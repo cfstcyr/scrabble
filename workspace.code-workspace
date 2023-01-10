@@ -4,13 +4,13 @@
             "path": "."
         },
         {
-            "path": "./client"
+            "path": "./packages/client"
         },
         {
-            "path": "./server"
+            "path": "./packages/server"
         },
         {
-            "path": "./common"
+            "path": "./packages/common"
         }
     ],
     "settings": {

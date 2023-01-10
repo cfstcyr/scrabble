@@ -1,0 +1,40 @@
+@import '../../style/utils.scss';
+@import '../../style/variables.scss';
+
+.content {
+    display: flex;
+    align-items: center;
+
+    .info {
+        flex-grow: 1;
+
+        .name {
+            font-size: 1.3em;
+            margin: 0 0 8px 0;
+        }
+
+        .chip-list {
+            display: flex;
+
+            .chip {
+                @include no-select;
+                background: $gray;
+                padding: 2px 12px;
+                border-radius: 100px;
+                font-size: 0.85em;
+
+                app-icon {
+                    margin-right: 2px;
+                }
+
+                &:not(:last-child) {
+                    margin-right: 6px;
+                }
+            }
+        }
+    }
+
+    .button-container {
+        flex-grow: 0;
+    }
+}

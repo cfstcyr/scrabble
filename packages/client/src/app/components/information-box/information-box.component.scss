@@ -1,0 +1,164 @@
+@import '../../style/utils.scss';
+@import '../../style/variables.scss';
+@import '../../style/animations.scss';
+
+#outer-container {
+    @include no-select;
+    cursor: default;
+    display: grid;
+    grid-template-columns: minmax(0, 2.5fr) 1fr minmax(0, 2.5fr);
+    gap: 8px;
+    height: 100%;
+
+    #time-container {
+        text-align: center;
+        padding: 12px 12px;
+
+        #time-left {
+            font-size: 2em;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        &.running .separator {
+            animation-name: blinking;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+        }
+    }
+
+    .player-container {
+        position: relative;
+        transition: ease-in all 0.1s;
+        z-index: 10;
+
+        mat-card {
+            width: 100%;
+            height: 100%;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
+            transition: ease-in all 0.1s;
+        }
+
+        .name-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            max-width: 100%;
+
+            & > *:not(:last-child) {
+                margin-right: 6px;
+            }
+
+            .name {
+                line-height: 1.2em;
+                font-size: 1.5em;
+                font-weight: 500;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .score {
+                font-weight: 400;
+                background: $primary;
+                color: white;
+                padding: 0.075em 0.65em;
+                border-radius: 100px;
+                white-space: nowrap;
+                transition: ease-in all 0.2s;
+            }
+
+            app-icon {
+                color: $primary;
+                transition: ease-in all 0.2s;
+            }
+        }
+
+        .local-player-active-indicator {
+            position: absolute;
+            bottom: 0;
+            background: rgb(39, 39, 39);
+            color: white;
+            padding: 6px 12px;
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+            z-index: -1;
+            transition: ease-in transform 0.2s;
+            pointer-events: none;
+        }
+
+        &#player-1 {
+            mat-card {
+                align-items: flex-start;
+            }
+
+            .local-player-active-indicator {
+                left: 12px;
+            }
+        }
+
+        &#player-2 {
+            mat-card {
+                align-items: flex-end;
+            }
+
+            .local-player-active-indicator {
+                right: 12px;
+            }
+        }
+
+        &.local.active {
+            transition: ease-in all 0.2s;
+            mat-card {
+                background: $primary;
+                color: white;
+                transition: ease-in all 0.1s;
+
+                .score {
+                    background: white;
+                    color: black;
+                    transition: ease-in all 0.2s;
+                }
+
+                app-icon {
+                    color: white;
+                    transition: ease-in all 0.2s;
+                }
+            }
+        }
+
+        &.active {
+            .local-player-active-indicator {
+                @keyframes hide {
+                    0% {
+                        transform: translateY(100%);
+                    }
+                    100% {
+                        transform: translateY(0%);
+                    }
+                }
+
+                transform: translateY(100%);
+                animation-name: hide;
+                animation-duration: 0.2s;
+                animation-fill-mode: forwards;
+                animation-delay: 4s;
+                transition: ease-in transform 0.5s;
+            }
+        }
+
+        &:not(.active) {
+            opacity: 0.55;
+            transition: ease-in all 0.1s;
+        }
+    }
+
+    p {
+        margin: 0;
+    }
+}

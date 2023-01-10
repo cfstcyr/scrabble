@@ -1,0 +1,52 @@
+<div id="page-content">
+    <div id="tiles">
+        <app-tile [tile]="{ letter: 'C', value: 3 }"></app-tile>
+        <app-tile [tile]="{ letter: 'I', value: 1 }"></app-tile>
+        <app-tile [tile]="{ letter: 'L', value: 1 }"></app-tile>
+        <app-tile [tile]="{ letter: 'H', value: 4 }"></app-tile>
+        <app-tile [tile]="{ letter: 'M', value: 2 }"></app-tile>
+        <app-tile [tile]="{ letter: 'E', value: 1 }"></app-tile>
+        <app-tile [tile]="{ letter: 'G', value: 2 }"></app-tile>
+    </div>
+
+    <div class="content">
+        <img src="https://bit.ly/3m206ss" alt="Logo Scrabble" />
+        <section id="button-group" class="justified">
+            <button mat-flat-button color="primary" routerLink="/lobby">Rejoindre une partie</button>
+            <button mat-flat-button color="primary" routerLink="/game-creation">Créer une partie</button>
+            <button mat-flat-button color="primary" routerLink="/high-scores">Meilleurs scores</button>
+        </section>
+        <div class="footer-item">
+            <h4 class="team-name">Équipe 212</h4>
+            <p>
+                <span
+                    ><a class="home-tile-name" href="https://www.linkedin.com/in/thomas-tr%C3%A9panier/"
+                        ><app-tile [tile]="{ letter: 'T', value: 0 }" [hideValue]="true"></app-tile></a
+                    >homas Trépanier</span
+                >
+                <span
+                    ><a class="home-tile-name" href="https://www.linkedin.com/in/vincent-haney/"
+                        ><app-tile [tile]="{ letter: 'V', value: 0 }" [hideValue]="true"></app-tile></a
+                    >incent Haney</span
+                >
+                <span
+                    ><a class="home-tile-name" href="https://www.linkedin.com/in/cfstcyr/"
+                        ><app-tile [tile]="{ letter: 'C', value: 0 }" [hideValue]="true"></app-tile></a
+                    >harles-François St-Cyr</span
+                >
+                <span
+                    ><a class="home-tile-name" href="https://www.linkedin.com/in/mathildebrosseau/"
+                        ><app-tile [tile]="{ letter: 'M', value: 0 }" [hideValue]="true"></app-tile></a
+                    >athilde Brosseau</span
+                >
+                <span
+                    ><a class="home-tile-name" href="https://www.linkedin.com/in/raphael-salvas/"
+                        ><app-tile [tile]="{ letter: 'R', value: 0 }" [hideValue]="true"></app-tile></a
+                    >aphael Salvas</span
+                >
+            </p>
+        </div>
+    </div>
+
+    <div id="background" style="background: url('assets/img/board_background.svg')"></div>
+</div>

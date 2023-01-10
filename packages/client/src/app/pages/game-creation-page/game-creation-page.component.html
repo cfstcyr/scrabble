@@ -1,0 +1,133 @@
+<div class="page">
+    <app-page-header title="Création de partie" button="Rejoindre une partie" buttonRoute="/lobby"></app-page-header>
+
+    <br />
+
+    <div class="container">
+        <div *ngIf="isCreatingGame" id="game-creation-waiting-container">
+            <app-loading-page></app-loading-page>
+        </div>
+        <mat-card *ngIf="!isCreatingGame">
+            <form [formGroup]="gameParameters" (ngSubmit)="onSubmit()">
+                <mat-label class="button-toggle-label">Choisissez un type de partie</mat-label>
+                <mat-button-toggle-group formControlName="gameType" ngDefaultControl>
+                    <mat-button-toggle id="classic-button" [value]="gameTypes.Classic">
+                        <mat-card class="content">
+                            <app-icon icon="chess-pawn" styling="solid"></app-icon>
+                            <p class="text">{{ gameTypes.Classic }}</p>
+                        </mat-card>
+                    </mat-button-toggle>
+                    <mat-button-toggle id="log2990-button" [value]="gameTypes.LOG2990">
+                        <mat-card class="content">
+                            <app-icon icon="chess-queen" styling="solid"></app-icon>
+                            <p class="text">{{ gameTypes.LOG2990 }}</p>
+                        </mat-card>
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+
+                <mat-divider></mat-divider>
+                <br />
+
+                <mat-label class="button-toggle-label">Choisissez un mode de jeu</mat-label>
+                <mat-button-toggle-group formControlName="gameMode" ngDefaultControl>
+                    <mat-button-toggle id="solo-button" [value]="gameModes.Solo">
+                        <mat-card class="content">
+                            <app-icon icon="user" styling="solid"></app-icon>
+                            <p class="text">{{ gameModes.Solo }}</p>
+                        </mat-card>
+                    </mat-button-toggle>
+                    <mat-button-toggle id="multi-button" [value]="gameModes.Multiplayer">
+                        <mat-card class="content">
+                            <app-icon icon="user-friends" styling="solid"></app-icon>
+                            <p class="text">{{ gameModes.Multiplayer }}</p>
+                        </mat-card>
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+
+                <ng-container *ngIf="gameParameters.get('gameMode')?.value === gameModes.Solo">
+                    <mat-label class="button-toggle-label" id="level-label">Choisissez le niveau de votre adversaire virtuel</mat-label>
+                    <mat-button-toggle-group id="level-buttons" formControlName="level">
+                        <mat-button-toggle id="begginer-button" [value]="virtualPlayerLevels.Beginner">
+                            <mat-card class="content">
+                                <app-icon icon="turtle" styling="solid"></app-icon>
+                                <p class="text">{{ virtualPlayerLevels.Beginner }}</p>
+                            </mat-card>
+                        </mat-button-toggle>
+
+                        <mat-button-toggle id="expert-button" [value]="virtualPlayerLevels.Expert">
+                            <mat-card class="content">
+                                <app-icon icon="rabbit" styling="solid"></app-icon>
+                                <p class="text">{{ virtualPlayerLevels.Expert }}</p>
+                            </mat-card>
+                        </mat-button-toggle>
+                    </mat-button-toggle-group>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label floatLabel="always">Choissez votre adversaire virtuel</mat-label>
+                        <mat-select formControlName="virtualPlayerName" (selectionChange)="isFormValid()">
+                            <mat-option *ngFor="let virtualPlayer of getVirtualPlayerNames()" value="{{ virtualPlayer }}">{{
+                                virtualPlayer
+                            }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </ng-container>
+
+                <mat-divider></mat-divider>
+
+                <mat-form-field appearance="outline" class="margin-top">
+                    <mat-label floatLabel="always"><app-icon icon="book"></app-icon> Choisissez le dictionnaire à utiliser</mat-label>
+                    <mat-select formControlName="dictionary" (selectionChange)="onDictionaryChange()">
+                        <mat-select-trigger>
+                            <span class="dictionary-title">{{ gameParameters.get('dictionary')?.value?.title }}</span>
+                            <span> - </span>
+                            <span class="dictionary-description">{{ gameParameters.get('dictionary')?.value?.description }}</span>
+                        </mat-select-trigger>
+                        <mat-option *ngFor="let dictionary of dictionaryOptions" [value]="dictionary">
+                            <span class="dictionary-title">{{ dictionary.title }}</span>
+                            <span> - </span>
+                            <span class="dictionary-description">{{ dictionary.description }}</span>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div
+                    class="alert-group"
+                    *ngIf="
+                        (gameParameters.get('dictionary')?.invalid &&
+                        (gameParameters.get('dictionary')?.dirty || gameParameters.get('dictionary')?.touched)) && gameParameters.get('dictionary')?.errors?.['required']
+                    "
+                >
+                    <mat-error class="alert" *ngIf="!wasDictionaryDeleted">
+                        {{ dictionaryRequiredError }}
+                    </mat-error>
+                    <mat-error class="alert" *ngIf="wasDictionaryDeleted">
+                        {{ dictionaryDeletedError }}
+                    </mat-error>
+                </div>
+
+                <app-timer-selection [parentForm]="gameParameters"></app-timer-selection>
+
+                <app-name-field
+                    [initialPlayerName]="playerName"
+                    [virtualPlayerName]="gameParameters.get('virtualPlayerName')?.value"
+                    [mustVerifyVirtualPlayerName]="gameParameters.get('gameMode')?.value === gameModes.Solo"
+                    (keydown.enter)="$event.preventDefault()"
+                    (playerNameChange)="onPlayerNameChanges($event)"
+                ></app-name-field>
+
+                <div class="buttons">
+                    <div
+                        class="button-container"
+                        matTooltip="Veuillez remplir tous les champs avec des données valides"
+                        [matTooltipDisabled]="isFormValid()"
+                        matTooltipPosition="above"
+                        (click)="onFormInvalidClick()"
+                    >
+                        <button mat-flat-button color="primary" type="submit" id="create-game-button" [disabled]="!isFormValid()" cdkFocusInitial>
+                            Créer la partie
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </mat-card>
+    </div>
+</div>

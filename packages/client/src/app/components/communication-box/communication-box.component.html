@@ -1,0 +1,47 @@
+<div id="outer-container" (click)="onContainerClick()">
+    <section id="objectives-container">
+        <mat-accordion>
+            <mat-expansion-panel *ngIf="gameType === 'LOG2990'" expanded="true">
+                <mat-expansion-panel-header>Objectifs</mat-expansion-panel-header>
+                <app-objective-box></app-objective-box>
+            </mat-expansion-panel>
+            <mat-expansion-panel id="tile-map" [expanded]="false" [disabled]="getNumberOfTilesLeft() === 0">
+                <mat-expansion-panel-header>Tuiles restantes : {{ getNumberOfTilesLeft() }}</mat-expansion-panel-header>
+                <div class="tile-map-content">
+                    <p *ngFor="let letter of getLettersLeft()">
+                        <app-tile [tile]="{ letter: letter.letter, value: 0 }" [hideValue]="true"></app-tile>
+                        <span class="separator">:</span>
+                        <span class="amount">{{ letter.amount }}</span>
+                    </p>
+                </div>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </section>
+    <section id="text-box-container" #textBoxContainer>
+        <mat-card>
+            <cdk-virtual-scroll-viewport itemSize="30*7" class="scrolling-area" #virtualScroll>
+                <div [class]="'scroll-item ' + msg.senderId" *cdkVirtualFor="let msg of messages">
+                    <div class="message-container">
+                        <p
+                            [ngClass]="{ isClickable: msg.isClickable }"
+                            class="message"
+                            [innerHTML]="msg.content"
+                            (click)="onMessageClicked($event)"
+                        ></p>
+                    </div>
+                </div>
+            </cdk-virtual-scroll-viewport>
+            <form class="input-zone" [formGroup]="messageForm" (ngSubmit)="onSendMessage()">
+                <div class="button-tooltip" matTooltip="Votre message est trop long" [matTooltipDisabled]="messageForm.valid">
+                    <input matInput type="text" formControlName="content" autocomplete="off" placeholder="Écrivez votre message ici" #messageInput />
+                    <button id="send-button" stype="submit" mat-flat-button color="primary" [disabled]="messageForm.invalid">
+                        <app-icon [icon]="'long-arrow-right'"></app-icon>
+                        <div class="mat-hint-wrapper">
+                            <mat-hint align="end" [ngClass]="{ isInvalid: (messageInput.value?.length || 0) > 512 }">{{messageInput.value?.length || 0}}/512</mat-hint>
+                        </div>
+                    </button>
+                </div>
+            </form>            
+        </mat-card>
+    </section>
+</div>

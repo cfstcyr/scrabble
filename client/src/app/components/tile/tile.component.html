@@ -1,8 +1,0 @@
-<div
-    [ngClass]="{ tile: true, 'hide-value': hideValue, blank: tile.isBlank, applied, 'newly-placed': newlyPlaced }"
-    [style.background]="'url(' + backgroundPath + ')'"
-    [style.fontSize]="fontSize"
->
-    <p class="letter">{{ tile.playedLetter ? tile.playedLetter : tile.letter === '*' ? '' : tile.letter }}</p>
-    <p class="value">{{ tile.value }}</p>
-</div>

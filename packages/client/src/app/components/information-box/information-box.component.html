@@ -1,0 +1,48 @@
+<div id="outer-container">
+    <div class="player-container" id="player-1" [ngClass]="{ active: isPlayer1Active, local: isPlayer1 }">
+        <mat-card>
+            <p class="name-container">
+                <app-icon *ngIf="isPlayer1" [icon]="localPlayerIcon" styling="solid"></app-icon>
+                <span class="name">{{ getPlayer1().name }}</span>
+                <span class="score">{{ getPlayer1().score }} points</span>
+            </p>
+    
+            <p *ngIf="getPlayer1().getTiles().length < maxTilesPerPlayer" class="tiles-left">
+                Tuiles restantes : {{ getPlayer1().getTiles().length }}
+            </p>
+        </mat-card>
+
+        <p class="local-player-active-indicator">
+            <span *ngIf="isPlayer1">C'est votre tour</span>
+            <span *ngIf="!isPlayer1">C'est au tour de {{ getPlayer1().name }}</span>
+        </p>
+    </div>
+
+    <mat-card id="time-container" [ngClass]="{ running: isTimerRunning() }">
+        <p>Temps restant au tour</p>
+        <p id="time-left">
+            <span class="minutes">{{ timer.minutes }}</span>
+            <span class="separator">:</span>
+            <span class="seconds">{{ timer.getTimerSecondsPadded() }}</span>
+        </p>
+    </mat-card>
+
+    <div class="player-container" id="player-2"  [ngClass]="{ active: isPlayer2Active, local: !isPlayer1 }">
+        <mat-card>
+            <p class="name-container">
+                <span class="score">{{ getPlayer2().score }} points</span>
+                <span class="name">{{ getPlayer2().name }}</span>
+                <app-icon *ngIf="!isPlayer1" [icon]="localPlayerIcon" styling="solid"></app-icon>
+            </p>
+    
+            <p *ngIf="getPlayer2().getTiles().length < maxTilesPerPlayer" class="tiles-left">
+                Tuiles restantes : {{ getPlayer2().getTiles().length }}
+            </p>
+        </mat-card>
+
+        <p class="local-player-active-indicator">
+            <span *ngIf="!isPlayer1">C'est votre tour</span>
+            <span *ngIf="isPlayer1">C'est au tour de {{ getPlayer2().name }}</span>
+        </p>
+    </div>
+</div>

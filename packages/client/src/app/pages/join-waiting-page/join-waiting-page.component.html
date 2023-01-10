@@ -1,0 +1,32 @@
+<div class="container centered">
+    <mat-card class="top-box">
+        <p class="waiting-message">En attente que l'hôte vous accepte.</p>
+
+        <mat-progress-bar class="progress" mode="indeterminate"></mat-progress-bar>
+
+        <div class="players">
+            <span class="name"
+                ><b>{{ currentName }}</b></span
+            ><span id="vs"> vs </span><span class="name">{{ currentLobby.hostName }}</span>
+        </div>
+
+        <div class="chip-list">
+            <div class="chip"><app-icon icon="hourglass-half" size="sm"></app-icon> {{ roundTime }}</div>
+            <div class="chip">
+                <app-icon icon="gamepad"></app-icon>
+                {{ currentLobby.gameType }}
+            </div>
+            <div class="chip">
+                <app-icon icon="book"></app-icon>
+                {{ currentLobby.dictionary.title }}
+            </div>
+        </div>
+
+        <button id="cancel-button" mat-flat-button color="primary" [routerLink]="'/lobby'">Annuler</button>
+    </mat-card>
+
+    <mat-card class="fun-fact-box">
+        <p id="intro">Le saviez-vous ?</p>
+        <p id="fact">{{ funFact }}</p>
+    </mat-card>
+</div>
