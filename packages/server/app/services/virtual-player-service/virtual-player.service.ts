@@ -7,7 +7,7 @@ import { HttpException } from '@app/classes/http-exception/http-exception';
 import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { IS_REQUESTING } from '@app/constants/game-constants';
 import { CONTENT_TYPE, GAME_SHOULD_CONTAIN_ROUND } from '@app/constants/virtual-player-constants';
-import { environment } from '@app/environments/environment';
+import { env } from '@app/utils/environment/environment';
 import { StatusCodes } from 'http-status-codes';
 import fetch, { Response } from 'node-fetch';
 import { Service } from 'typedi';
@@ -30,7 +30,7 @@ export class VirtualPlayerService {
     }
 
     private getEndPoint(): string {
-        return environment.serverUrl;
+        return env.SERVER_URL;
     }
 
     private async sendFetchRequest(gameId: string, playerId: string, action: ActionData): Promise<Response> {

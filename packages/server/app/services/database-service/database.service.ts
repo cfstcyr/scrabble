@@ -1,4 +1,4 @@
-import { MONGO_DATABASE_NAME, MONGO_DB_URL } from '@app/constants/services-constants/mongo-db-const';
+import { env } from '@app/utils/environment/environment';
 import { Collection, Db, Document, MongoClient } from 'mongodb';
 import { Service } from 'typedi';
 
@@ -14,11 +14,11 @@ export default class DatabaseService {
         }
     }
 
-    async connectToServer(databaseUrl: string = MONGO_DB_URL): Promise<MongoClient | null> {
+    async connectToServer(databaseUrl: string = env.MONGO_URL): Promise<MongoClient | null> {
         try {
             const client = await MongoClient.connect(databaseUrl);
             this.mongoClient = client;
-            this.db = this.mongoClient.db(MONGO_DATABASE_NAME);
+            this.db = this.mongoClient.db(env.MONGO_NAME);
         } catch (exception) {
             return null;
         }

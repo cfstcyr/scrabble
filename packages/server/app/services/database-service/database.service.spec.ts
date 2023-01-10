@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable dot-notation */
-import { HIGH_SCORES_MONGO_COLLECTION_NAME, MONGO_DATABASE_NAME } from '@app/constants/services-constants/mongo-db-const';
+import { HIGH_SCORES_MONGO_COLLECTION_NAME } from '@app/constants/services-constants/mongo-db-const';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { fail } from 'assert';
 import * as chai from 'chai';
@@ -15,6 +15,7 @@ import { Container } from 'typedi';
 import DatabaseService from './database.service';
 chai.use(chaiAsPromised);
 
+const MONGO_DATABASE_NAME = 'DB_TEST';
 const TEST_DOCUMENT_SMALL_ARRAY: Document[] = [{ name: 'pablito' }, { name: 'pablito' }];
 const TEST_DOCUMENT_BIG_ARRAY: Document[] = [{ score: 1 }, { score: 1 }, { score: 1 }, { score: 1 }];
 
