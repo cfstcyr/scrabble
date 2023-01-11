@@ -32,5 +32,9 @@ export function errorHandler(
         response.stack = error.stack?.split('\n');
     }
 
+    if (!env.isProd) {
+        console.error(error);
+    }
+
     res.status(status).json(response);
 }

@@ -8,8 +8,8 @@
         "build": "rimraf out && tsc --project tsconfig.app.json",
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "eslint -c .eslintrc.json \"./app/**/*.ts\" --format stylish",
-        "test": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' mocha --config=.mocharc.json --node-env=test",
-        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' nyc mocha --config=.mocharc.json --node-env=test --exit"
+        "test": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .test.env mocha --config=.mocharc.json --node-env=test",
+        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .test.env nyc mocha --config=.mocharc.json --node-env=test --exit"
     },
     "nyc": {
         "check-coverage": true,
@@ -48,7 +48,6 @@
         "@types/mock-fs": "^4.13.1",
         "@types/uuid": "^8.3.4",
         "ajv": "^8.11.0",
-        "common": "file:../common",
         "cookie-parser": "1.4.5",
         "cors": "2.8.5",
         "debug": "^4.3.2",
@@ -96,6 +95,7 @@
         "chai-as-promised": "^7.1.1",
         "chai-spies": "^1.0.0",
         "cross-env": "^7.0.3",
+        "dotenv-cli": "^6.0.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-import-resolver-typescript": "^2.4.0",

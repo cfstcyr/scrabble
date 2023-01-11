@@ -63,7 +63,7 @@ const DEFAULT_GAME_UPDATE_DATA: GameUpdateData = {
     isGameOver: false,
 };
 
-const PORT_NUMBER = 3000;
+const PORT_NUMBER = 14111;
 
 describe('VirtualPlayerService', () => {
     let virtualPlayerService: VirtualPlayerService;

@@ -15,7 +15,7 @@ import { Container } from 'typedi';
 import DatabaseService from './database.service';
 chai.use(chaiAsPromised);
 
-const MONGO_DATABASE_NAME = 'DB_TEST';
+const MONGO_DATABASE_NAME = 'test';
 const TEST_DOCUMENT_SMALL_ARRAY: Document[] = [{ name: 'pablito' }, { name: 'pablito' }];
 const TEST_DOCUMENT_BIG_ARRAY: Document[] = [{ score: 1 }, { score: 1 }, { score: 1 }, { score: 1 }];
 
