@@ -1,0 +1,21 @@
+version: '3.3'
+
+services:
+  server:
+    image: log3990-server:prod
+    build:
+      context: ./packages/server
+      target: prod
+    ports:
+      - ${SERVER_PORT:-3000}:3000
+    environment:
+      MONGO_URL: ${SERVER_MONGO_URL}
+      MONGO_NAME: ${SERVER_MONGO_NAME}
+      SERVER_URL: ${SERVER_SERVER_URL}
+  client:
+    image: log3990-client:prod
+    build: 
+      context: ./packages/client
+      target: prod
+    ports:
+      - ${CLIENT_PORT:-4200}:80

@@ -3,3 +3,6 @@ dev:
 
 dev-build:
 	docker-compose -f docker-compose.dev.yml up --build --attach server --attach client
+
+prod:
+	docker-compose -f docker-compose.yml up --build -d
