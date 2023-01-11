@@ -33,7 +33,7 @@ export class GamePlayController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.post('/games/:gameId/players/:playerId/action', async (req: GameRequest, res: Response) => {
+        this.router.post('/games/:gameId/players/:playerId/action', async (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
             const data: ActionData = req.body;
 
@@ -41,11 +41,11 @@ export class GamePlayController {
                 await this.handlePlayAction(gameId, playerId, data);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.post('/games/:gameId/players/:playerId/message', (req: GameRequest, res: Response) => {
+        this.router.post('/games/:gameId/players/:playerId/message', (req: GameRequest, res: Response, next) => {
             const gameId = req.params.gameId;
             const message: Message = req.body;
 
@@ -53,11 +53,11 @@ export class GamePlayController {
                 this.handleNewMessage(gameId, message);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.post('/games/:gameId/players/:playerId/error', (req: GameRequest, res: Response) => {
+        this.router.post('/games/:gameId/players/:playerId/error', (req: GameRequest, res: Response, next) => {
             const { playerId, gameId } = req.params;
             const message: Message = req.body;
 
@@ -65,7 +65,7 @@ export class GamePlayController {
                 this.handleNewError(playerId, gameId, message);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
     }

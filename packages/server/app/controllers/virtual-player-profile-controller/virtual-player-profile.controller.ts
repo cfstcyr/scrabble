@@ -19,16 +19,16 @@ export class VirtualPlayerProfilesController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.get('/virtualPlayerProfiles', async (req: VirtualPlayerProfilesRequest, res: Response) => {
+        this.router.get('/virtualPlayerProfiles', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 const virtualPlayerProfiles: VirtualPlayerProfile[] = await this.virtualPlayerProfileService.getAllVirtualPlayerProfiles();
                 res.status(StatusCodes.OK).send({ virtualPlayerProfiles });
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.get('/virtualPlayerProfiles/:level', async (req: VirtualPlayerProfilesRequest, res: Response) => {
+        this.router.get('/virtualPlayerProfiles/:level', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 const level: VirtualPlayerLevel = req.params.level as VirtualPlayerLevel;
                 if (!Object.values(VirtualPlayerLevel).includes(level)) throw new HttpException(INVALID_LEVEL, StatusCodes.BAD_REQUEST);
@@ -36,11 +36,11 @@ export class VirtualPlayerProfilesController {
                 const virtualPlayerProfiles: VirtualPlayerProfile[] = await this.virtualPlayerProfileService.getVirtualPlayerProfilesFromLevel(level);
                 res.status(StatusCodes.OK).send({ virtualPlayerProfiles });
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.post('/virtualPlayerProfiles', async (req: VirtualPlayerProfilesRequest, res: Response) => {
+        this.router.post('/virtualPlayerProfiles', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 const virtualPlayerData: VirtualPlayerData = req.body.virtualPlayerData;
                 if (!virtualPlayerData) throw new HttpException(MISSING_PARAMETER, StatusCodes.BAD_REQUEST);
@@ -48,11 +48,11 @@ export class VirtualPlayerProfilesController {
                 await this.virtualPlayerProfileService.addVirtualPlayerProfile(virtualPlayerData);
                 res.status(StatusCodes.CREATED).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.patch('/virtualPlayerProfiles/:profileId', async (req: VirtualPlayerProfilesRequest, res: Response) => {
+        this.router.patch('/virtualPlayerProfiles/:profileId', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 const profileId: string = req.params.profileId;
                 const newName: string = req.body.profileData.name;
@@ -60,26 +60,26 @@ export class VirtualPlayerProfilesController {
                 await this.virtualPlayerProfileService.updateVirtualPlayerProfile(newName, profileId);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.delete('/virtualPlayerProfiles/:profileId', async (req: VirtualPlayerProfilesRequest, res: Response) => {
+        this.router.delete('/virtualPlayerProfiles/:profileId', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 const profileId: string = req.params.profileId;
                 await this.virtualPlayerProfileService.deleteVirtualPlayerProfile(profileId);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.delete('/virtualPlayerProfiles', async (req: VirtualPlayerProfilesRequest, res: Response) => {
+        this.router.delete('/virtualPlayerProfiles', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 await this.virtualPlayerProfileService.resetVirtualPlayerProfiles();
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
     }

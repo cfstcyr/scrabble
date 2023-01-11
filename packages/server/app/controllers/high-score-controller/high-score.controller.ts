@@ -1,5 +1,4 @@
 import { HighScoresRequest } from '@app/classes/communication/request';
-import { HttpException } from '@app/classes/http-exception/http-exception';
 import HighScoresService from '@app/services/high-score-service/high-score.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { Response, Router } from 'express';
@@ -17,22 +16,22 @@ export class HighScoresController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.get('/highScores/:playerId', async (req: HighScoresRequest, res: Response) => {
+        this.router.get('/highScores/:playerId', async (req: HighScoresRequest, res: Response, next) => {
             const { playerId } = req.params;
             try {
                 await this.handleHighScoresRequest(playerId);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.delete('/highScores', async (req: HighScoresRequest, res: Response) => {
+        this.router.delete('/highScores', async (req: HighScoresRequest, res: Response, next) => {
             try {
                 await this.highScoresService.resetHighScores();
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
     }

@@ -1,7 +1,6 @@
 import { DictionaryRequest } from '@app/classes/communication/request';
 import { DictionaryData } from '@app/classes/dictionary';
 import { BasicDictionaryData, DictionarySummary, DictionaryUpdateInfo } from '@app/classes/communication/dictionary-data';
-import { HttpException } from '@app/classes/http-exception/http-exception';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -18,47 +17,47 @@ export class DictionaryController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.post('/dictionaries', async (req: DictionaryRequest, res: Response) => {
+        this.router.post('/dictionaries', async (req: DictionaryRequest, res: Response, next) => {
             const dictionaryData: DictionaryData = req.body.dictionaryData;
             try {
                 await this.dictionaryService.addNewDictionary(dictionaryData);
                 res.status(StatusCodes.CREATED).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.patch('/dictionaries', async (req: DictionaryRequest, res: Response) => {
+        this.router.patch('/dictionaries', async (req: DictionaryRequest, res: Response, next) => {
             const dictionaryUpdateInfo: DictionaryUpdateInfo = req.body.dictionaryUpdateInfo;
 
             try {
                 await this.dictionaryService.updateDictionary(dictionaryUpdateInfo);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.delete('/dictionaries', async (req: DictionaryRequest, res: Response) => {
+        this.router.delete('/dictionaries', async (req: DictionaryRequest, res: Response, next) => {
             const dictionaryId: string = req.query.dictionaryId as string;
             try {
                 await this.dictionaryService.deleteDictionary(dictionaryId);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.get('/dictionaries/summary', async (req: DictionaryRequest, res: Response) => {
+        this.router.get('/dictionaries/summary', async (req: DictionaryRequest, res: Response, next) => {
             try {
                 const dictionarySummaries: DictionarySummary[] = await this.dictionaryService.getAllDictionarySummaries();
                 res.status(StatusCodes.OK).send(dictionarySummaries);
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.get('/dictionaries/:dictionaryId', async (req: DictionaryRequest, res: Response) => {
+        this.router.get('/dictionaries/:dictionaryId', async (req: DictionaryRequest, res: Response, next) => {
             const { dictionaryId } = req.params;
 
             try {
@@ -71,16 +70,16 @@ export class DictionaryController {
 
                 res.status(StatusCodes.OK).send(dictionaryToSend);
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
 
-        this.router.delete('/dictionaries/reset', async (req: DictionaryRequest, res: Response) => {
+        this.router.delete('/dictionaries/reset', async (req: DictionaryRequest, res: Response, next) => {
             try {
                 await this.dictionaryService.restoreDictionaries();
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
-                HttpException.sendError(exception, res);
+                next(exception);
             }
         });
     }

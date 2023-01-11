@@ -29,36 +29,4 @@ describe('HttpException', () => {
 
         expect(httpException.message).to.equals(createdMessage);
     });
-
-    describe('sendError', () => {
-        let response: Response;
-
-        beforeEach(() => {
-            response = new MockResponse() as unknown as Response;
-        });
-
-        it('should send INTERNAL_SERVER_ERROR by default', () => {
-            const spy = chai.spy.on(response, 'status');
-            const expectedStatus = StatusCodes.INTERNAL_SERVER_ERROR;
-
-            try {
-                throw new Error();
-            } catch (exception) {
-                HttpException.sendError(exception, response);
-                expect(spy).to.have.been.called.with(expectedStatus);
-            }
-        });
-
-        it('should send status from HttpException', () => {
-            const spy = chai.spy.on(response, 'status');
-            const expectedStatus = StatusCodes.IM_A_TEAPOT;
-
-            try {
-                throw new HttpException('', expectedStatus);
-            } catch (exception) {
-                HttpException.sendError(exception, response);
-                expect(spy).to.have.been.called.with(expectedStatus);
-            }
-        });
-    });
 });

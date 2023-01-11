@@ -13,12 +13,12 @@ import { GameHistoriesController } from './controllers/game-history-controller/g
 import { GamePlayController } from './controllers/game-play-controller/game-play.controller';
 import { HighScoresController } from './controllers/high-score-controller/high-score.controller';
 import { VirtualPlayerProfilesController } from './controllers/virtual-player-profile-controller/virtual-player-profile.controller';
+import { errorHandler } from './middlewares/error-handler';
 import DatabaseService from './services/database-service/database.service';
 
 @Service()
 export class Application {
     app: express.Application;
-    private readonly internalError: number = StatusCodes.INTERNAL_SERVER_ERROR;
 
     constructor(
         private readonly gamePlayController: GamePlayController,
@@ -72,32 +72,10 @@ export class Application {
     }
 
     private errorHandling(): void {
-        // When previous handlers have not served a request: path wasn't found
         this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-            const err: HttpException = new HttpException('Not Found');
-            next(err);
+            next(new HttpException(`Cannot ${req.method} ${req.path}`, StatusCodes.NOT_FOUND));
         });
 
-        // development error handler
-        // will print stacktrace
-        if (this.app.get('env') === 'development') {
-            this.app.use((err: HttpException, req: express.Request, res: express.Response) => {
-                res.status(err.status || this.internalError);
-                res.send({
-                    message: err.message,
-                    error: err,
-                });
-            });
-        }
-
-        // production error handler
-        // no stacktraces leaked to user (in production env only)
-        this.app.use((err: HttpException, req: express.Request, res: express.Response) => {
-            res.status(err.status || this.internalError);
-            res.send({
-                message: err.message,
-                error: {},
-            });
-        });
+        this.app.use(errorHandler);
     }
 }
