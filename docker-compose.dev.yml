@@ -6,7 +6,7 @@ services:
     volumes:
       - ./conf/nginx/conf.d/:/etc/nginx/conf.d
     ports:
-      - 80:80
+      - ${NGINX_PORT:-80}:80
 
   server:
     image: log3990-server:dev
