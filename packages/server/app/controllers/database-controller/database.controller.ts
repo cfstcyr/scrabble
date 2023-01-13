@@ -2,19 +2,16 @@ import { Router } from 'express';
 import { Service } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 import { StatusCodes } from 'http-status-codes';
+import { BaseController } from '../base-controller';
 
 @Service()
-export class DatabaseController {
-    router: Router;
-
+export class DatabaseController extends BaseController {
     constructor(private readonly databaseService: DatabaseService) {
-        this.configureRouter();
+        super('/api/database');
     }
 
-    private configureRouter(): void {
-        this.router = Router();
-
-        this.router.get('/is-connected', async (req, res) => {
+    protected configure(router: Router): void {
+        router.get('/is-connected', async (req, res) => {
             this.databaseService
                 .connectToServer()
                 .then((client) => (client ? res.status(StatusCodes.NO_CONTENT).send() : res.status(StatusCodes.INTERNAL_SERVER_ERROR).send()))

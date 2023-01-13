@@ -4,20 +4,18 @@ import { SocketService } from '@app/services/socket-service/socket.service';
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
+import { BaseController } from '../base-controller';
 
 @Service()
-export class HighScoresController {
-    router: Router;
-
+export class HighScoresController extends BaseController {
     constructor(private highScoresService: HighScoresService, private socketService: SocketService) {
-        this.configureRouter();
+        super('/api/highScores');
     }
 
-    private configureRouter(): void {
-        this.router = Router();
-
-        this.router.get('/highScores/:playerId', async (req: HighScoresRequest, res: Response, next) => {
+    protected configure(router: Router): void {
+        router.get('/:playerId', async (req: HighScoresRequest, res: Response, next) => {
             const { playerId } = req.params;
+            console.log('GET HIGHSCORE PLAYER ID', playerId);
             try {
                 await this.handleHighScoresRequest(playerId);
                 res.status(StatusCodes.NO_CONTENT).send();
@@ -26,7 +24,7 @@ export class HighScoresController {
             }
         });
 
-        this.router.delete('/highScores', async (req: HighScoresRequest, res: Response, next) => {
+        router.delete('/', async (req: HighScoresRequest, res: Response, next) => {
             try {
                 await this.highScoresService.resetHighScores();
                 res.status(StatusCodes.NO_CONTENT).send();
@@ -37,6 +35,7 @@ export class HighScoresController {
     }
 
     private async handleHighScoresRequest(playerId: string): Promise<void> {
+        console.log('handleHighScoresRequest', 'normal');
         const highScores = await this.highScoresService.getAllHighScores();
         this.socketService.emitToSocket(playerId, 'highScoresList', highScores);
     }

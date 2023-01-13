@@ -72,10 +72,6 @@ describe('GameHistoriesController', () => {
         expect(controller).to.exist;
     });
 
-    it('router should be created', () => {
-        expect(controller.router).to.exist;
-    });
-
     describe('configureRouter', () => {
         let expressApp: Express.Application;
 

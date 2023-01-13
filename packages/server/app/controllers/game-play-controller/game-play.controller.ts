@@ -16,24 +16,21 @@ import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
+import { BaseController } from '../base-controller';
 
 @Service()
-export class GamePlayController {
-    router: Router;
-
+export class GamePlayController extends BaseController {
     constructor(
         private readonly gamePlayService: GamePlayService,
         private readonly socketService: SocketService,
         private readonly activeGameService: ActiveGameService,
         private readonly virtualPlayerService: VirtualPlayerService,
     ) {
-        this.configureRouter();
+        super('/api/games');
     }
 
-    private configureRouter(): void {
-        this.router = Router();
-
-        this.router.post('/games/:gameId/players/:playerId/action', async (req: GameRequest, res: Response, next) => {
+    protected configure(router: Router): void {
+        router.post('/:gameId/players/:playerId/action', async (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
             const data: ActionData = req.body;
 
@@ -45,7 +42,7 @@ export class GamePlayController {
             }
         });
 
-        this.router.post('/games/:gameId/players/:playerId/message', (req: GameRequest, res: Response, next) => {
+        router.post('/:gameId/players/:playerId/message', (req: GameRequest, res: Response, next) => {
             const gameId = req.params.gameId;
             const message: Message = req.body;
 
@@ -57,7 +54,7 @@ export class GamePlayController {
             }
         });
 
-        this.router.post('/games/:gameId/players/:playerId/error', (req: GameRequest, res: Response, next) => {
+        router.post('/:gameId/players/:playerId/error', (req: GameRequest, res: Response, next) => {
             const { playerId, gameId } = req.params;
             const message: Message = req.body;
 

@@ -5,19 +5,16 @@ import DictionaryService from '@app/services/dictionary-service/dictionary.servi
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
+import { BaseController } from '../base-controller';
 
 @Service()
-export class DictionaryController {
-    router: Router;
-
+export class DictionaryController extends BaseController {
     constructor(private dictionaryService: DictionaryService) {
-        this.configureRouter();
+        super('/api/dictionaries');
     }
 
-    private configureRouter(): void {
-        this.router = Router();
-
-        this.router.post('/dictionaries', async (req: DictionaryRequest, res: Response, next) => {
+    protected configure(router: Router): void {
+        router.post('/', async (req: DictionaryRequest, res: Response, next) => {
             const dictionaryData: DictionaryData = req.body.dictionaryData;
             try {
                 await this.dictionaryService.addNewDictionary(dictionaryData);
@@ -27,7 +24,7 @@ export class DictionaryController {
             }
         });
 
-        this.router.patch('/dictionaries', async (req: DictionaryRequest, res: Response, next) => {
+        router.patch('/', async (req: DictionaryRequest, res: Response, next) => {
             const dictionaryUpdateInfo: DictionaryUpdateInfo = req.body.dictionaryUpdateInfo;
 
             try {
@@ -38,7 +35,7 @@ export class DictionaryController {
             }
         });
 
-        this.router.delete('/dictionaries', async (req: DictionaryRequest, res: Response, next) => {
+        router.delete('/', async (req: DictionaryRequest, res: Response, next) => {
             const dictionaryId: string = req.query.dictionaryId as string;
             try {
                 await this.dictionaryService.deleteDictionary(dictionaryId);
@@ -48,7 +45,7 @@ export class DictionaryController {
             }
         });
 
-        this.router.get('/dictionaries/summary', async (req: DictionaryRequest, res: Response, next) => {
+        router.get('/summary', async (req: DictionaryRequest, res: Response, next) => {
             try {
                 const dictionarySummaries: DictionarySummary[] = await this.dictionaryService.getAllDictionarySummaries();
                 res.status(StatusCodes.OK).send(dictionarySummaries);
@@ -57,7 +54,7 @@ export class DictionaryController {
             }
         });
 
-        this.router.get('/dictionaries/:dictionaryId', async (req: DictionaryRequest, res: Response, next) => {
+        router.get('/:dictionaryId', async (req: DictionaryRequest, res: Response, next) => {
             const { dictionaryId } = req.params;
 
             try {
@@ -74,7 +71,7 @@ export class DictionaryController {
             }
         });
 
-        this.router.delete('/dictionaries/reset', async (req: DictionaryRequest, res: Response, next) => {
+        router.delete('/reset', async (req: DictionaryRequest, res: Response, next) => {
             try {
                 await this.dictionaryService.restoreDictionaries();
                 res.status(StatusCodes.NO_CONTENT).send();

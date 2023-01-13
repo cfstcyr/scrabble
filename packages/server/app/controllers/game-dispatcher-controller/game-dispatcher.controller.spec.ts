@@ -139,11 +139,6 @@ describe('GameDispatcherController', () => {
         expect(controller).to.exist;
     });
 
-    it('router should be created', () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
-        expect(controller.router).to.exist;
-    });
-
     describe('configureRouter', () => {
         let expressApp: Express.Application;
 

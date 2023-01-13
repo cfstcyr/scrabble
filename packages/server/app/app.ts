@@ -6,28 +6,23 @@ import { StatusCodes } from 'http-status-codes';
 import * as logger from 'morgan';
 import { join } from 'path';
 import { Service } from 'typedi';
-import { DatabaseController } from './controllers/database-controller/database.controller';
-import { DictionaryController } from './controllers/dictionary-controller/dictionary.controller';
-import { GameDispatcherController } from './controllers/game-dispatcher-controller/game-dispatcher.controller';
-import { GameHistoriesController } from './controllers/game-history-controller/game-history.controller';
-import { GamePlayController } from './controllers/game-play-controller/game-play.controller';
-import { HighScoresController } from './controllers/high-score-controller/high-score.controller';
-import { VirtualPlayerProfilesController } from './controllers/virtual-player-profile-controller/virtual-player-profile.controller';
 import { errorHandler } from './middlewares/error-handler';
 import DatabaseService from './services/database-service/database.service';
+import './controllers';
+import { DatabaseController, DictionaryController, GameDispatcherController, GameHistoriesController, GamePlayController, HighScoresController, VirtualPlayerProfilesController } from './controllers';
 
 @Service()
 export class Application {
     app: express.Application;
 
     constructor(
-        private readonly gamePlayController: GamePlayController,
-        private readonly gameDispatcherController: GameDispatcherController,
-        private readonly highScoreController: HighScoresController,
-        private readonly dictionaryController: DictionaryController,
-        private readonly gameHistoriesController: GameHistoriesController,
-        private readonly virtualPlayerProfilesController: VirtualPlayerProfilesController,
         private readonly databaseController: DatabaseController,
+        private readonly dictionaryController: DictionaryController,
+        private readonly gameDispatcherController: GameDispatcherController,
+        private readonly gameHistoryController: GameHistoriesController,
+        private readonly gamePlayController: GamePlayController,
+        private readonly highScoreController: HighScoresController,
+        private readonly virtualPlayerProfileController: VirtualPlayerProfilesController,
         private readonly databaseService: DatabaseService,
     ) {
         this.app = express();
@@ -42,13 +37,14 @@ export class Application {
     }
 
     bindRoutes(): void {
-        this.app.use('/api', this.gamePlayController.router);
-        this.app.use('/api', this.gameDispatcherController.router);
-        this.app.use('/api', this.highScoreController.router);
-        this.app.use('/api', this.dictionaryController.router);
-        this.app.use('/api', this.gameHistoriesController.router);
-        this.app.use('/api', this.virtualPlayerProfilesController.router);
-        this.app.use('/api/database', this.databaseController.router);
+        this.databaseController.route(this.app);
+        this.dictionaryController.route(this.app);
+        this.gameDispatcherController.route(this.app);
+        this.gameHistoryController.route(this.app);
+        this.gamePlayController.route(this.app);
+        this.highScoreController.route(this.app);
+        this.virtualPlayerProfileController.route(this.app);
+
         this.errorHandling();
     }
 

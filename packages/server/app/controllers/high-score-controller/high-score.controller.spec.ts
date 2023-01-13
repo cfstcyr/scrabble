@@ -15,7 +15,7 @@ import { afterEach } from 'mocha';
 import { SinonStubbedInstance } from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
-import { HighScoresController } from './high-score.controller';
+import { HighScoresController } from '..';
 
 const expect = chai.expect;
 
@@ -50,10 +50,6 @@ describe('HighScoresController', () => {
         expect(controller).to.exist;
     });
 
-    it('router should be created', () => {
-        expect(controller.router).to.exist;
-    });
-
     describe('configureRouter', () => {
         let expressApp: Express.Application;
 
@@ -71,6 +67,7 @@ describe('HighScoresController', () => {
 
             it('should return INTERNAL_SERVER_ERROR on throw httpException', async () => {
                 chai.spy.on(controller, 'handleHighScoresRequest', () => {
+                    console.log('handleHighScoresRequest', 'spy');
                     throw new HttpException(DEFAULT_EXCEPTION, StatusCodes.INTERNAL_SERVER_ERROR);
                 });
 

@@ -110,10 +110,6 @@ describe('GamePlayController', () => {
         expect(gamePlayController).to.exist;
     });
 
-    it('router should be created', () => {
-        expect(gamePlayController.router).to.exist;
-    });
-
     describe('configureRouter', () => {
         let expressApp: Express.Application;
 

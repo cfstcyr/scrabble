@@ -7,19 +7,16 @@ import VirtualPlayerProfileService from '@app/services/virtual-player-profile-se
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
+import { BaseController } from '../base-controller';
 
 @Service()
-export class VirtualPlayerProfilesController {
-    router: Router;
-
+export class VirtualPlayerProfilesController extends BaseController {
     constructor(private virtualPlayerProfileService: VirtualPlayerProfileService) {
-        this.configureRouter();
+        super('/api/virtualPlayerProfiles')
     }
-
-    private configureRouter(): void {
-        this.router = Router();
-
-        this.router.get('/virtualPlayerProfiles', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
+    
+    protected configure(router: Router): void {
+        router.get('/', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 const virtualPlayerProfiles: VirtualPlayerProfile[] = await this.virtualPlayerProfileService.getAllVirtualPlayerProfiles();
                 res.status(StatusCodes.OK).send({ virtualPlayerProfiles });
@@ -28,7 +25,7 @@ export class VirtualPlayerProfilesController {
             }
         });
 
-        this.router.get('/virtualPlayerProfiles/:level', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
+        router.get('/:level', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 const level: VirtualPlayerLevel = req.params.level as VirtualPlayerLevel;
                 if (!Object.values(VirtualPlayerLevel).includes(level)) throw new HttpException(INVALID_LEVEL, StatusCodes.BAD_REQUEST);
@@ -40,7 +37,7 @@ export class VirtualPlayerProfilesController {
             }
         });
 
-        this.router.post('/virtualPlayerProfiles', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
+        router.post('/', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 const virtualPlayerData: VirtualPlayerData = req.body.virtualPlayerData;
                 if (!virtualPlayerData) throw new HttpException(MISSING_PARAMETER, StatusCodes.BAD_REQUEST);
@@ -52,7 +49,7 @@ export class VirtualPlayerProfilesController {
             }
         });
 
-        this.router.patch('/virtualPlayerProfiles/:profileId', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
+        router.patch('/:profileId', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 const profileId: string = req.params.profileId;
                 const newName: string = req.body.profileData.name;
@@ -64,7 +61,7 @@ export class VirtualPlayerProfilesController {
             }
         });
 
-        this.router.delete('/virtualPlayerProfiles/:profileId', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
+        router.delete('/:profileId', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 const profileId: string = req.params.profileId;
                 await this.virtualPlayerProfileService.deleteVirtualPlayerProfile(profileId);
@@ -74,7 +71,7 @@ export class VirtualPlayerProfilesController {
             }
         });
 
-        this.router.delete('/virtualPlayerProfiles', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
+        router.delete('/', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {
                 await this.virtualPlayerProfileService.resetVirtualPlayerProfiles();
                 res.status(StatusCodes.NO_CONTENT).send();
