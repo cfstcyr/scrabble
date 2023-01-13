@@ -8,8 +8,8 @@
         "build": "rimraf out && tsc --project tsconfig.app.json",
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "eslint -c .eslintrc.json \"./app/**/*.ts\" --format stylish",
-        "test": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .test.env mocha --config=.mocharc.json --node-env=test",
-        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .test.env nyc mocha --config=.mocharc.json --node-env=test --exit"
+        "test": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .env.test mocha --config=.mocharc.json --node-env=test",
+        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .env.test nyc mocha --config=.mocharc.json --node-env=test --exit"
     },
     "nyc": {
         "check-coverage": true,

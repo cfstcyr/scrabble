@@ -11,7 +11,7 @@
         "coverage": "ng test --code-coverage --sourceMap=true",
         "lint": "ng lint --format stylish",
         "lint:fix": "npm run lint -- --fix",
-        "docker:dev": "ng serve --host 0.0.0.0"
+        "docker:dev": "ng serve --host 0.0.0.0 --disable-host-check"
     },
     "private": true,
     "dependencies": {
