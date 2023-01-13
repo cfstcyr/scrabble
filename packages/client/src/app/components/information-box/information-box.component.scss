@@ -6,13 +6,14 @@
     @include no-select;
     cursor: default;
     display: grid;
-    grid-template-columns: minmax(0, 2.5fr) 1fr minmax(0, 2.5fr);
+    grid-template-columns: minmax(0, 2.5fr) auto minmax(0, 2.5fr);
     gap: 8px;
     height: 100%;
 
     #time-container {
         text-align: center;
         padding: 12px 12px;
+        width: 150px;
 
         #time-left {
             font-size: 2em;
