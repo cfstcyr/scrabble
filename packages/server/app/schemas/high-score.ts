@@ -1,4 +1,4 @@
-import { Schema } from "./schema";
+import { Schema } from './schema';
 
 export interface HighScore extends Schema {
     gameType: string;

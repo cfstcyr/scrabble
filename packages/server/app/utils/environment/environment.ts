@@ -1,4 +1,5 @@
-import { cleanEnv, num, str } from "envalid";
+/* eslint-disable @typescript-eslint/naming-convention */
+import { cleanEnv, num, str } from 'envalid';
 
 const env = cleanEnv(process.env, {
     NODE_ENV: str({

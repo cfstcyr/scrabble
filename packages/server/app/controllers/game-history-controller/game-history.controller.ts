@@ -4,7 +4,7 @@ import GameHistoriesService from '@app/services/game-history-service/game-histor
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '../base-controller';
+import { BaseController } from '@app/controllers/base-controller';
 
 @Service()
 export class GameHistoriesController extends BaseController {

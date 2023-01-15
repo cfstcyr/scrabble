@@ -7,14 +7,14 @@ import VirtualPlayerProfileService from '@app/services/virtual-player-profile-se
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '../base-controller';
+import { BaseController } from '@app/controllers/base-controller';
 
 @Service()
 export class VirtualPlayerProfilesController extends BaseController {
     constructor(private virtualPlayerProfileService: VirtualPlayerProfileService) {
-        super('/api/virtualPlayerProfiles')
+        super('/api/virtualPlayerProfiles');
     }
-    
+
     protected configure(router: Router): void {
         router.get('/', async (req: VirtualPlayerProfilesRequest, res: Response, next) => {
             try {

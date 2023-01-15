@@ -5,7 +5,7 @@ import DictionaryService from '@app/services/dictionary-service/dictionary.servi
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '../base-controller';
+import { BaseController } from '@app/controllers/base-controller';
 
 @Service()
 export class DictionaryController extends BaseController {

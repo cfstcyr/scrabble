@@ -9,19 +9,19 @@ import { HighScore, HighScorePlayer, HighScoreWithPlayers } from '@app/schemas/h
 import { NoId } from '@app/schemas/schema';
 import { HIGH_SCORE_COUNT } from '@app/constants/game-constants';
 
+const HIGH_SCORE_TABLE = 'HighScore';
+const HIGH_SCORE_PLAYER_TABLE = 'HighScorePlayer';
+
 @Service()
 export default class HighScoresService {
-    private HIGH_SCORE_TABLE = 'HighScore';
-    private HIGH_SCORE_PLAYER_TABLE = 'HighScorePlayer';
-    
     constructor(private databaseService: DatabaseService) {}
 
     private get db() {
-        return this.databaseService.knex<HighScore>(this.HIGH_SCORE_TABLE);
+        return this.databaseService.knex<HighScore>(HIGH_SCORE_TABLE);
     }
 
     private get dbNames() {
-        return this.databaseService.knex<HighScorePlayer>(this.HIGH_SCORE_PLAYER_TABLE);
+        return this.databaseService.knex<HighScorePlayer>(HIGH_SCORE_PLAYER_TABLE);
     }
 
     // private static async fetchDefaultHighScores(): Promise<HighScore[]> {
@@ -34,21 +34,25 @@ export default class HighScoresService {
     async getAllHighScore(): Promise<NoId<HighScoreWithPlayers>[]> {
         const highScores: (HighScore & { name: string })[] = await this.db
             .select('*')
-            .leftJoin(this.HIGH_SCORE_PLAYER_TABLE, 'HighScore.id', 'HighScorePlayer.highScoreId');
+            .leftJoin(HIGH_SCORE_PLAYER_TABLE, 'HighScore.id', 'HighScorePlayer.highScoreId');
 
-        return [...highScores.reduce((map, val) => {
-            const entry = map.get(val.id) ?? {
-                gameType: val.gameType,
-                score: val.score,
-                names: [],
-            };
+        return [
+            ...highScores
+                .reduce((map, val) => {
+                    const entry = map.get(val.id) ?? {
+                        gameType: val.gameType,
+                        score: val.score,
+                        names: [],
+                    };
 
-            entry.names.push(val.name);
+                    entry.names.push(val.name);
 
-            map.set(val.id, entry);
-            
-            return map;
-        }, new Map<number, NoId<HighScoreWithPlayers>>()).values()];
+                    map.set(val.id, entry);
+
+                    return map;
+                }, new Map<number, NoId<HighScoreWithPlayers>>())
+                .values(),
+        ];
     }
 
     async addHighScore(name: string, score: number, gameType: GameType): Promise<void> {
@@ -85,7 +89,7 @@ export default class HighScoresService {
             await this.dbNames.delete().where('highScoreId', oldHighScore.id);
             await this.db.delete().where('id', oldHighScore.id);
         }
-        
+
         const [{ id }] = await this.db.insert({ gameType, score }, ['id']);
 
         await this.dbNames.insert({ highScoreId: id, name });

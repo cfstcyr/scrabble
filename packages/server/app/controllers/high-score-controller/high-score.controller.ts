@@ -4,7 +4,7 @@ import { SocketService } from '@app/services/socket-service/socket.service';
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '../base-controller';
+import { BaseController } from '@app/controllers/base-controller';
 
 @Service()
 export class HighScoresController extends BaseController {

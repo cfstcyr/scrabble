@@ -8,8 +8,15 @@ import { join } from 'path';
 import { Service } from 'typedi';
 import { errorHandler } from './middlewares/error-handler';
 import DatabaseService from './services/database-service/database.service';
-import './controllers';
-import { DatabaseController, DictionaryController, GameDispatcherController, GameHistoriesController, GamePlayController, HighScoresController, VirtualPlayerProfilesController } from './controllers';
+import {
+    DatabaseController,
+    DictionaryController,
+    GameDispatcherController,
+    GameHistoriesController,
+    GamePlayController,
+    HighScoresController,
+    VirtualPlayerProfilesController,
+} from './controllers';
 
 @Service()
 export class Application {

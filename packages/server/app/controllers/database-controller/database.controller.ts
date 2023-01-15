@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { Service } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 import { StatusCodes } from 'http-status-codes';
-import { BaseController } from '../base-controller';
+import { BaseController } from '@app/controllers/base-controller';
 
 @Service()
 export class DatabaseController extends BaseController {

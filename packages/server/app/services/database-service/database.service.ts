@@ -5,11 +5,11 @@ import { Service } from 'typedi';
 
 @Service()
 export default class DatabaseService {
+    readonly knex: Knex;
     private mongoClient: MongoClient;
     private db: Db;
-    readonly knex: Knex;
 
-    constructor () {
+    constructor() {
         this.knex = knex({
             client: 'pg',
             connection: {
@@ -18,16 +18,17 @@ export default class DatabaseService {
                 user: env.PG_USER,
                 password: env.PG_USER,
                 database: env.PG_DATABASE,
-            }
+            },
         });
     }
 
     async pingDb(): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.knex.raw('SELECT 1')
+            this.knex
+                .raw('SELECT 1')
                 .then(() => resolve())
                 .catch(reject);
-        })
+        });
     }
 
     async populateDb(collectionName: string, data: Document[]): Promise<void> {

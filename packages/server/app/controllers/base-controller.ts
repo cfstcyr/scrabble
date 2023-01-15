@@ -1,13 +1,13 @@
 import * as express from 'express';
-import { Token } from "typedi";
+import { Token } from 'typedi';
 
-export const ControllerToken = new Token<BaseController>('controllers');
+export const controllerToken = new Token<BaseController>('controllers');
 
 export abstract class BaseController {
     private router: express.Router;
     private path: string;
 
-    constructor (path: string) {
+    constructor(path: string) {
         this.router = express.Router();
         this.path = path;
 

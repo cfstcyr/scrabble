@@ -26,7 +26,7 @@ import { validateName } from '@app/utils/validate-name/validate-name';
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '../base-controller';
+import { BaseController } from '@app/controllers/base-controller';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(

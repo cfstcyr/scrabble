@@ -16,7 +16,7 @@ import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '../base-controller';
+import { BaseController } from '@app/controllers/base-controller';
 
 @Service()
 export class GamePlayController extends BaseController {
