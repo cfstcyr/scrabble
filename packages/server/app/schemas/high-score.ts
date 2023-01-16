@@ -1,12 +1,10 @@
-import { Schema } from './schema';
-
-export interface HighScore extends Schema {
+export interface HighScore {
     idHighScore: number;
     gameType: string;
     score: number;
 }
 
-export interface HighScorePlayer extends Schema {
+export interface HighScorePlayer {
     idHighScore: number;
     name: string;
 }

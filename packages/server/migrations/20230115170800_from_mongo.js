@@ -16,7 +16,7 @@ exports.up = async function(knex) {
         table.increments('idGameHistoryPlayer').notNullable()
         table.integer('playerIndex').notNullable();
         table.integer('idGameHistory').notNullable();
-        table.string('name', 20).notNullable();
+        table.string('name', 40).notNullable();
         table.integer('score').notNullable();
         table.boolean('isVirtualPlayer').notNullable();
         table.boolean('isWinner').notNullable();

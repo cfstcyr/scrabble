@@ -1,6 +1,6 @@
-import { NoId, Schema } from './schema';
+import { NoId } from './schema';
 
-export interface GameHistoryPlayer extends Schema {
+export interface GameHistoryPlayer {
     idGameHistoryPlayer: number;
     idGameHistory: number;
     playerIndex: number;
@@ -10,7 +10,7 @@ export interface GameHistoryPlayer extends Schema {
     isWinner: boolean;
 }
 
-export interface GameHistory extends Schema {
+export interface GameHistory {
     idGameHistory: number;
     startTime: Date;
     endTime: Date;
