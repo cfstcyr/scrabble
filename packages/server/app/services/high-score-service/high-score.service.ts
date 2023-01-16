@@ -15,11 +15,11 @@ import { aggregate } from '@app/utils/aggregate/aggregate';
 export default class HighScoresService {
     constructor(private databaseService: DatabaseService) {}
 
-    private get db() {
+    private get table() {
         return this.databaseService.knex<HighScore>(HIGH_SCORE_TABLE);
     }
 
-    private get dbNames() {
+    private get tableNames() {
         return this.databaseService.knex<HighScorePlayer>(HIGH_SCORE_PLAYER_TABLE);
     }
 
@@ -31,7 +31,7 @@ export default class HighScoresService {
     }
 
     async getAllHighScore(): Promise<NoId<HighScoreWithPlayers>[]> {
-        const highScores = await this.db
+        const highScores = await this.table
             .select('*')
             .leftJoin<HighScorePlayer>(HIGH_SCORE_PLAYER_TABLE, 'HighScore.idHighScore', 'HighScorePlayer.idHighScore');
 
@@ -60,32 +60,32 @@ export default class HighScoresService {
     }
 
     async resetHighScores(): Promise<void> {
-        await this.dbNames.delete();
-        await this.db.delete();
+        await this.tableNames.delete();
+        await this.table.delete();
         await this.populateDb();
     }
 
     private async updateHighScore(name: string, highScore: HighScore): Promise<void> {
-        const existingNames = await this.dbNames.select('*').where('idHighScore', highScore.idHighScore);
+        const existingNames = await this.tableNames.select('*').where('idHighScore', highScore.idHighScore);
 
         if (existingNames.some(({ name: existingName }) => existingName === name)) return;
 
-        await this.dbNames.insert({ idHighScore: highScore.idHighScore, name });
+        await this.tableNames.insert({ idHighScore: highScore.idHighScore, name });
     }
 
     private async replaceHighScore(name: string, score: number, gameType: string, oldHighScore?: HighScore): Promise<void> {
         if (oldHighScore) {
-            await this.dbNames.delete().where('idHighScore', oldHighScore.idHighScore);
-            await this.db.delete().where('idHighScore', oldHighScore.idHighScore);
+            await this.tableNames.delete().where('idHighScore', oldHighScore.idHighScore);
+            await this.table.delete().where('idHighScore', oldHighScore.idHighScore);
         }
 
-        const [{ idHighScore }] = await this.db.insert({ gameType, score }, ['idHighScore']);
+        const [{ idHighScore }] = await this.table.insert({ gameType, score }, ['idHighScore']);
 
-        await this.dbNames.insert({ idHighScore, name });
+        await this.tableNames.insert({ idHighScore, name });
     }
 
     private async getHighScores(gameType?: string): Promise<HighScore[]> {
-        const q = this.db.select('*').orderBy('score');
+        const q = this.table.select('*').orderBy('score');
 
         if (gameType) q.where('gameType', gameType);
 

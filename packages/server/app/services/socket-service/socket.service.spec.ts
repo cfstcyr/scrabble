@@ -9,6 +9,7 @@ import { ServicesTestingUnit } from '@app/services/service-testing-unit/services
 import { Delay } from '@app/utils/delay/delay';
 import * as arrowFunction from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { Server } from 'app/server';
+import * as chai from 'chai';
 import { expect, spy } from 'chai';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
@@ -36,6 +37,10 @@ const getSocketId = async (socket: Socket) => {
 };
 
 describe('SocketService', () => {
+    afterEach(() => {
+        chai.spy.restore();
+    });
+
     describe('Initialized', () => {
         let service: SocketService;
         let server: Server;

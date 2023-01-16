@@ -9,16 +9,16 @@ import { Service } from 'typedi';
 export default class GameHistoriesService {
     constructor(private databaseService: DatabaseService) {}
 
-    private get db() {
+    private get table() {
         return this.databaseService.knex<GameHistory>(GAME_HISTORY_TABLE);
     }
 
-    private get dbHistoryPlayer() {
+    private get tableHistoryPlayer() {
         return this.databaseService.knex<GameHistoryPlayer>(GAME_HISTORY_PLAYER_TABLE);
     }
 
     async getAllGameHistories(): Promise<NoIdGameHistoryWithPlayers[]> {
-        const gameHistories = await this.db
+        const gameHistories = await this.table
             .select('*')
             .leftJoin<GameHistoryPlayer>(
                 GAME_HISTORY_PLAYER_TABLE,
@@ -36,7 +36,7 @@ export default class GameHistoriesService {
     }
 
     async addGameHistory(newHistory: NoIdGameHistoryWithPlayers): Promise<void> {
-        const [{ idGameHistory }] = await this.db.insert(
+        const [{ idGameHistory }] = await this.table.insert(
             {
                 startTime: newHistory.startTime,
                 endTime: newHistory.endTime,
@@ -48,11 +48,13 @@ export default class GameHistoriesService {
         );
 
         await Promise.all(
-            newHistory.playersData.map(async (playerData, i) => await this.dbHistoryPlayer.insert({ ...playerData, playerIndex: i, idGameHistory })),
+            newHistory.playersData.map(
+                async (playerData, i) => await this.tableHistoryPlayer.insert({ ...playerData, playerIndex: i, idGameHistory }),
+            ),
         );
     }
 
     async resetGameHistories(): Promise<void> {
-        await this.db.delete();
+        await this.table.delete();
     }
 }

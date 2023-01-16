@@ -65,10 +65,6 @@ export default class VirtualPlayerProfilesService {
 
     private async populateDb(): Promise<void> {
         await this.table.insert(await VirtualPlayerProfilesService.fetchDefaultVirtualPlayerProfiles());
-        // await this.databaseService.populateDb(
-        //     VIRTUAL_PLAYER_PROFILES_MONGO_COLLECTION_NAME,
-        //     await VirtualPlayerProfilesService.fetchDefaultVirtualPlayerProfiles(),
-        // );
     }
 
     private async isNameAlreadyUsed(name: string): Promise<boolean> {
