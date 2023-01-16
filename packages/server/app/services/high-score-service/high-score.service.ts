@@ -1,5 +1,4 @@
 import { GameType } from '@app/classes/game/game-type';
-import { DEFAULT_HIGH_SCORES_RELATIVE_PATH } from '@app/constants/services-constants/mongo-db-const';
 import DatabaseService from '@app/services/database-service/database.service';
 import { promises } from 'fs';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
@@ -8,7 +7,7 @@ import { Service } from 'typedi';
 import { HighScore, HighScorePlayer, HighScoresData, HighScoreWithPlayers } from '@app/schemas/high-score';
 import { NoId } from '@app/schemas/schema';
 import { HIGH_SCORE_COUNT } from '@app/constants/game-constants';
-import { HIGH_SCORE_PLAYER_TABLE, HIGH_SCORE_TABLE } from '@app/constants/services-constants/database-const';
+import { DEFAULT_HIGH_SCORES_RELATIVE_PATH, HIGH_SCORE_PLAYER_TABLE, HIGH_SCORE_TABLE } from '@app/constants/services-constants/database-const';
 import { aggregate } from '@app/utils/aggregate/aggregate';
 
 @Service()

@@ -7,7 +7,6 @@ import * as logger from 'morgan';
 import { join } from 'path';
 import { Service } from 'typedi';
 import { errorHandler } from './middlewares/error-handler';
-import DatabaseService from './services/database-service/database.service';
 import {
     DatabaseController,
     DictionaryController,
@@ -30,7 +29,6 @@ export class Application {
         private readonly gamePlayController: GamePlayController,
         private readonly highScoreController: HighScoresController,
         private readonly virtualPlayerProfileController: VirtualPlayerProfilesController,
-        private readonly databaseService: DatabaseService,
     ) {
         this.app = express();
 
@@ -39,8 +37,6 @@ export class Application {
         this.setPublicDirectory();
 
         this.bindRoutes();
-
-        this.connectDatabase();
     }
 
     bindRoutes(): void {
@@ -53,11 +49,6 @@ export class Application {
         this.virtualPlayerProfileController.route(this.app);
 
         this.errorHandling();
-    }
-
-    private connectDatabase(): void {
-        // Connect to the mongoDB database
-        this.databaseService.connectToServer();
     }
 
     private config(): void {

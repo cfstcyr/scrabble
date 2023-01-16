@@ -1,7 +1,6 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
-import { VIRTUAL_PLAYER_TABLE } from '@app/constants/services-constants/database-const';
-import { DEFAULT_VIRTUAL_PLAYER_PROFILES_RELATIVE_PATH } from '@app/constants/services-constants/mongo-db-const';
+import { DEFAULT_VIRTUAL_PLAYER_PROFILES_RELATIVE_PATH, VIRTUAL_PLAYER_TABLE } from '@app/constants/services-constants/database-const';
 import { NAME_ALREADY_USED, NO_PROFILE_OF_LEVEL } from '@app/constants/services-errors';
 import { NoId } from '@app/schemas/schema';
 import { VirtualPlayer, VirtualPlayerProfilesData } from '@app/schemas/virtual-player';

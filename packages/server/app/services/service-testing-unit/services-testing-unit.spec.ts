@@ -6,13 +6,10 @@ import { GameHistoriesController } from '@app/controllers/game-history-controlle
 import { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';
 import { HighScoresController } from '@app/controllers/high-score-controller/high-score.controller';
 import { VirtualPlayerProfilesController } from '@app/controllers/virtual-player-profile-controller/virtual-player-profile.controller';
-import DatabaseService from '@app/services/database-service/database.service';
-import { DatabaseServiceMock } from '@app/services/database-service/database.service.mock.spec';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import WordFindingService from '@app/services/word-finding-service/word-finding.service';
 import { Router } from 'express';
 import * as mock from 'mock-fs';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createSandbox, SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
 
@@ -46,7 +43,6 @@ const CONTROLLERS: ClassType<unknown>[] = [
 ];
 
 export class ServicesTestingUnit {
-    private static server?: MongoMemoryServer;
     private sandbox: SinonSandbox;
     private stubbedInstances: Map<ClassType<unknown>, SinonStubbedInstance<unknown>>;
 
@@ -55,11 +51,6 @@ export class ServicesTestingUnit {
         this.stubbedInstances = new Map();
 
         Container.reset();
-    }
-
-    static async getMongoServer(): Promise<MongoMemoryServer> {
-        if (!this.server) this.server = await MongoMemoryServer.create();
-        return this.server;
     }
 
     withStubbed<T>(constructor: ClassType<T>, overrides?: ClassOverride<T>, attributesOverrides?: ClassAttributesOverrides<T>): ServicesTestingUnit {
@@ -79,7 +70,7 @@ export class ServicesTestingUnit {
     }
 
     withMockDatabaseService(): ServicesTestingUnit {
-        Container.set(DatabaseService, new DatabaseServiceMock());
+        // TODO: this
         return this;
     }
 

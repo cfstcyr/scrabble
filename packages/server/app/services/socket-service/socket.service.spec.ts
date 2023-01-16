@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
-import DatabaseService from '@app/services/database-service/database.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { Delay } from '@app/utils/delay/delay';
@@ -48,12 +47,7 @@ describe('SocketService', () => {
         let testingUnit: ServicesTestingUnit;
 
         beforeEach(() => {
-            testingUnit = new ServicesTestingUnit()
-                .withStubbed(DatabaseService, {
-                    connectToServer: Promise.resolve(null),
-                })
-                .withStubbed(DictionaryService)
-                .withStubbedPrototypes(Application, { bindRoutes: undefined });
+            testingUnit = new ServicesTestingUnit().withStubbed(DictionaryService).withStubbedPrototypes(Application, { bindRoutes: undefined });
         });
 
         beforeEach(() => {

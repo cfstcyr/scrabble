@@ -21,8 +21,6 @@ services:
         ports:
             - ${SERVER_PORT:-3000}:3000
         environment:
-            MONGO_URL: mongodb://root:root@mongo:27017/
-            MONGO_NAME: scrabble
             PG_HOST: postgres
             PG_PORT: 5432
             PG_USER: root
@@ -39,22 +37,6 @@ services:
             - ./packages/client:/var/www/app
         ports:
             - ${CLIENT_PORT:-4200}:4200
-
-    mongo:
-        image: mongo
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: root
-
-    mongo-express:
-        image: mongo-express
-        restart: always
-        ports:
-            - ${MONGO_EXPRESS_PORT:-8081}:8081
-        environment:
-            ME_CONFIG_MONGODB_ADMINUSERNAME: root
-            ME_CONFIG_MONGODB_ADMINPASSWORD: root
-            ME_CONFIG_MONGODB_URL: mongodb://root:root@mongo:27017/
 
     postgres:
         image: postgres

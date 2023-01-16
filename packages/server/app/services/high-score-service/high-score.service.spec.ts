@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 // import { GameType } from '@app/classes/game/game-type';
 // import { DEFAULT_HIGH_SCORES_RELATIVE_PATH } from '@app/constants/services-constants/mongo-db-const';
-import DatabaseService from '@app/services/database-service/database.service';
+// import DatabaseService from '@app/services/database-service/database.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as chai from 'chai';
 // import { assert, expect } from 'chai';
@@ -14,7 +14,7 @@ import { describe } from 'mocha';
 // import { join } from 'path';
 import * as sinon from 'sinon';
 // import { stub } from 'sinon';
-import { Container } from 'typedi';
+// import { Container } from 'typedi';
 // import HighScoresService from './high-score.service';
 chai.use(chaiAsPromised); // this allows us to test for rejection
 
@@ -65,7 +65,7 @@ chai.use(chaiAsPromised); // this allows us to test for rejection
 
 describe('HighScoresService', () => {
     // let highScoresService: HighScoresService;
-    let databaseService: DatabaseService;
+    // let databaseService: DatabaseService;
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(() => {
@@ -73,15 +73,12 @@ describe('HighScoresService', () => {
     });
 
     beforeEach(async () => {
-        databaseService = Container.get(DatabaseService);
-
+        // databaseService = Container.get(DatabaseService);
         // highScoresService = Container.get(HighScoresService);
-
         // await highScoresService['collection'].insertMany(INITIAL_HIGH_SCORES);
     });
 
     afterEach(async () => {
-        await databaseService.closeConnection();
         chai.spy.restore();
         sinon.restore();
         testingUnit.restore();
