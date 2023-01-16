@@ -3,20 +3,8 @@
  * @returns { Promise<void> }
  */
 exports.up = async function(knex) {
-    await knex.schema.createTable('GameHistoryPlayer', (table) => {
-        table.increments('id').notNullable()
-        table.integer('playerIndex').notNullable();
-        table.integer('gameHistoryId').notNullable();
-        table.string('name', 20).notNullable();
-        table.integer('score').notNullable();
-        table.boolean('isVirtualPlayer').notNullable();
-        table.boolean('isWinner').notNullable();
-
-        table.primary(['id', 'playerIndex', 'gameHistoryId']);
-    });
-
     await knex.schema.createTable('GameHistory', (table) => {
-        table.increments('id').notNullable().primary();
+        table.increments('idGameHistory').notNullable().primary();
         table.dateTime('startTime').notNullable();
         table.dateTime('endTime').notNullable();
         table.string('gameType', 20).notNullable();
@@ -24,22 +12,35 @@ exports.up = async function(knex) {
         table.boolean('hasBeenAbandoned').notNullable();
     });
 
+    await knex.schema.createTable('GameHistoryPlayer', (table) => {
+        table.increments('idGameHistoryPlayer').notNullable()
+        table.integer('playerIndex').notNullable();
+        table.integer('idGameHistory').notNullable();
+        table.string('name', 20).notNullable();
+        table.integer('score').notNullable();
+        table.boolean('isVirtualPlayer').notNullable();
+        table.boolean('isWinner').notNullable();
+
+        table.primary(['idGameHistoryPlayer', 'playerIndex', 'idGameHistory']);
+        table.foreign('idGameHistory', 'GameHistory', 'idGameHistory');
+    });
+
     await knex.schema.createTable('HighScore', (table) => {
-        table.increments('id').notNullable().primary();
+        table.increments('idHighScore').notNullable().primary();
         table.string('gameType', 20).notNullable();
         table.integer('score').notNullable();
     });
 
     await knex.schema.createTable('HighScorePlayer', (table) => {
-        table.integer('highScoreId').notNullable();
+        table.integer('idHighScore').notNullable();
         table.string('name', 20).notNullable();
 
-        table.primary(['highScoreId', 'name']);
-        table.foreign('highScoreId').references('id').inTable('HighScore');
+        table.primary(['idHighScore', 'name']);
+        table.foreign('idHighScore').references('idHighScore').inTable('HighScore');
     });
 
     await knex.schema.createTable('VirtualPlayer', (table) => {
-        table.increments('id').notNullable().primary();
+        table.increments('idVirtualPlayer').notNullable().primary();
         table.string('level', 20).notNullable();
         table.boolean('isDefault').notNullable().defaultTo(false);
     });
@@ -53,6 +54,6 @@ exports.down = async function(knex) {
     await knex.schema.dropTable('VirtualPlayer');
     await knex.schema.dropTable('HighScorePlayer');
     await knex.schema.dropTable('HighScore');
-    await knex.schema.dropTable('GameHistory');
     await knex.schema.dropTable('GameHistoryPlayer');
+    await knex.schema.dropTable('GameHistory');
 };

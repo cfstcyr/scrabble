@@ -20,11 +20,15 @@ export default class GameHistoriesService {
     async getAllGameHistories(): Promise<NoIdGameHistoryWithPlayers[]> {
         const gameHistories = await this.db
             .select('*')
-            .leftJoin<GameHistoryPlayer>(GAME_HISTORY_PLAYER_TABLE, `${GAME_HISTORY_TABLE}.id`, `${GAME_HISTORY_PLAYER_TABLE}.gameHistoryId`)
+            .leftJoin<GameHistoryPlayer>(
+                GAME_HISTORY_PLAYER_TABLE,
+                `${GAME_HISTORY_TABLE}.idGameHistory`,
+                `${GAME_HISTORY_PLAYER_TABLE}.idGameHistory`,
+            )
             .orderBy('endTime');
 
         return aggregate(gameHistories, {
-            idKey: 'gameHistoryId',
+            idKey: 'idGameHistory',
             fieldKey: 'playersData',
             mainItemKeys: ['startTime', 'endTime', 'gameMode', 'gameType', 'hasBeenAbandoned'],
             aggregatedItemKeys: ['name', 'score', 'isVirtualPlayer', 'isWinner'],
@@ -32,7 +36,7 @@ export default class GameHistoriesService {
     }
 
     async addGameHistory(newHistory: NoIdGameHistoryWithPlayers): Promise<void> {
-        const [{ id: gameHistoryId }] = await this.db.insert(
+        const [{ idGameHistory }] = await this.db.insert(
             {
                 startTime: newHistory.startTime,
                 endTime: newHistory.endTime,
@@ -40,11 +44,11 @@ export default class GameHistoriesService {
                 gameMode: newHistory.gameMode,
                 hasBeenAbandoned: newHistory.hasBeenAbandoned,
             },
-            ['id'],
+            ['idGameHistory'],
         );
 
         await Promise.all(
-            newHistory.playersData.map(async (playerData, i) => await this.dbHistoryPlayer.insert({ ...playerData, playerIndex: i, gameHistoryId })),
+            newHistory.playersData.map(async (playerData, i) => await this.dbHistoryPlayer.insert({ ...playerData, playerIndex: i, idGameHistory })),
         );
     }
 

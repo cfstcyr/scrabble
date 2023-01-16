@@ -1,7 +1,8 @@
 import { NoId, Schema } from './schema';
 
 export interface GameHistoryPlayer extends Schema {
-    gameHistoryId: number;
+    idGameHistoryPlayer: number;
+    idGameHistory: number;
     playerIndex: number;
     name: string;
     score: number;
@@ -10,6 +11,7 @@ export interface GameHistoryPlayer extends Schema {
 }
 
 export interface GameHistory extends Schema {
+    idGameHistory: number;
     startTime: Date;
     endTime: Date;
     gameType: string;
@@ -21,4 +23,4 @@ export interface GameHistoryWithPlayers extends GameHistory {
     playersData: GameHistoryPlayer[];
 }
 
-export type NoIdGameHistoryWithPlayers = NoId<GameHistoryWithPlayers, 'gameHistoryId' | 'playerIndex'>;
+export type NoIdGameHistoryWithPlayers = NoId<GameHistoryWithPlayers, 'playerIndex'>;

@@ -33,10 +33,10 @@ export default class HighScoresService {
     async getAllHighScore(): Promise<NoId<HighScoreWithPlayers>[]> {
         const highScores = await this.db
             .select('*')
-            .leftJoin<HighScorePlayer>(HIGH_SCORE_PLAYER_TABLE, 'HighScore.id', 'HighScorePlayer.highScoreId');
+            .leftJoin<HighScorePlayer>(HIGH_SCORE_PLAYER_TABLE, 'HighScore.idHighScore', 'HighScorePlayer.idHighScore');
 
         return aggregate(highScores, {
-            idKey: 'id',
+            idKey: 'idHighScore',
             fieldKey: 'names',
             mainItemKeys: ['gameType', 'score'],
             aggregatedItemKeys: 'name',
@@ -65,22 +65,22 @@ export default class HighScoresService {
     }
 
     private async updateHighScore(name: string, highScore: HighScore): Promise<void> {
-        const existingNames = await this.dbNames.select('*').where('highScoreId', highScore.id);
+        const existingNames = await this.dbNames.select('*').where('idHighScore', highScore.idHighScore);
 
         if (existingNames.some(({ name: existingName }) => existingName === name)) return;
 
-        await this.dbNames.insert({ highScoreId: highScore.id, name });
+        await this.dbNames.insert({ idHighScore: highScore.idHighScore, name });
     }
 
     private async replaceHighScore(name: string, score: number, gameType: string, oldHighScore?: HighScore): Promise<void> {
         if (oldHighScore) {
-            await this.dbNames.delete().where('highScoreId', oldHighScore.id);
-            await this.db.delete().where('id', oldHighScore.id);
+            await this.dbNames.delete().where('idHighScore', oldHighScore.idHighScore);
+            await this.db.delete().where('idHighScore', oldHighScore.idHighScore);
         }
 
-        const [{ id }] = await this.db.insert({ gameType, score }, ['id']);
+        const [{ idHighScore }] = await this.db.insert({ gameType, score }, ['idHighScore']);
 
-        await this.dbNames.insert({ highScoreId: id, name });
+        await this.dbNames.insert({ idHighScore, name });
     }
 
     private async getHighScores(gameType?: string): Promise<HighScore[]> {
