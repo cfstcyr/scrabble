@@ -9,7 +9,8 @@
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "eslint -c .eslintrc.json \"./app/**/*.ts\" --format stylish",
         "test": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .env.test mocha --config=.mocharc.json --node-env=test",
-        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .env.test nyc mocha --config=.mocharc.json --node-env=test --exit"
+        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .env.test nyc mocha --config=.mocharc.json --node-env=test --exit",
+        "reset-db": "knex migrate:rollback && knex migrate:latest"
     },
     "nyc": {
         "check-coverage": true,
