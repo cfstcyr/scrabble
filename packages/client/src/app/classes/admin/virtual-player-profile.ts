@@ -3,14 +3,14 @@ import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 export interface VirtualPlayerProfile {
     name: string;
     level: VirtualPlayerLevel;
-    id: string;
+    idVirtualPlayer: string;
     isDefault: boolean;
 }
 
 export interface VirtualPlayerData {
     name: string;
     level: VirtualPlayerLevel;
-    id?: string;
+    idVirtualPlayer?: string;
 }
 
 export interface VirtualPlayerProfilesData {

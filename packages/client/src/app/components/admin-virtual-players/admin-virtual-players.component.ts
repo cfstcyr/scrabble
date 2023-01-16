@@ -80,7 +80,7 @@ export class AdminVirtualPlayersComponent implements OnInit, OnDestroy {
         const virtualPlayerData: UpdateVirtualPlayersDialogParameters = {
             name: virtualPlayerProfile.name,
             level: virtualPlayerProfile.level,
-            id: virtualPlayerProfile.id,
+            idVirtualPlayer: virtualPlayerProfile.idVirtualPlayer,
         };
         this.dialog.open(UpdateVirtualPlayerComponent, {
             data: virtualPlayerData,
@@ -101,7 +101,7 @@ export class AdminVirtualPlayersComponent implements OnInit, OnDestroy {
             data: {
                 name: virtualPlayerProfile.name,
                 level: virtualPlayerProfile.level,
-                id: virtualPlayerProfile.id,
+                idVirtualPlayer: virtualPlayerProfile.idVirtualPlayer,
                 // We haven't been able to test that the right function is called because this
                 // arrow function creates a new instance of the function. We cannot spy on it.
                 // It totally works tho, try it!

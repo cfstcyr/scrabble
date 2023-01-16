@@ -41,6 +41,7 @@ exports.up = async function(knex) {
 
     await knex.schema.createTable('VirtualPlayer', (table) => {
         table.increments('idVirtualPlayer').notNullable().primary();
+        table.string('name', 20).notNullable().unique();
         table.string('level', 20).notNullable();
         table.boolean('isDefault').notNullable().defaultTo(false);
     });

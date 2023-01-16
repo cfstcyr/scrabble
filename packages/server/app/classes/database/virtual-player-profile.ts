@@ -1,4 +1,6 @@
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
+import { NoId } from '@app/schemas/schema';
+import { VirtualPlayer } from '@app/schemas/virtual-player';
 
 export interface VirtualPlayerProfile {
     name: string;
@@ -13,5 +15,5 @@ export interface VirtualPlayerData {
 }
 
 export interface VirtualPlayerProfilesData {
-    virtualPlayerProfiles: VirtualPlayerProfile[];
+    virtualPlayerProfiles: NoId<VirtualPlayer>[];
 }

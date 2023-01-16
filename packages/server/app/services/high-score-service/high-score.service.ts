@@ -1,11 +1,11 @@
 import { GameType } from '@app/classes/game/game-type';
-// import { DEFAULT_HIGH_SCORES_RELATIVE_PATH } from '@app/constants/services-constants/mongo-db-const';
+import { DEFAULT_HIGH_SCORES_RELATIVE_PATH } from '@app/constants/services-constants/mongo-db-const';
 import DatabaseService from '@app/services/database-service/database.service';
-// import { promises } from 'fs';
+import { promises } from 'fs';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
-// import { join } from 'path';
+import { join } from 'path';
 import { Service } from 'typedi';
-import { HighScore, HighScorePlayer, HighScoreWithPlayers } from '@app/schemas/high-score';
+import { HighScore, HighScorePlayer, HighScoresData, HighScoreWithPlayers } from '@app/schemas/high-score';
 import { NoId } from '@app/schemas/schema';
 import { HIGH_SCORE_COUNT } from '@app/constants/game-constants';
 import { HIGH_SCORE_PLAYER_TABLE, HIGH_SCORE_TABLE } from '@app/constants/services-constants/database-const';
@@ -23,12 +23,12 @@ export default class HighScoresService {
         return this.databaseService.knex<HighScorePlayer>(HIGH_SCORE_PLAYER_TABLE);
     }
 
-    // private static async fetchDefaultHighScores(): Promise<HighScore[]> {
-    //     const filePath = join(__dirname, DEFAULT_HIGH_SCORES_RELATIVE_PATH);
-    //     const dataBuffer = await promises.readFile(filePath, 'utf-8');
-    //     const defaultHighScores: HighScoresData = JSON.parse(dataBuffer);
-    //     return defaultHighScores.highScores;
-    // }
+    private static async fetchDefaultHighScores(): Promise<NoId<HighScoreWithPlayers>[]> {
+        const filePath = join(__dirname, DEFAULT_HIGH_SCORES_RELATIVE_PATH);
+        const dataBuffer = await promises.readFile(filePath, 'utf-8');
+        const defaultHighScores: HighScoresData = JSON.parse(dataBuffer);
+        return defaultHighScores.highScores;
+    }
 
     async getAllHighScore(): Promise<NoId<HighScoreWithPlayers>[]> {
         const highScores = await this.db
@@ -62,6 +62,7 @@ export default class HighScoresService {
     async resetHighScores(): Promise<void> {
         await this.dbNames.delete();
         await this.db.delete();
+        await this.populateDb();
     }
 
     private async updateHighScore(name: string, highScore: HighScore): Promise<void> {
@@ -91,7 +92,11 @@ export default class HighScoresService {
         return q;
     }
 
-    // private async populateDb(): Promise<void> {
-    //     await this.databaseService.populateDb(HIGH_SCORES_MONGO_COLLECTION_NAME, await HighScoresService.fetchDefaultHighScores());
-    // }
+    private async populateDb(): Promise<void> {
+        await Promise.all(
+            await (
+                await HighScoresService.fetchDefaultHighScores()
+            ).map(async ({ names, score, gameType }) => this.replaceHighScore(names[0], score, gameType)),
+        );
+    }
 }

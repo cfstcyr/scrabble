@@ -17,12 +17,12 @@ export enum VirtualPlayersComponentState {
 export interface UpdateVirtualPlayersDialogParameters {
     name: string;
     level: VirtualPlayerLevel;
-    id: string;
+    idVirtualPlayer: string;
 }
 
 export interface DeleteVirtualPlayerDialogParameters {
     name: string;
     level: VirtualPlayerLevel;
-    id: string;
+    idVirtualPlayer: string;
     onClose: () => void;
 }
