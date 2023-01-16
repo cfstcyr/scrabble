@@ -3,6 +3,9 @@ version: '3.3'
 services:
     nginx:
         image: nginx
+        depends_on:
+            - server
+            - client
         volumes:
             - ./conf/nginx/conf.d/:/etc/nginx/conf.d
         ports:

@@ -4,7 +4,6 @@ import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { GameObjectivesData } from '@app/classes/communication/objective-data';
 import { RoundData } from '@app/classes/communication/round-data';
-import { GameHistory } from '@app/classes/database/game-history';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { GameObjectives } from '@app/classes/objectives/objective-utils';
 import Player from '@app/classes/player/player';
@@ -17,6 +16,7 @@ import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virt
 import { END_GAME_HEADER_MESSAGE, START_TILES_AMOUNT } from '@app/constants/classes-constants';
 import { IS_REQUESTING, WINNER_MESSAGE } from '@app/constants/game-constants';
 import { INVALID_PLAYER_ID_FOR_GAME } from '@app/constants/services-errors';
+import { NoIdGameHistoryWithPlayers } from '@app/schemas/game-history';
 import BoardService from '@app/services/board-service/board.service';
 import ObjectivesService from '@app/services/objective-service/objective.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
@@ -41,7 +41,7 @@ export default class Game {
     player2: Player;
     isAddedToDatabase: boolean;
     gameIsOver: boolean;
-    gameHistory: GameHistory;
+    gameHistory: NoIdGameHistoryWithPlayers;
     private tileReserve: TileReserve;
     private id: string;
 
@@ -85,18 +85,20 @@ export default class Game {
         this.gameHistory = {
             startTime: this.roundManager.getGameStartTime(),
             endTime: new Date(),
-            player1Data: {
-                name: this.player1.name,
-                score: this.player1.score,
-                isVirtualPlayer: isIdVirtualPlayer(this.player1.id),
-                isWinner: this.isPlayerWinner(winnerName, this.player1, this.player2),
-            },
-            player2Data: {
-                name: this.player2.name,
-                score: this.player2.score,
-                isVirtualPlayer: isIdVirtualPlayer(this.player2.id),
-                isWinner: this.isPlayerWinner(winnerName, this.player2, this.player1),
-            },
+            playersData: [
+                {
+                    name: this.player1.name,
+                    score: this.player1.score,
+                    isVirtualPlayer: isIdVirtualPlayer(this.player1.id),
+                    isWinner: this.isPlayerWinner(winnerName, this.player1, this.player2),
+                },
+                {
+                    name: this.player2.name,
+                    score: this.player2.score,
+                    isVirtualPlayer: isIdVirtualPlayer(this.player2.id),
+                    isWinner: this.isPlayerWinner(winnerName, this.player2, this.player1),
+                },
+            ],
             gameType: this.gameType,
             gameMode: this.gameMode,
             hasBeenAbandoned: !this.player1.isConnected || !this.player2.isConnected,

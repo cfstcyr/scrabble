@@ -45,33 +45,33 @@
         
                 <ng-container matColumnDef="player1Name">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef> {{columns.player1Name}} </th>
-                    <td mat-cell *matCellDef="let element"> {{element.player1Data.name}} <app-icon *ngIf="element.player1Data.isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon> </td>
+                    <td mat-cell *matCellDef="let element"> {{element.playersData[0].name}} <app-icon *ngIf="element.playersData[0].isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon> </td>
                 </ng-container>
         
                 <ng-container matColumnDef="player1Score">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef> {{columns.player1Score}} </th>
-                    <td mat-cell *matCellDef="let element"> {{element.player1Data.score}} <app-icon *ngIf="element.player1Data.isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon> </td>
+                    <td mat-cell *matCellDef="let element"> {{element.playersData[0].score}} <app-icon *ngIf="element.playersData[0].isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon> </td>
                 </ng-container>
         
-                <ng-container matColumnDef="player1Data">
+                <ng-container matColumnDef="playersData[0]">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef> {{columns.player1Data}} </th>
-                    <td mat-cell *matCellDef="let element"> {{element.player1Data.name}} ({{element.player1Data.score}} points) <app-icon *ngIf="element.player1Data.isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon> 
+                    <td mat-cell *matCellDef="let element"> {{element.playersData[0].name}} ({{element.playersData[0].score}} points) <app-icon *ngIf="element.playersData[0].isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon> 
                     </td>
                 </ng-container>
         
                 <ng-container matColumnDef="player2Name">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef> {{columns.player2Name}} </th>
-                    <td mat-cell *matCellDef="let element"> {{element.player2Data.name}} <app-icon *ngIf="element.player2Data.isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon></td>
+                    <td mat-cell *matCellDef="let element"> {{element.playersData[1].name}} <app-icon *ngIf="element.playersData[1].isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon></td>
                 </ng-container>
         
                 <ng-container matColumnDef="player2Score">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef> {{columns.player2Score}} </th>
-                    <td mat-cell *matCellDef="let element"> {{element.player2Data.score}} <app-icon *ngIf="element.player2Data.isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon> </td>
+                    <td mat-cell *matCellDef="let element"> {{element.playersData[1].score}} <app-icon *ngIf="element.playersData[1].isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon> </td>
                 </ng-container>
         
-                <ng-container matColumnDef="player2Data">
+                <ng-container matColumnDef="playersData[1]">
                     <th mat-header-cell mat-sort-header *matHeaderCellDef> {{columns.player2Data}} </th>
-                    <td mat-cell *matCellDef="let element"> {{element.player2Data.name}} ({{element.player2Data.score}} points) <app-icon *ngIf="element.player2Data.isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon> 
+                    <td mat-cell *matCellDef="let element"> {{element.playersData[1].name}} ({{element.playersData[1].score}} points) <app-icon *ngIf="element.playersData[1].isWinner" class="winner-icon" icon="trophy" styling="solid"></app-icon> 
                     </td>
                 </ng-container>
         

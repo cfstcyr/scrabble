@@ -2,11 +2,12 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable dot-notation */
 import { Application } from '@app/app';
-import { GameHistory, PlayerHistoryData } from '@app/classes/database/game-history';
 import { GameMode } from '@app/classes/game/game-mode';
 import { GameType } from '@app/classes/game/game-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { GameHistoriesController } from '@app/controllers/game-history-controller/game-history.controller';
+import { GameHistoryPlayer, NoIdGameHistoryWithPlayers } from '@app/schemas/game-history';
+import { NoId } from '@app/schemas/schema';
 import GameHistoriesService from '@app/services/game-history-service/game-history.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as chai from 'chai';
@@ -23,25 +24,24 @@ chai.use(chaiAsPromised);
 
 const DEFAULT_EXCEPTION = 'exception';
 
-const DEFAULT_WINNER_DATA: PlayerHistoryData = {
+const DEFAULT_WINNER_DATA: NoId<GameHistoryPlayer, 'playerIndex' | 'gameHistoryId'> = {
     name: 'Matildd Broussaux',
     score: 569,
     isVirtualPlayer: false,
     isWinner: true,
 };
 
-const DEFAULT_LOSER_DATA: PlayerHistoryData = {
+const DEFAULT_LOSER_DATA: NoId<GameHistoryPlayer, 'playerIndex' | 'gameHistoryId'> = {
     name: 'RaphaitLaVaisselle',
     score: 420,
     isVirtualPlayer: false,
     isWinner: false,
 };
 
-const DEFAULT_GAME_HISTORY: GameHistory = {
+const DEFAULT_GAME_HISTORY: NoIdGameHistoryWithPlayers = {
     startTime: new Date(),
     endTime: new Date(),
-    player1Data: DEFAULT_WINNER_DATA,
-    player2Data: DEFAULT_LOSER_DATA,
+    playersData: [DEFAULT_WINNER_DATA, DEFAULT_LOSER_DATA],
     gameType: GameType.Classic,
     gameMode: GameMode.Multiplayer,
     hasBeenAbandoned: false,

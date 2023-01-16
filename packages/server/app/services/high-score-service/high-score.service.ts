@@ -8,9 +8,8 @@ import { Service } from 'typedi';
 import { HighScore, HighScorePlayer, HighScoreWithPlayers } from '@app/schemas/high-score';
 import { NoId } from '@app/schemas/schema';
 import { HIGH_SCORE_COUNT } from '@app/constants/game-constants';
-
-const HIGH_SCORE_TABLE = 'HighScore';
-const HIGH_SCORE_PLAYER_TABLE = 'HighScorePlayer';
+import { HIGH_SCORE_PLAYER_TABLE, HIGH_SCORE_TABLE } from '@app/constants/services-constants/database-const';
+import { aggregate } from '@app/utils/aggregate/aggregate';
 
 @Service()
 export default class HighScoresService {
@@ -32,27 +31,16 @@ export default class HighScoresService {
     // }
 
     async getAllHighScore(): Promise<NoId<HighScoreWithPlayers>[]> {
-        const highScores: (HighScore & { name: string })[] = await this.db
+        const highScores = await this.db
             .select('*')
-            .leftJoin(HIGH_SCORE_PLAYER_TABLE, 'HighScore.id', 'HighScorePlayer.highScoreId');
+            .leftJoin<HighScorePlayer>(HIGH_SCORE_PLAYER_TABLE, 'HighScore.id', 'HighScorePlayer.highScoreId');
 
-        return [
-            ...highScores
-                .reduce((map, val) => {
-                    const entry = map.get(val.id) ?? {
-                        gameType: val.gameType,
-                        score: val.score,
-                        names: [],
-                    };
-
-                    entry.names.push(val.name);
-
-                    map.set(val.id, entry);
-
-                    return map;
-                }, new Map<number, NoId<HighScoreWithPlayers>>())
-                .values(),
-        ];
+        return aggregate(highScores, {
+            idKey: 'id',
+            fieldKey: 'names',
+            mainItemKeys: ['gameType', 'score'],
+            aggregatedItemKeys: 'name',
+        });
     }
 
     async addHighScore(name: string, score: number, gameType: GameType): Promise<void> {

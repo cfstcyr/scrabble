@@ -549,8 +549,8 @@ describe('Game', () => {
                 game.player1.score = 100;
                 game.player2.score = 100;
                 game.completeGameHistory(undefined);
-                expect(game.gameHistory.player1Data.isWinner).to.be.true;
-                expect(game.gameHistory.player2Data.isWinner).to.be.true;
+                expect(game.gameHistory.playersData[0].isWinner).to.be.true;
+                expect(game.gameHistory.playersData[1].isWinner).to.be.true;
             });
         });
     });
