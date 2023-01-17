@@ -74,7 +74,7 @@ export class ServicesTestingUnit {
     async withMockDatabaseService(): Promise<void> {
         const databaseService = new TestingDatabaseService();
         Container.set(DatabaseService, databaseService);
-        await databaseService.configure();
+        await databaseService.setup();
     }
 
     withStubbedDictionaryService(): ServicesTestingUnit {

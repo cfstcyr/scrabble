@@ -16,6 +16,7 @@ import {
     HighScoresController,
     VirtualPlayerProfilesController,
 } from './controllers';
+import DatabaseService from './services/database-service/database.service';
 
 @Service()
 export class Application {
@@ -29,6 +30,7 @@ export class Application {
         private readonly gamePlayController: GamePlayController,
         private readonly highScoreController: HighScoresController,
         private readonly virtualPlayerProfileController: VirtualPlayerProfilesController,
+        private readonly databaseService: DatabaseService,
     ) {
         this.app = express();
 
@@ -49,6 +51,10 @@ export class Application {
         this.virtualPlayerProfileController.route(this.app);
 
         this.errorHandling();
+    }
+
+    async setupDatabase(): Promise<void> {
+        return this.databaseService.setup();
     }
 
     private config(): void {

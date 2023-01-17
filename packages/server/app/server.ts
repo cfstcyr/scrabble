@@ -23,6 +23,11 @@ export class Server {
             return false;
         }
     }
+
+    async setupDatabase(): Promise<void> {
+        return this.application.setupDatabase();
+    }
+
     init(): void {
         this.application.app.set('port', Server.appPort);
 
