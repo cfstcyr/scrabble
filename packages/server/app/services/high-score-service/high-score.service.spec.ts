@@ -122,6 +122,14 @@ describe('HighScoresService', () => {
             expect((await highScoresService['tableNames'].select('*')).length).to.equal(2);
         });
 
+        it('should not add a name if high score and name already exists', async () => {
+            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_1.name, DEFAULT_HIGH_SCORE.score, DEFAULT_HIGH_SCORE.gameType as GameType);
+            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_1.name, DEFAULT_HIGH_SCORE.score, DEFAULT_HIGH_SCORE.gameType as GameType);
+
+            expect((await highScoresService['table'].select('*')).length).to.equal(1);
+            expect((await highScoresService['tableNames'].select('*')).length).to.equal(1);
+        });
+
         it('should not add a high score if is lower than existing ones', async () => {
             for (let i = 0; i < HIGH_SCORE_COUNT; ++i) {
                 await highScoresService.addHighScore(
