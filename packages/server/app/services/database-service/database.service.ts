@@ -4,11 +4,13 @@ import { Service } from 'typedi';
 
 @Service()
 export default class DatabaseService {
-    readonly knex: Knex;
+    knex: Knex;
 
     constructor() {
         if (env.isTest) throw new Error('DatabaseService should not be used in a test environment');
+    }
 
+    async setup(): Promise<void> {
         this.knex = knex({
             client: 'pg',
             connection: {
@@ -19,6 +21,8 @@ export default class DatabaseService {
                 database: env.PG_DATABASE,
             },
         });
+
+        await this.knex.migrate.latest();
     }
 
     async pingDb(): Promise<void> {

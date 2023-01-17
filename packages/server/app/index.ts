@@ -4,5 +4,10 @@ import 'module-alias/register';
 import { Server } from '@app/server';
 import { Container } from 'typedi';
 
-const server: Server = Container.get(Server);
-server.init();
+(async () => {
+    const server: Server = Container.get(Server);
+
+    await server.setupDatabase();
+
+    server.init();
+})();
