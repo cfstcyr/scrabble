@@ -12,6 +12,8 @@ import { Router } from 'express';
 import * as mock from 'mock-fs';
 import { createSandbox, SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
+import DatabaseService from '@app/services/database-service/database.service';
+import TestingDatabaseService from '@app/services/database-service/testing-database.service.spec';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type ClassType<T> = Function & { prototype: T };
@@ -69,9 +71,10 @@ export class ServicesTestingUnit {
         return this;
     }
 
-    withMockDatabaseService(): ServicesTestingUnit {
-        // TODO: this
-        return this;
+    async withMockDatabaseService(): Promise<void> {
+        const databaseService = new TestingDatabaseService();
+        Container.set(DatabaseService, databaseService);
+        await databaseService.configure();
     }
 
     withStubbedDictionaryService(): ServicesTestingUnit {

@@ -68,8 +68,9 @@ describe('HighScoresService', () => {
     // let databaseService: DatabaseService;
     let testingUnit: ServicesTestingUnit;
 
-    beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withMockDatabaseService();
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit();
+        await testingUnit.withMockDatabaseService();
     });
 
     beforeEach(async () => {

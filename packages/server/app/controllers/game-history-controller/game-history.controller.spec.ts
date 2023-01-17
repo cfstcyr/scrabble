@@ -52,11 +52,10 @@ describe('GameHistoriesController', () => {
     let gameHistoriesServiceStub: SinonStubbedInstance<GameHistoriesService>;
     let testingUnit: ServicesTestingUnit;
 
-    beforeEach(() => {
-        testingUnit = new ServicesTestingUnit()
-            .withMockDatabaseService()
-            .withStubbedDictionaryService()
-            .withStubbedControllers(GameHistoriesController);
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit();
+        await testingUnit.withMockDatabaseService();
+        testingUnit.withStubbedDictionaryService().withStubbedControllers(GameHistoriesController);
         gameHistoriesServiceStub = testingUnit.setStubbed(GameHistoriesService);
     });
 

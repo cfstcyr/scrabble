@@ -32,8 +32,10 @@ describe('HighScoresController', () => {
     let socketServiceStub: SinonStubbedInstance<SocketService>;
     let highScoreServicesStub: SinonStubbedInstance<HighScoresService>;
 
-    beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withMockDatabaseService().withStubbedDictionaryService().withStubbedControllers(HighScoresController);
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit();
+        await testingUnit.withMockDatabaseService();
+        testingUnit.withStubbedDictionaryService().withStubbedControllers(HighScoresController);
         socketServiceStub = testingUnit.setStubbed(SocketService);
         highScoreServicesStub = testingUnit.setStubbed(HighScoresService);
     });

@@ -116,12 +116,10 @@ describe('GameDispatcherController', () => {
     let createGameServiceStub: SinonStubbedInstance<CreateGameService>;
     let testingUnit: ServicesTestingUnit;
 
-    beforeEach(() => {
-        testingUnit = new ServicesTestingUnit()
-            .withStubbedDictionaryService()
-            .withMockDatabaseService()
-            .withStubbedControllers(GameDispatcherController)
-            .withStubbed(SocketService);
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit();
+        await testingUnit.withMockDatabaseService();
+        testingUnit.withStubbedDictionaryService().withStubbedControllers(GameDispatcherController).withStubbed(SocketService);
         createGameServiceStub = testingUnit.setStubbed(CreateGameService);
     });
 

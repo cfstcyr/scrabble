@@ -63,11 +63,10 @@ describe('VirtualPlayerProfilesController', () => {
     let testingUnit: ServicesTestingUnit;
     let virtualPlayerProfileServiceStub: SinonStubbedInstance<VirtualPlayerProfilesService>;
 
-    beforeEach(() => {
-        testingUnit = new ServicesTestingUnit()
-            .withMockDatabaseService()
-            .withStubbedDictionaryService()
-            .withStubbedControllers(VirtualPlayerProfilesController);
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit();
+        await testingUnit.withMockDatabaseService();
+        testingUnit.withStubbedDictionaryService().withStubbedControllers(VirtualPlayerProfilesController);
         virtualPlayerProfileServiceStub = testingUnit.setStubbed(VirtualPlayerProfilesService);
     });
 
