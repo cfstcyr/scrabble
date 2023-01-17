@@ -1,21 +1,40 @@
 version: '3.3'
 
 services:
-  server:
-    image: log3990-server:prod
-    build:
-      context: ./packages/server
-      target: prod
-    ports:
-      - ${SERVER_PORT:-3000}:3000
-    environment:
-      MONGO_URL: ${SERVER_MONGO_URL}
-      MONGO_NAME: ${SERVER_MONGO_NAME}
-      SERVER_URL: ${SERVER_SERVER_URL}
-  client:
-    image: log3990-client:prod
-    build: 
-      context: ./packages/client
-      target: prod
-    ports:
-      - ${CLIENT_PORT:-4200}:80
+    nginx:
+        image: nginx
+        depends_on:
+            - server
+            - client
+            - postgres
+        volumes:
+            - ./conf/nginx/prod.d/:/etc/nginx/conf.d
+        ports:
+            - ${NGINX_PORT:-80}:80
+
+    server:
+        image: log3990-server:prod
+        build:
+            context: ./packages/server
+            target: prod
+        environment:
+            PG_HOST: postgres
+            PG_PORT: 5432
+            PG_USER: root
+            PG_PASSWORD: sdaUIHDSaiudHSa*(567)
+            PG_DATABASE: scrabble
+            SERVER_URL: http://server:${SERVER_PORT:-3000}/api
+
+    client:
+        image: log3990-client:prod
+        build:
+            context: ./packages/client
+            target: prod
+
+    postgres:
+        image: postgres
+        restart: always
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: sdaUIHDSaiudHSa*(567)
+            POSTGRES_DB: scrabble
