@@ -56,5 +56,6 @@ export default class GameHistoriesService {
 
     async resetGameHistories(): Promise<void> {
         await this.table.delete();
+        await this.tableHistoryPlayer.delete();
     }
 }

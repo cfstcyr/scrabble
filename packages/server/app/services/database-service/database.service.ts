@@ -7,7 +7,7 @@ export default class DatabaseService {
     readonly knex: Knex;
 
     constructor() {
-        if (env.isTest) throw new Error('Database service should not be used in a test environment');
+        if (env.isTest) throw new Error('DatabaseService should not be used in a test environment');
 
         this.knex = knex({
             client: 'pg',
