@@ -32,8 +32,7 @@ export const aggregate = <
         } as { [K in MainItemKeys]?: T[K] } & { [K in FieldKey]: AggregatedItem[] };
 
         for (const key of mainItemKeys) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (mainItem[key] as any) = item[key];
+            (mainItem[key] as unknown) = item[key];
         }
 
         return mainItem as unknown as MainItem;
