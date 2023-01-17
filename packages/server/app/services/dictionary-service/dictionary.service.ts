@@ -18,6 +18,7 @@ import {
 import { ONE_HOUR_IN_MS } from '@app/constants/services-constants/dictionary-const';
 import { MAXIMUM_WORD_LENGTH, MINIMUM_WORD_LENGTH } from '@app/constants/services-errors';
 import DictionarySavingService from '@app/services/dictionary-saving-service/dictionary-saving.service';
+import { env } from '@app/utils/environment/environment';
 import Ajv, { ValidateFunction } from 'ajv';
 import { StatusCodes } from 'http-status-codes';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
@@ -29,6 +30,7 @@ export default class DictionaryService {
     private activeDictionaries: Map<string, DictionaryUsage> = new Map();
 
     constructor(private readonly dictionarySavingService: DictionarySavingService) {
+        if (env.isTest) throw new Error('DictionaryService should not be used in a test environment');
         this.initializeDictionaries();
     }
 

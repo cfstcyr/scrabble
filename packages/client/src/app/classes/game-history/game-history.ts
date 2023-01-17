@@ -4,8 +4,7 @@ import { GameType } from '@app/constants/game-type';
 export interface GameHistory {
     startTime: Date;
     endTime: Date;
-    player1Data: PlayerHistoryData;
-    player2Data: PlayerHistoryData;
+    playersData: PlayerHistoryData[];
     gameType: GameType;
     gameMode: GameMode;
     hasBeenAbandoned: boolean;

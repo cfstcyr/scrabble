@@ -82,3 +82,5 @@ export const GOOD_LUCK_MESSAGE = 'Bonne chance!';
 
 export const MAX_TILES_PER_PLAYER = 7;
 export const BINGO_BONUS_POINTS = 50;
+
+export const HIGH_SCORE_COUNT = 5;

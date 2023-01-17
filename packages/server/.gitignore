@@ -30,3 +30,7 @@ assets/dictionaries/index.json
 !tsconfig.spec.json
 !tsconfig.json
 !package-lock.json
+
+# Keep knex files
+!knexfile.js
+!migrations/*

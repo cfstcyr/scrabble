@@ -9,16 +9,9 @@ interface ErrorResponse {
     stack?: string[];
 }
 
-export function errorHandler(
-    error: Error,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-) {
-    const status =
-        error instanceof HttpException
-            ? error.status
-            : StatusCodes.INTERNAL_SERVER_ERROR;
+// eslint-disable-next-line no-unused-vars
+export const errorHandler = (error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const status = error instanceof HttpException ? error.status : StatusCodes.INTERNAL_SERVER_ERROR;
 
     const response: ErrorResponse = {
         message: error.message,
@@ -32,9 +25,10 @@ export function errorHandler(
         response.stack = error.stack?.split('\n');
     }
 
-    // if (!env.isProd) {
-    //     console.error(error);
-    // }
+    if (!env.isProd) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+    }
 
     res.status(status).json(response);
-}
+};

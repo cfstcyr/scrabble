@@ -49,8 +49,9 @@ describe('DictionaryService', () => {
     let testingUnit: ServicesTestingUnit;
     let dictionarySavingServiceStub: SinonStubbedInstance<DictionarySavingService>;
 
-    beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withMockDatabaseService();
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit();
+        await testingUnit.withMockDatabaseService();
         dictionarySavingServiceStub = testingUnit.setStubbed(DictionarySavingService, {
             getDictionarySummaries: [],
         });

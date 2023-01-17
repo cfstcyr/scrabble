@@ -32,8 +32,10 @@ describe('HighScoresController', () => {
     let socketServiceStub: SinonStubbedInstance<SocketService>;
     let highScoreServicesStub: SinonStubbedInstance<HighScoresService>;
 
-    beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withMockDatabaseService().withStubbedDictionaryService().withStubbedControllers(HighScoresController);
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit();
+        await testingUnit.withMockDatabaseService();
+        testingUnit.withStubbedDictionaryService().withStubbedControllers(HighScoresController);
         socketServiceStub = testingUnit.setStubbed(SocketService);
         highScoreServicesStub = testingUnit.setStubbed(HighScoresService);
     });
@@ -67,7 +69,6 @@ describe('HighScoresController', () => {
 
             it('should return INTERNAL_SERVER_ERROR on throw httpException', async () => {
                 chai.spy.on(controller, 'handleHighScoresRequest', () => {
-                    console.log('handleHighScoresRequest', 'spy');
                     throw new HttpException(DEFAULT_EXCEPTION, StatusCodes.INTERNAL_SERVER_ERROR);
                 });
 
@@ -97,7 +98,7 @@ describe('HighScoresController', () => {
         it('should call socketService.emitToSocket', async () => {
             await controller['handleHighScoresRequest'](DEFAULT_PLAYER_ID);
             expect(socketServiceStub.emitToSocket.called).to.be.true;
-            expect(highScoreServicesStub.getAllHighScores.called).to.be.true;
+            expect(highScoreServicesStub.getAllHighScore.called).to.be.true;
         });
     });
 });

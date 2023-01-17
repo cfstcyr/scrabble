@@ -1,33 +1,52 @@
-import { HighScore, HighScoresData } from '@app/classes/database/high-score';
 import { GameType } from '@app/classes/game/game-type';
-import { DEFAULT_HIGH_SCORES_RELATIVE_PATH, HIGH_SCORES_MONGO_COLLECTION_NAME } from '@app/constants/services-constants/mongo-db-const';
 import DatabaseService from '@app/services/database-service/database.service';
 import { promises } from 'fs';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
-import { Collection } from 'mongodb';
 import { join } from 'path';
 import { Service } from 'typedi';
+import { HighScore, HighScorePlayer, HighScoresData, HighScoreWithPlayers } from '@app/schemas/high-score';
+import { NoId } from '@app/schemas/schema';
+import { HIGH_SCORE_COUNT } from '@app/constants/game-constants';
+import { DEFAULT_HIGH_SCORES_RELATIVE_PATH, HIGH_SCORE_PLAYER_TABLE, HIGH_SCORE_TABLE } from '@app/constants/services-constants/database-const';
+import { aggregate } from '@app/utils/aggregate/aggregate';
 
 @Service()
 export default class HighScoresService {
     constructor(private databaseService: DatabaseService) {}
 
-    private static async fetchDefaultHighScores(): Promise<HighScore[]> {
+    private get table() {
+        return this.databaseService.knex<HighScore>(HIGH_SCORE_TABLE);
+    }
+
+    private get tableNames() {
+        return this.databaseService.knex<HighScorePlayer>(HIGH_SCORE_PLAYER_TABLE);
+    }
+
+    private static async fetchDefaultHighScores(): Promise<NoId<HighScoreWithPlayers>[]> {
         const filePath = join(__dirname, DEFAULT_HIGH_SCORES_RELATIVE_PATH);
         const dataBuffer = await promises.readFile(filePath, 'utf-8');
         const defaultHighScores: HighScoresData = JSON.parse(dataBuffer);
         return defaultHighScores.highScores;
     }
 
-    async getAllHighScores(): Promise<HighScore[]> {
-        return this.collection.find({}).toArray();
+    async getAllHighScore(): Promise<NoId<HighScoreWithPlayers>[]> {
+        const highScores = await this.table
+            .select('*')
+            .leftJoin<HighScorePlayer>(HIGH_SCORE_PLAYER_TABLE, 'HighScore.idHighScore', 'HighScorePlayer.idHighScore');
+
+        return aggregate(highScores, {
+            idKey: 'idHighScore',
+            fieldKey: 'names',
+            mainItemKeys: ['gameType', 'score'],
+            aggregatedItemKeys: 'name',
+        });
     }
 
     async addHighScore(name: string, score: number, gameType: GameType): Promise<void> {
-        const sortedHighScores = await this.getSortedHighScores(gameType);
+        const sortedHighScores = await this.getHighScores(gameType);
 
         const lowestHighScore = sortedHighScores[0];
-        if (lowestHighScore.score > score) return;
+        if (sortedHighScores.length >= HIGH_SCORE_COUNT && lowestHighScore.score > score) return;
 
         const presentHighScore = sortedHighScores.find((highScore) => highScore.score === score);
 
@@ -36,39 +55,47 @@ export default class HighScoresService {
             return;
         }
 
-        await this.replaceHighScore(name, score, sortedHighScores[0]);
+        await this.replaceHighScore(name, score, gameType, sortedHighScores.length >= HIGH_SCORE_COUNT ? sortedHighScores[0] : undefined);
     }
 
     async resetHighScores(): Promise<void> {
-        await this.collection.deleteMany({});
+        await this.tableNames.delete();
+        await this.table.delete();
         await this.populateDb();
     }
 
     private async updateHighScore(name: string, highScore: HighScore): Promise<void> {
-        if (highScore.names.find((currentName) => currentName === name)) return;
-        await this.collection.updateOne({ score: highScore.score, gameType: highScore.gameType }, { $push: { names: name } });
+        const existingNames = await this.tableNames.select('*').where('idHighScore', highScore.idHighScore);
+
+        if (existingNames.some(({ name: existingName }) => existingName === name)) return;
+
+        await this.tableNames.insert({ idHighScore: highScore.idHighScore, name });
     }
 
-    private async replaceHighScore(name: string, score: number, highScore: HighScore): Promise<void> {
-        await this.collection.replaceOne(
-            { score: highScore.score, gameType: highScore.gameType },
-            { gameType: highScore.gameType, score, names: [name] },
-        );
+    private async replaceHighScore(name: string, score: number, gameType: string, oldHighScore?: HighScore): Promise<void> {
+        if (oldHighScore) {
+            await this.tableNames.delete().where('idHighScore', oldHighScore.idHighScore);
+            await this.table.delete().where('idHighScore', oldHighScore.idHighScore);
+        }
+
+        const [{ idHighScore }] = await this.table.insert({ gameType, score }, ['idHighScore']);
+
+        await this.tableNames.insert({ idHighScore, name });
     }
 
-    private get collection(): Collection<HighScore> {
-        return this.databaseService.database.collection(HIGH_SCORES_MONGO_COLLECTION_NAME);
-    }
+    private async getHighScores(gameType?: string): Promise<HighScore[]> {
+        const q = this.table.select('*').orderBy('score');
 
-    private async getHighScores(gameType: GameType): Promise<HighScore[]> {
-        return this.collection.find({ gameType }).toArray();
-    }
+        if (gameType) q.where('gameType', gameType);
 
-    private async getSortedHighScores(gameType: GameType): Promise<HighScore[]> {
-        return (await this.getHighScores(gameType)).sort((previous, current) => previous.score - current.score);
+        return q;
     }
 
     private async populateDb(): Promise<void> {
-        await this.databaseService.populateDb(HIGH_SCORES_MONGO_COLLECTION_NAME, await HighScoresService.fetchDefaultHighScores());
+        await Promise.all(
+            await (
+                await HighScoresService.fetchDefaultHighScores()
+            ).map(async ({ names, score, gameType }) => this.replaceHighScore(names[0], score, gameType)),
+        );
     }
 }

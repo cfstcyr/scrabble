@@ -4,7 +4,7 @@ import { SocketService } from '@app/services/socket-service/socket.service';
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '../base-controller';
+import { BaseController } from '@app/controllers/base-controller';
 
 @Service()
 export class HighScoresController extends BaseController {
@@ -15,7 +15,7 @@ export class HighScoresController extends BaseController {
     protected configure(router: Router): void {
         router.get('/:playerId', async (req: HighScoresRequest, res: Response, next) => {
             const { playerId } = req.params;
-            console.log('GET HIGHSCORE PLAYER ID', playerId);
+
             try {
                 await this.handleHighScoresRequest(playerId);
                 res.status(StatusCodes.NO_CONTENT).send();
@@ -35,8 +35,7 @@ export class HighScoresController extends BaseController {
     }
 
     private async handleHighScoresRequest(playerId: string): Promise<void> {
-        console.log('handleHighScoresRequest', 'normal');
-        const highScores = await this.highScoresService.getAllHighScores();
+        const highScores = await this.highScoresService.getAllHighScore();
         this.socketService.emitToSocket(playerId, 'highScoresList', highScores);
     }
 }

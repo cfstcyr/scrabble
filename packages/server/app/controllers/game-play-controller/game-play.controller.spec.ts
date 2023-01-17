@@ -84,13 +84,15 @@ describe('GamePlayController', () => {
     let gamePlayController: GamePlayController;
     let testingUnit: ServicesTestingUnit;
 
-    beforeEach(() => {
-        testingUnit = new ServicesTestingUnit()
-            .withMockDatabaseService()
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit();
+        await testingUnit.withMockDatabaseService();
+        testingUnit
             .withStubbedDictionaryService()
             .withStubbed(ActiveGameService)
             .withStubbed(VirtualPlayerService)
             .withStubbedControllers(GamePlayController);
+
         gamePlayServiceStub = testingUnit.setStubbed(GamePlayService);
         socketServiceStub = testingUnit.setStubbed(SocketService);
         activeGameServiceStub = testingUnit.setStubbed(ActiveGameService);

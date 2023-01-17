@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
 import { Application } from '@app/app';
-import { VirtualPlayerProfile } from '@app/classes/database/virtual-player-profile';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
+import { VirtualPlayer } from '@app/schemas/virtual-player';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import VirtualPlayerProfilesService from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
 import * as chai from 'chai';
@@ -23,51 +23,50 @@ chai.use(spies);
 chai.use(chaiAsPromised);
 
 const DEFAULT_EXCEPTION = 'exception';
-const DEFAULT_PLAYER_ID_1 = 'player-id-1';
-const DEFAULT_PLAYER_ID_2 = 'player-id-2';
+const DEFAULT_PLAYER_ID_1 = 1;
+const DEFAULT_PLAYER_ID_2 = 2;
 
-const DEFAULT_PROFILE_1: VirtualPlayerProfile = {
+const DEFAULT_PROFILE_1: VirtualPlayer = {
     name: 'Brun',
     level: VirtualPlayerLevel.Beginner,
     isDefault: true,
-    id: DEFAULT_PLAYER_ID_1,
+    idVirtualPlayer: DEFAULT_PLAYER_ID_1,
 };
 
-const DEFAULT_PROFILE_2: VirtualPlayerProfile = {
+const DEFAULT_PROFILE_2: VirtualPlayer = {
     name: 'Vert',
     level: VirtualPlayerLevel.Expert,
     isDefault: true,
-    id: DEFAULT_PLAYER_ID_2,
+    idVirtualPlayer: DEFAULT_PLAYER_ID_2,
 };
 
-const CUSTOM_PROFILE_1: VirtualPlayerProfile = {
+const CUSTOM_PROFILE_1: VirtualPlayer = {
     name: 'Rouge',
     level: VirtualPlayerLevel.Beginner,
     isDefault: false,
-    id: DEFAULT_PLAYER_ID_1,
+    idVirtualPlayer: DEFAULT_PLAYER_ID_1,
 };
 
-const CUSTOM_PROFILE_2: VirtualPlayerProfile = {
+const CUSTOM_PROFILE_2: VirtualPlayer = {
     name: 'Turquoise',
     level: VirtualPlayerLevel.Expert,
     isDefault: false,
-    id: DEFAULT_PLAYER_ID_2,
+    idVirtualPlayer: DEFAULT_PLAYER_ID_2,
 };
 
-const DEFAULT_PROFILES: VirtualPlayerProfile[] = [DEFAULT_PROFILE_1, DEFAULT_PROFILE_2];
-const CUSTOM_PROFILES: VirtualPlayerProfile[] = [CUSTOM_PROFILE_1, CUSTOM_PROFILE_2];
-const ALL_PROFILES: VirtualPlayerProfile[] = DEFAULT_PROFILES.concat(CUSTOM_PROFILES);
+const DEFAULT_PROFILES: VirtualPlayer[] = [DEFAULT_PROFILE_1, DEFAULT_PROFILE_2];
+const CUSTOM_PROFILES: VirtualPlayer[] = [CUSTOM_PROFILE_1, CUSTOM_PROFILE_2];
+const ALL_PROFILES: VirtualPlayer[] = DEFAULT_PROFILES.concat(CUSTOM_PROFILES);
 
 describe('VirtualPlayerProfilesController', () => {
     let controller: VirtualPlayerProfilesController;
     let testingUnit: ServicesTestingUnit;
     let virtualPlayerProfileServiceStub: SinonStubbedInstance<VirtualPlayerProfilesService>;
 
-    beforeEach(() => {
-        testingUnit = new ServicesTestingUnit()
-            .withMockDatabaseService()
-            .withStubbedDictionaryService()
-            .withStubbedControllers(VirtualPlayerProfilesController);
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit();
+        await testingUnit.withMockDatabaseService();
+        testingUnit.withStubbedDictionaryService().withStubbedControllers(VirtualPlayerProfilesController);
         virtualPlayerProfileServiceStub = testingUnit.setStubbed(VirtualPlayerProfilesService);
     });
 

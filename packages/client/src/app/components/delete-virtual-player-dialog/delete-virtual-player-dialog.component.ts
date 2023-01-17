@@ -15,7 +15,7 @@ export class DeleteVirtualPlayerDialogComponent {
         private virtualPlayerProfilesService: VirtualPlayerProfilesService,
         @Inject(MAT_DIALOG_DATA) public data: DeleteVirtualPlayerDialogParameters,
     ) {
-        this.virtualPlayerId = data.id;
+        this.virtualPlayerId = data.idVirtualPlayer;
     }
 
     closeDialog(): void {

@@ -45,7 +45,7 @@ export class VirtualPlayerProfilesController implements OnDestroy {
     }
 
     handleUpdateVirtualPlayerProfileEvent(profileData: VirtualPlayerData): void {
-        this.http.patch<void>(`${this.endpoint}/${profileData.id}`, { profileData }).subscribe(
+        this.http.patch<void>(`${this.endpoint}/${profileData.idVirtualPlayer}`, { profileData }).subscribe(
             () => {
                 this.virtualPlayerServerResponseEvent.next(PositiveFeedback.VirtualPlayerUpdated);
             },

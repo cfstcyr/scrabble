@@ -1,9 +1,11 @@
 import { GameHistory } from '@app/classes/game-history/game-history';
 
 export type DisplayGameHistoryKeys =
-    | keyof GameHistory
+    | keyof Omit<GameHistory, 'playersData'>
+    | 'player1Data'
     | 'player1Name'
     | 'player1Score'
+    | 'player2Data'
     | 'player2Name'
     | 'player2Score'
     | 'startDate'

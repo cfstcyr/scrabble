@@ -138,17 +138,17 @@ export class AdminGameHistoryComponent implements OnInit, AfterViewInit {
     private sortGameHistory(item: GameHistory, property: string): string | number {
         switch (property) {
             case 'player1Name':
-                return item.player1Data.name;
+                return item.playersData[0]?.name;
             case 'player1Score':
-                return item.player1Data.score;
+                return item.playersData[0]?.score;
             case 'player1Data':
-                return item.player1Data.name;
+                return item.playersData[0]?.name;
             case 'player2Name':
-                return item.player2Data.name;
+                return item.playersData[1]?.name;
             case 'player2Score':
-                return item.player2Data.score;
+                return item.playersData[1]?.score;
             case 'player2Data':
-                return item.player2Data.name;
+                return item.playersData[1]?.name;
             case 'startDate':
                 return item.startTime.valueOf();
             case 'endDate':
