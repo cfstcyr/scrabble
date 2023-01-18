@@ -21,7 +21,7 @@ services:
             PG_HOST: postgres
             PG_PORT: 5432
             PG_USER: root
-            PG_PASSWORD: sdaUIHDSaiudHSa*(567)
+            PG_PASSWORD: uhdSAOUHhdsa87DSAUH7DSAHu
             PG_DATABASE: scrabble
             SERVER_URL: http://server:${SERVER_PORT:-3000}/api
 
@@ -36,5 +36,5 @@ services:
         restart: always
         environment:
             POSTGRES_USER: root
-            POSTGRES_PASSWORD: sdaUIHDSaiudHSa*(567)
+            POSTGRES_PASSWORD: uhdSAOUHhdsa87DSAUH7DSAHu
             POSTGRES_DB: scrabble
