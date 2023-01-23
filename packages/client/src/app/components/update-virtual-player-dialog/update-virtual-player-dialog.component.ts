@@ -1,6 +1,5 @@
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { VirtualPlayerData } from '@app/classes/admin/virtual-player-profile';
 import { VirtualPlayerProfilesService } from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
 import { Subject } from 'rxjs';
 import { UpdateVirtualPlayerDialogParameters } from './update-virtual-player.component.types';
@@ -39,8 +38,8 @@ export class UpdateVirtualPlayerComponent implements OnDestroy {
         this.virtualPlayerProfilesService.updateVirtualPlayer({
             name: this.virtualPlayerName,
             level: this.data.level,
-            id: this.data.id,
-        } as VirtualPlayerData);
+            idVirtualPlayer: this.data.idVirtualPlayer,
+        });
         this.closeDialog();
     }
 

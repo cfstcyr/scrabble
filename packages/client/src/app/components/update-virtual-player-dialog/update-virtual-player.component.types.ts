@@ -1,10 +1,6 @@
-import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
+import { VirtualPlayer } from '@common/models/virtual-player';
 
-export interface UpdateVirtualPlayerDialogParameters {
-    name: string;
-    level: VirtualPlayerLevel;
-    id: string;
-}
+export type UpdateVirtualPlayerDialogParameters = Omit<VirtualPlayer, 'idDefault'>;
 
 export enum UpdateDictionaryComponentIcons {
     SuccessIcon = 'check',

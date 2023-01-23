@@ -1,14 +1,14 @@
 import { GameHistoriesData, GameHistoryData } from '@app/classes/communication/game-histories';
-import { GameHistory } from './game-history';
+import { GameHistoryWithPlayers } from '@common/models/game-history';
 
 const INVERSE = -1;
 
 export class GameHistoriesConverter {
-    static convert(gameHistories: GameHistoriesData): GameHistory[] {
-        return gameHistories.gameHistories.map<GameHistory>(this.convertGameHistory).sort(this.compareGameHistory);
+    static convert(gameHistories: GameHistoriesData): GameHistoryWithPlayers[] {
+        return gameHistories.gameHistories.map<GameHistoryWithPlayers>(this.convertGameHistory).sort(this.compareGameHistory);
     }
 
-    private static convertGameHistory(gameHistoryData: GameHistoryData): GameHistory {
+    private static convertGameHistory(gameHistoryData: GameHistoryData): GameHistoryWithPlayers {
         return {
             ...gameHistoryData,
             startTime: new Date(gameHistoryData.startTime),
@@ -16,7 +16,7 @@ export class GameHistoriesConverter {
         };
     }
 
-    private static compareGameHistory(gameHistoryA: GameHistory, gameHistoryB: GameHistory): number {
+    private static compareGameHistory(gameHistoryA: GameHistoryWithPlayers, gameHistoryB: GameHistoryWithPlayers): number {
         return gameHistoryA.startTime < gameHistoryB.startTime ? 1 : INVERSE;
     }
 }

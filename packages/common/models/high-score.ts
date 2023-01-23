@@ -1,9 +1,14 @@
-import { NoId } from './schema';
+import { NoId } from '../types/no-id';
 
 export interface HighScore {
     idHighScore: number;
     gameType: string;
     score: number;
+}
+
+export interface SingleHighScore extends NoId<HighScore> {
+    rank?: number;
+    name: string;
 }
 
 export interface HighScorePlayer {

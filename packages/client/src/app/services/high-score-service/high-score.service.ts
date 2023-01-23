@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HighScore } from '@app/classes/admin';
-import { SingleHighScore } from '@app/classes/admin/high-score';
 import { GameType } from '@app/constants/game-type';
 import { HighScoresController } from '@app/controllers/high-score-controller/high-score.controller';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { HighScoreWithPlayers, SingleHighScore } from '@common/models/high-score';
 @Injectable({
     providedIn: 'root',
 })
@@ -14,7 +13,7 @@ export default class HighScoresService {
     private highScoresMap: Map<GameType, SingleHighScore[]> = new Map();
 
     constructor(private highScoresController: HighScoresController) {
-        this.highScoresController.subscribeToHighScoresListEvent(this.serviceDestroyed$, (highScores: HighScore[]) => {
+        this.highScoresController.subscribeToHighScoresListEvent(this.serviceDestroyed$, (highScores: HighScoreWithPlayers[]) => {
             this.updateHighScores(highScores);
             this.highScoresListInitializedEvent.next();
         });
@@ -37,15 +36,15 @@ export default class HighScoresService {
         this.highScoresController.resetHighScores();
     }
 
-    private updateHighScores(highScores: HighScore[]): void {
+    private updateHighScores(highScores: HighScoreWithPlayers[]): void {
         const [classicHighScores, log2990HighScores] = this.separateHighScoresType(highScores);
         this.highScoresMap.set(GameType.Classic, this.rankHighScores(classicHighScores));
         this.highScoresMap.set(GameType.LOG2990, this.rankHighScores(log2990HighScores));
     }
 
-    private separateHighScoresType(highScores: HighScore[]): [HighScore[], HighScore[]] {
-        const classicHighScores: HighScore[] = [];
-        const log2990HighScores: HighScore[] = [];
+    private separateHighScoresType(highScores: HighScoreWithPlayers[]): [HighScoreWithPlayers[], HighScoreWithPlayers[]] {
+        const classicHighScores: HighScoreWithPlayers[] = [];
+        const log2990HighScores: HighScoreWithPlayers[] = [];
 
         highScores.forEach((highScore) => {
             if (highScore.gameType === GameType.Classic) classicHighScores.push(highScore);
@@ -55,7 +54,7 @@ export default class HighScoresService {
         return [classicHighScores, log2990HighScores];
     }
 
-    private rankHighScores(highScores: HighScore[]): SingleHighScore[] {
+    private rankHighScores(highScores: HighScoreWithPlayers[]): SingleHighScore[] {
         const singleHighScores: SingleHighScore[] = [];
         let rank = 1;
         highScores = highScores.sort((previous, current) => current.score - previous.score);

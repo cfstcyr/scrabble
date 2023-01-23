@@ -3,9 +3,9 @@ import { LobbyData } from '@app/classes/communication/lobby-data';
 import { Message } from '@app/classes/communication/message';
 import { PlayerName } from '@app/classes/communication/player-name';
 import { StartGameData } from '@app/classes/game/game-config';
-import { NoIdGameHistoryWithPlayers } from '@app/schemas/game-history';
-import { HighScoreWithPlayers } from '@app/schemas/high-score';
-import { NoId } from '@app/schemas/schema';
+import { NoIdGameHistoryWithPlayers } from '@common/models/game-history';
+import { HighScoreWithPlayers } from '@common/models/high-score';
+import { NoId } from '@common/types/no-id';
 
 export type SocketEmitEvents =
     | 'gameUpdate'

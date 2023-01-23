@@ -1,8 +1,8 @@
 import { DisplayGameHistoryColumns, DisplayGameHistoryKeys } from '@app/classes/admin/admin-game-history';
 import { DisplayDictionaryKeys } from '@app/classes/admin/dictionaries';
-import { SingleHighScore } from '@app/classes/admin/high-score';
 import { IconName } from '@app/components/icon/icon.component.type';
 import { GameType } from '@app/constants/game-type';
+import { SingleHighScore } from '@common/models/high-score';
 import { SNACK_BAR_ERROR_DURATION, SNACK_BAR_SUCCESS_DURATION } from './dictionaries-components';
 
 export const LOCAL_PLAYER_ICON: IconName[] = ['user-astronaut', 'user-cowboy', 'user-ninja', 'user-crown'];

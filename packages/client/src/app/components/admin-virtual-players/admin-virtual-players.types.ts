@@ -1,4 +1,4 @@
-import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
+import { VirtualPlayer } from '@common/models/virtual-player';
 
 export type DisplayVirtualPlayersKeys = keyof { name: string } | 'name' | 'actions';
 
@@ -14,15 +14,8 @@ export enum VirtualPlayersComponentState {
     Error = 'error',
 }
 
-export interface UpdateVirtualPlayersDialogParameters {
-    name: string;
-    level: VirtualPlayerLevel;
-    idVirtualPlayer: string;
-}
+export type UpdateVirtualPlayersDialogParameters = Omit<VirtualPlayer, 'isDefault'>;
 
-export interface DeleteVirtualPlayerDialogParameters {
-    name: string;
-    level: VirtualPlayerLevel;
-    idVirtualPlayer: string;
+export interface DeleteVirtualPlayerDialogParameters extends Omit<VirtualPlayer, 'isDefault'> {
     onClose: () => void;
 }

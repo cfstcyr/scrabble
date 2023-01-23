@@ -26,7 +26,8 @@
         "esModuleInterop": true,
         "lib": ["es2018", "dom"],
         "paths": {
-            "@app/*": ["./src/app/*"]
+            "@app/*": ["./src/app/*"],
+            "@common/*": ["../common/*"],
         }
     },
     "angularCompilerOptions": {
@@ -34,5 +35,8 @@
         "strictInjectionParameters": true,
         "strictInputAccessModifiers": true,
         "strictTemplates": true
-    }
+    },
+    "references": [
+        { "path": "../common" }
+    ]
 }

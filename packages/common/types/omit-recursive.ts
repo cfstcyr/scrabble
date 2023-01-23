@@ -1,3 +1,5 @@
+import { TryArrayElement } from './array-element';
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type OmitRecursive<T, O extends string, DefaultType = object> = T extends DefaultType
     ? T extends Date
@@ -11,6 +13,3 @@ export type OmitRecursive<T, O extends string, DefaultType = object> = T extends
               O
           >
     : T;
-
-export type ArrayElement<ArrayType extends unknown[]> = ArrayType extends (infer ElementType)[] ? ElementType : never;
-export type TryArrayElement<T> = T extends (infer ElementType)[] ? ElementType : T;

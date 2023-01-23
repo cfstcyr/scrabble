@@ -14,10 +14,11 @@ services:
     server:
         image: log3990-server:dev
         build:
-            context: ./packages/server
-            target: dev
+            # context: ./packages/server
+            target: server-dev
         volumes:
             - ./packages/server:/var/www/app
+            - ./packages/common:/var/www/common
         ports:
             - ${SERVER_PORT:-3000}:3000
         environment:
@@ -31,10 +32,11 @@ services:
     client:
         image: log3990-client:dev
         build:
-            context: ./packages/client
-            target: dev
+            # context: ./packages/client
+            target: client-dev
         volumes:
             - ./packages/client:/var/www/app
+            - ./packages/common:/var/www/common
         ports:
             - ${CLIENT_PORT:-4200}:4200
 
