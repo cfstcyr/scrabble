@@ -3,8 +3,8 @@ image: xwiillz/node-chromium-mongo:lts-bionic
 cache:
     key: '${CI_COMMIT_REF_SLUG}-client'
     paths:
-        - client/node_modules/
-        - server/node_modules/
+        - packages/client/node_modules/
+        - packages/server/node_modules/
     policy: pull
 
 .only-client: &only-client
@@ -13,11 +13,11 @@ cache:
             - master
             - merge_requests
         changes:
-            - client/**/*
+            - packages/client/**/*
     cache:
         key: '${CI_COMMIT_REF_SLUG}-client'
         paths:
-            - client/node_modules/
+            - packages/client/node_modules/
         policy: pull
 
 .only-server: &only-server
@@ -26,11 +26,11 @@ cache:
             - master
             - merge_requests
         changes:
-            - server/**/*
+            - packages/server/**/*
     cache:
         key: '${CI_COMMIT_REF_SLUG}-server'
         paths:
-            - server/node_modules/
+            - packages/server/node_modules/
         policy: pull
 
 stages:
@@ -44,26 +44,26 @@ install:client:
     stage: install
     <<: *only-client
     script:
-        - cd client
+        - cd packages/client
         - npm ci --cache .npm --prefer-offline
     cache:
         key: '${CI_COMMIT_REF_SLUG}-client'
         paths:
-            - client/node_modules/
-            - client/.npm/
+            - packages/client/node_modules/
+            - packages/client/.npm/
         policy: pull-push
 
 install:server:
     stage: install
     <<: *only-server
     script:
-        - cd server
+        - cd packages/server
         - npm ci --cache .npm --prefer-offline
     cache:
         key: '${CI_COMMIT_REF_SLUG}-server'
         paths:
-            - server/node_modules/
-            - server/.npm/
+            - packages/server/node_modules/
+            - packages/server/.npm/
         policy: pull-push
 
 lint:client:
@@ -71,7 +71,7 @@ lint:client:
     allow_failure: true
     <<: *only-client
     script:
-        - cd client
+        - cd packages/client
         - npm run lint
 
 lint:server:
@@ -79,53 +79,53 @@ lint:server:
     allow_failure: true
     <<: *only-server
     script:
-        - cd server
+        - cd packages/server
         - npm run lint
 
 build:client:
     stage: build
     <<: *only-client
     script:
-        - cd client
+        - cd packages/client
         - npm run build
     artifacts:
         paths:
-            - client/dist/
+            - packages/client/dist/
 
 build:server:
     stage: build
     <<: *only-server
     script:
-        - cd server
+        - cd packages/server
         - npm run build
     artifacts:
         paths:
-            - server/out/
+            - packages/server/out/
 
 test:client:
     stage: test
     <<: *only-client
     script:
         - Xvfb :99 -ac -screen 0 1920x1080x24 &
-        - cd client
+        - cd packages/client
         - npm run coverage -- --browsers=ChromeHeadlessNoSandbox --watch=false
     dependencies:
         - build:client
     artifacts:
         paths:
-            - client/coverage/
+            - packages/client/coverage/
 
 test:server:
     stage: test
     <<: *only-server
     script:
-        - cd server
+        - cd packages/server
         - npm run coverage
     dependencies:
         - build:server
     artifacts:
         paths:
-            - server/coverage/
+            - packages/server/coverage/
 
 pages:
     image: node:14.15.0
@@ -134,7 +134,7 @@ pages:
         - if: '$CI_COMMIT_TAG =~ /deploy/'
           when: manual
     script:
-        - cd client
+        - cd packages/client
         - npm ci --cache .npm --prefer-offline
         - npm run deploy -- --base-href $BASE_HREF
         - mkdir ../public
@@ -179,7 +179,7 @@ deploy:server:
                 git checkout ${CI_COMMIT_SHA}
 
                 # Build the project
-                cd server
+                cd packages/server
                 npm ci
                 npm run build
 
