@@ -3,9 +3,9 @@
 import { Application } from '@app/app';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
-import { VirtualPlayer } from '@app/schemas/virtual-player';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import VirtualPlayerProfilesService from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
+import { VirtualPlayer } from '@common/models/virtual-player';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';

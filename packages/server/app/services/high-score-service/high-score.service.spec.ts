@@ -4,12 +4,12 @@ import { Container } from 'typedi';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import HighScoresService from './high-score.service';
 import { expect } from 'chai';
-import { HighScore, HighScorePlayer, HighScoresData, HighScoreWithPlayers } from '@app/schemas/high-score';
 import { GameType } from '@app/classes/game/game-type';
 import { HIGH_SCORE_COUNT } from '@app/constants/game-constants';
 import { DEFAULT_HIGH_SCORES_RELATIVE_PATH, HIGH_SCORE_PLAYER_TABLE, HIGH_SCORE_TABLE } from '@app/constants/services-constants/database-const';
 import { join } from 'path';
-import { NoId } from '@app/schemas/schema';
+import { NoId } from '@common/types/no-id';
+import { HighScore, HighScorePlayer, HighScoresData, HighScoreWithPlayers } from '@common/models/high-score';
 
 const HIGH_SCORE_CLASSIC_1: NoId<HighScoreWithPlayers> = {
     names: ['testname1', 'testname2'],

@@ -2,9 +2,9 @@
 import { expect } from 'chai';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import GameHistoriesService from './game-history.service';
-import { GameHistoryPlayer, NoIdGameHistoryWithPlayers } from '@app/schemas/game-history';
-import { NoId } from '@app/schemas/schema';
 import { Container } from 'typedi';
+import { GameHistoryPlayer, NoIdGameHistoryWithPlayers } from '@common/models/game-history';
+import { NoId } from '@common/types/no-id';
 
 const DEFAULT_PLAYER_1: NoId<GameHistoryPlayer, 'playerIndex'> = {
     name: 'p1',
