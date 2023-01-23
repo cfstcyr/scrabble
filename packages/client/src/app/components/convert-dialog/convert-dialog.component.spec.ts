@@ -18,13 +18,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { VirtualPlayerData, VirtualPlayerProfile } from '@app/classes/admin/virtual-player-profile';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { MOCK_PLAYER_PROFILES, MOCK_PLAYER_PROFILE_MAP } from '@app/constants/service-test-constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameDispatcherService } from '@app/services/';
 import { VirtualPlayerProfilesService } from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
+import { VirtualPlayer, VirtualPlayerData } from '@common/models/virtual-player';
 import { Subject } from 'rxjs';
 import { ConvertDialogComponent } from './convert-dialog.component';
 import SpyObj = jasmine.SpyObj;
@@ -41,7 +41,7 @@ describe('ConvertDialogComponent', () => {
     let gameDispatcherServiceSpy: SpyObj<GameDispatcherService>;
     let matDialogSpy: SpyObj<MatDialogRef<ConvertDialogComponent>>;
     let backdropSubject: Subject<MouseEvent>;
-    let updateObs = new Subject<VirtualPlayerProfile[]>();
+    let updateObs = new Subject<VirtualPlayer[]>();
 
     beforeEach(() => {
         virtualPlayerProfileSpy = jasmine.createSpyObj('VirtualPlayerProfilesService', [
@@ -58,7 +58,7 @@ describe('ConvertDialogComponent', () => {
         ]);
         updateObs = new Subject();
         virtualPlayerProfileSpy.subscribeToVirtualPlayerProfilesUpdateEvent.and.callFake(
-            (serviceDestroyed$: Subject<boolean>, callback: (dictionaries: VirtualPlayerProfile[]) => void) => updateObs.subscribe(callback),
+            (serviceDestroyed$: Subject<boolean>, callback: (dictionaries: VirtualPlayer[]) => void) => updateObs.subscribe(callback),
         );
     });
 

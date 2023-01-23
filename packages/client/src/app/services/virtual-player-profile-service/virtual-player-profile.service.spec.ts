@@ -4,21 +4,21 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { VirtualPlayerData, VirtualPlayerProfile } from '@app/classes/admin/virtual-player-profile';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { VirtualPlayerProfilesController } from '@app/controllers/virtual-player-profile-controller/virtual-player-profile.controller';
+import { VirtualPlayer, VirtualPlayerData } from '@common/models/virtual-player';
 import { Subject } from 'rxjs';
 import { VirtualPlayerProfilesService } from './virtual-player-profile.service';
 
-const TEST_ID = 'losIDgrande';
+const TEST_ID = 8980;
 
 const TEST_VIRTUAL_PLAYER_DATA: VirtualPlayerData = {
     name: 'BenOuiEncoreElScrabblo',
-    id: TEST_ID,
+    idVirtualPlayer: TEST_ID,
     level: VirtualPlayerLevel.Beginner,
 };
 
-const TEST_VIRTUAL_PLAYER_PROFILES: VirtualPlayerProfile[] = [{} as VirtualPlayerProfile];
+const TEST_VIRTUAL_PLAYER_PROFILES: VirtualPlayer[] = [{} as VirtualPlayer];
 
 describe('VirtualPlayerProfilesService', () => {
     let service: VirtualPlayerProfilesService;

@@ -21,7 +21,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { VirtualPlayerData, VirtualPlayerProfile } from '@app/classes/admin/virtual-player-profile';
 import { DictionarySummary } from '@app/classes/communication/dictionary-summary';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { IconComponent } from '@app/components/icon/icon.component';
@@ -39,6 +38,7 @@ import { LoadingPageComponent } from '@app/pages/loading-page/loading-page.compo
 import { GameDispatcherService } from '@app/services/';
 import { DictionaryService } from '@app/services/dictionary-service/dictionary.service';
 import { VirtualPlayerProfilesService } from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
+import { VirtualPlayer, VirtualPlayerData } from '@common/models/virtual-player';
 import { Subject } from 'rxjs';
 import { GameCreationPageComponent } from './game-creation-page.component';
 import SpyObj = jasmine.SpyObj;
@@ -57,7 +57,7 @@ describe('GameCreationPageComponent', () => {
     let dictionaryServiceSpy: SpyObj<DictionaryService>;
     let gameDispatcherCreationSubject: Subject<HttpErrorResponse>;
     let dictionaryUpdateSubject: Subject<DictionarySummary[]>;
-    let updateObs: Subject<VirtualPlayerProfile[]>;
+    let updateObs: Subject<VirtualPlayer[]>;
 
     const EMPTY_VALUE = '';
 
@@ -75,7 +75,7 @@ describe('GameCreationPageComponent', () => {
         updateObs = new Subject();
 
         virtualPlayerProfileSpy.subscribeToVirtualPlayerProfilesUpdateEvent.and.callFake(
-            (serviceDestroyed$: Subject<boolean>, callback: (dictionaries: VirtualPlayerProfile[]) => void) => updateObs.subscribe(callback),
+            (serviceDestroyed$: Subject<boolean>, callback: (dictionaries: VirtualPlayer[]) => void) => updateObs.subscribe(callback),
         );
     });
 

@@ -2,8 +2,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { GameHistoriesData } from '@app/classes/communication/game-histories';
 import { GameHistoriesConverter } from '@app/classes/game-history/game-histories-converter';
-import { GameHistory } from '@app/classes/game-history/game-history';
 import { GameHistoryController } from '@app/controllers/game-history-controller/game-history.controller';
+import { GameHistoryWithPlayers } from '@common/models/game-history';
 import { Observable, Subject, throwError } from 'rxjs';
 
 import { GameHistoryService } from './game-history.service';
@@ -51,7 +51,7 @@ describe('GameHistoryService', () => {
         });
 
         it('should resolve with conversion result', (done) => {
-            const expected = new Array<GameHistory>();
+            const expected = new Array<GameHistoryWithPlayers>();
             const subject = new Subject<GameHistoriesData>();
             const spy = spyOn(GameHistoriesConverter, 'convert').and.returnValue(expected);
             controllerSpy.getGameHistories.and.returnValue(subject);

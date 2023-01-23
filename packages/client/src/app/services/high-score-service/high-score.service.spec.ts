@@ -3,10 +3,11 @@
 import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import HighScore, { SingleHighScore } from '@app/classes/admin/high-score';
 import { GameType } from '@app/constants/game-type';
 import { HighScoresController } from '@app/controllers/high-score-controller/high-score.controller';
 import SocketService from '@app/services/socket-service/socket.service';
+import { HighScoreWithPlayers, SingleHighScore } from '@common/models/high-score';
+import { NoId } from '@common/types/no-id';
 import { Subject } from 'rxjs';
 import HighScoresService from './high-score.service';
 
@@ -19,14 +20,14 @@ const DEFAULT_LOG2990_HIGH_SCORES: SingleHighScore[] = [
     { name: 'name1', score: 1, gameType: GameType.LOG2990 },
     { name: 'name2', score: 2, gameType: GameType.LOG2990 },
 ];
-const DEFAULT_CLASSIC_HIGH_SCORE_1: HighScore = { names: ['name1', 'name2', 'name3'], score: 1, gameType: GameType.Classic };
-const DEFAULT_CLASSIC_HIGH_SCORE_2: HighScore = { names: ['non', 'name2'], score: 2, gameType: GameType.Classic };
-const DEFAULT_CLASSIC_HIGH_SCORE_3: HighScore = { names: ['name2'], score: 3, gameType: GameType.Classic };
-const DEFAULT_LOG2990_HIGH_SCORE_1: HighScore = { names: ['name2'], score: 11, gameType: GameType.LOG2990 };
-const DEFAULT_LOG2990_HIGH_SCORE_2: HighScore = { names: ['name2'], score: 22, gameType: GameType.LOG2990 };
-const DEFAULT_LOG2990_HIGH_SCORE_3: HighScore = { names: ['name2'], score: 33, gameType: GameType.LOG2990 };
+const DEFAULT_CLASSIC_HIGH_SCORE_1: NoId<HighScoreWithPlayers> = { names: ['name1', 'name2', 'name3'], score: 1, gameType: GameType.Classic };
+const DEFAULT_CLASSIC_HIGH_SCORE_2: NoId<HighScoreWithPlayers> = { names: ['non', 'name2'], score: 2, gameType: GameType.Classic };
+const DEFAULT_CLASSIC_HIGH_SCORE_3: NoId<HighScoreWithPlayers> = { names: ['name2'], score: 3, gameType: GameType.Classic };
+const DEFAULT_LOG2990_HIGH_SCORE_1: NoId<HighScoreWithPlayers> = { names: ['name2'], score: 11, gameType: GameType.LOG2990 };
+const DEFAULT_LOG2990_HIGH_SCORE_2: NoId<HighScoreWithPlayers> = { names: ['name2'], score: 22, gameType: GameType.LOG2990 };
+const DEFAULT_LOG2990_HIGH_SCORE_3: NoId<HighScoreWithPlayers> = { names: ['name2'], score: 33, gameType: GameType.LOG2990 };
 
-const DEFAULT_HIGH_SCORES: HighScore[] = [
+const DEFAULT_HIGH_SCORES: NoId<HighScoreWithPlayers>[] = [
     DEFAULT_CLASSIC_HIGH_SCORE_1,
     DEFAULT_LOG2990_HIGH_SCORE_1,
     DEFAULT_LOG2990_HIGH_SCORE_2,
@@ -35,7 +36,7 @@ const DEFAULT_HIGH_SCORES: HighScore[] = [
     DEFAULT_LOG2990_HIGH_SCORE_3,
 ];
 
-const CLASSIC_HIGH_SCORES: HighScore[] = [DEFAULT_CLASSIC_HIGH_SCORE_3, DEFAULT_CLASSIC_HIGH_SCORE_1, DEFAULT_CLASSIC_HIGH_SCORE_2];
+const CLASSIC_HIGH_SCORES: NoId<HighScoreWithPlayers>[] = [DEFAULT_CLASSIC_HIGH_SCORE_3, DEFAULT_CLASSIC_HIGH_SCORE_1, DEFAULT_CLASSIC_HIGH_SCORE_2];
 
 const DEFAULT_HIGH_SCORES_MAP: Map<GameType, SingleHighScore[]> = new Map([
     [GameType.Classic, DEFAULT_CLASSIC_HIGH_SCORES],

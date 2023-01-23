@@ -5,10 +5,10 @@ import { Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
-import { SingleHighScore } from '@app/classes/admin/high-score';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { GameType } from '@app/constants/game-type';
 import HighScoresService from '@app/services/high-score-service/high-score.service';
+import { SingleHighScore } from '@common/models/high-score';
 import { AdminHighScoresComponent } from './admin-high-scores.component';
 
 @Injectable()

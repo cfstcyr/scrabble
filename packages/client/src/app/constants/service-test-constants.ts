@@ -1,22 +1,22 @@
-import { VirtualPlayerProfile } from '@app/classes/admin/virtual-player-profile';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
+import { VirtualPlayer } from '@common/models/virtual-player';
 
-export const MOCK_PLAYER_PROFILES: VirtualPlayerProfile[] = [
+export const MOCK_PLAYER_PROFILES: VirtualPlayer[] = [
     {
         name: 'Jean Charest',
-        id: 'lemouton',
+        idVirtualPlayer: 1,
         level: VirtualPlayerLevel.Beginner,
         isDefault: false,
     },
     {
         name: 'Jean Charest Jr',
-        id: 'lemoutonnoir',
+        idVirtualPlayer: 2,
         level: VirtualPlayerLevel.Beginner,
         isDefault: false,
     },
     {
         name: 'Thomas "The best" Trépanier',
-        id: 'lachevre',
+        idVirtualPlayer: 3,
         level: VirtualPlayerLevel.Expert,
         isDefault: false,
     },

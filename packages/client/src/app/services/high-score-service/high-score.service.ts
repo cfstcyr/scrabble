@@ -4,6 +4,7 @@ import { HighScoresController } from '@app/controllers/high-score-controller/hig
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HighScoreWithPlayers, SingleHighScore } from '@common/models/high-score';
+import { NoId } from '@common/types/no-id';
 @Injectable({
     providedIn: 'root',
 })
@@ -36,15 +37,15 @@ export default class HighScoresService {
         this.highScoresController.resetHighScores();
     }
 
-    private updateHighScores(highScores: HighScoreWithPlayers[]): void {
+    private updateHighScores(highScores: NoId<HighScoreWithPlayers>[]): void {
         const [classicHighScores, log2990HighScores] = this.separateHighScoresType(highScores);
         this.highScoresMap.set(GameType.Classic, this.rankHighScores(classicHighScores));
         this.highScoresMap.set(GameType.LOG2990, this.rankHighScores(log2990HighScores));
     }
 
-    private separateHighScoresType(highScores: HighScoreWithPlayers[]): [HighScoreWithPlayers[], HighScoreWithPlayers[]] {
-        const classicHighScores: HighScoreWithPlayers[] = [];
-        const log2990HighScores: HighScoreWithPlayers[] = [];
+    private separateHighScoresType(highScores: NoId<HighScoreWithPlayers>[]): [NoId<HighScoreWithPlayers>[], NoId<HighScoreWithPlayers>[]] {
+        const classicHighScores: NoId<HighScoreWithPlayers>[] = [];
+        const log2990HighScores: NoId<HighScoreWithPlayers>[] = [];
 
         highScores.forEach((highScore) => {
             if (highScore.gameType === GameType.Classic) classicHighScores.push(highScore);
@@ -54,7 +55,7 @@ export default class HighScoresService {
         return [classicHighScores, log2990HighScores];
     }
 
-    private rankHighScores(highScores: HighScoreWithPlayers[]): SingleHighScore[] {
+    private rankHighScores(highScores: NoId<HighScoreWithPlayers>[]): SingleHighScore[] {
         const singleHighScores: SingleHighScore[] = [];
         let rank = 1;
         highScores = highScores.sort((previous, current) => current.score - previous.score);

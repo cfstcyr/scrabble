@@ -15,12 +15,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameHistoryState } from '@app/classes/admin/admin-game-history';
-import { GameHistory } from '@app/classes/game-history/game-history';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { DEFAULT_GAME_HISTORY_COLUMNS, GAME_HISTORY_COLUMNS } from '@app/constants/components-constants';
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
 import { GameHistoryService } from '@app/services/game-history-service/game-history.service';
+import { GameHistoryWithPlayers } from '@common/models/game-history';
+import { NoId } from '@common/types/no-id';
 import { AdminGameHistoryComponent } from './admin-game-history.component';
 
 describe('AdminGameHistoryComponent', () => {
@@ -153,7 +154,7 @@ describe('AdminGameHistoryComponent', () => {
         });
 
         it('should set state to ready on resolve', (done) => {
-            const data = new Array<GameHistory>();
+            const data = new Array<GameHistoryWithPlayers>();
             gameHistoryServiceSpy.getGameHistories.and.resolveTo(data);
 
             component.updateHistoryData();
@@ -237,53 +238,33 @@ describe('AdminGameHistoryComponent', () => {
     });
 
     describe('sortGameHistory', () => {
-        let gameHistory: GameHistory;
+        let gameHistory: NoId<GameHistoryWithPlayers>;
 
         beforeEach(() => {
             gameHistory = {
                 startTime: new Date(2022, 2, 28),
                 endTime: new Date(2022, 2, 29),
-                player1Data: {
-                    name: 'player-1',
-                    score: 1,
-                    isVirtualPlayer: false,
-                    isWinner: true,
-                },
-                player2Data: {
-                    name: 'player-2',
-                    score: 2,
-                    isVirtualPlayer: true,
-                    isWinner: false,
-                },
+                playersData: [
+                    {
+                        name: 'player-1',
+                        score: 1,
+                        isVirtualPlayer: false,
+                        isWinner: true,
+                        playerIndex: 1,
+                    },
+                    {
+                        name: 'player-2',
+                        score: 2,
+                        isVirtualPlayer: true,
+                        isWinner: false,
+                        playerIndex: 2,
+                    },
+                ],
                 gameType: GameType.Classic,
                 gameMode: GameMode.Multiplayer,
                 hasBeenAbandoned: false,
             };
         });
-
-        const tests: [property: string, element: string][] = [
-            ['player1Name', 'player1Data.name'],
-            ['player1Score', 'player1Data.score'],
-            ['player1Data', 'player1Data.name'],
-            ['player2Name', 'player2Data.name'],
-            ['player2Score', 'player2Data.score'],
-            ['player2Data', 'player2Data.name'],
-            ['startTime', 'startTime'],
-        ];
-
-        for (const [property, element] of tests) {
-            it(`should return ${element} for ${property}`, () => {
-                let expected: any = gameHistory;
-                const elements = element.split('.');
-
-                let currentElement: any;
-                while ((currentElement = elements.shift())) {
-                    expected = expected[currentElement];
-                }
-
-                expect(component['sortGameHistory'](gameHistory, property) as unknown).toEqual(expected);
-            });
-        }
 
         it('should return startTime for startDate', () => {
             const expected = gameHistory.startTime.valueOf();
@@ -318,7 +299,7 @@ describe('AdminGameHistoryComponent', () => {
         let index = 1;
         for (const [start, end, expected] of tests) {
             it(`should get duration (${index})`, () => {
-                const item: GameHistory = { startTime: start, endTime: end } as GameHistory;
+                const item: GameHistoryWithPlayers = { startTime: start, endTime: end } as GameHistoryWithPlayers;
                 expect(component.getDuration(item)).toEqual(expected);
             });
             index++;
