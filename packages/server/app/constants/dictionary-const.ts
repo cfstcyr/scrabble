@@ -1,6 +1,6 @@
-export const DICTIONARY_PATH = '../../../../../assets/dictionaries/dictionnary.json';
+export const DICTIONARY_PATH = '../../../assets/dictionaries/dictionnary.json';
 
-export const DICTIONARY_DIRECTORY = '../../../../../assets/dictionaries';
+export const DICTIONARY_DIRECTORY = '../../../assets/dictionaries';
 export const DICTIONARY_INDEX_FILENAME = 'index.json';
 export const DEFAULT_DICTIONARY_FILENAME = 'dictionary.json';
 

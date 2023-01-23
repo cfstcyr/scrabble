@@ -22,9 +22,9 @@ EXPOSE 3000
 ENV PORT 3000
 ENV NODE_ENV production
 RUN npm ci --production && npm cache clean --force
-COPY packages/server/assets/ assets/
 COPY packages/server/migrations/ migrations/
 COPY --from=server-builder /app/out out
+COPY packages/server/assets out/app/assets
 COPY packages/server/public out/app/public
 CMD ["node", "out/app/app/index.js"]
 
