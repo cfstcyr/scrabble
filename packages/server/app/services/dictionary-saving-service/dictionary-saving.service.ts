@@ -13,7 +13,6 @@ import {
     DEFAULT_DICTIONARY_NOT_FOUND,
     DICTIONARY_DIRECTORY,
     DICTIONARY_INDEX_FILENAME,
-    DICTIONARY_PATH,
     INVALID_TITLE_ALREADY_USED,
     NO_DICTIONARY_WITH_ID,
     NO_DICTIONARY_WITH_NAME,
@@ -106,7 +105,7 @@ export default class DictionarySavingService {
     }
 
     private createDirectory(): void {
-        const path = join(__dirname, DICTIONARY_PATH);
+        const path = join(__dirname, DICTIONARY_DIRECTORY);
         if (!existsSync(path)) {
             mkdirSync(path, { recursive: true });
         }
