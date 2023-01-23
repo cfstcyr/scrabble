@@ -13,12 +13,13 @@ import {
     DEFAULT_DICTIONARY_NOT_FOUND,
     DICTIONARY_DIRECTORY,
     DICTIONARY_INDEX_FILENAME,
+    DICTIONARY_PATH,
     INVALID_TITLE_ALREADY_USED,
     NO_DICTIONARY_WITH_ID,
     NO_DICTIONARY_WITH_NAME,
 } from '@app/constants/dictionary-const';
 import { NOT_FOUND } from '@app/constants/game-constants';
-import { existsSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import { StatusCodes } from 'http-status-codes';
 import { join } from 'path';
 import { Service } from 'typedi';
@@ -29,6 +30,7 @@ export default class DictionarySavingService {
     private dictionaryIndexes: DictionaryIndexes;
 
     constructor() {
+        this.createDirectory();
         this.dictionaryIndexes = this.readDictionaryIndexes();
     }
 
@@ -101,6 +103,13 @@ export default class DictionarySavingService {
         this.dictionaryIndexes = this.getDefaultDictionaryIndexFile();
 
         this.writeFile(DICTIONARY_INDEX_FILENAME, this.dictionaryIndexes);
+    }
+
+    private createDirectory(): void {
+        const path = join(__dirname, DICTIONARY_PATH);
+        if (!existsSync(path)) {
+            mkdirSync(path, { recursive: true });
+        }
     }
 
     private getDictionaryByFilename(filename: string): BasicDictionaryData {
