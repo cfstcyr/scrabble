@@ -14,7 +14,6 @@ services:
     server:
         image: log3990-server:dev
         build:
-            # context: ./packages/server
             target: server-dev
         volumes:
             - ./packages/server:/var/www/app
@@ -32,7 +31,6 @@ services:
     client:
         image: log3990-client:dev
         build:
-            # context: ./packages/client
             target: client-dev
         volumes:
             - ./packages/client:/var/www/app
@@ -49,3 +47,9 @@ services:
             POSTGRES_USER: root
             POSTGRES_PASSWORD: root
             POSTGRES_DB: scrabble
+        volumes:
+            - db:/var/lib/postgresql/data
+
+volumes:
+    db:
+        driver: local

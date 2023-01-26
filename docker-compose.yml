@@ -33,3 +33,9 @@ services:
             POSTGRES_USER: root
             POSTGRES_PASSWORD: uhdSAOUHhdsa87DSAUH7DSAHu
             POSTGRES_DB: scrabble
+        volumes:
+            - db:/var/lib/postgresql/data
+
+volumes:
+    db:
+        driver: local
