@@ -33,7 +33,7 @@ export class MatDialogMock {
 const MODEL: UpdateVirtualPlayerDialogParameters = {
     name: 'testName',
     level: VirtualPlayerLevel.Beginner,
-    id: 'eyedee',
+    idVirtualPlayer: 4435,
 };
 
 describe('UpdateDictionaryComponent', () => {

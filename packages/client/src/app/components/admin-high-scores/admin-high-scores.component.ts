@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { SingleHighScore } from '@app/classes/admin/high-score';
 import {
     ADMIN_RESET_HIGH_SCORE_TITLE,
     ADMIN_RESET_MESSAGE,
@@ -13,6 +12,7 @@ import { GameType } from '@app/constants/game-type';
 import HighScoresService from '@app/services/high-score-service/high-score.service';
 import { Subject } from 'rxjs';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { SingleHighScore } from '@common/models/high-score';
 
 @Component({
     selector: 'app-admin-high-scores',

@@ -14,10 +14,10 @@ services:
     server:
         image: log3990-server:dev
         build:
-            context: ./packages/server
-            target: dev
+            target: server-dev
         volumes:
             - ./packages/server:/var/www/app
+            - ./packages/common:/var/www/common
         ports:
             - ${SERVER_PORT:-3000}:3000
         environment:
@@ -31,10 +31,10 @@ services:
     client:
         image: log3990-client:dev
         build:
-            context: ./packages/client
-            target: dev
+            target: client-dev
         volumes:
             - ./packages/client:/var/www/app
+            - ./packages/common:/var/www/common
         ports:
             - ${CLIENT_PORT:-4200}:4200
 
@@ -47,3 +47,9 @@ services:
             POSTGRES_USER: root
             POSTGRES_PASSWORD: root
             POSTGRES_DB: scrabble
+        volumes:
+            - db:/var/lib/postgresql/data
+
+volumes:
+    db:
+        driver: local

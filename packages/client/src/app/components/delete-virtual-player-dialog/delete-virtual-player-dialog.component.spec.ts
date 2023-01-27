@@ -30,7 +30,7 @@ export class MatDialogMock {
 const MODEL: DeleteVirtualPlayerDialogParameters = {
     name: 'testName',
     level: VirtualPlayerLevel.Beginner,
-    id: 'eyedee',
+    idVirtualPlayer: 7653,
     onClose: () => {
         return;
     },

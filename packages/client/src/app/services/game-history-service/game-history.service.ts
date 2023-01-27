@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { GameHistoriesConverter } from '@app/classes/game-history/game-histories-converter';
-import { GameHistory } from '@app/classes/game-history/game-history';
 import { GameHistoryController } from '@app/controllers/game-history-controller/game-history.controller';
 import { catchError, retry } from 'rxjs/operators';
+import { GameHistoryWithPlayers } from '@common/models/game-history';
+import { NoId } from '@common/types/no-id';
 
 @Injectable({
     providedIn: 'root',
@@ -10,7 +11,7 @@ import { catchError, retry } from 'rxjs/operators';
 export class GameHistoryService {
     constructor(private readonly gameHistoryController: GameHistoryController) {}
 
-    async getGameHistories(): Promise<GameHistory[]> {
+    async getGameHistories(): Promise<NoId<GameHistoryWithPlayers>[]> {
         return new Promise((resolve, reject) => {
             this.gameHistoryController
                 .getGameHistories()

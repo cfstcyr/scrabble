@@ -1,7 +1,8 @@
-import { GameHistory } from '@app/classes/game-history/game-history';
+import { GameHistoryWithPlayers } from '@common/models/game-history';
+import { NoId } from '@common/types/no-id';
 
 export type DisplayGameHistoryKeys =
-    | keyof Omit<GameHistory, 'playersData'>
+    | keyof Omit<NoId<GameHistoryWithPlayers>, 'playersData'>
     | 'player1Data'
     | 'player1Name'
     | 'player1Score'

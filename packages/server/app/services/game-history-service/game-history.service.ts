@@ -1,9 +1,9 @@
 import { GAME_HISTORY_PLAYER_TABLE, GAME_HISTORY_TABLE } from '@app/constants/services-constants/database-const';
-import { GameHistory, GameHistoryPlayer, NoIdGameHistoryWithPlayers } from '@app/schemas/game-history';
 import DatabaseService from '@app/services/database-service/database.service';
 import { aggregate } from '@app/utils/aggregate/aggregate';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
 import { Service } from 'typedi';
+import { GameHistory, GameHistoryPlayer, NoIdGameHistoryWithPlayers } from '@common/models/game-history';
 
 @Service()
 export default class GameHistoriesService {

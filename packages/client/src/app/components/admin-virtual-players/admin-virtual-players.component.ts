@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { VirtualPlayerProfile } from '@app/classes/admin/virtual-player-profile';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { CreateVirtualPlayerComponent } from '@app/components/create-virtual-player-dialog/create-virtual-player-dialog.component';
 import { DeleteVirtualPlayerDialogComponent } from '@app/components/delete-virtual-player-dialog/delete-virtual-player-dialog.component';
@@ -37,6 +36,7 @@ import {
     UpdateVirtualPlayersDialogParameters,
     VirtualPlayersComponentState,
 } from './admin-virtual-players.types';
+import { VirtualPlayer } from '@common/models/virtual-player';
 
 @Component({
     selector: 'app-admin-virtual-players',
@@ -47,8 +47,8 @@ export class AdminVirtualPlayersComponent implements OnInit, OnDestroy {
     @ViewChild(MatSort) sortBeginner: MatSort;
     @ViewChild(MatSort) sortExpert: MatSort;
     columns: DisplayVirtualPlayersColumns;
-    dataSourceBeginner: MatTableDataSource<VirtualPlayerProfile>;
-    dataSourceExpert: MatTableDataSource<VirtualPlayerProfile>;
+    dataSourceBeginner: MatTableDataSource<VirtualPlayer>;
+    dataSourceExpert: MatTableDataSource<VirtualPlayer>;
     state: VirtualPlayersComponentState;
     error: string | undefined;
     isWaitingForServerResponse: boolean;
@@ -76,10 +76,10 @@ export class AdminVirtualPlayersComponent implements OnInit, OnDestroy {
         this.virtualPlayerProfilesService.getAllVirtualPlayersProfile();
     }
 
-    updateVirtualPlayer(virtualPlayerProfile: VirtualPlayerProfile): void {
+    updateVirtualPlayer(virtualPlayerProfile: VirtualPlayer): void {
         const virtualPlayerData: UpdateVirtualPlayersDialogParameters = {
             name: virtualPlayerProfile.name,
-            level: virtualPlayerProfile.level,
+            level: virtualPlayerProfile.level as VirtualPlayerLevel,
             idVirtualPlayer: virtualPlayerProfile.idVirtualPlayer,
         };
         this.dialog.open(UpdateVirtualPlayerComponent, {
@@ -96,7 +96,7 @@ export class AdminVirtualPlayersComponent implements OnInit, OnDestroy {
         });
     }
 
-    deleteVirtualPlayer(virtualPlayerProfile: VirtualPlayerProfile): void {
+    deleteVirtualPlayer(virtualPlayerProfile: VirtualPlayer): void {
         this.dialog.open(DeleteVirtualPlayerDialogComponent, {
             data: {
                 name: virtualPlayerProfile.name,
@@ -152,7 +152,7 @@ export class AdminVirtualPlayersComponent implements OnInit, OnDestroy {
         return this.columnsItems.map(({ key }) => key);
     }
 
-    private convertVirtualPlayerProfilesToMatDataSource(virtualPlayerProfiles: VirtualPlayerProfile[]): void {
+    private convertVirtualPlayerProfilesToMatDataSource(virtualPlayerProfiles: VirtualPlayer[]): void {
         this.dataSourceBeginner.data = virtualPlayerProfiles.filter((profile) => {
             return profile.level === VirtualPlayerLevel.Beginner;
         });

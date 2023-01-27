@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { SingleHighScore } from '@app/classes/admin/high-score';
 import { DEFAULT_HIGH_SCORE } from '@app/constants/components-constants';
+import { SingleHighScore } from '@common/models/high-score';
 
 @Component({
     selector: 'app-high-score-box',

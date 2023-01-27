@@ -3,24 +3,27 @@
 import { GameHistoriesData, GameHistoryData } from '@app/classes/communication/game-histories';
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
+import { GameHistoryWithPlayers } from '@common/models/game-history';
+import { NoId } from '@common/types/no-id';
 import { GameHistoriesConverter } from './game-histories-converter';
-import { GameHistory } from './game-history';
 
-const DEFAULT_GAME_HISTORY: GameHistory = {
+const DEFAULT_GAME_HISTORY: NoId<GameHistoryWithPlayers> = {
     startTime: new Date(),
     endTime: new Date(),
-    player1Data: { name: '1', score: 0, isVirtualPlayer: false, isWinner: false },
-    player2Data: { name: '2', score: 0, isVirtualPlayer: false, isWinner: false },
+    playersData: [
+        { name: '1', score: 0, isVirtualPlayer: false, isWinner: false, playerIndex: 1 },
+        { name: '2', score: 0, isVirtualPlayer: false, isWinner: false, playerIndex: 2 },
+    ],
     gameType: GameType.Classic,
     gameMode: GameMode.Solo,
     hasBeenAbandoned: false,
 };
-const DEFAULT_GAME_HISTORY_DATA: GameHistoryData = {
+const DEFAULT_GAME_HISTORY_DATA: NoId<GameHistoryData> = {
     ...DEFAULT_GAME_HISTORY,
     startTime: '',
     endTime: '',
 };
-const DEFAULT_GAME_HISTORIES_DATA: GameHistoriesData = {
+const DEFAULT_GAME_HISTORIES_DATA: NoId<GameHistoriesData> = {
     gameHistories: [{ ...DEFAULT_GAME_HISTORY_DATA, ...DEFAULT_GAME_HISTORY_DATA, ...DEFAULT_GAME_HISTORY_DATA }],
 };
 
@@ -37,7 +40,7 @@ describe('GameHistoriesConverter', () => {
 
         it('should call sort with compareGameHistory', () => {
             const gameHistories = { ...DEFAULT_GAME_HISTORIES_DATA };
-            const mapResult = new Array<GameHistory>();
+            const mapResult = new Array<GameHistoryWithPlayers>();
             spyOn(gameHistories.gameHistories, 'map').and.returnValue(mapResult);
             const sortSpy = spyOn(mapResult, 'sort');
 

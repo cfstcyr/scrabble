@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
-import { VirtualPlayerData, VirtualPlayerProfile, VirtualPlayerProfilesData } from '@app/classes/admin/virtual-player-profile';
 import { PositiveFeedback } from '@app/constants/virtual-players-components-constants';
+import { VirtualPlayer, VirtualPlayerData, VirtualPlayerProfilesData } from '@common/models/virtual-player';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 export class VirtualPlayerProfilesController implements OnDestroy {
     private endpoint = `${environment.serverUrl}/virtualPlayerProfiles`;
     private virtualPlayerServerResponseEvent: Subject<string> = new Subject();
-    private getAllVirtualPlayersEvent: Subject<VirtualPlayerProfile[]> = new Subject();
+    private getAllVirtualPlayersEvent: Subject<VirtualPlayer[]> = new Subject();
     private virtualPlayerErrorEvent: Subject<string> = new Subject();
     private serviceDestroyed$: Subject<boolean> = new Subject();
     constructor(private readonly http: HttpClient) {}
@@ -55,7 +55,7 @@ export class VirtualPlayerProfilesController implements OnDestroy {
         );
     }
 
-    handleDeleteVirtualPlayerProfileEvent(profileId: string): void {
+    handleDeleteVirtualPlayerProfileEvent(profileId: number): void {
         this.http.delete<void>(`${this.endpoint}/${profileId}`).subscribe(
             () => {
                 this.virtualPlayerServerResponseEvent.next(PositiveFeedback.VirtualPlayerDeleted);
@@ -77,7 +77,7 @@ export class VirtualPlayerProfilesController implements OnDestroy {
         );
     }
 
-    subscribeToGetAllVirtualPlayersEvent(serviceDestroyed$: Subject<boolean>, callback: (response: VirtualPlayerProfile[]) => void): void {
+    subscribeToGetAllVirtualPlayersEvent(serviceDestroyed$: Subject<boolean>, callback: (response: VirtualPlayer[]) => void): void {
         this.getAllVirtualPlayersEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 

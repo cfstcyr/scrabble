@@ -2,10 +2,10 @@ import { HttpException } from '@app/classes/http-exception/http-exception';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { DEFAULT_VIRTUAL_PLAYER_PROFILES_RELATIVE_PATH, VIRTUAL_PLAYER_TABLE } from '@app/constants/services-constants/database-const';
 import { NAME_ALREADY_USED, NO_PROFILE_OF_LEVEL } from '@app/constants/services-errors';
-import { NoId } from '@app/schemas/schema';
-import { VirtualPlayer, VirtualPlayerProfilesData } from '@app/schemas/virtual-player';
 import DatabaseService from '@app/services/database-service/database.service';
 import { Random } from '@app/utils/random/random';
+import { VirtualPlayer, VirtualPlayerProfilesData } from '@common/models/virtual-player';
+import { NoId } from '@common/types/no-id';
 import { promises } from 'fs';
 import { StatusCodes } from 'http-status-codes';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname

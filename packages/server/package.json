@@ -43,7 +43,8 @@
         "instrument": true
     },
     "_moduleAliases": {
-        "@app": "out/"
+        "@app": "out/app/app",
+        "@common": "out/common"
     },
     "dependencies": {
         "@types/mock-fs": "^4.13.1",

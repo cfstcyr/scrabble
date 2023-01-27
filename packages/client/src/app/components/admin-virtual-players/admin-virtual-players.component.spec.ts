@@ -16,7 +16,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { VirtualPlayerProfile } from '@app/classes/admin/virtual-player-profile';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { PageHeaderComponent } from '@app/components/page-header/page-header.component';
@@ -24,26 +23,27 @@ import { ERROR_SNACK_BAR_CONFIG, SUCCESS_SNACK_BAR_CONFIG } from '@app/constants
 import { PositiveFeedback } from '@app/constants/virtual-players-components-constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { VirtualPlayerProfilesService } from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
+import { VirtualPlayer } from '@common/models/virtual-player';
 import { AdminVirtualPlayersComponent } from './admin-virtual-players.component';
 import { VirtualPlayersComponentState } from './admin-virtual-players.types';
 
-const TEST_ID = 'losIDgrande';
+const TEST_ID = 524324;
 
-const DEFAULT_PROFILE: VirtualPlayerProfile = {
+const DEFAULT_PROFILE: VirtualPlayer = {
     name: 'Brun',
     level: VirtualPlayerLevel.Beginner,
     isDefault: true,
-    id: TEST_ID + '1',
+    idVirtualPlayer: TEST_ID + 1,
 };
 
-const CUSTOM_PROFILE: VirtualPlayerProfile = {
+const CUSTOM_PROFILE: VirtualPlayer = {
     name: 'Rouge',
     level: VirtualPlayerLevel.Beginner,
     isDefault: false,
-    id: TEST_ID + '2',
+    idVirtualPlayer: TEST_ID + 2,
 };
 
-const TEST_VIRTUAL_PLAYER_PROFILES: VirtualPlayerProfile[] = [DEFAULT_PROFILE, CUSTOM_PROFILE];
+const TEST_VIRTUAL_PLAYER_PROFILES: VirtualPlayer[] = [DEFAULT_PROFILE, CUSTOM_PROFILE];
 
 describe('AdminVirtualPlayersComponent', () => {
     let component: AdminVirtualPlayersComponent;

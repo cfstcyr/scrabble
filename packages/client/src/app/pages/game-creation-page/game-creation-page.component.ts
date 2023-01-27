@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { VirtualPlayerProfile } from '@app/classes/admin/virtual-player-profile';
 import { DictionarySummary } from '@app/classes/communication/dictionary-summary';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { NameFieldComponent } from '@app/components/name-field/name-field.component';
@@ -15,6 +14,7 @@ import { GameDispatcherService } from '@app/services';
 import { DictionaryService } from '@app/services/dictionary-service/dictionary.service';
 import { VirtualPlayerProfilesService } from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
 import { randomizeArray } from '@app/utils/randomize-array/randomize-array';
+import { VirtualPlayer } from '@common/models/virtual-player';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -158,10 +158,10 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
         return namesForLevel ?? [];
     }
 
-    private generateVirtualPlayerProfileMap(virtualPlayerProfiles: VirtualPlayerProfile[]): void {
-        virtualPlayerProfiles.forEach((profile: VirtualPlayerProfile) => {
-            const namesForLevel: string[] | undefined = this.virtualPlayerNameMap.get(profile.level);
-            if (!namesForLevel) this.virtualPlayerNameMap.set(profile.level, [profile.name]);
+    private generateVirtualPlayerProfileMap(virtualPlayerProfiles: VirtualPlayer[]): void {
+        virtualPlayerProfiles.forEach((profile: VirtualPlayer) => {
+            const namesForLevel: string[] | undefined = this.virtualPlayerNameMap.get(profile.level as VirtualPlayerLevel);
+            if (!namesForLevel) this.virtualPlayerNameMap.set(profile.level as VirtualPlayerLevel, [profile.name]);
             else namesForLevel.push(profile.name);
         });
     }

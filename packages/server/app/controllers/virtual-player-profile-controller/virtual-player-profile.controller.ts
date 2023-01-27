@@ -7,8 +7,8 @@ import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
-import { NoId } from '@app/schemas/schema';
-import { VirtualPlayer } from '@app/schemas/virtual-player';
+import { NoId } from '@common/types/no-id';
+import { VirtualPlayer } from '@common/models/virtual-player';
 
 @Service()
 export class VirtualPlayerProfilesController extends BaseController {

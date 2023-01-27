@@ -11,7 +11,6 @@ import {
     DisplayGameHistoryKeys,
     GameHistoryState,
 } from '@app/classes/admin/admin-game-history';
-import { GameHistory } from '@app/classes/game-history/game-history';
 import {
     ADMIN_RESET_HISTORY_TITLE,
     ADMIN_RESET_MESSAGE,
@@ -25,6 +24,8 @@ import {
 import { GameHistoryService } from '@app/services/game-history-service/game-history.service';
 import { isKey } from '@app/utils/isKey/is-key';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { GameHistoryWithPlayers } from '@common/models/game-history';
+import { NoId } from '@common/types/no-id';
 
 @Component({
     selector: 'app-admin-game-history',
@@ -39,7 +40,7 @@ export class AdminGameHistoryComponent implements OnInit, AfterViewInit {
     columnsItems: DisplayGameHistoryColumnsIteratorItem[];
     selectedColumnsItems: DisplayGameHistoryColumnsIteratorItem[];
     columnsControl: FormControl;
-    dataSource: MatTableDataSource<GameHistory>;
+    dataSource: MatTableDataSource<NoId<GameHistoryWithPlayers>>;
     state: GameHistoryState;
     error: string | undefined;
 
@@ -118,7 +119,7 @@ export class AdminGameHistoryComponent implements OnInit, AfterViewInit {
         return this.selectedColumnsItems.map(({ key }) => key);
     }
 
-    getDuration(item: GameHistory): number {
+    getDuration(item: GameHistoryWithPlayers): number {
         return item.endTime.getTime() - item.startTime.getTime();
     }
 
@@ -135,7 +136,7 @@ export class AdminGameHistoryComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private sortGameHistory(item: GameHistory, property: string): string | number {
+    private sortGameHistory(item: NoId<GameHistoryWithPlayers>, property: string): string | number {
         switch (property) {
             case 'player1Name':
                 return item.playersData[0]?.name;

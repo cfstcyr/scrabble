@@ -9,7 +9,7 @@ import { VirtualPlayerProfilesService } from '@app/services/virtual-player-profi
     styleUrls: ['delete-virtual-player-dialog.component.scss'],
 })
 export class DeleteVirtualPlayerDialogComponent {
-    virtualPlayerId: string;
+    virtualPlayerId: number;
     constructor(
         private dialogRef: MatDialogRef<DeleteVirtualPlayerDialogComponent>,
         private virtualPlayerProfilesService: VirtualPlayerProfilesService,

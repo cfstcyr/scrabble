@@ -6,11 +6,11 @@ import { HttpParams } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { VirtualPlayerData } from '@app/classes/admin/virtual-player-profile';
+import { VirtualPlayerData } from '@common/models/virtual-player';
 import { of, Subject, throwError } from 'rxjs';
 import { VirtualPlayerProfilesController } from './virtual-player-profile.controller';
 const TEST_VIRTUAL_PLAYER_DATA = {} as VirtualPlayerData;
-const TEST_ID = 'iamtheidthatwillbetested';
+const TEST_ID = 54352;
 
 describe('VirtualPlayerProfilesController', () => {
     let controller: VirtualPlayerProfilesController;

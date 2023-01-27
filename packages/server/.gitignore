@@ -16,10 +16,8 @@ npm-debug.log
 *.js
 
 # Dictionnaires
-assets/dictionaries/
-assets/dictionaries/index.json
+assets/dictionaries/*
 !assets/dictionaries/dictionary.json
-
 
 # Garder les fichiers necessaires pour les tests
 !systemjs.config.js

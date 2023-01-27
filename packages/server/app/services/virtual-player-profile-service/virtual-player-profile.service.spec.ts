@@ -4,13 +4,13 @@
 import { Container } from 'typedi';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import VirtualPlayerProfilesService from './virtual-player-profile.service';
-import { VirtualPlayer } from '@app/schemas/virtual-player';
 import { expect } from 'chai';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { NAME_ALREADY_USED, NO_PROFILE_OF_LEVEL } from '@app/constants/services-errors';
+import { VirtualPlayer } from '@common/models/virtual-player';
 
 chai.use(chaiAsPromised);
 

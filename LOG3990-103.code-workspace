@@ -8,6 +8,12 @@
         },
         {
             "path": "./packages/server"
+        },
+        {
+            "path": "./packages/common"
+        },
+        {
+            "path": "./packages/mobile"
         }
     ],
     "settings": {

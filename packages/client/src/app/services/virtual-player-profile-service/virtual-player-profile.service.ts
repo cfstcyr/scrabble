@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { VirtualPlayerData, VirtualPlayerProfile } from '@app/classes/admin/virtual-player-profile';
 import { VirtualPlayerProfilesController } from '@app/controllers/virtual-player-profile-controller/virtual-player-profile.controller';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { VirtualPlayer, VirtualPlayerData } from '@common/models/virtual-player';
 
 @Injectable({
     providedIn: 'root',
 })
 export class VirtualPlayerProfilesService {
     private serviceDestroyed$: Subject<boolean>;
-    private virtualPlayersUpdateEvent: Subject<VirtualPlayerProfile[]>;
+    private virtualPlayersUpdateEvent: Subject<VirtualPlayer[]>;
     private componentUpdateEvent: Subject<string>;
     private requestSentEvent: Subject<undefined>;
     constructor(private readonly virtualPlayerProfilesController: VirtualPlayerProfilesController) {
@@ -47,11 +47,11 @@ export class VirtualPlayerProfilesService {
         this.virtualPlayerProfilesController.handleResetVirtualPlayerProfilesEvent();
     }
 
-    deleteVirtualPlayer(id: string): void {
+    deleteVirtualPlayer(id: number): void {
         this.virtualPlayerProfilesController.handleDeleteVirtualPlayerProfileEvent(id);
     }
 
-    subscribeToVirtualPlayerProfilesUpdateEvent(serviceDestroyed$: Subject<boolean>, callback: (profiles: VirtualPlayerProfile[]) => void): void {
+    subscribeToVirtualPlayerProfilesUpdateEvent(serviceDestroyed$: Subject<boolean>, callback: (profiles: VirtualPlayer[]) => void): void {
         this.virtualPlayersUpdateEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
     subscribeToComponentUpdateEvent(serviceDestroyed$: Subject<boolean>, callback: (message: string) => void): void {

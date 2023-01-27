@@ -1,11 +1,11 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { VirtualPlayerProfile } from '@app/classes/admin/virtual-player-profile';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { GameMode } from '@app/constants/game-mode';
 import { GameDispatcherService } from '@app/services';
 import { VirtualPlayerProfilesService } from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
+import { VirtualPlayer } from '@common/models/virtual-player';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -77,12 +77,12 @@ export class ConvertDialogComponent implements OnInit, OnDestroy {
         this.dialogRef.close({ isConverting: false });
     }
 
-    private generateVirtualPlayerProfileMap(virtualPlayerProfiles: VirtualPlayerProfile[]): void {
-        virtualPlayerProfiles.forEach((profile: VirtualPlayerProfile) => {
+    private generateVirtualPlayerProfileMap(virtualPlayerProfiles: VirtualPlayer[]): void {
+        virtualPlayerProfiles.forEach((profile: VirtualPlayer) => {
             if (profile.name === this.playerName) return;
 
-            const namesForLevel: string[] | undefined = this.virtualPlayerNameMap.get(profile.level);
-            if (!namesForLevel) this.virtualPlayerNameMap.set(profile.level, [profile.name]);
+            const namesForLevel: string[] | undefined = this.virtualPlayerNameMap.get(profile.level as VirtualPlayerLevel);
+            if (!namesForLevel) this.virtualPlayerNameMap.set(profile.level as VirtualPlayerLevel, [profile.name]);
             else namesForLevel.push(profile.name);
         });
     }

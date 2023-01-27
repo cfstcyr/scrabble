@@ -3,16 +3,17 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HighScore } from '@app/classes/admin';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
 import { GameType } from '@app/constants/game-type';
 import SocketService from '@app/services/socket-service/socket.service';
+import { HighScoreWithPlayers } from '@common/models/high-score';
+import { NoId } from '@common/types/no-id';
 import { of, Subject } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { HighScoresController } from './high-score.controller';
 
-const DEFAULT_HIGH_SCORES: HighScore[] = [
+const DEFAULT_HIGH_SCORES: NoId<HighScoreWithPlayers>[] = [
     { names: ['name1'], score: 120, gameType: GameType.Classic },
     { names: ['name2'], score: 220, gameType: GameType.Classic },
     { names: ['name3'], score: 320, gameType: GameType.LOG2990 },
