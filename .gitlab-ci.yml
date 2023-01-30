@@ -39,6 +39,7 @@ stages:
     - build
     - test
     - deploy
+    - deploy:push
 
 install:client:
     stage: install
@@ -147,10 +148,46 @@ variables:
     EC2_USER: ec2-user
     ORIGIN: 'https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}'
 
-deploy:server:
+deploy:client:
+    image: docker
+    services:
+        - docker:20.10.16-dind
     stage: deploy
     rules:
-        - if: '$CI_COMMIT_TAG =~ /deploy/'
+        - if: '$CI_COMMIT_TAG'
+          when: manual
+          changes:
+              - packages/client/**/*
+    script:
+        - export DOCKER_BUILDKIT=1
+        - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+        - docker build --target=client-prod -t $CI_REGISTRY/polytechnique-montr-al/log3900/23-1/equipe-103/log3900-103/client:$CI_COMMIT_TAG -t $CI_REGISTRY/polytechnique-montr-al/log3900/23-1/equipe-103/log3900-103/client:latest .
+        - docker push $CI_REGISTRY/polytechnique-montr-al/log3900/23-1/equipe-103/log3900-103/client --all-tags
+
+deploy:server:
+    image: docker
+    services:
+        - docker:20.10.16-dind
+    stage: deploy
+    rules:
+        - if: '$CI_COMMIT_TAG'
+          when: manual
+          changes:
+              - packages/server/**/*
+    script:
+        - export DOCKER_BUILDKIT=1
+        - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+        - docker build --target=server-prod -t $CI_REGISTRY/polytechnique-montr-al/log3900/23-1/equipe-103/log3900-103/server:$CI_COMMIT_TAG -t $CI_REGISTRY/polytechnique-montr-al/log3900/23-1/equipe-103/log3900-103/server:latest .
+        - docker push $CI_REGISTRY/polytechnique-montr-al/log3900/23-1/equipe-103/log3900-103/server --all-tags
+
+deploy:push:
+    stage: deploy:push
+    environment:
+        name: production
+        url: http://scrabble.cfstcyr.com
+    needs: []
+    rules:
+        - if: '$CI_COMMIT_TAG'
           when: manual
     script:
         - 'which ssh-agent || (apt-get update -qq && apt-get install -qq openssh-client )'
@@ -162,28 +199,22 @@ deploy:server:
             timeout 600 ssh -t -o ServerAliveInterval=15 -o ServerAliveCountMax=5 "${EC2_USER}@${EC2_HOST}" "
                 set -x -ev
 
-                # Force kill any node app or any app running on the server port
-                forever stopall && sudo fuser -k '${SERVER_PORT}/tcp' && sudo killall node
-
-                # Clone the repository
-                git clone ${ORIGIN} repo || echo Git repository already exist
-                cd repo
+                git clone ${ORIGIN} LOG3900-103 || echo Git repository already exist
+                cd LOG3900-103
 
                 # Update the remote origin
                 # This action is important because the CI_JOB_TOKEN become invalid after each pipeline
                 git remote remove origin
                 git remote add origin ${ORIGIN}
 
-                # Checkout to the targeted commit 
+                # Checkout to the targeted commit
                 git fetch --all
                 git checkout ${CI_COMMIT_SHA}
 
-                # Build the project
-                cd packages/server
-                npm ci
-                npm run build
+                export IMAGE_SERVER_VERSION=latest
 
+                docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+                docker-compose up --pull always --detach --remove-orphans --force-recreate
 
-                # Launch the server in background and append output to /var/log/messages for CloudWatch
-                PORT=${SERVER_PORT} forever start -a -l /var/log/messages out/index.js
+                docker image prune -f
             "
