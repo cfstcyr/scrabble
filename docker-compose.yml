@@ -1,28 +1,32 @@
 version: '3.3'
 
 services:
-    server:
-        image: log3990-server:prod
+    nginx:
+        image: nginx
         depends_on:
-            - postgres
-        build:
-            target: server-prod
+            - server
+            - client
+        volumes:
+            - ./conf/nginx/prod.d/:/etc/nginx/conf.d
         ports:
-            - ${SERVER_PORT:-5000}:3000
+            - ${NGINX_PORT:-80}:80
+
+    server:
+        image: registry.gitlab.com/polytechnique-montr-al/log3900/23-1/equipe-103/log3900-103/server:${IMAGE_SERVER_VERSION:-latest}
         environment:
             PG_HOST: postgres
             PG_PORT: 5432
             PG_USER: root
             PG_PASSWORD: uhdSAOUHhdsa87DSAUH7DSAHu
             PG_DATABASE: scrabble
-            SERVER_URL: http://server:3000/api
+            SERVER_URL: http://api.scrabble.cfstcyr.com/api
+        ports:
+            - 3000
 
     client:
-        image: log3990-client:prod
+        image: registry.gitlab.com/polytechnique-montr-al/log3900/23-1/equipe-103/log3900-103/client:${IMAGE_SERVER_VERSION:-latest}
         ports:
-            - ${CLIENT_PORT:-80}:80
-        build:
-            target: client-prod
+            - 80
 
     postgres:
         image: postgres
