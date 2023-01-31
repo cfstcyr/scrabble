@@ -199,16 +199,16 @@ deploy:push:
             timeout 600 ssh -t -o ServerAliveInterval=15 -o ServerAliveCountMax=5 "${EC2_USER}@${EC2_HOST}" "
                 set -x -ev
 
-                git clone ${ORIGIN} LOG3900-103 || echo Git repository already exist
+                git clone ${ORIGIN} --branch develop LOG3900-103 || echo Git repository already exist
                 cd LOG3900-103
 
-                # Update the remote origin
+                # Update the remote origin 
                 # This action is important because the CI_JOB_TOKEN become invalid after each pipeline
                 git remote remove origin
                 git remote add origin ${ORIGIN}
 
                 # Checkout to the targeted commit
-                git fetch --all
+                git fetch origin ${CI_COMMIT_SHA} --depth 1
                 git checkout ${CI_COMMIT_SHA}
 
                 export IMAGE_SERVER_VERSION=latest
