@@ -216,5 +216,5 @@ deploy:push:
                 docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
                 docker-compose up --pull always --detach --remove-orphans --force-recreate
 
-                docker image prune -f
+                docker image prune -af
             "
