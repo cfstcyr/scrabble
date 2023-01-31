@@ -18,7 +18,6 @@ import {
 import { errorHandler } from './middlewares/error-handler';
 import DatabaseService from './services/database-service/database.service';
 
-// Test
 @Service()
 export class Application {
     app: express.Application;

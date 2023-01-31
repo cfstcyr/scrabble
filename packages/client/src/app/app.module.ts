@@ -48,7 +48,7 @@ import { DurationPipe } from './pipes/duration/duration.pipe';
 import { InitializerService } from './services/initializer-service/initializer.service';
 
 registerLocaleData(localeFr);
-// Test
+
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
