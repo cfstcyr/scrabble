@@ -6,7 +6,6 @@ import { StatusCodes } from 'http-status-codes';
 import * as logger from 'morgan';
 import { join } from 'path';
 import { Service } from 'typedi';
-import { errorHandler } from './middlewares/error-handler';
 import {
     DatabaseController,
     DictionaryController,
@@ -16,6 +15,7 @@ import {
     HighScoresController,
     VirtualPlayerProfilesController,
 } from './controllers';
+import { errorHandler } from './middlewares/error-handler';
 import DatabaseService from './services/database-service/database.service';
 
 @Service()
