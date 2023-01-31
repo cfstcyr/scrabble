@@ -112,7 +112,7 @@ build:server:
 test:client:
     stage: test
     <<: *only-client
-    needs: ['install:client']
+    needs: ['build:client']
     script:
         - Xvfb :99 -ac -screen 0 1920x1080x24 &
         - cd packages/client
@@ -126,7 +126,7 @@ test:client:
 test:server:
     stage: test
     <<: *only-server
-    needs: ['install:server']
+    needs: ['build:server']
     script:
         - cd packages/server
         - npm run coverage
