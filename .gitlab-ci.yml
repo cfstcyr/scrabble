@@ -44,6 +44,7 @@ stages:
 install:client:
     stage: install
     <<: *only-client
+    needs: []
     script:
         - cd packages/client
         - npm ci --cache .npm --prefer-offline
@@ -57,6 +58,7 @@ install:client:
 install:server:
     stage: install
     <<: *only-server
+    needs: []
     script:
         - cd packages/server
         - npm ci --cache .npm --prefer-offline
@@ -71,6 +73,7 @@ lint:client:
     stage: lint
     allow_failure: true
     <<: *only-client
+    needs: ['install:client']
     script:
         - cd packages/client
         - npm run lint
@@ -79,6 +82,7 @@ lint:server:
     stage: lint
     allow_failure: true
     <<: *only-server
+    needs: ['install:server']
     script:
         - cd packages/server
         - npm run lint
@@ -86,6 +90,7 @@ lint:server:
 build:client:
     stage: build
     <<: *only-client
+    needs: ['install:client']
     script:
         - cd packages/client
         - npm run build
@@ -96,6 +101,7 @@ build:client:
 build:server:
     stage: build
     <<: *only-server
+    needs: ['install:server']
     script:
         - cd packages/server
         - npm run build
@@ -106,6 +112,7 @@ build:server:
 test:client:
     stage: test
     <<: *only-client
+    needs: ['install:client']
     script:
         - Xvfb :99 -ac -screen 0 1920x1080x24 &
         - cd packages/client
@@ -119,6 +126,7 @@ test:client:
 test:server:
     stage: test
     <<: *only-server
+    needs: ['install:server']
     script:
         - cd packages/server
         - npm run coverage
