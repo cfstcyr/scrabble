@@ -1,0 +1,33 @@
+<div [ngClass]="{'chatbox': true, 'chatbox--is-open': isOpen}">
+    <div class="chatbox__header">
+        <div class="chatbox__header__left">
+            <div class="chatbox__header__icon"></div>
+            <div class="chatbox__header__title">{{ title }}</div>
+        </div>
+        <div class="chatbox__header__right">
+            <button class="chatbox__button chatbox__minify" (click)="toggleOpen()">
+                <app-icon *ngIf="isOpen" icon="minus"></app-icon>
+                <app-icon *ngIf="!isOpen" icon="window-maximize"></app-icon>
+            </button>
+            <button class="chatbox__button chatbox__close"><app-icon icon="times"></app-icon></button>
+        </div>
+    </div>
+    <ng-container *ngIf="isOpen">
+        <div class="chatbox__messages">
+            <div class="chatbox__messages__container">
+                <ng-container *ngFor="let message of messages">
+                    <div [ngClass]="{'chatbox__message': true, 'chatbox__message--is-current-user': message.isCurrentUser, 'chatbox__message--is-other-user': !message.isCurrentUser, 'chatbox__message--only-emoji': onlyHasEmoji(emojify(message.message))}">
+                        {{ emojify(message.message) }}
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+        <div class="chatbox__input">
+            <form class="chatbox__input__form" [formGroup]="messageForm" (ngSubmit)="onMessageSubmit()" novalidate>
+                <input type="text" formControlName="message" class="chatbox__input__form__control" placeholder="Aa">
+            </form>
+
+            <button class="chatbox__button" (click)="onEmojiClick('👍')">👍</button>
+        </div>
+    </ng-container>
+</div>

@@ -1,0 +1,6 @@
+<div class="chatbox-container">
+    <app-chatbox 
+        *ngFor="let channel of channels" [title]="channel.title"
+        [messages]="channel.messages"
+    ></app-chatbox>
+</div>

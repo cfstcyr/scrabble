@@ -6,5 +6,7 @@
     <app-loading-page *ngSwitchCase="states.ServerNotReachable" [error]="state" [isTrying]="true"></app-loading-page>
 
     <app-loading-page *ngSwitchDefault [error]="state"></app-loading-page>
+
+    <app-chatbox-container *ngSwitchCase="states.Ready"></app-chatbox-container>
 </ng-container>
 

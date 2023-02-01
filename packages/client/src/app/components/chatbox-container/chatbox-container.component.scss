@@ -1,0 +1,9 @@
+.chatbox-container {
+    position: fixed;
+    bottom: 0;
+    right: 12px;
+    z-index: 1;
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
