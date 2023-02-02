@@ -15,8 +15,6 @@ export class ChatService {
 
     constructor(private readonly socketService: SocketService, private readonly userService: UserService) {
         this.configureSocket(this.socketService.socket);
-
-        this.createChannel({ name: 'test channel' });
     }
 
     configureSocket(socket: ClientSocket): void {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ClientChannel } from '@app/classes/chat/channel';
 import { Channel } from '@common/models/chat/channel';
@@ -12,6 +12,7 @@ export class ChatboxContainerComponent {
     @Input() channels: ClientChannel[] = [];
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
+    @ViewChild('createChannelInput') createChannelInput: ElementRef<HTMLInputElement>;
     createChannelForm: FormGroup;
     openedChannels: ClientChannel[] = [];
     startChannelIsOpen: boolean = false;
@@ -70,5 +71,6 @@ export class ChatboxContainerComponent {
         this.createChannel.next(channelName);
         this.createChannelForm.reset();
         this.createChannelForm.setErrors({ createChannel: false });
+        this.createChannelInput.nativeElement.blur();
     }
 }
