@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
+import { ChatService } from '@app/services/chat-service/chat.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { Delay } from '@app/utils/delay/delay';
@@ -269,7 +270,7 @@ describe('SocketService', () => {
         let service: SocketService;
 
         beforeEach(async () => {
-            service = new SocketService();
+            service = new SocketService(Container.get(ChatService));
         });
 
         describe('handleSockets', () => {
