@@ -38,6 +38,16 @@ services:
         ports:
             - ${CLIENT_PORT:-4200}:4200
 
+    storybook:
+        image: node:14.15
+        volumes:
+            - ./packages/client:/var/www/app
+            - ./packages/client:/var/www/common
+        working_dir: /var/www/app
+        command: npm run docker:storybook
+        ports:
+            - 6006:6006
+
     postgres:
         image: postgres
         restart: always
