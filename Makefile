@@ -1,3 +1,8 @@
+dev-clientless dev-c:
+	docker compose -f docker-compose.dev-clientless.yml up -d
+	cd packages/client && \
+	npm start
+	
 dev:
 	docker compose -f docker-compose.dev.yml up --attach server --attach client
 
