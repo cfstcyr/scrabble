@@ -351,9 +351,9 @@ describe('GameCreationPageComponent', () => {
         });
 
         it('form should call createGame on submit if form is valid', async () => {
-            const spy = spyOn<any>(component, 'createGame');
+            const spy = spyOn<any>(component, 'createGame').and.callFake(() => {});
             spyOn(component, 'isFormValid').and.returnValue(true);
-            spyOn(component.gameParameters, 'get').and.returnValue({ value: { title: '' } } as any);
+            setValidFormValues();
 
             component.onSubmit();
             expect(spy).toHaveBeenCalled();
