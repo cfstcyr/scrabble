@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ClientChannel } from '@app/classes/chat/channel';
 import { Channel } from '@common/models/chat/channel';
 
@@ -10,11 +11,17 @@ import { Channel } from '@common/models/chat/channel';
 export class ChatboxContainerComponent {
     @Input() channels: ClientChannel[] = [];
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
+    @Output() createChannel: EventEmitter<string> = new EventEmitter();
+    createChannelForm: FormGroup;
     openedChannels: ClientChannel[] = [];
     startChannelIsOpen: boolean = false;
 
-    constructor() {
+    constructor(private readonly formBuilder: FormBuilder) {
         this.openedChannels = [];
+
+        this.createChannelForm = this.formBuilder.group({
+            createChannel: new FormControl(''),
+        });
     }
 
     getChannelsForStartChannel(): (ClientChannel & { canOpen: boolean })[] {
@@ -51,5 +58,17 @@ export class ChatboxContainerComponent {
 
     handleSendMessage(channel: Channel, content: string) {
         this.sendMessage.next([channel, content]);
+    }
+
+    handleCreateChannel() {
+        if (!this.createChannelForm.valid) return;
+
+        const channelName = this.createChannelForm.value.createChannel.trim();
+
+        if (channelName.length === 0) return;
+
+        this.createChannel.next(channelName);
+        this.createChannelForm.reset();
+        this.createChannelForm.setErrors({ createChannel: false });
     }
 }

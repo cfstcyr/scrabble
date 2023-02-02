@@ -47,8 +47,9 @@ export class ChatService {
     private createChannel(channel: NoId<Channel>, socket: ServerSocket): void {
         if (this.getChannel(channel.name)) {
             socket.emit('error', ALREADY_EXISTING_CHANNEL_NAME, StatusCodes.FORBIDDEN);
+            return;
         }
-        const newChannel: Channel = { ...channel, id: String(this.channels.length) };
+        const newChannel: Channel = { ...channel, id: String(this.channels.length + 1) };
 
         this.channels.push(newChannel);
 

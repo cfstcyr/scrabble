@@ -11,17 +11,30 @@
         </ng-container>
 
         <app-chatbox title="New message" (onMinimize)="closeStartChannel()" [hideIcon]="true" [hideClose]="true" *ngIf="startChannelIsOpen">
-            <div class="chatbox-container__my-channels">
-                <p class="chatbox-container__my-channels__title">My channels</p>
-                <div class="chatbox-container__my-channels__content">
-                    <button 
-                        *ngFor="let channel of getChannelsForStartChannel()" 
-                        [disabled]="!channel.canOpen"
-                        (click)="showChannel(channel)"
-                        class="chatbox-container__my-channels__button"
-                    >
-                        {{channel.name}}
-                    </button>
+            <div class="chatbox-container__add-channel">
+                <div class="chatbox-container__section">
+                    <form [formGroup]="createChannelForm" (ngSubmit)="handleCreateChannel()">
+                        <mat-form-field appearance="outline" class="chatbox-container__create-channel">
+                            <mat-label>Créer un canal</mat-label>
+                            <input matInput type="text" formControlName="createChannel" />
+                            <button mat-icon-button matSuffix><mat-icon>add</mat-icon></button>
+                            <!-- <app-icon-button matSuffix><app-icon icon="plus"></app-icon></app-icon-button> -->
+                        </mat-form-field>
+                        
+                    </form>
+                </div>
+                <div class="chatbox-container__section">
+                    <p class="chatbox-container__section__title">Mes canaux</p>
+                    <div class="chatbox-container__my-channels__content">
+                        <button 
+                            *ngFor="let channel of getChannelsForStartChannel()" 
+                            [disabled]="!channel.canOpen"
+                            (click)="showChannel(channel)"
+                            class="chatbox-container__my-channels__button"
+                        >
+                            {{channel.name}}
+                        </button>
+                    </div>
                 </div>
             </div>
         </app-chatbox>

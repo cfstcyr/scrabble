@@ -18,4 +18,8 @@ export class ChatboxWrapperComponent {
     handleSendMessage([channel, content]: [Channel, string]) {
         this.chatService.sendMessage(channel, content);
     }
+
+    handleCreateChannel(channelName: string): void {
+        this.chatService.createChannel({ name: channelName });
+    }
 }

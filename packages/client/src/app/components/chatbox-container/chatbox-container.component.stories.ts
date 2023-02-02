@@ -25,25 +25,28 @@ const template: Story<ChatboxContainerComponent> = (args: ChatboxContainerCompon
 
 export const primary = template.bind({});
 
+const channels = [
+    {
+        id: '1',
+        name: 'Chat 1',
+        messages: [
+            {
+                sender: { username: 'John', avatar: 'https://placedog.net/50' },
+                content: 'Bonjour!',
+            },
+        ],
+    },
+    {
+        id: '2',
+        name: 'Chat 2',
+        messages: [],
+    },
+];
+
 primary.args = {
-    channels: [
-        {
-            id: '1',
-            title: 'Chat 1',
-            messages: [
-                {
-                    username: 'John',
-                    isCurrentUser: false,
-                    message: 'Bonjour!',
-                },
-            ],
-        },
-        {
-            id: '2',
-            title: 'Chat 2',
-            messages: [],
-        },
-    ],
+    channels,
+    openedChannels: [channels[0]],
+    startChannelIsOpen: true,
 };
 
 export const withVeryLongName = template.bind({});
@@ -52,7 +55,7 @@ withVeryLongName.args = {
     channels: [
         {
             id: '1',
-            title: 'Very long channel name that never finishes because why not',
+            name: 'Very long channel name that never finishes because why not',
             messages: [],
         },
     ],

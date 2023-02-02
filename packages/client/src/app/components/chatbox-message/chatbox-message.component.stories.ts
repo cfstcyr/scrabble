@@ -1,11 +1,12 @@
 // also exported from '@storybook/angular' if you can deal with breaking changes in 6.1
 import { Story, Meta } from '@storybook/angular/types-6-0';
-import { ChatboxMessageComponent, Message } from './chatbox-message.component';
+import { ChatboxMessageComponent } from './chatbox-message.component';
 import { moduleMetadata } from '@storybook/angular';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';
 import { IconButtonComponent } from '@app/components/icon-button/icon-button.component';
+import { ChatMessage } from '@common/models/chat/chat-message';
 
 export default {
     title: 'Chatbox/Messages',
@@ -29,36 +30,22 @@ primary.args = {
     title: 'Général',
     messages: [
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        ...new Array(15).fill(0).map<Message>(() => ({ message: 'hey', isCurrentUser: false, username: 'John' })),
+        ...new Array(15).fill(0).map<ChatMessage>(() => ({ content: 'hey', sender: { username: 'John', avatar: '' } })),
         {
-            message: 'bonjour',
-            isCurrentUser: false,
-            username: 'Guy',
+            content: 'bonjour',
+            sender: { username: 'Guy', avatar: '' },
         },
         {
-            message: 'hola',
-            isCurrentUser: true,
-            username: 'Me',
+            content: 'hola',
+            sender: { username: 'Me', avatar: '' },
         },
         {
-            message: 'sup',
-            isCurrentUser: true,
-            username: 'Me',
+            content: 'sup',
+            sender: { username: 'Me', avatar: '' },
         },
         {
-            message: 'Exercitation cupidatat officia ut aliqua adipiscing irure culpa anim duis eiusmod ullamco',
-            isCurrentUser: false,
-            username: 'Guy',
-        },
-        {
-            message: 'DAhnsiufhnudishfjdnsjkfndashfudashifgs',
-            isCurrentUser: true,
-            username: 'Me',
-        },
-        {
-            message: ':frog::trumpet:',
-            isCurrentUser: true,
-            username: 'Me',
+            content: 'Exercitation cupidatat officia ut aliqua adipiscing irure culpa anim duis eiusmod ullamco',
+            sender: { username: 'Guy', avatar: '' },
         },
     ],
     icon: 'https://placedog.net/50',
@@ -71,4 +58,5 @@ empty.args = {
     title: 'Empty chat',
     messages: [],
     icon: 'https://placedog.net/52',
+    icon2: 'https://placedog.net/53',
 };

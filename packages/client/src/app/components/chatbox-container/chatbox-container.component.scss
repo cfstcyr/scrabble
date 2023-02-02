@@ -15,7 +15,17 @@
         align-items: flex-end;
     }
 
-    &__my-channels {
+    &__add-channel {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    &__create-channel {
+        width: 100%;
+        margin-bottom: -24px;
+    }
+
+    &__section {
         padding: 12px;
         display: flex;
         flex-direction: column;
@@ -26,7 +36,9 @@
             opacity: 0.55;
             margin: 0;
         }
+    }
 
+    &__my-channels {
         &__content {
             display: flex;
             flex-direction: column;

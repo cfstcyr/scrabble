@@ -1,4 +1,5 @@
 <app-chatbox-container 
     [channels]="channels"
     (sendMessage)="handleSendMessage($event)"
+    (createChannel)="handleCreateChannel($event)"
 ></app-chatbox-container>
