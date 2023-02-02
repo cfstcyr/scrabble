@@ -30,7 +30,7 @@ services:
 
     client:
         image: log3990-client:dev
-        profiles: ['client']
+        profiles: ['with-client']
         build:
             target: client-dev
         volumes:

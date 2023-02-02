@@ -4,7 +4,7 @@ dev-clientless dev-c:
 	npm start
 	
 dev:
-	docker compose -f docker-compose.dev.yml --profile client up --attach server --attach client
+	docker compose -f docker-compose.dev.yml --profile with-client up --attach server --attach client
 
 dev-detached dev-d:
 	docker compose -f docker-compose.dev.yml --profile client up -d
