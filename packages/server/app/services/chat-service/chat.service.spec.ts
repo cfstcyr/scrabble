@@ -121,6 +121,18 @@ describe('ChatService', () => {
                         expect(code).to.equal(StatusCodes.BAD_REQUEST);
                         done();
                     });
+                    serverSocket.join(testChannel.name);
+
+                    clientSocket.emit('channel:newMessage', testChannel, expectedMessage);
+                });
+
+                it.only('should throw error if user not in channel', (done) => {
+                    clientSocket.on('error' as any, (err: string, code: number) => {
+                        expect(err).to.equal(NOT_IN_CHANNEL);
+                        expect(code).to.equal(StatusCodes.FORBIDDEN);
+                        done();
+                    });
+                    serverSocket.leave(testChannel.name);
 
                     clientSocket.emit('channel:newMessage', testChannel, expectedMessage);
                 });

@@ -31,6 +31,9 @@ export class ChatService {
         if (!this.channels.find((c) => c.name === channel.name)) {
             socket.emit('error', INEXISTING_CHANNEL_NAME, StatusCodes.BAD_REQUEST);
         }
+        if (!socket.rooms.has(channel.name)) {
+            socket.emit('error', NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
+        }
 
         socket.nsp.to(channel.name).emit('channel:newMessage', chatMessage);
         // TODO: Save message in DB
