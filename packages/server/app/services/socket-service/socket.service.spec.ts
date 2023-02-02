@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
+import { ChatService } from '@app/services/chat-service/chat.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { Delay } from '@app/utils/delay/delay';
@@ -10,6 +12,7 @@ import * as arrowFunction from '@app/utils/is-id-virtual-player/is-id-virtual-pl
 import { Server } from 'app/server';
 import * as chai from 'chai';
 import { expect, spy } from 'chai';
+import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { SocketService } from './socket.service';
@@ -47,7 +50,10 @@ describe('SocketService', () => {
         let testingUnit: ServicesTestingUnit;
 
         beforeEach(() => {
-            testingUnit = new ServicesTestingUnit().withStubbed(DictionaryService).withStubbedPrototypes(Application, { bindRoutes: undefined });
+            testingUnit = new ServicesTestingUnit()
+                .withStubbed(DictionaryService)
+                .withStubbed(ChatService)
+                .withStubbedPrototypes(Application, { bindRoutes: undefined });
         });
 
         beforeEach(() => {
@@ -83,6 +89,16 @@ describe('SocketService', () => {
                 });
                 clientSocket.connect();
             });
+        });
+
+        it('should configure sockets of ChatService', async () => {
+            testingUnit.getStubbedInstance(ChatService).configureSocket.callsFake(() => {});
+            service.handleSockets();
+            clientSocket.connect();
+
+            await Delay.for(RESPONSE_DELAY); // Wait until the server socket received connection.
+
+            sinon.assert.called(testingUnit.getStubbedInstance(ChatService).configureSocket);
         });
 
         describe('getSocket', () => {
@@ -269,7 +285,7 @@ describe('SocketService', () => {
         let service: SocketService;
 
         beforeEach(async () => {
-            service = new SocketService();
+            service = new SocketService(Container.get(ChatService));
         });
 
         describe('handleSockets', () => {
