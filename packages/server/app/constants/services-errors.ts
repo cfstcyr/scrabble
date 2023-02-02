@@ -39,3 +39,5 @@ export const CANNOT_ADD_DEFAULT_PROFILE = "Impossible d'ajouter un nouveau profi
 export const NO_PROFILE_OF_LEVEL = "Il n'y a aucun joueur du niveau demandé";
 export const INVALID_LEVEL = 'Le niveau spécifié pour le nouveau profil joueur virtuel est invalide';
 export const MISSING_PARAMETER = 'La requête ne contient pas toutes les spécifications requises';
+export const INEXISTING_CHANNEL_NAME = "Le canal n'existe pas";
+export const ALREADY_EXISTING_CHANNEL_NAME = 'Le canal que vous voulez créer existe déjà';

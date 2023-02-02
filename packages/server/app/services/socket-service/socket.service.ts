@@ -1,6 +1,8 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
+import { ChatService } from '@app/services/chat-service/chat.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { ClientEvents, ServerEvents } from '@common/events/chat.event';
 import * as http from 'http';
 import { StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
@@ -24,12 +26,12 @@ export class SocketService {
     private sio?: io.Server;
     private sockets: Map<string, io.Socket>;
 
-    constructor() {
+    constructor(private readonly chatService: ChatService) {
         this.sockets = new Map();
     }
 
     initialize(server: http.Server): void {
-        this.sio = new io.Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
+        this.sio = new io.Server<ClientEvents, ServerEvents>(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
     }
 
     handleSockets(): void {
@@ -39,6 +41,8 @@ export class SocketService {
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
 
+            this.chatService.configureSocket(socket);
+            this.chatService.newSocketConnected(socket);
             socket.on('disconnect', () => {
                 this.sockets.delete(socket.id);
             });
