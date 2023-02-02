@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
@@ -14,6 +15,7 @@ import { expect, spy } from 'chai';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { SocketService } from './socket.service';
+import sinon = require('sinon');
 
 const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
@@ -48,7 +50,10 @@ describe('SocketService', () => {
         let testingUnit: ServicesTestingUnit;
 
         beforeEach(() => {
-            testingUnit = new ServicesTestingUnit().withStubbed(DictionaryService).withStubbedPrototypes(Application, { bindRoutes: undefined });
+            testingUnit = new ServicesTestingUnit()
+                .withStubbed(DictionaryService)
+                .withStubbed(ChatService)
+                .withStubbedPrototypes(Application, { bindRoutes: undefined });
         });
 
         beforeEach(() => {
@@ -84,6 +89,16 @@ describe('SocketService', () => {
                 });
                 clientSocket.connect();
             });
+        });
+
+        it('should configure sockets of ChatService', async () => {
+            testingUnit.getStubbedInstance(ChatService).configureSocket.callsFake(() => {});
+            service.handleSockets();
+            clientSocket.connect();
+
+            await Delay.for(RESPONSE_DELAY); // Wait until the server socket received connection.
+
+            sinon.assert.called(testingUnit.getStubbedInstance(ChatService).configureSocket);
         });
 
         describe('getSocket', () => {
