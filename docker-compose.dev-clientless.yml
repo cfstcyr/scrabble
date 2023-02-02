@@ -5,7 +5,6 @@ services:
         image: nginx
         depends_on:
             - server
-            - client
         volumes:
             - ./conf/nginx/dev.d/:/etc/nginx/conf.d
         ports:
@@ -27,16 +26,6 @@ services:
             PG_PASSWORD: root
             PG_DATABASE: scrabble
             SERVER_URL: http://server:${SERVER_PORT:-3000}/api
-
-    client:
-        image: log3990-client:dev
-        build:
-            target: client-dev
-        volumes:
-            - ./packages/client:/var/www/app
-            - ./packages/common:/var/www/common
-        ports:
-            - ${CLIENT_PORT:-4200}:4200
 
     storybook:
         image: node:14.15
