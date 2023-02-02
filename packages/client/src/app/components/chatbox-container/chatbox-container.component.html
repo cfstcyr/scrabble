@@ -18,9 +18,14 @@
                             <mat-label>Créer un canal</mat-label>
                             <input matInput type="text" formControlName="createChannel" #createChannelInput />
                             <button mat-icon-button matSuffix><mat-icon>add</mat-icon></button>
-                            <!-- <app-icon-button matSuffix><app-icon icon="plus"></app-icon></app-icon-button> -->
                         </mat-form-field>
-                        
+                    </form>
+                    <form [formGroup]="joinChannelForm" (ngSubmit)="handleJoinChannel()">
+                        <mat-form-field appearance="outline" class="chatbox-container__create-channel">
+                            <mat-label>Joindre un canal</mat-label>
+                            <input matInput type="text" formControlName="joinChannel" #joinChannelInput />
+                            <button mat-icon-button matSuffix><mat-icon>login</mat-icon></button>
+                        </mat-form-field>
                     </form>
                 </div>
                 <div class="chatbox-container__section">

@@ -15,8 +15,11 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
     @Input() joinedChannel: Subject<ClientChannel> = new Subject();
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
+    @Output() joinChannel: EventEmitter<string> = new EventEmitter();
     @ViewChild('createChannelInput') createChannelInput: ElementRef<HTMLInputElement>;
+    @ViewChild('joinChannelInput') joinChannelInput: ElementRef<HTMLInputElement>;
     createChannelForm: FormGroup;
+    joinChannelForm: FormGroup;
     openedChannels: ClientChannel[] = [];
     startChannelIsOpen: boolean = false;
     private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
@@ -26,6 +29,9 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
 
         this.createChannelForm = this.formBuilder.group({
             createChannel: new FormControl(''),
+        });
+        this.joinChannelForm = this.formBuilder.group({
+            joinChannel: new FormControl(''),
         });
     }
 
@@ -88,5 +94,18 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.createChannelForm.reset();
         this.createChannelForm.setErrors({ createChannel: false });
         this.createChannelInput.nativeElement.blur();
+    }
+
+    handleJoinChannel() {
+        if (!this.joinChannelForm.valid) return;
+
+        const channelName = this.joinChannelForm.value.joinChannel.trim();
+
+        if (channelName.length === 0) return;
+
+        this.joinChannel.next(channelName);
+        this.joinChannelForm.reset();
+        this.joinChannelForm.setErrors({ joinChannel: false });
+        this.joinChannelInput.nativeElement.blur();
     }
 }

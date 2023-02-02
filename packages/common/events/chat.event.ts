@@ -12,7 +12,7 @@ export interface ChatServerEvents {
   export interface ChatClientEvents {
     'channel:newMessage': (channel: NoId<Channel>, message: ChatMessage) => void;
     'channel:newChannel': (channel: NoId<Channel>) => void;
-    'channel:join': (channel: Channel) => void;
+    'channel:join': (channel: string) => void;
     'channel:quit': (channel: Channel) => void;
     'channel:init': () => void;
   }

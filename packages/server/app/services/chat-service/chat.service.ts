@@ -19,7 +19,7 @@ export class ChatService {
     configureSocket(socket: ServerSocket): void {
         socket.on('channel:newMessage', (channel: NoId<Channel>, chatMessage: ChatMessage) => this.sendMessage(channel, socket, chatMessage));
         socket.on('channel:newChannel', (channel: NoId<Channel>) => this.createChannel(channel, socket));
-        socket.on('channel:join', (channel: Channel) => this.joinChannel(channel.name, socket));
+        socket.on('channel:join', (channel: string) => this.joinChannel(channel, socket));
         socket.on('channel:quit', (channel: Channel) => this.quitChannel(channel.name, socket));
         socket.on('channel:init', () => {
             this.joinChannel(GENERAL_CHANNEL.name, socket);

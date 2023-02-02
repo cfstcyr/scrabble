@@ -52,6 +52,10 @@ export class ChatService {
         this.socketService.socket.emit('channel:newChannel', channel);
     }
 
+    joinChannel(channel: string): void {
+        this.socketService.socket.emit('channel:join', channel);
+    }
+
     private getChannel(id: string): ClientChannel {
         const index = this.channels.findIndex((c) => id === c.id);
 
