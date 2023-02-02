@@ -1,5 +1,5 @@
 import { GENERAL_CHANNEL } from '@app/constants/chat';
-import { ALREADY_EXISTING_CHANNEL_NAME, INEXISTING_CHANNEL_NAME } from '@app/constants/services-errors';
+import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, INEXISTING_CHANNEL_NAME, NOT_IN_CHANNEL } from '@app/constants/services-errors';
 import { ClientEvents, ServerEvents } from '@common/events/events';
 import { Channel } from '@common/models/chat/channel';
 import { ChatMessage } from '@common/models/chat/chat-message';
@@ -52,6 +52,9 @@ export class ChatService {
         if (!this.channels.find((channel) => channel.name === channelName)) {
             socket.emit('error', INEXISTING_CHANNEL_NAME, StatusCodes.BAD_REQUEST);
         }
+        if (socket.rooms.has(channelName)) {
+            socket.emit('error', ALREADY_IN_CHANNEL, StatusCodes.BAD_REQUEST);
+        }
 
         socket.join(channelName);
         socket.emit('channel:join', `Channel ${channelName} joined now`);
@@ -62,6 +65,11 @@ export class ChatService {
         if (!this.channels.find((channel) => channel.name === channelName)) {
             socket.emit('error', INEXISTING_CHANNEL_NAME, StatusCodes.BAD_REQUEST);
         }
+        if (!socket.rooms.has(channelName)) {
+            socket.emit('error', NOT_IN_CHANNEL, StatusCodes.BAD_REQUEST);
+        }
+
+        socket.leave(channelName);
         socket.emit('channel:quit', `Channel ${channelName} left`);
         // TODO: Save user left channel in DB
     }
