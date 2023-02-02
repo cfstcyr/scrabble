@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ClientChannel } from '@app/classes/chat/channel';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { Channel } from '@common/models/chat/channel';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'app-chatbox-wrapper',
@@ -10,9 +11,11 @@ import { Channel } from '@common/models/chat/channel';
 })
 export class ChatboxWrapperComponent {
     channels: ClientChannel[];
+    joinedChannel: Subject<ClientChannel>;
 
     constructor(private readonly chatService: ChatService) {
         this.channels = this.chatService.channels;
+        this.joinedChannel = this.chatService.joinedChannel;
     }
 
     handleSendMessage([channel, content]: [Channel, string]) {

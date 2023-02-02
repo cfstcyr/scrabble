@@ -1,21 +1,25 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ClientChannel } from '@app/classes/chat/channel';
 import { Channel } from '@common/models/chat/channel';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-chatbox-container',
     templateUrl: './chatbox-container.component.html',
     styleUrls: ['./chatbox-container.component.scss'],
 })
-export class ChatboxContainerComponent {
+export class ChatboxContainerComponent implements OnInit, OnDestroy {
     @Input() channels: ClientChannel[] = [];
+    @Input() joinedChannel: Subject<ClientChannel> = new Subject();
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
     @ViewChild('createChannelInput') createChannelInput: ElementRef<HTMLInputElement>;
     createChannelForm: FormGroup;
     openedChannels: ClientChannel[] = [];
     startChannelIsOpen: boolean = false;
+    private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
 
     constructor(private readonly formBuilder: FormBuilder) {
         this.openedChannels = [];
@@ -23,6 +27,18 @@ export class ChatboxContainerComponent {
         this.createChannelForm = this.formBuilder.group({
             createChannel: new FormControl(''),
         });
+    }
+
+    ngOnInit(): void {
+        this.joinedChannel.pipe(takeUntil(this.componentDestroyed$)).subscribe((channel) => {
+            if (!channel) return;
+            if (this.startChannelIsOpen) this.showChannel(channel);
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.componentDestroyed$.next(false);
+        this.componentDestroyed$.complete();
     }
 
     getChannelsForStartChannel(): (ClientChannel & { canOpen: boolean })[] {

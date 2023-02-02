@@ -6,20 +6,25 @@ import SocketService from '@app/services/socket-service/socket.service';
 import { ClientChannel } from '@app/classes/chat/channel';
 import { UserService } from '@app/services/user-service/user.service';
 import { NoId } from '@common/types/no-id';
+import { Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ChatService {
     channels: ClientChannel[] = [];
+    joinedChannel: Subject<ClientChannel>;
 
     constructor(private readonly socketService: SocketService, private readonly userService: UserService) {
         this.configureSocket(this.socketService.socket);
+        this.joinedChannel = new Subject();
     }
 
     configureSocket(socket: ClientSocket): void {
         socket.on('channel:join', (channel: Channel) => {
-            this.channels.push({ ...channel, messages: [] });
+            const newChannel = { ...channel, messages: [] };
+            this.channels.push(newChannel);
+            this.joinedChannel.next(newChannel);
         });
 
         socket.on('channel:quit', (channel: Channel) => {
