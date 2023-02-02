@@ -6,8 +6,10 @@
     $border: solid 1px rgb(238, 238, 238);
 
     display: grid;
-    grid-template-rows: auto 1fr auto;
-    width: fit-content;
+    height: 400px;
+    width: 310px;
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     background-color: white;
     border: $border;
     border-bottom: none;
@@ -15,22 +17,17 @@
     border-top-right-radius: $border-radius;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.15), 0 0 15px rgba(0, 0, 0, 0.05);
 
-    &--is-open {
-        height: 400px;
-        width: 300px;
-    }
-
     &__header {
-        padding: 12px 12px;
+        padding: 12px;
         display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 24px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        border-bottom: $border;
 
         &__left,
         &__right {
             display: flex;
             align-items: center;
-            // gap: 6px;
         }
 
         &__left {
@@ -44,95 +41,19 @@
             width: $size;
             border-radius: $size;
             background-color: $gray;
+            flex-shrink: 0;
         }
 
         &__title {
             font-weight: 500;
+            font-size: 1.15em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .chatbox--is-open & {
             border-bottom: $border;
-        }
-    }
-
-    &__messages {
-        padding: 12px;
-        display: flex;
-        flex-direction: column-reverse;
-        gap: 2px;
-        overflow-y: auto;
-
-        &__container {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-    }
-
-    &__message {
-        $border-radius-l: 16px;
-        $padding-h: 14px;
-
-        background-color: $gray;
-        width: fit-content;
-        max-width: calc(100% - 36px);
-        box-sizing: border-box;
-        border-radius: 4px;
-        padding: 10px $padding-h;
-        overflow: hidden;
-        line-break: loose;
-        word-break: break-word;
-
-        &--is-current-user {
-            background-color: $primary;
-            color: white;
-            text-align: right;
-            align-self: flex-end;
-            border-top-left-radius: $border-radius-l;
-            border-bottom-left-radius: $border-radius-l;
-
-            & + .chatbox__message--is-other-user {
-                margin-top: 12px;
-                border-top-left-radius: $border-radius-l;
-            }
-        }
-
-        &--is-other-user {
-            border-top-right-radius: $border-radius-l;
-            border-bottom-right-radius: $border-radius-l;
-
-            & + .chatbox__message--is-current-user {
-                margin-top: 12px;
-                border-top-right-radius: $border-radius-l;
-            }
-        }
-
-        &--only-emoji {
-            background-color: transparent;
-            padding: 0;
-            border-radius: 0;
-            font-size: 2.5em;
-            letter-spacing: 6px;
-        }
-    }
-
-    &__input {
-        padding: 12px;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 6px;
-
-        &__form {
-            &__control {
-                background-color: lighten($gray, 5);
-                border: none;
-                font-size: inherit;
-                font-family: inherit;
-                padding: 8px 12px;
-                border-radius: 12px;
-                width: 100%;
-                box-sizing: border-box;
-            }
         }
     }
 

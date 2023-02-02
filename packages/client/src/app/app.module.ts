@@ -48,6 +48,8 @@ import { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';
 import { DurationPipe } from './pipes/duration/duration.pipe';
 import { InitializerService } from './services/initializer-service/initializer.service';
 import { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';
+import { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';
+import { IconButtonComponent } from './components/icon-button/icon-button.component';
 
 registerLocaleData(localeFr);
 
@@ -98,6 +100,8 @@ registerLocaleData(localeFr);
         LoadingPageComponent,
         ChatBoxComponent,
         ChatboxContainerComponent,
+        ChatboxMessageComponent,
+        IconButtonComponent,
     ],
     imports: [
         AppMaterialModule,

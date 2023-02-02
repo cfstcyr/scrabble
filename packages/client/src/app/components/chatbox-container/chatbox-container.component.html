@@ -1,6 +1,33 @@
 <div class="chatbox-container">
-    <app-chatbox 
-        *ngFor="let channel of channels" [title]="channel.title"
-        [messages]="channel.messages"
-    ></app-chatbox>
+    <div class="chatbox-container__chatboxes">
+        <app-chatbox title="New message" [hideIcon]="true" [hideClose]="true">
+            <div class="chatbox-container__my-channels">
+                <p class="chatbox-container__my-channels__title">My channels</p>
+                <div class="chatbox-container__my-channels__content">
+                    <button 
+                        *ngFor="let channel of channels" 
+                        [disabled]="!channel.hidden"
+                        (click)="showChannel(channel)"
+                        class="chatbox-container__my-channels__button"
+                    >
+                        {{channel.title}}
+                    </button>
+                </div>
+            </div>
+        </app-chatbox>
+
+        <ng-container *ngFor="let channel of channels">
+            <app-chatbox-message 
+                *ngIf="!channel.hidden"
+                [title]="channel.title"
+                [messages]="channel.messages"
+                (onMinimize)="minimizeChannel(channel)"
+                (onClose)="closeChannel(channel)"
+            ></app-chatbox-message>
+        </ng-container>
+    </div>
+
+    <button mat-fab color="white" class="chatbox-container__button">
+        <app-icon icon="edit" styling="solid"></app-icon>
+    </button>
 </div>

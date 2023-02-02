@@ -1,12 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { onlyHasEmoji } from '@app/utils/emoji/emoji';
-import { emojify } from 'node-emoji';
-
-export interface Message {
-    message: string;
-    isCurrentUser: boolean;
-}
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
     selector: 'app-chatbox',
@@ -15,39 +7,17 @@ export interface Message {
 })
 export class ChatBoxComponent {
     @Input() title: string;
-    @Input() messages: Message[];
-    @Input() isOpen = true;
-    messageForm: FormGroup;
-    onlyHasEmoji = onlyHasEmoji;
-    emojify = emojify;
+    @Input() hideIcon: boolean = false;
+    @Input() hideMinimize: boolean = false;
+    @Input() hideClose: boolean = false;
+    @Output() onMinimize: EventEmitter<void> = new EventEmitter();
+    @Output() onClose: EventEmitter<void> = new EventEmitter();
 
-    constructor(private readonly formBuilder: FormBuilder) {
-        this.messageForm = this.formBuilder.group({
-            message: new FormControl('', [Validators.required]),
-        });
+    handleMinimize() {
+        this.onMinimize.next();
     }
 
-    toggleOpen() {
-        this.isOpen = !this.isOpen;
-    }
-
-    addMessage(message: Message): void {
-        this.messages.push(message);
-    }
-
-    onMessageSubmit() {
-        if (!this.messageForm.valid) return;
-        this.addMessage({
-            message: this.messageForm.value.message,
-            isCurrentUser: true,
-        });
-        this.messageForm.setValue({ message: '' });
-    }
-
-    onEmojiClick(emoji: string) {
-        this.addMessage({
-            message: emoji,
-            isCurrentUser: true,
-        });
+    handleClose() {
+        this.onClose.next();
     }
 }
