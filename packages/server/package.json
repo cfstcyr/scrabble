@@ -15,6 +15,7 @@
     "nyc": {
         "check-coverage": true,
         "per-file": true,
+        "lines": 80,
         "include": [
             "app/**/*.ts"
         ],
@@ -26,7 +27,8 @@
             "app/index.ts",
             "app/server.ts",
             "app/app.ts",
-            "**/*.const.ts"
+            "**/*.const.ts",
+            "app/services/database-service/database.service.ts"
         ],
         "require": [
             "ts-node/register",
