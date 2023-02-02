@@ -36,4 +36,12 @@ describe('AuthentificationService', () => {
         const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com' };
         expect(authentificationService.createToken(user));
     });
+    it('signUp should call createUser method from databaseService', () => {
+        const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com' };
+        authentificationService.signUp(user);
+    });
+    it('login should call getUser method from databaseService', () => {
+        const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com' };
+        authentificationService.login(user);
+    });
 });

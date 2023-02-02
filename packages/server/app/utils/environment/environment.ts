@@ -16,6 +16,7 @@ const env = cleanEnv(process.env, {
     PG_USER: str(),
     PG_PASSWORD: str(),
     PG_DATABASE: str(),
+    TOKEN_SECRET: str(),
 });
 
 export { env };
