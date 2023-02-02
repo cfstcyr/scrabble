@@ -3,7 +3,8 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
-import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, INEXISTING_CHANNEL_NAME, NOT_IN_CHANNEL } from '@app/constants/services-errors';
+import { ServerSocket } from '@app/classes/communication/socket-type';
+import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_NAME_DOES_NOT_EXIST, NOT_IN_CHANNEL } from '@app/constants/services-errors';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { Delay } from '@app/utils/delay/delay';
@@ -43,7 +44,7 @@ describe('ChatService', () => {
     let service: ChatService;
     let sio: io.Server;
     let server: Server;
-    let serverSocket: io.Socket<ChatClientEvents, ChatServerEvents>;
+    let serverSocket: ServerSocket;
     let clientSocket: ClientSocket<ChatServerEvents, ChatClientEvents>;
     let testingUnit: ServicesTestingUnit;
 
@@ -117,7 +118,7 @@ describe('ChatService', () => {
                 it('should throw error if channel does NOT exist', (done) => {
                     service['channels'] = [];
                     clientSocket.on('error' as any, (err: string, code: number) => {
-                        expect(err).to.equal(INEXISTING_CHANNEL_NAME);
+                        expect(err).to.equal(CHANNEL_NAME_DOES_NOT_EXIST);
                         expect(code).to.equal(StatusCodes.BAD_REQUEST);
                         done();
                     });
@@ -178,7 +179,7 @@ describe('ChatService', () => {
                 it('should throw error if channel does NOT exist', (done) => {
                     service['channels'] = [];
                     clientSocket.on('error' as any, (err: string, code: number) => {
-                        expect(err).to.equal(INEXISTING_CHANNEL_NAME);
+                        expect(err).to.equal(CHANNEL_NAME_DOES_NOT_EXIST);
                         expect(code).to.equal(StatusCodes.BAD_REQUEST);
                         done();
                     });
@@ -214,7 +215,7 @@ describe('ChatService', () => {
                 it('should throw error if channel does NOT exist', (done) => {
                     service['channels'] = [];
                     clientSocket.on('error' as any, (err: string, code: number) => {
-                        expect(err).to.equal(INEXISTING_CHANNEL_NAME);
+                        expect(err).to.equal(CHANNEL_NAME_DOES_NOT_EXIST);
                         expect(code).to.equal(StatusCodes.BAD_REQUEST);
                         done();
                     });

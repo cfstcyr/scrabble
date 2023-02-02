@@ -1,11 +1,10 @@
+import { ServerSocket } from '@app/classes/communication/socket-type';
 import { GENERAL_CHANNEL } from '@app/constants/chat';
-import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, INEXISTING_CHANNEL_NAME, NOT_IN_CHANNEL } from '@app/constants/services-errors';
-import { ClientEvents, ServerEvents } from '@common/events/events';
+import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_NAME_DOES_NOT_EXIST, NOT_IN_CHANNEL } from '@app/constants/services-errors';
 import { Channel } from '@common/models/chat/channel';
 import { ChatMessage } from '@common/models/chat/chat-message';
 import { NoId } from '@common/types/no-id';
 import { StatusCodes } from 'http-status-codes';
-import { Socket } from 'socket.io';
 import { Service } from 'typedi';
 
 @Service()
@@ -17,7 +16,7 @@ export class ChatService {
         this.channels = [GENERAL_CHANNEL];
     }
 
-    configureSocket(socket: Socket<ClientEvents, ServerEvents>): void {
+    configureSocket(socket: ServerSocket): void {
         socket.on('channel:newMessage', (channel: NoId<Channel>, chatMessage: ChatMessage) => this.sendMessage(channel, socket, chatMessage));
         socket.on('channel:newChannel', (channel: NoId<Channel>) => this.createChannel(channel, socket));
         socket.on('channel:join', (channel: Channel) => this.joinChannel(channel.name, socket));
@@ -27,9 +26,9 @@ export class ChatService {
         // TODO: Join all channels in DB that the user is in
     }
 
-    private sendMessage(channel: NoId<Channel>, socket: Socket<ClientEvents, ServerEvents>, chatMessage: ChatMessage): void {
+    private sendMessage(channel: NoId<Channel>, socket: ServerSocket, chatMessage: ChatMessage): void {
         if (!this.channels.find((c) => c.name === channel.name)) {
-            socket.emit('error', INEXISTING_CHANNEL_NAME, StatusCodes.BAD_REQUEST);
+            socket.emit('error', CHANNEL_NAME_DOES_NOT_EXIST, StatusCodes.BAD_REQUEST);
         }
         if (!socket.rooms.has(channel.name)) {
             socket.emit('error', NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
@@ -39,7 +38,7 @@ export class ChatService {
         // TODO: Save message in DB
     }
 
-    private createChannel(channel: NoId<Channel>, socket: Socket<ClientEvents, ServerEvents>): void {
+    private createChannel(channel: NoId<Channel>, socket: ServerSocket): void {
         if (this.channels.find((c) => c.name === channel.name)) {
             socket.emit('error', ALREADY_EXISTING_CHANNEL_NAME, StatusCodes.FORBIDDEN);
         }
@@ -49,9 +48,9 @@ export class ChatService {
         // TODO: Save channel in DB
     }
 
-    private joinChannel(channelName: string, socket: Socket<ClientEvents, ServerEvents>): void {
+    private joinChannel(channelName: string, socket: ServerSocket): void {
         if (!this.channels.find((channel) => channel.name === channelName)) {
-            socket.emit('error', INEXISTING_CHANNEL_NAME, StatusCodes.BAD_REQUEST);
+            socket.emit('error', CHANNEL_NAME_DOES_NOT_EXIST, StatusCodes.BAD_REQUEST);
         }
         if (socket.rooms.has(channelName)) {
             socket.emit('error', ALREADY_IN_CHANNEL, StatusCodes.BAD_REQUEST);
@@ -62,9 +61,9 @@ export class ChatService {
         // TODO: Save user joined channel in DB
     }
 
-    private quitChannel(channelName: string, socket: Socket<ClientEvents, ServerEvents>): void {
+    private quitChannel(channelName: string, socket: ServerSocket): void {
         if (!this.channels.find((channel) => channel.name === channelName)) {
-            socket.emit('error', INEXISTING_CHANNEL_NAME, StatusCodes.BAD_REQUEST);
+            socket.emit('error', CHANNEL_NAME_DOES_NOT_EXIST, StatusCodes.BAD_REQUEST);
         }
         if (!socket.rooms.has(channelName)) {
             socket.emit('error', NOT_IN_CHANNEL, StatusCodes.BAD_REQUEST);
