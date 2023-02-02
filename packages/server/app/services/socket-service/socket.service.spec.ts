@@ -12,10 +12,10 @@ import * as arrowFunction from '@app/utils/is-id-virtual-player/is-id-virtual-pl
 import { Server } from 'app/server';
 import * as chai from 'chai';
 import { expect, spy } from 'chai';
+import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { SocketService } from './socket.service';
-import sinon = require('sinon');
 
 const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
