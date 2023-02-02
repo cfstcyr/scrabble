@@ -61,6 +61,8 @@ primary.args = {
             username: 'Me',
         },
     ],
+    icon: 'https://placedog.net/50',
+    icon2: 'https://placedog.net/51',
 };
 
 export const empty = template.bind({});
@@ -68,4 +70,5 @@ export const empty = template.bind({});
 empty.args = {
     title: 'Empty chat',
     messages: [],
+    icon: 'https://placedog.net/52',
 };

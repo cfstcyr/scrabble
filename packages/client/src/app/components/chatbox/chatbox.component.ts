@@ -10,6 +10,8 @@ export class ChatBoxComponent {
     @Input() hideIcon: boolean = false;
     @Input() hideMinimize: boolean = false;
     @Input() hideClose: boolean = false;
+    @Input() icon: string;
+    @Input() icon2?: string;
     @Output() onMinimize: EventEmitter<void> = new EventEmitter();
     @Output() onClose: EventEmitter<void> = new EventEmitter();
 

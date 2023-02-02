@@ -1,12 +1,21 @@
 <div class="chatbox-container">
     <div class="chatbox-container__chatboxes">
-        <app-chatbox title="New message" [hideIcon]="true" [hideClose]="true">
+        <ng-container *ngFor="let channel of openedChannels">
+            <app-chatbox-message 
+                [title]="channel.title"
+                [messages]="channel.messages"
+                (onMinimize)="minimizeChannel(channel)"
+                (onClose)="closeChannel(channel)"
+            ></app-chatbox-message>
+        </ng-container>
+
+        <app-chatbox title="New message" (onMinimize)="closeNewMessage()" [hideIcon]="true" [hideClose]="true" *ngIf="newMessageIsOpen">
             <div class="chatbox-container__my-channels">
                 <p class="chatbox-container__my-channels__title">My channels</p>
                 <div class="chatbox-container__my-channels__content">
                     <button 
-                        *ngFor="let channel of channels" 
-                        [disabled]="!channel.hidden"
+                        *ngFor="let channel of getChannelsForNewMessage()" 
+                        [disabled]="!channel.canOpen"
                         (click)="showChannel(channel)"
                         class="chatbox-container__my-channels__button"
                     >
@@ -15,19 +24,9 @@
                 </div>
             </div>
         </app-chatbox>
-
-        <ng-container *ngFor="let channel of channels">
-            <app-chatbox-message 
-                *ngIf="!channel.hidden"
-                [title]="channel.title"
-                [messages]="channel.messages"
-                (onMinimize)="minimizeChannel(channel)"
-                (onClose)="closeChannel(channel)"
-            ></app-chatbox-message>
-        </ng-container>
     </div>
 
-    <button mat-fab color="white" class="chatbox-container__button">
+    <button mat-fab color="white" class="chatbox-container__button" (click)="toggleNewMessage()">
         <app-icon icon="edit" styling="solid"></app-icon>
     </button>
 </div>

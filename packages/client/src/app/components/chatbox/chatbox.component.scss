@@ -4,6 +4,7 @@
     $gray: rgb(230, 230, 230);
     $border-radius: 8px;
     $border: solid 1px rgb(238, 238, 238);
+    $icon-size: 28px;
 
     display: grid;
     height: 400px;
@@ -35,13 +36,37 @@
         }
 
         &__icon {
-            $size: 28px;
-
-            height: $size;
-            width: $size;
-            border-radius: $size;
+            height: $icon-size;
+            width: $icon-size;
+            border-radius: $icon-size;
             background-color: $gray;
             flex-shrink: 0;
+        }
+
+        &__icons {
+            &--two-icons {
+                position: relative;
+                height: $icon-size;
+                width: $icon-size;
+
+                .chatbox__header__icon {
+                    $space: 3px;
+                    height: $icon-size / 1.4;
+                    width: $icon-size / 1.4;
+                    position: absolute;
+                    border: solid 1.5px white;
+                    
+                    &:nth-child(1) {
+                        top: -$space;
+                        left: -$space;
+                    }
+
+                    &:nth-child(2) {
+                        bottom: -$space;
+                        right: -$space;
+                    }
+                }
+            }
         }
 
         &__title {

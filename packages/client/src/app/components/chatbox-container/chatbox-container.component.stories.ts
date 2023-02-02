@@ -37,13 +37,23 @@ primary.args = {
                     message: 'Bonjour!',
                 },
             ],
-            hidden: false,
         },
         {
             id: '2',
-            title: 'Chat 2 dsadhfdusah fjhdsbfhjdbhf bdjshbfhdsb fh dbsjhfb dsjab',
+            title: 'Chat 2',
             messages: [],
-            hidden: true,
+        },
+    ],
+};
+
+export const withVeryLongName = template.bind({});
+
+withVeryLongName.args = {
+    channels: [
+        {
+            id: '1',
+            title: 'Very long channel name that never finishes because why not',
+            messages: [],
         },
     ],
 };
