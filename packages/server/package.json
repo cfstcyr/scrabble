@@ -4,7 +4,7 @@
     "version": "1.1.0",
     "private": true,
     "scripts": {
-        "start": "nodemon",
+        "start": "nodemon -L",
         "build": "rimraf out && tsc --project tsconfig.app.json",
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "eslint -c .eslintrc.json \"./app/**/*.ts\" --format stylish",
@@ -15,6 +15,7 @@
     "nyc": {
         "check-coverage": true,
         "per-file": true,
+        "lines": 80,
         "include": [
             "app/**/*.ts"
         ],
@@ -26,7 +27,8 @@
             "app/index.ts",
             "app/server.ts",
             "app/app.ts",
-            "**/*.const.ts"
+            "**/*.const.ts",
+            "app/services/database-service/database.service.ts"
         ],
         "require": [
             "ts-node/register",
