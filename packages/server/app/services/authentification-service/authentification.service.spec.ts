@@ -1,3 +1,4 @@
+import User from '@app/classes/user/user';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as chai from 'chai';
 import { Container } from 'typedi';
@@ -24,5 +25,15 @@ describe('AuthentificationService', () => {
 
     it('should be defined', () => {
         expect(authentificationService);
+    });
+
+    it('should login the admin', () => {
+        const admin: User = { username: 'admin', password: 'admin', email: 'admin@admin.com' };
+        expect(authentificationService.logout(admin));
+    });
+
+    it('should createToken from userData', () => {
+        const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com' };
+        expect(authentificationService.createToken(user));
     });
 });

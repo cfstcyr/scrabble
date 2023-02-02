@@ -1,3 +1,4 @@
+import User from '@app/classes/user/user';
 import { env } from '@app/utils/environment/environment';
 import knex, { Knex } from 'knex';
 import { Service } from 'typedi';
@@ -30,6 +31,24 @@ export default class DatabaseService {
             this.knex
                 .raw('SELECT 1')
                 .then(() => resolve())
+                .catch(reject);
+        });
+    }
+
+    async getUser(user: User): Promise<User> {
+        return new Promise((resolve, reject) => {
+            this.knex
+                .raw('SELECT 1')
+                .then(() => resolve(user))
+                .catch(reject);
+        });
+    }
+
+    async createUser(user: User): Promise<User> {
+        return new Promise((resolve, reject) => {
+            this.knex
+                .raw('SELECT 1')
+                .then(() => resolve(user))
                 .catch(reject);
         });
     }
