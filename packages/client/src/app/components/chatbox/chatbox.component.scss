@@ -41,7 +41,7 @@
             border-radius: $icon-size;
             background-color: $gray;
             flex-shrink: 0;
-            object-fit: fill;
+            object-fit: cover;
         }
 
         &__icons {
