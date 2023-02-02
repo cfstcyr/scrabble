@@ -46,10 +46,27 @@
             opacity: 0.55;
         }
 
+        &__content {
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
+        &__avatar {
+            $size: 18px;
+
+            height: $size;
+            width: $size;
+            border-radius: $size / 2;
+            background-color: $gray;
+            flex-shrink: 0;
+        }
+
         &__messages {
             display: flex;
             flex-direction: column;
             gap: 4px;
+            flex-grow: 1;
         }
 
         &--is-current-user {
@@ -84,7 +101,7 @@
         &--is-other-user {
             .chatbox-message__group {
                 &__username {
-                    margin-left: $border-radius-l - 6px;
+                    margin-left: $border-radius-l + 14px;
                 }
             }
             

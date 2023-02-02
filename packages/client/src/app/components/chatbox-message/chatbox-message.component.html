@@ -4,8 +4,11 @@
             <div class="chatbox-message__messages__container">
                 <div *ngFor="let messageGroup of getMessages()" [ngClass]="{'chatbox-message__group': true, 'chatbox-message__group--is-current-user': messageGroup.isCurrentUser, 'chatbox-message__group--is-other-user': !messageGroup.isCurrentUser}">
                     <p class="chatbox-message__group__username">{{messageGroup.username}}</p>
-                    <div class="chatbox-message__group__messages">
-                        <p *ngFor="let message of messageGroup.messages" [ngClass]="{'chatbox-message__message': true, 'chatbox-message__message--only-emoji': onlyHasEmoji(message)}">{{message}}</p>
+                    <div class="chatbox-message__group__content">
+                        <div class="chatbox-message__group__avatar" *ngIf="!messageGroup.isCurrentUser"></div>
+                        <div class="chatbox-message__group__messages">
+                            <p *ngFor="let message of messageGroup.messages" [ngClass]="{'chatbox-message__message': true, 'chatbox-message__message--only-emoji': onlyHasEmoji(message)}">{{message}}</p>
+                        </div>
                     </div>
                 </div>
             </div>
