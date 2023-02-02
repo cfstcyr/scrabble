@@ -42,7 +42,6 @@ export class SocketService {
             socket.emit('initialization', { id: socket.id });
 
             this.chatService.configureSocket(socket);
-            this.chatService.newSocketConnected(socket);
             socket.on('disconnect', () => {
                 this.sockets.delete(socket.id);
             });

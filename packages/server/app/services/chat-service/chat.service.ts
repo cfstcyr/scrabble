@@ -22,9 +22,7 @@ export class ChatService {
         socket.on('channel:newChannel', (channel: NoId<Channel>) => this.createChannel(channel, socket));
         socket.on('channel:join', (channel: Channel) => this.joinChannel(channel.name, socket));
         socket.on('channel:quit', (channel: Channel) => this.quitChannel(channel.name, socket));
-    }
 
-    newSocketConnected(socket: Socket<ClientEvents, ServerEvents>): void {
         this.joinChannel(GENERAL_CHANNEL.name, socket);
         // TODO: Join all channels in DB that the user is in
     }
