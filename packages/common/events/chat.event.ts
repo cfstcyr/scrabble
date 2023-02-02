@@ -3,10 +3,10 @@ import { ChatMessage } from '../models/chat/chat-message';
 import { NoId } from '../types/no-id';
 
 export interface ChatServerEvents {
-    'channel:newMessage': (message: ChatMessage) => void;
-    'channel:newChannel': (response: string) => void;
-    'channel:join': (response: string) => void;
-    'channel:quit': (response: string) => void;
+    'channel:newMessage': (channelId: string, message: ChatMessage) => void;
+    'channel:newChannel': (response: Channel) => void;
+    'channel:join': (channel: Channel) => void;
+    'channel:quit': (channel: Channel) => void;
   }
   
   export interface ChatClientEvents {
@@ -14,5 +14,6 @@ export interface ChatServerEvents {
     'channel:newChannel': (channel: NoId<Channel>) => void;
     'channel:join': (channel: Channel) => void;
     'channel:quit': (channel: Channel) => void;
+    'channel:init': () => void;
   }
 

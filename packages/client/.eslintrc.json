@@ -27,7 +27,8 @@
                     }
                 ],
                 "@angular-eslint/use-lifecycle-interface": "error", // Warn in @angular-eslint/recommended,
-                "@angular-eslint/no-output-on-prefix": 0
+                "@angular-eslint/no-output-on-prefix": 0,
+                "@angular-eslint/no-empty-lifecycle-method": 0
             }
         },
         {

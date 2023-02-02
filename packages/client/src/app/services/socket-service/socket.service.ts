@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { ConnectionState } from '@app/classes/connection-state-service/connection-state';
 import ConnectionStateService from '@app/classes/connection-state-service/connection-state-service';
 import { SOCKET_ID_UNDEFINED } from '@app/constants/services-errors';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import { ClientSocket } from '@app/classes/communication/socket-type';
 @Injectable({
     providedIn: 'root',
 })
 export default class SocketService extends ConnectionStateService {
-    private socket: Socket;
+    socket: ClientSocket;
 
     initializeService(): void {
         this.socket = this.getSocket();
@@ -25,10 +26,11 @@ export default class SocketService extends ConnectionStateService {
         if (!this.socket) {
             return;
         }
-        this.socket.on(ev, handler);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.socket.on(ev as any, handler);
     }
 
-    private getSocket(): Socket {
+    private getSocket(): ClientSocket {
         // This line cannot be tested since it would connect to the real socket in the tests since it is impossible to mock io()
         return io(environment.serverUrlWebsocket, { transports: ['websocket'], upgrade: false });
     }

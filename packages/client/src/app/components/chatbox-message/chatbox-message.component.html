@@ -1,11 +1,22 @@
-<app-chatbox [title]="title" (onMinimize)="handleMinimize()" (onClose)="handleClose()" [icon]="icon" [icon2]="icon2" class="chatbox-message">
+<app-chatbox 
+    [title]="title" 
+    (onMinimize)="handleMinimize()" 
+    (onClose)="handleClose()" 
+    [icon]="getLastUsersAvatarUrl()[0] ?? ''" 
+    [icon2]="getLastUsersAvatarUrl()[1] ?? ''" 
+    class="chatbox-message"
+>
     <div class="chatbox-message__content">
         <div class="chatbox-message__messages">
             <div class="chatbox-message__messages__container">
                 <div *ngFor="let messageGroup of getMessages()" [ngClass]="{'chatbox-message__group': true, 'chatbox-message__group--is-current-user': messageGroup.isCurrentUser, 'chatbox-message__group--is-other-user': !messageGroup.isCurrentUser}">
-                    <p class="chatbox-message__group__username">{{messageGroup.username}}</p>
+                    <p class="chatbox-message__group__username">{{messageGroup.sender.username}}</p>
                     <div class="chatbox-message__group__content">
-                        <div class="chatbox-message__group__avatar" *ngIf="!messageGroup.isCurrentUser"></div>
+                        <img 
+                            class="chatbox-message__group__avatar"
+                            [src]="messageGroup.sender.avatar" 
+                            *ngIf="!messageGroup.isCurrentUser"
+                        />
                         <div class="chatbox-message__group__messages">
                             <p *ngFor="let message of messageGroup.messages" [ngClass]="{'chatbox-message__message': true, 'chatbox-message__message--only-emoji': onlyHasEmoji(message)}">{{message}}</p>
                         </div>

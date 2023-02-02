@@ -2,24 +2,25 @@
     <div class="chatbox-container__chatboxes">
         <ng-container *ngFor="let channel of openedChannels">
             <app-chatbox-message 
-                [title]="channel.title"
+                [title]="channel.name"
                 [messages]="channel.messages"
                 (onMinimize)="minimizeChannel(channel)"
-                (onClose)="closeChannel(channel)"
+                (onClose)="leaveChannel(channel)"
+                (sendMessage)="handleSendMessage(channel, $event)"
             ></app-chatbox-message>
         </ng-container>
 
-        <app-chatbox title="New message" (onMinimize)="closeNewMessage()" [hideIcon]="true" [hideClose]="true" *ngIf="newMessageIsOpen">
+        <app-chatbox title="New message" (onMinimize)="closeStartChannel()" [hideIcon]="true" [hideClose]="true" *ngIf="startChannelIsOpen">
             <div class="chatbox-container__my-channels">
                 <p class="chatbox-container__my-channels__title">My channels</p>
                 <div class="chatbox-container__my-channels__content">
                     <button 
-                        *ngFor="let channel of getChannelsForNewMessage()" 
+                        *ngFor="let channel of getChannelsForStartChannel()" 
                         [disabled]="!channel.canOpen"
                         (click)="showChannel(channel)"
                         class="chatbox-container__my-channels__button"
                     >
-                        {{channel.title}}
+                        {{channel.name}}
                     </button>
                 </div>
             </div>

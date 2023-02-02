@@ -1,17 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { onlyHasEmoji } from '@app/utils/emoji/emoji';
 import { emojify } from 'node-emoji';
 import { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';
-
-export interface Message {
-    message: string;
-    isCurrentUser: boolean;
-    username: string;
-}
+import { PublicUser } from '@common/models/user';
+import { UserService } from '@app/services/user-service/user.service';
+import { ChatMessage } from '@common/models/chat/chat-message';
 
 export interface DisplayMessage {
-    username: string;
+    sender: PublicUser;
     isCurrentUser: boolean;
     messages: string[];
 }
@@ -22,11 +19,12 @@ export interface DisplayMessage {
     styleUrls: ['./chatbox-message.component.scss'],
 })
 export class ChatboxMessageComponent extends ChatBoxComponent {
-    @Input() messages: Message[];
+    @Input() messages: ChatMessage[];
+    @Output() sendMessage: EventEmitter<string> = new EventEmitter();
     messageForm: FormGroup;
     onlyHasEmoji = onlyHasEmoji;
 
-    constructor(private readonly formBuilder: FormBuilder) {
+    constructor(private readonly formBuilder: FormBuilder, private readonly userService: UserService) {
         super();
         this.messageForm = this.formBuilder.group({
             message: new FormControl('', [Validators.required]),
@@ -37,54 +35,63 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
         return this.messages.reduce<DisplayMessage[]>((messages, current) => {
             const last = messages[messages.length - 1];
 
+            const content = emojify(current.content.trim());
+
             if (last) {
-                if (last.username === current.username) {
-                    last.messages.push(emojify(current.message.trim()));
+                if (last.sender.username === current.sender.username) {
+                    last.messages.push(content);
                 } else {
                     messages.push({
-                        username: current.username,
-                        isCurrentUser: current.isCurrentUser,
-                        messages: [emojify(current.message.trim())],
+                        sender: current.sender,
+                        isCurrentUser: this.userService.isUser(current.sender),
+                        messages: [content],
                     });
                 }
                 return messages;
             } else {
                 return [
                     {
-                        username: current.username,
-                        isCurrentUser: current.isCurrentUser,
-                        messages: [emojify(current.message.trim())],
+                        sender: current.sender,
+                        isCurrentUser: this.userService.isUser(current.sender),
+                        messages: [content],
                     },
                 ];
             }
         }, []);
-        // return [];
     }
 
-    addMessage(message: Message): void {
-        this.messages.push(message);
+    getLastUsersAvatarUrl(): [string?, string?] {
+        return this.messages.reduce<[string?, string?]>(
+            (avatars, { sender: { avatar } }) => {
+                if (!avatars[0]) return [avatar, undefined];
+                if (!avatars[1] && avatars[0] !== avatar) return [avatars[0], avatar];
+
+                return avatars;
+            },
+            [undefined, undefined],
+        );
+    }
+
+    addMessage(content: string): void {
+        this.messages.push({
+            content,
+            sender: this.userService.user,
+        });
+        this.sendMessage.next(content);
     }
 
     onMessageSubmit() {
         if (!this.messageForm.valid) return;
 
-        const message = this.messageForm.value.message.trim();
+        const content = this.messageForm.value.message.trim();
 
-        if (message.length === 0) return;
+        if (content.length === 0) return;
 
-        this.addMessage({
-            message,
-            isCurrentUser: true,
-            username: 'Me',
-        });
+        this.addMessage(content);
         this.messageForm.setValue({ message: '' });
     }
 
     onEmojiClick(emoji: string) {
-        this.addMessage({
-            message: emoji,
-            isCurrentUser: true,
-            username: 'Me',
-        });
+        this.addMessage(emoji);
     }
 }

@@ -50,6 +50,7 @@ import { InitializerService } from './services/initializer-service/initializer.s
 import { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';
 import { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';
 import { IconButtonComponent } from './components/icon-button/icon-button.component';
+import { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';
 
 registerLocaleData(localeFr);
 
@@ -102,6 +103,7 @@ registerLocaleData(localeFr);
         ChatboxContainerComponent,
         ChatboxMessageComponent,
         IconButtonComponent,
+        ChatboxWrapperComponent,
     ],
     imports: [
         AppMaterialModule,

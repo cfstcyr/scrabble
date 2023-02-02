@@ -60,6 +60,7 @@
             border-radius: $size / 2;
             background-color: $gray;
             flex-shrink: 0;
+            object-fit: fill;
         }
 
         &__messages {

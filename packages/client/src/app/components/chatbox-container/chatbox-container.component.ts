@@ -1,11 +1,6 @@
-import { Component, Input } from '@angular/core';
-import { Message } from '@app/components/chatbox-message/chatbox-message.component';
-
-interface Channel {
-    id: string;
-    title: string;
-    messages: Message[];
-}
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ClientChannel } from '@app/classes/chat/channel';
+import { Channel } from '@common/models/chat/channel';
 
 @Component({
     selector: 'app-chatbox-container',
@@ -13,55 +8,48 @@ interface Channel {
     styleUrls: ['./chatbox-container.component.scss'],
 })
 export class ChatboxContainerComponent {
-    @Input() channels: Channel[];
-    openedChannels: Channel[];
-    newMessageIsOpen: boolean = false;
+    @Input() channels: ClientChannel[] = [];
+    @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
+    openedChannels: ClientChannel[] = [];
+    startChannelIsOpen: boolean = false;
 
     constructor() {
-        this.channels = [
-            {
-                id: '1',
-                title: 'Général',
-                messages: [],
-            },
-            {
-                id: '2',
-                title: 'sup',
-                messages: [],
-            },
-        ];
         this.openedChannels = [];
     }
 
-    getChannelsForNewMessage(): (Channel & { canOpen: boolean })[] {
-        return this.channels.map<Channel & { canOpen: boolean }>((channel) => ({
+    getChannelsForStartChannel(): (ClientChannel & { canOpen: boolean })[] {
+        return this.channels.map<ClientChannel & { canOpen: boolean }>((channel) => ({
             ...channel,
             canOpen: !this.openedChannels.find((c) => channel.id === c.id),
         }));
     }
 
-    showChannel(channel: Channel) {
+    showChannel(channel: ClientChannel) {
         this.openedChannels.push(channel);
-        this.closeNewMessage();
+        this.closeStartChannel();
     }
 
-    minimizeChannel(channel: Channel) {
+    minimizeChannel(channel: ClientChannel) {
         const index = this.openedChannels.findIndex(({ id }) => channel.id === id);
         this.openedChannels.splice(index, 1);
     }
 
-    closeChannel(channel: Channel) {
-        if (confirm(`Do you want to quit channel "${channel.title}"?`)) {
+    leaveChannel(channel: ClientChannel) {
+        if (confirm(`Do you want to quit channel "${channel.name}"?`)) {
             this.minimizeChannel(channel);
             this.channels = this.channels.filter(({ id }) => id !== channel.id);
         }
     }
 
-    closeNewMessage() {
-        this.newMessageIsOpen = false;
+    closeStartChannel() {
+        this.startChannelIsOpen = false;
     }
 
     toggleNewMessage() {
-        this.newMessageIsOpen = !this.newMessageIsOpen;
+        this.startChannelIsOpen = !this.startChannelIsOpen;
+    }
+
+    handleSendMessage(channel: Channel, content: string) {
+        this.sendMessage.next([channel, content]);
     }
 }
