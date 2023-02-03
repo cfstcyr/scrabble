@@ -16,6 +16,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
     @Output() joinChannel: EventEmitter<string> = new EventEmitter();
+    @Output() quitChannel: EventEmitter<string> = new EventEmitter();
     @ViewChild('createChannelInput') createChannelInput: ElementRef<HTMLInputElement>;
     @ViewChild('joinChannelInput') joinChannelInput: ElementRef<HTMLInputElement>;
     createChannelForm: FormGroup;
@@ -67,7 +68,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
     leaveChannel(channel: ClientChannel) {
         if (confirm(`Do you want to quit channel "${channel.name}"?`)) {
             this.minimizeChannel(channel);
-            this.channels = this.channels.filter(({ id }) => id !== channel.id);
+            this.quitChannel.emit(channel.name);
         }
     }
 

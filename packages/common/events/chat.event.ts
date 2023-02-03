@@ -13,7 +13,7 @@ export interface ChatServerEvents {
     'channel:newMessage': (channel: NoId<Channel>, message: ChatMessage) => void;
     'channel:newChannel': (channel: NoId<Channel>) => void;
     'channel:join': (channel: string) => void;
-    'channel:quit': (channel: Channel) => void;
+    'channel:quit': (channel: string) => void;
     'channel:init': () => void;
   }
 

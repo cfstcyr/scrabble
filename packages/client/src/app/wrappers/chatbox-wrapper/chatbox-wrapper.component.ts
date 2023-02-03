@@ -29,4 +29,8 @@ export class ChatboxWrapperComponent {
     handleJoinChannel(channelName: string): void {
         this.chatService.joinChannel(channelName);
     }
+
+    handleQuitChannel(channelName: string): void {
+        this.chatService.quitChannel(channelName);
+    }
 }

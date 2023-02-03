@@ -20,7 +20,7 @@ export class ChatService {
         socket.on('channel:newMessage', (channel: NoId<Channel>, chatMessage: ChatMessage) => this.sendMessage(channel, socket, chatMessage));
         socket.on('channel:newChannel', (channel: NoId<Channel>) => this.createChannel(channel, socket));
         socket.on('channel:join', (channel: string) => this.joinChannel(channel, socket));
-        socket.on('channel:quit', (channel: Channel) => this.quitChannel(channel.name, socket));
+        socket.on('channel:quit', (channel: string) => this.quitChannel(channel, socket));
         socket.on('channel:init', () => {
             this.joinChannel(GENERAL_CHANNEL.name, socket);
             // TODO: Join all channels in DB that the user is in

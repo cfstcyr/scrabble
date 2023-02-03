@@ -43,6 +43,10 @@ export class ChatService {
         this.socketService.socket.emit('channel:join', channel);
     }
 
+    quitChannel(channel: string): void {
+        this.socketService.socket.emit('channel:quit', channel);
+    }
+
     handleJoinChannel(channel: Channel) {
         const newChannel = { ...channel, messages: [] };
         this.channels.push(newChannel);
