@@ -10,7 +10,6 @@ import 'package:mobile/services/theme-color-service.dart';
 import 'package:email_validator/email_validator.dart';
 
 import '../constants/create-account-constants.dart';
-import '../controllers/account-authentification-controller.dart';
 import '../pages/home-page.dart';
 import '../services/account-authentification-service.dart';
 
@@ -21,6 +20,8 @@ class CreateAccountForm extends StatefulWidget {
 
 class _CreateAccountFormState extends State<CreateAccountForm> {
   bool isPasswordShown = false;
+  bool isFirstSubmit = true;
+  bool get isButtonEnabled => isFirstSubmit || isFormValid();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
   AccountAuthenticationService accountService = getIt.get<AccountAuthenticationService>();
 
@@ -148,7 +149,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: checkIfFormValid() ? () => {createAccount()} : null,
+                  onPressed: isButtonEnabled ? () => {createAccount()} : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeColor,
                     shadowColor: Colors.black,
@@ -156,9 +157,11 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                       borderRadius: BorderRadius.circular(3.0),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     CREATE_ACCOUNT_LABEL_FR,
-                    style: TextStyle(color: Colors.white, fontSize: 15),
+                    style: isButtonEnabled
+                        ? TextStyle(color: Colors.white, fontSize: 15)
+                        : TextStyle(color: Color.fromARGB(255, 87, 87, 87), fontSize: 15),
                   ),
                 ),
               ],
@@ -233,14 +236,20 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
     }
   }
 
-  bool checkIfFormValid() {
+  bool isFormValid() {
     return emailHandler.isValid() && usernameHandler.isValid() && passwordHandler.isValid() && passwordMatchHandler.isValid();
   }
 
   Future<void> createAccount() async {
+    setState(() {
+      isFirstSubmit = false;
+    });
+    if (!isFormValid()) {
+      return;
+    }
     Account newAccount =
         Account(username: usernameHandler.controller.text, password: passwordHandler.controller.text, email: emailHandler.controller.text);
-    
+
     if (await accountService.createAccount(newAccount)) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
     }
