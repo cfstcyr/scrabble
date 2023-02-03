@@ -1,6 +1,16 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable dot-notation */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { expect } from 'chai';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+import * as spies from 'chai-spies';
 import { AuthentificationController } from './authentification-controller';
+
+const expect = chai.expect;
+chai.use(spies);
+chai.use(chaiAsPromised);
 
 describe('AuthentificationController', () => {
     let controller: AuthentificationController;
@@ -11,7 +21,7 @@ describe('AuthentificationController', () => {
     });
 
     it('should be defined', () => {
-        expect(controller).toBeDefined();
+        expect(controller).to.exist;
     });
 
     it('should call authentificationService.login on login request', () => {
