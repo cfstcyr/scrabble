@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { cleanEnv, num, str } from 'envalid';
+import * as crypto from 'crypto';
 
 const env = cleanEnv(process.env, {
     NODE_ENV: str({
@@ -16,7 +17,8 @@ const env = cleanEnv(process.env, {
     PG_USER: str(),
     PG_PASSWORD: str(),
     PG_DATABASE: str(),
-    TOKEN_SECRET: str({ default: process.env.TOKEN_SECRET }),
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    TOKEN_SECRET: str({ default: crypto.randomBytes(64).toString('hex') }),
 });
 
 export { env };
