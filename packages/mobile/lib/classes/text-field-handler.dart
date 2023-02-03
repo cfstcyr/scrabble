@@ -6,8 +6,8 @@ class TextFieldHandler {
   late TextEditingController controller;
 
   TextFieldHandler() {
-    this.focusNode = FocusNode();
-    this.controller = TextEditingController();
+    focusNode = FocusNode();
+    controller = TextEditingController();
   }
 
   void dispose() {
@@ -25,7 +25,7 @@ class TextFieldHandler {
     });
   }
 
-  bool isValid(){
+  bool isValid() {
     return controller.text.isNotEmpty && errorMessage.isEmpty;
   }
 }

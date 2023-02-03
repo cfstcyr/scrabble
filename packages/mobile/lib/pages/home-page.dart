@@ -1,11 +1,7 @@
-import 'package:english_words/english_words.dart';
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/prototype-page.dart';
-import 'package:provider/provider.dart';
-
-import 'create-account-page.dart';
-import 'login-page.dart';
-
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
