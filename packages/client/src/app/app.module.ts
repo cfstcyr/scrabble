@@ -21,6 +21,7 @@ import { AdminDictionariesComponent } from './components/admin-dictionaries-comp
 import { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';
 import { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';
 import { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';
+import { ChatBoxComponent } from './components/chatbox/chatbox.component';
 import { CommunicationBoxComponent } from './components/communication-box/communication-box.component';
 import { ConvertDialogComponent } from './components/convert-dialog/convert-dialog.component';
 import { CreateVirtualPlayerComponent } from './components/create-virtual-player-dialog/create-virtual-player-dialog.component';
@@ -46,6 +47,11 @@ import { LoadingPageComponent } from './pages/loading-page/loading-page.componen
 import { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';
 import { DurationPipe } from './pipes/duration/duration.pipe';
 import { InitializerService } from './services/initializer-service/initializer.service';
+import { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';
+import { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';
+import { IconButtonComponent } from './components/icon-button/icon-button.component';
+import { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';
+import { AlertComponent } from './components/alert/alert.component';
 
 registerLocaleData(localeFr);
 
@@ -94,6 +100,12 @@ registerLocaleData(localeFr);
         ObjectiveComponent,
         ObjectiveBoxComponent,
         LoadingPageComponent,
+        ChatBoxComponent,
+        ChatboxContainerComponent,
+        ChatboxMessageComponent,
+        IconButtonComponent,
+        ChatboxWrapperComponent,
+        AlertComponent,
     ],
     imports: [
         AppMaterialModule,

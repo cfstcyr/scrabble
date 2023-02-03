@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -107,6 +108,7 @@ describe('GamePageComponent', () => {
                 HttpClientTestingModule,
                 MatTooltipModule,
                 RouterTestingModule.withRoutes([]),
+                MatSnackBarModule,
             ],
             providers: [
                 {

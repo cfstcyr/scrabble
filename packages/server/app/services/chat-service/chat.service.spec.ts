@@ -19,7 +19,7 @@ import { StatusCodes } from 'http-status-codes';
 import { AddressInfo } from 'net';
 import * as io from 'socket.io';
 import { io as ioClient, Socket as ClientSocket } from 'socket.io-client';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { ChatService } from './chat.service';
 
 // const TIMEOUT_DELAY = 10000;
@@ -75,10 +75,12 @@ describe('ChatService', () => {
         const testChannel: Channel = {
             id: '0',
             name: 'test',
+            canQuit: true,
         };
         const expectedMessage: ChatMessage = {
             sender: PUBLIC_USER,
             content: 'Gratton',
+            date: new Date(),
         };
 
         beforeEach(() => {
@@ -88,16 +90,6 @@ describe('ChatService', () => {
 
         describe('channel:newMessage', () => {
             describe('HAPPY - PATH', () => {
-                it('should emit message back to all client in channel', (done) => {
-                    clientSocket.on('channel:newMessage', (chatMessage: ChatMessage) => {
-                        expect(chatMessage).to.deep.equal(expectedMessage);
-                        done();
-                    });
-                    serverSocket.join(testChannel.name);
-
-                    clientSocket.emit('channel:newMessage', testChannel, expectedMessage);
-                });
-
                 it('should not emit message to client NOT in channel', async () => {
                     const testClass = new TestClass();
                     const funcSpy = chai.spy.on(testClass, 'testFunc');
@@ -144,7 +136,7 @@ describe('ChatService', () => {
             describe('HAPPY PATH', () => {
                 it("should add channel to list of channels if it doesn't exist", async () => {
                     service['channels'] = [];
-                    clientSocket.emit('channel:newChannel', testChannel);
+                    clientSocket.emit('channel:newChannel', testChannel.name);
 
                     await Delay.for(RESPONSE_DELAY);
 
@@ -160,7 +152,7 @@ describe('ChatService', () => {
                         done();
                     });
 
-                    clientSocket.emit('channel:newChannel', testChannel);
+                    clientSocket.emit('channel:newChannel', testChannel.name);
                 });
             });
         });
@@ -168,7 +160,7 @@ describe('ChatService', () => {
         describe('channel:join', () => {
             describe('HAPPY PATH', () => {
                 it('should add socket to channel room', async () => {
-                    clientSocket.emit('channel:join', testChannel);
+                    clientSocket.emit('channel:join', testChannel.name);
 
                     await Delay.for(RESPONSE_DELAY);
 
@@ -184,7 +176,7 @@ describe('ChatService', () => {
                         done();
                     });
 
-                    clientSocket.emit('channel:join', testChannel);
+                    clientSocket.emit('channel:join', testChannel.name);
                 });
                 it('should throw error if user already in channel', (done) => {
                     clientSocket.on('error' as any, (err: string, code: number) => {
@@ -194,7 +186,7 @@ describe('ChatService', () => {
                     });
                     serverSocket.join(testChannel.name);
 
-                    clientSocket.emit('channel:join', testChannel);
+                    clientSocket.emit('channel:join', testChannel.name);
                 });
             });
         });
@@ -204,7 +196,7 @@ describe('ChatService', () => {
                 it('should remove socket from channel room of room exists', async () => {
                     serverSocket.join(testChannel.name);
 
-                    clientSocket.emit('channel:quit', testChannel);
+                    clientSocket.emit('channel:quit', testChannel.name);
 
                     await Delay.for(RESPONSE_DELAY);
 
@@ -221,7 +213,7 @@ describe('ChatService', () => {
                     });
                     serverSocket.join(testChannel.name);
 
-                    clientSocket.emit('channel:quit', testChannel);
+                    clientSocket.emit('channel:quit', testChannel.name);
                 });
                 it('should throw error if user NOT in channel', (done) => {
                     clientSocket.on('error' as any, (err: string, code: number) => {
@@ -231,7 +223,7 @@ describe('ChatService', () => {
                     });
                     serverSocket.leave(testChannel.name);
 
-                    clientSocket.emit('channel:quit', testChannel);
+                    clientSocket.emit('channel:quit', testChannel.name);
                 });
             });
         });

@@ -332,6 +332,47 @@
             "methods": []
         },
         {
+            "name": "Channel",
+            "id": "interface-Channel-acbbfdc0f587fedeb0716b45054dec36a96e3f649e7c2030b51b7a531e2a4bc33ad5d113fe5ed770b3d6bbb2ba19fda0bac62141dcaed8f651fdb92e77b77815",
+            "file": "src/app/components/chatbox-container/chatbox-container.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { Component, Input } from '@angular/core';\nimport { Message } from '@app/components/chatbox-message/chatbox-message.component';\n\ninterface Channel {\n    id: string;\n    title: string;\n    messages: Message[];\n}\n\n@Component({\n    selector: 'app-chatbox-container',\n    templateUrl: './chatbox-container.component.html',\n    styleUrls: ['./chatbox-container.component.scss'],\n})\nexport class ChatboxContainerComponent {\n    @Input() channels: Channel[];\n    openedChannels: Channel[];\n    newMessageIsOpen: boolean = false;\n\n    constructor() {\n        this.channels = [\n            {\n                id: '1',\n                title: 'Général',\n                messages: [],\n            },\n            {\n                id: '2',\n                title: 'sup',\n                messages: [],\n            },\n        ];\n        this.openedChannels = [];\n    }\n\n    getChannelsForNewMessage(): (Channel & { canOpen: boolean })[] {\n        return this.channels.map<Channel & { canOpen: boolean }>((channel) => ({\n            ...channel,\n            canOpen: !this.openedChannels.find((c) => channel.id === c.id),\n        }));\n    }\n\n    showChannel(channel: Channel) {\n        this.openedChannels.push(channel);\n        this.closeNewMessage();\n    }\n\n    minimizeChannel(channel: Channel) {\n        const index = this.openedChannels.findIndex(({ id }) => channel.id === id);\n        this.openedChannels.splice(index, 1);\n    }\n\n    closeChannel(channel: Channel) {\n        if (confirm(`Do you want to quit channel \"${channel.title}\"?`)) {\n            this.minimizeChannel(channel);\n            this.channels = this.channels.filter(({ id }) => id !== channel.id);\n        }\n    }\n\n    closeNewMessage() {\n        this.newMessageIsOpen = false;\n    }\n\n    toggleNewMessage() {\n        this.newMessageIsOpen = !this.newMessageIsOpen;\n    }\n}\n",
+            "properties": [
+                {
+                    "name": "id",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 5
+                },
+                {
+                    "name": "messages",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Message[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 7
+                },
+                {
+                    "name": "title",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 6
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 165,
+            "methods": []
+        },
+        {
             "name": "ConvertResult",
             "id": "interface-ConvertResult-28993406797c4075071afbf6ce90a938df142959dca29aef6477fd0be1cb04b0a08c3d47de00c282de0f34701b71a4d6fa3f9bd80c4eec97784db1e83ec3f6e7",
             "file": "src/app/components/convert-dialog/convert-dialog.component.ts",
@@ -727,6 +768,47 @@
                     "optional": true,
                     "description": "",
                     "line": 15
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 165,
+            "methods": []
+        },
+        {
+            "name": "DisplayMessage",
+            "id": "interface-DisplayMessage-0b7858c657bff4dfef512320f010e8f27cf539db47dbcee99187279eab92a8ae510acbe7d2d756a26c605a7536b7ef312775fb8d2cc141a716929f1b77f51273",
+            "file": "src/app/components/chatbox-message/chatbox-message.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { Component, Input } from '@angular/core';\nimport { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';\nimport { onlyHasEmoji } from '@app/utils/emoji/emoji';\nimport { emojify } from 'node-emoji';\nimport { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';\n\nexport interface Message {\n    message: string;\n    isCurrentUser: boolean;\n    username: string;\n}\n\nexport interface DisplayMessage {\n    username: string;\n    isCurrentUser: boolean;\n    messages: string[];\n}\n\n@Component({\n    selector: 'app-chatbox-message',\n    templateUrl: './chatbox-message.component.html',\n    styleUrls: ['./chatbox-message.component.scss'],\n})\nexport class ChatboxMessageComponent extends ChatBoxComponent {\n    @Input() messages: Message[];\n    messageForm: FormGroup;\n    onlyHasEmoji = onlyHasEmoji;\n\n    constructor(private readonly formBuilder: FormBuilder) {\n        super();\n        this.messageForm = this.formBuilder.group({\n            message: new FormControl('', [Validators.required]),\n        });\n    }\n\n    getMessages(): DisplayMessage[] {\n        return this.messages.reduce<DisplayMessage[]>((messages, current) => {\n            const last = messages[messages.length - 1];\n\n            if (last) {\n                if (last.username === current.username) {\n                    last.messages.push(emojify(current.message.trim()));\n                } else {\n                    messages.push({\n                        username: current.username,\n                        isCurrentUser: current.isCurrentUser,\n                        messages: [emojify(current.message.trim())],\n                    });\n                }\n                return messages;\n            } else {\n                return [\n                    {\n                        username: current.username,\n                        isCurrentUser: current.isCurrentUser,\n                        messages: [emojify(current.message.trim())],\n                    },\n                ];\n            }\n        }, []);\n        // return [];\n    }\n\n    addMessage(message: Message): void {\n        this.messages.push(message);\n    }\n\n    onMessageSubmit() {\n        if (!this.messageForm.valid) return;\n\n        const message = this.messageForm.value.message.trim();\n\n        if (message.length === 0) return;\n\n        this.addMessage({\n            message,\n            isCurrentUser: true,\n            username: 'Me',\n        });\n        this.messageForm.setValue({ message: '' });\n    }\n\n    onEmojiClick(emoji: string) {\n        this.addMessage({\n            message: emoji,\n            isCurrentUser: true,\n            username: 'Me',\n        });\n    }\n}\n",
+            "properties": [
+                {
+                    "name": "isCurrentUser",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 15
+                },
+                {
+                    "name": "messages",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 16
+                },
+                {
+                    "name": "username",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 14
                 }
             ],
             "indexSignatures": [],
@@ -1498,7 +1580,48 @@
         },
         {
             "name": "Message",
-            "id": "interface-Message-517d7f8da744200c6eaafb0c1d1c49207ccb3d6aba3c42d131859f21020ab149c86f9ac8a6017b17115ac750d3b3a9499573a9ed580ea8c0a03e5004615fc37c",
+            "id": "interface-Message-0b7858c657bff4dfef512320f010e8f27cf539db47dbcee99187279eab92a8ae510acbe7d2d756a26c605a7536b7ef312775fb8d2cc141a716929f1b77f51273",
+            "file": "src/app/components/chatbox-message/chatbox-message.component.ts",
+            "deprecated": false,
+            "deprecationMessage": "",
+            "type": "interface",
+            "sourceCode": "import { Component, Input } from '@angular/core';\nimport { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';\nimport { onlyHasEmoji } from '@app/utils/emoji/emoji';\nimport { emojify } from 'node-emoji';\nimport { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';\n\nexport interface Message {\n    message: string;\n    isCurrentUser: boolean;\n    username: string;\n}\n\nexport interface DisplayMessage {\n    username: string;\n    isCurrentUser: boolean;\n    messages: string[];\n}\n\n@Component({\n    selector: 'app-chatbox-message',\n    templateUrl: './chatbox-message.component.html',\n    styleUrls: ['./chatbox-message.component.scss'],\n})\nexport class ChatboxMessageComponent extends ChatBoxComponent {\n    @Input() messages: Message[];\n    messageForm: FormGroup;\n    onlyHasEmoji = onlyHasEmoji;\n\n    constructor(private readonly formBuilder: FormBuilder) {\n        super();\n        this.messageForm = this.formBuilder.group({\n            message: new FormControl('', [Validators.required]),\n        });\n    }\n\n    getMessages(): DisplayMessage[] {\n        return this.messages.reduce<DisplayMessage[]>((messages, current) => {\n            const last = messages[messages.length - 1];\n\n            if (last) {\n                if (last.username === current.username) {\n                    last.messages.push(emojify(current.message.trim()));\n                } else {\n                    messages.push({\n                        username: current.username,\n                        isCurrentUser: current.isCurrentUser,\n                        messages: [emojify(current.message.trim())],\n                    });\n                }\n                return messages;\n            } else {\n                return [\n                    {\n                        username: current.username,\n                        isCurrentUser: current.isCurrentUser,\n                        messages: [emojify(current.message.trim())],\n                    },\n                ];\n            }\n        }, []);\n        // return [];\n    }\n\n    addMessage(message: Message): void {\n        this.messages.push(message);\n    }\n\n    onMessageSubmit() {\n        if (!this.messageForm.valid) return;\n\n        const message = this.messageForm.value.message.trim();\n\n        if (message.length === 0) return;\n\n        this.addMessage({\n            message,\n            isCurrentUser: true,\n            username: 'Me',\n        });\n        this.messageForm.setValue({ message: '' });\n    }\n\n    onEmojiClick(emoji: string) {\n        this.addMessage({\n            message: emoji,\n            isCurrentUser: true,\n            username: 'Me',\n        });\n    }\n}\n",
+            "properties": [
+                {
+                    "name": "isCurrentUser",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 9
+                },
+                {
+                    "name": "message",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 8
+                },
+                {
+                    "name": "username",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 10
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 165,
+            "methods": []
+        },
+        {
+            "name": "Message",
+            "id": "interface-Message-517d7f8da744200c6eaafb0c1d1c49207ccb3d6aba3c42d131859f21020ab149c86f9ac8a6017b17115ac750d3b3a9499573a9ed580ea8c0a03e5004615fc37c-1",
             "file": "src/app/classes/communication/message.ts",
             "deprecated": false,
             "deprecationMessage": "",
@@ -1544,7 +1667,10 @@
             ],
             "indexSignatures": [],
             "kind": 165,
-            "methods": []
+            "methods": [],
+            "isDuplicate": true,
+            "duplicateId": 1,
+            "duplicateName": "Message-1"
         },
         {
             "name": "ObjectiveData",
@@ -2182,18 +2308,6 @@
             "kind": 165,
             "methods": [],
             "extends": "EventTarget"
-        },
-        {
-            "name": "User",
-            "id": "interface-User-9c7e5f1bbbab702cb032307d130876cb68969b0cd4eedef32a0c8cad8081a54e5f8f577ed6ad4539c1b99a1d246cb34031d198c2ea8eba440e64e91b14f01fdc",
-            "file": "src/stories/User.ts",
-            "deprecated": false,
-            "deprecationMessage": "",
-            "type": "interface",
-            "sourceCode": "export interface User {}\n",
-            "properties": [],
-            "indexSignatures": [],
-            "methods": []
         },
         {
             "name": "Vec2",
@@ -15403,7 +15517,7 @@
             "implements": [
                 "OnDestroy"
             ],
-            "templateData": "<ng-container [ngSwitch]=\"state\">\n    <router-outlet *ngSwitchCase=\"states.Ready\"></router-outlet>\n\n    <app-loading-page *ngSwitchCase=\"states.Loading\"></app-loading-page>\n\n    <app-loading-page *ngSwitchCase=\"states.ServerNotReachable\" [error]=\"state\" [isTrying]=\"true\"></app-loading-page>\n\n    <app-loading-page *ngSwitchDefault [error]=\"state\"></app-loading-page>\n</ng-container>\n\n"
+            "templateData": "<ng-container [ngSwitch]=\"state\">\n    <router-outlet *ngSwitchCase=\"states.Ready\"></router-outlet>\n\n    <app-loading-page *ngSwitchCase=\"states.Loading\"></app-loading-page>\n\n    <app-loading-page *ngSwitchCase=\"states.ServerNotReachable\" [error]=\"state\" [isTrying]=\"true\"></app-loading-page>\n\n    <app-loading-page *ngSwitchDefault [error]=\"state\"></app-loading-page>\n\n    <app-chatbox-container *ngSwitchCase=\"states.Ready\"></app-chatbox-container>\n</ng-container>\n\n"
         },
         {
             "name": "BoardComponent",
@@ -16482,101 +16596,117 @@
             "templateData": "<div id=\"board\" #board (click)=\"clearNewlyPlacedTiles()\">\n    <mat-card id=\"board-container\">\n        <mat-grid-list cols=\"{{ gridSize.x + marginColumnSize }}\" rowHeight=\"fit\" gutterSize=\"3px\" id=\"board-grid\" class=\"full-size\">\n            <mat-grid-tile *ngFor=\"let item of [].constructor(gridSize.x + marginColumnSize); let i = index\" [colspan]=\"1\" [rowspan]=\"1\">\n                <p *ngIf=\"i > 0\" class=\"letter-number-grid\">{{ i }}</p>\n            </mat-grid-tile>\n\n            <div *ngFor=\"let squareRow of squareGrid; let i = index\">\n                <mat-grid-tile [colspan]=\"marginColumnSize\" [rowspan]=\"1\">\n                    <p class=\"letter-number-grid\">{{ marginLetters[i] }}</p>\n                </mat-grid-tile>\n                <mat-grid-tile *ngFor=\"let square of squareRow\" [colspan]=\"square.squareSize.x\" [rowspan]=\"square.squareSize.y\" class=\"square-background\">\n                    <app-square [tileFontSize]=\"tileFontSize\" [isCursor]=\"isSamePosition(square, selectedSquare)\" [cursorOrientation]=\"navigator.orientation\" class=\"full-size\" [squareView]=\"square\" (click)=\"onSquareClick(square)\"></app-square>\n                </mat-grid-tile>\n            </div>\n        </mat-grid-list>\n    </mat-card>\n</div>\n"
         },
         {
-            "name": "ButtonComponent",
-            "id": "component-ButtonComponent-4ef205c97a334c309aa4001c8ab4a6d9571dcae18d0e85aaf0d367467ab5d3a9f13ab3573726f1fcb409bc9b49894dadfb80b1bbe1b6ba7041455ad9d4922004",
-            "file": "src/stories/button.component.ts",
+            "name": "ChatBoxComponent",
+            "id": "component-ChatBoxComponent-96536d7433051c39261ff9c635bd488e677af68171552650f578c5752defd722d3d3f7c2ccdf3387c2e08773569128afca5c7d0e0544d67c39b3d3c7fafb3b96",
+            "file": "src/app/components/chatbox/chatbox.component.ts",
             "encapsulation": [],
             "entryComponents": [],
             "inputs": [],
             "outputs": [],
             "providers": [],
-            "selector": "storybook-button",
+            "selector": "app-chatbox",
             "styleUrls": [
-                "./button.css"
+                "./chatbox.component.scss"
             ],
             "styles": [],
-            "template": "<button   type=\"button\"\n   (click)=\"onClick.emit($event)\"\n   [ngClass]=\"classes\"\n   [ngStyle]=\"{ 'background-color': backgroundColor }\"\n >\n   {{ label }}\n </button>",
-            "templateUrl": [],
+            "templateUrl": [
+                "./chatbox.component.html"
+            ],
             "viewProviders": [],
             "inputsClass": [
                 {
-                    "name": "backgroundColor",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "rawdescription": "\n\nWhat background color to use\n",
-                    "description": "<p>What background color to use</p>\n",
-                    "line": 26,
-                    "type": "string",
-                    "decorators": []
-                },
-                {
-                    "name": "label",
-                    "defaultValue": "'Button'",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "jsdoctags": [
-                        {
-                            "pos": 711,
-                            "end": 724,
-                            "flags": 4227072,
-                            "modifierFlagsCache": 0,
-                            "transformFlags": 0,
-                            "kind": 325,
-                            "tagName": {
-                                "pos": 712,
-                                "end": 720,
-                                "flags": 4227072,
-                                "modifierFlagsCache": 0,
-                                "transformFlags": 0,
-                                "kind": 79,
-                                "escapedText": "required"
-                            },
-                            "comment": ""
-                        }
-                    ],
-                    "rawdescription": "\n\nButton contents\n\n",
-                    "description": "<p>Button contents</p>\n",
-                    "line": 40,
-                    "type": "string",
-                    "decorators": []
-                },
-                {
-                    "name": "primary",
+                    "name": "hideClose",
                     "defaultValue": "false",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "rawdescription": "\n\nIs this the principal call to action on the page?\n",
-                    "description": "<p>Is this the principal call to action on the page?</p>\n",
-                    "line": 20,
+                    "line": 12,
                     "type": "boolean",
                     "decorators": []
                 },
                 {
-                    "name": "size",
-                    "defaultValue": "'medium'",
+                    "name": "hideIcon",
+                    "defaultValue": "false",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "rawdescription": "\n\nHow large should the button be?\n",
-                    "description": "<p>How large should the button be?</p>\n",
-                    "line": 32,
-                    "type": "\"small\" | \"medium\" | \"large\"",
+                    "line": 10,
+                    "type": "boolean",
+                    "decorators": []
+                },
+                {
+                    "name": "hideMinimize",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 11,
+                    "type": "boolean",
+                    "decorators": []
+                },
+                {
+                    "name": "icon",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 13,
+                    "type": "string",
+                    "decorators": []
+                },
+                {
+                    "name": "icon2",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 14,
+                    "type": "string",
+                    "decorators": []
+                },
+                {
+                    "name": "title",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 9,
+                    "type": "string",
                     "decorators": []
                 }
             ],
             "outputsClass": [
                 {
-                    "name": "onClick",
-                    "defaultValue": "new EventEmitter<Event>()",
+                    "name": "onClose",
+                    "defaultValue": "new EventEmitter()",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "rawdescription": "\n\nOptional click handler\n",
-                    "description": "<p>Optional click handler</p>\n",
-                    "line": 46,
-                    "type": "EventEmitter"
+                    "line": 16,
+                    "type": "EventEmitter<void>"
+                },
+                {
+                    "name": "onMinimize",
+                    "defaultValue": "new EventEmitter()",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 15,
+                    "type": "EventEmitter<void>"
                 }
             ],
             "propertiesClass": [],
-            "methodsClass": [],
+            "methodsClass": [
+                {
+                    "name": "handleClose",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 22,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "handleMinimize",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 18,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                }
+            ],
             "deprecated": false,
             "deprecationMessage": "",
             "hostBindings": [],
@@ -16584,26 +16714,499 @@
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component, Input, Output, EventEmitter } from '@angular/core';\n\n@Component({\n  selector: 'storybook-button',\n  template: ` <button\n    type=\"button\"\n    (click)=\"onClick.emit($event)\"\n    [ngClass]=\"classes\"\n    [ngStyle]=\"{ 'background-color': backgroundColor }\"\n  >\n    {{ label }}\n  </button>`,\n  styleUrls: ['./button.css'],\n})\nexport default class ButtonComponent {\n  /**\n   * Is this the principal call to action on the page?\n   */\n  @Input()\n  primary = false;\n\n  /**\n   * What background color to use\n   */\n  @Input()\n  backgroundColor?: string;\n\n  /**\n   * How large should the button be?\n   */\n  @Input()\n  size: 'small' | 'medium' | 'large' = 'medium';\n\n  /**\n   * Button contents\n   *\n   * @required\n   */\n  @Input()\n  label = 'Button';\n\n  /**\n   * Optional click handler\n   */\n  @Output()\n  onClick = new EventEmitter<Event>();\n\n  public get classes(): string[] {\n    const mode = this.primary ? 'storybook-button--primary' : 'storybook-button--secondary';\n\n    return ['storybook-button', `storybook-button--${this.size}`, mode];\n  }\n}\n",
+            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\n\n@Component({\n    selector: 'app-chatbox',\n    templateUrl: './chatbox.component.html',\n    styleUrls: ['./chatbox.component.scss'],\n})\nexport class ChatBoxComponent {\n    @Input() title: string;\n    @Input() hideIcon: boolean = false;\n    @Input() hideMinimize: boolean = false;\n    @Input() hideClose: boolean = false;\n    @Input() icon: string;\n    @Input() icon2?: string;\n    @Output() onMinimize: EventEmitter<void> = new EventEmitter();\n    @Output() onClose: EventEmitter<void> = new EventEmitter();\n\n    handleMinimize() {\n        this.onMinimize.next();\n    }\n\n    handleClose() {\n        this.onClose.next();\n    }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": ".storybook-button {\n  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n  font-weight: 700;\n  border: 0;\n  border-radius: 3em;\n  cursor: pointer;\n  display: inline-block;\n  line-height: 1;\n}\n.storybook-button--primary {\n  color: white;\n  background-color: #1ea7fd;\n}\n.storybook-button--secondary {\n  color: #333;\n  background-color: transparent;\n  box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px 1px inset;\n}\n.storybook-button--small {\n  font-size: 12px;\n  padding: 10px 16px;\n}\n.storybook-button--medium {\n  font-size: 14px;\n  padding: 11px 20px;\n}\n.storybook-button--large {\n  font-size: 16px;\n  padding: 12px 24px;\n}\n",
-                    "styleUrl": "./button.css"
+                    "data": "@import '../../style/variables.scss';\n\n.chatbox {\n    $gray: rgb(230, 230, 230);\n    $border-radius: 8px;\n    $border: solid 1px rgb(238, 238, 238);\n    $icon-size: 28px;\n\n    display: grid;\n    height: 400px;\n    width: 310px;\n    grid-template-rows: auto minmax(0, 1fr);\n    grid-template-columns: minmax(0, 1fr);\n    background-color: white;\n    border: $border;\n    border-bottom: none;\n    border-top-left-radius: $border-radius;\n    border-top-right-radius: $border-radius;\n    box-shadow: 0 0 2px rgba(0, 0, 0, 0.15), 0 0 15px rgba(0, 0, 0, 0.05);\n\n    &__header {\n        padding: 12px;\n        display: grid;\n        grid-template-columns: minmax(0, 1fr) auto;\n        gap: 12px;\n        border-bottom: $border;\n\n        &__left,\n        &__right {\n            display: flex;\n            align-items: center;\n        }\n\n        &__left {\n            gap: 6px;\n        }\n\n        &__icon {\n            height: $icon-size;\n            width: $icon-size;\n            border-radius: $icon-size;\n            background-color: $gray;\n            flex-shrink: 0;\n        }\n\n        &__icons {\n            &--two-icons {\n                position: relative;\n                height: $icon-size;\n                width: $icon-size;\n\n                .chatbox__header__icon {\n                    $space: 3px;\n                    height: $icon-size / 1.4;\n                    width: $icon-size / 1.4;\n                    position: absolute;\n                    border: solid 1.5px white;\n                    \n                    &:nth-child(1) {\n                        top: -$space;\n                        left: -$space;\n                    }\n\n                    &:nth-child(2) {\n                        bottom: -$space;\n                        right: -$space;\n                    }\n                }\n            }\n        }\n\n        &__title {\n            font-weight: 500;\n            font-size: 1.15em;\n            overflow: hidden;\n            text-overflow: ellipsis;\n            white-space: nowrap;\n        }\n\n        .chatbox--is-open & {\n            border-bottom: $border;\n        }\n    }\n\n    &__button {\n        border: none;\n        background-color: transparent;\n        font-size: 18px;\n        padding: 6px 8px;\n        border-radius: 4px;\n        cursor: pointer;\n        transition: ease-in scale 0.1s;\n\n        &:hover {\n            background-color: rgba($gray, 0.2);\n        }\n\n        &:active {\n            scale: 0.925;\n            transition: ease-in scale 0.1s;\n        }\n    }\n}",
+                    "styleUrl": "./chatbox.component.scss"
                 }
             ],
             "stylesData": "",
-            "accessors": {
-                "classes": {
-                    "name": "classes",
-                    "getSignature": {
-                        "name": "classes",
-                        "type": "[]",
-                        "returnType": "string[]",
-                        "line": 48
+            "templateData": "<div class=\"chatbox\">\n    <div class=\"chatbox__header\">\n        <div class=\"chatbox__header__left\">\n            <div [ngClass]=\"{'chatbox__header__icons': true, 'chatbox__header__icons--two-icons': !!icon2}\" *ngIf=\"!hideIcon\">\n                <img class=\"chatbox__header__icon\" [src]=\"icon\" />\n                <img class=\"chatbox__header__icon\" [src]=\"icon2\" *ngIf=\"icon2\" />\n            </div>\n            <div class=\"chatbox__header__title\">{{ title }}</div>\n        </div>\n        <div class=\"chatbox__header__right\">\n            <app-icon-button *ngIf=\"!hideMinimize\" (click)=\"handleMinimize()\">\n                <app-icon icon=\"minus\"></app-icon>\n            </app-icon-button>\n            <app-icon-button *ngIf=\"!hideClose\" (click)=\"handleClose()\">\n                <app-icon icon=\"times\"></app-icon>\n            </app-icon-button>\n            <!-- <button class=\"chatboxi__button chatbox__close\" (click)=\"handleClose()\">\n                <app-icon icon=\"tmes\"></app-icon>\n            </button> -->\n        </div>\n    </div>\n    <div class=\"chatbox__content\">\n        <ng-content></ng-content>\n    </div>\n</div>"
+        },
+        {
+            "name": "ChatboxContainerComponent",
+            "id": "component-ChatboxContainerComponent-acbbfdc0f587fedeb0716b45054dec36a96e3f649e7c2030b51b7a531e2a4bc33ad5d113fe5ed770b3d6bbb2ba19fda0bac62141dcaed8f651fdb92e77b77815",
+            "file": "src/app/components/chatbox-container/chatbox-container.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-chatbox-container",
+            "styleUrls": [
+                "./chatbox-container.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./chatbox-container.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "channels",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 16,
+                    "type": "Channel[]",
+                    "decorators": []
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "newMessageIsOpen",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 18
+                },
+                {
+                    "name": "openedChannels",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Channel[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 17
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "closeChannel",
+                    "args": [
+                        {
+                            "name": "channel",
+                            "type": "Channel",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 53,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "channel",
+                            "type": "Channel",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "closeNewMessage",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 60,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "getChannelsForNewMessage",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "[]",
+                    "typeParameters": [],
+                    "line": 36,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "minimizeChannel",
+                    "args": [
+                        {
+                            "name": "channel",
+                            "type": "Channel",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 48,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "channel",
+                            "type": "Channel",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "showChannel",
+                    "args": [
+                        {
+                            "name": "channel",
+                            "type": "Channel",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 43,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "channel",
+                            "type": "Channel",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "toggleNewMessage",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 64,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                }
+            ],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component, Input } from '@angular/core';\nimport { Message } from '@app/components/chatbox-message/chatbox-message.component';\n\ninterface Channel {\n    id: string;\n    title: string;\n    messages: Message[];\n}\n\n@Component({\n    selector: 'app-chatbox-container',\n    templateUrl: './chatbox-container.component.html',\n    styleUrls: ['./chatbox-container.component.scss'],\n})\nexport class ChatboxContainerComponent {\n    @Input() channels: Channel[];\n    openedChannels: Channel[];\n    newMessageIsOpen: boolean = false;\n\n    constructor() {\n        this.channels = [\n            {\n                id: '1',\n                title: 'Général',\n                messages: [],\n            },\n            {\n                id: '2',\n                title: 'sup',\n                messages: [],\n            },\n        ];\n        this.openedChannels = [];\n    }\n\n    getChannelsForNewMessage(): (Channel & { canOpen: boolean })[] {\n        return this.channels.map<Channel & { canOpen: boolean }>((channel) => ({\n            ...channel,\n            canOpen: !this.openedChannels.find((c) => channel.id === c.id),\n        }));\n    }\n\n    showChannel(channel: Channel) {\n        this.openedChannels.push(channel);\n        this.closeNewMessage();\n    }\n\n    minimizeChannel(channel: Channel) {\n        const index = this.openedChannels.findIndex(({ id }) => channel.id === id);\n        this.openedChannels.splice(index, 1);\n    }\n\n    closeChannel(channel: Channel) {\n        if (confirm(`Do you want to quit channel \"${channel.title}\"?`)) {\n            this.minimizeChannel(channel);\n            this.channels = this.channels.filter(({ id }) => id !== channel.id);\n        }\n    }\n\n    closeNewMessage() {\n        this.newMessageIsOpen = false;\n    }\n\n    toggleNewMessage() {\n        this.newMessageIsOpen = !this.newMessageIsOpen;\n    }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".chatbox-container {\n    $button-space: 16px;\n\n    position: fixed;\n    bottom: 0;\n    right: $button-space;\n    z-index: 1;\n    display: flex;\n    gap: $button-space;\n    align-items: flex-end;\n\n    &__chatboxes {\n        display: flex;\n        gap: 12px;\n        align-items: flex-end;\n    }\n\n    &__my-channels {\n        padding: 12px;\n        display: flex;\n        flex-direction: column;\n        gap: 12px;\n\n        &__title {\n            font-size: 0.9em;\n            opacity: 0.55;\n            margin: 0;\n        }\n\n        &__content {\n            display: flex;\n            flex-direction: column;\n            width: 100%;\n        }\n\n        &__button {\n            border: none;\n            background-color: transparent;\n            font: inherit;\n            text-align: inherit;\n            transition: ease-in scale 0.1s;\n            padding: 12px 12px;\n            font-size: 16px;\n            border-radius: 4px;\n            overflow: hidden;\n            text-overflow: ellipsis;\n            white-space: nowrap;\n            width: 100%;\n            max-width: 100%;\n\n            &:not(:disabled) {\n                cursor: pointer;\n\n                &:hover {\n                    background-color: rgba(gray, 0.05);\n                }\n    \n                &:active {\n                    scale: 0.97;\n                    transition: ease-in scale 0.1s;\n                }\n            }\n            \n            // width: 100%;\n        }\n    }\n\n    &__button {\n        margin-bottom: 12px;\n\n        app-icon {\n            font-size: 1.3em;\n            position: relative;\n            top: -2px;\n            left: 1px;\n        }\n    }\n}",
+                    "styleUrl": "./chatbox-container.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [],
+                "line": 18
+            },
+            "templateData": "<div class=\"chatbox-container\">\n    <div class=\"chatbox-container__chatboxes\">\n        <ng-container *ngFor=\"let channel of openedChannels\">\n            <app-chatbox-message \n                [title]=\"channel.title\"\n                [messages]=\"channel.messages\"\n                (onMinimize)=\"minimizeChannel(channel)\"\n                (onClose)=\"closeChannel(channel)\"\n            ></app-chatbox-message>\n        </ng-container>\n\n        <app-chatbox title=\"New message\" (onMinimize)=\"closeNewMessage()\" [hideIcon]=\"true\" [hideClose]=\"true\" *ngIf=\"newMessageIsOpen\">\n            <div class=\"chatbox-container__my-channels\">\n                <p class=\"chatbox-container__my-channels__title\">My channels</p>\n                <div class=\"chatbox-container__my-channels__content\">\n                    <button \n                        *ngFor=\"let channel of getChannelsForNewMessage()\" \n                        [disabled]=\"!channel.canOpen\"\n                        (click)=\"showChannel(channel)\"\n                        class=\"chatbox-container__my-channels__button\"\n                    >\n                        {{channel.title}}\n                    </button>\n                </div>\n            </div>\n        </app-chatbox>\n    </div>\n\n    <button mat-fab color=\"white\" class=\"chatbox-container__button\" (click)=\"toggleNewMessage()\">\n        <app-icon icon=\"edit\" styling=\"solid\"></app-icon>\n    </button>\n</div>"
+        },
+        {
+            "name": "ChatboxMessageComponent",
+            "id": "component-ChatboxMessageComponent-0b7858c657bff4dfef512320f010e8f27cf539db47dbcee99187279eab92a8ae510acbe7d2d756a26c605a7536b7ef312775fb8d2cc141a716929f1b77f51273",
+            "file": "src/app/components/chatbox-message/chatbox-message.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-chatbox-message",
+            "styleUrls": [
+                "./chatbox-message.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./chatbox-message.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "messages",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 25,
+                    "type": "Message[]",
+                    "decorators": []
+                },
+                {
+                    "name": "hideClose",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 12,
+                    "type": "boolean",
+                    "decorators": [],
+                    "inheritance": {
+                        "file": "ChatBoxComponent"
+                    }
+                },
+                {
+                    "name": "hideIcon",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 10,
+                    "type": "boolean",
+                    "decorators": [],
+                    "inheritance": {
+                        "file": "ChatBoxComponent"
+                    }
+                },
+                {
+                    "name": "hideMinimize",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 11,
+                    "type": "boolean",
+                    "decorators": [],
+                    "inheritance": {
+                        "file": "ChatBoxComponent"
+                    }
+                },
+                {
+                    "name": "icon",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 13,
+                    "type": "string",
+                    "decorators": [],
+                    "inheritance": {
+                        "file": "ChatBoxComponent"
+                    }
+                },
+                {
+                    "name": "icon2",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 14,
+                    "type": "string",
+                    "decorators": [],
+                    "inheritance": {
+                        "file": "ChatBoxComponent"
+                    }
+                },
+                {
+                    "name": "title",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 9,
+                    "type": "string",
+                    "decorators": [],
+                    "inheritance": {
+                        "file": "ChatBoxComponent"
                     }
                 }
-            }
+            ],
+            "outputsClass": [
+                {
+                    "name": "onClose",
+                    "defaultValue": "new EventEmitter()",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 16,
+                    "type": "EventEmitter<void>",
+                    "inheritance": {
+                        "file": "ChatBoxComponent"
+                    }
+                },
+                {
+                    "name": "onMinimize",
+                    "defaultValue": "new EventEmitter()",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 15,
+                    "type": "EventEmitter<void>",
+                    "inheritance": {
+                        "file": "ChatBoxComponent"
+                    }
+                }
+            ],
+            "propertiesClass": [
+                {
+                    "name": "messageForm",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "FormGroup",
+                    "optional": false,
+                    "description": "",
+                    "line": 26
+                },
+                {
+                    "name": "onlyHasEmoji",
+                    "defaultValue": "onlyHasEmoji",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 27
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "addMessage",
+                    "args": [
+                        {
+                            "name": "message",
+                            "type": "Message",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 64,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "message",
+                            "type": "Message",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "getMessages",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "DisplayMessage[]",
+                    "typeParameters": [],
+                    "line": 36,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "onEmojiClick",
+                    "args": [
+                        {
+                            "name": "emoji",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 83,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "emoji",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "onMessageSubmit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 68,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "handleClose",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 22,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "inheritance": {
+                        "file": "ChatBoxComponent"
+                    }
+                },
+                {
+                    "name": "handleMinimize",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 18,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "inheritance": {
+                        "file": "ChatBoxComponent"
+                    }
+                }
+            ],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component, Input } from '@angular/core';\nimport { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';\nimport { onlyHasEmoji } from '@app/utils/emoji/emoji';\nimport { emojify } from 'node-emoji';\nimport { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';\n\nexport interface Message {\n    message: string;\n    isCurrentUser: boolean;\n    username: string;\n}\n\nexport interface DisplayMessage {\n    username: string;\n    isCurrentUser: boolean;\n    messages: string[];\n}\n\n@Component({\n    selector: 'app-chatbox-message',\n    templateUrl: './chatbox-message.component.html',\n    styleUrls: ['./chatbox-message.component.scss'],\n})\nexport class ChatboxMessageComponent extends ChatBoxComponent {\n    @Input() messages: Message[];\n    messageForm: FormGroup;\n    onlyHasEmoji = onlyHasEmoji;\n\n    constructor(private readonly formBuilder: FormBuilder) {\n        super();\n        this.messageForm = this.formBuilder.group({\n            message: new FormControl('', [Validators.required]),\n        });\n    }\n\n    getMessages(): DisplayMessage[] {\n        return this.messages.reduce<DisplayMessage[]>((messages, current) => {\n            const last = messages[messages.length - 1];\n\n            if (last) {\n                if (last.username === current.username) {\n                    last.messages.push(emojify(current.message.trim()));\n                } else {\n                    messages.push({\n                        username: current.username,\n                        isCurrentUser: current.isCurrentUser,\n                        messages: [emojify(current.message.trim())],\n                    });\n                }\n                return messages;\n            } else {\n                return [\n                    {\n                        username: current.username,\n                        isCurrentUser: current.isCurrentUser,\n                        messages: [emojify(current.message.trim())],\n                    },\n                ];\n            }\n        }, []);\n        // return [];\n    }\n\n    addMessage(message: Message): void {\n        this.messages.push(message);\n    }\n\n    onMessageSubmit() {\n        if (!this.messageForm.valid) return;\n\n        const message = this.messageForm.value.message.trim();\n\n        if (message.length === 0) return;\n\n        this.addMessage({\n            message,\n            isCurrentUser: true,\n            username: 'Me',\n        });\n        this.messageForm.setValue({ message: '' });\n    }\n\n    onEmojiClick(emoji: string) {\n        this.addMessage({\n            message: emoji,\n            isCurrentUser: true,\n            username: 'Me',\n        });\n    }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "@import '../../style/variables.scss';\n\n.chatbox-message {\n    &__content {\n        display: grid;\n        grid-template-rows: 1fr auto;\n        height: 100%;\n    }\n\n    &__messages {\n        padding: 12px;\n        display: flex;\n        flex-direction: column-reverse;\n        gap: 2px;\n        overflow-y: auto;\n\n        &__container {\n            display: flex;\n            flex-direction: column;\n            gap: 12px;\n            padding-top: 12px;\n\n            &:empty {\n                height: 100%;\n                justify-content: center;\n                align-items: center;\n                \n                &::after {\n                    content: \"No messages yet!\";\n                    opacity: 0.35;\n                }\n            }\n        }\n    }\n\n    &__group {\n        $border-radius-l: 16px;\n\n        display: flex;\n        flex-direction: column;\n        gap: 4px;\n\n        &__username {\n            margin: 0;\n            font-size: 0.75em;\n            opacity: 0.55;\n        }\n\n        &__content {\n            display: flex;\n            align-items: flex-end;\n            gap: 6px;\n        }\n\n        &__avatar {\n            $size: 18px;\n\n            height: $size;\n            width: $size;\n            border-radius: $size / 2;\n            background-color: $gray;\n            flex-shrink: 0;\n        }\n\n        &__messages {\n            display: flex;\n            flex-direction: column;\n            gap: 4px;\n            flex-grow: 1;\n        }\n\n        &--is-current-user {\n            .chatbox-message__group {\n                &__username {\n                    text-align: right;\n                    margin-right: $border-radius-l - 6px;\n                }\n                &__messages {\n                    text-align: right;\n                    align-items: flex-end;\n                }\n            }\n\n            .chatbox-message__message {\n                text-align: right;\n                background-color: $primary;\n                color: white;\n                border-top-left-radius: $border-radius-l;\n                border-bottom-left-radius: $border-radius-l;\n\n                &:first-child {\n                    border-top-right-radius: $border-radius-l;\n                }\n                \n                &:last-child {\n                    border-bottom-right-radius: $border-radius-l;\n                }\n            }\n        }\n\n        &--is-other-user {\n            .chatbox-message__group {\n                &__username {\n                    margin-left: $border-radius-l + 14px;\n                }\n            }\n            \n            .chatbox-message__message {\n                border-top-right-radius: $border-radius-l;\n                border-bottom-right-radius: $border-radius-l;\n\n                &:first-child {\n                    border-top-left-radius: $border-radius-l;\n                }\n                \n                &:last-child {\n                    border-bottom-left-radius: $border-radius-l;\n                }\n            }\n        }\n    }\n\n    &__message {\n        $border-radius-l: 16px;\n        $padding-h: 14px;\n\n        background-color: $gray;\n        width: fit-content;\n        max-width: calc(100% - 36px);\n        box-sizing: border-box;\n        border-radius: 4px;\n        padding: 10px $padding-h;\n        overflow: hidden;\n        line-break: loose;\n        word-break: break-word;\n        margin: 0;\n        font-size: 0.95em;\n\n        &--only-emoji {\n            background-color: transparent !important;\n            padding: 0 !important;\n            border-radius: 0 !important;\n            font-size: 2.2em !important;\n            letter-spacing: 6px !important;\n            line-height: normal !important;\n        }\n    }\n\n    &__input {\n        padding: 12px;\n        display: grid;\n        grid-template-columns: 1fr auto;\n        gap: 6px;\n\n        &__form {\n            &__control {\n                background-color: lighten($gray, 5);\n                border: none;\n                font-size: inherit;\n                font-family: inherit;\n                padding: 8px 12px;\n                border-radius: 12px;\n                width: 100%;\n                box-sizing: border-box;\n            }\n        }\n    }\n}",
+                    "styleUrl": "./chatbox-message.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [
+                    {
+                        "name": "formBuilder",
+                        "type": "FormBuilder",
+                        "deprecated": false,
+                        "deprecationMessage": ""
+                    }
+                ],
+                "line": 27,
+                "jsdoctags": [
+                    {
+                        "name": "formBuilder",
+                        "type": "FormBuilder",
+                        "deprecated": false,
+                        "deprecationMessage": "",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "extends": "ChatBoxComponent",
+            "templateData": "<app-chatbox [title]=\"title\" (onMinimize)=\"handleMinimize()\" (onClose)=\"handleClose()\" [icon]=\"icon\" [icon2]=\"icon2\" class=\"chatbox-message\">\n    <div class=\"chatbox-message__content\">\n        <div class=\"chatbox-message__messages\">\n            <div class=\"chatbox-message__messages__container\">\n                <div *ngFor=\"let messageGroup of getMessages()\" [ngClass]=\"{'chatbox-message__group': true, 'chatbox-message__group--is-current-user': messageGroup.isCurrentUser, 'chatbox-message__group--is-other-user': !messageGroup.isCurrentUser}\">\n                    <p class=\"chatbox-message__group__username\">{{messageGroup.username}}</p>\n                    <div class=\"chatbox-message__group__content\">\n                        <div class=\"chatbox-message__group__avatar\" *ngIf=\"!messageGroup.isCurrentUser\"></div>\n                        <div class=\"chatbox-message__group__messages\">\n                            <p *ngFor=\"let message of messageGroup.messages\" [ngClass]=\"{'chatbox-message__message': true, 'chatbox-message__message--only-emoji': onlyHasEmoji(message)}\">{{message}}</p>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <div class=\"chatbox-message__input\">\n            <form class=\"chatbox-message__input__form\" [formGroup]=\"messageForm\" (ngSubmit)=\"onMessageSubmit()\" novalidate>\n                <input type=\"text\" formControlName=\"message\" class=\"chatbox-message__input__form__control\" placeholder=\"Aa\" [maxlength]=\"512\">\n            </form>\n    \n            <app-icon-button (click)=\"onEmojiClick('👍')\">👍</app-icon-button>\n        </div>\n    </div>\n</app-chatbox>"
         },
         {
             "name": "CommunicationBoxComponent",
@@ -20051,79 +20654,6 @@
             "templateData": "<div id=\"page-container\">\n    <div class=\"top-level-grid\">\n        <div class=\"grid-item-container\">\n            <app-information-box></app-information-box>\n        </div>\n        <div class=\"horizontal-grid\">\n            <div class=\"vertical-grid\">\n                <div class=\"grid-item-container\">\n                    <app-board #boardComponent></app-board>\n                </div>\n                <div class=\"grid-item-container\">\n                    <app-tile-rack #tileRackComponent></app-tile-rack>\n                </div>\n                <div class=\"grid-item-container\" id=\"button-group\">\n                    <mat-card>\n                        <div>\n                            <button mat-flat-button id=\"surrender-dialog-button\" (click)=\"quitButtonClicked()\" color=\"primary\">\n                                <ng-container *ngIf=\"!gameService.isGameOver\">\n                                    <app-icon icon=\"flag-alt\" styling=\"solid\"></app-icon>\n                                    <span> Abandonner</span>\n                                </ng-container>\n                                <ng-container *ngIf=\"gameService.isGameOver\">\n                                    <app-icon icon=\"door-open\" styling=\"solid\"></app-icon>\n                                    <span *ngIf=\"gameService.isGameOver\"> Quitter</span>\n                                </ng-container>\n                            </button>\n                        </div>\n                        <div matTooltip=\"Ce n'est pas votre tour de jouer\" matTooltipPosition=\"above\" [matTooltipDisabled]=\"canPlay()\">\n                            <button mat-flat-button color=\"primary\" [disabled]=\"!canPlay()\" (click)=\"hintButtonClicked()\">\n                                <app-icon icon=\"lightbulb\" styling=\"solid\"></app-icon> Indice\n                            </button>\n                        </div>\n                        <div matTooltip=\"Ce n'est pas votre tour de jouer\" matTooltipPosition=\"above\" [matTooltipDisabled]=\"canPlay()\">\n                            <button mat-flat-button color=\"primary\" [disabled]=\"!canPlay()\" (click)=\"passButtonClicked()\">\n                                <app-icon icon=\"redo\"></app-icon> Passer\n                            </button>\n                        </div>\n                        <div\n                            matTooltip=\"Ce n'est pas votre tour de jouer ou vous n'avez pas placé de mot encore\"\n                            matTooltipPosition=\"above\"\n                            [matTooltipDisabled]=\"canPlaceWord()\"\n                        >\n                            <button mat-flat-button color=\"primary\" [disabled]=\"!canPlaceWord()\" (click)=\"placeButtonClicked()\">\n                                <app-icon icon=\"square\" styling=\"solid\"></app-icon> Placer\n                            </button>\n                        </div>\n                    </mat-card>\n                </div>\n            </div>\n            <div class=\"sidebar-section\">\n                <div class=\"communication-box-container\">\n                    <app-communication-box></app-communication-box>\n                    <div class=\"text-button-container\">\n                        <mat-card>\n                            <span><app-icon icon=\"text-size\"></app-icon> Taille de la police</span>\n                            <div class=\"text-buttons\">\n                                <button mat-flat-button id=\"minus-button\" color=\"primary\" (click)=\"changeTileFontSize('smaller')\">\n                                    <app-icon icon=\"minus\"></app-icon>\n                                </button>\n                                <button mat-flat-button id=\"plus-button\" color=\"primary\" (click)=\"changeTileFontSize('larger')\">\n                                    <app-icon icon=\"plus\"></app-icon>\n                                </button>\n                            </div>\n                        </mat-card>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
         },
         {
-            "name": "HeaderComponent",
-            "id": "component-HeaderComponent-a557eec14f72c438a8033301f4d6ce023e0a1844a3b06ec2b38794a612acc31735ae78a5ee10071b230c8c20d699eb914554e69d07ade54adb371da8efb464cc",
-            "file": "src/stories/header.component.ts",
-            "encapsulation": [],
-            "entryComponents": [],
-            "inputs": [],
-            "outputs": [],
-            "providers": [],
-            "selector": "storybook-header",
-            "styleUrls": [
-                "./header.css"
-            ],
-            "styles": [],
-            "template": "<header>    <div class=\"wrapper\">\n      <div>\n        <svg width=\"32\" height=\"32\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M10 0h12a10 10 0 0110 10v12a10 10 0 01-10 10H10A10 10 0 010 22V10A10 10 0 0110 0z\"\n              fill=\"#FFF\"\n            />\n            <path\n              d=\"M5.3 10.6l10.4 6v11.1l-10.4-6v-11zm11.4-6.2l9.7 5.5-9.7 5.6V4.4z\"\n              fill=\"#555AB9\"\n            />\n            <path\n              d=\"M27.2 10.6v11.2l-10.5 6V16.5l10.5-6zM15.7 4.4v11L6 10l9.7-5.5z\"\n              fill=\"#91BAF8\"\n            />\n          </g>\n        </svg>\n        <h1>Acme</h1>\n      </div>\n      <div>\n        <div *ngIf=\"user\">\n          <span class=\"welcome\">\n            Welcome, <b>{{ user.name }}</b\n            >!\n          </span>\n          <storybook-button\n            *ngIf=\"user\"\n            size=\"small\"\n            (onClick)=\"onLogout.emit($event)\"\n            label=\"Log out\"\n          ></storybook-button>\n        </div>\n        <div *ngIf=\"!user\">\n          <storybook-button\n            *ngIf=\"!user\"\n            size=\"small\"\n            class=\"margin-left\"\n            (onClick)=\"onLogin.emit($event)\"\n            label=\"Log in\"\n          ></storybook-button>\n          <storybook-button\n            *ngIf=\"!user\"\n            primary\n            size=\"small\"\n            primary=\"true\"\n            class=\"margin-left\"\n            (onClick)=\"onCreateAccount.emit($event)\"\n            label=\"Sign up\"\n          ></storybook-button>\n        </div>\n      </div>\n    </div>\n  </header>",
-            "templateUrl": [],
-            "viewProviders": [],
-            "inputsClass": [
-                {
-                    "name": "user",
-                    "defaultValue": "null",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "line": 65,
-                    "type": "User | null",
-                    "decorators": []
-                }
-            ],
-            "outputsClass": [
-                {
-                    "name": "onCreateAccount",
-                    "defaultValue": "new EventEmitter<Event>()",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "line": 74,
-                    "type": "EventEmitter"
-                },
-                {
-                    "name": "onLogin",
-                    "defaultValue": "new EventEmitter<Event>()",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "line": 68,
-                    "type": "EventEmitter"
-                },
-                {
-                    "name": "onLogout",
-                    "defaultValue": "new EventEmitter<Event>()",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "line": 71,
-                    "type": "EventEmitter"
-                }
-            ],
-            "propertiesClass": [],
-            "methodsClass": [],
-            "deprecated": false,
-            "deprecationMessage": "",
-            "hostBindings": [],
-            "hostListeners": [],
-            "description": "",
-            "rawdescription": "\n",
-            "type": "component",
-            "sourceCode": "import { Component, Input, Output, EventEmitter } from '@angular/core';\nimport { User } from './User';\n\n@Component({\n  selector: 'storybook-header',\n  template: `<header>\n    <div class=\"wrapper\">\n      <div>\n        <svg width=\"32\" height=\"32\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M10 0h12a10 10 0 0110 10v12a10 10 0 01-10 10H10A10 10 0 010 22V10A10 10 0 0110 0z\"\n              fill=\"#FFF\"\n            />\n            <path\n              d=\"M5.3 10.6l10.4 6v11.1l-10.4-6v-11zm11.4-6.2l9.7 5.5-9.7 5.6V4.4z\"\n              fill=\"#555AB9\"\n            />\n            <path\n              d=\"M27.2 10.6v11.2l-10.5 6V16.5l10.5-6zM15.7 4.4v11L6 10l9.7-5.5z\"\n              fill=\"#91BAF8\"\n            />\n          </g>\n        </svg>\n        <h1>Acme</h1>\n      </div>\n      <div>\n        <div *ngIf=\"user\">\n          <span class=\"welcome\">\n            Welcome, <b>{{ user.name }}</b\n            >!\n          </span>\n          <storybook-button\n            *ngIf=\"user\"\n            size=\"small\"\n            (onClick)=\"onLogout.emit($event)\"\n            label=\"Log out\"\n          ></storybook-button>\n        </div>\n        <div *ngIf=\"!user\">\n          <storybook-button\n            *ngIf=\"!user\"\n            size=\"small\"\n            class=\"margin-left\"\n            (onClick)=\"onLogin.emit($event)\"\n            label=\"Log in\"\n          ></storybook-button>\n          <storybook-button\n            *ngIf=\"!user\"\n            primary\n            size=\"small\"\n            primary=\"true\"\n            class=\"margin-left\"\n            (onClick)=\"onCreateAccount.emit($event)\"\n            label=\"Sign up\"\n          ></storybook-button>\n        </div>\n      </div>\n    </div>\n  </header>`,\n  styleUrls: ['./header.css'],\n})\nexport default class HeaderComponent {\n  @Input()\n  user: User | null = null;\n\n  @Output()\n  onLogin = new EventEmitter<Event>();\n\n  @Output()\n  onLogout = new EventEmitter<Event>();\n\n  @Output()\n  onCreateAccount = new EventEmitter<Event>();\n}\n",
-            "assetsDirs": [],
-            "styleUrlsData": [
-                {
-                    "data": ".wrapper {\n  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n  padding: 15px 20px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\nsvg {\n  display: inline-block;\n  vertical-align: top;\n}\n\nh1 {\n  font-weight: 900;\n  font-size: 20px;\n  line-height: 1;\n  margin: 6px 0 6px 10px;\n  display: inline-block;\n  vertical-align: top;\n}\n\nbutton + button {\n  margin-left: 10px;\n}\n\n.welcome {\n  color: #333;\n  font-size: 14px;\n  margin-right: 10px;\n}\n",
-                    "styleUrl": "./header.css"
-                }
-            ],
-            "stylesData": ""
-        },
-        {
             "name": "HighScoreBoxComponent",
             "id": "component-HighScoreBoxComponent-874ce40bfc76f4793d08220ecc39de992c52bf81abf50e7d6c3b60a8220820a6015e85c48ad1c99b6089c68db9be014944108f6b5acf1eb284d48bb99ae542b9",
             "file": "src/app/components/high-score-box/high-score-box.component.ts",
@@ -20357,6 +20887,46 @@
             ],
             "stylesData": "",
             "templateData": "<div id=\"page-content\">\n    <div id=\"tiles\">\n        <app-tile [tile]=\"{ letter: 'C', value: 3 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'I', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'L', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'H', value: 4 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'M', value: 2 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'E', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'G', value: 2 }\"></app-tile>\n    </div>\n\n    <div class=\"content\">\n        <img src=\"https://bit.ly/3m206ss\" alt=\"Logo Scrabble\" />\n        <section id=\"button-group\" class=\"justified\">\n            <button mat-flat-button color=\"primary\" routerLink=\"/lobby\">Rejoindre une partie</button>\n            <button mat-flat-button color=\"primary\" routerLink=\"/game-creation\">Créer une partie</button>\n            <button mat-flat-button color=\"primary\" routerLink=\"/high-scores\">Meilleurs scores</button>\n        </section>\n        <div class=\"footer-item\">\n            <h4 class=\"team-name\">Équipe 212</h4>\n            <p>\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/thomas-tr%C3%A9panier/\"\n                        ><app-tile [tile]=\"{ letter: 'T', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >homas Trépanier</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/rachad-chazbek-a06489212/\"\n                        ><app-tile [tile]=\"{ letter: 'R', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >achad Chazbek</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/cfstcyr/\"\n                        ><app-tile [tile]=\"{ letter: 'C', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >harles-François St-Cyr</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/ahmed-mewloud-b0a481195/\"\n                        ><app-tile [tile]=\"{ letter: 'A', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >hmed Mewloud</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/raphael-salvas/\"\n                        ><app-tile [tile]=\"{ letter: 'R', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >aphael Salvas</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/bourdache-amine-26b67a22a/\"\n                        ><app-tile [tile]=\"{ letter: 'A', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >mine Bourdache</span\n                >\n            </p>\n        </div>\n    </div>\n\n    <div id=\"background\" style=\"background: url('assets/img/board_background.svg')\"></div>\n</div>\n"
+        },
+        {
+            "name": "IconButtonComponent",
+            "id": "component-IconButtonComponent-151d6a7615de59b9a6c2442b76e458626c0d08dc1a6771d446b1cc41671505e9b882b35e29a4e428ea1da89f8e6af3e46109266e007303134cf6375c264254a6",
+            "file": "src/app/components/icon-button/icon-button.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-icon-button",
+            "styleUrls": [
+                "./icon-button.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./icon-button.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component } from '@angular/core';\n\n@Component({\n    selector: 'app-icon-button',\n    templateUrl: './icon-button.component.html',\n    styleUrls: ['./icon-button.component.scss'],\n})\nexport class IconButtonComponent {}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".icon-button {\n    border: none;\n    background-color: transparent;\n    font-size: 18px;\n    padding: 6px 8px;\n    border-radius: 4px;\n    cursor: pointer;\n    box-sizing: border-box;\n    transition: ease-in scale 0.1s;\n\n    &:hover {\n        background-color: rgba(gray, 0.05);\n    }\n\n    &:active {\n        scale: 0.925;\n        transition: ease-in scale 0.1s;\n    }\n}",
+                    "styleUrl": "./icon-button.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "templateData": "<button class=\"icon-button\">\n    <ng-content></ng-content>\n</button>"
         },
         {
             "name": "IconComponent",
@@ -22398,86 +22968,6 @@
             "templateData": "<mat-card id=\"objective\" [ngClass]=\"{ \n    'not-completed': objective.state === 'NotCompleted', \n    'completed': objective.state === 'Completed', \n    'completed-by-opponent': objective.state === 'CompletedByOpponent' \n}\">\n    <div class=\"top\">\n        <p>\n            <app-icon icon=\"trophy\" styling=\"solid\" *ngIf=\"objective.state !== 'NotCompleted'\" class=\"trophy-icon\" [matTooltip]=\"getStateMessage()\" matTooltipPosition=\"left\"></app-icon>\n            <span class=\"title\">{{ objective.name }}</span>\n            <app-icon icon=\"info-circle\" class=\"help-icon\" [matTooltip]=\"objective.description\" matTooltipPosition=\"above\"></app-icon>\n        </p>\n        <p class=\"points\">{{ objective.bonusPoints }} points</p>\n    </div>\n    <div class=\"bottom\">\n        <span class=\"progress-text\">{{ objective.progress }}/{{ objective.maxProgress }}</span>\n        <mat-progress-bar mode=\"determinate\" [value]=\"getProgress()\" *ngIf=\"objective.state === 'NotCompleted'\"></mat-progress-bar>\n    </div>\n</mat-card>"
         },
         {
-            "name": "PageComponent",
-            "id": "component-PageComponent-7126d8c2607c946741c651482413b43feb72b2d63cac9d3ac173fde206a5e635eb4cdbf7ca7ac9327c7d4d05cf7ef619144c34c11609ad677081d0ee4e855064",
-            "file": "src/stories/page.component.ts",
-            "encapsulation": [],
-            "entryComponents": [],
-            "inputs": [],
-            "outputs": [],
-            "providers": [],
-            "selector": "storybook-page",
-            "styleUrls": [
-                "./page.css"
-            ],
-            "styles": [],
-            "template": "<article>    <storybook-header\n      [user]=\"user\"\n      (onLogout)=\"doLogout()\"\n      (onLogin)=\"doLogin()\"\n      (onCreateAccount)=\"doCreateAccount()\"\n    ></storybook-header>\n    <section>\n      <h2>Pages in Storybook</h2>\n      <p>\n        We recommend building UIs with a\n        <a href=\"https://componentdriven.org\" target=\"_blank\" rel=\"noopener noreferrer\">\n          <strong>component-driven</strong>\n        </a>\n        process starting with atomic components and ending with pages.\n      </p>\n      <p>\n        Render pages with mock data. This makes it easy to build and review page states without\n        needing to navigate to them in your app. Here are some handy patterns for managing page data\n        in Storybook:\n      </p>\n      <ul>\n        <li>\n          Use a higher-level connected component. Storybook helps you compose such data from the\n          \"args\" of child component stories\n        </li>\n        <li>\n          Assemble data in the page component from your services. You can mock these services out\n          using Storybook.\n        </li>\n      </ul>\n      <p>\n        Get a guided tutorial on component-driven development at\n        <a href=\"https://storybook.js.org/tutorials/\" target=\"_blank\" rel=\"noopener noreferrer\">\n          Storybook tutorials\n        </a>\n        . Read more in the\n        <a href=\"https://storybook.js.org/docs\" target=\"_blank\" rel=\"noopener noreferrer\"> docs </a>\n        .\n      </p>\n      <div class=\"tip-wrapper\">\n        <span class=\"tip\">Tip</span> Adjust the width of the canvas with the\n        <svg width=\"10\" height=\"10\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M1.5 5.2h4.8c.3 0 .5.2.5.4v5.1c-.1.2-.3.3-.4.3H1.4a.5.5 0 01-.5-.4V5.7c0-.3.2-.5.5-.5zm0-2.1h6.9c.3 0 .5.2.5.4v7a.5.5 0 01-1 0V4H1.5a.5.5 0 010-1zm0-2.1h9c.3 0 .5.2.5.4v9.1a.5.5 0 01-1 0V2H1.5a.5.5 0 010-1zm4.3 5.2H2V10h3.8V6.2z\"\n              id=\"a\"\n              fill=\"#999\"\n            />\n          </g>\n        </svg>\n        Viewports addon in the toolbar\n      </div>\n    </section>\n  </article>",
-            "templateUrl": [],
-            "viewProviders": [],
-            "inputsClass": [],
-            "outputsClass": [],
-            "propertiesClass": [
-                {
-                    "name": "user",
-                    "defaultValue": "null",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "User | null",
-                    "optional": false,
-                    "description": "",
-                    "line": 64
-                }
-            ],
-            "methodsClass": [
-                {
-                    "name": "doCreateAccount",
-                    "args": [],
-                    "optional": false,
-                    "returnType": "void",
-                    "typeParameters": [],
-                    "line": 74,
-                    "deprecated": false,
-                    "deprecationMessage": ""
-                },
-                {
-                    "name": "doLogin",
-                    "args": [],
-                    "optional": false,
-                    "returnType": "void",
-                    "typeParameters": [],
-                    "line": 70,
-                    "deprecated": false,
-                    "deprecationMessage": ""
-                },
-                {
-                    "name": "doLogout",
-                    "args": [],
-                    "optional": false,
-                    "returnType": "void",
-                    "typeParameters": [],
-                    "line": 66,
-                    "deprecated": false,
-                    "deprecationMessage": ""
-                }
-            ],
-            "deprecated": false,
-            "deprecationMessage": "",
-            "hostBindings": [],
-            "hostListeners": [],
-            "description": "",
-            "rawdescription": "\n",
-            "type": "component",
-            "sourceCode": "import { Component } from '@angular/core';\nimport { User } from './User';\n\n@Component({\n  selector: 'storybook-page',\n  template: `<article>\n    <storybook-header\n      [user]=\"user\"\n      (onLogout)=\"doLogout()\"\n      (onLogin)=\"doLogin()\"\n      (onCreateAccount)=\"doCreateAccount()\"\n    ></storybook-header>\n    <section>\n      <h2>Pages in Storybook</h2>\n      <p>\n        We recommend building UIs with a\n        <a href=\"https://componentdriven.org\" target=\"_blank\" rel=\"noopener noreferrer\">\n          <strong>component-driven</strong>\n        </a>\n        process starting with atomic components and ending with pages.\n      </p>\n      <p>\n        Render pages with mock data. This makes it easy to build and review page states without\n        needing to navigate to them in your app. Here are some handy patterns for managing page data\n        in Storybook:\n      </p>\n      <ul>\n        <li>\n          Use a higher-level connected component. Storybook helps you compose such data from the\n          \"args\" of child component stories\n        </li>\n        <li>\n          Assemble data in the page component from your services. You can mock these services out\n          using Storybook.\n        </li>\n      </ul>\n      <p>\n        Get a guided tutorial on component-driven development at\n        <a href=\"https://storybook.js.org/tutorials/\" target=\"_blank\" rel=\"noopener noreferrer\">\n          Storybook tutorials\n        </a>\n        . Read more in the\n        <a href=\"https://storybook.js.org/docs\" target=\"_blank\" rel=\"noopener noreferrer\"> docs </a>\n        .\n      </p>\n      <div class=\"tip-wrapper\">\n        <span class=\"tip\">Tip</span> Adjust the width of the canvas with the\n        <svg width=\"10\" height=\"10\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M1.5 5.2h4.8c.3 0 .5.2.5.4v5.1c-.1.2-.3.3-.4.3H1.4a.5.5 0 01-.5-.4V5.7c0-.3.2-.5.5-.5zm0-2.1h6.9c.3 0 .5.2.5.4v7a.5.5 0 01-1 0V4H1.5a.5.5 0 010-1zm0-2.1h9c.3 0 .5.2.5.4v9.1a.5.5 0 01-1 0V2H1.5a.5.5 0 010-1zm4.3 5.2H2V10h3.8V6.2z\"\n              id=\"a\"\n              fill=\"#999\"\n            />\n          </g>\n        </svg>\n        Viewports addon in the toolbar\n      </div>\n    </section>\n  </article>`,\n  styleUrls: ['./page.css'],\n})\nexport default class PageComponent {\n  user: User | null = null;\n\n  doLogout() {\n    this.user = null;\n  }\n\n  doLogin() {\n    this.user = { name: 'Jane Doe' };\n  }\n\n  doCreateAccount() {\n    this.user = { name: 'Jane Doe' };\n  }\n}\n",
-            "assetsDirs": [],
-            "styleUrlsData": [
-                {
-                    "data": "section {\n  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n  font-size: 14px;\n  line-height: 24px;\n  padding: 48px 20px;\n  margin: 0 auto;\n  max-width: 600px;\n  color: #333;\n}\n\nsection h2 {\n  font-weight: 900;\n  font-size: 32px;\n  line-height: 1;\n  margin: 0 0 4px;\n  display: inline-block;\n  vertical-align: top;\n}\n\nsection p {\n  margin: 1em 0;\n}\n\nsection a {\n  text-decoration: none;\n  color: #1ea7fd;\n}\n\nsection ul {\n  padding-left: 30px;\n  margin: 1em 0;\n}\n\nsection li {\n  margin-bottom: 8px;\n}\n\nsection .tip {\n  display: inline-block;\n  border-radius: 1em;\n  font-size: 11px;\n  line-height: 12px;\n  font-weight: 700;\n  background: #e7fdd8;\n  color: #66bf3c;\n  padding: 4px 12px;\n  margin-right: 10px;\n  vertical-align: top;\n}\n\nsection .tip-wrapper {\n  font-size: 13px;\n  line-height: 20px;\n  margin-top: 40px;\n  margin-bottom: 40px;\n}\n\nsection .tip-wrapper svg {\n  display: inline-block;\n  height: 12px;\n  width: 12px;\n  margin-right: 4px;\n  vertical-align: top;\n  margin-top: 3px;\n}\n\nsection .tip-wrapper svg path {\n  fill: #1ea7fd;\n}\n",
-                    "styleUrl": "./page.css"
-                }
-            ],
-            "stylesData": ""
-        },
-        {
             "name": "PageHeaderComponent",
             "id": "component-PageHeaderComponent-4267a0aab1aba47404b52a5c64658390bba007b32d636ed83b071200b8dbe135048ce37b76c05adad0bc32c46af7a2117e744b9a11b72adb01172b31b22696c0",
             "file": "src/app/components/page-header/page-header.component.ts",
@@ -24286,13 +24776,13 @@
         },
         {
             "name": "AppModule",
-            "id": "module-AppModule-a7f683c03b27e913d9292bc821f81584a8221767ae6a5e6a1419cd6a50a10d65b21ac7fa4c0856ac6b9e3305ff39d49e1ddf89cac6495bb1ca644a904014bb8e",
+            "id": "module-AppModule-b3bdc0492fd00114f98ba9e0a73d6f8f17e950869f236cb9f29a903c64039a837dad504d05aa4a42c81cac5e425d39ea6310498f1fb03aacdc5537fb142bd14b",
             "description": "<p>Main module that is used in main.ts.\nAll automatically generated components will appear in this module.\nPlease do not move this module in the module folder.\nOtherwise Angular Cli will not know in which module to put new component</p>\n",
             "deprecationMessage": "",
             "deprecated": false,
             "file": "src/app/app.module.ts",
             "methods": [],
-            "sourceCode": "import { ScrollingModule } from '@angular/cdk/scrolling';\nimport { registerLocaleData } from '@angular/common';\nimport { HttpClientModule } from '@angular/common/http';\nimport localeFr from '@angular/common/locales/fr';\nimport { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';\nimport { FormsModule, ReactiveFormsModule } from '@angular/forms';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { BrowserAnimationsModule } from '@angular/platform-browser/animations';\nimport { BoardComponent } from '@app/components/board/board.component';\nimport { SquareComponent } from '@app/components/square/square.component';\nimport { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';\nimport { TileComponent } from '@app/components/tile/tile.component';\nimport { AppRoutingModule } from '@app/modules/app-routing.module';\nimport { AppMaterialModule } from '@app/modules/material.module';\nimport { AppComponent } from '@app/pages/app/app.component';\nimport { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';\nimport { GamePageComponent } from '@app/pages/game-page/game-page.component';\nimport { HomePageComponent } from '@app/pages/home-page/home-page.component';\nimport { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';\nimport { AdminDictionariesComponent } from './components/admin-dictionaries-component/admin-dictionaries.component';\nimport { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';\nimport { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';\nimport { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';\nimport { CommunicationBoxComponent } from './components/communication-box/communication-box.component';\nimport { ConvertDialogComponent } from './components/convert-dialog/convert-dialog.component';\nimport { CreateVirtualPlayerComponent } from './components/create-virtual-player-dialog/create-virtual-player-dialog.component';\nimport { DefaultDialogComponent } from './components/default-dialog/default-dialog.component';\nimport { DeleteDictionaryDialogComponent } from './components/delete-dictionary-dialog/delete-dictionary-dialog.component';\nimport { DeleteVirtualPlayerDialogComponent } from './components/delete-virtual-player-dialog/delete-virtual-player-dialog.component';\nimport { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';\nimport { IconComponent } from './components/icon/icon.component';\nimport { InformationBoxComponent } from './components/information-box/information-box.component';\nimport { LobbyInfoComponent } from './components/lobby-info/lobby-info.component';\nimport { ModifyDictionaryComponent } from './components/modify-dictionary-dialog/modify-dictionary-dialog.component';\nimport { NameFieldComponent } from './components/name-field/name-field.component';\nimport { ObjectiveBoxComponent } from './components/objective-box/objective-box.component';\nimport { ObjectiveComponent } from './components/objective/objective.component';\nimport { PageHeaderComponent } from './components/page-header/page-header.component';\nimport { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';\nimport { UpdateVirtualPlayerComponent } from './components/update-virtual-player-dialog/update-virtual-player-dialog.component';\nimport { UploadDictionaryComponent } from './components/upload-dictionary/upload-dictionary.component';\nimport { AdminPageComponent } from './pages/admin-page/admin-page.component';\nimport { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';\nimport { HighScoresPageComponent } from './pages/high-scores-page/high-scores-page.component';\nimport { LoadingPageComponent } from './pages/loading-page/loading-page.component';\nimport { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';\nimport { DurationPipe } from './pipes/duration/duration.pipe';\nimport { InitializerService } from './services/initializer-service/initializer.service';\n\nregisterLocaleData(localeFr);\n\n/**\n * Main module that is used in main.ts.\n * All automatically generated components will appear in this module.\n * Please do not move this module in the module folder.\n * Otherwise Angular Cli will not know in which module to put new component\n */\n@NgModule({\n    declarations: [\n        AppComponent,\n        GamePageComponent,\n        HomePageComponent,\n        SquareComponent,\n        TileComponent,\n        InformationBoxComponent,\n        CommunicationBoxComponent,\n        BoardComponent,\n        TileRackComponent,\n        LobbyPageComponent,\n        LobbyInfoComponent,\n        CreateWaitingPageComponent,\n        JoinWaitingPageComponent,\n        GameCreationPageComponent,\n        DefaultDialogComponent,\n        IconComponent,\n        NameFieldComponent,\n        TimerSelectionComponent,\n        PageHeaderComponent,\n        HighScoresPageComponent,\n        HighScoreBoxComponent,\n        ConvertDialogComponent,\n        AdminPageComponent,\n        AdminVirtualPlayersComponent,\n        CreateVirtualPlayerComponent,\n        UpdateVirtualPlayerComponent,\n        DeleteVirtualPlayerDialogComponent,\n        AdminDictionariesComponent,\n        ModifyDictionaryComponent,\n        UploadDictionaryComponent,\n        DeleteDictionaryDialogComponent,\n        AdminHighScoresComponent,\n        AdminGameHistoryComponent,\n        DurationPipe,\n        ObjectiveComponent,\n        ObjectiveBoxComponent,\n        LoadingPageComponent,\n    ],\n    imports: [\n        AppMaterialModule,\n        AppRoutingModule,\n        BrowserAnimationsModule,\n        BrowserModule,\n        FormsModule,\n        ReactiveFormsModule,\n        HttpClientModule,\n        ScrollingModule,\n    ],\n    providers: [\n        InitializerService,\n        {\n            provide: APP_INITIALIZER,\n            useFactory: (initializer: InitializerService) => () => initializer.initialize(),\n            deps: [InitializerService],\n            multi: true,\n        },\n        {\n            provide: LOCALE_ID,\n            useValue: 'fr-CA',\n        },\n    ],\n    bootstrap: [AppComponent],\n})\nexport class AppModule {}\n",
+            "sourceCode": "import { ScrollingModule } from '@angular/cdk/scrolling';\nimport { registerLocaleData } from '@angular/common';\nimport { HttpClientModule } from '@angular/common/http';\nimport localeFr from '@angular/common/locales/fr';\nimport { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';\nimport { FormsModule, ReactiveFormsModule } from '@angular/forms';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { BrowserAnimationsModule } from '@angular/platform-browser/animations';\nimport { BoardComponent } from '@app/components/board/board.component';\nimport { SquareComponent } from '@app/components/square/square.component';\nimport { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';\nimport { TileComponent } from '@app/components/tile/tile.component';\nimport { AppRoutingModule } from '@app/modules/app-routing.module';\nimport { AppMaterialModule } from '@app/modules/material.module';\nimport { AppComponent } from '@app/pages/app/app.component';\nimport { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';\nimport { GamePageComponent } from '@app/pages/game-page/game-page.component';\nimport { HomePageComponent } from '@app/pages/home-page/home-page.component';\nimport { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';\nimport { AdminDictionariesComponent } from './components/admin-dictionaries-component/admin-dictionaries.component';\nimport { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';\nimport { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';\nimport { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';\nimport { ChatBoxComponent } from './components/chatbox/chatbox.component';\nimport { CommunicationBoxComponent } from './components/communication-box/communication-box.component';\nimport { ConvertDialogComponent } from './components/convert-dialog/convert-dialog.component';\nimport { CreateVirtualPlayerComponent } from './components/create-virtual-player-dialog/create-virtual-player-dialog.component';\nimport { DefaultDialogComponent } from './components/default-dialog/default-dialog.component';\nimport { DeleteDictionaryDialogComponent } from './components/delete-dictionary-dialog/delete-dictionary-dialog.component';\nimport { DeleteVirtualPlayerDialogComponent } from './components/delete-virtual-player-dialog/delete-virtual-player-dialog.component';\nimport { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';\nimport { IconComponent } from './components/icon/icon.component';\nimport { InformationBoxComponent } from './components/information-box/information-box.component';\nimport { LobbyInfoComponent } from './components/lobby-info/lobby-info.component';\nimport { ModifyDictionaryComponent } from './components/modify-dictionary-dialog/modify-dictionary-dialog.component';\nimport { NameFieldComponent } from './components/name-field/name-field.component';\nimport { ObjectiveBoxComponent } from './components/objective-box/objective-box.component';\nimport { ObjectiveComponent } from './components/objective/objective.component';\nimport { PageHeaderComponent } from './components/page-header/page-header.component';\nimport { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';\nimport { UpdateVirtualPlayerComponent } from './components/update-virtual-player-dialog/update-virtual-player-dialog.component';\nimport { UploadDictionaryComponent } from './components/upload-dictionary/upload-dictionary.component';\nimport { AdminPageComponent } from './pages/admin-page/admin-page.component';\nimport { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';\nimport { HighScoresPageComponent } from './pages/high-scores-page/high-scores-page.component';\nimport { LoadingPageComponent } from './pages/loading-page/loading-page.component';\nimport { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';\nimport { DurationPipe } from './pipes/duration/duration.pipe';\nimport { InitializerService } from './services/initializer-service/initializer.service';\nimport { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';\nimport { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';\nimport { IconButtonComponent } from './components/icon-button/icon-button.component';\n\nregisterLocaleData(localeFr);\n\n/**\n * Main module that is used in main.ts.\n * All automatically generated components will appear in this module.\n * Please do not move this module in the module folder.\n * Otherwise Angular Cli will not know in which module to put new component\n */\n@NgModule({\n    declarations: [\n        AppComponent,\n        GamePageComponent,\n        HomePageComponent,\n        SquareComponent,\n        TileComponent,\n        InformationBoxComponent,\n        CommunicationBoxComponent,\n        BoardComponent,\n        TileRackComponent,\n        LobbyPageComponent,\n        LobbyInfoComponent,\n        CreateWaitingPageComponent,\n        JoinWaitingPageComponent,\n        GameCreationPageComponent,\n        DefaultDialogComponent,\n        IconComponent,\n        NameFieldComponent,\n        TimerSelectionComponent,\n        PageHeaderComponent,\n        HighScoresPageComponent,\n        HighScoreBoxComponent,\n        ConvertDialogComponent,\n        AdminPageComponent,\n        AdminVirtualPlayersComponent,\n        CreateVirtualPlayerComponent,\n        UpdateVirtualPlayerComponent,\n        DeleteVirtualPlayerDialogComponent,\n        AdminDictionariesComponent,\n        ModifyDictionaryComponent,\n        UploadDictionaryComponent,\n        DeleteDictionaryDialogComponent,\n        AdminHighScoresComponent,\n        AdminGameHistoryComponent,\n        DurationPipe,\n        ObjectiveComponent,\n        ObjectiveBoxComponent,\n        LoadingPageComponent,\n        ChatBoxComponent,\n        ChatboxContainerComponent,\n        ChatboxMessageComponent,\n        IconButtonComponent,\n    ],\n    imports: [\n        AppMaterialModule,\n        AppRoutingModule,\n        BrowserAnimationsModule,\n        BrowserModule,\n        FormsModule,\n        ReactiveFormsModule,\n        HttpClientModule,\n        ScrollingModule,\n    ],\n    providers: [\n        InitializerService,\n        {\n            provide: APP_INITIALIZER,\n            useFactory: (initializer: InitializerService) => () => initializer.initialize(),\n            deps: [InitializerService],\n            multi: true,\n        },\n        {\n            provide: LOCALE_ID,\n            useValue: 'fr-CA',\n        },\n    ],\n    bootstrap: [AppComponent],\n})\nexport class AppModule {}\n",
             "children": [
                 {
                     "type": "providers",
@@ -24325,6 +24815,15 @@
                         },
                         {
                             "name": "BoardComponent"
+                        },
+                        {
+                            "name": "ChatBoxComponent"
+                        },
+                        {
+                            "name": "ChatboxContainerComponent"
+                        },
+                        {
+                            "name": "ChatboxMessageComponent"
                         },
                         {
                             "name": "CommunicationBoxComponent"
@@ -24364,6 +24863,9 @@
                         },
                         {
                             "name": "HomePageComponent"
+                        },
+                        {
+                            "name": "IconButtonComponent"
                         },
                         {
                             "name": "IconComponent"
@@ -25277,6 +25779,26 @@
                 "defaultValue": "'a'"
             },
             {
+                "name": "EMOJI_REGEX",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/utils/emoji/emoji.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "/^(?:[\\u2700-\\u27bf]|(?:\\ud83c[\\udde6-\\uddff]){2}|[\\ud800-\\udbff][\\udc00-\\udfff]|[\\u0023-\\u0039]\\ufe0f?\\u20e3|\\u3299|\\u3297|\\u303d|\\u3030|\\u24c2|\\ud83c[\\udd70-\\udd71]|\\ud83c[\\udd7e-\\udd7f]|\\ud83c\\udd8e|\\ud83c[\\udd91-\\udd9a]|\\ud83c[\\udde6-\\uddff]|[\\ud83c[\\ude01-\\ude02]|\\ud83c\\ude1a|\\ud83c\\ude2f|[\\ud83c[\\ude32-\\ude3a]|[\\ud83c[\\ude50-\\ude51]|\\u203c|\\u2049|[\\u25aa-\\u25ab]|\\u25b6|\\u25c0|[\\u25fb-\\u25fe]|\\u00a9|\\u00ae|\\u2122|\\u2139|\\ud83c\\udc04|[\\u2600-\\u26FF]|\\u2b05|\\u2b06|\\u2b07|\\u2b1b|\\u2b1c|\\u2b50|\\u2b55|\\u231a|\\u231b|\\u2328|\\u23cf|[\\u23e9-\\u23f3]|[\\u23f8-\\u23fa]|\\ud83c\\udccf|\\u2934|\\u2935|[\\u2190-\\u21ff])+$/"
+            },
+            {
+                "name": "empty",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "template.bind({})"
+            },
+            {
                 "name": "ENTER",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -25557,16 +26079,6 @@
                 "defaultValue": "'keydown'"
             },
             {
-                "name": "Large",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/stories/Button.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
                 "name": "LETTER_MULTIPLIER_COLOR_MAP",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -25605,46 +26117,6 @@
                 "deprecationMessage": "",
                 "type": "string",
                 "defaultValue": "'me'"
-            },
-            {
-                "name": "LoggedIn",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/stories/Header.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
-                "name": "LoggedIn",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/stories/Page.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
-                "name": "LoggedOut",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/stories/Header.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
-                "name": "LoggedOut",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/stories/Page.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "",
-                "defaultValue": "Template.bind({})"
             },
             {
                 "name": "MARGIN_COLUMN_SIZE",
@@ -26127,6 +26599,16 @@
                 "defaultValue": "[ActionType.PLACE, ActionType.EXCHANGE, ActionType.PASS, ActionType.HINT]"
             },
             {
+                "name": "onlyHasEmoji",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/utils/emoji/emoji.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "(str: string): boolean => {\n    return EMOJI_REGEX.test(str);\n}"
+            },
+            {
                 "name": "OPPONENT_COMPLETED_THIS_OBJECTIVE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -26250,21 +26732,41 @@
                 "name": "primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/icon/icon.component.stories.ts",
+                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
                 "defaultValue": "template.bind({})"
             },
             {
-                "name": "Primary",
+                "name": "primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/stories/Button.stories.ts",
+                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
-                "defaultValue": "Template.bind({})"
+                "defaultValue": "template.bind({})"
+            },
+            {
+                "name": "primary",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "template.bind({})"
+            },
+            {
+                "name": "primary",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/components/icon/icon.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "template.bind({})"
             },
             {
                 "name": "RACK_FONT_SIZE_INCREMENT",
@@ -26356,16 +26858,6 @@
                 "type": "literal type"
             },
             {
-                "name": "Secondary",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/stories/Button.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
                 "name": "SECONDS_IN_DAY",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -26424,16 +26916,6 @@
                 "deprecationMessage": "",
                 "type": "number",
                 "defaultValue": "250"
-            },
-            {
-                "name": "Small",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/stories/Button.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "",
-                "defaultValue": "Template.bind({})"
             },
             {
                 "name": "SNACK_BAR_ERROR_DURATION",
@@ -26579,41 +27061,41 @@
                 "name": "template",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
+                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story<ChatboxMessageComponent>",
+                "defaultValue": "(args: ChatboxMessageComponent) => ({\n    props: args,\n})"
+            },
+            {
+                "name": "template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story<ChatBoxComponent>",
+                "defaultValue": "(args: ChatBoxComponent) => ({\n    props: args,\n})"
+            },
+            {
+                "name": "template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story<ChatboxContainerComponent>",
+                "defaultValue": "(args: ChatboxContainerComponent) => ({\n    props: args,\n})"
+            },
+            {
+                "name": "template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
                 "file": "src/app/components/icon/icon.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story<IconComponent>",
                 "defaultValue": "(args: IconComponent) => ({\n    props: args,\n})"
-            },
-            {
-                "name": "Template",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/stories/Header.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Story<Header>",
-                "defaultValue": "(args: Header) => ({\n  props: args,\n})"
-            },
-            {
-                "name": "Template",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/stories/Button.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Story<Button>",
-                "defaultValue": "(args: Button) => ({\n  props: args,\n})"
-            },
-            {
-                "name": "Template",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/stories/Page.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Story<Page>",
-                "defaultValue": "(args: Page) => ({\n  props: args,\n})"
             },
             {
                 "name": "TEST_DICTIONARY",
@@ -26784,6 +27266,16 @@
                 "deprecationMessage": "",
                 "type": "",
                 "defaultValue": "(gameId: string): Message => {\n    return {\n        content: \"Veuillez attendre la confirmation de votre commande précédente avant d'en envoyer une autre.\",\n        senderId: SYSTEM_ID,\n        gameId,\n    };\n}"
+            },
+            {
+                "name": "withVeryLongName",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "template.bind({})"
             },
             {
                 "name": "WORD_MULTIPLIER_COLOR_MAP",
@@ -29469,6 +29961,60 @@
                     "defaultValue": "'a'"
                 }
             ],
+            "src/app/utils/emoji/emoji.ts": [
+                {
+                    "name": "EMOJI_REGEX",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/utils/emoji/emoji.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "/^(?:[\\u2700-\\u27bf]|(?:\\ud83c[\\udde6-\\uddff]){2}|[\\ud800-\\udbff][\\udc00-\\udfff]|[\\u0023-\\u0039]\\ufe0f?\\u20e3|\\u3299|\\u3297|\\u303d|\\u3030|\\u24c2|\\ud83c[\\udd70-\\udd71]|\\ud83c[\\udd7e-\\udd7f]|\\ud83c\\udd8e|\\ud83c[\\udd91-\\udd9a]|\\ud83c[\\udde6-\\uddff]|[\\ud83c[\\ude01-\\ude02]|\\ud83c\\ude1a|\\ud83c\\ude2f|[\\ud83c[\\ude32-\\ude3a]|[\\ud83c[\\ude50-\\ude51]|\\u203c|\\u2049|[\\u25aa-\\u25ab]|\\u25b6|\\u25c0|[\\u25fb-\\u25fe]|\\u00a9|\\u00ae|\\u2122|\\u2139|\\ud83c\\udc04|[\\u2600-\\u26FF]|\\u2b05|\\u2b06|\\u2b07|\\u2b1b|\\u2b1c|\\u2b50|\\u2b55|\\u231a|\\u231b|\\u2328|\\u23cf|[\\u23e9-\\u23f3]|[\\u23f8-\\u23fa]|\\ud83c\\udccf|\\u2934|\\u2935|[\\u2190-\\u21ff])+$/"
+                },
+                {
+                    "name": "onlyHasEmoji",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/utils/emoji/emoji.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "(str: string): boolean => {\n    return EMOJI_REGEX.test(str);\n}"
+                }
+            ],
+            "src/app/components/chatbox-message/chatbox-message.component.stories.ts": [
+                {
+                    "name": "empty",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "template.bind({})"
+                },
+                {
+                    "name": "primary",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "template.bind({})"
+                },
+                {
+                    "name": "template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story<ChatboxMessageComponent>",
+                    "defaultValue": "(args: ChatboxMessageComponent) => ({\n    props: args,\n})"
+                }
+            ],
             "src/environments/environment.ts": [
                 {
                     "name": "environment",
@@ -29711,58 +30257,6 @@
                     "defaultValue": "(char: string) => !isNaN(parseInt(char, 10))"
                 }
             ],
-            "src/stories/Button.stories.ts": [
-                {
-                    "name": "Large",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Button.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Primary",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Button.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Secondary",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Button.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Small",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Button.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Template",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Button.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story<Button>",
-                    "defaultValue": "(args: Button) => ({\n  props: args,\n})"
-                }
-            ],
             "src/app/classes/square/square-multiplier-to-color-map.ts": [
                 {
                     "name": "LETTER_MULTIPLIER_COLOR_MAP",
@@ -29793,70 +30287,6 @@
                     "deprecationMessage": "",
                     "type": "Map<number, COLORS>",
                     "defaultValue": "new Map([\n    [2, COLORS.Word2x],\n    [3, COLORS.Word3x],\n])"
-                }
-            ],
-            "src/stories/Header.stories.ts": [
-                {
-                    "name": "LoggedIn",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Header.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "LoggedOut",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Header.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Template",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Header.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story<Header>",
-                    "defaultValue": "(args: Header) => ({\n  props: args,\n})"
-                }
-            ],
-            "src/stories/Page.stories.ts": [
-                {
-                    "name": "LoggedIn",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Page.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "LoggedOut",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Page.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Template",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/stories/Page.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story<Page>",
-                    "defaultValue": "(args: Page) => ({\n  props: args,\n})"
                 }
             ],
             "src/app/constants/name-validation.ts": [
@@ -30083,6 +30513,60 @@
                     "deprecationMessage": "",
                     "type": "string",
                     "defaultValue": "'v'"
+                }
+            ],
+            "src/app/components/chatbox/chatbox.component.stories.ts": [
+                {
+                    "name": "primary",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/chatbox/chatbox.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "template.bind({})"
+                },
+                {
+                    "name": "template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/chatbox/chatbox.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story<ChatBoxComponent>",
+                    "defaultValue": "(args: ChatBoxComponent) => ({\n    props: args,\n})"
+                }
+            ],
+            "src/app/components/chatbox-container/chatbox-container.component.stories.ts": [
+                {
+                    "name": "primary",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "template.bind({})"
+                },
+                {
+                    "name": "template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story<ChatboxContainerComponent>",
+                    "defaultValue": "(args: ChatboxContainerComponent) => ({\n    props: args,\n})"
+                },
+                {
+                    "name": "withVeryLongName",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "template.bind({})"
                 }
             ],
             "src/app/components/icon/icon.component.stories.ts": [
@@ -31878,6 +32362,140 @@
                 "status": "low"
             },
             {
+                "filePath": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "primary",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "template",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "withVeryLongName",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox-container/chatbox-container.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ChatboxContainerComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/11",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox-container/chatbox-container.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "Channel",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "empty",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "primary",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "template",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox-message/chatbox-message.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ChatboxMessageComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/19",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox-message/chatbox-message.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "DisplayMessage",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox-message/chatbox-message.component.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "Message",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox/chatbox.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "primary",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox/chatbox.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "template",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/chatbox/chatbox.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ChatBoxComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/11",
+                "status": "low"
+            },
+            {
                 "filePath": "src/app/components/communication-box/communication-box.component.ts",
                 "type": "component",
                 "linktype": "component",
@@ -31974,6 +32592,15 @@
                 "name": "HighScoreBoxComponent",
                 "coveragePercent": 0,
                 "coverageCount": "0/2",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/icon-button/icon-button.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "IconButtonComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
                 "status": "low"
             },
             {
@@ -34555,6 +35182,26 @@
                 "status": "low"
             },
             {
+                "filePath": "src/app/utils/emoji/emoji.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "EMOJI_REGEX",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/utils/emoji/emoji.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "onlyHasEmoji",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
                 "filePath": "src/app/utils/i-reset-service-data/i-reset-service-data.ts",
                 "type": "interface",
                 "linktype": "interface",
@@ -34660,152 +35307,6 @@
                 "name": "environment",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Button.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Large",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Button.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Primary",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Button.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Secondary",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Button.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Small",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Button.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Template",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Header.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "LoggedIn",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Header.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "LoggedOut",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Header.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Template",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Page.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "LoggedIn",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Page.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "LoggedOut",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/Page.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Template",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/User.ts",
-                "type": "interface",
-                "linktype": "interface",
-                "name": "User",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/button.component.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "ButtonComponent",
-                "coveragePercent": 83,
-                "coverageCount": "5/6",
-                "status": "very-good"
-            },
-            {
-                "filePath": "src/stories/header.component.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "HeaderComponent",
-                "coveragePercent": 0,
-                "coverageCount": "0/5",
-                "status": "low"
-            },
-            {
-                "filePath": "src/stories/page.component.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "PageComponent",
-                "coveragePercent": 0,
-                "coverageCount": "0/5",
                 "status": "low"
             },
             {

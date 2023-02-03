@@ -4,6 +4,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { GameType } from '@app/constants/game-type';
@@ -38,7 +39,7 @@ describe('AdminHighScoresComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [AdminHighScoresComponent, IconComponent],
-            imports: [RouterTestingModule, HttpClientTestingModule, MatDialogModule],
+            imports: [RouterTestingModule, HttpClientTestingModule, MatDialogModule, MatSnackBarModule],
             providers: [{ provide: HighScoresService, useClass: HighScoresServiceSpy }],
         }).compileComponents();
     });

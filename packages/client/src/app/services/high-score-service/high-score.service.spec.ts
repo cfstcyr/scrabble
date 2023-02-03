@@ -2,6 +2,7 @@
 /* eslint-disable dot-notation */
 import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameType } from '@app/constants/game-type';
 import { HighScoresController } from '@app/controllers/high-score-controller/high-score.controller';
@@ -49,7 +50,7 @@ describe('HighScoresService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientModule, RouterTestingModule],
+            imports: [HttpClientModule, RouterTestingModule, MatSnackBarModule],
             providers: [HighScoresController, SocketService],
         });
         service = TestBed.inject(HighScoresService);

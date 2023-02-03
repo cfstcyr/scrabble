@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -115,6 +116,7 @@ describe('CommunicationBoxComponent', () => {
                 HttpClientTestingModule,
                 RouterTestingModule,
                 MatTooltipModule,
+                MatSnackBarModule,
             ],
             providers: [
                 { provide: InputParserService, useValue: inputParserSpy },
