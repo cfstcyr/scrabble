@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientChannel, ViewClientChannel } from '@app/classes/chat/channel';
-import { CONFIRM_QUIT_CHANNEL, CONFIRM_QUIT_DIALOG_TITLE } from '@app/constants/chat-constants';
+import { CONFIRM_QUIT_CHANNEL, CONFIRM_QUIT_DIALOG_TITLE, MAX_OPEN_CHAT } from '@app/constants/chat-constants';
 import { Channel } from '@common/models/chat/channel';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -60,6 +60,8 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
 
     showChannel(channel: ClientChannel): void {
         this.openedChannels.push(channel);
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        this.openedChannels = this.openedChannels.slice(-1 * MAX_OPEN_CHAT);
         this.closeMenu();
     }
 
@@ -74,6 +76,11 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
 
     toggleMenu(): void {
         this.channelMenuIsOpen = !this.channelMenuIsOpen;
+
+        if (this.channelMenuIsOpen) {
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            this.openedChannels = this.openedChannels.slice(-1);
+        }
     }
 
     handleSendMessage(channel: Channel, content: string): void {
