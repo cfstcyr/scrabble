@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ClientChannel } from '@app/classes/chat/channel';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { Channel } from '@common/models/chat/channel';
-import { Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-chatbox-wrapper',
@@ -11,7 +11,7 @@ import { Subject } from 'rxjs';
 })
 export class ChatboxWrapperComponent {
     channels: ClientChannel[];
-    joinedChannel: Subject<ClientChannel>;
+    joinedChannel: Observable<ClientChannel>;
 
     constructor(private readonly chatService: ChatService) {
         this.channels = this.chatService.channels;

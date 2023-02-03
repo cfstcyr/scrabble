@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ClientChannel, ViewClientChannel } from '@app/classes/chat/channel';
 import { Channel } from '@common/models/chat/channel';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -12,7 +12,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class ChatboxContainerComponent implements OnInit, OnDestroy {
     @Input() channels: ClientChannel[] = [];
-    @Input() joinedChannel: Subject<ClientChannel> = new Subject();
+    @Input() joinedChannel: Observable<ClientChannel> = new Subject();
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
     @Output() joinChannel: EventEmitter<string> = new EventEmitter();
