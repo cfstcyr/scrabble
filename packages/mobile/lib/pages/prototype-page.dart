@@ -2,7 +2,8 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+
+class PrototypePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -17,7 +18,12 @@ class HomePage extends StatelessWidget {
               SizedBox(width: 10), // c'est un spacing fancy
               ElevatedButton(
                 onPressed: () {},
-                child: Text('Loginaa'),
+                child: Text('NeFaitRien'),
+              ),
+              SizedBox(width: 10), // c'est un spacing fancy
+              ElevatedButton(
+                onPressed: () {},
+                child: Text('Amusez vous à clavarder'),
               ),
             ],
           ),
@@ -42,7 +48,7 @@ class MainTitle extends StatelessWidget {
       color: theme.colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Text('PolyScrabbleaa', style: style),
+        child: Text('Bravo, vous êtes connectés!', style: style),
       ),
     );
   }
