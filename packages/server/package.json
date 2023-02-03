@@ -4,7 +4,7 @@
     "version": "1.1.0",
     "private": true,
     "scripts": {
-        "start": "nodemon",
+        "start": "nodemon -L",
         "build": "rimraf out && tsc --project tsconfig.app.json",
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "eslint -c .eslintrc.json \"./app/**/*.ts\" --format stylish",
