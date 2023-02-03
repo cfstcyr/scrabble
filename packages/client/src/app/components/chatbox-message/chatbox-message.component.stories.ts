@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 // also exported from '@storybook/angular' if you can deal with breaking changes in 6.1
 import { Story, Meta } from '@storybook/angular/types-6-0';
 import { ChatboxMessageComponent } from './chatbox-message.component';
@@ -30,22 +31,28 @@ primary.args = {
     title: 'Général',
     messages: [
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        ...new Array(15).fill(0).map<ChatMessage>(() => ({ content: 'hey', sender: { username: 'John', avatar: '' } })),
+        ...new Array(15)
+            .fill(0)
+            .map<ChatMessage>(() => ({ content: 'hey', sender: { username: 'John', avatar: '' }, date: new Date(2001, 5, 29, 10, 43) })),
         {
             content: 'bonjour',
             sender: { username: 'Guy', avatar: '' },
+            date: new Date(2001, 5, 29, 10, 45),
         },
         {
             content: 'hola',
             sender: { username: 'Me', avatar: '' },
+            date: new Date(2001, 5, 29, 10, 45),
         },
         {
             content: 'sup',
             sender: { username: 'Me', avatar: '' },
+            date: new Date(2001, 5, 29, 10, 47),
         },
         {
             content: 'Exercitation cupidatat officia ut aliqua adipiscing irure culpa anim duis eiusmod ullamco',
             sender: { username: 'Guy', avatar: '' },
+            date: new Date(2001, 5, 29, 10, 47),
         },
     ],
     icon: 'https://placedog.net/50',

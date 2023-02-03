@@ -25,7 +25,7 @@
                                 <p
                                     [ngClass]="{
                                         'chatbox-message__message': true, 
-                                        'chatbox-message__message--only-emoji': onlyHasEmoji(message.content)
+                                        'chatbox-message__message--only-emoji': message.onlyEmoji
                                     }"
                                 >{{message.content}}</p>
                             </div>
