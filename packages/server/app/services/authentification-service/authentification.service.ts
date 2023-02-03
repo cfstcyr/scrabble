@@ -12,8 +12,8 @@ export class AuthentificationService {
     constructor(private databaseService: DatabaseService) { }
 
     async login(credentials: { email: string; password: string }): Promise<string> {
-        const id = await this.databaseService.getUserId(credentials.email);
-        const user = await this.databaseService.getUser(id.idUser);
+        const id = await this.getUserId(credentials.email);
+        const user = await this.getUser(id.idUser);
         const match = await bcrypt.compare(credentials.password, user.password);
 
         return new Promise((resolve, reject) => {
@@ -30,7 +30,7 @@ export class AuthentificationService {
 
     async signUp(user: User): Promise<string> {
         const hash = await bcrypt.hash(user.password, SALTROUNDS);
-        const data = (await this.databaseService.createUser({ ...user, password: hash })) as TokenData;
+        const data = (await this.createUser({ ...user, password: hash })) as TokenData;
 
         return new Promise((resolve, reject) => {
             try {
@@ -39,6 +39,41 @@ export class AuthentificationService {
             } catch (err) {
                 reject(err);
             }
+        });
+    }
+
+    async getUserId(email: string): Promise<TokenData> {
+        return new Promise((resolve, reject) => {
+            this.databaseService
+                .knex<User>('User')
+                .where('email', email)
+                .select('idUser')
+                .then((data) => resolve(data[0]))
+                .catch((err) => reject(err));
+        });
+    }
+
+    async getUser(idUser: number): Promise<User> {
+        return new Promise((resolve, reject) => {
+            this.databaseService
+                .knex<User>('User')
+                .where('idUser', idUser)
+                .select('*')
+                .then((data) => resolve(data[0]))
+                .catch((err) => reject(err));
+        });
+    }
+
+    async createUser(user: User): Promise<unknown> {
+        return new Promise((resolve, reject) => {
+            this.databaseService.knex
+                .returning('idUser')
+                .insert(user)
+                .into('User')
+                .onConflict('email')
+                .ignore()
+                .then((data) => resolve(data[0]))
+                .catch((err) => reject(err));
         });
     }
 

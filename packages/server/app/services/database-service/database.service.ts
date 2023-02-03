@@ -1,5 +1,3 @@
-import TokenData from '@app/classes/user/token-data';
-import User from '@app/classes/user/user';
 import { env } from '@app/utils/environment/environment';
 import knex, { Knex } from 'knex';
 import { Service } from 'typedi';
@@ -33,39 +31,6 @@ export default class DatabaseService {
                 .raw('SELECT 1')
                 .then(() => resolve())
                 .catch(reject);
-        });
-    }
-
-    async getUserId(email: string): Promise<TokenData> {
-        return new Promise((resolve, reject) => {
-            this.knex<User>('User')
-                .where('email', email)
-                .select('idUser')
-                .then((data) => resolve(data[0]))
-                .catch((err) => reject(err));
-        });
-    }
-
-    async getUser(idUser: number): Promise<User> {
-        return new Promise((resolve, reject) => {
-            this.knex<User>('User')
-                .where('idUser', idUser)
-                .select('*')
-                .then((data) => resolve(data[0]))
-                .catch((err) => reject(err));
-        });
-    }
-
-    async createUser(user: User): Promise<unknown> {
-        return new Promise((resolve, reject) => {
-            this.knex
-                .returning('idUser')
-                .insert(user)
-                .into('User')
-                .onConflict('email')
-                .ignore()
-                .then((data) => resolve(data[0]))
-                .catch((err) => reject(err));
         });
     }
 }
