@@ -5,15 +5,24 @@ import { SOCKET_ID_UNDEFINED } from '@app/constants/services-errors';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { ClientSocket } from '@app/classes/communication/socket-type';
+import { AlertService } from '@app/services/alert-service/alert.service';
 @Injectable({
     providedIn: 'root',
 })
 export default class SocketService extends ConnectionStateService {
     socket: ClientSocket;
 
+    constructor(private alertService: AlertService) {
+        super();
+    }
+
     initializeService(): void {
         this.socket = this.getSocket();
         this.socket.on('connect', () => this.nextState(ConnectionState.Connected)).on('connect_error', () => this.nextState(ConnectionState.Error));
+
+        this.socket.on('error', (message: string, code: number) => {
+            this.alertService.error(message, { log: `Error ${code}: ${message}` });
+        });
     }
 
     getId(): string {

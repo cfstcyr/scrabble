@@ -51,6 +51,7 @@ import { ChatboxContainerComponent } from './components/chatbox-container/chatbo
 import { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';
 import { IconButtonComponent } from './components/icon-button/icon-button.component';
 import { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';
+import { AlertComponent } from './components/alert/alert.component';
 
 registerLocaleData(localeFr);
 
@@ -104,6 +105,7 @@ registerLocaleData(localeFr);
         ChatboxMessageComponent,
         IconButtonComponent,
         ChatboxWrapperComponent,
+        AlertComponent,
     ],
     imports: [
         AppMaterialModule,
