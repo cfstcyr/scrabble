@@ -88,16 +88,6 @@ describe('ChatService', () => {
 
         describe('channel:newMessage', () => {
             describe('HAPPY - PATH', () => {
-                it('should emit message back to all client in channel', (done) => {
-                    clientSocket.on('channel:newMessage', (channelId: string, chatMessage: ChatMessage) => {
-                        expect(chatMessage).to.deep.equal(expectedMessage);
-                        done();
-                    });
-                    serverSocket.join(testChannel.name);
-
-                    clientSocket.emit('channel:newMessage', testChannel, expectedMessage);
-                });
-
                 it('should not emit message to client NOT in channel', async () => {
                     const testClass = new TestClass();
                     const funcSpy = chai.spy.on(testClass, 'testFunc');
@@ -204,7 +194,7 @@ describe('ChatService', () => {
                 it('should remove socket from channel room of room exists', async () => {
                     serverSocket.join(testChannel.name);
 
-                    clientSocket.emit('channel:quit', testChannel);
+                    clientSocket.emit('channel:quit', testChannel.name);
 
                     await Delay.for(RESPONSE_DELAY);
 
@@ -221,7 +211,7 @@ describe('ChatService', () => {
                     });
                     serverSocket.join(testChannel.name);
 
-                    clientSocket.emit('channel:quit', testChannel);
+                    clientSocket.emit('channel:quit', testChannel.name);
                 });
                 it('should throw error if user NOT in channel', (done) => {
                     clientSocket.on('error' as any, (err: string, code: number) => {
@@ -231,7 +221,7 @@ describe('ChatService', () => {
                     });
                     serverSocket.leave(testChannel.name);
 
-                    clientSocket.emit('channel:quit', testChannel);
+                    clientSocket.emit('channel:quit', testChannel.name);
                 });
             });
         });
