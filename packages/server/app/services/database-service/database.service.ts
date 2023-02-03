@@ -35,25 +35,36 @@ export default class DatabaseService {
         });
     }
 
-    async getUser(user: User): Promise<User> {
+    async getUserId(email: string): Promise<{ idUser: number }> {
         return new Promise((resolve, reject) => {
-            this.knex
-                .raw('SELECT 1')
-                .then(() => resolve(user))
-                .catch(reject);
+            this.knex('User')
+                .where('email', email)
+                .select('idUser')
+                .then((data) => resolve(data[0]))
+                .catch((err) => reject(err));
         });
     }
 
-    async createUser(user: User): Promise<number[]> {
+    async getUser(idUser: number): Promise<unknown[]> {
+        return new Promise((resolve, reject) => {
+            this.knex('User')
+                .where('idUser', idUser)
+                .select('*')
+                .then((data) => resolve(data))
+                .catch((err) => reject(err));
+        });
+    }
+
+    async createUser(user: User): Promise<number> {
         return new Promise((resolve, reject) => {
             this.knex
+                .returning('idUser')
                 .insert(user)
                 .into('User')
                 .onConflict('email')
                 .ignore()
-                .returning('idUser')
-                .then((data) => resolve(data))
-                .catch(reject);
+                .then((data) => resolve(data[0]))
+                .catch((err) => reject(err));
         });
     }
 }
