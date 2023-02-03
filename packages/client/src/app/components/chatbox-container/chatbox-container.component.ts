@@ -93,7 +93,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.createChannel.next(channelName);
         this.createChannelForm.reset();
         this.createChannelForm.setErrors({ createChannel: false });
-        this.createChannelInput.nativeElement.blur();
+        this.createChannelInput?.nativeElement?.blur();
     }
 
     handleJoinChannel() {
@@ -106,6 +106,6 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.joinChannel.next(channelName);
         this.joinChannelForm.reset();
         this.joinChannelForm.setErrors({ joinChannel: false });
-        this.joinChannelInput.nativeElement.blur();
+        this.joinChannelInput?.nativeElement?.blur();
     }
 }

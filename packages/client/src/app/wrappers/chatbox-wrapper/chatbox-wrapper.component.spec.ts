@@ -1,4 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ChatboxContainerComponent } from '@app/components/chatbox-container/chatbox-container.component';
+import { ChatboxMessageComponent } from '@app/components/chatbox-message/chatbox-message.component';
+import { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';
+import { IconButtonComponent } from '@app/components/icon-button/icon-button.component';
+import { IconComponent } from '@app/components/icon/icon.component';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { Subject } from 'rxjs';
 
@@ -16,8 +23,16 @@ describe('ChatboxWrapperComponent', () => {
         });
 
         await TestBed.configureTestingModule({
-            declarations: [ChatboxWrapperComponent],
-            providers: [{ provide: ChatService, useValue: chatService }],
+            declarations: [
+                ChatboxWrapperComponent,
+                ChatboxContainerComponent,
+                ChatBoxComponent,
+                ChatboxMessageComponent,
+                IconButtonComponent,
+                IconComponent,
+            ],
+            imports: [ReactiveFormsModule],
+            providers: [{ provide: ChatService, useValue: chatService }, FormBuilder],
         }).compileComponents();
     });
 
@@ -29,5 +44,26 @@ describe('ChatboxWrapperComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    describe('handleSendMessage', () => {
+        it('should call sendMessage', () => {
+            component.handleSendMessage([{} as any, '']);
+            expect(chatService.sendMessage).toHaveBeenCalled();
+        });
+    });
+
+    describe('handleCreateChannel', () => {
+        it('should call createChannel', () => {
+            component.handleCreateChannel('');
+            expect(chatService.createChannel).toHaveBeenCalled();
+        });
+    });
+
+    describe('handleJoinChannel', () => {
+        it('should call joinChannel', () => {
+            component.handleJoinChannel('');
+            expect(chatService.joinChannel).toHaveBeenCalled();
+        });
     });
 });

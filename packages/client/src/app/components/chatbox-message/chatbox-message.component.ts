@@ -61,15 +61,16 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
     }
 
     getLastUsersAvatarUrl(): [string?, string?] {
-        return this.messages.reduce<[string?, string?]>(
-            (avatars, { sender: { avatar } }) => {
-                if (!avatars[0]) return [avatar, undefined];
-                if (!avatars[1] && avatars[0] !== avatar) return [avatars[0], avatar];
+        let avatars: [string?, string?] = [undefined, undefined];
 
-                return avatars;
-            },
-            [undefined, undefined],
-        );
+        for (const {
+            sender: { avatar },
+        } of this.messages) {
+            if (!avatars[0]) avatars = [avatar, undefined];
+            if (!avatars[1] && avatars[0] !== avatar) return [avatars[0], avatar];
+        }
+
+        return avatars;
     }
 
     addMessage(content: string): void {

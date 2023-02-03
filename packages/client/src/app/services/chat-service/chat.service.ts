@@ -21,22 +21,9 @@ export class ChatService {
     }
 
     configureSocket(socket: ClientSocket): void {
-        socket.on('channel:join', (channel: Channel) => {
-            const newChannel = { ...channel, messages: [] };
-            this.channels.push(newChannel);
-            this.joinedChannel.next(newChannel);
-        });
-
-        socket.on('channel:quit', (channel: Channel) => {
-            const index = this.channels.findIndex(({ id }) => id === channel.id);
-            this.channels.splice(index, 0);
-        });
-
-        socket.on('channel:newMessage', (channelId: string, message: ChatMessage) => {
-            if (this.userService.isUser(message.sender)) return;
-            const channel = this.getChannel(channelId);
-            channel.messages.push(message);
-        });
+        socket.on('channel:join', this.handleJoinChannel.bind(this));
+        socket.on('channel:quit', this.handleChannelQuit.bind(this));
+        socket.on('channel:newMessage', this.handleNewMessage.bind(this));
 
         socket.emit('channel:init');
     }
@@ -54,6 +41,23 @@ export class ChatService {
 
     joinChannel(channel: string): void {
         this.socketService.socket.emit('channel:join', channel);
+    }
+
+    handleJoinChannel(channel: Channel) {
+        const newChannel = { ...channel, messages: [] };
+        this.channels.push(newChannel);
+        this.joinedChannel.next(newChannel);
+    }
+
+    handleChannelQuit(channel: Channel) {
+        const index = this.channels.findIndex(({ id }) => id === channel.id);
+        this.channels.splice(index, 1);
+    }
+
+    handleNewMessage(channelId: string, message: ChatMessage) {
+        if (this.userService.isUser(message.sender)) return;
+        const channel = this.getChannel(channelId);
+        channel.messages.push(message);
     }
 
     private getChannel(id: string): ClientChannel {
