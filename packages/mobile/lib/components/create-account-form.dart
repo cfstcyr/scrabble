@@ -30,8 +30,6 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
   final passwordHandler = TextFieldHandler();
   final passwordMatchHandler = TextFieldHandler();
 
-  final EdgeInsetsGeometry textFieldPadding = EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 0);
-
   @override
   void initState() {
     super.initState();
@@ -53,123 +51,138 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 600,
-      width: 500,
-      decoration: BoxDecoration(
-          border: Border.all(
-            color: themeColor,
-          ),
-          borderRadius: BorderRadius.circular(5)),
-      child: Column(
-        children: [
-          Padding(
-            padding: textFieldPadding,
-            child: TextField(
-              controller: emailHandler.controller,
-              focusNode: emailHandler.focusNode,
-              obscureText: false,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: EMAIL_LABEL_FR,
-                errorText: emailHandler.errorMessage.isEmpty ? null : emailHandler.errorMessage,
+    return Column(
+      children: [
+        SizedBox(height: 50),
+        Container(
+          height: 585,
+          width: 500,
+          decoration: BoxDecoration(
+              border: Border.all(
+                color: themeColor,
               ),
-            ),
-          ),
-          Padding(
-            padding: textFieldPadding,
-            child: TextField(
-              controller: usernameHandler.controller,
-              focusNode: usernameHandler.focusNode,
-              obscureText: false,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: USERNAME_LABEL_FR,
-                errorText: usernameHandler.errorMessage.isEmpty ? null : usernameHandler.errorMessage,
-              ),
-            ),
-          ),
-          Padding(
-            padding: textFieldPadding,
-            child: TextField(
-              controller: passwordHandler.controller,
-              focusNode: passwordHandler.focusNode,
-              keyboardType: TextInputType.visiblePassword,
-              autocorrect: false,
-              enableSuggestions: false,
-              obscureText: !isPasswordShown,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: PASSWORD_LABEL_FR,
-                helperText: PASSWORD_HELPER_TEXT_FR,
-                helperMaxLines: 3,
-                errorText: passwordHandler.errorMessage.isEmpty ? null : passwordHandler.errorMessage,
-              ),
-            ),
-          ),
-          Padding(
-            padding: textFieldPadding,
-            child: TextField(
-              controller: passwordMatchHandler.controller,
-              focusNode: passwordMatchHandler.focusNode,
-              autocorrect: false,
-              keyboardType: TextInputType.visiblePassword,
-              enableSuggestions: false,
-              obscureText: !isPasswordShown,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: PASSWORD_MATCH_LABEL_FR,
-                errorText: passwordMatchHandler.errorMessage.isEmpty ? null : passwordMatchHandler.errorMessage,
-              ),
-            ),
-          ),
-          CheckboxListTile(
-            title: Text(CHECKBOX_SHOW_PASSWORD_LABEL_FR),
-            value: isPasswordShown,
-            onChanged: (bool? value) {
-              setState(() {
-                isPasswordShown = value!;
-              });
-            },
-            controlAffinity: ListTileControlAffinity.leading,
-          ),
-          Padding(
-            padding: textFieldPadding,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
-                  },
-                  child: const Text(
-                    REDIRECT_LOGIN_LABEL_FR,
-                    style: TextStyle(color: Colors.black, fontSize: 15),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: isButtonEnabled ? () => {createAccount()} : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: themeColor,
-                    shadowColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3.0),
+              borderRadius: BorderRadius.circular(5)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 0),
+                    child: TextField(
+                      controller: emailHandler.controller,
+                      focusNode: emailHandler.focusNode,
+                      obscureText: false,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: EMAIL_LABEL_FR,
+                        errorText: emailHandler.errorMessage.isEmpty ? null : emailHandler.errorMessage,
+                      ),
                     ),
                   ),
-                  child: Text(
-                    CREATE_ACCOUNT_LABEL_FR,
-                    style: isButtonEnabled
-                        ? TextStyle(color: Colors.white, fontSize: 15)
-                        : TextStyle(color: Color.fromARGB(255, 87, 87, 87), fontSize: 15),
+                  Padding(
+                    padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 0),
+                    child: TextField(
+                      controller: usernameHandler.controller,
+                      focusNode: usernameHandler.focusNode,
+                      obscureText: false,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: USERNAME_LABEL_FR,
+                        errorText: usernameHandler.errorMessage.isEmpty ? null : usernameHandler.errorMessage,
+                      ),
+                    ),
                   ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 0),
+                    child: TextField(
+                      controller: passwordHandler.controller,
+                      focusNode: passwordHandler.focusNode,
+                      keyboardType: TextInputType.visiblePassword,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      obscureText: !isPasswordShown,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: PASSWORD_LABEL_FR,
+                        errorText: passwordHandler.errorMessage.isEmpty ? null : passwordHandler.errorMessage,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 0),
+                    child: TextField(
+                      controller: passwordMatchHandler.controller,
+                      focusNode: passwordMatchHandler.focusNode,
+                      autocorrect: false,
+                      keyboardType: TextInputType.visiblePassword,
+                      enableSuggestions: false,
+                      obscureText: !isPasswordShown,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: PASSWORD_MATCH_LABEL_FR,
+                        helperText: PASSWORD_HELPER_TEXT_FR,
+                        helperMaxLines: 3,
+                        errorText: passwordMatchHandler.errorMessage.isEmpty ? null : passwordMatchHandler.errorMessage,
+                      ),
+                    ),
+                  ),
+                  CheckboxListTile(
+                    title: Text(CHECKBOX_SHOW_PASSWORD_LABEL_FR),
+                    value: isPasswordShown,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        isPasswordShown = value!;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                      },
+                      child: const Text(
+                        REDIRECT_LOGIN_LABEL_FR,
+                        style: TextStyle(color: Colors.black, fontSize: 15),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: isButtonEnabled ? () => {createAccount()} : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: themeColor,
+                        shadowColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3.0),
+                        ),
+                      ),
+                      child: Text(
+                        CREATE_ACCOUNT_LABEL_FR,
+                        style: isButtonEnabled
+                            ? TextStyle(color: Colors.white, fontSize: 15)
+                            : TextStyle(color: Color.fromARGB(255, 87, 87, 87), fontSize: 15),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  bool isFormValid() {
+    return emailHandler.isValid() && usernameHandler.isValid() && passwordHandler.isValid() && passwordMatchHandler.isValid();
   }
 
   void validatePassword() {
@@ -234,10 +247,6 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
         usernameHandler.errorMessage = "";
       });
     }
-  }
-
-  bool isFormValid() {
-    return emailHandler.isValid() && usernameHandler.isValid() && passwordHandler.isValid() && passwordMatchHandler.isValid();
   }
 
   Future<void> createAccount() async {

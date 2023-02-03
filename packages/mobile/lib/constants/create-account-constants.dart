@@ -7,5 +7,5 @@ const String REDIRECT_LOGIN_LABEL_FR = 'Vous connecter à un compte existant';
 const String CREATE_ACCOUNT_LABEL_FR = 'Créer son compte';
 const String PASSWORD_HELPER_TEXT_FR = 'Au moins huit caractères comprenant au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 symbole';
 
-const String USERNAME_REGEX_PATTERN = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
+const String USERNAME_REGEX_PATTERN = r'^.{1,40}$';
 const String PASSWORD_REGEX_PATTERN = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
