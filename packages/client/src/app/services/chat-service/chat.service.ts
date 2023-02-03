@@ -59,7 +59,7 @@ export class ChatService {
     }
 
     handleNewMessage(channelId: string, message: ChatMessage) {
-        if (this.userService.isUser(message.sender)) return;
+        // if (this.userService.isUser(message.sender)) return;
         const channel = this.getChannel(channelId);
         channel.messages.push(message);
     }

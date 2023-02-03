@@ -40,7 +40,7 @@ export class ChatService {
             return;
         }
 
-        socket.nsp.to(channel.name).emit('channel:newMessage', foundChannel?.id, chatMessage);
+        socket.to(channel.name).emit('channel:newMessage', foundChannel?.id, chatMessage);
         // TODO: Save message in DB
     }
 
