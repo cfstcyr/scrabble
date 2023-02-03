@@ -12,8 +12,18 @@ export class AuthentificationController extends BaseController {
     protected configure(router: Router): void {
         router.post('/login', async (req, res, next) => {
             try {
-                const user = await this.authentificationservice.login(req.body);
-                res.status(StatusCodes.ACCEPTED).send(user);
+                this.authentificationservice
+                    .login(req.body)
+                    .then((user) => this.authentificationservice.generateAccessToken(user))
+                    .then((token) => res.send(token).status(StatusCodes.ACCEPTED).end());
+            } catch (exception) {
+                next(exception);
+            }
+        });
+
+        router.post('/signUp', async (req, res, next) => {
+            try {
+                this.authentificationservice.signUp(req.body).then((userId) => res.send(userId).status(StatusCodes.ACCEPTED).end());
             } catch (exception) {
                 next(exception);
             }

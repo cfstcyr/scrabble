@@ -8,18 +8,24 @@ import { env } from '@app/utils/environment/environment';
 export class AuthentificationService {
     constructor(private databaseService: DatabaseService) { }
 
-    async login(user: User): Promise<string> {
+    async login(user: User): Promise<User> {
         const data = await this.databaseService.getUser(user);
 
         return new Promise((resolve, reject) => {
             if (data) {
-                resolve(this.generateAccessToken(user));
+                resolve(data);
             } else reject();
         });
     }
 
-    signUp(user: User): void {
-        this.databaseService.createUser(user);
+    async signUp(user: User): Promise<number[]> {
+        const userId = await this.databaseService.createUser(user);
+
+        return new Promise((resolve, reject) => {
+            if (userId) {
+                resolve(userId);
+            } else reject();
+        });
     }
 
     private generateAccessToken(user: User) {

@@ -2219,7 +2219,7 @@
     "injectables": [
         {
             "name": "ActionService",
-            "id": "injectable-ActionService-036c7a7fc48ad42c967f401240bd17a7634b99ffdca46ebeb062977d748841b4448bb239b3c19ae32fc05e8545224e82c678f79f3259f591cdfb149521c6ceb0",
+            "id": "injectable-ActionService-a9f19c18b5939a910e0de9ff0bd5960fed42d73fbe139b83be19a334e032fbed966b4fcf08901156f51c4ce2bf866d9464a4486a31f3c3937d9fece4c16b1393",
             "file": "src/app/services/action-service/action.service.ts",
             "properties": [
                 {
@@ -2264,7 +2264,7 @@
                     "optional": false,
                     "returnType": "boolean",
                     "typeParameters": [],
-                    "line": 74,
+                    "line": 73,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -2415,7 +2415,7 @@
                     "optional": false,
                     "returnType": "string",
                     "typeParameters": [],
-                    "line": 78,
+                    "line": 77,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -2506,7 +2506,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 97,
+                    "line": 96,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -2529,7 +2529,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 93,
+                    "line": 92,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -2542,7 +2542,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 70,
+                    "line": 69,
                     "deprecated": false,
                     "deprecationMessage": ""
                 },
@@ -2623,7 +2623,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 89,
+                    "line": 88,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -2655,7 +2655,7 @@
             "deprecationMessage": "",
             "description": "",
             "rawdescription": "\n",
-            "sourceCode": "import { Injectable, OnDestroy } from '@angular/core';\nimport { ActionData, ActionPayload, ActionType, ExchangeActionPayload, PlaceActionPayload } from '@app/classes/actions/action-data';\nimport { Orientation } from '@app/classes/actions/orientation';\nimport { Position } from '@app/classes/board-navigator/position';\nimport { Tile } from '@app/classes/tile';\nimport { WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE } from '@app/constants/services-errors';\nimport { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';\nimport { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';\nimport { ActionPayloadToString } from '@app/utils/action-payload-to-string/action-payload-to-string';\nimport { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-service-data';\nimport { Subject } from 'rxjs';\nimport { takeUntil } from 'rxjs/operators';\n\n@Injectable({\n    providedIn: 'root',\n})\nexport class ActionService implements IResetServiceData, OnDestroy {\n    hasActionBeenPlayed: boolean;\n    private serviceDestroyed$: Subject<boolean>;\n\n    constructor(private gamePlayController: GamePlayController, private readonly gameViewEventManagerService: GameViewEventManagerService) {\n        this.hasActionBeenPlayed = false;\n        this.serviceDestroyed$ = new Subject();\n        this.gamePlayController\n            .observeActionDone()\n            .pipe(takeUntil(this.serviceDestroyed$))\n            .subscribe(() => this.resetHasActionBeenSent());\n        this.gameViewEventManagerService.subscribeToGameViewEvent('resetUsedTiles', this.serviceDestroyed$, () => this.handleResetUsedTiles());\n        this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());\n    }\n\n    ngOnDestroy(): void {\n        this.serviceDestroyed$.next(true);\n        this.serviceDestroyed$.complete();\n    }\n\n    createPlaceActionPayload(tiles: Tile[], startPosition: Position, orientation: Orientation): PlaceActionPayload {\n        return {\n            tiles,\n            startPosition,\n            orientation,\n        };\n    }\n\n    createExchangeActionPayload(tiles: Tile[]): ExchangeActionPayload {\n        return { tiles };\n    }\n\n    createActionData(actionType: ActionType, actionPayload: ActionPayload, input?: string, needsInput: boolean = false): ActionData {\n        if (!input) input = this.actionNeedsInput(actionType, needsInput) ? this.createInputFromPayload(actionType, actionPayload) : '';\n\n        return {\n            type: actionType,\n            input,\n            payload: actionPayload,\n        };\n    }\n\n    sendAction(gameId: string, playerId: string | undefined, actionData: ActionData): void {\n        if (!playerId) return;\n        if (this.hasActionBeenPlayed) {\n            this.sendWaitForConfirmationMessage(gameId, playerId);\n            return;\n        }\n\n        this.gamePlayController.sendAction(gameId, playerId, actionData);\n        this.hasActionBeenPlayed = true;\n    }\n\n    resetServiceData(): void {\n        this.hasActionBeenPlayed = false;\n    }\n\n    private actionNeedsInput(actionType: ActionType, needsInput: boolean): boolean {\n        return actionType === ActionType.PLACE || actionType === ActionType.EXCHANGE || needsInput;\n    }\n\n    private createInputFromPayload(actionType: ActionType, payload: ActionPayload): string {\n        switch (actionType) {\n            case ActionType.PLACE:\n                return ActionPayloadToString.placeActionPayloadToString(payload as PlaceActionPayload);\n            case ActionType.EXCHANGE:\n                return ActionPayloadToString.exchangeActionPayloadToString(payload as ExchangeActionPayload);\n            default:\n                return ActionPayloadToString.simpleActionToString(actionType);\n        }\n    }\n\n    private sendWaitForConfirmationMessage(gameId: string, playerId: string): void {\n        this.gamePlayController.sendError(gameId, playerId, WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE(gameId));\n    }\n\n    private resetHasActionBeenSent(): void {\n        this.hasActionBeenPlayed = false;\n    }\n\n    private handleResetUsedTiles(): void {\n        const usedTiles: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');\n        if (usedTiles) {\n            usedTiles.tiles.forEach((tile: Tile) => {\n                if (tile.isBlank) tile.playedLetter = undefined;\n            });\n        }\n        this.gameViewEventManagerService.emitGameViewEvent('usedTiles', undefined);\n    }\n}\n",
+            "sourceCode": "import { Injectable, OnDestroy } from '@angular/core';\nimport { ActionData, ActionPayload, ActionType, ExchangeActionPayload, PlaceActionPayload } from '@app/classes/actions/action-data';\nimport { Orientation } from '@app/classes/actions/orientation';\nimport { Position } from '@app/classes/board-navigator/position';\nimport { Tile } from '@app/classes/tile';\nimport { WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE } from '@app/constants/services-errors';\nimport { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';\nimport { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';\nimport { ActionPayloadToString } from '@app/utils/action-payload-to-string/action-payload-to-string';\nimport { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-service-data';\nimport { Subject } from 'rxjs';\nimport { takeUntil } from 'rxjs/operators';\n\n@Injectable({\n    providedIn: 'root',\n})\nexport class ActionService implements IResetServiceData, OnDestroy {\n    hasActionBeenPlayed: boolean;\n    private serviceDestroyed$: Subject<boolean>;\n\n    constructor(private gamePlayController: GamePlayController, private readonly gameViewEventManagerService: GameViewEventManagerService) {\n        this.hasActionBeenPlayed = false;\n        this.serviceDestroyed$ = new Subject();\n        this.gamePlayController\n            .observeActionDone()\n            .pipe(takeUntil(this.serviceDestroyed$))\n            .subscribe(() => this.resetHasActionBeenSent());\n        this.gameViewEventManagerService.subscribeToGameViewEvent('resetUsedTiles', this.serviceDestroyed$, () => this.handleResetUsedTiles());\n        this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());\n    }\n\n    ngOnDestroy(): void {\n        this.serviceDestroyed$.next(true);\n        this.serviceDestroyed$.complete();\n    }\n\n    createPlaceActionPayload(tiles: Tile[], startPosition: Position, orientation: Orientation): PlaceActionPayload {\n        return {\n            tiles,\n            startPosition,\n            orientation,\n        };\n    }\n\n    createExchangeActionPayload(tiles: Tile[]): ExchangeActionPayload {\n        return { tiles };\n    }\n\n    createActionData(actionType: ActionType, actionPayload: ActionPayload, input?: string, needsInput: boolean = false): ActionData {\n        if (!input) input = this.actionNeedsInput(actionType, needsInput) ? this.createInputFromPayload(actionType, actionPayload) : '';\n\n        return {\n            type: actionType,\n            input,\n            payload: actionPayload,\n        };\n    }\n\n    sendAction(gameId: string, playerId: string | undefined, actionData: ActionData): void {\n        if (!playerId) return;\n        if (this.hasActionBeenPlayed) {\n            this.sendWaitForConfirmationMessage(gameId, playerId);\n            return;\n        }\n        this.gamePlayController.sendAction(gameId, playerId, actionData);\n        this.hasActionBeenPlayed = true;\n    }\n\n    resetServiceData(): void {\n        this.hasActionBeenPlayed = false;\n    }\n\n    private actionNeedsInput(actionType: ActionType, needsInput: boolean): boolean {\n        return actionType === ActionType.PLACE || actionType === ActionType.EXCHANGE || needsInput;\n    }\n\n    private createInputFromPayload(actionType: ActionType, payload: ActionPayload): string {\n        switch (actionType) {\n            case ActionType.PLACE:\n                return ActionPayloadToString.placeActionPayloadToString(payload as PlaceActionPayload);\n            case ActionType.EXCHANGE:\n                return ActionPayloadToString.exchangeActionPayloadToString(payload as ExchangeActionPayload);\n            default:\n                return ActionPayloadToString.simpleActionToString(actionType);\n        }\n    }\n\n    private sendWaitForConfirmationMessage(gameId: string, playerId: string): void {\n        this.gamePlayController.sendError(gameId, playerId, WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE(gameId));\n    }\n\n    private resetHasActionBeenSent(): void {\n        this.hasActionBeenPlayed = false;\n    }\n\n    private handleResetUsedTiles(): void {\n        const usedTiles: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');\n        if (usedTiles) {\n            usedTiles.tiles.forEach((tile: Tile) => {\n                if (tile.isBlank) tile.playedLetter = undefined;\n            });\n        }\n        this.gameViewEventManagerService.emitGameViewEvent('usedTiles', undefined);\n    }\n}\n",
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
@@ -26070,7 +26070,7 @@
                 "name": "SNACK_BAR_ERROR_DURATION",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/constants/dictionaries-components.ts",
+                "file": "src/app/constants/dictionaries-component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -26080,7 +26080,7 @@
                 "name": "SNACK_BAR_ERROR_DURATION",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/constants/dictionaries-component.ts",
+                "file": "src/app/constants/dictionaries-components.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",

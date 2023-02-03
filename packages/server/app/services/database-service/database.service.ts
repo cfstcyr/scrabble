@@ -44,11 +44,15 @@ export default class DatabaseService {
         });
     }
 
-    async createUser(user: User): Promise<User> {
+    async createUser(user: User): Promise<number[]> {
         return new Promise((resolve, reject) => {
             this.knex
-                .raw('SELECT 1')
-                .then(() => resolve(user))
+                .insert(user)
+                .into('User')
+                .onConflict('email')
+                .ignore()
+                .returning('idUser')
+                .then((data) => resolve(data))
                 .catch(reject);
         });
     }
