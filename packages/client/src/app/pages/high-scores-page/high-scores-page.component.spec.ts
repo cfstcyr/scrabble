@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -64,6 +65,7 @@ describe('HighScoresPageComponent', () => {
                 RouterModule,
                 RouterTestingModule,
                 MatProgressSpinnerModule,
+                MatSnackBarModule,
             ],
             providers: [{ provide: HighScoresService, useClass: HighScoresServiceSpy }],
         }).compileComponents();

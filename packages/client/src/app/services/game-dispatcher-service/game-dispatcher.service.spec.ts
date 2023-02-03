@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LobbyData, LobbyInfo } from '@app/classes/communication';
 import { GameConfigData } from '@app/classes/communication/game-config';
@@ -87,6 +88,7 @@ describe('GameDispatcherService', () => {
                     { path: 'waiting-room', component: TestComponent },
                     { path: 'join-waiting-room', component: TestComponent },
                 ]),
+                MatSnackBarModule,
             ],
             providers: [GameDispatcherController, SocketService, { provide: GameViewEventManagerService, useValue: gameViewEventSpy }],
         });

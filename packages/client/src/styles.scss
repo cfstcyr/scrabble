@@ -86,3 +86,22 @@ body {
     margin: 0;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+
+.alert {
+    &--error {
+        background-color: rgb(212, 85, 58);
+        color: white;
+    }
+    &--warn {
+        background-color: rgb(235, 174, 75);
+        color: white;
+    }
+    &--success {
+        background-color: rgb(89, 167, 81);
+        color: white;
+    }
+    &--info {
+        background-color: rgb(48, 99, 209);
+        color: white;
+    }
+}

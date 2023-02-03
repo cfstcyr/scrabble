@@ -2,6 +2,7 @@
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
 import { GameType } from '@app/constants/game-type';
@@ -28,10 +29,10 @@ describe('HighScoresController', () => {
 
     beforeEach(() => {
         socketHelper = new SocketTestHelper();
-        socketServiceMock = new SocketService();
+        socketServiceMock = new SocketService(jasmine.createSpyObj('AlertService', ['alert', 'error', 'warn', 'success', 'info']));
         socketServiceMock['socket'] = socketHelper as unknown as Socket;
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, RouterTestingModule],
+            imports: [HttpClientTestingModule, RouterTestingModule, MatSnackBarModule],
             providers: [{ provide: SocketService, useValue: socketServiceMock }],
         });
         controller = TestBed.inject(HighScoresController);

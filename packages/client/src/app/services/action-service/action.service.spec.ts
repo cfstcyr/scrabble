@@ -2,6 +2,7 @@
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActionData, ActionType, ExchangeActionPayload, PlaceActionPayload } from '@app/classes/actions/action-data';
 import { Orientation } from '@app/classes/actions/orientation';
@@ -30,7 +31,7 @@ describe('ActionService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, RouterTestingModule],
+            imports: [HttpClientTestingModule, RouterTestingModule, MatSnackBarModule],
         });
         service = TestBed.inject(ActionService);
     });

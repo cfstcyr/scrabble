@@ -18,59 +18,83 @@ export class ChatService {
 
     configureSocket(socket: ServerSocket): void {
         socket.on('channel:newMessage', (channel: NoId<Channel>, chatMessage: ChatMessage) => this.sendMessage(channel, socket, chatMessage));
-        socket.on('channel:newChannel', (channel: NoId<Channel>) => this.createChannel(channel, socket));
-        socket.on('channel:join', (channel: Channel) => this.joinChannel(channel.name, socket));
-        socket.on('channel:quit', (channel: Channel) => this.quitChannel(channel.name, socket));
-
-        this.joinChannel(GENERAL_CHANNEL.name, socket);
-        // TODO: Join all channels in DB that the user is in
+        socket.on('channel:newChannel', (channelName: string) => this.createChannel(channelName, socket));
+        socket.on('channel:join', (channel: string) => this.joinChannel(channel, socket));
+        socket.on('channel:quit', (channel: string) => this.quitChannel(channel, socket));
+        socket.on('channel:init', () => {
+            this.joinChannel(GENERAL_CHANNEL.name, socket);
+            // TODO: Join all channels in DB that the user is in
+        });
     }
 
     private sendMessage(channel: NoId<Channel>, socket: ServerSocket, chatMessage: ChatMessage): void {
-        if (!this.channels.find((c) => c.name === channel.name)) {
+        const foundChannel = this.getChannel(channel.name);
+
+        if (!foundChannel) {
             socket.emit('error', CHANNEL_NAME_DOES_NOT_EXIST, StatusCodes.BAD_REQUEST);
-        }
-        if (!socket.rooms.has(channel.name)) {
-            socket.emit('error', NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
+            return;
         }
 
-        socket.nsp.to(channel.name).emit('channel:newMessage', chatMessage);
+        if (!socket.rooms.has(channel.name)) {
+            socket.emit('error', NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
+            return;
+        }
+
+        socket.to(channel.name).emit('channel:newMessage', foundChannel?.id, chatMessage);
         // TODO: Save message in DB
     }
 
-    private createChannel(channel: NoId<Channel>, socket: ServerSocket): void {
-        if (this.channels.find((c) => c.name === channel.name)) {
+    private createChannel(channelName: string, socket: ServerSocket): void {
+        if (this.getChannel(channelName)) {
             socket.emit('error', ALREADY_EXISTING_CHANNEL_NAME, StatusCodes.FORBIDDEN);
+            return;
         }
-        this.channels.push({ ...channel, id: String(this.channels.length) });
+        const newChannel: Channel = { name: channelName, id: String(this.channels.length + 1), canQuit: true };
 
-        socket.emit('channel:newChannel', `Channel ${channel.name} created successfully`);
+        this.channels.push(newChannel);
+
+        socket.emit('channel:newChannel', newChannel);
         // TODO: Save channel in DB
+
+        this.joinChannel(channelName, socket);
     }
 
     private joinChannel(channelName: string, socket: ServerSocket): void {
-        if (!this.channels.find((channel) => channel.name === channelName)) {
+        const channel = this.getChannel(channelName);
+
+        if (!channel) {
             socket.emit('error', CHANNEL_NAME_DOES_NOT_EXIST, StatusCodes.BAD_REQUEST);
+            return;
         }
+
         if (socket.rooms.has(channelName)) {
             socket.emit('error', ALREADY_IN_CHANNEL, StatusCodes.BAD_REQUEST);
+            return;
         }
 
         socket.join(channelName);
-        socket.emit('channel:join', `Channel ${channelName} joined now`);
+        socket.emit('channel:join', channel);
         // TODO: Save user joined channel in DB
     }
 
     private quitChannel(channelName: string, socket: ServerSocket): void {
-        if (!this.channels.find((channel) => channel.name === channelName)) {
+        const channel = this.getChannel(channelName);
+
+        if (!channel) {
             socket.emit('error', CHANNEL_NAME_DOES_NOT_EXIST, StatusCodes.BAD_REQUEST);
+            return;
         }
         if (!socket.rooms.has(channelName)) {
             socket.emit('error', NOT_IN_CHANNEL, StatusCodes.BAD_REQUEST);
+            return;
         }
 
         socket.leave(channelName);
-        socket.emit('channel:quit', `Channel ${channelName} left`);
+        socket.emit('channel:quit', channel);
         // TODO: Save user left channel in DB
+    }
+
+    private getChannel(channelName: string): Channel | undefined {
+        return this.channels.find((c) => c.name === channelName);
     }
 }
