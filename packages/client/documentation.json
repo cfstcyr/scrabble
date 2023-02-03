@@ -25001,21 +25001,21 @@
                 "name": "environment",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/environments/environment.prod.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "object",
-                "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
-            },
-            {
-                "name": "environment",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "src/environments/environment.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "object",
                 "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
+            },
+            {
+                "name": "environment",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/environments/environment.prod.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "object",
+                "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
             },
             {
                 "name": "ERROR_SNACK_BAR_CONFIG",
@@ -26070,7 +26070,7 @@
                 "name": "SNACK_BAR_ERROR_DURATION",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/constants/dictionaries-component.ts",
+                "file": "src/app/constants/dictionaries-components.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -26080,7 +26080,7 @@
                 "name": "SNACK_BAR_ERROR_DURATION",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/constants/dictionaries-components.ts",
+                "file": "src/app/constants/dictionaries-component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -29070,18 +29070,6 @@
                     "defaultValue": "'a'"
                 }
             ],
-            "src/environments/environment.prod.ts": [
-                {
-                    "name": "environment",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/environments/environment.prod.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "object",
-                    "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
-                }
-            ],
             "src/environments/environment.ts": [
                 {
                     "name": "environment",
@@ -29092,6 +29080,18 @@
                     "deprecationMessage": "",
                     "type": "object",
                     "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
+                }
+            ],
+            "src/environments/environment.prod.ts": [
+                {
+                    "name": "environment",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/environments/environment.prod.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "object",
+                    "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
                 }
             ],
             "src/app/constants/fun-facts-scrabble-constants.ts": [
