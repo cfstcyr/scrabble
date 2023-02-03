@@ -75,10 +75,12 @@ describe('ChatService', () => {
         const testChannel: Channel = {
             id: '0',
             name: 'test',
+            canQuit: true,
         };
         const expectedMessage: ChatMessage = {
             sender: PUBLIC_USER,
             content: 'Gratton',
+            date: new Date(),
         };
 
         beforeEach(() => {
@@ -134,7 +136,7 @@ describe('ChatService', () => {
             describe('HAPPY PATH', () => {
                 it("should add channel to list of channels if it doesn't exist", async () => {
                     service['channels'] = [];
-                    clientSocket.emit('channel:newChannel', testChannel);
+                    clientSocket.emit('channel:newChannel', testChannel.name);
 
                     await Delay.for(RESPONSE_DELAY);
 
@@ -150,7 +152,7 @@ describe('ChatService', () => {
                         done();
                     });
 
-                    clientSocket.emit('channel:newChannel', testChannel);
+                    clientSocket.emit('channel:newChannel', testChannel.name);
                 });
             });
         });

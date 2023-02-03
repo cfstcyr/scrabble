@@ -51,14 +51,17 @@ describe('ChatboxMessageComponent', () => {
                 {
                     content: '',
                     sender: USER_1,
+                    date: new Date(),
                 },
                 {
                     content: '',
                     sender: USER_1,
+                    date: new Date(),
                 },
                 {
                     content: '',
                     sender: USER_2,
+                    date: new Date(),
                 },
             ];
             expect(component.getMessages()).toHaveSize(2);
@@ -77,10 +80,12 @@ describe('ChatboxMessageComponent', () => {
                 {
                     content: '',
                     sender: USER_1,
+                    date: new Date(),
                 },
                 {
                     content: '',
                     sender: USER_1,
+                    date: new Date(),
                 },
             ];
             const [a1, a2] = component.getLastUsersAvatarUrl();
@@ -93,14 +98,17 @@ describe('ChatboxMessageComponent', () => {
                 {
                     content: '',
                     sender: USER_1,
+                    date: new Date(),
                 },
                 {
                     content: '',
                     sender: USER_1,
+                    date: new Date(),
                 },
                 {
                     content: '',
                     sender: USER_2,
+                    date: new Date(),
                 },
             ];
             const [a1, a2] = component.getLastUsersAvatarUrl();
