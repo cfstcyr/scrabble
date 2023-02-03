@@ -41,7 +41,8 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
             current.content = emojify(current.content.trim());
 
             if (last) {
-                const isRecent = current.date.getTime() - last.date.getTime() <= MINUTE;
+                const lastMessage = last.messages[last.messages.length - 1];
+                const isRecent = current.date.getTime() - lastMessage.date.getTime() <= MINUTE;
 
                 if (last.sender.username === current.sender.username && isRecent) {
                     last.messages.push(current);
