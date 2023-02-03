@@ -91,5 +91,9 @@
             top: -2px;
             left: 1px;
         }
+
+        & ::ng-deep .mat-button-focus-overlay {
+            display: none;
+        }
     }
 }
