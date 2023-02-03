@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ClientChannel, ViewClientChannel } from '@app/classes/chat/channel';
+import { CONFIRM_QUIT_CHANNEL } from '@app/constants/chat-constants';
 import { Channel } from '@common/models/chat/channel';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -104,7 +105,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
     }
 
     handleQuitChannel(channel: ClientChannel) {
-        if (confirm(`Do you want to quit channel "${channel.name}"?`)) {
+        if (confirm(CONFIRM_QUIT_CHANNEL(channel.name))) {
             this.minimizeChannel(channel);
             this.quitChannel.emit(channel.name);
         }
