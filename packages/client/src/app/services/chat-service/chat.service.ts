@@ -55,7 +55,7 @@ export class ChatService {
 
     handleChannelQuit(channel: Channel) {
         const index = this.channels.findIndex(({ id }) => id === channel.id);
-        this.channels.splice(index, 1);
+        if (index >= 0) this.channels.splice(index, 1);
     }
 
     handleNewMessage(channelId: string, message: ChatMessage) {
