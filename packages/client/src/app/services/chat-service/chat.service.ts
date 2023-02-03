@@ -47,19 +47,18 @@ export class ChatService {
         this.socketService.socket.emit('channel:quit', channel);
     }
 
-    handleJoinChannel(channel: Channel) {
+    handleJoinChannel(channel: Channel): void {
         const newChannel = { ...channel, messages: [] };
         this.channels.push(newChannel);
         this.joinedChannel.next(newChannel);
     }
 
-    handleChannelQuit(channel: Channel) {
+    handleChannelQuit(channel: Channel): void {
         const index = this.channels.findIndex(({ id }) => id === channel.id);
         if (index >= 0) this.channels.splice(index, 1);
     }
 
-    handleNewMessage(channelId: string, message: ChatMessage) {
-        // if (this.userService.isUser(message.sender)) return;
+    handleNewMessage(channelId: string, message: ChatMessage): void {
         const channel = this.getChannel(channelId);
         channel.messages.push(message);
     }
