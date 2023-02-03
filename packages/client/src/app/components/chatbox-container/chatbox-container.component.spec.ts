@@ -1,6 +1,7 @@
 /* eslint-disable dot-notation */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
 import { ClientChannel } from '@app/classes/chat/channel';
 import { ChatboxMessageComponent } from '@app/components/chatbox-message/chatbox-message.component';
 import { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';
@@ -26,7 +27,7 @@ describe('ChatboxContainerComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [ReactiveFormsModule],
+            imports: [ReactiveFormsModule, MatDialogModule],
             providers: [FormBuilder],
             declarations: [ChatboxContainerComponent, ChatBoxComponent, ChatboxMessageComponent, IconComponent, IconButtonComponent],
         }).compileComponents();

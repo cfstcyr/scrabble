@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ChatboxContainerComponent } from '@app/components/chatbox-container/chatbox-container.component';
 import { ChatboxMessageComponent } from '@app/components/chatbox-message/chatbox-message.component';
 import { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';
@@ -31,8 +32,8 @@ describe('ChatboxWrapperComponent', () => {
                 IconButtonComponent,
                 IconComponent,
             ],
-            imports: [ReactiveFormsModule],
-            providers: [{ provide: ChatService, useValue: chatService }, FormBuilder],
+            imports: [ReactiveFormsModule, MatDialogModule],
+            providers: [{ provide: ChatService, useValue: chatService }, FormBuilder, MatDialog],
         }).compileComponents();
     });
 

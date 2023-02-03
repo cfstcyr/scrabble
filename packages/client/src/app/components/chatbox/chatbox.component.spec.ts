@@ -23,20 +23,4 @@ describe('ChatboxComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    describe('handleMinimize', () => {
-        it('should emit to onMinimize', () => {
-            spyOn(component.onMinimize, 'next');
-            component.handleMinimize();
-            expect(component.onMinimize.next).toHaveBeenCalled();
-        });
-    });
-
-    describe('handleClose', () => {
-        it('should emit to onClose', () => {
-            spyOn(component.onClose, 'next');
-            component.handleClose();
-            expect(component.onClose.next).toHaveBeenCalled();
-        });
-    });
 });
