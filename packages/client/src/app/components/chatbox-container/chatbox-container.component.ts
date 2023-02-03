@@ -1,10 +1,12 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ClientChannel, ViewClientChannel } from '@app/classes/chat/channel';
-import { CONFIRM_QUIT_CHANNEL } from '@app/constants/chat-constants';
+import { CONFIRM_QUIT_CHANNEL, CONFIRM_QUIT_DIALOG_TITLE } from '@app/constants/chat-constants';
 import { Channel } from '@common/models/chat/channel';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 
 @Component({
     selector: 'app-chatbox-container',
@@ -26,7 +28,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
     channelMenuIsOpen: boolean = false;
     private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
 
-    constructor(private readonly formBuilder: FormBuilder) {
+    constructor(private readonly formBuilder: FormBuilder, private readonly dialog: MatDialog) {
         this.openedChannels = [];
 
         this.createChannelForm = this.formBuilder.group({
@@ -105,9 +107,25 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
     }
 
     handleQuitChannel(channel: ClientChannel) {
-        if (confirm(CONFIRM_QUIT_CHANNEL(channel.name))) {
-            this.minimizeChannel(channel);
-            this.quitChannel.emit(channel.name);
-        }
+        this.dialog.open(DefaultDialogComponent, {
+            data: {
+                title: CONFIRM_QUIT_DIALOG_TITLE,
+                content: CONFIRM_QUIT_CHANNEL(channel.name),
+                buttons: [
+                    {
+                        content: 'Annuler',
+                        closeDialog: true,
+                    },
+                    {
+                        content: 'Quitter',
+                        closeDialog: true,
+                        action: () => {
+                            this.minimizeChannel(channel);
+                            this.quitChannel.emit(channel.name);
+                        },
+                    },
+                ],
+            },
+        });
     }
 }
