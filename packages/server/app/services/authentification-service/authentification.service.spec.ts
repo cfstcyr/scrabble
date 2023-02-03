@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
@@ -46,14 +47,14 @@ describe('AuthentificationService', () => {
     });
 
     it('signUp should call createUser method from databaseService', () => {
-        const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com' };
+        const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: 1 };
         const spy = chai.spy.on(databaseServiceStub, 'createUser', () => { });
         authentificationService.signUp(user);
         expect(spy).to.have.been.called;
     });
 
     it('login should call getUser method from databaseService', () => {
-        const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com' };
+        const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: 1 };
         const spy = chai.spy.on(databaseServiceStub, 'getUser', () => { });
         authentificationService.login(user);
         expect(spy).to.have.been.called;
