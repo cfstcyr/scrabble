@@ -62,7 +62,6 @@ export class ActionService implements IResetServiceData, OnDestroy {
             this.sendWaitForConfirmationMessage(gameId, playerId);
             return;
         }
-
         this.gamePlayController.sendAction(gameId, playerId, actionData);
         this.hasActionBeenPlayed = true;
     }
