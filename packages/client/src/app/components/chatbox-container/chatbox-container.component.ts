@@ -65,18 +65,11 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.openedChannels.splice(index, 1);
     }
 
-    leaveChannel(channel: ClientChannel) {
-        if (confirm(`Do you want to quit channel "${channel.name}"?`)) {
-            this.minimizeChannel(channel);
-            this.quitChannel.emit(channel.name);
-        }
-    }
-
     closeStartChannel() {
         this.startChannelIsOpen = false;
     }
 
-    toggleNewMessage() {
+    toggleStartChannel() {
         this.startChannelIsOpen = !this.startChannelIsOpen;
     }
 
@@ -108,5 +101,12 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.joinChannelForm.reset();
         this.joinChannelForm.setErrors({ joinChannel: false });
         this.joinChannelInput?.nativeElement?.blur();
+    }
+
+    handleQuitChannel(channel: ClientChannel) {
+        if (confirm(`Do you want to quit channel "${channel.name}"?`)) {
+            this.minimizeChannel(channel);
+            this.quitChannel.emit(channel.name);
+        }
     }
 }

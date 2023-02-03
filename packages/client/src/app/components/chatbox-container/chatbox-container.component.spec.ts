@@ -83,13 +83,13 @@ describe('ChatboxContainerComponent', () => {
     describe('toggleNewMessage', () => {
         it('should set startChannelIsOpen to false it true', () => {
             component.startChannelIsOpen = true;
-            component.toggleNewMessage();
+            component.toggleStartChannel();
             expect(component.startChannelIsOpen).toBeFalse();
         });
 
         it('should set startChannelIsOpen to true it false', () => {
             component.startChannelIsOpen = false;
-            component.toggleNewMessage();
+            component.toggleStartChannel();
             expect(component.startChannelIsOpen).toBeTrue();
         });
     });

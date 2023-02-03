@@ -5,7 +5,7 @@
                 [title]="channel.name"
                 [messages]="channel.messages"
                 (onMinimize)="minimizeChannel(channel)"
-                (onClose)="leaveChannel(channel)"
+                (onClose)="handleQuitChannel(channel)"
                 (sendMessage)="handleSendMessage(channel, $event)"
             ></app-chatbox-message>
         </ng-container>
@@ -45,7 +45,7 @@
         </app-chatbox>
     </div>
 
-    <button mat-fab color="white" class="chatbox-container__button" (click)="toggleNewMessage()">
+    <button mat-fab color="white" class="chatbox-container__button" (click)="toggleStartChannel()">
         <app-icon icon="edit" styling="solid"></app-icon>
     </button>
 </div>
