@@ -4,13 +4,22 @@
             <app-chatbox-message 
                 [title]="channel.name"
                 [messages]="channel.messages"
-                (onMinimize)="minimizeChannel(channel)"
-                (onClose)="handleQuitChannel(channel)"
                 (sendMessage)="handleSendMessage(channel, $event)"
-            ></app-chatbox-message>
+            >
+                <app-icon-button action-button (click)="minimizeChannel(channel)">
+                    <app-icon icon="minus"></app-icon>
+                </app-icon-button>
+                <app-icon-button action-button (click)="handleQuitChannel(channel)">
+                    <app-icon icon="sign-out"></app-icon>
+                </app-icon-button>
+            </app-chatbox-message>
         </ng-container>
 
-        <app-chatbox title="New message" (onMinimize)="closeStartChannel()" [hideIcon]="true" [hideClose]="true" *ngIf="startChannelIsOpen">
+        <app-chatbox title="New message" [hideIcon]="true" *ngIf="startChannelIsOpen">
+            <app-icon-button action-button (click)="closeStartChannel()">
+                <app-icon icon="minus"></app-icon>
+            </app-icon-button>
+
             <div class="chatbox-container__add-channel">
                 <div class="chatbox-container__section">
                     <form [formGroup]="createChannelForm" (ngSubmit)="handleCreateChannel()">

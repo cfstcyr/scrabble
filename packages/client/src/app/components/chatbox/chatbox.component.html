@@ -8,15 +8,7 @@
             <div class="chatbox__header__title">{{ title }}</div>
         </div>
         <div class="chatbox__header__right">
-            <app-icon-button *ngIf="!hideMinimize" (click)="handleMinimize()">
-                <app-icon icon="minus"></app-icon>
-            </app-icon-button>
-            <app-icon-button *ngIf="!hideClose" (click)="handleClose()">
-                <app-icon icon="times"></app-icon>
-            </app-icon-button>
-            <!-- <button class="chatboxi__button chatbox__close" (click)="handleClose()">
-                <app-icon icon="tmes"></app-icon>
-            </button> -->
+            <ng-content select="[action-button]"></ng-content>
         </div>
     </div>
     <div class="chatbox__content">

@@ -1,11 +1,13 @@
 <app-chatbox 
     [title]="title" 
-    (onMinimize)="handleMinimize()" 
-    (onClose)="handleClose()" 
     [icon]="getLastUsersAvatarUrl()[0] ?? ''" 
     [icon2]="getLastUsersAvatarUrl()[1] ?? ''" 
     class="chatbox-message"
 >
+    <ng-container action-button>
+        <ng-content select="[action-button]"></ng-content>
+    </ng-container>
+
     <div class="chatbox-message__content">
         <div class="chatbox-message__messages">
             <div class="chatbox-message__messages__container">

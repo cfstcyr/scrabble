@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ContentChildren, Input } from '@angular/core';
+import { IconButtonComponent } from '@app/components/icon-button/icon-button.component';
 
 @Component({
     selector: 'app-chatbox',
@@ -6,20 +7,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     styleUrls: ['./chatbox.component.scss'],
 })
 export class ChatBoxComponent {
+    @ContentChildren(IconButtonComponent) actionButtons: IconButtonComponent[];
     @Input() title: string;
     @Input() hideIcon: boolean = false;
-    @Input() hideMinimize: boolean = false;
-    @Input() hideClose: boolean = false;
     @Input() icon: string;
     @Input() icon2?: string;
-    @Output() onMinimize: EventEmitter<void> = new EventEmitter();
-    @Output() onClose: EventEmitter<void> = new EventEmitter();
-
-    handleMinimize() {
-        this.onMinimize.next();
-    }
-
-    handleClose() {
-        this.onClose.next();
-    }
 }
