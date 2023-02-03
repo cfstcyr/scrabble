@@ -47,19 +47,7 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {}
 
-class MainPage extends StatefulWidget {
-  @override
-  State<MainPage> createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  var selectedIndex = 0;
-
-  final _loginScreen = GlobalKey<NavigatorState>();
-  final _createAccountScreen = GlobalKey<NavigatorState>();
-  final _homePageScreen = GlobalKey<NavigatorState>();
-  final _settingsScreen = GlobalKey<NavigatorState>();
-
+class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LoginPage();
