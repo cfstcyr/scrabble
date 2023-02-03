@@ -21,7 +21,7 @@
                             *ngIf="!messageGroup.isCurrentUser"
                         />
                         <div class="chatbox-message__group__messages">
-                            <div *ngFor="let message of messageGroup.messages" class="chatbox-message__message__outer" [attr.tooltip]="(messageGroup.date | date:'mediumTime') ?? ''">
+                            <div *ngFor="let message of messageGroup.messages" class="chatbox-message__message__outer" [attr.tooltip]="(message.date | date:'mediumTime') ?? ''">
                                 <p
                                     [ngClass]="{
                                         'chatbox-message__message': true, 
