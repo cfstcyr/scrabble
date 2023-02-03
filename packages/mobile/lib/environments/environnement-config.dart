@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 abstract class BaseConfig {
   String get apiUrl;
   String get webSocketUrl;
@@ -7,8 +9,8 @@ abstract class BaseConfig {
 }
 
 class DevConfig implements BaseConfig {
-  String get apiUrl => 'http://10.0.2.2:3000/api';
-  String get webSocketUrl => 'http://10.0.2.2:3000/';
+  String get apiUrl => 'http://10.0.2.2:${dotenv.env['SERVER_PORT']}/api';
+  String get webSocketUrl => 'http://10.0.2.2:${dotenv.env['SERVER_PORT']}/';
 
   bool get reportErrors => false;
 
