@@ -19,7 +19,7 @@ export interface DisplayMessage {
     styleUrls: ['./chatbox-message.component.scss'],
 })
 export class ChatboxMessageComponent extends ChatBoxComponent {
-    @Input() messages: ChatMessage[];
+    @Input() messages: ChatMessage[] = [];
     @Output() sendMessage: EventEmitter<string> = new EventEmitter();
     messageForm: FormGroup;
     onlyHasEmoji = onlyHasEmoji;

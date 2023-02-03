@@ -19,7 +19,7 @@ import { StatusCodes } from 'http-status-codes';
 import { AddressInfo } from 'net';
 import * as io from 'socket.io';
 import { io as ioClient, Socket as ClientSocket } from 'socket.io-client';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { ChatService } from './chat.service';
 
 // const TIMEOUT_DELAY = 10000;
@@ -89,7 +89,7 @@ describe('ChatService', () => {
         describe('channel:newMessage', () => {
             describe('HAPPY - PATH', () => {
                 it('should emit message back to all client in channel', (done) => {
-                    clientSocket.on('channel:newMessage', (chatMessage: ChatMessage) => {
+                    clientSocket.on('channel:newMessage', (channelId: string, chatMessage: ChatMessage) => {
                         expect(chatMessage).to.deep.equal(expectedMessage);
                         done();
                     });
@@ -168,7 +168,7 @@ describe('ChatService', () => {
         describe('channel:join', () => {
             describe('HAPPY PATH', () => {
                 it('should add socket to channel room', async () => {
-                    clientSocket.emit('channel:join', testChannel);
+                    clientSocket.emit('channel:join', testChannel.name);
 
                     await Delay.for(RESPONSE_DELAY);
 
@@ -184,7 +184,7 @@ describe('ChatService', () => {
                         done();
                     });
 
-                    clientSocket.emit('channel:join', testChannel);
+                    clientSocket.emit('channel:join', testChannel.name);
                 });
                 it('should throw error if user already in channel', (done) => {
                     clientSocket.on('error' as any, (err: string, code: number) => {
@@ -194,7 +194,7 @@ describe('ChatService', () => {
                     });
                     serverSocket.join(testChannel.name);
 
-                    clientSocket.emit('channel:join', testChannel);
+                    clientSocket.emit('channel:join', testChannel.name);
                 });
             });
         });

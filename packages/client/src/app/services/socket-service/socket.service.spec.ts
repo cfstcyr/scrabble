@@ -60,7 +60,7 @@ describe('SocketService', () => {
         const action = () => {};
         const spy = spyOn(service['socket'], 'on');
         service.on(event, action);
-        expect(spy).toHaveBeenCalledWith(event, action);
+        expect(spy).toHaveBeenCalledWith(event as any, action);
     });
 
     it('should throw when socket is undefined on getId', () => {

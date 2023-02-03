@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 import { ChatboxContainerComponent } from './chatbox-container.component';
 
@@ -8,6 +9,8 @@ describe('ChatboxContainerComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            imports: [ReactiveFormsModule],
+            providers: [FormBuilder],
             declarations: [ChatboxContainerComponent],
         }).compileComponents();
     });
