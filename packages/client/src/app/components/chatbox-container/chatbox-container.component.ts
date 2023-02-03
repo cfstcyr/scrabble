@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { ClientChannel } from '@app/classes/chat/channel';
+import { ClientChannel, ViewClientChannel } from '@app/classes/chat/channel';
 import { Channel } from '@common/models/chat/channel';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -48,8 +48,8 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.complete();
     }
 
-    getChannelsForStartChannel(): (ClientChannel & { canOpen: boolean })[] {
-        return this.channels.map<ClientChannel & { canOpen: boolean }>((channel) => ({
+    getChannelsForStartChannel(): ViewClientChannel[] {
+        return this.channels.map<ViewClientChannel>((channel) => ({
             ...channel,
             canOpen: !this.openedChannels.find((c) => channel.id === c.id),
         }));
