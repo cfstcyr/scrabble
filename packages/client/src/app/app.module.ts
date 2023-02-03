@@ -52,6 +52,7 @@ import { ChatboxMessageComponent } from './components/chatbox-message/chatbox-me
 import { IconButtonComponent } from './components/icon-button/icon-button.component';
 import { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';
 import { AlertComponent } from './components/alert/alert.component';
+import { SignUpPageComponent } from './pages/signin-page/signup-page.component';
 
 registerLocaleData(localeFr);
 
@@ -66,6 +67,7 @@ registerLocaleData(localeFr);
         AppComponent,
         GamePageComponent,
         HomePageComponent,
+        SignUpPageComponent,
         SquareComponent,
         TileComponent,
         InformationBoxComponent,
