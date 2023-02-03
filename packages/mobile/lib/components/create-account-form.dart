@@ -2,11 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/account.dart';
+import 'package:mobile/classes/text-field-handler.dart';
+import 'package:mobile/constants/create-account-errors.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:email_validator/email_validator.dart';
 
+import '../constants/create-account-constants.dart';
 import '../controllers/account-authentification-controller.dart';
 import '../pages/home-page.dart';
 import '../services/account-authentification-service.dart';
@@ -20,83 +23,37 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
   bool isPasswordShown = false;
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
   AccountAuthenticationService accountService = getIt.get<AccountAuthenticationService>();
-  String _emailErrorMessage = '';
-  String _usernameErrorMessage = '';
-  String _passwordErrorMessage = '';
-  String _passwordMatchErrorMessage = '';
 
-  late FocusNode emailFocusNode;
-  late FocusNode usernameFocusNode;
-  late FocusNode passwordFocusNode;
-  late FocusNode passwordMatchFocusNode;
-  final emailController = TextEditingController();
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
-  final passwordMatchController = TextEditingController();
+  final emailHandler = TextFieldHandler();
+  final usernameHandler = TextFieldHandler();
+  final passwordHandler = TextFieldHandler();
+  final passwordMatchHandler = TextFieldHandler();
+
+  final EdgeInsetsGeometry textFieldPadding = EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 0);
 
   @override
   void initState() {
     super.initState();
 
-    emailFocusNode = FocusNode();
-    emailFocusNode.addListener(() {
-      if (emailFocusNode.hasFocus) {
-        _emailErrorMessage = "";
-      } else {
-        validateEmail();
-      }
-    });
-
-    usernameFocusNode = FocusNode();
-    usernameFocusNode.addListener(() {
-      if (usernameFocusNode.hasFocus) {
-        _usernameErrorMessage = "";
-      } else {
-        validateUsername();
-      }
-    });
-
-    passwordFocusNode = FocusNode();
-    passwordFocusNode.addListener(() {
-      if (passwordFocusNode.hasFocus) {
-        setState(() {
-          _passwordErrorMessage = "";
-        });
-      } else {
-        validatePassword();
-      }
-    });
-
-    passwordMatchFocusNode = FocusNode();
-    passwordMatchFocusNode.addListener(() {
-      if (passwordMatchFocusNode.hasFocus) {
-        // setState(() {
-        //   _passwordErrorMessage = "";
-        // });
-      } else {
-        validatePasswordMatch();
-      }
-    });
+    emailHandler.addListener(validateEmail);
+    usernameHandler.addListener(validateUsername);
+    passwordHandler.addListener(validatePassword);
+    passwordMatchHandler.addListener(validatePasswordMatch);
   }
 
   @override
   void dispose() {
-    // Clean up the focus node when the Form is disposed.
-    emailFocusNode.dispose();
-    usernameFocusNode.dispose();
-    passwordFocusNode.dispose();
-    passwordMatchFocusNode.dispose();
-    emailController.dispose();
-    usernameController.dispose();
-    passwordController.dispose();
-    passwordMatchController.dispose();
+    usernameHandler.dispose();
+    passwordHandler.dispose();
+    passwordMatchHandler.dispose();
+    emailHandler.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 500,
+      height: 600,
       width: 500,
       decoration: BoxDecoration(
           border: Border.all(
@@ -106,68 +63,68 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+            padding: textFieldPadding,
             child: TextField(
-              controller: emailController,
-              focusNode: emailFocusNode,
+              controller: emailHandler.controller,
+              focusNode: emailHandler.focusNode,
               obscureText: false,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Courriel',
-                errorText: _emailErrorMessage.isEmpty ? null : _emailErrorMessage,
+                labelText: EMAIL_LABEL_FR,
+                errorText: emailHandler.errorMessage.isEmpty ? null : emailHandler.errorMessage,
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+            padding: textFieldPadding,
             child: TextField(
-              controller: usernameController,
-              focusNode: usernameFocusNode,
+              controller: usernameHandler.controller,
+              focusNode: usernameHandler.focusNode,
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Pseudonyme',
-                errorText: _usernameErrorMessage.isEmpty ? null : _usernameErrorMessage,
+                labelText: USERNAME_LABEL_FR,
+                errorText: usernameHandler.errorMessage.isEmpty ? null : usernameHandler.errorMessage,
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+            padding: textFieldPadding,
             child: TextField(
-              controller: passwordController,
-              focusNode: passwordFocusNode,
+              controller: passwordHandler.controller,
+              focusNode: passwordHandler.focusNode,
               keyboardType: TextInputType.visiblePassword,
               autocorrect: false,
               enableSuggestions: false,
               obscureText: !isPasswordShown,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Mot de passe',
-                helperText: 'Au moins huit caractères comprenant au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 symbole',
+                labelText: PASSWORD_LABEL_FR,
+                helperText: PASSWORD_HELPER_TEXT_FR,
                 helperMaxLines: 3,
-                errorText: _passwordErrorMessage.isEmpty ? null : _passwordErrorMessage,
+                errorText: passwordHandler.errorMessage.isEmpty ? null : passwordHandler.errorMessage,
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+            padding: textFieldPadding,
             child: TextField(
-              controller: passwordMatchController,
-              focusNode: passwordMatchFocusNode,
+              controller: passwordMatchHandler.controller,
+              focusNode: passwordMatchHandler.focusNode,
               autocorrect: false,
               keyboardType: TextInputType.visiblePassword,
               enableSuggestions: false,
               obscureText: !isPasswordShown,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Confirmer',
-                errorText: _passwordMatchErrorMessage.isEmpty ? null : _passwordMatchErrorMessage,
+                labelText: PASSWORD_MATCH_LABEL_FR,
+                errorText: passwordMatchHandler.errorMessage.isEmpty ? null : passwordMatchHandler.errorMessage,
               ),
             ),
           ),
           CheckboxListTile(
-            title: Text("Afficher le mot de passe"),
+            title: Text(CHECKBOX_SHOW_PASSWORD_LABEL_FR),
             value: isPasswordShown,
             onChanged: (bool? value) {
               setState(() {
@@ -176,25 +133,21 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
             },
             controlAffinity: ListTileControlAffinity.leading,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: TextButton(
+          Padding(
+            padding: textFieldPadding,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
                   onPressed: () {
-                    //TODO Redirect to connection page
                     Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   child: const Text(
-                    'Vous connecter à un compte existant',
+                    REDIRECT_LOGIN_LABEL_FR,
                     style: TextStyle(color: Colors.black, fontSize: 15),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: ElevatedButton(
+                ElevatedButton(
                   onPressed: checkIfFormValid() ? () => {createAccount()} : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeColor,
@@ -204,12 +157,12 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                     ),
                   ),
                   child: const Text(
-                    'Créer son compte',
+                    CREATE_ACCOUNT_LABEL_FR,
                     style: TextStyle(color: Colors.white, fontSize: 15),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -217,96 +170,89 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
   }
 
   void validatePassword() {
-    if (!validatePasswordStructure(passwordController.text)) {
+    if (!validatePasswordStructure(passwordHandler.controller.text)) {
       setState(() {
-        _passwordErrorMessage = "Le mot de passe doit respecter le format attendu";
+        passwordHandler.errorMessage = PASSWORD_INVALID_FORMAT_FR;
       });
     } else {
       setState(() {
-        _passwordErrorMessage = "";
+        passwordHandler.errorMessage = "";
       });
     }
-    return;
   }
 
   void validatePasswordMatch() {
-    if (passwordController.text != passwordMatchController.text) {
+    if (passwordHandler.controller.text != passwordMatchHandler.controller.text) {
       setState(() {
-        _passwordMatchErrorMessage = "Les mots de passe ne correspondent pas. Réessayez.";
+        passwordMatchHandler.errorMessage = PASSWORD_NOT_MATCHING_FR;
       });
     } else {
       setState(() {
-        _passwordMatchErrorMessage = "";
+        passwordMatchHandler.errorMessage = "";
       });
     }
-    return;
   }
 
   Future<void> validateEmail() async {
-    if (emailController.text.isEmpty) {
+    if (emailHandler.controller.text.isEmpty) {
       setState(() {
-        _emailErrorMessage = "L'adresse courriel ne peut pas être vide";
+        emailHandler.errorMessage = EMAIL_EMPTY_FR;
       });
-    } else if (!EmailValidator.validate(emailController.text, true)) {
+    } else if (!EmailValidator.validate(emailHandler.controller.text, true)) {
       setState(() {
-        _emailErrorMessage = "Adresse courriel invalide";
+        emailHandler.errorMessage = EMAIL_INVALID_FORMAT_FR;
       });
-    } else if (!await accountService.isEmailUnique(emailController.text)) {
+    } else if (!await accountService.isEmailUnique(emailHandler.controller.text)) {
       setState(() {
-        _emailErrorMessage = "Cette adresse courriel est déjà utilisée";
+        emailHandler.errorMessage = EMAIL_ALREADY_USED_FR;
       });
     } else {
       setState(() {
-        _emailErrorMessage = "";
+        emailHandler.errorMessage = "";
       });
     }
   }
 
   Future<void> validateUsername() async {
-    if (usernameController.text.isEmpty) {
+    if (usernameHandler.controller.text.isEmpty) {
       setState(() {
-        _usernameErrorMessage = "Le nom d'utilisateur ne peut pas être vide";
+        usernameHandler.errorMessage = USERNAME_EMPTY_FR;
       });
-    } else if (!validateUsernameStructure(usernameController.text)) {
+    } else if (!validateUsernameStructure(usernameHandler.controller.text)) {
       setState(() {
-        _usernameErrorMessage = "Le nom d'utilisateur doit respecté le format attendu";
+        usernameHandler.errorMessage = USERNAME_INVALID_FORMAT_FR;
       });
-    } else if (!await accountService.isUsernameUnique(usernameController.text)) {
+    } else if (!await accountService.isUsernameUnique(usernameHandler.controller.text)) {
       setState(() {
-        _usernameErrorMessage = "Ce nom d'utilisateur est déjà utilisé";
+        usernameHandler.errorMessage = USERNAME_ALREADY_USED_FR;
       });
     } else {
       setState(() {
-        _usernameErrorMessage = "";
+        usernameHandler.errorMessage = "";
       });
     }
   }
 
   bool checkIfFormValid() {
-    bool isEmailValid = emailController.text.isNotEmpty && _emailErrorMessage.isEmpty;
-    bool isUsernameValid = usernameController.text.isNotEmpty && _usernameErrorMessage.isEmpty;
-    bool isPasswordValid = passwordController.text.isNotEmpty && _passwordErrorMessage.isEmpty;
-    bool isPasswordMatchValid = passwordMatchController.text.isNotEmpty && _passwordMatchErrorMessage.isEmpty;
-
-    return isEmailValid && isUsernameValid && isPasswordValid && isPasswordMatchValid;
+    return emailHandler.isValid() && usernameHandler.isValid() && passwordHandler.isValid() && passwordMatchHandler.isValid();
   }
 
   Future<void> createAccount() async {
-    Account newAccount = Account(username: usernameController.text, password: passwordController.text, email: emailController.text);
+    Account newAccount =
+        Account(username: usernameHandler.controller.text, password: passwordHandler.controller.text, email: emailHandler.controller.text);
+    
     if (await accountService.createAccount(newAccount)) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
     }
   }
 
-  bool validatePasswordStructure(String value) {
-    String pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
-    RegExp regExp = new RegExp(pattern);
+  static bool validatePasswordStructure(String value) {
+    RegExp regExp = RegExp(PASSWORD_REGEX_PATTERN);
     return regExp.hasMatch(value);
   }
 
-  bool validateUsernameStructure(String value) {
-    String pattern = r'^.{5,15}$';
-    RegExp regExp = new RegExp(pattern);
+  static bool validateUsernameStructure(String value) {
+    RegExp regExp = RegExp(USERNAME_REGEX_PATTERN);
     return regExp.hasMatch(value);
   }
 }
