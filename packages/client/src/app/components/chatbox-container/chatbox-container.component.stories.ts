@@ -46,7 +46,7 @@ const channels = [
 primary.args = {
     channels,
     openedChannels: [channels[0]],
-    startChannelIsOpen: true,
+    channelMenuIsOpen: true,
 };
 
 export const withVeryLongName = template.bind({});

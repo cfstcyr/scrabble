@@ -22,7 +22,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
     createChannelForm: FormGroup;
     joinChannelForm: FormGroup;
     openedChannels: ClientChannel[] = [];
-    startChannelIsOpen: boolean = false;
+    channelMenuIsOpen: boolean = false;
     private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
 
     constructor(private readonly formBuilder: FormBuilder) {
@@ -39,7 +39,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.joinedChannel.pipe(takeUntil(this.componentDestroyed$)).subscribe((channel) => {
             if (!channel) return;
-            if (this.startChannelIsOpen) this.showChannel(channel);
+            if (this.channelMenuIsOpen) this.showChannel(channel);
         });
     }
 
@@ -48,7 +48,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.complete();
     }
 
-    getChannelsForStartChannel(): ViewClientChannel[] {
+    getChannelsForMenu(): ViewClientChannel[] {
         return this.channels.map<ViewClientChannel>((channel) => ({
             ...channel,
             canOpen: !this.openedChannels.find((c) => channel.id === c.id),
@@ -57,7 +57,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
 
     showChannel(channel: ClientChannel) {
         this.openedChannels.push(channel);
-        this.closeStartChannel();
+        this.closeMenu();
     }
 
     minimizeChannel(channel: ClientChannel) {
@@ -65,12 +65,12 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.openedChannels.splice(index, 1);
     }
 
-    closeStartChannel() {
-        this.startChannelIsOpen = false;
+    closeMenu() {
+        this.channelMenuIsOpen = false;
     }
 
-    toggleStartChannel() {
-        this.startChannelIsOpen = !this.startChannelIsOpen;
+    toggleMenu() {
+        this.channelMenuIsOpen = !this.channelMenuIsOpen;
     }
 
     handleSendMessage(channel: Channel, content: string) {

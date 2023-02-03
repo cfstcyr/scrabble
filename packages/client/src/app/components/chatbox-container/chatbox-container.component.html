@@ -15,12 +15,12 @@
             </app-chatbox-message>
         </ng-container>
 
-        <app-chatbox title="New message" [hideIcon]="true" *ngIf="startChannelIsOpen">
-            <app-icon-button action-button (click)="closeStartChannel()">
+        <app-chatbox title="New message" [hideIcon]="true" *ngIf="channelMenuIsOpen">
+            <app-icon-button action-button (click)="closeMenu()">
                 <app-icon icon="minus"></app-icon>
             </app-icon-button>
 
-            <div class="chatbox-container__add-channel">
+            <div class="chatbox-container__channel-menu">
                 <div class="chatbox-container__section">
                     <form [formGroup]="createChannelForm" (ngSubmit)="handleCreateChannel()">
                         <mat-form-field appearance="outline" class="chatbox-container__create-channel">
@@ -41,7 +41,7 @@
                     <p class="chatbox-container__section__title">Mes canaux</p>
                     <div class="chatbox-container__my-channels__content">
                         <button 
-                            *ngFor="let channel of getChannelsForStartChannel()" 
+                            *ngFor="let channel of getChannelsForMenu()" 
                             [disabled]="!channel.canOpen"
                             (click)="showChannel(channel)"
                             class="chatbox-container__my-channels__button"
@@ -54,7 +54,7 @@
         </app-chatbox>
     </div>
 
-    <button mat-fab color="white" class="chatbox-container__button" (click)="toggleStartChannel()">
+    <button mat-fab color="white" class="chatbox-container__button" (click)="toggleMenu()">
         <app-icon icon="edit" styling="solid"></app-icon>
     </button>
 </div>

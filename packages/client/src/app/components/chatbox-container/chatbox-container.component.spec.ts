@@ -53,7 +53,7 @@ describe('ChatboxContainerComponent', () => {
     describe('getChannelsForStartChannel', () => {
         it('should return channels', () => {
             component.channels = [CHANNEL_1, CHANNEL_2];
-            expect(component.getChannelsForStartChannel()).toHaveSize(component.channels.length);
+            expect(component.getChannelsForMenu()).toHaveSize(component.channels.length);
         });
     });
 
@@ -74,23 +74,23 @@ describe('ChatboxContainerComponent', () => {
 
     describe('closeStartChannel', () => {
         it('should set startChannelIsOpen to false', () => {
-            component.startChannelIsOpen = true;
-            component.closeStartChannel();
-            expect(component.startChannelIsOpen).toBeFalse();
+            component.channelMenuIsOpen = true;
+            component.closeMenu();
+            expect(component.channelMenuIsOpen).toBeFalse();
         });
     });
 
     describe('toggleNewMessage', () => {
         it('should set startChannelIsOpen to false it true', () => {
-            component.startChannelIsOpen = true;
-            component.toggleStartChannel();
-            expect(component.startChannelIsOpen).toBeFalse();
+            component.channelMenuIsOpen = true;
+            component.toggleMenu();
+            expect(component.channelMenuIsOpen).toBeFalse();
         });
 
         it('should set startChannelIsOpen to true it false', () => {
-            component.startChannelIsOpen = false;
-            component.toggleStartChannel();
-            expect(component.startChannelIsOpen).toBeTrue();
+            component.channelMenuIsOpen = false;
+            component.toggleMenu();
+            expect(component.channelMenuIsOpen).toBeTrue();
         });
     });
 
