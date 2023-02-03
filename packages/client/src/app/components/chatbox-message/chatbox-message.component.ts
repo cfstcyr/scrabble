@@ -6,11 +6,14 @@ import { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';
 import { PublicUser } from '@common/models/user';
 import { UserService } from '@app/services/user-service/user.service';
 import { ChatMessage } from '@common/models/chat/chat-message';
+import { MINUTE } from '@app/constants/time-constant';
 
 export interface DisplayMessage {
     sender: PublicUser;
     isCurrentUser: boolean;
-    messages: string[];
+    messages: ChatMessage[];
+    date: Date;
+    displayDate: boolean;
 }
 
 @Component({
@@ -35,16 +38,20 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
         return this.messages.reduce<DisplayMessage[]>((messages, current) => {
             const last = messages[messages.length - 1];
 
-            const content = emojify(current.content.trim());
+            current.content = emojify(current.content.trim());
 
             if (last) {
-                if (last.sender.username === current.sender.username) {
-                    last.messages.push(content);
+                const isRecent = current.date.getTime() - last.date.getTime() <= MINUTE;
+
+                if (last.sender.username === current.sender.username && isRecent) {
+                    last.messages.push(current);
                 } else {
                     messages.push({
                         sender: current.sender,
                         isCurrentUser: this.userService.isUser(current.sender),
-                        messages: [content],
+                        messages: [current],
+                        date: current.date,
+                        displayDate: !isRecent,
                     });
                 }
                 return messages;
@@ -53,7 +60,9 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
                     {
                         sender: current.sender,
                         isCurrentUser: this.userService.isUser(current.sender),
-                        messages: [content],
+                        messages: [current],
+                        date: current.date,
+                        displayDate: true,
                     },
                 ];
             }
@@ -77,6 +86,7 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
         this.messages.push({
             content,
             sender: this.userService.user,
+            date: new Date(),
         });
         this.sendMessage.next(content);
     }

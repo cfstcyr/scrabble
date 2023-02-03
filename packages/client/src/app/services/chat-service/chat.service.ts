@@ -31,6 +31,7 @@ export class ChatService {
         this.socketService.socket.emit('channel:newMessage', channel, {
             content,
             sender: this.userService.user,
+            date: new Date(),
         });
     }
 
@@ -59,7 +60,10 @@ export class ChatService {
 
     handleNewMessage(channelId: string, message: ChatMessage): void {
         const channel = this.getChannel(channelId);
-        channel.messages.push(message);
+        channel.messages.push({
+            ...message,
+            date: new Date(message.date),
+        });
     }
 
     private getChannel(id: string): ClientChannel {

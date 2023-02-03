@@ -46,6 +46,13 @@
             opacity: 0.55;
         }
 
+        &__time {
+            margin: 0;
+            font-size: 0.75em;
+            opacity: 0.55;
+            text-align: center;
+        }
+
         &__content {
             display: flex;
             align-items: flex-end;
@@ -89,12 +96,18 @@
                 border-top-left-radius: $border-radius-l;
                 border-bottom-left-radius: $border-radius-l;
 
-                &:first-child {
-                    border-top-right-radius: $border-radius-l;
-                }
-                
-                &:last-child {
-                    border-bottom-right-radius: $border-radius-l;
+                &__outer {
+                    &:first-child {
+                        .chatbox-message__message { 
+                            border-top-right-radius: $border-radius-l;
+                        }
+                    }
+                        
+                    &:last-child {
+                        .chatbox-message__message { 
+                            border-bottom-right-radius: $border-radius-l;
+                        }
+                    }
                 }
             }
         }
@@ -110,12 +123,18 @@
                 border-top-right-radius: $border-radius-l;
                 border-bottom-right-radius: $border-radius-l;
 
-                &:first-child {
-                    border-top-left-radius: $border-radius-l;
-                }
-                
-                &:last-child {
-                    border-bottom-left-radius: $border-radius-l;
+                &__outer {
+                    &:first-child {
+                        .chatbox-message__message { 
+                            border-top-left-radius: $border-radius-l;
+                        }
+                    }
+                        
+                    &:last-child {
+                        .chatbox-message__message { 
+                            border-bottom-left-radius: $border-radius-l;
+                        }
+                    }
                 }
             }
         }
@@ -127,7 +146,6 @@
 
         background-color: $gray;
         width: fit-content;
-        max-width: calc(100% - 36px);
         box-sizing: border-box;
         border-radius: 4px;
         padding: 10px $padding-h;
@@ -144,6 +162,36 @@
             font-size: 2.2em !important;
             letter-spacing: 6px !important;
             line-height: normal !important;
+        }
+
+        &__outer {
+            position: relative;
+            width: fit-content;
+            max-width: calc(100% - 36px);
+
+            &::after {
+                content: attr(tooltip);
+                position: absolute;
+                top: -6px;
+                left: 50%;
+                translate: -50% -100%;
+                padding: 2px 6px;
+                border-radius: 6px;
+                background-color: rgb(91, 91, 91);
+                font-size: 10px;
+                color: white;
+                display: none;
+                visibility: hidden;
+                transition-delay: 500ms;
+                transition: 0 visibility;
+            }
+
+            &:hover {
+                &::after {
+                    display: inherit;
+                    visibility: visible;
+                }
+            }
         }
     }
 
