@@ -18,7 +18,7 @@ describe('PlayerLeavesController', () => {
 
     beforeEach(async () => {
         socketHelper = new SocketTestHelper();
-        socketServiceMock = new SocketService();
+        socketServiceMock = new SocketService(jasmine.createSpyObj('AlertService', ['alert', 'error', 'warn', 'success', 'info']));
         socketServiceMock['socket'] = socketHelper as unknown as Socket;
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule, RouterTestingModule],
