@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/prototype-page.dart';
+
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
@@ -51,15 +52,15 @@ class _HomePageState extends State<HomePage> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.library_books),
-            label: 'Connexion',
+            label: 'Page a implementer 1',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
-            label: 'Création',
+            label: 'Page a implementer 2',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: 'Page Principale',
+            label: 'Page a implementer 3',
           ),
         ],
       ),
