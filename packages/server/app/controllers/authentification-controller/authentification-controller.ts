@@ -12,10 +12,7 @@ export class AuthentificationController extends BaseController {
     protected configure(router: Router): void {
         router.post('/login', async (req, res, next) => {
             try {
-                this.authentificationservice
-                    .login(req.body)
-                    .then((user) => this.authentificationservice.generateAccessToken(user))
-                    .then((token) => res.send(token).status(StatusCodes.ACCEPTED).end());
+                this.authentificationservice.login(req.body).then((token) => res.send({ token }).status(StatusCodes.ACCEPTED).end());
             } catch (exception) {
                 next(exception);
             }
@@ -23,7 +20,7 @@ export class AuthentificationController extends BaseController {
 
         router.post('/signUp', async (req, res, next) => {
             try {
-                this.authentificationservice.signUp(req.body).then((userId) => res.send(userId).status(StatusCodes.ACCEPTED).end());
+                this.authentificationservice.signUp(req.body).then((token) => res.send({ token }).status(StatusCodes.ACCEPTED).end());
             } catch (exception) {
                 next(exception);
             }

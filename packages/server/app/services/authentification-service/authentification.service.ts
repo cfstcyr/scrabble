@@ -8,27 +8,34 @@ import { env } from '@app/utils/environment/environment';
 export class AuthentificationService {
     constructor(private databaseService: DatabaseService) { }
 
-    async login(user: User): Promise<User> {
-        const data = await this.databaseService.getUser(user);
+    async login(user: { email: string; password: string }): Promise<string> {
+        const data = await this.databaseService.getUserId(user);
 
         return new Promise((resolve, reject) => {
             if (data) {
-                resolve(data);
+                const token = this.generateAccessToken(this.dataToUserId(data));
+                resolve(token);
             } else reject();
         });
     }
 
-    async signUp(user: User): Promise<number[]> {
-        const userId = await this.databaseService.createUser(user);
+    async signUp(user: User): Promise<string> {
+        const data = await this.databaseService.createUser(user);
 
         return new Promise((resolve, reject) => {
-            if (userId) {
-                resolve(userId);
+            if (data) {
+                const token = this.generateAccessToken(this.dataToUserId(data));
+                resolve(token);
             } else reject();
         });
     }
 
-    private generateAccessToken(user: User) {
-        return jwt.sign(user, env.TOKEN_SECRET, { expiresIn: '1800s' });
+    private generateAccessToken(userId: string): string {
+        return jwt.sign(userId, env.TOKEN_SECRET, { expiresIn: '1800s' });
     }
+
+    private dataToUserId(data: number[]): string {
+        return data[0].toString();
+    }
+
 }

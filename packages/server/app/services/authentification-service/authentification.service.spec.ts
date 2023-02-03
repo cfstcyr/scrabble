@@ -41,14 +41,8 @@ describe('AuthentificationService', () => {
     });
 
     it('should login the admin', () => {
-        const admin: User = { username: 'admin', password: 'admin', email: 'admin@admin.com' };
-        expect(authentificationService.login(admin));
-    });
-
-    it('should createToken from userData', () => {
-        const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com' };
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        expect(authentificationService.generateAccessToken(user)).to.exist;
+        const admin = { email: 'admin@admin.com', password: 'admin' };
+        expect(authentificationService.login(admin)).to.exist;
     });
 
     it('signUp should call createUser method from databaseService', () => {
