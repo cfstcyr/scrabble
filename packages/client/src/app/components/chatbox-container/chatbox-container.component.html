@@ -9,7 +9,7 @@
                 <app-icon-button action-button (click)="minimizeChannel(channel)">
                     <app-icon icon="minus"></app-icon>
                 </app-icon-button>
-                <app-icon-button action-button (click)="handleQuitChannel(channel)">
+                <app-icon-button action-button (click)="handleQuitChannel(channel)" *ngIf="channel.canQuit">
                     <app-icon icon="sign-out"></app-icon>
                 </app-icon-button>
             </app-chatbox-message>

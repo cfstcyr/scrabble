@@ -23,7 +23,7 @@ export class ChatboxWrapperComponent {
     }
 
     handleCreateChannel(channelName: string): void {
-        this.chatService.createChannel({ name: channelName });
+        this.chatService.createChannel(channelName);
     }
 
     handleJoinChannel(channelName: string): void {

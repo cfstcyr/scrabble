@@ -14,11 +14,13 @@ const CHANNEL_1: ClientChannel = {
     id: '1',
     name: '1',
     messages: [],
+    canQuit: true,
 };
 const CHANNEL_2: ClientChannel = {
     id: '2',
     name: '2',
     messages: [],
+    canQuit: true,
 };
 
 describe('ChatboxContainerComponent', () => {

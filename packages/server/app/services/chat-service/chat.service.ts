@@ -18,7 +18,7 @@ export class ChatService {
 
     configureSocket(socket: ServerSocket): void {
         socket.on('channel:newMessage', (channel: NoId<Channel>, chatMessage: ChatMessage) => this.sendMessage(channel, socket, chatMessage));
-        socket.on('channel:newChannel', (channel: NoId<Channel>) => this.createChannel(channel, socket));
+        socket.on('channel:newChannel', (channelName: string) => this.createChannel(channelName, socket));
         socket.on('channel:join', (channel: string) => this.joinChannel(channel, socket));
         socket.on('channel:quit', (channel: string) => this.quitChannel(channel, socket));
         socket.on('channel:init', () => {
@@ -44,19 +44,19 @@ export class ChatService {
         // TODO: Save message in DB
     }
 
-    private createChannel(channel: NoId<Channel>, socket: ServerSocket): void {
-        if (this.getChannel(channel.name)) {
+    private createChannel(channelName: string, socket: ServerSocket): void {
+        if (this.getChannel(channelName)) {
             socket.emit('error', ALREADY_EXISTING_CHANNEL_NAME, StatusCodes.FORBIDDEN);
             return;
         }
-        const newChannel: Channel = { ...channel, id: String(this.channels.length + 1) };
+        const newChannel: Channel = { name: channelName, id: String(this.channels.length + 1), canQuit: true };
 
         this.channels.push(newChannel);
 
         socket.emit('channel:newChannel', newChannel);
         // TODO: Save channel in DB
 
-        this.joinChannel(channel.name, socket);
+        this.joinChannel(channelName, socket);
     }
 
     private joinChannel(channelName: string, socket: ServerSocket): void {

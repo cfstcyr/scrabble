@@ -59,8 +59,7 @@ describe('ChatService', () => {
     describe('createChannel', () => {
         it('should emit to channel:newChannel', () => {
             spyOn(socket, 'emit');
-            const channel = {} as Channel;
-            service.createChannel(channel);
+            service.createChannel('');
             expect(socket.emit).toHaveBeenCalled();
         });
     });
@@ -93,6 +92,7 @@ describe('ChatService', () => {
                 id: '1',
                 name: 'channel',
                 messages: [],
+                canQuit: true,
             };
             service.channels = [channel];
             service.handleChannelQuit(channel);
@@ -106,6 +106,7 @@ describe('ChatService', () => {
                 id: '1',
                 name: 'channel',
                 messages: [],
+                canQuit: true,
             };
             service.channels = [channel];
             service.handleNewMessage(channel.id, {} as ChatMessage);

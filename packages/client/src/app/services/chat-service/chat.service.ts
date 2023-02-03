@@ -5,7 +5,6 @@ import { ChatMessage } from '@common/models/chat/chat-message';
 import SocketService from '@app/services/socket-service/socket.service';
 import { ClientChannel } from '@app/classes/chat/channel';
 import { UserService } from '@app/services/user-service/user.service';
-import { NoId } from '@common/types/no-id';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -35,8 +34,8 @@ export class ChatService {
         });
     }
 
-    createChannel(channel: NoId<Channel>): void {
-        this.socketService.socket.emit('channel:newChannel', channel);
+    createChannel(channelName: string): void {
+        this.socketService.socket.emit('channel:newChannel', channelName);
     }
 
     joinChannel(channel: string): void {
