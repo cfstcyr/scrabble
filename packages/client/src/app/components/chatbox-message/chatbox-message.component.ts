@@ -81,7 +81,7 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
         this.sendMessage.next(content);
     }
 
-    onMessageSubmit() {
+    onMessageSubmit(): void {
         if (!this.messageForm.valid) return;
 
         const content = this.messageForm.value.message.trim();
@@ -92,7 +92,7 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
         this.messageForm.setValue({ message: '' });
     }
 
-    onEmojiClick(emoji: string) {
+    onEmojiClick(emoji: string): void {
         this.addMessage(emoji);
     }
 }

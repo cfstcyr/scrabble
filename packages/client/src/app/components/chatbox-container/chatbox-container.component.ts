@@ -58,29 +58,29 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         }));
     }
 
-    showChannel(channel: ClientChannel) {
+    showChannel(channel: ClientChannel): void {
         this.openedChannels.push(channel);
         this.closeMenu();
     }
 
-    minimizeChannel(channel: ClientChannel) {
+    minimizeChannel(channel: ClientChannel): void {
         const index = this.openedChannels.findIndex(({ id }) => channel.id === id);
         if (index >= 0) this.openedChannels.splice(index, 1);
     }
 
-    closeMenu() {
+    closeMenu(): void {
         this.channelMenuIsOpen = false;
     }
 
-    toggleMenu() {
+    toggleMenu(): void {
         this.channelMenuIsOpen = !this.channelMenuIsOpen;
     }
 
-    handleSendMessage(channel: Channel, content: string) {
+    handleSendMessage(channel: Channel, content: string): void {
         this.sendMessage.next([channel, content]);
     }
 
-    handleCreateChannel() {
+    handleCreateChannel(): void {
         if (!this.createChannelForm.valid) return;
 
         const channelName = this.createChannelForm.value.createChannel.trim();
@@ -93,7 +93,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.createChannelInput?.nativeElement?.blur();
     }
 
-    handleJoinChannel() {
+    handleJoinChannel(): void {
         if (!this.joinChannelForm.valid) return;
 
         const channelName = this.joinChannelForm.value.joinChannel.trim();
@@ -106,7 +106,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.joinChannelInput?.nativeElement?.blur();
     }
 
-    handleQuitChannel(channel: ClientChannel) {
+    handleQuitChannel(channel: ClientChannel): void {
         this.dialog.open(DefaultDialogComponent, {
             data: {
                 title: CONFIRM_QUIT_DIALOG_TITLE,
