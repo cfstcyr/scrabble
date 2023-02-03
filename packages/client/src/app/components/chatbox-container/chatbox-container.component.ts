@@ -62,7 +62,7 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
 
     minimizeChannel(channel: ClientChannel) {
         const index = this.openedChannels.findIndex(({ id }) => channel.id === id);
-        this.openedChannels.splice(index, 1);
+        if (index >= 0) this.openedChannels.splice(index, 1);
     }
 
     closeMenu() {
