@@ -1,3 +1,4 @@
+import TokenData from '@app/classes/user/token-data';
 import User from '@app/classes/user/user';
 import { env } from '@app/utils/environment/environment';
 import knex, { Knex } from 'knex';
@@ -35,9 +36,9 @@ export default class DatabaseService {
         });
     }
 
-    async getUserId(email: string): Promise<{ idUser: number }> {
+    async getUserId(email: string): Promise<TokenData> {
         return new Promise((resolve, reject) => {
-            this.knex('User')
+            this.knex<User>('User')
                 .where('email', email)
                 .select('idUser')
                 .then((data) => resolve(data[0]))
@@ -45,17 +46,17 @@ export default class DatabaseService {
         });
     }
 
-    async getUser(idUser: number): Promise<unknown[]> {
+    async getUser(idUser: number): Promise<User> {
         return new Promise((resolve, reject) => {
-            this.knex('User')
+            this.knex<User>('User')
                 .where('idUser', idUser)
                 .select('*')
-                .then((data) => resolve(data))
+                .then((data) => resolve(data[0]))
                 .catch((err) => reject(err));
         });
     }
 
-    async createUser(user: User): Promise<number> {
+    async createUser(user: User): Promise<unknown> {
         return new Promise((resolve, reject) => {
             this.knex
                 .returning('idUser')
