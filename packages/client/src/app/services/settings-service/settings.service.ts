@@ -1,6 +1,6 @@
 /* eslint-disable no-dupe-class-members */
 import { Injectable } from '@angular/core';
-import { SettingsModule } from '@app/modules/settings.module';
+import { DEFAULT_SETTINGS, SettingsModule } from '@app/modules/settings.module';
 import store from 'store2';
 
 @Injectable({
@@ -9,16 +9,8 @@ import store from 'store2';
 export class SettingsService {
     private readonly namespace = 'scrabble-settings';
 
-    get<K extends keyof SettingsModule>(key: K): SettingsModule[K] {
-        const value = this.tryGet(key);
-
-        if (!value) throw new Error(`No setting for key "${key as string}"`);
-
-        return value;
-    }
-
-    tryGet<K extends keyof SettingsModule>(key: K): SettingsModule[K] | undefined {
-        return store.namespace(this.namespace).get(key) ?? undefined;
+    get<K extends keyof SettingsModule>(key: K): SettingsModule[K] | (typeof DEFAULT_SETTINGS extends { [S in K]?: infer I } ? I : undefined) {
+        return store.namespace(this.namespace).get(key) ?? (DEFAULT_SETTINGS as Record<string, unknown>)[key] ?? undefined;
     }
 
     set<K extends keyof SettingsModule>(key: K, value: SettingsModule[K]): void {
