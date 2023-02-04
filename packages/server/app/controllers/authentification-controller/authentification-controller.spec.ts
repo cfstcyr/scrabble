@@ -50,41 +50,49 @@ describe('AuthentificationController', () => {
             expressApp = app.app;
         });
 
-        it('should call authentificationService.login', async () => {
-            return supertest(expressApp)
-                .post('api/authentification/login')
-                .send({ email: 'admin@admin.com', password: 'password' })
-                .set('Accept', 'application/json')
-                .expect(StatusCodes.OK);
-        });
+        describe('POST /authentification/login', () => {
+            it('should return 200 on successful login', async () => {
+                chai.spy.on(authentificationServiceStub, 'login', async () => 'OK');
 
-        it('should return 200', async () => {
-            return supertest(expressApp)
-                .post('api/authentification/signUp')
-                .send({ email: 'admin@admin.com', password: 'password', username: 'admin' })
-                .set('Accept', 'application/json')
-                .expect(StatusCodes.OK);
-        });
-
-        it('login should return 401', async () => {
-            chai.spy.on(authentificationServiceStub, 'login', async () => {
-                throw new HttpException('NOT FOUND', StatusCodes.NOT_FOUND);
+                return supertest(expressApp)
+                    .post('/api/authentification/login')
+                    .send({ email: 'admin@admin.com', password: 'password' })
+                    .set('Accept', 'application/json')
+                    .expect(StatusCodes.OK);
             });
-            return supertest(expressApp)
-                .post('api/authentification/signUp')
-                .send({ email: '', password: '' })
-                .set('Accept', 'application/json')
-                .expect(StatusCodes.NOT_FOUND);
+
+            it('should return 400 on failed login', async () => {
+                chai.spy.on(authentificationServiceStub, 'login', async () => {
+                    throw new HttpException('NOT FOUND', StatusCodes.NOT_FOUND);
+                });
+                return supertest(expressApp)
+                    .post('/api/authentification/login')
+                    .send({ email: '', password: '' })
+                    .set('Accept', 'application/json')
+                    .expect(StatusCodes.BAD_REQUEST);
+            });
         });
 
-        it('signUp should return 401', async () => {
-            chai.spy.on(authentificationServiceStub, 'signUp', async () => {
-                throw new HttpException('NOT FOUND', StatusCodes.NOT_FOUND);
+        describe('POST /authentification/signUp', () => {
+            it('should return 200 on successful signup', async () => {
+                chai.spy.on(authentificationServiceStub, 'signUp', async () => 'OK');
+
+                return supertest(expressApp)
+                    .post('/api/authentification/signUp')
+                    .send({ email: 'admin@admin.com', password: 'password', username: 'admin' })
+                    .set('Accept', 'application/json')
+                    .expect(StatusCodes.OK);
             });
-            return supertest(expressApp)
-                .post('api/authentification/signUp')
-                .send({ email: 'admin', password: 'password', username: 'username' })
-                .expect(StatusCodes.NOT_FOUND);
+
+            it('should return 403 on failed signup', async () => {
+                chai.spy.on(authentificationServiceStub, 'signUp', async () => {
+                    throw new HttpException('NOT FOUND', StatusCodes.NOT_FOUND);
+                });
+                return supertest(expressApp)
+                    .post('/api/authentification/signUp')
+                    .send({ email: 'admin', password: 'password', username: 'username' })
+                    .expect(StatusCodes.FORBIDDEN);
+            });
         });
     });
 });
