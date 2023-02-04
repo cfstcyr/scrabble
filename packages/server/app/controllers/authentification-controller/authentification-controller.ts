@@ -4,6 +4,7 @@ import { BaseController } from '@app/controllers/base-controller';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { NO_CRENTIALS, NO_LOGIN, NO_SIGNUP } from '@app/constants/controllers-errors';
 
 @Service()
 export class AuthentificationController extends BaseController {
@@ -16,14 +17,14 @@ export class AuthentificationController extends BaseController {
             this.authentificationservice
                 .login(req.body)
                 .then((token) => res.send({ token }).status(StatusCodes.OK).end())
-                .catch(() => next(new HttpException('Could not login with credentials', StatusCodes.BAD_REQUEST)));
+                .catch(() => next(new HttpException(NO_LOGIN, StatusCodes.BAD_REQUEST)));
         });
 
         router.post('/signUp', async (req, res, next) => {
             this.authentificationservice
                 .signUp(req.body)
                 .then((token) => res.send({ token }).status(StatusCodes.CREATED).end())
-                .catch(() => next(new HttpException('Could not signUp with credentials', StatusCodes.FORBIDDEN)));
+                .catch(() => next(new HttpException(NO_SIGNUP, StatusCodes.FORBIDDEN)));
         });
     }
 }
