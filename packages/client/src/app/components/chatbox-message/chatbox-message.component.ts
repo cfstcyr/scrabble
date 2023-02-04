@@ -8,10 +8,12 @@ import { UserService } from '@app/services/user-service/user.service';
 import { ChatMessage } from '@common/models/chat/chat-message';
 import { MINUTE } from '@app/constants/time-constant';
 
-export interface DisplayMessage {
+export type DisplayMessage = ChatMessage & { onlyEmoji: boolean };
+
+export interface DisplayGroup {
     sender: PublicUser;
     isCurrentUser: boolean;
-    messages: ChatMessage[];
+    messages: DisplayMessage[];
     date: Date;
     displayDate: boolean;
 }
@@ -34,22 +36,27 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
         });
     }
 
-    getMessages(): DisplayMessage[] {
-        return this.messages.reduce<DisplayMessage[]>((messages, current) => {
+    getMessages(): DisplayGroup[] {
+        return this.messages.reduce<DisplayGroup[]>((messages: DisplayGroup[], current) => {
             const last = messages[messages.length - 1];
 
-            current.content = emojify(current.content.trim());
+            const newMessage: DisplayMessage = {
+                ...current,
+                content: emojify(current.content.trim()),
+                onlyEmoji: onlyHasEmoji(current.content),
+            };
 
             if (last) {
-                const isRecent = current.date.getTime() - last.date.getTime() <= MINUTE;
+                const lastMessage = last.messages[last.messages.length - 1];
+                const isRecent = current.date.getTime() - lastMessage.date.getTime() <= MINUTE;
 
                 if (last.sender.username === current.sender.username && isRecent) {
-                    last.messages.push(current);
+                    last.messages.push(newMessage);
                 } else {
                     messages.push({
                         sender: current.sender,
                         isCurrentUser: this.userService.isUser(current.sender),
-                        messages: [current],
+                        messages: [newMessage],
                         date: current.date,
                         displayDate: !isRecent,
                     });
@@ -60,7 +67,7 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
                     {
                         sender: current.sender,
                         isCurrentUser: this.userService.isUser(current.sender),
-                        messages: [current],
+                        messages: [newMessage],
                         date: current.date,
                         displayDate: true,
                     },

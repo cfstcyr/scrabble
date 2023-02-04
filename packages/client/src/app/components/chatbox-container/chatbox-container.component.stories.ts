@@ -6,6 +6,8 @@ import { IconComponent } from '@app/components/icon/icon.component';
 import { MatButtonModule } from '@angular/material/button';
 import { ChatboxMessageComponent } from '@app/components/chatbox-message/chatbox-message.component';
 import { IconButtonComponent } from '@app/components/icon-button/icon-button.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ClientChannel } from '@app/classes/chat/channel';
 
 export default {
     title: 'Chatbox/Container',
@@ -13,7 +15,7 @@ export default {
     decorators: [
         moduleMetadata({
             declarations: [ChatBoxComponent, ChatboxMessageComponent, IconComponent, IconButtonComponent],
-            imports: [ReactiveFormsModule, MatButtonModule],
+            imports: [ReactiveFormsModule, MatButtonModule, MatDialogModule],
             providers: [FormBuilder],
         }),
     ],
@@ -25,20 +27,23 @@ const template: Story<ChatboxContainerComponent> = (args: ChatboxContainerCompon
 
 export const primary = template.bind({});
 
-const channels = [
+const channels: ClientChannel[] = [
     {
         id: '1',
         name: 'Chat 1',
+        canQuit: true,
         messages: [
             {
                 sender: { username: 'John', avatar: 'https://placedog.net/50' },
                 content: 'Bonjour!',
+                date: new Date(),
             },
         ],
     },
     {
         id: '2',
         name: 'Chat 2',
+        canQuit: true,
         messages: [],
     },
 ];
@@ -56,6 +61,7 @@ withVeryLongName.args = {
         {
             id: '1',
             name: 'Very long channel name that never finishes because why not',
+            canQuit: true,
             messages: [],
         },
     ],
