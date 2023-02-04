@@ -1,7 +1,7 @@
 import 'package:mobile/classes/account.dart';
-import 'package:mobile/classes/login.dart';
 import 'package:mobile/controllers/account-authentification-controller.dart';
 
+import '../controllers/login-authentification.controller.dart';
 import '../locator.dart';
 
 class AccountAuthenticationService {
@@ -16,6 +16,7 @@ class AccountAuthenticationService {
   // final headers = {"Content-type": "application/json"};
   final accountAuthenticationController =
       getIt.get<AccountAuthenticationController>();
+  final authenticationController = getIt.get<AuthentificationController>();
   Future<bool> createAccount(Account account) async {
     return await accountAuthenticationController.createAccount(account);
     // if (res.statusCode == 200) {
@@ -36,15 +37,6 @@ class AccountAuthenticationService {
 
   Future<bool> isUsernameUnique(String username) async {
     return await accountAuthenticationController.isUsernameUnique(username);
-    // if (res.statusCode == 200) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
-  }
-
-  Future<bool> login(LoginData credentials) async {
-    return await accountAuthenticationController.login(credentials);
     // if (res.statusCode == 200) {
     //   return true;
     // } else {
