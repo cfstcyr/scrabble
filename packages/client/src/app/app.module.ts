@@ -52,7 +52,9 @@ import { ChatboxMessageComponent } from './components/chatbox-message/chatbox-me
 import { IconButtonComponent } from './components/icon-button/icon-button.component';
 import { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';
 import { AlertComponent } from './components/alert/alert.component';
-import { SignUpPageComponent } from './pages/signin-page/signup-page.component';
+import { SignUpPageComponent } from './pages/signup-page/signup-page.component';
+import { SignupWrapperComponent } from './wrappers/signup-wrapper/signup-wrapper.component';
+import { SignupContainerComponent } from './components/signup-container/signup-container.component';
 
 registerLocaleData(localeFr);
 
@@ -108,6 +110,8 @@ registerLocaleData(localeFr);
         IconButtonComponent,
         ChatboxWrapperComponent,
         AlertComponent,
+        SignupWrapperComponent,
+        SignupContainerComponent,
     ],
     imports: [
         AppMaterialModule,

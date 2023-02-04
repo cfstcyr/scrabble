@@ -8,3 +8,8 @@ export interface User extends PublicUser {
   hash: string;
   salt: string;
 }
+
+export interface UserCredentials extends PublicUser {
+  email: string,
+  password: string
+}

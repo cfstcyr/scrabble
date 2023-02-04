@@ -1,0 +1,31 @@
+<div class="signup-container">
+    <mat-card>
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+            <mat-label><app-icon icon="user"></app-icon> Choisissez votre nom de joueur</mat-label>
+            <input
+                matInput
+                id="playerNameValidator"
+                type="text"
+                formControlName="inputName"
+                autocomplete="off"
+                (ngModelChange)="''"
+                (valueChanges)="''"
+            />
+    
+            <div class="buttons">
+                <div
+                    class="button-container"
+                    matTooltip="Veuillez remplir tous les champs avec des données valides"
+                    [matTooltipDisabled]="''"
+                    matTooltipPosition="above"
+                    (click)="''"
+                >
+                    <button mat-flat-button color="primary" type="submit" id="create-game-button" [disabled]="false" cdkFocusInitial>
+                        Créer son compte
+                    </button>
+                </div>
+            </div>
+        </form>
+    </mat-card>
+
+</div>

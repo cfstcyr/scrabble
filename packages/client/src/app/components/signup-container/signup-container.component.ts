@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-    selector: 'app-signup-page',
-    templateUrl: './signup-page.component.html',
-    styleUrls: ['./signup-page.component.scss'],
+    selector: 'app-signup-container',
+    templateUrl: './signup-container.component.html',
+    styleUrls: ['./signup-container.component.scss'],
 })
-export class SignUpPageComponent {
+export class SignupContainerComponent {
     signupForm: FormGroup;
 
     constructor() {
@@ -19,18 +19,6 @@ export class SignUpPageComponent {
     }
 
     onSubmit(): void {
-        return;
-    }
-
-    onUsernameChange(): void {
-        return;
-    }
-
-    isFormValid(): boolean {
-        return true;
-    }
-
-    onFormInvalidClick(): void {
         return;
     }
 }
