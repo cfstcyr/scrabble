@@ -4,7 +4,7 @@ import { BaseController } from '@app/controllers/base-controller';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { NO_CRENTIALS, NO_LOGIN, NO_SIGNUP } from '@app/constants/controllers-errors';
+import { NO_LOGIN, NO_SIGNUP } from '@app/constants/controllers-errors';
 
 @Service()
 export class AuthentificationController extends BaseController {
