@@ -7,7 +7,6 @@ import 'package:mobile/services/theme-color-service.dart';
 
 import '../classes/login.dart';
 import '../constants/create-account-constants.dart';
-import '../constants/create-account-errors.dart';
 import '../constants/login-constants.dart';
 import '../pages/create-account-page.dart';
 import '../pages/home-page.dart';
