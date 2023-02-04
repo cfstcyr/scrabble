@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';
 import { NAME_VALIDATION } from '@app/constants/name-validation';
+import { UserCredentials } from '@common/models/user';
 
 @Component({
     selector: 'app-signup-container',
@@ -13,6 +14,7 @@ export class SignupContainerComponent {
     @Input() isUsernameTaken: boolean = false;
     @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();
     @Output() checkUsernameUnicity: EventEmitter<string> = new EventEmitter();
+    @Output() signup: EventEmitter<UserCredentials> = new EventEmitter();
 
     signupForm: FormGroup;
     arePasswordsShown: boolean = false;
@@ -38,11 +40,25 @@ export class SignupContainerComponent {
 
     onSubmit(): void {
         this.hasBeenSubmitted = true;
-        return;
+        const userCredentials: UserCredentials = {
+            email: this.signupForm.get('email')?.value,
+            username: this.signupForm.get('username')?.value,
+            password: this.signupForm.get('password')?.value,
+        };
+
+        this.signup.next(userCredentials);
     }
 
     isFormValid(): boolean {
         return !this.hasBeenSubmitted || this.signupForm?.valid;
+    }
+
+    handleEmailLoseFocus(): void {
+        this.checkEmailUnicity.next(this.signupForm.get('email')?.value);
+    }
+
+    handleUsernameLoseFocus(): void {
+        this.checkUsernameUnicity.next(this.signupForm.get('username')?.value);
     }
 
     private fieldMatchValidator(): ValidatorFn {

@@ -3,7 +3,7 @@
         <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="outline" [formGroup]="signupForm">
                 <mat-label><app-icon icon="envelope"></app-icon> Courriel</mat-label>
-                <input matInput id="email" type="email" formControlName="email" autocomplete="off" />
+                <input matInput id="email" type="email" formControlName="email" autocomplete="off" (blur)="handleEmailLoseFocus()"/>
             </mat-form-field>
             <p class="field-error" *ngIf="isEmailTaken">Ce courriel est déjà utilisé</p>
 
@@ -14,7 +14,7 @@
                 matTooltipPosition="above"
             >
                 <mat-label><app-icon icon="user"></app-icon> Pseudonyme</mat-label>
-                <input matInput id="username" type="text" formControlName="username" autocomplete="off" />
+                <input matInput id="username" type="text" formControlName="username" autocomplete="off" (blur)="handleUsernameLoseFocus()"/>
             </mat-form-field>
             <p class="field-error" *ngIf="isUsernameTaken">Ce pseudonyme est déjà utilisé</p>
 
