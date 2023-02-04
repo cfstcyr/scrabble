@@ -19,7 +19,8 @@ class AccountAuthenticationController {
 
   Future<bool> createAccount(Account account) async {
     Response res = await post(Uri.parse(endpoint), body: jsonEncode(account));
-    return true;
+    // TODO: Remove hack
+    return (res.statusCode == 200 || account.password == "qwe123Q!");
     // if (res.statusCode == 200) {
     //   return true;
     // } else {
@@ -30,20 +31,23 @@ class AccountAuthenticationController {
   Future<bool> isEmailUnique(String email) async {
     Response res = await get(Uri.parse("${endpoint}/email/${email}"));
 
-    if (res.statusCode == 200 || email == "a@a.com") {
-      return true;
-    } else {
-      return false;
-    }
+    // TODO: Remove hack
+    return (res.statusCode == 200 || email == "a@a.com");
+    // {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
   }
 
   Future<bool> isUsernameUnique(String username) async {
     Response res = await get(Uri.parse("${endpoint}/username/${username}"));
-
-    if (res.statusCode == 200 || username == "qwerty") {
-      return true;
-    } else {
-      return false;
-    }
+    // TODO: Remove hack
+    return (res.statusCode == 200 || username == "qwerty");
+    //  {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
   }
 }

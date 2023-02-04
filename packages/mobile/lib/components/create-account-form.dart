@@ -1,13 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/text-field-handler.dart';
-import 'package:mobile/constants/create-account-errors.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
-import 'package:email_validator/email_validator.dart';
 
 import '../constants/create-account-constants.dart';
 import '../pages/home-page.dart';
@@ -15,15 +14,17 @@ import '../services/account-authentification-service.dart';
 
 class CreateAccountForm extends StatefulWidget {
   @override
-  _CreateAccountFormState createState() => _CreateAccountFormState();
+  CreateAccountFormState createState() => CreateAccountFormState();
 }
 
-class _CreateAccountFormState extends State<CreateAccountForm> {
+@visibleForTesting
+class CreateAccountFormState extends State<CreateAccountForm> {
   bool isPasswordShown = false;
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  AccountAuthenticationService accountService = getIt.get<AccountAuthenticationService>();
+  AccountAuthenticationService accountService =
+      getIt.get<AccountAuthenticationService>();
 
   final emailHandler = TextFieldHandler();
   final usernameHandler = TextFieldHandler();
@@ -68,7 +69,8 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
               Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 0),
+                    padding: EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15.0, bottom: 0),
                     child: TextField(
                       controller: emailHandler.controller,
                       focusNode: emailHandler.focusNode,
@@ -77,12 +79,15 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: EMAIL_LABEL_FR,
-                        errorText: emailHandler.errorMessage.isEmpty ? null : emailHandler.errorMessage,
+                        errorText: emailHandler.errorMessage.isEmpty
+                            ? null
+                            : emailHandler.errorMessage,
                       ),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 0),
+                    padding: EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15.0, bottom: 0),
                     child: TextField(
                       controller: usernameHandler.controller,
                       focusNode: usernameHandler.focusNode,
@@ -90,13 +95,16 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: USERNAME_LABEL_FR,
-                        errorText: usernameHandler.errorMessage.isEmpty ? null : usernameHandler.errorMessage,
+                        errorText: usernameHandler.errorMessage.isEmpty
+                            ? null
+                            : usernameHandler.errorMessage,
                       ),
                     ),
                   ),
                   SizedBox(height: 20),
                   Padding(
-                    padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 0),
+                    padding: EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15.0, bottom: 0),
                     child: TextField(
                       controller: passwordHandler.controller,
                       focusNode: passwordHandler.focusNode,
@@ -107,12 +115,15 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: PASSWORD_LABEL_FR,
-                        errorText: passwordHandler.errorMessage.isEmpty ? null : passwordHandler.errorMessage,
+                        errorText: passwordHandler.errorMessage.isEmpty
+                            ? null
+                            : passwordHandler.errorMessage,
                       ),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 0),
+                    padding: EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15.0, bottom: 0),
                     child: TextField(
                       controller: passwordMatchHandler.controller,
                       focusNode: passwordMatchHandler.focusNode,
@@ -125,7 +136,9 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                         labelText: PASSWORD_MATCH_LABEL_FR,
                         helperText: PASSWORD_HELPER_TEXT_FR,
                         helperMaxLines: 3,
-                        errorText: passwordMatchHandler.errorMessage.isEmpty ? null : passwordMatchHandler.errorMessage,
+                        errorText: passwordMatchHandler.errorMessage.isEmpty
+                            ? null
+                            : passwordMatchHandler.errorMessage,
                       ),
                     ),
                   ),
@@ -142,13 +155,17 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0, bottom: 15.0),
+                padding: EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15.0, bottom: 15.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
                       },
                       child: const Text(
                         REDIRECT_LOGIN_LABEL_FR,
@@ -156,7 +173,8 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: isButtonEnabled ? () => {createAccount()} : null,
+                      onPressed:
+                          isButtonEnabled ? () => {createAccount()} : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: themeColor,
                         shadowColor: Colors.black,
@@ -168,7 +186,9 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                         CREATE_ACCOUNT_LABEL_FR,
                         style: isButtonEnabled
                             ? TextStyle(color: Colors.white, fontSize: 15)
-                            : TextStyle(color: Color.fromARGB(255, 87, 87, 87), fontSize: 15),
+                            : TextStyle(
+                                color: Color.fromARGB(255, 87, 87, 87),
+                                fontSize: 15),
                       ),
                     ),
                   ],
@@ -182,7 +202,10 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
   }
 
   bool isFormValid() {
-    return emailHandler.isValid() && usernameHandler.isValid() && passwordHandler.isValid() && passwordMatchHandler.isValid();
+    return emailHandler.isValid() &&
+        usernameHandler.isValid() &&
+        passwordHandler.isValid() &&
+        passwordMatchHandler.isValid();
   }
 
   void validatePassword() {
@@ -191,6 +214,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
         passwordHandler.errorMessage = PASSWORD_INVALID_FORMAT_FR;
       });
     } else {
+      validatePasswordMatch();
       setState(() {
         passwordHandler.errorMessage = "";
       });
@@ -198,7 +222,8 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
   }
 
   void validatePasswordMatch() {
-    if (passwordHandler.controller.text != passwordMatchHandler.controller.text) {
+    if (passwordHandler.controller.text !=
+        passwordMatchHandler.controller.text) {
       setState(() {
         passwordMatchHandler.errorMessage = PASSWORD_NOT_MATCHING_FR;
       });
@@ -218,7 +243,8 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
       setState(() {
         emailHandler.errorMessage = EMAIL_INVALID_FORMAT_FR;
       });
-    } else if (!await accountService.isEmailUnique(emailHandler.controller.text)) {
+    } else if (!await accountService
+        .isEmailUnique(emailHandler.controller.text)) {
       setState(() {
         emailHandler.errorMessage = EMAIL_ALREADY_USED_FR;
       });
@@ -238,7 +264,8 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
       setState(() {
         usernameHandler.errorMessage = USERNAME_INVALID_FORMAT_FR;
       });
-    } else if (!await accountService.isUsernameUnique(usernameHandler.controller.text)) {
+    } else if (!await accountService
+        .isUsernameUnique(usernameHandler.controller.text)) {
       setState(() {
         usernameHandler.errorMessage = USERNAME_ALREADY_USED_FR;
       });
@@ -256,20 +283,38 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
     if (!isFormValid()) {
       return;
     }
-    Account newAccount =
-        Account(username: usernameHandler.controller.text, password: passwordHandler.controller.text, email: emailHandler.controller.text);
-
+    Account newAccount = Account(
+        username: usernameHandler.controller.text,
+        password: passwordHandler.controller.text,
+        email: emailHandler.controller.text);
     if (await accountService.createAccount(newAccount)) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
+    } else {
+      validateUsername();
+      validateEmail();
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text(ACCOUNT_CREATION_DIALOG_TITLE_FR),
+          content: const Text(ACCOUNT_CREATION_DIALOG_ERROR_FR),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text(ACCOUNT_CREATION_DIALOG_RETURN_FR),
+            ),
+          ],
+        ),
+      );
     }
   }
 
-  static bool validatePasswordStructure(String value) {
+  bool validatePasswordStructure(String value) {
     RegExp regExp = RegExp(PASSWORD_REGEX_PATTERN);
     return regExp.hasMatch(value);
   }
 
-  static bool validateUsernameStructure(String value) {
+  bool validateUsernameStructure(String value) {
     RegExp regExp = RegExp(USERNAME_REGEX_PATTERN);
     return regExp.hasMatch(value);
   }

@@ -3,6 +3,7 @@
 /* eslint-disable dot-notation */
 import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DEFAULT_GAME_ID, DEFAULT_LEAVER } from '@app/constants/controller-test-constants';
 import { PlayerLeavesController } from '@app/controllers/player-leave-controller/player-leave.controller';
@@ -16,7 +17,7 @@ describe('PlayerLeavesService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientModule, RouterTestingModule],
+            imports: [HttpClientModule, RouterTestingModule, MatSnackBarModule],
             providers: [PlayerLeavesController, SocketService],
         });
         service = TestBed.inject(PlayerLeavesService);

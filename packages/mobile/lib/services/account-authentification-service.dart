@@ -15,7 +15,6 @@ class AccountAuthenticationService {
   // final headers = {"Content-type": "application/json"};
   final accountAuthenticationController =
       getIt.get<AccountAuthenticationController>();
-  final authenticationController = getIt.get<AccountAuthenticationController>();
   Future<bool> createAccount(Account account) async {
     return await accountAuthenticationController.createAccount(account);
     // if (res.statusCode == 200) {

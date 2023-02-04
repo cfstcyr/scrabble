@@ -6,6 +6,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationEnd, NavigationStart, Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -44,6 +45,7 @@ describe('JoinWaitingPageComponent', () => {
                     { path: 'lobby', component: TestComponent },
                     { path: 'join-waiting-room', component: JoinWaitingPageComponent },
                 ]),
+                MatSnackBarModule,
             ],
             providers: [GameDispatcherService],
         }).compileComponents();

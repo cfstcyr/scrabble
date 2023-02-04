@@ -2,17 +2,22 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
 import { TestBed } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConnectionState } from '@app/classes/connection-state-service/connection-state';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
 import { SOCKET_ID_UNDEFINED } from '@app/constants/services-errors';
 import { SocketService } from '@app/services/';
+import { AlertService } from '@app/services/alert-service/alert.service';
 
 describe('SocketService', () => {
     let service: SocketService;
     let socket: SocketTestHelper;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({
+            imports: [MatSnackBarModule],
+            providers: [AlertService],
+        });
         service = TestBed.inject(SocketService);
 
         socket = new SocketTestHelper();
@@ -60,7 +65,7 @@ describe('SocketService', () => {
         const action = () => {};
         const spy = spyOn(service['socket'], 'on');
         service.on(event, action);
-        expect(spy).toHaveBeenCalledWith(event, action);
+        expect(spy).toHaveBeenCalledWith(event as any, action);
     });
 
     it('should throw when socket is undefined on getId', () => {
