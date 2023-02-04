@@ -11,7 +11,7 @@ import '../constants/login-constants.dart';
 import '../pages/create-account-page.dart';
 import '../pages/home-page.dart';
 import '../pages/prototype-page.dart';
-import '../services/login-authentification.service.dart';
+// import '../services/login-authentification.service.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -24,7 +24,7 @@ class _LoginFormState extends State<LoginForm> {
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit;
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  AuthenticationService accountService = getIt.get<AuthenticationService>();
+  // AuthentificationService accountService = getIt.get<AuthentificationService>();
 
   final usernameHandler = TextFieldHandler();
   final passwordHandler = TextFieldHandler();
@@ -168,7 +168,8 @@ class _LoginFormState extends State<LoginForm> {
         username: usernameHandler.controller.text,
         password: passwordHandler.controller.text);
 
-    if (await accountService.login(credentials)) {
+    if (true) {
+      // await accountService.login(credentials))
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => HomePage()));
     }

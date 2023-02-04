@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../components/login-form.dart';
+import '../constants/login-constants.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -30,10 +31,9 @@ class MainTitle extends StatelessWidget {
     );
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Card(
-        color: theme.colorScheme.primary,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Text('LoginPage', style: style),
+          child: Image.asset(LOGO_PATH, height: 80, width: 120),
         ),
       ),
       SizedBox(height: 10),
