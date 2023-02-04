@@ -10,7 +10,8 @@ import '../constants/create-account-constants.dart';
 import '../constants/login-constants.dart';
 import '../pages/create-account-page.dart';
 import '../pages/home-page.dart';
-import '../services/account-authentification-service.dart';
+import '../pages/prototype-page.dart';
+import '../services/login-authentification.service.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -23,8 +24,7 @@ class _LoginFormState extends State<LoginForm> {
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit;
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  AccountAuthenticationService accountService =
-      getIt.get<AccountAuthenticationService>();
+  AuthenticationService accountService = getIt.get<AuthenticationService>();
 
   final usernameHandler = TextFieldHandler();
   final passwordHandler = TextFieldHandler();
@@ -114,8 +114,13 @@ class _LoginFormState extends State<LoginForm> {
                               left: 50.0, right: 0, top: 30, bottom: 0),
                           child: Row(children: [
                             ElevatedButton(
-                              onPressed:
-                                  isButtonEnabled ? () => {login()} : null,
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => PrototypePage()));
+                                isButtonEnabled ? () => {login()} : null;
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: themeColor,
                                 shadowColor: Colors.black,
