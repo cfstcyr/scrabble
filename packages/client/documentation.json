@@ -24220,7 +24220,7 @@
         },
         {
             "name": "SignupContainerComponent",
-            "id": "component-SignupContainerComponent-03c8204c79b35e18b7d0e06c89f587417f0a8cbc61d4d87d1d3cb2736bc3bd1a229047bd42a8928ab61ecd1ee3c03ffde93d6f9ce313c1ab1e8e3d2371ac12d5",
+            "id": "component-SignupContainerComponent-aed81c7164269e34519e2f15e271b07ec1b8e46bb3b5985c5f338db9ffc3605f138eba60c7968f7fc54b9e9aac60337b084f9181337edeecc2f7175b2abc19ff",
             "file": "src/app/components/signup-container/signup-container.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -24240,23 +24240,56 @@
             "outputsClass": [],
             "propertiesClass": [
                 {
+                    "name": "arePasswordsShown",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 13
+                },
+                {
                     "name": "signupForm",
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "FormGroup",
                     "optional": false,
                     "description": "",
-                    "line": 10
+                    "line": 12
                 }
             ],
             "methodsClass": [
+                {
+                    "name": "fieldMatchValidator",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "ValidatorFn",
+                    "typeParameters": [],
+                    "line": 40,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "modifierKind": [
+                        121
+                    ]
+                },
+                {
+                    "name": "isFormValid",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "boolean",
+                    "typeParameters": [],
+                    "line": 36,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
                 {
                     "name": "onSubmit",
                     "args": [],
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 21,
+                    "line": 32,
                     "deprecated": false,
                     "deprecationMessage": ""
                 }
@@ -24268,11 +24301,11 @@
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component } from '@angular/core';\nimport { FormControl, FormGroup, Validators } from '@angular/forms';\n\n@Component({\n    selector: 'app-signup-container',\n    templateUrl: './signup-container.component.html',\n    styleUrls: ['./signup-container.component.scss'],\n})\nexport class SignupContainerComponent {\n    signupForm: FormGroup;\n\n    constructor() {\n        this.signupForm = new FormGroup({\n            username: new FormControl('', Validators.required),\n            email: new FormControl('', [Validators.required, Validators.email]),\n            password: new FormControl('', Validators.required),\n            confirmPassword: new FormControl('', Validators.required),\n        });\n    }\n\n    onSubmit(): void {\n        return;\n    }\n}\n",
+            "sourceCode": "import { Component } from '@angular/core';\nimport { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';\nimport { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';\nimport { NAME_VALIDATION } from '@app/constants/name-validation';\n\n@Component({\n    selector: 'app-signup-container',\n    templateUrl: './signup-container.component.html',\n    styleUrls: ['./signup-container.component.scss'],\n})\nexport class SignupContainerComponent {\n    signupForm: FormGroup;\n    arePasswordsShown: boolean = false;\n\n    constructor() {\n        this.signupForm = new FormGroup(\n            {\n                username: new FormControl('', [\n                    Validators.required,\n                    Validators.minLength(1),\n                    Validators.maxLength(USERNAME_MAX_LENGTH),\n                    Validators.pattern(NAME_VALIDATION.rule),\n                ]),\n                email: new FormControl('', [Validators.required, Validators.email]),\n                password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),\n                confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),\n            },\n            [matchValidator('password', 'confirmPassword')],\n        );\n    }\n\n    onSubmit(): void {\n        return;\n    }\n\n    isFormValid(): boolean {\n        return this.signupForm?.valid;\n    }\n\n    private fieldMatchValidator(): ValidatorFn {\n        return (inputValue: AbstractControl): ValidationErrors | null => {\n            const expectedValue = this.signupForm?.get('password')?.value;\n\n            return inputValue && expectedValue && inputValue.value !== expectedValue ? { mismatch: true } : null;\n        };\n    }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": "@import '../../style/variables.scss';\n\n$border-radius: 6px;\n\n:host ::ng-deep {\n    span.mat-button-toggle-label-content {\n        line-height: 1em;\n        height: 100%;\n        width: 100%;\n        padding: 0;\n        border-radius: $border-radius;\n    }\n}\n\n::ng-deep .mat-tooltip {\n    font-size: small;\n}\n\n.signup-container {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n\n    max-width: 625px;\n    margin: 0 auto;\n\n    & > mat-card {\n        margin: 0 12px;\n    }\n\n    form {\n        mat-button-toggle-group,\n        mat-form-field {\n            width: 100%;\n        }\n\n        mat-button-toggle-group {\n            margin-bottom: 1.34375em;\n        }\n\n        mat-button-toggle-group {\n            display: grid;\n            grid-template-columns: repeat(2, 1fr);\n            gap: 12px;\n            border: none;\n            overflow: visible;\n\n            mat-button-toggle {\n                border-radius: $border-radius;\n                background: transparent;\n                border: none;\n                overflow: visible;\n\n                mat-card.content {\n                    background: white;\n                    border-radius: $border-radius;\n                    border: none;\n                    box-sizing: border-box;\n                    display: block;\n                    width: 100%;\n                    border: solid 1px rgb(236, 236, 236);\n                    padding: 8px;\n                }\n                p,\n                app-icon {\n                    margin: auto;\n                    line-height: 1em !important;\n                }\n\n                app-icon {\n                    font-size: 1.3em;\n                    margin-bottom: 0.3em;\n                    display: block;\n                }\n\n                p {\n                    font-size: 0.9em;\n                }\n\n                &.mat-button-toggle-checked {\n                    mat-card.content {\n                        background-color: rgba($primary, 0.15);\n                        border: solid 1px rgba($primary, 0.1);\n                        app-icon {\n                            color: $primary;\n                        }\n                    }\n                }\n\n                &.mat-button-toggle-disabled {\n                    mat-card.content {\n                        background-color: rgb(241, 241, 241);\n                        border-color: rgb(241, 241, 241);\n                        color: rgba(0, 0, 0, 0.459);\n                    }\n                }\n            }\n        }\n\n        mat-label.button-toggle-label {\n            display: block;\n            margin-bottom: 0.25em;\n        }\n\n        mat-form-field.margin-top {\n            margin-top: 1.34375em;\n        }\n\n        app-timer-selection {\n            display: block;\n        }\n\n        .alert {\n            color: red;\n            display: flex;\n        }\n\n        .alert-group {\n            margin: -1.34375em 0px calc(1.34375em / 2) 2px;\n            height: 100%;\n            color: red;\n        }\n    }\n\n    .buttons {\n        display: flex;\n        justify-content: flex-end;\n\n        button {\n            font-size: 1.2em;\n            padding: 6px 16px;\n        }\n    }\n}\n\n::ng-deep snack-bar-container.error {\n    background: lighten(tomato, 30%);\n    color: tomato;\n\n    button {\n        color: tomato;\n    }\n}\n",
+                    "data": "@import '../../style/variables.scss';\n\n$border-radius: 6px;\n\n:host ::ng-deep {\n    span.mat-button-toggle-label-content {\n        line-height: 1em;\n        height: 100%;\n        width: 100%;\n        padding: 0;\n        border-radius: $border-radius;\n    }\n}\n\n::ng-deep .mat-tooltip {\n    font-size: small;\n}\n\n.signup-container {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n\n    max-width: 625px;\n    margin: 0 auto;\n\n    & > mat-card {\n        margin: 0 12px;\n    }\n\n    form {\n        mat-button-toggle-group,\n        mat-form-field {\n            width: 100%;\n        }\n\n        mat-button-toggle-group {\n            margin-bottom: 1.34375em;\n        }\n\n        mat-button-toggle-group {\n            display: grid;\n            grid-template-columns: repeat(2, 1fr);\n            gap: 12px;\n            border: none;\n            overflow: visible;\n\n            mat-button-toggle {\n                border-radius: $border-radius;\n                background: transparent;\n                border: none;\n                overflow: visible;\n\n                mat-card.content {\n                    background: white;\n                    border-radius: $border-radius;\n                    border: none;\n                    box-sizing: border-box;\n                    display: block;\n                    width: 100%;\n                    border: solid 1px rgb(236, 236, 236);\n                    padding: 8px;\n                }\n                p,\n                app-icon {\n                    margin: auto;\n                    line-height: 1em !important;\n                }\n\n                app-icon {\n                    font-size: 1.3em;\n                    margin-bottom: 0.3em;\n                    display: block;\n                }\n\n                p {\n                    font-size: 0.9em;\n                }\n\n                &.mat-button-toggle-checked {\n                    mat-card.content {\n                        background-color: rgba($primary, 0.15);\n                        border: solid 1px rgba($primary, 0.1);\n                        app-icon {\n                            color: $primary;\n                        }\n                    }\n                }\n\n                &.mat-button-toggle-disabled {\n                    mat-card.content {\n                        background-color: rgb(241, 241, 241);\n                        border-color: rgb(241, 241, 241);\n                        color: rgba(0, 0, 0, 0.459);\n                    }\n                }\n            }\n        }\n\n        mat-label.button-toggle-label {\n            display: block;\n            margin-bottom: 0.25em;\n        }\n\n        mat-form-field.margin-top {\n            margin-top: 1.34375em;\n        }\n\n        .alert {\n            color: red;\n            display: flex;\n        }\n\n        .alert-group {\n            margin: -1.34375em 0px calc(1.34375em / 2) 2px;\n            height: 100%;\n            color: red;\n        }\n    }\n\n    .buttons {\n        display: flex;\n        justify-content: flex-end;\n\n        button {\n            font-size: 1.2em;\n            padding: 6px 16px;\n        }\n    }\n}\n\n::ng-deep snack-bar-container.error {\n    background: lighten(tomato, 30%);\n    color: tomato;\n\n    button {\n        color: tomato;\n    }\n}\n",
                     "styleUrl": "./signup-container.component.scss"
                 }
             ],
@@ -24283,9 +24316,9 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "args": [],
-                "line": 10
+                "line": 13
             },
-            "templateData": "<div class=\"signup-container\">\n    <mat-card>\n        <form [formGroup]=\"signupForm\" (ngSubmit)=\"onSubmit()\">\n            <mat-label><app-icon icon=\"user\"></app-icon> Choisissez votre nom de joueur</mat-label>\n            <input\n                matInput\n                id=\"playerNameValidator\"\n                type=\"text\"\n                formControlName=\"inputName\"\n                autocomplete=\"off\"\n                (ngModelChange)=\"''\"\n                (valueChanges)=\"''\"\n            />\n    \n            <div class=\"buttons\">\n                <div\n                    class=\"button-container\"\n                    matTooltip=\"Veuillez remplir tous les champs avec des données valides\"\n                    [matTooltipDisabled]=\"''\"\n                    matTooltipPosition=\"above\"\n                    (click)=\"''\"\n                >\n                    <button mat-flat-button color=\"primary\" type=\"submit\" id=\"create-game-button\" [disabled]=\"false\" cdkFocusInitial>\n                        Créer son compte\n                    </button>\n                </div>\n            </div>\n        </form>\n    </mat-card>\n\n</div>"
+            "templateData": "<div class=\"signup-container\">\n    <mat-card>\n        <form [formGroup]=\"signupForm\" (ngSubmit)=\"onSubmit()\">\n            <mat-form-field appearance=\"outline\" [formGroup]=\"signupForm\">\n                <mat-label><app-icon icon=\"envelope\"></app-icon> Courriel</mat-label>\n                <input\n                    matInput\n                    id=\"email\"\n                    type=\"email\"\n                    formControlName=\"email\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Votre nom doit être entre 1 et 40 caractères sans caractères spéciaux\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"user\"></app-icon> Pseudonyme</mat-label>\n                <input\n                    matInput\n                    id=\"username\"\n                    type=\"text\"\n                    formControlName=\"username\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Au moins huit caractères comprenant au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 symbole\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Mot de passe</mat-label>\n                <input\n                    matInput\n                    id=\"password\"\n                    type=\"password\"\n                    formControlName=\"password\"\n                    autocomplete=\"off\"\n                />\n                <mat-checkbox><app-icon icon=\"eye\" styling=\"solid\"></app-icon></mat-checkbox>\n            </mat-form-field>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Le mot de passe entré doit être le même que celui ci-dessus\"\n                matTooltipPosition=\"above\"\n                [matTooltipDisabled]=\"!signupForm.getError('mismatch')\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Confirmer </mat-label>\n                <input\n                    matInput\n                    id=\"confirmPassword\"\n                    type=\"password\"\n                    formControlName=\"confirmPassword\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n\n            <div class=\"buttons\">\n                <!-- <mat-checkbox matInput type=\"checkbox\" class=\"checkbox\" [value]=\"(arePasswordsShown)\"> -->\n                <div\n                    class=\"button-container\"\n                    matTooltip=\"Veuillez remplir tous les champs avec des données valides\"\n                    [matTooltipDisabled]=\"isFormValid()\"\n                    matTooltipPosition=\"above\"\n                >\n                    <button mat-flat-button color=\"primary\" type=\"submit\" id=\"create-game-button\" [disabled]=\"!isFormValid()\" cdkFocusInitial>\n                        Créer son compte\n                    </button>\n                </div>\n            </div>\n        </form>\n    </mat-card>\n</div>\n"
         },
         {
             "name": "SignUpPageComponent",
@@ -26101,13 +26134,13 @@
     "modules": [
         {
             "name": "AppMaterialModule",
-            "id": "module-AppMaterialModule-d7bb73f813c6d51971078d0f2c729606cf6a043e9ffed4491aed61e67f0ffbcdaf3d0918f982757a080ad5c71f62a771aea61d0b6eca815e0693ccbe45e4e5e1",
+            "id": "module-AppMaterialModule-cf33f6168f7a2ce6a7982cc8cb92a5e82a6a172e7b7fd2f59dac015023d7eedc0aa95c73f11e18633d825778e0070e29c9469a98f2ab1dd8017cbef6c638b4c3",
             "description": "<p>Material module\nIMPORTANT : IMPORT ONLY USED MODULES !!!!!!</p>\n",
             "deprecationMessage": "",
             "deprecated": false,
             "file": "src/app/modules/material.module.ts",
             "methods": [],
-            "sourceCode": "import { NgModule } from '@angular/core';\n// import { MatAutocompleteModule } from '@angular/material/autocomplete';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatButtonToggleModule } from '@angular/material/button-toggle';\nimport { MatCardModule } from '@angular/material/card';\n// import { MatCheckboxModule } from '@angular/material/checkbox';\nimport { MatChipsModule } from '@angular/material/chips';\n// import { MatDatepickerModule } from '@angular/material/datepicker';\nimport { MatDialogModule } from '@angular/material/dialog';\nimport { MatDividerModule } from '@angular/material/divider';\nimport { MatExpansionModule } from '@angular/material/expansion';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatGridListModule } from '@angular/material/grid-list';\nimport { MatIconModule } from '@angular/material/icon';\nimport { MatInputModule } from '@angular/material/input';\nimport { MatListModule } from '@angular/material/list';\n// import { MatMenuModule } from '@angular/material/menu';\nimport { MatPaginatorModule } from '@angular/material/paginator';\nimport { MatProgressBarModule } from '@angular/material/progress-bar';\nimport { MatProgressSpinnerModule } from '@angular/material/progress-spinner';\nimport { MatRadioModule } from '@angular/material/radio';\nimport { MatSelectModule } from '@angular/material/select';\n// import { MatSidenavModule } from '@angular/material/sidenav';\nimport { MatSlideToggleModule } from '@angular/material/slide-toggle';\n// import { MatSliderModule } from '@angular/material/slider';\nimport { MatSnackBarModule } from '@angular/material/snack-bar';\nimport { MatSortModule } from '@angular/material/sort';\nimport { MatStepperModule } from '@angular/material/stepper';\nimport { MatTableModule } from '@angular/material/table';\nimport { MatTabsModule } from '@angular/material/tabs';\nimport { MatToolbarModule } from '@angular/material/toolbar';\nimport { MatTooltipModule } from '@angular/material/tooltip';\n\nconst modules = [\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    // MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n];\n\n/**\n * Material module\n * IMPORTANT : IMPORT ONLY USED MODULES !!!!!!\n */\n@NgModule({\n    imports: [...modules],\n    exports: [...modules],\n    providers: [],\n})\nexport class AppMaterialModule {}\n",
+            "sourceCode": "import { NgModule } from '@angular/core';\n// import { MatAutocompleteModule } from '@angular/material/autocomplete';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatButtonToggleModule } from '@angular/material/button-toggle';\nimport { MatCardModule } from '@angular/material/card';\nimport { MatCheckboxModule } from '@angular/material/checkbox';\nimport { MatChipsModule } from '@angular/material/chips';\n// import { MatDatepickerModule } from '@angular/material/datepicker';\nimport { MatDialogModule } from '@angular/material/dialog';\nimport { MatDividerModule } from '@angular/material/divider';\nimport { MatExpansionModule } from '@angular/material/expansion';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatGridListModule } from '@angular/material/grid-list';\nimport { MatIconModule } from '@angular/material/icon';\nimport { MatInputModule } from '@angular/material/input';\nimport { MatListModule } from '@angular/material/list';\n// import { MatMenuModule } from '@angular/material/menu';\nimport { MatPaginatorModule } from '@angular/material/paginator';\nimport { MatProgressBarModule } from '@angular/material/progress-bar';\nimport { MatProgressSpinnerModule } from '@angular/material/progress-spinner';\nimport { MatRadioModule } from '@angular/material/radio';\nimport { MatSelectModule } from '@angular/material/select';\n// import { MatSidenavModule } from '@angular/material/sidenav';\nimport { MatSlideToggleModule } from '@angular/material/slide-toggle';\n// import { MatSliderModule } from '@angular/material/slider';\nimport { MatSnackBarModule } from '@angular/material/snack-bar';\nimport { MatSortModule } from '@angular/material/sort';\nimport { MatStepperModule } from '@angular/material/stepper';\nimport { MatTableModule } from '@angular/material/table';\nimport { MatTabsModule } from '@angular/material/tabs';\nimport { MatToolbarModule } from '@angular/material/toolbar';\nimport { MatTooltipModule } from '@angular/material/tooltip';\n\nconst modules = [\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n];\n\n/**\n * Material module\n * IMPORTANT : IMPORT ONLY USED MODULES !!!!!!\n */\n@NgModule({\n    imports: [...modules],\n    exports: [...modules],\n    providers: [],\n})\nexport class AppMaterialModule {}\n",
             "children": [
                 {
                     "type": "providers",
@@ -27535,6 +27568,16 @@
                 "defaultValue": "1"
             },
             {
+                "name": "matchValidator",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/constants/authentification-constants.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "(source: string, target: string): ValidatorFn => {\n    return (control: AbstractControl): ValidationErrors | null => {\n        const sourceCtrl = control.get(source);\n        const targetCtrl = control.get(target);\n\n        return sourceCtrl && targetCtrl && sourceCtrl.value !== targetCtrl.value ? { mismatch: true } : null;\n    };\n}"
+            },
+            {
                 "name": "MAX_COL_NUMBER",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -27842,7 +27885,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "[]",
-                "defaultValue": "[\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    // MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n]"
+                "defaultValue": "[\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n]"
             },
             {
                 "name": "MULTIPLIER_COLOR_MAP",
@@ -28085,6 +28128,16 @@
                 "defaultValue": "'v'"
             },
             {
+                "name": "PASSWORD_REGEX",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/constants/authentification-constants.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\\\\$&*~]).{8,}$')"
+            },
+            {
                 "name": "PERCENT",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -28158,7 +28211,7 @@
                 "name": "primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
@@ -28168,7 +28221,7 @@
                 "name": "primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
+                "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
@@ -28497,21 +28550,21 @@
                 "name": "template",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Story<ChatboxContainerComponent>",
-                "defaultValue": "(args: ChatboxContainerComponent) => ({\n    props: args,\n})"
-            },
-            {
-                "name": "template",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "src/app/components/chatbox/chatbox.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story<ChatBoxComponent>",
                 "defaultValue": "(args: ChatBoxComponent) => ({\n    props: args,\n})"
+            },
+            {
+                "name": "template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story<ChatboxContainerComponent>",
+                "defaultValue": "(args: ChatboxContainerComponent) => ({\n    props: args,\n})"
             },
             {
                 "name": "template",
@@ -28642,6 +28695,16 @@
                 "deprecationMessage": "",
                 "type": "string",
                 "defaultValue": "'450px'"
+            },
+            {
+                "name": "USERNAME_MAX_LENGTH",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/constants/authentification-constants.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "number",
+                "defaultValue": "40"
             },
             {
                 "name": "VALID_MULTIPLIERS",
@@ -31888,6 +31951,38 @@
                     "defaultValue": "new Map([\n    [2, COLORS.Word2x],\n    [3, COLORS.Word3x],\n])"
                 }
             ],
+            "src/app/constants/authentification-constants.ts": [
+                {
+                    "name": "matchValidator",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/constants/authentification-constants.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "(source: string, target: string): ValidatorFn => {\n    return (control: AbstractControl): ValidationErrors | null => {\n        const sourceCtrl = control.get(source);\n        const targetCtrl = control.get(target);\n\n        return sourceCtrl && targetCtrl && sourceCtrl.value !== targetCtrl.value ? { mismatch: true } : null;\n    };\n}"
+                },
+                {
+                    "name": "PASSWORD_REGEX",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/constants/authentification-constants.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\\\\$&*~]).{8,}$')"
+                },
+                {
+                    "name": "USERNAME_MAX_LENGTH",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/constants/authentification-constants.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "number",
+                    "defaultValue": "40"
+                }
+            ],
             "src/app/constants/name-validation.ts": [
                 {
                     "name": "MAX_LENGTH",
@@ -32015,7 +32110,7 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "[]",
-                    "defaultValue": "[\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    // MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n]"
+                    "defaultValue": "[\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n]"
                 }
             ],
             "src/app/constants/name-field.ts": [
@@ -34441,7 +34536,7 @@
                 "linktype": "component",
                 "name": "SignupContainerComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/4",
+                "coverageCount": "0/7",
                 "status": "low"
             },
             {
@@ -34534,6 +34629,36 @@
                 "name": "UploadEvent",
                 "coveragePercent": 0,
                 "coverageCount": "0/2",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/constants/authentification-constants.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "matchValidator",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/constants/authentification-constants.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "PASSWORD_REGEX",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/constants/authentification-constants.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "USERNAME_MAX_LENGTH",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
                 "status": "low"
             },
             {
