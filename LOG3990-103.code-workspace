@@ -1,19 +1,24 @@
 {
     "folders": [
         {
+            "name": "LOG3900-103",
             "path": "."
         },
         {
-            "path": "./packages/client"
+            "name": "client",
+            "path": "packages/client"
         },
         {
-            "path": "./packages/server"
+            "name": "server",
+            "path": "packages/server"
         },
         {
-            "path": "./packages/common"
+            "name": "mobile",
+            "path": "packages/mobile"
         },
         {
-            "path": "./packages/mobile"
+            "name": "common",
+            "path": "packages/common"
         }
     ],
     "settings": {
