@@ -7,6 +7,7 @@ import 'package:mobile/services/theme-color-service.dart';
 
 import '../classes/login.dart';
 import '../constants/create-account-constants.dart';
+import '../constants/create-account-errors.dart';
 import '../constants/login-constants.dart';
 import '../pages/create-account-page.dart';
 import '../pages/home-page.dart';
@@ -32,6 +33,8 @@ class _LoginFormState extends State<LoginForm> {
   @override
   void initState() {
     super.initState();
+
+    usernameHandler.addListener(validateUsername);
   }
 
   @override
@@ -43,15 +46,20 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
     return Column(
       children: [
         SizedBox(height: 20),
+        Padding(padding: EdgeInsets.only(top: 1.0)),
         Container(
-          height: 300,
+          height: 330,
           width: 580,
           decoration: BoxDecoration(
               border: Border.all(
-                color: themeColor,
+                color: theme.colorScheme.onPrimary,
               ),
               borderRadius: BorderRadius.circular(5)),
           child: Column(
@@ -161,6 +169,18 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ],
     );
+  }
+
+  Future<void> validateUsername() async {
+    if (usernameHandler.controller.text.isEmpty) {
+      setState(() {
+        usernameHandler.errorMessage = USERNAME_EMPTY_FR;
+      });
+    } else {
+      setState(() {
+        usernameHandler.errorMessage = "";
+      });
+    }
   }
 
   Future<void> login() async {
