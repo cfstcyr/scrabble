@@ -33,6 +33,7 @@
     "@angular/platform-browser-dynamic": "12.1.5",
     "@angular/router": "12.1.5",
     "@types/node-emoji": "^1.8.2",
+    "electron-is-dev": "^2.0.0",
     "marked": "^4.0.12",
     "node-emoji": "^1.11.0",
     "party-js": "^2.1.2",
