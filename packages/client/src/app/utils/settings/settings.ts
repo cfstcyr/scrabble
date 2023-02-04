@@ -3,7 +3,7 @@
 import store from 'store2';
 import { ValidatorSpec } from './validators';
 
-interface Setting<T> {
+export interface Setting<T> {
     get: <K extends keyof T>(key: K) => T[K];
     set: <K extends keyof T>(key: K, value: NonNullable<T[K]>) => void;
     pipe: <K extends keyof T>(key: K, ...callback: ((value: T[K]) => NonNullable<T[K]>)[]) => NonNullable<T[K]>;

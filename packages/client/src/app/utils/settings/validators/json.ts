@@ -29,7 +29,7 @@ export function json<T extends object = object>(spec?: SettingsSpec<T>): Validat
             }
         }
 
-        const out = (value ? value : s.default) as T;
+        const out = (j ? j : s.default) as T;
 
         if (s.default === undefined && !s.isRequired) {
             return out;

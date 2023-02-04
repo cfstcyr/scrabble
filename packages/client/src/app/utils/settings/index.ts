@@ -2,8 +2,6 @@ import { DEFAULT_TIMER_VALUE } from '@app/constants/pages-constants';
 import { settings } from './settings';
 import { num, str } from './validators';
 
-export * from './operators/num';
-
 export const authenticationSettings = settings('authentication', {
     token: str(),
 });
