@@ -10,6 +10,10 @@ import * as sinon from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
 import { Application } from '@app/app';
+import { StatusCodes } from 'http-status-codes';
+import { HttpException } from '@app/classes/http-exception/http-exception';
+import { SinonStubbedInstance } from 'sinon';
+import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 
 const expect = chai.expect;
 chai.use(spies);
@@ -17,32 +21,70 @@ chai.use(chaiAsPromised);
 
 describe('AuthentificationController', () => {
     let controller: AuthentificationController;
-    let authentificationServiceStub: AuthentificationService;
-    let expressApp: Express.Application;
+    let authentificationServiceStub: SinonStubbedInstance<AuthentificationService>;
+    let testingUnit: ServicesTestingUnit;
 
-    beforeEach(() => {
-        const app = Container.get(Application);
-        expressApp = app.app;
-        controller = new AuthentificationController(authentificationServiceStub);
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit();
+        await testingUnit.withMockDatabaseService();
+        testingUnit.withStubbedDictionaryService().withStubbedControllers(AuthentificationService);
+        authentificationServiceStub = testingUnit.setStubbed(AuthentificationService);
+        controller = Container.get(AuthentificationController);
     });
 
     afterEach(() => {
         sinon.restore();
+        chai.spy.restore();
+        testingUnit.restore();
     });
 
     it('should be defined', () => {
         expect(controller).to.exist;
     });
 
-    it('should call authentificationService.login on login request', async () => {
-        const spy = chai.spy.on(controller, 'login', () => { });
-        supertest(expressApp).post('api/authentification/login');
-        expect(spy).to.have.been.called;
-    });
+    describe('configureRouter', () => {
+        let expressApp: Express.Application;
 
-    it('should call authentificationService.signUp on signUp request', async () => {
-        const spy = chai.spy.on(controller, 'signUp', () => { });
-        supertest(expressApp).post('api/authentification/signUp');
-        expect(spy).to.have.been.called;
+        beforeEach(() => {
+            const app = Container.get(Application);
+            expressApp = app.app;
+        });
+
+        it('should call authentificationService.login', async () => {
+            return supertest(expressApp)
+                .post('api/authentification/login')
+                .send({ email: 'admin@admin.com', password: 'password' })
+                .set('Accept', 'application/json')
+                .expect(StatusCodes.OK);
+        });
+
+        it('should return 200', async () => {
+            return supertest(expressApp)
+                .post('api/authentification/signUp')
+                .send({ email: 'admin@admin.com', password: 'password', username: 'admin' })
+                .set('Accept', 'application/json')
+                .expect(StatusCodes.OK);
+        });
+
+        it('login should return 401', async () => {
+            chai.spy.on(authentificationServiceStub, 'login', async () => {
+                throw new HttpException('NOT FOUND', StatusCodes.NOT_FOUND);
+            });
+            return supertest(expressApp)
+                .post('api/authentification/signUp')
+                .send({ email: '', password: '' })
+                .set('Accept', 'application/json')
+                .expect(StatusCodes.NOT_FOUND);
+        });
+
+        it('signUp should return 401', async () => {
+            chai.spy.on(authentificationServiceStub, 'signUp', async () => {
+                throw new HttpException('NOT FOUND', StatusCodes.NOT_FOUND);
+            });
+            return supertest(expressApp)
+                .post('api/authentification/signUp')
+                .send({ email: 'admin', password: 'password', username: 'username' })
+                .expect(StatusCodes.NOT_FOUND);
+        });
     });
 });
