@@ -8,12 +8,11 @@ import { DICTIONARY_DELETED, DICTIONARY_REQUIRED } from '@app/constants/componen
 import { INVALID_DICTIONARY_ID } from '@app/constants/controllers-errors';
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
-import { DEFAULT_TIMER_VALUE } from '@app/constants/pages-constants';
 import { GameDispatcherService } from '@app/services';
 import { DictionaryService } from '@app/services/dictionary-service/dictionary.service';
-import { SettingsService } from '@app/services/settings-service/settings.service';
 import { VirtualPlayerProfilesService } from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
 import { randomizeArray } from '@app/utils/randomize-array/randomize-array';
+import { gameSettings } from '@app/utils/settings';
 import { VirtualPlayer } from '@common/models/virtual-player';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
@@ -48,14 +47,13 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
         private gameDispatcherService: GameDispatcherService,
         private readonly virtualPlayerProfilesService: VirtualPlayerProfilesService,
         private readonly dictionaryService: DictionaryService,
-        private readonly settingsService: SettingsService,
     ) {
         this.gameTypes = GameType;
         this.gameModes = GameMode;
         this.virtualPlayerLevels = VirtualPlayerLevel;
         this.dictionaryOptions = [];
         this.virtualPlayerNameMap = new Map();
-        this.playerName = settingsService.get('playerName');
+        this.playerName = gameSettings.get('playerName');
         this.playerNameValid = false;
         this.pageDestroyed$ = new Subject();
         this.gameParameters = new FormGroup({
@@ -63,7 +61,7 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
             gameMode: new FormControl(GameMode.Multiplayer, Validators.required),
             level: new FormControl(VirtualPlayerLevel.Beginner),
             virtualPlayerName: new FormControl(''),
-            timer: new FormControl(this.getDefaultTimerValue(), Validators.required),
+            timer: new FormControl(gameSettings.get('timer'), Validators.required),
             dictionary: new FormControl(undefined, [Validators.required]),
         });
 
@@ -84,9 +82,7 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
             this.dictionaryOptions = this.dictionaryService.getDictionaries();
             if (this.shouldSetToDefaultDictionary)
                 this.gameParameters.patchValue({
-                    dictionary: this.dictionaryOptions.find(
-                        (d) => d.title === this.settingsService.get('dictionaryName') || this.dictionaryOptions[0],
-                    ),
+                    dictionary: this.dictionaryOptions.find((d) => d.title === gameSettings.get('dictionaryName') || this.dictionaryOptions[0]),
                 });
         });
     }
@@ -132,9 +128,9 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
 
     onSubmit(): void {
         if (this.isFormValid()) {
-            this.settingsService.set('playerName', this.playerName);
-            this.settingsService.set('dictionaryName', this.gameParameters.get('dictionary')?.value.title);
-            this.settingsService.set('timer', this.gameParameters.get('timer')?.value);
+            gameSettings.set('playerName', this.playerName);
+            gameSettings.set('dictionaryName', this.gameParameters.get('dictionary')?.value.title);
+            gameSettings.set('timer', this.gameParameters.get('timer')?.value);
             this.createGame();
         }
     }
@@ -166,11 +162,6 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
             if (!namesForLevel) this.virtualPlayerNameMap.set(profile.level as VirtualPlayerLevel, [profile.name]);
             else namesForLevel.push(profile.name);
         });
-    }
-
-    private getDefaultTimerValue(): number {
-        const time = Number(this.settingsService.get('timer'));
-        return time && !Number.isNaN(time) ? time : DEFAULT_TIMER_VALUE;
     }
 
     private createGame(): void {

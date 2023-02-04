@@ -13,7 +13,7 @@ import {
     DIALOG_FULL_TITLE,
 } from '@app/constants/pages-constants';
 import { GameDispatcherService } from '@app/services/';
-import { SettingsService } from '@app/services/settings-service/settings.service';
+import { gameSettings } from '@app/utils/settings';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -30,13 +30,8 @@ export class LobbyPageComponent implements OnInit, OnDestroy {
 
     private componentDestroyed$: Subject<boolean>;
 
-    constructor(
-        public gameDispatcherService: GameDispatcherService,
-        private readonly settingsService: SettingsService,
-        public dialog: MatDialog,
-        private snackBar: MatSnackBar,
-    ) {
-        this.playerName = this.settingsService.get('playerName');
+    constructor(public gameDispatcherService: GameDispatcherService, public dialog: MatDialog, private snackBar: MatSnackBar) {
+        this.playerName = gameSettings.get('playerName');
         this.playerNameValid = false;
         this.lobbies = [];
         this.componentDestroyed$ = new Subject();
@@ -61,7 +56,7 @@ export class LobbyPageComponent implements OnInit, OnDestroy {
     }
 
     joinLobby(lobbyId: string): void {
-        this.settingsService.set('playerName', this.playerName);
+        gameSettings.set('playerName', this.playerName);
         this.gameDispatcherService.handleJoinLobby(this.lobbies.filter((lobby) => lobby.lobbyId === lobbyId)[0], this.playerName);
     }
 
