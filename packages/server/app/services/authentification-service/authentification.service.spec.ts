@@ -63,7 +63,7 @@ describe('AuthentificationService', () => {
         expect(spy).to.have.been.called;
     });
 
-    describe.only('login', () => {
+    describe('login', () => {
 
         describe('HAPPY PATH', () => {
             it('should return access token on password match', async () => {
