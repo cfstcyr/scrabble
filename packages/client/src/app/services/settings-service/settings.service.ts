@@ -10,22 +10,26 @@ export class SettingsService {
     private readonly namespace = 'scrabble-settings';
 
     get<K extends keyof SettingsModule>(key: K): SettingsModule[K] | (typeof DEFAULT_SETTINGS extends { [S in K]?: infer I } ? I : undefined) {
-        return store.namespace(this.namespace).get(key) ?? (DEFAULT_SETTINGS as Record<string, unknown>)[key] ?? undefined;
+        return (this.store.has(key) ? this.store.get(key) : (DEFAULT_SETTINGS as Record<string, unknown>)[key]) ?? undefined;
     }
 
     set<K extends keyof SettingsModule>(key: K, value: SettingsModule[K]): void {
-        store.namespace(this.namespace).set(key, value);
+        this.store.set(key, value);
     }
 
     has<K extends keyof SettingsModule>(key: K): boolean {
-        return store.namespace(this.namespace).has(key);
+        return this.store.has(key);
     }
 
     remove<K extends keyof SettingsModule>(key: K): void {
-        store.namespace(this.namespace).remove(key);
+        this.store.remove(key);
     }
 
     reset(): void {
-        store.namespace(this.namespace).clear();
+        this.store.clear();
+    }
+
+    private get store() {
+        return store.namespace(this.namespace);
     }
 }

@@ -263,17 +263,18 @@ describe('GameCreationPageComponent', () => {
 
     describe('getDefaultTimerValue', () => {
         it('should return the equivalent number', () => {
-            spyOn<any>(window['localStorage'], 'getItem').and.returnValue('1');
-            expect(component['getDefaultTimerValue']()).toEqual(1);
+            const VALUE = 4;
+            spyOn(component['settingsService'], 'get').and.returnValue(VALUE);
+            expect(component['getDefaultTimerValue']()).toEqual(VALUE);
         });
 
         it('should return the default value if the stored information is invalid', () => {
-            spyOn<any>(window['localStorage'], 'getItem').and.returnValue('a');
+            spyOn(component['settingsService'], 'get').and.returnValue('a');
             expect(component['getDefaultTimerValue']()).toEqual(DEFAULT_TIMER_VALUE);
         });
 
         it('should return the default value if there is no stored information', () => {
-            spyOn<any>(window['localStorage'], 'getItem').and.returnValue(null);
+            spyOn<any>(component['settingsService'], 'get').and.returnValue(undefined);
             expect(component['getDefaultTimerValue']()).toEqual(DEFAULT_TIMER_VALUE);
         });
     });
