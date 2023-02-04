@@ -784,13 +784,13 @@
             "methods": []
         },
         {
-            "name": "DisplayMessage",
-            "id": "interface-DisplayMessage-58a1ad4dd59822b90853db91e02308ba222659eca66ca89aaa7229142d6a2353326a7e82b6ff958435a4c9f266cc5d71194a6eee71ddb8ee5c2100f44d79b8e0",
+            "name": "DisplayGroup",
+            "id": "interface-DisplayGroup-8eba5d9806c7a00560ccc4b7187e005770e40977908224a887c100c82a64190d4fb3dfa3e687cf09c736c5ea254c6e7b07ce01866f65167849654f2a781ecbf8",
             "file": "src/app/components/chatbox-message/chatbox-message.component.ts",
             "deprecated": false,
             "deprecationMessage": "",
             "type": "interface",
-            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';\nimport { onlyHasEmoji } from '@app/utils/emoji/emoji';\nimport { emojify } from 'node-emoji';\nimport { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';\nimport { PublicUser } from '@common/models/user';\nimport { UserService } from '@app/services/user-service/user.service';\nimport { ChatMessage } from '@common/models/chat/chat-message';\nimport { MINUTE } from '@app/constants/time-constant';\n\nexport interface DisplayMessage {\n    sender: PublicUser;\n    isCurrentUser: boolean;\n    messages: ChatMessage[];\n    date: Date;\n    displayDate: boolean;\n}\n\n@Component({\n    selector: 'app-chatbox-message',\n    templateUrl: './chatbox-message.component.html',\n    styleUrls: ['./chatbox-message.component.scss'],\n})\nexport class ChatboxMessageComponent extends ChatBoxComponent {\n    @Input() messages: ChatMessage[] = [];\n    @Output() sendMessage: EventEmitter<string> = new EventEmitter();\n    messageForm: FormGroup;\n    onlyHasEmoji = onlyHasEmoji;\n\n    constructor(private readonly formBuilder: FormBuilder, private readonly userService: UserService) {\n        super();\n        this.messageForm = this.formBuilder.group({\n            message: new FormControl('', [Validators.required]),\n        });\n    }\n\n    getMessages(): DisplayMessage[] {\n        return this.messages.reduce<DisplayMessage[]>((messages, current) => {\n            const last = messages[messages.length - 1];\n\n            current.content = emojify(current.content.trim());\n\n            if (last) {\n                const isRecent = current.date.getTime() - last.date.getTime() <= MINUTE;\n\n                if (last.sender.username === current.sender.username && isRecent) {\n                    last.messages.push(current);\n                } else {\n                    messages.push({\n                        sender: current.sender,\n                        isCurrentUser: this.userService.isUser(current.sender),\n                        messages: [current],\n                        date: current.date,\n                        displayDate: !isRecent,\n                    });\n                }\n                return messages;\n            } else {\n                return [\n                    {\n                        sender: current.sender,\n                        isCurrentUser: this.userService.isUser(current.sender),\n                        messages: [current],\n                        date: current.date,\n                        displayDate: true,\n                    },\n                ];\n            }\n        }, []);\n    }\n\n    getLastUsersAvatarUrl(): [string?, string?] {\n        let avatars: [string?, string?] = [undefined, undefined];\n\n        for (const {\n            sender: { avatar },\n        } of this.messages) {\n            if (!avatars[0]) avatars = [avatar, undefined];\n            if (!avatars[1] && avatars[0] !== avatar) return [avatars[0], avatar];\n        }\n\n        return avatars;\n    }\n\n    addMessage(content: string): void {\n        this.messages.push({\n            content,\n            sender: this.userService.user,\n            date: new Date(),\n        });\n        this.sendMessage.next(content);\n    }\n\n    onMessageSubmit(): void {\n        if (!this.messageForm.valid) return;\n\n        const content = this.messageForm.value.message.trim();\n\n        if (content.length === 0) return;\n\n        this.addMessage(content);\n        this.messageForm.setValue({ message: '' });\n    }\n\n    onEmojiClick(emoji: string): void {\n        this.addMessage(emoji);\n    }\n}\n",
+            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';\nimport { onlyHasEmoji } from '@app/utils/emoji/emoji';\nimport { emojify } from 'node-emoji';\nimport { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';\nimport { PublicUser } from '@common/models/user';\nimport { UserService } from '@app/services/user-service/user.service';\nimport { ChatMessage } from '@common/models/chat/chat-message';\nimport { MINUTE } from '@app/constants/time-constant';\n\nexport type DisplayMessage = ChatMessage & { onlyEmoji: boolean };\n\nexport interface DisplayGroup {\n    sender: PublicUser;\n    isCurrentUser: boolean;\n    messages: DisplayMessage[];\n    date: Date;\n    displayDate: boolean;\n}\n\n@Component({\n    selector: 'app-chatbox-message',\n    templateUrl: './chatbox-message.component.html',\n    styleUrls: ['./chatbox-message.component.scss'],\n})\nexport class ChatboxMessageComponent extends ChatBoxComponent {\n    @Input() messages: ChatMessage[] = [];\n    @Output() sendMessage: EventEmitter<string> = new EventEmitter();\n    messageForm: FormGroup;\n    onlyHasEmoji = onlyHasEmoji;\n\n    constructor(private readonly formBuilder: FormBuilder, private readonly userService: UserService) {\n        super();\n        this.messageForm = this.formBuilder.group({\n            message: new FormControl('', [Validators.required]),\n        });\n    }\n\n    getMessages(): DisplayGroup[] {\n        return this.messages.reduce<DisplayGroup[]>((messages: DisplayGroup[], current) => {\n            const last = messages[messages.length - 1];\n\n            const newMessage: DisplayMessage = {\n                ...current,\n                content: emojify(current.content.trim()),\n                onlyEmoji: onlyHasEmoji(current.content),\n            };\n\n            if (last) {\n                const lastMessage = last.messages[last.messages.length - 1];\n                const isRecent = current.date.getTime() - lastMessage.date.getTime() <= MINUTE;\n\n                if (last.sender.username === current.sender.username && isRecent) {\n                    last.messages.push(newMessage);\n                } else {\n                    messages.push({\n                        sender: current.sender,\n                        isCurrentUser: this.userService.isUser(current.sender),\n                        messages: [newMessage],\n                        date: current.date,\n                        displayDate: !isRecent,\n                    });\n                }\n                return messages;\n            } else {\n                return [\n                    {\n                        sender: current.sender,\n                        isCurrentUser: this.userService.isUser(current.sender),\n                        messages: [newMessage],\n                        date: current.date,\n                        displayDate: true,\n                    },\n                ];\n            }\n        }, []);\n    }\n\n    getLastUsersAvatarUrl(): [string?, string?] {\n        let avatars: [string?, string?] = [undefined, undefined];\n\n        for (const {\n            sender: { avatar },\n        } of this.messages) {\n            if (!avatars[0]) avatars = [avatar, undefined];\n            if (!avatars[1] && avatars[0] !== avatar) return [avatars[0], avatar];\n        }\n\n        return avatars;\n    }\n\n    addMessage(content: string): void {\n        this.messages.push({\n            content,\n            sender: this.userService.user,\n            date: new Date(),\n        });\n        this.sendMessage.next(content);\n    }\n\n    onMessageSubmit(): void {\n        if (!this.messageForm.valid) return;\n\n        const content = this.messageForm.value.message.trim();\n\n        if (content.length === 0) return;\n\n        this.addMessage(content);\n        this.messageForm.setValue({ message: '' });\n    }\n\n    onEmojiClick(emoji: string): void {\n        this.addMessage(emoji);\n    }\n}\n",
             "properties": [
                 {
                     "name": "date",
@@ -799,7 +799,7 @@
                     "type": "Date",
                     "optional": false,
                     "description": "",
-                    "line": 15
+                    "line": 17
                 },
                 {
                     "name": "displayDate",
@@ -808,7 +808,7 @@
                     "type": "boolean",
                     "optional": false,
                     "description": "",
-                    "line": 16
+                    "line": 18
                 },
                 {
                     "name": "isCurrentUser",
@@ -817,16 +817,16 @@
                     "type": "boolean",
                     "optional": false,
                     "description": "",
-                    "line": 13
+                    "line": 15
                 },
                 {
                     "name": "messages",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "type": "ChatMessage[]",
+                    "type": "DisplayMessage[]",
                     "optional": false,
                     "description": "",
-                    "line": 14
+                    "line": 16
                 },
                 {
                     "name": "sender",
@@ -835,7 +835,7 @@
                     "type": "PublicUser",
                     "optional": false,
                     "description": "",
-                    "line": 12
+                    "line": 14
                 }
             ],
             "indexSignatures": [],
@@ -2328,7 +2328,7 @@
     "injectables": [
         {
             "name": "ActionService",
-            "id": "injectable-ActionService-036c7a7fc48ad42c967f401240bd17a7634b99ffdca46ebeb062977d748841b4448bb239b3c19ae32fc05e8545224e82c678f79f3259f591cdfb149521c6ceb0",
+            "id": "injectable-ActionService-a9f19c18b5939a910e0de9ff0bd5960fed42d73fbe139b83be19a334e032fbed966b4fcf08901156f51c4ce2bf866d9464a4486a31f3c3937d9fece4c16b1393",
             "file": "src/app/services/action-service/action.service.ts",
             "properties": [
                 {
@@ -2373,7 +2373,7 @@
                     "optional": false,
                     "returnType": "boolean",
                     "typeParameters": [],
-                    "line": 74,
+                    "line": 73,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -2524,7 +2524,7 @@
                     "optional": false,
                     "returnType": "string",
                     "typeParameters": [],
-                    "line": 78,
+                    "line": 77,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -2615,7 +2615,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 97,
+                    "line": 96,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -2638,7 +2638,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 93,
+                    "line": 92,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -2651,7 +2651,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 70,
+                    "line": 69,
                     "deprecated": false,
                     "deprecationMessage": ""
                 },
@@ -2732,7 +2732,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 89,
+                    "line": 88,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -2764,7 +2764,7 @@
             "deprecationMessage": "",
             "description": "",
             "rawdescription": "\n",
-            "sourceCode": "import { Injectable, OnDestroy } from '@angular/core';\nimport { ActionData, ActionPayload, ActionType, ExchangeActionPayload, PlaceActionPayload } from '@app/classes/actions/action-data';\nimport { Orientation } from '@app/classes/actions/orientation';\nimport { Position } from '@app/classes/board-navigator/position';\nimport { Tile } from '@app/classes/tile';\nimport { WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE } from '@app/constants/services-errors';\nimport { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';\nimport { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';\nimport { ActionPayloadToString } from '@app/utils/action-payload-to-string/action-payload-to-string';\nimport { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-service-data';\nimport { Subject } from 'rxjs';\nimport { takeUntil } from 'rxjs/operators';\n\n@Injectable({\n    providedIn: 'root',\n})\nexport class ActionService implements IResetServiceData, OnDestroy {\n    hasActionBeenPlayed: boolean;\n    private serviceDestroyed$: Subject<boolean>;\n\n    constructor(private gamePlayController: GamePlayController, private readonly gameViewEventManagerService: GameViewEventManagerService) {\n        this.hasActionBeenPlayed = false;\n        this.serviceDestroyed$ = new Subject();\n        this.gamePlayController\n            .observeActionDone()\n            .pipe(takeUntil(this.serviceDestroyed$))\n            .subscribe(() => this.resetHasActionBeenSent());\n        this.gameViewEventManagerService.subscribeToGameViewEvent('resetUsedTiles', this.serviceDestroyed$, () => this.handleResetUsedTiles());\n        this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());\n    }\n\n    ngOnDestroy(): void {\n        this.serviceDestroyed$.next(true);\n        this.serviceDestroyed$.complete();\n    }\n\n    createPlaceActionPayload(tiles: Tile[], startPosition: Position, orientation: Orientation): PlaceActionPayload {\n        return {\n            tiles,\n            startPosition,\n            orientation,\n        };\n    }\n\n    createExchangeActionPayload(tiles: Tile[]): ExchangeActionPayload {\n        return { tiles };\n    }\n\n    createActionData(actionType: ActionType, actionPayload: ActionPayload, input?: string, needsInput: boolean = false): ActionData {\n        if (!input) input = this.actionNeedsInput(actionType, needsInput) ? this.createInputFromPayload(actionType, actionPayload) : '';\n\n        return {\n            type: actionType,\n            input,\n            payload: actionPayload,\n        };\n    }\n\n    sendAction(gameId: string, playerId: string | undefined, actionData: ActionData): void {\n        if (!playerId) return;\n        if (this.hasActionBeenPlayed) {\n            this.sendWaitForConfirmationMessage(gameId, playerId);\n            return;\n        }\n\n        this.gamePlayController.sendAction(gameId, playerId, actionData);\n        this.hasActionBeenPlayed = true;\n    }\n\n    resetServiceData(): void {\n        this.hasActionBeenPlayed = false;\n    }\n\n    private actionNeedsInput(actionType: ActionType, needsInput: boolean): boolean {\n        return actionType === ActionType.PLACE || actionType === ActionType.EXCHANGE || needsInput;\n    }\n\n    private createInputFromPayload(actionType: ActionType, payload: ActionPayload): string {\n        switch (actionType) {\n            case ActionType.PLACE:\n                return ActionPayloadToString.placeActionPayloadToString(payload as PlaceActionPayload);\n            case ActionType.EXCHANGE:\n                return ActionPayloadToString.exchangeActionPayloadToString(payload as ExchangeActionPayload);\n            default:\n                return ActionPayloadToString.simpleActionToString(actionType);\n        }\n    }\n\n    private sendWaitForConfirmationMessage(gameId: string, playerId: string): void {\n        this.gamePlayController.sendError(gameId, playerId, WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE(gameId));\n    }\n\n    private resetHasActionBeenSent(): void {\n        this.hasActionBeenPlayed = false;\n    }\n\n    private handleResetUsedTiles(): void {\n        const usedTiles: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');\n        if (usedTiles) {\n            usedTiles.tiles.forEach((tile: Tile) => {\n                if (tile.isBlank) tile.playedLetter = undefined;\n            });\n        }\n        this.gameViewEventManagerService.emitGameViewEvent('usedTiles', undefined);\n    }\n}\n",
+            "sourceCode": "import { Injectable, OnDestroy } from '@angular/core';\nimport { ActionData, ActionPayload, ActionType, ExchangeActionPayload, PlaceActionPayload } from '@app/classes/actions/action-data';\nimport { Orientation } from '@app/classes/actions/orientation';\nimport { Position } from '@app/classes/board-navigator/position';\nimport { Tile } from '@app/classes/tile';\nimport { WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE } from '@app/constants/services-errors';\nimport { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';\nimport { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';\nimport { ActionPayloadToString } from '@app/utils/action-payload-to-string/action-payload-to-string';\nimport { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-service-data';\nimport { Subject } from 'rxjs';\nimport { takeUntil } from 'rxjs/operators';\n\n@Injectable({\n    providedIn: 'root',\n})\nexport class ActionService implements IResetServiceData, OnDestroy {\n    hasActionBeenPlayed: boolean;\n    private serviceDestroyed$: Subject<boolean>;\n\n    constructor(private gamePlayController: GamePlayController, private readonly gameViewEventManagerService: GameViewEventManagerService) {\n        this.hasActionBeenPlayed = false;\n        this.serviceDestroyed$ = new Subject();\n        this.gamePlayController\n            .observeActionDone()\n            .pipe(takeUntil(this.serviceDestroyed$))\n            .subscribe(() => this.resetHasActionBeenSent());\n        this.gameViewEventManagerService.subscribeToGameViewEvent('resetUsedTiles', this.serviceDestroyed$, () => this.handleResetUsedTiles());\n        this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());\n    }\n\n    ngOnDestroy(): void {\n        this.serviceDestroyed$.next(true);\n        this.serviceDestroyed$.complete();\n    }\n\n    createPlaceActionPayload(tiles: Tile[], startPosition: Position, orientation: Orientation): PlaceActionPayload {\n        return {\n            tiles,\n            startPosition,\n            orientation,\n        };\n    }\n\n    createExchangeActionPayload(tiles: Tile[]): ExchangeActionPayload {\n        return { tiles };\n    }\n\n    createActionData(actionType: ActionType, actionPayload: ActionPayload, input?: string, needsInput: boolean = false): ActionData {\n        if (!input) input = this.actionNeedsInput(actionType, needsInput) ? this.createInputFromPayload(actionType, actionPayload) : '';\n\n        return {\n            type: actionType,\n            input,\n            payload: actionPayload,\n        };\n    }\n\n    sendAction(gameId: string, playerId: string | undefined, actionData: ActionData): void {\n        if (!playerId) return;\n        if (this.hasActionBeenPlayed) {\n            this.sendWaitForConfirmationMessage(gameId, playerId);\n            return;\n        }\n        this.gamePlayController.sendAction(gameId, playerId, actionData);\n        this.hasActionBeenPlayed = true;\n    }\n\n    resetServiceData(): void {\n        this.hasActionBeenPlayed = false;\n    }\n\n    private actionNeedsInput(actionType: ActionType, needsInput: boolean): boolean {\n        return actionType === ActionType.PLACE || actionType === ActionType.EXCHANGE || needsInput;\n    }\n\n    private createInputFromPayload(actionType: ActionType, payload: ActionPayload): string {\n        switch (actionType) {\n            case ActionType.PLACE:\n                return ActionPayloadToString.placeActionPayloadToString(payload as PlaceActionPayload);\n            case ActionType.EXCHANGE:\n                return ActionPayloadToString.exchangeActionPayloadToString(payload as ExchangeActionPayload);\n            default:\n                return ActionPayloadToString.simpleActionToString(actionType);\n        }\n    }\n\n    private sendWaitForConfirmationMessage(gameId: string, playerId: string): void {\n        this.gamePlayController.sendError(gameId, playerId, WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE(gameId));\n    }\n\n    private resetHasActionBeenSent(): void {\n        this.hasActionBeenPlayed = false;\n    }\n\n    private handleResetUsedTiles(): void {\n        const usedTiles: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');\n        if (usedTiles) {\n            usedTiles.tiles.forEach((tile: Tile) => {\n                if (tile.isBlank) tile.playedLetter = undefined;\n            });\n        }\n        this.gameViewEventManagerService.emitGameViewEvent('usedTiles', undefined);\n    }\n}\n",
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
@@ -17872,7 +17872,7 @@
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": ".chatbox-container {\n    $button-space: 16px;\n\n    position: fixed;\n    bottom: 0;\n    right: $button-space;\n    z-index: 1;\n    display: flex;\n    gap: $button-space;\n    align-items: flex-end;\n\n    &__chatboxes {\n        display: flex;\n        gap: 12px;\n        align-items: flex-end;\n    }\n\n    &__channel-menu {\n        height: 100%;\n        overflow-y: auto;\n    }\n\n    &__create-channel {\n        width: 100%;\n        margin-bottom: -24px;\n    }\n\n    &__section {\n        padding: 12px;\n        display: flex;\n        flex-direction: column;\n        gap: 12px;\n\n        &__title {\n            font-size: 0.9em;\n            opacity: 0.55;\n            margin: 0;\n        }\n    }\n\n    &__my-channels {\n        &__content {\n            display: flex;\n            flex-direction: column;\n            width: 100%;\n        }\n\n        &__item {\n            display: grid;\n            grid-template-columns: minmax(0, 1fr) auto;\n            align-items: center;\n            gap: 6px;\n        }\n\n        &__button {\n            border: none;\n            background-color: transparent;\n            font: inherit;\n            text-align: inherit;\n            transition: ease-in scale 0.1s;\n            padding: 12px 12px;\n            font-size: 16px;\n            border-radius: 4px;\n            overflow: hidden;\n            text-overflow: ellipsis;\n            white-space: nowrap;\n            width: 100%;\n            max-width: 100%;\n\n            &:not(:disabled) {\n                cursor: pointer;\n\n                &:hover {\n                    background-color: rgba(gray, 0.05);\n                }\n    \n                &:active {\n                    scale: 0.97;\n                    transition: ease-in scale 0.1s;\n                }\n            }\n        }\n    }\n\n    &__button {\n        margin-bottom: 12px;\n\n        app-icon {\n            font-size: 1.3em;\n            position: relative;\n            top: -2px;\n            left: 1px;\n        }\n    }\n}",
+                    "data": ".chatbox-container {\n    $button-space: 16px;\n\n    position: fixed;\n    bottom: 0;\n    right: $button-space;\n    z-index: 1;\n    display: flex;\n    gap: $button-space;\n    align-items: flex-end;\n\n    &__chatboxes {\n        display: flex;\n        gap: 12px;\n        align-items: flex-end;\n    }\n\n    &__channel-menu {\n        height: 100%;\n        overflow-y: auto;\n    }\n\n    &__create-channel {\n        width: 100%;\n        margin-bottom: -24px;\n    }\n\n    &__section {\n        padding: 12px;\n        display: flex;\n        flex-direction: column;\n        gap: 12px;\n\n        &__title {\n            font-size: 0.9em;\n            opacity: 0.55;\n            margin: 0;\n        }\n    }\n\n    &__my-channels {\n        &__content {\n            display: flex;\n            flex-direction: column;\n            width: 100%;\n        }\n\n        &__item {\n            display: grid;\n            grid-template-columns: minmax(0, 1fr) auto;\n            align-items: center;\n            gap: 6px;\n        }\n\n        &__button {\n            border: none;\n            background-color: transparent;\n            font: inherit;\n            text-align: inherit;\n            transition: ease-in scale 0.1s;\n            padding: 12px 12px;\n            font-size: 16px;\n            border-radius: 4px;\n            overflow: hidden;\n            text-overflow: ellipsis;\n            white-space: nowrap;\n            width: 100%;\n            max-width: 100%;\n\n            &:not(:disabled) {\n                cursor: pointer;\n\n                &:hover {\n                    background-color: rgba(gray, 0.05);\n                }\n    \n                &:active {\n                    scale: 0.97;\n                    transition: ease-in scale 0.1s;\n                }\n            }\n        }\n    }\n\n    &__button {\n        margin-bottom: 12px;\n\n        app-icon {\n            font-size: 1.3em;\n            position: relative;\n            top: -2px;\n            left: 1px;\n        }\n\n        & ::ng-deep .mat-button-focus-overlay {\n            display: none;\n        }\n    }\n}",
                     "styleUrl": "./chatbox-container.component.scss"
                 }
             ],
@@ -17922,11 +17922,11 @@
                 "OnInit",
                 "OnDestroy"
             ],
-            "templateData": "<div class=\"chatbox-container\">\n    <div class=\"chatbox-container__chatboxes\">\n        <ng-container *ngFor=\"let channel of openedChannels\">\n            <app-chatbox-message \n                [title]=\"channel.name\"\n                [messages]=\"channel.messages\"\n                (sendMessage)=\"handleSendMessage(channel, $event)\"\n            >\n                <app-icon-button action-button (click)=\"minimizeChannel(channel)\">\n                    <app-icon icon=\"minus\"></app-icon>\n                </app-icon-button>\n                <app-icon-button action-button (click)=\"handleQuitChannel(channel)\" *ngIf=\"channel.canQuit\">\n                    <app-icon icon=\"sign-out\"></app-icon>\n                </app-icon-button>\n            </app-chatbox-message>\n        </ng-container>\n\n        <app-chatbox title=\"New message\" [hideIcon]=\"true\" *ngIf=\"channelMenuIsOpen\">\n            <app-icon-button action-button (click)=\"closeMenu()\">\n                <app-icon icon=\"minus\"></app-icon>\n            </app-icon-button>\n\n            <div class=\"chatbox-container__channel-menu\">\n                <div class=\"chatbox-container__section\">\n                    <form [formGroup]=\"createChannelForm\" (ngSubmit)=\"handleCreateChannel()\">\n                        <mat-form-field appearance=\"outline\" class=\"chatbox-container__create-channel\">\n                            <mat-label>Créer un canal</mat-label>\n                            <input matInput type=\"text\" formControlName=\"createChannel\" #createChannelInput />\n                            <button mat-icon-button matSuffix><mat-icon>add</mat-icon></button>\n                        </mat-form-field>\n                    </form>\n                    <form [formGroup]=\"joinChannelForm\" (ngSubmit)=\"handleJoinChannel()\">\n                        <mat-form-field appearance=\"outline\" class=\"chatbox-container__create-channel\">\n                            <mat-label>Joindre un canal</mat-label>\n                            <input matInput type=\"text\" formControlName=\"joinChannel\" #joinChannelInput />\n                            <button mat-icon-button matSuffix><mat-icon>login</mat-icon></button>\n                        </mat-form-field>\n                    </form>\n                </div>\n                <div class=\"chatbox-container__section\">\n                    <p class=\"chatbox-container__section__title\">Mes canaux</p>\n                    <div class=\"chatbox-container__my-channels__content\">\n                        <div class=\"chatbox-container__my-channels__item\" *ngFor=\"let channel of getChannelsForMenu()\" >\n                            <button\n                                [disabled]=\"!channel.canOpen\"\n                                (click)=\"showChannel(channel)\"\n                                class=\"chatbox-container__my-channels__button\"\n                            >\n                                {{channel.name}}\n                            </button>\n                            <app-icon-button (click)=\"handleQuitChannel(channel)\" *ngIf=\"channel.canQuit\">\n                                <app-icon icon=\"sign-out\"></app-icon>\n                            </app-icon-button>\n                        </div>\n                        \n                    </div>\n                </div>\n            </div>\n        </app-chatbox>\n    </div>\n\n    <button mat-fab color=\"white\" class=\"chatbox-container__button\" (click)=\"toggleMenu()\">\n        <app-icon icon=\"edit\" styling=\"solid\"></app-icon>\n    </button>\n</div>"
+            "templateData": "<div class=\"chatbox-container\">\n    <div class=\"chatbox-container__chatboxes\">\n        <ng-container *ngFor=\"let channel of openedChannels\">\n            <app-chatbox-message \n                [title]=\"channel.name\"\n                [messages]=\"channel.messages\"\n                (sendMessage)=\"handleSendMessage(channel, $event)\"\n            >\n                <app-icon-button action-button (click)=\"minimizeChannel(channel)\">\n                    <app-icon icon=\"minus\"></app-icon>\n                </app-icon-button>\n                <app-icon-button action-button (click)=\"handleQuitChannel(channel)\" *ngIf=\"channel.canQuit\">\n                    <app-icon icon=\"sign-out\"></app-icon>\n                </app-icon-button>\n            </app-chatbox-message>\n        </ng-container>\n\n        <app-chatbox title=\"New message\" [hideIcon]=\"true\" *ngIf=\"channelMenuIsOpen\">\n            <app-icon-button action-button (click)=\"closeMenu()\">\n                <app-icon icon=\"minus\"></app-icon>\n            </app-icon-button>\n\n            <div class=\"chatbox-container__channel-menu\">\n                <div class=\"chatbox-container__section\">\n                    <form [formGroup]=\"createChannelForm\" (ngSubmit)=\"handleCreateChannel()\">\n                        <mat-form-field appearance=\"outline\" class=\"chatbox-container__create-channel\">\n                            <mat-label>Créer un canal</mat-label>\n                            <input matInput type=\"text\" formControlName=\"createChannel\" #createChannelInput />\n                            <button mat-icon-button matSuffix><mat-icon>add</mat-icon></button>\n                        </mat-form-field>\n                    </form>\n                    <form [formGroup]=\"joinChannelForm\" (ngSubmit)=\"handleJoinChannel()\">\n                        <mat-form-field appearance=\"outline\" class=\"chatbox-container__create-channel\">\n                            <mat-label>Joindre un canal</mat-label>\n                            <input matInput type=\"text\" formControlName=\"joinChannel\" #joinChannelInput />\n                            <button mat-icon-button matSuffix><mat-icon>login</mat-icon></button>\n                        </mat-form-field>\n                    </form>\n                </div>\n                <div class=\"chatbox-container__section\">\n                    <p class=\"chatbox-container__section__title\">Mes canaux</p>\n                    <div class=\"chatbox-container__my-channels__content\">\n                        <div class=\"chatbox-container__my-channels__item\" *ngFor=\"let channel of getChannelsForMenu()\" >\n                            <button\n                                [disabled]=\"!channel.canOpen\"\n                                (click)=\"showChannel(channel)\"\n                                class=\"chatbox-container__my-channels__button\"\n                            >\n                                {{channel.name}}\n                            </button>\n                            <app-icon-button (click)=\"handleQuitChannel(channel)\" *ngIf=\"channel.canQuit\">\n                                <app-icon icon=\"sign-out\"></app-icon>\n                            </app-icon-button>\n                        </div>\n                        \n                    </div>\n                </div>\n            </div>\n        </app-chatbox>\n    </div>\n\n    <button mat-fab color=\"white\" class=\"chatbox-container__button\" (click)=\"toggleMenu()\" tabindex=\"-1\">\n        <app-icon icon=\"edit\" styling=\"solid\"></app-icon>\n    </button>\n</div>"
         },
         {
             "name": "ChatboxMessageComponent",
-            "id": "component-ChatboxMessageComponent-58a1ad4dd59822b90853db91e02308ba222659eca66ca89aaa7229142d6a2353326a7e82b6ff958435a4c9f266cc5d71194a6eee71ddb8ee5c2100f44d79b8e0",
+            "id": "component-ChatboxMessageComponent-8eba5d9806c7a00560ccc4b7187e005770e40977908224a887c100c82a64190d4fb3dfa3e687cf09c736c5ea254c6e7b07ce01866f65167849654f2a781ecbf8",
             "file": "src/app/components/chatbox-message/chatbox-message.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -17948,7 +17948,7 @@
                     "defaultValue": "[]",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "line": 25,
+                    "line": 27,
                     "type": "ChatMessage[]",
                     "decorators": []
                 },
@@ -18004,7 +18004,7 @@
                     "defaultValue": "new EventEmitter()",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "line": 26,
+                    "line": 28,
                     "type": "EventEmitter<string>"
                 }
             ],
@@ -18016,7 +18016,7 @@
                     "type": "FormGroup",
                     "optional": false,
                     "description": "",
-                    "line": 27
+                    "line": 29
                 },
                 {
                     "name": "onlyHasEmoji",
@@ -18026,7 +18026,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 28
+                    "line": 30
                 },
                 {
                     "name": "actionButtons",
@@ -18061,7 +18061,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 85,
+                    "line": 92,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "jsdoctags": [
@@ -18082,7 +18082,7 @@
                     "optional": false,
                     "returnType": "",
                     "typeParameters": [],
-                    "line": 72,
+                    "line": 79,
                     "deprecated": false,
                     "deprecationMessage": ""
                 },
@@ -18090,9 +18090,9 @@
                     "name": "getMessages",
                     "args": [],
                     "optional": false,
-                    "returnType": "DisplayMessage[]",
+                    "returnType": "DisplayGroup[]",
                     "typeParameters": [],
-                    "line": 37,
+                    "line": 39,
                     "deprecated": false,
                     "deprecationMessage": ""
                 },
@@ -18109,7 +18109,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 105,
+                    "line": 112,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "jsdoctags": [
@@ -18130,7 +18130,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 94,
+                    "line": 101,
                     "deprecated": false,
                     "deprecationMessage": ""
                 }
@@ -18142,7 +18142,7 @@
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';\nimport { onlyHasEmoji } from '@app/utils/emoji/emoji';\nimport { emojify } from 'node-emoji';\nimport { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';\nimport { PublicUser } from '@common/models/user';\nimport { UserService } from '@app/services/user-service/user.service';\nimport { ChatMessage } from '@common/models/chat/chat-message';\nimport { MINUTE } from '@app/constants/time-constant';\n\nexport interface DisplayMessage {\n    sender: PublicUser;\n    isCurrentUser: boolean;\n    messages: ChatMessage[];\n    date: Date;\n    displayDate: boolean;\n}\n\n@Component({\n    selector: 'app-chatbox-message',\n    templateUrl: './chatbox-message.component.html',\n    styleUrls: ['./chatbox-message.component.scss'],\n})\nexport class ChatboxMessageComponent extends ChatBoxComponent {\n    @Input() messages: ChatMessage[] = [];\n    @Output() sendMessage: EventEmitter<string> = new EventEmitter();\n    messageForm: FormGroup;\n    onlyHasEmoji = onlyHasEmoji;\n\n    constructor(private readonly formBuilder: FormBuilder, private readonly userService: UserService) {\n        super();\n        this.messageForm = this.formBuilder.group({\n            message: new FormControl('', [Validators.required]),\n        });\n    }\n\n    getMessages(): DisplayMessage[] {\n        return this.messages.reduce<DisplayMessage[]>((messages, current) => {\n            const last = messages[messages.length - 1];\n\n            current.content = emojify(current.content.trim());\n\n            if (last) {\n                const isRecent = current.date.getTime() - last.date.getTime() <= MINUTE;\n\n                if (last.sender.username === current.sender.username && isRecent) {\n                    last.messages.push(current);\n                } else {\n                    messages.push({\n                        sender: current.sender,\n                        isCurrentUser: this.userService.isUser(current.sender),\n                        messages: [current],\n                        date: current.date,\n                        displayDate: !isRecent,\n                    });\n                }\n                return messages;\n            } else {\n                return [\n                    {\n                        sender: current.sender,\n                        isCurrentUser: this.userService.isUser(current.sender),\n                        messages: [current],\n                        date: current.date,\n                        displayDate: true,\n                    },\n                ];\n            }\n        }, []);\n    }\n\n    getLastUsersAvatarUrl(): [string?, string?] {\n        let avatars: [string?, string?] = [undefined, undefined];\n\n        for (const {\n            sender: { avatar },\n        } of this.messages) {\n            if (!avatars[0]) avatars = [avatar, undefined];\n            if (!avatars[1] && avatars[0] !== avatar) return [avatars[0], avatar];\n        }\n\n        return avatars;\n    }\n\n    addMessage(content: string): void {\n        this.messages.push({\n            content,\n            sender: this.userService.user,\n            date: new Date(),\n        });\n        this.sendMessage.next(content);\n    }\n\n    onMessageSubmit(): void {\n        if (!this.messageForm.valid) return;\n\n        const content = this.messageForm.value.message.trim();\n\n        if (content.length === 0) return;\n\n        this.addMessage(content);\n        this.messageForm.setValue({ message: '' });\n    }\n\n    onEmojiClick(emoji: string): void {\n        this.addMessage(emoji);\n    }\n}\n",
+            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';\nimport { onlyHasEmoji } from '@app/utils/emoji/emoji';\nimport { emojify } from 'node-emoji';\nimport { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';\nimport { PublicUser } from '@common/models/user';\nimport { UserService } from '@app/services/user-service/user.service';\nimport { ChatMessage } from '@common/models/chat/chat-message';\nimport { MINUTE } from '@app/constants/time-constant';\n\nexport type DisplayMessage = ChatMessage & { onlyEmoji: boolean };\n\nexport interface DisplayGroup {\n    sender: PublicUser;\n    isCurrentUser: boolean;\n    messages: DisplayMessage[];\n    date: Date;\n    displayDate: boolean;\n}\n\n@Component({\n    selector: 'app-chatbox-message',\n    templateUrl: './chatbox-message.component.html',\n    styleUrls: ['./chatbox-message.component.scss'],\n})\nexport class ChatboxMessageComponent extends ChatBoxComponent {\n    @Input() messages: ChatMessage[] = [];\n    @Output() sendMessage: EventEmitter<string> = new EventEmitter();\n    messageForm: FormGroup;\n    onlyHasEmoji = onlyHasEmoji;\n\n    constructor(private readonly formBuilder: FormBuilder, private readonly userService: UserService) {\n        super();\n        this.messageForm = this.formBuilder.group({\n            message: new FormControl('', [Validators.required]),\n        });\n    }\n\n    getMessages(): DisplayGroup[] {\n        return this.messages.reduce<DisplayGroup[]>((messages: DisplayGroup[], current) => {\n            const last = messages[messages.length - 1];\n\n            const newMessage: DisplayMessage = {\n                ...current,\n                content: emojify(current.content.trim()),\n                onlyEmoji: onlyHasEmoji(current.content),\n            };\n\n            if (last) {\n                const lastMessage = last.messages[last.messages.length - 1];\n                const isRecent = current.date.getTime() - lastMessage.date.getTime() <= MINUTE;\n\n                if (last.sender.username === current.sender.username && isRecent) {\n                    last.messages.push(newMessage);\n                } else {\n                    messages.push({\n                        sender: current.sender,\n                        isCurrentUser: this.userService.isUser(current.sender),\n                        messages: [newMessage],\n                        date: current.date,\n                        displayDate: !isRecent,\n                    });\n                }\n                return messages;\n            } else {\n                return [\n                    {\n                        sender: current.sender,\n                        isCurrentUser: this.userService.isUser(current.sender),\n                        messages: [newMessage],\n                        date: current.date,\n                        displayDate: true,\n                    },\n                ];\n            }\n        }, []);\n    }\n\n    getLastUsersAvatarUrl(): [string?, string?] {\n        let avatars: [string?, string?] = [undefined, undefined];\n\n        for (const {\n            sender: { avatar },\n        } of this.messages) {\n            if (!avatars[0]) avatars = [avatar, undefined];\n            if (!avatars[1] && avatars[0] !== avatar) return [avatars[0], avatar];\n        }\n\n        return avatars;\n    }\n\n    addMessage(content: string): void {\n        this.messages.push({\n            content,\n            sender: this.userService.user,\n            date: new Date(),\n        });\n        this.sendMessage.next(content);\n    }\n\n    onMessageSubmit(): void {\n        if (!this.messageForm.valid) return;\n\n        const content = this.messageForm.value.message.trim();\n\n        if (content.length === 0) return;\n\n        this.addMessage(content);\n        this.messageForm.setValue({ message: '' });\n    }\n\n    onEmojiClick(emoji: string): void {\n        this.addMessage(emoji);\n    }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
@@ -18170,7 +18170,7 @@
                         "deprecationMessage": ""
                     }
                 ],
-                "line": 28,
+                "line": 30,
                 "jsdoctags": [
                     {
                         "name": "formBuilder",
@@ -18193,7 +18193,7 @@
                 ]
             },
             "extends": "ChatBoxComponent",
-            "templateData": "<app-chatbox \n    [title]=\"title\" \n    [icon]=\"getLastUsersAvatarUrl()[0] ?? ''\" \n    [icon2]=\"getLastUsersAvatarUrl()[1] ?? ''\" \n    class=\"chatbox-message\"\n>\n    <ng-container action-button>\n        <ng-content select=\"[action-button]\"></ng-content>\n    </ng-container>\n\n    <div class=\"chatbox-message__content\">\n        <div class=\"chatbox-message__messages\">\n            <div class=\"chatbox-message__messages__container\">\n                <div *ngFor=\"let messageGroup of getMessages()\" [ngClass]=\"{'chatbox-message__group': true, 'chatbox-message__group--is-current-user': messageGroup.isCurrentUser, 'chatbox-message__group--is-other-user': !messageGroup.isCurrentUser}\">\n                    <p class=\"chatbox-message__group__time\" *ngIf=\"messageGroup.displayDate\">{{messageGroup.date | date:'shortTime'}}</p>\n                    <p class=\"chatbox-message__group__username\">{{messageGroup.sender.username}}</p>\n                    <div class=\"chatbox-message__group__content\">\n                        <img \n                            class=\"chatbox-message__group__avatar\"\n                            [src]=\"messageGroup.sender.avatar\" \n                            *ngIf=\"!messageGroup.isCurrentUser\"\n                        />\n                        <div class=\"chatbox-message__group__messages\">\n                            <div *ngFor=\"let message of messageGroup.messages\" class=\"chatbox-message__message__outer\" [attr.tooltip]=\"(messageGroup.date | date:'mediumTime') ?? ''\">\n                                <p\n                                    [ngClass]=\"{\n                                        'chatbox-message__message': true, \n                                        'chatbox-message__message--only-emoji': onlyHasEmoji(message.content)\n                                    }\"\n                                >{{message.content}}</p>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <div class=\"chatbox-message__input\">\n            <form class=\"chatbox-message__input__form\" [formGroup]=\"messageForm\" (ngSubmit)=\"onMessageSubmit()\" novalidate>\n                <input type=\"text\" formControlName=\"message\" class=\"chatbox-message__input__form__control\" placeholder=\"Aa\" [maxlength]=\"512\">\n            </form>\n    \n            <app-icon-button (click)=\"onEmojiClick('👍')\">👍</app-icon-button>\n        </div>\n    </div>\n</app-chatbox>"
+            "templateData": "<app-chatbox \n    [title]=\"title\" \n    [icon]=\"getLastUsersAvatarUrl()[0] ?? ''\" \n    [icon2]=\"getLastUsersAvatarUrl()[1] ?? ''\" \n    class=\"chatbox-message\"\n>\n    <ng-container action-button>\n        <ng-content select=\"[action-button]\"></ng-content>\n    </ng-container>\n\n    <div class=\"chatbox-message__content\">\n        <div class=\"chatbox-message__messages\">\n            <div class=\"chatbox-message__messages__container\">\n                <div *ngFor=\"let messageGroup of getMessages()\" [ngClass]=\"{'chatbox-message__group': true, 'chatbox-message__group--is-current-user': messageGroup.isCurrentUser, 'chatbox-message__group--is-other-user': !messageGroup.isCurrentUser}\">\n                    <p class=\"chatbox-message__group__time\" *ngIf=\"messageGroup.displayDate\">{{messageGroup.date | date:'shortTime'}}</p>\n                    <p class=\"chatbox-message__group__username\">{{messageGroup.sender.username}}</p>\n                    <div class=\"chatbox-message__group__content\">\n                        <img \n                            class=\"chatbox-message__group__avatar\"\n                            [src]=\"messageGroup.sender.avatar\" \n                            *ngIf=\"!messageGroup.isCurrentUser\"\n                        />\n                        <div class=\"chatbox-message__group__messages\">\n                            <div *ngFor=\"let message of messageGroup.messages\" class=\"chatbox-message__message__outer\" [attr.tooltip]=\"(message.date | date:'mediumTime') ?? ''\">\n                                <p\n                                    [ngClass]=\"{\n                                        'chatbox-message__message': true, \n                                        'chatbox-message__message--only-emoji': message.onlyEmoji\n                                    }\"\n                                >{{message.content}}</p>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <div class=\"chatbox-message__input\">\n            <form class=\"chatbox-message__input__form\" [formGroup]=\"messageForm\" (ngSubmit)=\"onMessageSubmit()\" novalidate>\n                <input type=\"text\" formControlName=\"message\" class=\"chatbox-message__input__form__control\" placeholder=\"Aa\" [maxlength]=\"512\">\n            </form>\n    \n            <app-icon-button (click)=\"onEmojiClick('👍')\">👍</app-icon-button>\n        </div>\n    </div>\n</app-chatbox>"
         },
         {
             "name": "ChatboxWrapperComponent",
@@ -24272,7 +24272,7 @@
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": "@import '../../style/variables.scss';\r\n\r\n$border-radius: 6px;\r\n\r\n:host ::ng-deep {\r\n    span.mat-button-toggle-label-content {\r\n        line-height: 1em;\r\n        height: 100%;\r\n        width: 100%;\r\n        padding: 0;\r\n        border-radius: $border-radius;\r\n    }\r\n}\r\n\r\n::ng-deep .mat-tooltip {\r\n    font-size: small;\r\n}\r\n\r\n.signup-container {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n\r\n    max-width: 625px;\r\n    margin: 0 auto;\r\n\r\n    & > mat-card {\r\n        margin: 0 12px;\r\n    }\r\n\r\n    form {\r\n        mat-button-toggle-group,\r\n        mat-form-field {\r\n            width: 100%;\r\n        }\r\n\r\n        mat-button-toggle-group {\r\n            margin-bottom: 1.34375em;\r\n        }\r\n\r\n        mat-button-toggle-group {\r\n            display: grid;\r\n            grid-template-columns: repeat(2, 1fr);\r\n            gap: 12px;\r\n            border: none;\r\n            overflow: visible;\r\n\r\n            mat-button-toggle {\r\n                border-radius: $border-radius;\r\n                background: transparent;\r\n                border: none;\r\n                overflow: visible;\r\n\r\n                mat-card.content {\r\n                    background: white;\r\n                    border-radius: $border-radius;\r\n                    border: none;\r\n                    box-sizing: border-box;\r\n                    display: block;\r\n                    width: 100%;\r\n                    border: solid 1px rgb(236, 236, 236);\r\n                    padding: 8px;\r\n                }\r\n                p,\r\n                app-icon {\r\n                    margin: auto;\r\n                    line-height: 1em !important;\r\n                }\r\n\r\n                app-icon {\r\n                    font-size: 1.3em;\r\n                    margin-bottom: 0.3em;\r\n                    display: block;\r\n                }\r\n\r\n                p {\r\n                    font-size: 0.9em;\r\n                }\r\n\r\n                &.mat-button-toggle-checked {\r\n                    mat-card.content {\r\n                        background-color: rgba($primary, 0.15);\r\n                        border: solid 1px rgba($primary, 0.1);\r\n                        app-icon {\r\n                            color: $primary;\r\n                        }\r\n                    }\r\n                }\r\n\r\n                &.mat-button-toggle-disabled {\r\n                    mat-card.content {\r\n                        background-color: rgb(241, 241, 241);\r\n                        border-color: rgb(241, 241, 241);\r\n                        color: rgba(0, 0, 0, 0.459);\r\n                    }\r\n                }\r\n            }\r\n        }\r\n\r\n        mat-label.button-toggle-label {\r\n            display: block;\r\n            margin-bottom: 0.25em;\r\n        }\r\n\r\n        mat-form-field.margin-top {\r\n            margin-top: 1.34375em;\r\n        }\r\n\r\n        app-timer-selection {\r\n            display: block;\r\n        }\r\n\r\n        .alert {\r\n            color: red;\r\n            display: flex;\r\n        }\r\n\r\n        .alert-group {\r\n            margin: -1.34375em 0px calc(1.34375em / 2) 2px;\r\n            height: 100%;\r\n            color: red;\r\n        }\r\n    }\r\n\r\n    .buttons {\r\n        display: flex;\r\n        justify-content: flex-end;\r\n\r\n        button {\r\n            font-size: 1.2em;\r\n            padding: 6px 16px;\r\n        }\r\n    }\r\n}\r\n\r\n::ng-deep snack-bar-container.error {\r\n    background: lighten(tomato, 30%);\r\n    color: tomato;\r\n\r\n    button {\r\n        color: tomato;\r\n    }\r\n}\r\n",
+                    "data": "@import '../../style/variables.scss';\n\n$border-radius: 6px;\n\n:host ::ng-deep {\n    span.mat-button-toggle-label-content {\n        line-height: 1em;\n        height: 100%;\n        width: 100%;\n        padding: 0;\n        border-radius: $border-radius;\n    }\n}\n\n::ng-deep .mat-tooltip {\n    font-size: small;\n}\n\n.signup-container {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n\n    max-width: 625px;\n    margin: 0 auto;\n\n    & > mat-card {\n        margin: 0 12px;\n    }\n\n    form {\n        mat-button-toggle-group,\n        mat-form-field {\n            width: 100%;\n        }\n\n        mat-button-toggle-group {\n            margin-bottom: 1.34375em;\n        }\n\n        mat-button-toggle-group {\n            display: grid;\n            grid-template-columns: repeat(2, 1fr);\n            gap: 12px;\n            border: none;\n            overflow: visible;\n\n            mat-button-toggle {\n                border-radius: $border-radius;\n                background: transparent;\n                border: none;\n                overflow: visible;\n\n                mat-card.content {\n                    background: white;\n                    border-radius: $border-radius;\n                    border: none;\n                    box-sizing: border-box;\n                    display: block;\n                    width: 100%;\n                    border: solid 1px rgb(236, 236, 236);\n                    padding: 8px;\n                }\n                p,\n                app-icon {\n                    margin: auto;\n                    line-height: 1em !important;\n                }\n\n                app-icon {\n                    font-size: 1.3em;\n                    margin-bottom: 0.3em;\n                    display: block;\n                }\n\n                p {\n                    font-size: 0.9em;\n                }\n\n                &.mat-button-toggle-checked {\n                    mat-card.content {\n                        background-color: rgba($primary, 0.15);\n                        border: solid 1px rgba($primary, 0.1);\n                        app-icon {\n                            color: $primary;\n                        }\n                    }\n                }\n\n                &.mat-button-toggle-disabled {\n                    mat-card.content {\n                        background-color: rgb(241, 241, 241);\n                        border-color: rgb(241, 241, 241);\n                        color: rgba(0, 0, 0, 0.459);\n                    }\n                }\n            }\n        }\n\n        mat-label.button-toggle-label {\n            display: block;\n            margin-bottom: 0.25em;\n        }\n\n        mat-form-field.margin-top {\n            margin-top: 1.34375em;\n        }\n\n        app-timer-selection {\n            display: block;\n        }\n\n        .alert {\n            color: red;\n            display: flex;\n        }\n\n        .alert-group {\n            margin: -1.34375em 0px calc(1.34375em / 2) 2px;\n            height: 100%;\n            color: red;\n        }\n    }\n\n    .buttons {\n        display: flex;\n        justify-content: flex-end;\n\n        button {\n            font-size: 1.2em;\n            padding: 6px 16px;\n        }\n    }\n}\n\n::ng-deep snack-bar-container.error {\n    background: lighten(tomato, 30%);\n    color: tomato;\n\n    button {\n        color: tomato;\n    }\n}\n",
                     "styleUrl": "./signup-container.component.scss"
                 }
             ],
@@ -26571,8 +26571,8 @@
                 "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "[]",
-                "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50' },\n                content: 'Bonjour!',\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        messages: [],\n    },\n]"
+                "type": "ClientChannel[]",
+                "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        canQuit: true,\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50' },\n                content: 'Bonjour!',\n                date: new Date(),\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        canQuit: true,\n        messages: [],\n    },\n]"
             },
             {
                 "name": "CODE_HTML_TAG",
@@ -27218,21 +27218,21 @@
                 "name": "environment",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/environments/environment.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "object",
-                "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
-            },
-            {
-                "name": "environment",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "src/environments/environment.prod.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "object",
                 "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
+            },
+            {
+                "name": "environment",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/environments/environment.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "object",
+                "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
             },
             {
                 "name": "ERROR_SNACK_BAR_CONFIG",
@@ -28158,7 +28158,7 @@
                 "name": "primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
+                "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
@@ -28168,7 +28168,7 @@
                 "name": "primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
+                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
@@ -28357,7 +28357,7 @@
                 "name": "SNACK_BAR_ERROR_DURATION",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/constants/dictionaries-components.ts",
+                "file": "src/app/constants/dictionaries-component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -28367,7 +28367,7 @@
                 "name": "SNACK_BAR_ERROR_DURATION",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/constants/dictionaries-component.ts",
+                "file": "src/app/constants/dictionaries-components.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -28497,21 +28497,21 @@
                 "name": "template",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Story<ChatBoxComponent>",
-                "defaultValue": "(args: ChatBoxComponent) => ({\n    props: args,\n})"
-            },
-            {
-                "name": "template",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story<ChatboxContainerComponent>",
                 "defaultValue": "(args: ChatboxContainerComponent) => ({\n    props: args,\n})"
+            },
+            {
+                "name": "template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story<ChatBoxComponent>",
+                "defaultValue": "(args: ChatBoxComponent) => ({\n    props: args,\n})"
             },
             {
                 "name": "template",
@@ -28541,7 +28541,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "Story<SignupContainerComponent>",
-                "defaultValue": "(args: SignupContainerComponent) => ({\r\n    props: args,\r\n})"
+                "defaultValue": "(args: SignupContainerComponent) => ({\n    props: args,\n})"
             },
             {
                 "name": "TEST_DICTIONARY",
@@ -28843,6 +28843,17 @@
                 "deprecationMessage": "",
                 "description": "",
                 "kind": 186
+            },
+            {
+                "name": "DisplayMessage",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "rawtype": "",
+                "file": "src/app/components/chatbox-message/chatbox-message.component.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "description": "",
+                "kind": 187
             },
             {
                 "name": "DisplayVirtualPlayersColumns",
@@ -30794,8 +30805,8 @@
                     "file": "src/app/components/chatbox-container/chatbox-container.component.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "type": "[]",
-                    "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50' },\n                content: 'Bonjour!',\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        messages: [],\n    },\n]"
+                    "type": "ClientChannel[]",
+                    "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        canQuit: true,\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50' },\n                content: 'Bonjour!',\n                date: new Date(),\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        canQuit: true,\n        messages: [],\n    },\n]"
                 },
                 {
                     "name": "primary",
@@ -31603,18 +31614,6 @@
                     "defaultValue": "(args: ChatboxMessageComponent) => ({\n    props: args,\n})"
                 }
             ],
-            "src/environments/environment.ts": [
-                {
-                    "name": "environment",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/environments/environment.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "object",
-                    "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
-                }
-            ],
             "src/environments/environment.prod.ts": [
                 {
                     "name": "environment",
@@ -31625,6 +31624,18 @@
                     "deprecationMessage": "",
                     "type": "object",
                     "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
+                }
+            ],
+            "src/environments/environment.ts": [
+                {
+                    "name": "environment",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/environments/environment.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "object",
+                    "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
                 }
             ],
             "src/app/constants/fun-facts-scrabble-constants.ts": [
@@ -32178,7 +32189,7 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "Story<SignupContainerComponent>",
-                    "defaultValue": "(args: SignupContainerComponent) => ({\r\n    props: args,\r\n})"
+                    "defaultValue": "(args: SignupContainerComponent) => ({\n    props: args,\n})"
                 }
             ],
             "src/app/constants/tile-font-size-constants.ts": [
@@ -33208,6 +33219,19 @@
                     "kind": 186
                 }
             ],
+            "src/app/components/chatbox-message/chatbox-message.component.ts": [
+                {
+                    "name": "DisplayMessage",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "rawtype": "",
+                    "file": "src/app/components/chatbox-message/chatbox-message.component.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "description": "",
+                    "kind": 187
+                }
+            ],
             "src/app/components/admin-virtual-players/admin-virtual-players.types.ts": [
                 {
                     "name": "DisplayVirtualPlayersColumns",
@@ -34139,7 +34163,7 @@
                 "filePath": "src/app/components/chatbox-message/chatbox-message.component.ts",
                 "type": "interface",
                 "linktype": "interface",
-                "name": "DisplayMessage",
+                "name": "DisplayGroup",
                 "coveragePercent": 0,
                 "coverageCount": "0/6",
                 "status": "low"

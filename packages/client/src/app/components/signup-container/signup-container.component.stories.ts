@@ -1,6 +1,8 @@
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
+import { IconComponent } from '@app/components/icon/icon.component';
 import { SignupContainerComponent } from './signup-container.component';
 
 export default {
@@ -8,8 +10,8 @@ export default {
     component: SignupContainerComponent,
     decorators: [
         moduleMetadata({
-            declarations: [],
-            imports: [ReactiveFormsModule, MatButtonModule],
+            declarations: [IconComponent],
+            imports: [ReactiveFormsModule, AppMaterialModule, FormsModule, BrowserAnimationsModule],
             providers: [FormBuilder],
         }),
     ],

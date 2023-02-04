@@ -1,22 +1,29 @@
 <div class="signup-container">
     <mat-card>
         <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-            <mat-label><app-icon icon="user"></app-icon> Choisissez votre nom de joueur</mat-label>
-            <input
-                matInput
-                id="playerNameValidator"
-                type="text"
-                formControlName="inputName"
-                autocomplete="off"
-                (ngModelChange)="''"
-                (valueChanges)="''"
-            />
-    
+            <mat-form-field
+                appearance="outline"
+                [formGroup]="signupForm"
+                matTooltip="Votre nom doit être entre 2 et 20 caractères sans caractères spéciaux"
+                matTooltipPosition="above"
+            >
+                <mat-label><app-icon icon="user"></app-icon> Choisissez votre nom de joueur</mat-label>
+                <input
+                    matInput
+                    id="playerNameValidator"
+                    type="text"
+                    formControlName="username"
+                    autocomplete="off"
+                    (ngModelChange)="''"
+                    (valueChanges)="''"
+                />
+            </mat-form-field>
+
             <div class="buttons">
                 <div
                     class="button-container"
                     matTooltip="Veuillez remplir tous les champs avec des données valides"
-                    [matTooltipDisabled]="''"
+                    [matTooltipDisabled]="false"
                     matTooltipPosition="above"
                     (click)="''"
                 >
@@ -27,5 +34,4 @@
             </div>
         </form>
     </mat-card>
-
 </div>
