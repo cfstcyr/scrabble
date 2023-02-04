@@ -13,3 +13,5 @@ coverage/
 server/assets/dictionaries/index.json
 
 .env
+
+build/

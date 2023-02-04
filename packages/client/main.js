@@ -1,5 +1,14 @@
 const { app, BrowserWindow } = require('electron');
 
+const isDev = (() => {
+    // copied from https://github.com/sindresorhus/electron-is-dev/blob/main/index.js
+    
+    const isEnvSet = 'ELECTRON_IS_DEV' in process.env;
+    const getFromEnv = Number.parseInt(process.env.ELECTRON_IS_DEV, 10) === 1;
+    
+    return isEnvSet ? getFromEnv : !app.isPackaged;
+})();
+
 let appWindow;
 
 function initWindow() {
@@ -13,8 +22,12 @@ function initWindow() {
     });
 
     // Electron Build Path
-    const path = `file://${__dirname}/dist/client/index.html`;
-    appWindow.loadURL(path);
+    appWindow.loadURL(
+        isDev
+            ? 'http://localhost:4200'
+            : `file://${__dirname}/dist/client/index.html`
+    );
+    
 
     appWindow.setMenuBarVisibility(false)
 
