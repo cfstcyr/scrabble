@@ -1,5 +1,5 @@
 const { app, BrowserWindow } = require('electron');
-
+const isDev = require('electron-is-dev');
 let appWindow;
 
 function initWindow() {
@@ -14,7 +14,8 @@ function initWindow() {
 
     // Electron Build Path
     const path = `file://${__dirname}/dist/client/index.html`;
-    appWindow.loadURL(path);
+    
+    appWindow.loadURL(isDev ?'http://localhost:4200' : path)
 
     appWindow.setMenuBarVisibility(false)
 
