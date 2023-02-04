@@ -4,6 +4,7 @@ import { BaseController } from '@app/controllers/base-controller';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { authenticateToken } from '@app/middlewares/authentificate-token';
 
 @Service()
 export class AuthentificationController extends BaseController {
@@ -24,6 +25,10 @@ export class AuthentificationController extends BaseController {
                 .signUp(req.body)
                 .then((token) => res.send({ token }).status(StatusCodes.CREATED).end())
                 .catch(() => next(new HttpException('Could not signUp with credentials', StatusCodes.FORBIDDEN)));
+        });
+
+        router.get('/validate', authenticateToken, async (req, res) => {
+            res.sendStatus(StatusCodes.OK);
         });
     }
 }

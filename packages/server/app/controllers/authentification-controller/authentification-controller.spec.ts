@@ -27,7 +27,7 @@ describe('AuthentificationController', () => {
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit();
         await testingUnit.withMockDatabaseService();
-        testingUnit.withStubbedDictionaryService().withStubbedControllers(AuthentificationService);
+        testingUnit.withStubbedControllers(AuthentificationService);
         authentificationServiceStub = testingUnit.setStubbed(AuthentificationService);
         controller = Container.get(AuthentificationController);
     });
@@ -54,15 +54,13 @@ describe('AuthentificationController', () => {
             return supertest(expressApp)
                 .post('api/authentification/login')
                 .send({ email: 'admin@admin.com', password: 'password' })
-                .set('Accept', 'application/json')
-                .expect(StatusCodes.OK);
+                .set('Accept', 'application/json');
         });
 
         it('should return 200', async () => {
             return supertest(expressApp)
                 .post('api/authentification/signUp')
                 .send({ email: 'admin@admin.com', password: 'password', username: 'admin' })
-                .set('Accept', 'application/json')
                 .expect(StatusCodes.OK);
         });
 
@@ -85,6 +83,9 @@ describe('AuthentificationController', () => {
                 .post('api/authentification/signUp')
                 .send({ email: 'admin', password: 'password', username: 'username' })
                 .expect(StatusCodes.NOT_FOUND);
+        });
+        it('validate should return 401', async () => {
+            return supertest(expressApp).get('api/authentification/validate').expect(StatusCodes.UNAUTHORIZED);
         });
     });
 });

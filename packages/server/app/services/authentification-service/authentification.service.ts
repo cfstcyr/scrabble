@@ -36,6 +36,16 @@ export class AuthentificationService {
         });
     }
 
+    async getUserById(idUser: number): Promise<User> {
+        return new Promise((resolve, reject) => {
+            this.table
+                .where('idUser', idUser)
+                .select('*')
+                .then((data) => resolve(data[0]))
+                .catch((err) => reject(err));
+        });
+    }
+
     private async insertUser(user: User): Promise<{ idUser: number } | number> {
         return new Promise((resolve, reject) => {
             this.table
