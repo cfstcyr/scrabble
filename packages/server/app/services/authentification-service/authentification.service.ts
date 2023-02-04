@@ -9,7 +9,7 @@ import { Service } from 'typedi';
 
 @Service()
 export class AuthentificationService {
-    constructor(private databaseService: DatabaseService) { }
+    constructor(private databaseService: DatabaseService) {}
 
     async login(credentials: Credentials): Promise<string | void> {
         const user = await this.getUserByEmail(credentials.email);
