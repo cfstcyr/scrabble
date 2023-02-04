@@ -12,6 +12,8 @@ export class SignupContainerComponent {
     signupForm: FormGroup;
     arePasswordsShown: boolean = false;
 
+    private hasBeenSubmitted: boolean = false;
+
     constructor() {
         this.signupForm = new FormGroup(
             {
@@ -30,11 +32,12 @@ export class SignupContainerComponent {
     }
 
     onSubmit(): void {
+        this.hasBeenSubmitted = true;
         return;
     }
 
     isFormValid(): boolean {
-        return this.signupForm?.valid;
+        return !this.hasBeenSubmitted || this.signupForm?.valid;
     }
 
     private fieldMatchValidator(): ValidatorFn {
