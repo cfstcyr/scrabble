@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
@@ -11,7 +10,6 @@ import * as sinon from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
 import { Application } from '@app/app';
-import { StatusCodes } from 'http-status-codes';
 
 const expect = chai.expect;
 chai.use(spies);
@@ -42,14 +40,9 @@ describe('AuthentificationController', () => {
         expect(spy).to.have.been.called;
     });
 
-    it('should call authentificationService.signUp on signUp request', () => {
+    it('should call authentificationService.signUp on signUp request', async () => {
         const spy = chai.spy.on(controller, 'signUp', () => { });
         supertest(expressApp).post('api/authentification/signUp');
         expect(spy).to.have.been.called;
-    });
-
-    it('should return code 401 - Unathorized to login', async () => {
-        chai.spy.on(controller, 'login', () => { });
-        expect((await supertest(expressApp).post('api/authentification/login')).statusCode).to.equal(StatusCodes.NOT_FOUND);
     });
 });

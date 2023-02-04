@@ -1,4 +1,4 @@
-import TokenData from '@app/classes/user/token-data';
+import { TokenData } from '@app/classes/user/token-data';
 import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
@@ -9,7 +9,7 @@ import { Service } from 'typedi';
 
 @Service()
 export class AuthentificationService {
-    constructor(private databaseService: DatabaseService) {}
+    constructor(private databaseService: DatabaseService) { }
 
     async login(credentials: Credentials): Promise<string | void> {
         const user = await this.getUserByEmail(credentials.email);
