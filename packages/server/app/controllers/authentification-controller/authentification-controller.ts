@@ -16,14 +16,14 @@ export class AuthentificationController extends BaseController {
         router.post('/login', async (req, res, next) => {
             this.authentificationservice
                 .login(req.body)
-                .then((token) => res.send({ token }).status(StatusCodes.OK).end())
+                .then((token) => res.header({ authorisation: token }).status(StatusCodes.OK).end())
                 .catch(() => next(new HttpException('Could not login with credentials', StatusCodes.BAD_REQUEST)));
         });
 
         router.post('/signUp', async (req, res, next) => {
             this.authentificationservice
                 .signUp(req.body)
-                .then((token) => res.send({ token }).status(StatusCodes.CREATED).end())
+                .then((token) => res.header({ authorisation: token }).status(StatusCodes.CREATED).end())
                 .catch(() => next(new HttpException('Could not signUp with credentials', StatusCodes.FORBIDDEN)));
         });
 
