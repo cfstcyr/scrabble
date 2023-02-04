@@ -24220,7 +24220,7 @@
         },
         {
             "name": "SignupContainerComponent",
-            "id": "component-SignupContainerComponent-aed81c7164269e34519e2f15e271b07ec1b8e46bb3b5985c5f338db9ffc3605f138eba60c7968f7fc54b9e9aac60337b084f9181337edeecc2f7175b2abc19ff",
+            "id": "component-SignupContainerComponent-f6a9bff282940c7c128cbaa85831934e910956706f1b3f3b8f058c6d5b40e77de885f70404c3a127c82271074c982c99a9c28c35eed85168f67821c157aaebcb",
             "file": "src/app/components/signup-container/signup-container.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -24236,8 +24236,44 @@
                 "./signup-container.component.html"
             ],
             "viewProviders": [],
-            "inputsClass": [],
-            "outputsClass": [],
+            "inputsClass": [
+                {
+                    "name": "isEmailTaken",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 12,
+                    "type": "boolean",
+                    "decorators": []
+                },
+                {
+                    "name": "isUsernameTaken",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 13,
+                    "type": "boolean",
+                    "decorators": []
+                }
+            ],
+            "outputsClass": [
+                {
+                    "name": "checkEmailUnicity",
+                    "defaultValue": "new EventEmitter()",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 14,
+                    "type": "EventEmitter<string>"
+                },
+                {
+                    "name": "checkUsernameUnicity",
+                    "defaultValue": "new EventEmitter()",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 15,
+                    "type": "EventEmitter<string>"
+                }
+            ],
             "propertiesClass": [
                 {
                     "name": "arePasswordsShown",
@@ -24247,7 +24283,20 @@
                     "type": "boolean",
                     "optional": false,
                     "description": "",
-                    "line": 13
+                    "line": 18
+                },
+                {
+                    "name": "hasBeenSubmitted",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 20,
+                    "modifierKind": [
+                        121
+                    ]
                 },
                 {
                     "name": "signupForm",
@@ -24256,7 +24305,7 @@
                     "type": "FormGroup",
                     "optional": false,
                     "description": "",
-                    "line": 12
+                    "line": 17
                 }
             ],
             "methodsClass": [
@@ -24266,7 +24315,7 @@
                     "optional": false,
                     "returnType": "ValidatorFn",
                     "typeParameters": [],
-                    "line": 40,
+                    "line": 48,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -24279,7 +24328,7 @@
                     "optional": false,
                     "returnType": "boolean",
                     "typeParameters": [],
-                    "line": 36,
+                    "line": 44,
                     "deprecated": false,
                     "deprecationMessage": ""
                 },
@@ -24289,7 +24338,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 32,
+                    "line": 39,
                     "deprecated": false,
                     "deprecationMessage": ""
                 }
@@ -24301,11 +24350,11 @@
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component } from '@angular/core';\nimport { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';\nimport { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';\nimport { NAME_VALIDATION } from '@app/constants/name-validation';\n\n@Component({\n    selector: 'app-signup-container',\n    templateUrl: './signup-container.component.html',\n    styleUrls: ['./signup-container.component.scss'],\n})\nexport class SignupContainerComponent {\n    signupForm: FormGroup;\n    arePasswordsShown: boolean = false;\n\n    constructor() {\n        this.signupForm = new FormGroup(\n            {\n                username: new FormControl('', [\n                    Validators.required,\n                    Validators.minLength(1),\n                    Validators.maxLength(USERNAME_MAX_LENGTH),\n                    Validators.pattern(NAME_VALIDATION.rule),\n                ]),\n                email: new FormControl('', [Validators.required, Validators.email]),\n                password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),\n                confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),\n            },\n            [matchValidator('password', 'confirmPassword')],\n        );\n    }\n\n    onSubmit(): void {\n        return;\n    }\n\n    isFormValid(): boolean {\n        return this.signupForm?.valid;\n    }\n\n    private fieldMatchValidator(): ValidatorFn {\n        return (inputValue: AbstractControl): ValidationErrors | null => {\n            const expectedValue = this.signupForm?.get('password')?.value;\n\n            return inputValue && expectedValue && inputValue.value !== expectedValue ? { mismatch: true } : null;\n        };\n    }\n}\n",
+            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';\nimport { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';\nimport { NAME_VALIDATION } from '@app/constants/name-validation';\n\n@Component({\n    selector: 'app-signup-container',\n    templateUrl: './signup-container.component.html',\n    styleUrls: ['./signup-container.component.scss'],\n})\nexport class SignupContainerComponent {\n    @Input() isEmailTaken: boolean = false;\n    @Input() isUsernameTaken: boolean = false;\n    @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();\n    @Output() checkUsernameUnicity: EventEmitter<string> = new EventEmitter();\n\n    signupForm: FormGroup;\n    arePasswordsShown: boolean = false;\n\n    private hasBeenSubmitted: boolean = false;\n\n    constructor() {\n        this.signupForm = new FormGroup(\n            {\n                username: new FormControl('', [\n                    Validators.required,\n                    Validators.minLength(1),\n                    Validators.maxLength(USERNAME_MAX_LENGTH),\n                    Validators.pattern(NAME_VALIDATION.rule),\n                ]),\n                email: new FormControl('', [Validators.required, Validators.email]),\n                password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),\n                confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),\n            },\n            [matchValidator('password', 'confirmPassword')],\n        );\n    }\n\n    onSubmit(): void {\n        this.hasBeenSubmitted = true;\n        return;\n    }\n\n    isFormValid(): boolean {\n        return !this.hasBeenSubmitted || this.signupForm?.valid;\n    }\n\n    private fieldMatchValidator(): ValidatorFn {\n        return (inputValue: AbstractControl): ValidationErrors | null => {\n            const expectedValue = this.signupForm?.get('password')?.value;\n\n            return inputValue && expectedValue && inputValue.value !== expectedValue ? { mismatch: true } : null;\n        };\n    }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": "@import '../../style/variables.scss';\n\n$border-radius: 6px;\n\n:host ::ng-deep {\n    span.mat-button-toggle-label-content {\n        line-height: 1em;\n        height: 100%;\n        width: 100%;\n        padding: 0;\n        border-radius: $border-radius;\n    }\n}\n\n::ng-deep .mat-tooltip {\n    font-size: small;\n}\n\n.signup-container {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n\n    max-width: 625px;\n    margin: 0 auto;\n\n    & > mat-card {\n        margin: 0 12px;\n    }\n\n    form {\n        mat-button-toggle-group,\n        mat-form-field {\n            width: 100%;\n        }\n\n        mat-button-toggle-group {\n            margin-bottom: 1.34375em;\n        }\n\n        mat-button-toggle-group {\n            display: grid;\n            grid-template-columns: repeat(2, 1fr);\n            gap: 12px;\n            border: none;\n            overflow: visible;\n\n            mat-button-toggle {\n                border-radius: $border-radius;\n                background: transparent;\n                border: none;\n                overflow: visible;\n\n                mat-card.content {\n                    background: white;\n                    border-radius: $border-radius;\n                    border: none;\n                    box-sizing: border-box;\n                    display: block;\n                    width: 100%;\n                    border: solid 1px rgb(236, 236, 236);\n                    padding: 8px;\n                }\n                p,\n                app-icon {\n                    margin: auto;\n                    line-height: 1em !important;\n                }\n\n                app-icon {\n                    font-size: 1.3em;\n                    margin-bottom: 0.3em;\n                    display: block;\n                }\n\n                p {\n                    font-size: 0.9em;\n                }\n\n                &.mat-button-toggle-checked {\n                    mat-card.content {\n                        background-color: rgba($primary, 0.15);\n                        border: solid 1px rgba($primary, 0.1);\n                        app-icon {\n                            color: $primary;\n                        }\n                    }\n                }\n\n                &.mat-button-toggle-disabled {\n                    mat-card.content {\n                        background-color: rgb(241, 241, 241);\n                        border-color: rgb(241, 241, 241);\n                        color: rgba(0, 0, 0, 0.459);\n                    }\n                }\n            }\n        }\n\n        mat-label.button-toggle-label {\n            display: block;\n            margin-bottom: 0.25em;\n        }\n\n        mat-form-field.margin-top {\n            margin-top: 1.34375em;\n        }\n\n        .alert {\n            color: red;\n            display: flex;\n        }\n\n        .alert-group {\n            margin: -1.34375em 0px calc(1.34375em / 2) 2px;\n            height: 100%;\n            color: red;\n        }\n    }\n\n    .buttons {\n        display: flex;\n        justify-content: flex-end;\n\n        button {\n            font-size: 1.2em;\n            padding: 6px 16px;\n        }\n    }\n}\n\n::ng-deep snack-bar-container.error {\n    background: lighten(tomato, 30%);\n    color: tomato;\n\n    button {\n        color: tomato;\n    }\n}\n",
+                    "data": "@import '../../style/variables.scss';\n\n$border-radius: 6px;\n\n:host ::ng-deep {\n    span.mat-button-toggle-label-content {\n        line-height: 1em;\n        height: 100%;\n        width: 100%;\n        padding: 0;\n        border-radius: $border-radius;\n    }\n}\n\n::ng-deep .mat-tooltip {\n    font-size: small;\n}\n\n.signup-container {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n\n    max-width: 625px;\n    margin: 0 auto;\n\n    & > mat-card {\n        margin: 0 12px;\n    }\n\n    form {\n        mat-button-toggle-group,\n        mat-form-field {\n            width: 100%;\n        }\n\n        mat-button-toggle-group {\n            margin-bottom: 1.34375em;\n        }\n\n        mat-button-toggle-group {\n            display: grid;\n            grid-template-columns: repeat(2, 1fr);\n            gap: 12px;\n            border: none;\n            overflow: visible;\n\n            mat-button-toggle {\n                border-radius: $border-radius;\n                background: transparent;\n                border: none;\n                overflow: visible;\n\n                mat-card.content {\n                    background: white;\n                    border-radius: $border-radius;\n                    border: none;\n                    box-sizing: border-box;\n                    display: block;\n                    width: 100%;\n                    border: solid 1px rgb(236, 236, 236);\n                    padding: 8px;\n                }\n                p,\n                app-icon {\n                    margin: auto;\n                    line-height: 1em !important;\n                }\n\n                app-icon {\n                    font-size: 1.3em;\n                    margin-bottom: 0.3em;\n                    display: block;\n                }\n\n                p {\n                    font-size: 0.9em;\n                }\n\n                &.mat-button-toggle-checked {\n                    mat-card.content {\n                        background-color: rgba($primary, 0.15);\n                        border: solid 1px rgba($primary, 0.1);\n                        app-icon {\n                            color: $primary;\n                        }\n                    }\n                }\n\n                &.mat-button-toggle-disabled {\n                    mat-card.content {\n                        background-color: rgb(241, 241, 241);\n                        border-color: rgb(241, 241, 241);\n                        color: rgba(0, 0, 0, 0.459);\n                    }\n                }\n            }\n        }\n\n        mat-label.button-toggle-label {\n            display: block;\n            margin-bottom: 0.25em;\n        }\n\n        mat-form-field.margin-top {\n            margin-top: 1.34375em;\n        }\n\n        .alert {\n            color: red;\n            display: flex;\n        }\n\n        .alert-group {\n            margin: -1.34375em 0px calc(1.34375em / 2) 2px;\n            height: 100%;\n            color: red;\n        }\n    }\n\n    .buttons {\n        display: flex;\n        justify-content: space-between;\n\n        button {\n            font-size: 1.2em;\n            padding: 6px 16px;\n        }\n    }\n}\n\n::ng-deep snack-bar-container.error {\n    background: lighten(tomato, 30%);\n    color: tomato;\n\n    button {\n        color: tomato;\n    }\n}\n",
                     "styleUrl": "./signup-container.component.scss"
                 }
             ],
@@ -24316,9 +24365,9 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "args": [],
-                "line": 13
+                "line": 20
             },
-            "templateData": "<div class=\"signup-container\">\n    <mat-card>\n        <form [formGroup]=\"signupForm\" (ngSubmit)=\"onSubmit()\">\n            <mat-form-field appearance=\"outline\" [formGroup]=\"signupForm\">\n                <mat-label><app-icon icon=\"envelope\"></app-icon> Courriel</mat-label>\n                <input\n                    matInput\n                    id=\"email\"\n                    type=\"email\"\n                    formControlName=\"email\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Votre nom doit être entre 1 et 40 caractères sans caractères spéciaux\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"user\"></app-icon> Pseudonyme</mat-label>\n                <input\n                    matInput\n                    id=\"username\"\n                    type=\"text\"\n                    formControlName=\"username\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Au moins huit caractères comprenant au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 symbole\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Mot de passe</mat-label>\n                <input\n                    matInput\n                    id=\"password\"\n                    type=\"password\"\n                    formControlName=\"password\"\n                    autocomplete=\"off\"\n                />\n                <mat-checkbox><app-icon icon=\"eye\" styling=\"solid\"></app-icon></mat-checkbox>\n            </mat-form-field>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Le mot de passe entré doit être le même que celui ci-dessus\"\n                matTooltipPosition=\"above\"\n                [matTooltipDisabled]=\"!signupForm.getError('mismatch')\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Confirmer </mat-label>\n                <input\n                    matInput\n                    id=\"confirmPassword\"\n                    type=\"password\"\n                    formControlName=\"confirmPassword\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n\n            <div class=\"buttons\">\n                <!-- <mat-checkbox matInput type=\"checkbox\" class=\"checkbox\" [value]=\"(arePasswordsShown)\"> -->\n                <div\n                    class=\"button-container\"\n                    matTooltip=\"Veuillez remplir tous les champs avec des données valides\"\n                    [matTooltipDisabled]=\"isFormValid()\"\n                    matTooltipPosition=\"above\"\n                >\n                    <button mat-flat-button color=\"primary\" type=\"submit\" id=\"create-game-button\" [disabled]=\"!isFormValid()\" cdkFocusInitial>\n                        Créer son compte\n                    </button>\n                </div>\n            </div>\n        </form>\n    </mat-card>\n</div>\n"
+            "templateData": "<div class=\"signup-container\">\n    <mat-card>\n        <form [formGroup]=\"signupForm\" (ngSubmit)=\"onSubmit()\">\n            <mat-form-field appearance=\"outline\" [formGroup]=\"signupForm\">\n                <mat-label><app-icon icon=\"envelope\"></app-icon> Courriel</mat-label>\n                <input\n                    matInput\n                    id=\"email\"\n                    type=\"email\"\n                    formControlName=\"email\"\n                    autocomplete=\"off\"\n                />\n                <p *ngIf=\"isEmailTaken\"> Ce courriel est déjà utilisé</p>\n            </mat-form-field>\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Votre nom doit être entre 1 et 40 caractères sans caractères spéciaux\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"user\"></app-icon> Pseudonyme</mat-label>\n                <input\n                    matInput\n                    id=\"username\"\n                    type=\"text\"\n                    formControlName=\"username\"\n                    autocomplete=\"off\"\n                />\n                <p *ngIf=\"isEmailTaken\"> Ce pseudonyme est déjà utilisé</p>\n            </mat-form-field>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Au moins huit caractères comprenant au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 symbole\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Mot de passe</mat-label>\n                <input\n                    matInput\n                    id=\"password\"\n                    [type]=\"arePasswordsShown ? 'text' : 'password'\"\n                    formControlName=\"password\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Le mot de passe entré doit être le même que celui ci-dessus\"\n                matTooltipPosition=\"above\"\n                [matTooltipDisabled]=\"!signupForm.getError('mismatch')\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Confirmer </mat-label>\n                <input\n                    matInput\n                    id=\"confirmPassword\"\n                    [type]=\"arePasswordsShown ? 'text' : 'password'\"\n                    formControlName=\"confirmPassword\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n\n            <div class=\"buttons\">\n                <mat-checkbox [(ngModel)]=\"arePasswordsShown\" [ngModelOptions]=\"{standalone: true}\"> Afficher les mots de passe</mat-checkbox>\n\n                <div\n                    class=\"button-container\"\n                    matTooltip=\"Veuillez remplir tous les champs avec des données valides\"\n                    [matTooltipDisabled]=\"isFormValid()\"\n                    matTooltipPosition=\"above\"\n                >\n                    <button mat-flat-button color=\"primary\" type=\"submit\" id=\"create-game-button\" [disabled]=\"!isFormValid()\" cdkFocusInitial>\n                        Créer son compte\n                    </button>\n                </div>\n            </div>\n        </form>\n    </mat-card>\n</div>\n"
         },
         {
             "name": "SignUpPageComponent",
@@ -28410,7 +28459,7 @@
                 "name": "SNACK_BAR_ERROR_DURATION",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/constants/dictionaries-component.ts",
+                "file": "src/app/constants/dictionaries-components.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -28420,7 +28469,7 @@
                 "name": "SNACK_BAR_ERROR_DURATION",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/constants/dictionaries-components.ts",
+                "file": "src/app/constants/dictionaries-component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -34536,7 +34585,7 @@
                 "linktype": "component",
                 "name": "SignupContainerComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/7",
+                "coverageCount": "0/12",
                 "status": "low"
             },
             {

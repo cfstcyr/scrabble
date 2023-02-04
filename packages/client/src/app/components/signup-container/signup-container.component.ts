@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';
 import { NAME_VALIDATION } from '@app/constants/name-validation';
@@ -9,6 +9,11 @@ import { NAME_VALIDATION } from '@app/constants/name-validation';
     styleUrls: ['./signup-container.component.scss'],
 })
 export class SignupContainerComponent {
+    @Input() isEmailTaken: boolean = false;
+    @Input() isUsernameTaken: boolean = false;
+    @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();
+    @Output() checkUsernameUnicity: EventEmitter<string> = new EventEmitter();
+
     signupForm: FormGroup;
     arePasswordsShown: boolean = false;
 

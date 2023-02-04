@@ -3,14 +3,10 @@
         <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="outline" [formGroup]="signupForm">
                 <mat-label><app-icon icon="envelope"></app-icon> Courriel</mat-label>
-                <input
-                    matInput
-                    id="email"
-                    type="email"
-                    formControlName="email"
-                    autocomplete="off"
-                />
+                <input matInput id="email" type="email" formControlName="email" autocomplete="off" />
             </mat-form-field>
+            <p class="field-error" *ngIf="isEmailTaken">Ce courriel est déjà utilisé</p>
+
             <mat-form-field
                 appearance="outline"
                 [formGroup]="signupForm"
@@ -18,14 +14,9 @@
                 matTooltipPosition="above"
             >
                 <mat-label><app-icon icon="user"></app-icon> Pseudonyme</mat-label>
-                <input
-                    matInput
-                    id="username"
-                    type="text"
-                    formControlName="username"
-                    autocomplete="off"
-                />
+                <input matInput id="username" type="text" formControlName="username" autocomplete="off" />
             </mat-form-field>
+            <p class="field-error" *ngIf="isUsernameTaken">Ce pseudonyme est déjà utilisé</p>
 
             <mat-form-field
                 appearance="outline"
@@ -34,14 +25,9 @@
                 matTooltipPosition="above"
             >
                 <mat-label><app-icon icon="lock"></app-icon> Mot de passe</mat-label>
-                <input
-                    matInput
-                    id="password"
-                    [type]="arePasswordsShown ? 'text' : 'password'"
-                    formControlName="password"
-                    autocomplete="off"
-                />
+                <input matInput id="password" [type]="arePasswordsShown ? 'text' : 'password'" formControlName="password" autocomplete="off" />
             </mat-form-field>
+
 
             <mat-form-field
                 appearance="outline"
@@ -60,8 +46,9 @@
                 />
             </mat-form-field>
 
+
             <div class="buttons">
-                <mat-checkbox [(ngModel)]="arePasswordsShown" [ngModelOptions]="{standalone: true}"> Afficher les mots de passe</mat-checkbox>
+                <mat-checkbox [(ngModel)]="arePasswordsShown" [ngModelOptions]="{ standalone: true }"> Afficher les mots de passe</mat-checkbox>
 
                 <div
                     class="button-container"
