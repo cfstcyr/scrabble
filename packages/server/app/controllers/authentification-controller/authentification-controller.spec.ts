@@ -94,8 +94,60 @@ describe('AuthentificationController', () => {
                     .expect(StatusCodes.FORBIDDEN);
             });
         });
-        it('validate should return 401', async () => {
-            return supertest(expressApp).get('api/authentification/validate').expect(StatusCodes.UNAUTHORIZED);
+        describe('POST /authentification/validate', () => {
+            it('validate should return 401', async () => {
+                return supertest(expressApp).get('/api/authentification/validate').expect(StatusCodes.UNAUTHORIZED);
+            });
+
+            it('validateUsername should return 403', async () => {
+                chai.spy.on(authentificationServiceStub, 'validateUsername', async () => {
+                    throw new HttpException('USER FOUND');
+                });
+
+                return supertest(expressApp).post('/api/authentification/validateUsername').send({ username: 'admin' }).expect(StatusCodes.FORBIDDEN);
+            });
+
+            it('validateUsername should return 200', async () => {
+                chai.spy.on(authentificationServiceStub, 'validateUsername', async () => 'OK');
+
+                return supertest(expressApp).post('/api/authentification/validateUsername').send({ username: 'XXXX' }).expect(StatusCodes.OK);
+            });
+
+            it('validateEmail should return 403', async () => {
+                chai.spy.on(authentificationServiceStub, 'validateEmail', async () => {
+                    throw new HttpException('USER FOUND');
+                });
+
+                return supertest(expressApp)
+                    .post('/api/authentification/validateEmail')
+                    .send({ email: 'admin@admin.com' })
+                    .expect(StatusCodes.FORBIDDEN);
+            });
+
+            it('validateEmail should return 200', async () => {
+                chai.spy.on(authentificationServiceStub, 'validateEmail', async () => true);
+
+                return supertest(expressApp).post('/api/authentification/validateEmail').send({ email: 'XXXX' }).expect(StatusCodes.OK);
+            });
+
+            it('validateEmail should return true in the body', async () => {
+                chai.spy.on(authentificationServiceStub, 'validateEmail', async () => true);
+                const body = (await supertest(expressApp).post('/api/authentification/validateEmail').send({ email: 'XXX@admin.com' })).body;
+
+                expect(body).to.deep.equal({
+                    isAvailable: true,
+                });
+            });
+
+            it('validateEmail should return false in the body', async () => {
+                chai.spy.on(authentificationServiceStub, 'validateEmail', async () => false);
+
+                expect(
+                    (await supertest(expressApp).post('/api/authentification/validateEmail').send({ email: 'admin@admin.com' })).body,
+                ).to.deep.equal({
+                    isAvailable: false,
+                });
+            });
         });
     });
 });

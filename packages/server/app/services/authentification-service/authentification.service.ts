@@ -34,6 +34,26 @@ export class AuthentificationService {
         });
     }
 
+    async validateUsername(username: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.table
+                .where('username', username)
+                .select('*')
+                .then((data) => resolve(data.length === 0))
+                .catch((err) => reject(err));
+        });
+    }
+
+    async validateEmail(email: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.table
+                .where('email', email)
+                .select('*')
+                .then((data) => resolve(data.length === 0))
+                .catch((err) => reject(err));
+        });
+    }
+
     private async insertUser(user: User): Promise<TokenData> {
         return new Promise((resolve, reject) => {
             this.table

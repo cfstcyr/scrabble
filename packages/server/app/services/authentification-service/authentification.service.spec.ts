@@ -52,15 +52,25 @@ describe('AuthentificationService', () => {
     });
 
     it('signUp should call createUser method from databaseService', () => {
-        const spy = chai.spy.on(databaseServiceStub, 'createUser', () => {});
+        const spy = chai.spy.on(databaseServiceStub, 'createUser', () => { });
         authentificationService.signUp(ADMIN_USER);
         expect(spy).to.have.been.called;
     });
 
     it('login should call getUser method from databaseService', () => {
-        const spy = chai.spy.on(databaseServiceStub, 'getUser', () => {});
+        const spy = chai.spy.on(databaseServiceStub, 'getUser', () => { });
         authentificationService.login(ADMIN_USER);
         expect(spy).to.have.been.called;
+    });
+
+    it('validateEmail should return true with a unused email', async () => {
+        const email = 'XXXXXX@admin.com';
+        expect(await authentificationService.validateEmail(email)).to.be.true;
+    });
+
+    it('validateUsername should return true with a unused username', async () => {
+        const username = 'XXXXXXX';
+        expect(await authentificationService.validateUsername(username)).to.be.true;
     });
 
     describe('login', () => {
