@@ -14,7 +14,7 @@ import { SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 import { AuthentificationService } from './authentification.service';
-import * as bcrypt from 'bcrypt';
+import * as bcryptjs from 'bcryptjs';
 
 const expect = chai.expect;
 chai.use(spies);
@@ -52,13 +52,13 @@ describe('AuthentificationService', () => {
     });
 
     it('signUp should call createUser method from databaseService', () => {
-        const spy = chai.spy.on(databaseServiceStub, 'createUser', () => {});
+        const spy = chai.spy.on(databaseServiceStub, 'createUser', () => { });
         authentificationService.signUp(ADMIN_USER);
         expect(spy).to.have.been.called;
     });
 
     it('login should call getUser method from databaseService', () => {
-        const spy = chai.spy.on(databaseServiceStub, 'getUser', () => {});
+        const spy = chai.spy.on(databaseServiceStub, 'getUser', () => { });
         authentificationService.login(ADMIN_USER);
         expect(spy).to.have.been.called;
     });
@@ -70,7 +70,7 @@ describe('AuthentificationService', () => {
                 const expectedAccessToken = 'ACCESS';
                 chai.spy.on(databaseServiceStub, 'getUser', () => ADMIN_USER);
                 chai.spy.on(authentificationService, 'generateAccessToken', () => expectedAccessToken);
-                chai.spy.on(bcrypt, 'compare', () => true);
+                chai.spy.on(bcryptjs, 'compare', () => true);
 
                 expect(authentificationService.login(ADMIN_USER)).to.eventually.equal(expectedAccessToken);
             });
@@ -79,7 +79,7 @@ describe('AuthentificationService', () => {
         describe('SAD PATH', () => {
             it('should NOT return access token on password match', async () => {
                 chai.spy.on(databaseServiceStub, 'getUser', () => ADMIN_USER);
-                chai.spy.on(bcrypt, 'compare', () => false);
+                chai.spy.on(bcryptjs, 'compare', () => false);
 
                 expect(authentificationService.login(ADMIN_USER)).to.eventually.not.exist;
             });
