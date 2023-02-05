@@ -125,6 +125,17 @@ class _LoginFormState extends State<LoginForm> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
+                                        builder: (context) =>
+                                            CreateAccountPage()));
+                              },
+                              child: Text('Se créer un compte'),
+                            ),
+                            SizedBox(width: 100),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
                                         builder: (context) => PrototypePage()));
                                 isButtonEnabled ? () => {login()} : null;
                               },
@@ -145,17 +156,6 @@ class _LoginFormState extends State<LoginForm> {
                                         fontSize: 15),
                               ),
                             ),
-                            SizedBox(width: 50),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            CreateAccountPage()));
-                              },
-                              child: Text('Se créer un compte'),
-                            )
                           ]),
                         )
                       ],
