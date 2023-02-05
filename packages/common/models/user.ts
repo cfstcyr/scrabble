@@ -3,8 +3,14 @@ export interface PublicUser {
   avatar: string;
 }
 
-export interface User extends PublicUser {
+export interface User {
+  idUser: number;
   email: string;
-  hash: string;
-  salt: string;
+  password: string;
+  username: string;
+}
+
+export interface Credentials {
+  email: string,
+  password: string
 }
