@@ -41,10 +41,6 @@ export class AuthentificationService {
             this.table
                 .returning('idUser')
                 .insert(user)
-                .onConflict('email')
-                .ignore()
-                .onConflict('username')
-                .ignore()
                 .then((data) => resolve(data[0] as unknown as TokenData))
                 .catch((err) => reject(err));
         });
