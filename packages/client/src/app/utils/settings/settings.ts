@@ -6,7 +6,11 @@ import { ValidatorSpec } from './validators';
 export interface Setting<T> {
     get: <K extends keyof T>(key: K) => T[K];
     set: <K extends keyof T>(key: K, value: NonNullable<T[K]>) => void;
-    pipe: <K extends keyof T>(key: K, ...callback: ((value: T[K]) => NonNullable<T[K]>)[]) => NonNullable<T[K]>;
+    pipe: <K extends keyof T>(
+        key: K,
+        callback0: (value: T[K]) => NonNullable<T[K]>,
+        ...callback: ((value: NonNullable<T[K]>) => NonNullable<T[K]>)[]
+    ) => NonNullable<T[K]>;
     has: <K extends keyof T>(key: K) => boolean;
     remove: <K extends keyof T>(key: K) => void;
     reset: () => void;
@@ -30,8 +34,12 @@ export function settings<T>(namespaceOrSpec: string | SettingsSpecs<T>, maybeSpe
         settingsStore.set(key, value);
     };
 
-    const pipe = <K extends keyof T>(key: K, ...callback: ((value: T[K]) => NonNullable<T[K]>)[]): NonNullable<T[K]> => {
-        const value = callback.reduce((v, f) => f(v), get(key)) as NonNullable<T[K]>;
+    const pipe = <K extends keyof T>(
+        key: K,
+        callback0: (value: T[K]) => NonNullable<T[K]>,
+        ...callback: ((value: NonNullable<T[K]>) => NonNullable<T[K]>)[]
+    ): NonNullable<T[K]> => {
+        const value = callback.reduce((v, f) => f(v), callback0(get(key))) as NonNullable<T[K]>;
         set(key, value);
         return value;
     };
