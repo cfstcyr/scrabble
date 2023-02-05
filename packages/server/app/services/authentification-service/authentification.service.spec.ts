@@ -14,7 +14,7 @@ import { SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 import { AuthentificationService } from './authentification.service';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 const expect = chai.expect;
 chai.use(spies);
