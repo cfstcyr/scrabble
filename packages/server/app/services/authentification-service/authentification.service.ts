@@ -14,14 +14,12 @@ export class AuthentificationService {
     async login(credentials: Credentials): Promise<string | void> {
         const user = await this.getUserByEmail(credentials.email);
         const match = await bcrypt.compare(credentials.password, user.password);
-        if (match) {
-            return this.generateAccessToken(user.idUser);
-        }
+        if (match) return this.generateAccessToken(user.idUser);
     }
 
     async signUp(user: User): Promise<string> {
         const hash = await bcrypt.hash(user.password, SALTROUNDS);
-        const data = (await this.insertUser({ ...user, password: hash })) as TokenData;
+        const data = await this.insertUser({ ...user, password: hash });
 
         return this.generateAccessToken(data.idUser);
     }
@@ -36,26 +34,12 @@ export class AuthentificationService {
         });
     }
 
-    async getUserById(idUser: number): Promise<User> {
-        return new Promise((resolve, reject) => {
-            this.table
-                .where('idUser', idUser)
-                .select('*')
-                .then((data) => resolve(data[0]))
-                .catch((err) => reject(err));
-        });
-    }
-
-    private async insertUser(user: User): Promise<{ idUser: number } | number> {
+    private async insertUser(user: User): Promise<TokenData> {
         return new Promise((resolve, reject) => {
             this.table
                 .returning('idUser')
                 .insert(user)
-                .onConflict('email')
-                .ignore()
-                .onConflict('username')
-                .ignore()
-                .then((data) => resolve(data[0]))
+                .then((data) => resolve(data[0] as unknown as TokenData))
                 .catch((err) => reject(err));
         });
     }

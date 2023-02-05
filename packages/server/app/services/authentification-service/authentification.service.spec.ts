@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
@@ -13,10 +14,13 @@ import { SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 import { AuthentificationService } from './authentification.service';
+import * as bcrypt from 'bcrypt';
 
 const expect = chai.expect;
 chai.use(spies);
 chai.use(chaiAsPromised);
+
+const ADMIN_USER: User = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: 1 };
 
 describe('AuthentificationService', () => {
     let testingUnit: ServicesTestingUnit;
@@ -35,6 +39,7 @@ describe('AuthentificationService', () => {
 
     afterEach(() => {
         testingUnit.restore();
+        chai.spy.restore();
     });
 
     it('should be defined', () => {
@@ -47,16 +52,37 @@ describe('AuthentificationService', () => {
     });
 
     it('signUp should call createUser method from databaseService', () => {
-        const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: 1 };
-        const spy = chai.spy.on(databaseServiceStub, 'createUser', () => { });
-        authentificationService.signUp(user);
+        const spy = chai.spy.on(databaseServiceStub, 'createUser', () => {});
+        authentificationService.signUp(ADMIN_USER);
         expect(spy).to.have.been.called;
     });
 
     it('login should call getUser method from databaseService', () => {
-        const user: User = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: 1 };
-        const spy = chai.spy.on(databaseServiceStub, 'getUser', () => { });
-        authentificationService.login(user);
+        const spy = chai.spy.on(databaseServiceStub, 'getUser', () => {});
+        authentificationService.login(ADMIN_USER);
         expect(spy).to.have.been.called;
+    });
+
+    describe('login', () => {
+
+        describe('HAPPY PATH', () => {
+            it('should return access token on password match', async () => {
+                const expectedAccessToken = 'ACCESS';
+                chai.spy.on(databaseServiceStub, 'getUser', () => ADMIN_USER);
+                chai.spy.on(authentificationService, 'generateAccessToken', () => expectedAccessToken);
+                chai.spy.on(bcrypt, 'compare', () => true);
+
+                expect(authentificationService.login(ADMIN_USER)).to.eventually.equal(expectedAccessToken);
+            });
+        });
+
+        describe('SAD PATH', () => {
+            it('should NOT return access token on password match', async () => {
+                chai.spy.on(databaseServiceStub, 'getUser', () => ADMIN_USER);
+                chai.spy.on(bcrypt, 'compare', () => false);
+
+                expect(authentificationService.login(ADMIN_USER)).to.eventually.not.exist;
+            });
+        });
     });
 });
