@@ -54,7 +54,7 @@ class _LoginFormState extends State<LoginForm> {
         SizedBox(height: 20),
         Padding(padding: EdgeInsets.only(top: 1.0)),
         Container(
-          height: 360,
+          height: 390,
           width: 580,
           decoration: BoxDecoration(
               border: Border.all(
@@ -170,7 +170,7 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Future<void> validateUsername() async {
+  validateUsername() {
     if (usernameHandler.controller.text.isEmpty) {
       setState(() {
         usernameHandler.errorMessage = USERNAME_EMPTY_FR;
