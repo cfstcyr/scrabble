@@ -40,6 +40,9 @@ export class SignupContainerComponent {
 
     onSubmit(): void {
         this.hasBeenSubmitted = true;
+
+        if (this.signupForm.invalid) return;
+
         const userCredentials: UserCredentials = {
             email: this.signupForm.get('email')?.value,
             username: this.signupForm.get('username')?.value,
@@ -54,10 +57,12 @@ export class SignupContainerComponent {
     }
 
     handleEmailLoseFocus(): void {
+        if (this.signupForm.get('email')?.invalid) return;
         this.checkEmailUnicity.next(this.signupForm.get('email')?.value);
     }
 
     handleUsernameLoseFocus(): void {
+        if (this.signupForm.get('username')?.invalid) return;
         this.checkUsernameUnicity.next(this.signupForm.get('username')?.value);
     }
 

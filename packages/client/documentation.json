@@ -11557,7 +11557,7 @@
         },
         {
             "name": "UserService",
-            "id": "injectable-UserService-d92069136df2081e1449ae8816e7f36c5e457a02ebaee5473893c8badac2e4ea43e350ef56648fc7f8d3bcb462d60ecce06fa8f1fbecba37b8e8f072da8d598c",
+            "id": "injectable-UserService-27b95a8d8123d77129a0f93113c56d39ad866d5fb0e0c3fdc5ec1a1ee6f964d6363c290c3708890ed4acc69f0a6a4694704029709643b154a09f0677784d656f",
             "file": "src/app/services/user-service/user.service.ts",
             "properties": [
                 {
@@ -11584,7 +11584,7 @@
                     "optional": false,
                     "returnType": "boolean",
                     "typeParameters": [],
-                    "line": 20,
+                    "line": 21,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "jsdoctags": [
@@ -11604,7 +11604,7 @@
             "deprecationMessage": "",
             "description": "",
             "rawdescription": "\n",
-            "sourceCode": "import { Injectable } from '@angular/core';\nimport { PublicUser } from '@common/models/user';\n\n@Injectable({\n    providedIn: 'root',\n})\nexport class UserService {\n    user: PublicUser;\n\n    constructor() {\n        // TODO: user real user\n        this.user = {\n            // eslint-disable-next-line @typescript-eslint/no-magic-numbers\n            username: `User ${Math.floor(Math.random() * 1000)}`,\n            // eslint-disable-next-line @typescript-eslint/no-magic-numbers\n            avatar: `https://placedog.net/${Math.floor(Math.random() * 20 + 50)}`,\n        };\n    }\n\n    isUser(u: PublicUser | string) {\n        return (typeof u === 'string' ? u : u.username) === this.user.username;\n    }\n}\n",
+            "sourceCode": "import { Injectable } from '@angular/core';\nimport { PublicUser } from '@common/models/user';\n\n@Injectable({\n    providedIn: 'root',\n})\nexport class UserService {\n    user: PublicUser;\n\n    constructor() {\n        // TODO: user real user\n        this.user = {\n            // eslint-disable-next-line @typescript-eslint/no-magic-numbers\n            username: `User ${Math.floor(Math.random() * 1000)}`,\n            // eslint-disable-next-line @typescript-eslint/no-magic-numbers\n            avatar: `https://placedog.net/${Math.floor(Math.random() * 20 + 50)}`,\n            email: 'test@test.com',\n        };\n    }\n\n    isUser(u: PublicUser | string) {\n        return (typeof u === 'string' ? u : u.username) === this.user.username;\n    }\n}\n",
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
@@ -24220,7 +24220,7 @@
         },
         {
             "name": "SignupContainerComponent",
-            "id": "component-SignupContainerComponent-f6a9bff282940c7c128cbaa85831934e910956706f1b3f3b8f058c6d5b40e77de885f70404c3a127c82271074c982c99a9c28c35eed85168f67821c157aaebcb",
+            "id": "component-SignupContainerComponent-38d7c024b8dccd11b61b558418bae5d3ab07379e316d5fc286756e19b17f62058fef9943f131a5d809427a8651d8857108aa66c3c49e760f8513d3d51a6a2825",
             "file": "src/app/components/signup-container/signup-container.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -24242,7 +24242,7 @@
                     "defaultValue": "false",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "line": 12,
+                    "line": 13,
                     "type": "boolean",
                     "decorators": []
                 },
@@ -24251,7 +24251,7 @@
                     "defaultValue": "false",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "line": 13,
+                    "line": 14,
                     "type": "boolean",
                     "decorators": []
                 }
@@ -24262,7 +24262,7 @@
                     "defaultValue": "new EventEmitter()",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "line": 14,
+                    "line": 15,
                     "type": "EventEmitter<string>"
                 },
                 {
@@ -24270,8 +24270,16 @@
                     "defaultValue": "new EventEmitter()",
                     "deprecated": false,
                     "deprecationMessage": "",
-                    "line": 15,
+                    "line": 16,
                     "type": "EventEmitter<string>"
+                },
+                {
+                    "name": "signup",
+                    "defaultValue": "new EventEmitter()",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 17,
+                    "type": "EventEmitter<UserCredentials>"
                 }
             ],
             "propertiesClass": [
@@ -24283,7 +24291,7 @@
                     "type": "boolean",
                     "optional": false,
                     "description": "",
-                    "line": 18
+                    "line": 20
                 },
                 {
                     "name": "hasBeenSubmitted",
@@ -24293,7 +24301,7 @@
                     "type": "boolean",
                     "optional": false,
                     "description": "",
-                    "line": 20,
+                    "line": 22,
                     "modifierKind": [
                         121
                     ]
@@ -24305,7 +24313,7 @@
                     "type": "FormGroup",
                     "optional": false,
                     "description": "",
-                    "line": 17
+                    "line": 19
                 }
             ],
             "methodsClass": [
@@ -24315,7 +24323,7 @@
                     "optional": false,
                     "returnType": "ValidatorFn",
                     "typeParameters": [],
-                    "line": 48,
+                    "line": 64,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -24323,12 +24331,32 @@
                     ]
                 },
                 {
+                    "name": "handleEmailLoseFocus",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 56,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "handleUsernameLoseFocus",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 60,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
                     "name": "isFormValid",
                     "args": [],
                     "optional": false,
                     "returnType": "boolean",
                     "typeParameters": [],
-                    "line": 44,
+                    "line": 52,
                     "deprecated": false,
                     "deprecationMessage": ""
                 },
@@ -24338,7 +24366,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 39,
+                    "line": 41,
                     "deprecated": false,
                     "deprecationMessage": ""
                 }
@@ -24350,11 +24378,11 @@
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';\nimport { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';\nimport { NAME_VALIDATION } from '@app/constants/name-validation';\n\n@Component({\n    selector: 'app-signup-container',\n    templateUrl: './signup-container.component.html',\n    styleUrls: ['./signup-container.component.scss'],\n})\nexport class SignupContainerComponent {\n    @Input() isEmailTaken: boolean = false;\n    @Input() isUsernameTaken: boolean = false;\n    @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();\n    @Output() checkUsernameUnicity: EventEmitter<string> = new EventEmitter();\n\n    signupForm: FormGroup;\n    arePasswordsShown: boolean = false;\n\n    private hasBeenSubmitted: boolean = false;\n\n    constructor() {\n        this.signupForm = new FormGroup(\n            {\n                username: new FormControl('', [\n                    Validators.required,\n                    Validators.minLength(1),\n                    Validators.maxLength(USERNAME_MAX_LENGTH),\n                    Validators.pattern(NAME_VALIDATION.rule),\n                ]),\n                email: new FormControl('', [Validators.required, Validators.email]),\n                password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),\n                confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),\n            },\n            [matchValidator('password', 'confirmPassword')],\n        );\n    }\n\n    onSubmit(): void {\n        this.hasBeenSubmitted = true;\n        return;\n    }\n\n    isFormValid(): boolean {\n        return !this.hasBeenSubmitted || this.signupForm?.valid;\n    }\n\n    private fieldMatchValidator(): ValidatorFn {\n        return (inputValue: AbstractControl): ValidationErrors | null => {\n            const expectedValue = this.signupForm?.get('password')?.value;\n\n            return inputValue && expectedValue && inputValue.value !== expectedValue ? { mismatch: true } : null;\n        };\n    }\n}\n",
+            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';\nimport { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';\nimport { NAME_VALIDATION } from '@app/constants/name-validation';\nimport { UserCredentials } from '@common/models/user';\n\n@Component({\n    selector: 'app-signup-container',\n    templateUrl: './signup-container.component.html',\n    styleUrls: ['./signup-container.component.scss'],\n})\nexport class SignupContainerComponent {\n    @Input() isEmailTaken: boolean = false;\n    @Input() isUsernameTaken: boolean = false;\n    @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();\n    @Output() checkUsernameUnicity: EventEmitter<string> = new EventEmitter();\n    @Output() signup: EventEmitter<UserCredentials> = new EventEmitter();\n\n    signupForm: FormGroup;\n    arePasswordsShown: boolean = false;\n\n    private hasBeenSubmitted: boolean = false;\n\n    constructor() {\n        this.signupForm = new FormGroup(\n            {\n                username: new FormControl('', [\n                    Validators.required,\n                    Validators.minLength(1),\n                    Validators.maxLength(USERNAME_MAX_LENGTH),\n                    Validators.pattern(NAME_VALIDATION.rule),\n                ]),\n                email: new FormControl('', [Validators.required, Validators.email]),\n                password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),\n                confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),\n            },\n            [matchValidator('password', 'confirmPassword')],\n        );\n    }\n\n    onSubmit(): void {\n        this.hasBeenSubmitted = true;\n        const userCredentials: UserCredentials = {\n            email: this.signupForm.get('email')?.value,\n            username: this.signupForm.get('username')?.value,\n            password: this.signupForm.get('password')?.value,\n        };\n\n        this.signup.next(userCredentials);\n    }\n\n    isFormValid(): boolean {\n        return !this.hasBeenSubmitted || this.signupForm?.valid;\n    }\n\n    handleEmailLoseFocus(): void {\n        this.checkEmailUnicity.next(this.signupForm.get('email')?.value);\n    }\n\n    handleUsernameLoseFocus(): void {\n        this.checkUsernameUnicity.next(this.signupForm.get('username')?.value);\n    }\n\n    private fieldMatchValidator(): ValidatorFn {\n        return (inputValue: AbstractControl): ValidationErrors | null => {\n            const expectedValue = this.signupForm?.get('password')?.value;\n\n            return inputValue && expectedValue && inputValue.value !== expectedValue ? { mismatch: true } : null;\n        };\n    }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": "@import '../../style/variables.scss';\n\n$border-radius: 6px;\n\n:host ::ng-deep {\n    span.mat-button-toggle-label-content {\n        line-height: 1em;\n        height: 100%;\n        width: 100%;\n        padding: 0;\n        border-radius: $border-radius;\n    }\n}\n\n::ng-deep .mat-tooltip {\n    font-size: small;\n}\n\n.signup-container {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n\n    max-width: 625px;\n    margin: 0 auto;\n\n    & > mat-card {\n        margin: 0 12px;\n    }\n\n    form {\n        mat-button-toggle-group,\n        mat-form-field {\n            width: 100%;\n        }\n\n        mat-button-toggle-group {\n            margin-bottom: 1.34375em;\n        }\n\n        mat-button-toggle-group {\n            display: grid;\n            grid-template-columns: repeat(2, 1fr);\n            gap: 12px;\n            border: none;\n            overflow: visible;\n\n            mat-button-toggle {\n                border-radius: $border-radius;\n                background: transparent;\n                border: none;\n                overflow: visible;\n\n                mat-card.content {\n                    background: white;\n                    border-radius: $border-radius;\n                    border: none;\n                    box-sizing: border-box;\n                    display: block;\n                    width: 100%;\n                    border: solid 1px rgb(236, 236, 236);\n                    padding: 8px;\n                }\n                p,\n                app-icon {\n                    margin: auto;\n                    line-height: 1em !important;\n                }\n\n                app-icon {\n                    font-size: 1.3em;\n                    margin-bottom: 0.3em;\n                    display: block;\n                }\n\n                p {\n                    font-size: 0.9em;\n                }\n\n                &.mat-button-toggle-checked {\n                    mat-card.content {\n                        background-color: rgba($primary, 0.15);\n                        border: solid 1px rgba($primary, 0.1);\n                        app-icon {\n                            color: $primary;\n                        }\n                    }\n                }\n\n                &.mat-button-toggle-disabled {\n                    mat-card.content {\n                        background-color: rgb(241, 241, 241);\n                        border-color: rgb(241, 241, 241);\n                        color: rgba(0, 0, 0, 0.459);\n                    }\n                }\n            }\n        }\n\n        mat-label.button-toggle-label {\n            display: block;\n            margin-bottom: 0.25em;\n        }\n\n        mat-form-field.margin-top {\n            margin-top: 1.34375em;\n        }\n\n        .alert {\n            color: red;\n            display: flex;\n        }\n\n        .alert-group {\n            margin: -1.34375em 0px calc(1.34375em / 2) 2px;\n            height: 100%;\n            color: red;\n        }\n    }\n\n    .buttons {\n        display: flex;\n        justify-content: space-between;\n\n        button {\n            font-size: 1.2em;\n            padding: 6px 16px;\n        }\n    }\n}\n\n::ng-deep snack-bar-container.error {\n    background: lighten(tomato, 30%);\n    color: tomato;\n\n    button {\n        color: tomato;\n    }\n}\n",
+                    "data": "@import '../../style/variables.scss';\n\n$border-radius: 6px;\n\n::ng-deep .mat-tooltip {\n    font-size: small;\n}\n\n.signup-container {\n    max-width: 625px;\n    width: 100%;\n    margin: 0 auto;\n\n    & > mat-card {\n        margin: 0 12px;\n    }\n\n    form {\n        \n        mat-form-field {\n            width: 100%;\n        }\n\n        .field-error {\n            margin-top: -1.5em;\n            padding-left: 0.25em;\n            color: tomato;\n            font-size: small;\n        }\n    }\n\n    .buttons {\n        display: flex;\n        justify-content: space-between;\n\n        button {\n            font-size: 1.2em;\n            padding: 6px 16px;\n        }\n    }\n}\n",
                     "styleUrl": "./signup-container.component.scss"
                 }
             ],
@@ -24365,9 +24393,9 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "args": [],
-                "line": 20
+                "line": 22
             },
-            "templateData": "<div class=\"signup-container\">\n    <mat-card>\n        <form [formGroup]=\"signupForm\" (ngSubmit)=\"onSubmit()\">\n            <mat-form-field appearance=\"outline\" [formGroup]=\"signupForm\">\n                <mat-label><app-icon icon=\"envelope\"></app-icon> Courriel</mat-label>\n                <input\n                    matInput\n                    id=\"email\"\n                    type=\"email\"\n                    formControlName=\"email\"\n                    autocomplete=\"off\"\n                />\n                <p *ngIf=\"isEmailTaken\"> Ce courriel est déjà utilisé</p>\n            </mat-form-field>\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Votre nom doit être entre 1 et 40 caractères sans caractères spéciaux\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"user\"></app-icon> Pseudonyme</mat-label>\n                <input\n                    matInput\n                    id=\"username\"\n                    type=\"text\"\n                    formControlName=\"username\"\n                    autocomplete=\"off\"\n                />\n                <p *ngIf=\"isEmailTaken\"> Ce pseudonyme est déjà utilisé</p>\n            </mat-form-field>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Au moins huit caractères comprenant au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 symbole\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Mot de passe</mat-label>\n                <input\n                    matInput\n                    id=\"password\"\n                    [type]=\"arePasswordsShown ? 'text' : 'password'\"\n                    formControlName=\"password\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Le mot de passe entré doit être le même que celui ci-dessus\"\n                matTooltipPosition=\"above\"\n                [matTooltipDisabled]=\"!signupForm.getError('mismatch')\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Confirmer </mat-label>\n                <input\n                    matInput\n                    id=\"confirmPassword\"\n                    [type]=\"arePasswordsShown ? 'text' : 'password'\"\n                    formControlName=\"confirmPassword\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n\n            <div class=\"buttons\">\n                <mat-checkbox [(ngModel)]=\"arePasswordsShown\" [ngModelOptions]=\"{standalone: true}\"> Afficher les mots de passe</mat-checkbox>\n\n                <div\n                    class=\"button-container\"\n                    matTooltip=\"Veuillez remplir tous les champs avec des données valides\"\n                    [matTooltipDisabled]=\"isFormValid()\"\n                    matTooltipPosition=\"above\"\n                >\n                    <button mat-flat-button color=\"primary\" type=\"submit\" id=\"create-game-button\" [disabled]=\"!isFormValid()\" cdkFocusInitial>\n                        Créer son compte\n                    </button>\n                </div>\n            </div>\n        </form>\n    </mat-card>\n</div>\n"
+            "templateData": "<div class=\"signup-container\">\n    <mat-card>\n        <form [formGroup]=\"signupForm\" (ngSubmit)=\"onSubmit()\">\n            <mat-form-field appearance=\"outline\" [formGroup]=\"signupForm\">\n                <mat-label><app-icon icon=\"envelope\"></app-icon> Courriel</mat-label>\n                <input matInput id=\"email\" type=\"email\" formControlName=\"email\" autocomplete=\"off\" (blur)=\"handleEmailLoseFocus()\"/>\n            </mat-form-field>\n            <p class=\"field-error\" *ngIf=\"isEmailTaken\">Ce courriel est déjà utilisé</p>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Votre nom doit être entre 1 et 40 caractères sans caractères spéciaux\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"user\"></app-icon> Pseudonyme</mat-label>\n                <input matInput id=\"username\" type=\"text\" formControlName=\"username\" autocomplete=\"off\" (blur)=\"handleUsernameLoseFocus()\"/>\n            </mat-form-field>\n            <p class=\"field-error\" *ngIf=\"isUsernameTaken\">Ce pseudonyme est déjà utilisé</p>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Au moins huit caractères comprenant au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 symbole\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Mot de passe</mat-label>\n                <input matInput id=\"password\" [type]=\"arePasswordsShown ? 'text' : 'password'\" formControlName=\"password\" autocomplete=\"off\" />\n            </mat-form-field>\n\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Le mot de passe entré doit être le même que celui ci-dessus\"\n                matTooltipPosition=\"above\"\n                [matTooltipDisabled]=\"!signupForm.getError('mismatch')\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Confirmer </mat-label>\n                <input\n                    matInput\n                    id=\"confirmPassword\"\n                    [type]=\"arePasswordsShown ? 'text' : 'password'\"\n                    formControlName=\"confirmPassword\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n\n\n            <div class=\"buttons\">\n                <mat-checkbox [(ngModel)]=\"arePasswordsShown\" [ngModelOptions]=\"{ standalone: true }\" color=\"primary\"> Afficher les mots de passe</mat-checkbox>\n\n                <div\n                    class=\"button-container\"\n                    matTooltip=\"Veuillez remplir tous les champs avec des données valides\"\n                    [matTooltipDisabled]=\"isFormValid()\"\n                    matTooltipPosition=\"above\"\n                >\n                    <button mat-flat-button color=\"primary\" type=\"submit\" id=\"create-game-button\" [disabled]=\"!isFormValid()\" cdkFocusInitial>\n                        Créer son compte\n                    </button>\n                </div>\n            </div>\n        </form>\n    </mat-card>\n</div>\n"
         },
         {
             "name": "SignUpPageComponent",
@@ -24411,7 +24439,7 @@
         },
         {
             "name": "SignupWrapperComponent",
-            "id": "component-SignupWrapperComponent-574ae364ea5eec8426950a59af46ed330654f3cac305e57309ee78f0226dea5f51c8a5f8740e07556b159b86b703477d412e7040a2b01420162761201756a232",
+            "id": "component-SignupWrapperComponent-4ac07a929076603d0709e05457b31e9679ca985e18952f5844e60a2a2c06db5b435faf3204442d79284352209f4811bb5485492df669800ade6b17ca383e933f",
             "file": "src/app/wrappers/signup-wrapper/signup-wrapper.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -24429,10 +24457,87 @@
             "viewProviders": [],
             "inputsClass": [],
             "outputsClass": [],
-            "propertiesClass": [],
+            "propertiesClass": [
+                {
+                    "name": "isEmailTaken",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 10
+                },
+                {
+                    "name": "isUsernameTaken",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 11
+                }
+            ],
             "methodsClass": [
                 {
-                    "name": "signup",
+                    "name": "handleCheckEmailUnicity",
+                    "args": [
+                        {
+                            "name": "email",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 19,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "email",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "handleCheckUsernameUnicity",
+                    "args": [
+                        {
+                            "name": "username",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 25,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "username",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "handleSignup",
                     "args": [
                         {
                             "name": "usercredentials",
@@ -24444,7 +24549,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 11,
+                    "line": 13,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "jsdoctags": [
@@ -24467,7 +24572,7 @@
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component } from '@angular/core';\nimport { UserCredentials } from '@common/models/user';\n\n@Component({\n    selector: 'app-signup-wrapper',\n    templateUrl: './signup-wrapper.component.html',\n    styleUrls: ['./signup-wrapper.component.scss'],\n})\nexport class SignupWrapperComponent {\n    // eslint-disable-next-line no-unused-vars\n    signup(usercredentials: UserCredentials): void {\n        // TODO: Add call to AuthentificationService\n    }\n}\n",
+            "sourceCode": "import { Component } from '@angular/core';\nimport { UserCredentials } from '@common/models/user';\n\n@Component({\n    selector: 'app-signup-wrapper',\n    templateUrl: './signup-wrapper.component.html',\n    styleUrls: ['./signup-wrapper.component.scss'],\n})\nexport class SignupWrapperComponent {\n    isEmailTaken: boolean = false;\n    isUsernameTaken: boolean = false;\n\n    handleSignup(usercredentials: UserCredentials): void {\n        // eslint-disable-next-line no-console\n        console.log(usercredentials);\n        // TODO: Add call to AuthentificationService\n    }\n\n    handleCheckEmailUnicity(email: string): void {\n        // eslint-disable-next-line no-console\n        console.log(email);\n        // TODO: Add handle call to backend\n    }\n\n    handleCheckUsernameUnicity(username: string): void {\n        // eslint-disable-next-line no-console\n        console.log(username);\n        // TODO: Add handle call to backend\n    }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
@@ -24476,7 +24581,7 @@
                 }
             ],
             "stylesData": "",
-            "templateData": "<app-signup-container></app-signup-container>  \n"
+            "templateData": "<app-signup-container\n    [isEmailTaken]=\"isEmailTaken\"\n    [isUsernameTaken]=\"isUsernameTaken\"\n    (checkEmailUnicity)=\"handleCheckEmailUnicity($event)\"\n    (checkUsernameUnicity)=\"handleCheckUsernameUnicity($event)\"\n    (signup)=\"handleSignup($event)\"\n></app-signup-container>\n"
         },
         {
             "name": "SquareComponent",
@@ -26219,13 +26324,13 @@
         },
         {
             "name": "AppModule",
-            "id": "module-AppModule-267340fc29c83734653a4bae4f9f7fb6ba19768dde3e27523c59256d7a40f83f7b4a621f23a1fcbfb3ed92a3224b5a64baa84e0a4df562a465004cc0e01616f2",
+            "id": "module-AppModule-e10feb65271954df6c03f3bae30c537707abdbaba952428c0514a82620864a07f2c09359e72d846dc0f88f5542740a93fcfd46c8106a32733362d0e334e0da46",
             "description": "<p>Main module that is used in main.ts.\nAll automatically generated components will appear in this module.\nPlease do not move this module in the module folder.\nOtherwise Angular Cli will not know in which module to put new component</p>\n",
             "deprecationMessage": "",
             "deprecated": false,
             "file": "src/app/app.module.ts",
             "methods": [],
-            "sourceCode": "import { ScrollingModule } from '@angular/cdk/scrolling';\nimport { registerLocaleData } from '@angular/common';\nimport { HttpClientModule } from '@angular/common/http';\nimport localeFr from '@angular/common/locales/fr';\nimport { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';\nimport { FormsModule, ReactiveFormsModule } from '@angular/forms';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { BrowserAnimationsModule } from '@angular/platform-browser/animations';\nimport { BoardComponent } from '@app/components/board/board.component';\nimport { SquareComponent } from '@app/components/square/square.component';\nimport { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';\nimport { TileComponent } from '@app/components/tile/tile.component';\nimport { AppRoutingModule } from '@app/modules/app-routing.module';\nimport { AppMaterialModule } from '@app/modules/material.module';\nimport { AppComponent } from '@app/pages/app/app.component';\nimport { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';\nimport { GamePageComponent } from '@app/pages/game-page/game-page.component';\nimport { HomePageComponent } from '@app/pages/home-page/home-page.component';\nimport { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';\nimport { AdminDictionariesComponent } from './components/admin-dictionaries-component/admin-dictionaries.component';\nimport { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';\nimport { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';\nimport { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';\nimport { ChatBoxComponent } from './components/chatbox/chatbox.component';\nimport { CommunicationBoxComponent } from './components/communication-box/communication-box.component';\nimport { ConvertDialogComponent } from './components/convert-dialog/convert-dialog.component';\nimport { CreateVirtualPlayerComponent } from './components/create-virtual-player-dialog/create-virtual-player-dialog.component';\nimport { DefaultDialogComponent } from './components/default-dialog/default-dialog.component';\nimport { DeleteDictionaryDialogComponent } from './components/delete-dictionary-dialog/delete-dictionary-dialog.component';\nimport { DeleteVirtualPlayerDialogComponent } from './components/delete-virtual-player-dialog/delete-virtual-player-dialog.component';\nimport { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';\nimport { IconComponent } from './components/icon/icon.component';\nimport { InformationBoxComponent } from './components/information-box/information-box.component';\nimport { LobbyInfoComponent } from './components/lobby-info/lobby-info.component';\nimport { ModifyDictionaryComponent } from './components/modify-dictionary-dialog/modify-dictionary-dialog.component';\nimport { NameFieldComponent } from './components/name-field/name-field.component';\nimport { ObjectiveBoxComponent } from './components/objective-box/objective-box.component';\nimport { ObjectiveComponent } from './components/objective/objective.component';\nimport { PageHeaderComponent } from './components/page-header/page-header.component';\nimport { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';\nimport { UpdateVirtualPlayerComponent } from './components/update-virtual-player-dialog/update-virtual-player-dialog.component';\nimport { UploadDictionaryComponent } from './components/upload-dictionary/upload-dictionary.component';\nimport { AdminPageComponent } from './pages/admin-page/admin-page.component';\nimport { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';\nimport { HighScoresPageComponent } from './pages/high-scores-page/high-scores-page.component';\nimport { LoadingPageComponent } from './pages/loading-page/loading-page.component';\nimport { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';\nimport { DurationPipe } from './pipes/duration/duration.pipe';\nimport { InitializerService } from './services/initializer-service/initializer.service';\nimport { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';\nimport { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';\nimport { IconButtonComponent } from './components/icon-button/icon-button.component';\nimport { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';\nimport { AlertComponent } from './components/alert/alert.component';\n\nregisterLocaleData(localeFr);\n\n/**\n * Main module that is used in main.ts.\n * All automatically generated components will appear in this module.\n * Please do not move this module in the module folder.\n * Otherwise Angular Cli will not know in which module to put new component\n */\n@NgModule({\n    declarations: [\n        AppComponent,\n        GamePageComponent,\n        HomePageComponent,\n        SquareComponent,\n        TileComponent,\n        InformationBoxComponent,\n        CommunicationBoxComponent,\n        BoardComponent,\n        TileRackComponent,\n        LobbyPageComponent,\n        LobbyInfoComponent,\n        CreateWaitingPageComponent,\n        JoinWaitingPageComponent,\n        GameCreationPageComponent,\n        DefaultDialogComponent,\n        IconComponent,\n        NameFieldComponent,\n        TimerSelectionComponent,\n        PageHeaderComponent,\n        HighScoresPageComponent,\n        HighScoreBoxComponent,\n        ConvertDialogComponent,\n        AdminPageComponent,\n        AdminVirtualPlayersComponent,\n        CreateVirtualPlayerComponent,\n        UpdateVirtualPlayerComponent,\n        DeleteVirtualPlayerDialogComponent,\n        AdminDictionariesComponent,\n        ModifyDictionaryComponent,\n        UploadDictionaryComponent,\n        DeleteDictionaryDialogComponent,\n        AdminHighScoresComponent,\n        AdminGameHistoryComponent,\n        DurationPipe,\n        ObjectiveComponent,\n        ObjectiveBoxComponent,\n        LoadingPageComponent,\n        ChatBoxComponent,\n        ChatboxContainerComponent,\n        ChatboxMessageComponent,\n        IconButtonComponent,\n        ChatboxWrapperComponent,\n        AlertComponent,\n    ],\n    imports: [\n        AppMaterialModule,\n        AppRoutingModule,\n        BrowserAnimationsModule,\n        BrowserModule,\n        FormsModule,\n        ReactiveFormsModule,\n        HttpClientModule,\n        ScrollingModule,\n    ],\n    providers: [\n        InitializerService,\n        {\n            provide: APP_INITIALIZER,\n            useFactory: (initializer: InitializerService) => () => initializer.initialize(),\n            deps: [InitializerService],\n            multi: true,\n        },\n        {\n            provide: LOCALE_ID,\n            useValue: 'fr-CA',\n        },\n    ],\n    bootstrap: [AppComponent],\n})\nexport class AppModule {}\n",
+            "sourceCode": "import { ScrollingModule } from '@angular/cdk/scrolling';\nimport { registerLocaleData } from '@angular/common';\nimport { HttpClientModule } from '@angular/common/http';\nimport localeFr from '@angular/common/locales/fr';\nimport { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';\nimport { FormsModule, ReactiveFormsModule } from '@angular/forms';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { BrowserAnimationsModule } from '@angular/platform-browser/animations';\nimport { BoardComponent } from '@app/components/board/board.component';\nimport { SquareComponent } from '@app/components/square/square.component';\nimport { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';\nimport { TileComponent } from '@app/components/tile/tile.component';\nimport { AppRoutingModule } from '@app/modules/app-routing.module';\nimport { AppMaterialModule } from '@app/modules/material.module';\nimport { AppComponent } from '@app/pages/app/app.component';\nimport { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';\nimport { GamePageComponent } from '@app/pages/game-page/game-page.component';\nimport { HomePageComponent } from '@app/pages/home-page/home-page.component';\nimport { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';\nimport { AdminDictionariesComponent } from './components/admin-dictionaries-component/admin-dictionaries.component';\nimport { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';\nimport { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';\nimport { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';\nimport { ChatBoxComponent } from './components/chatbox/chatbox.component';\nimport { CommunicationBoxComponent } from './components/communication-box/communication-box.component';\nimport { ConvertDialogComponent } from './components/convert-dialog/convert-dialog.component';\nimport { CreateVirtualPlayerComponent } from './components/create-virtual-player-dialog/create-virtual-player-dialog.component';\nimport { DefaultDialogComponent } from './components/default-dialog/default-dialog.component';\nimport { DeleteDictionaryDialogComponent } from './components/delete-dictionary-dialog/delete-dictionary-dialog.component';\nimport { DeleteVirtualPlayerDialogComponent } from './components/delete-virtual-player-dialog/delete-virtual-player-dialog.component';\nimport { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';\nimport { IconComponent } from './components/icon/icon.component';\nimport { InformationBoxComponent } from './components/information-box/information-box.component';\nimport { LobbyInfoComponent } from './components/lobby-info/lobby-info.component';\nimport { ModifyDictionaryComponent } from './components/modify-dictionary-dialog/modify-dictionary-dialog.component';\nimport { NameFieldComponent } from './components/name-field/name-field.component';\nimport { ObjectiveBoxComponent } from './components/objective-box/objective-box.component';\nimport { ObjectiveComponent } from './components/objective/objective.component';\nimport { PageHeaderComponent } from './components/page-header/page-header.component';\nimport { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';\nimport { UpdateVirtualPlayerComponent } from './components/update-virtual-player-dialog/update-virtual-player-dialog.component';\nimport { UploadDictionaryComponent } from './components/upload-dictionary/upload-dictionary.component';\nimport { AdminPageComponent } from './pages/admin-page/admin-page.component';\nimport { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';\nimport { HighScoresPageComponent } from './pages/high-scores-page/high-scores-page.component';\nimport { LoadingPageComponent } from './pages/loading-page/loading-page.component';\nimport { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';\nimport { DurationPipe } from './pipes/duration/duration.pipe';\nimport { InitializerService } from './services/initializer-service/initializer.service';\nimport { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';\nimport { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';\nimport { IconButtonComponent } from './components/icon-button/icon-button.component';\nimport { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';\nimport { AlertComponent } from './components/alert/alert.component';\nimport { SignUpPageComponent } from './pages/signup-page/signup-page.component';\nimport { SignupWrapperComponent } from './wrappers/signup-wrapper/signup-wrapper.component';\nimport { SignupContainerComponent } from './components/signup-container/signup-container.component';\n\nregisterLocaleData(localeFr);\n\n/**\n * Main module that is used in main.ts.\n * All automatically generated components will appear in this module.\n * Please do not move this module in the module folder.\n * Otherwise Angular Cli will not know in which module to put new component\n */\n@NgModule({\n    declarations: [\n        AppComponent,\n        GamePageComponent,\n        HomePageComponent,\n        SignUpPageComponent,\n        SquareComponent,\n        TileComponent,\n        InformationBoxComponent,\n        CommunicationBoxComponent,\n        BoardComponent,\n        TileRackComponent,\n        LobbyPageComponent,\n        LobbyInfoComponent,\n        CreateWaitingPageComponent,\n        JoinWaitingPageComponent,\n        GameCreationPageComponent,\n        DefaultDialogComponent,\n        IconComponent,\n        NameFieldComponent,\n        TimerSelectionComponent,\n        PageHeaderComponent,\n        HighScoresPageComponent,\n        HighScoreBoxComponent,\n        ConvertDialogComponent,\n        AdminPageComponent,\n        AdminVirtualPlayersComponent,\n        CreateVirtualPlayerComponent,\n        UpdateVirtualPlayerComponent,\n        DeleteVirtualPlayerDialogComponent,\n        AdminDictionariesComponent,\n        ModifyDictionaryComponent,\n        UploadDictionaryComponent,\n        DeleteDictionaryDialogComponent,\n        AdminHighScoresComponent,\n        AdminGameHistoryComponent,\n        DurationPipe,\n        ObjectiveComponent,\n        ObjectiveBoxComponent,\n        LoadingPageComponent,\n        ChatBoxComponent,\n        ChatboxContainerComponent,\n        ChatboxMessageComponent,\n        IconButtonComponent,\n        ChatboxWrapperComponent,\n        AlertComponent,\n        SignupWrapperComponent,\n        SignupContainerComponent,\n    ],\n    imports: [\n        AppMaterialModule,\n        AppRoutingModule,\n        BrowserAnimationsModule,\n        BrowserModule,\n        FormsModule,\n        ReactiveFormsModule,\n        HttpClientModule,\n        ScrollingModule,\n    ],\n    providers: [\n        InitializerService,\n        {\n            provide: APP_INITIALIZER,\n            useFactory: (initializer: InitializerService) => () => initializer.initialize(),\n            deps: [InitializerService],\n            multi: true,\n        },\n        {\n            provide: LOCALE_ID,\n            useValue: 'fr-CA',\n        },\n    ],\n    bootstrap: [AppComponent],\n})\nexport class AppModule {}\n",
             "children": [
                 {
                     "type": "providers",
@@ -26654,7 +26759,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "ClientChannel[]",
-                "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        canQuit: true,\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50' },\n                content: 'Bonjour!',\n                date: new Date(),\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        canQuit: true,\n        messages: [],\n    },\n]"
+                "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        canQuit: true,\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50', email: '' },\n                content: 'Bonjour!',\n                date: new Date(),\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        canQuit: true,\n        messages: [],\n    },\n]"
             },
             {
                 "name": "CODE_HTML_TAG",
@@ -27300,21 +27405,21 @@
                 "name": "environment",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/environments/environment.prod.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "object",
-                "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
-            },
-            {
-                "name": "environment",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "src/environments/environment.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "object",
                 "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
+            },
+            {
+                "name": "environment",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/environments/environment.prod.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "object",
+                "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
             },
             {
                 "name": "ERROR_SNACK_BAR_CONFIG",
@@ -28280,7 +28385,7 @@
                 "name": "primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
+                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
@@ -28459,7 +28564,7 @@
                 "name": "SNACK_BAR_ERROR_DURATION",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/constants/dictionaries-components.ts",
+                "file": "src/app/constants/dictionaries-component.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -28469,7 +28574,7 @@
                 "name": "SNACK_BAR_ERROR_DURATION",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/constants/dictionaries-component.ts",
+                "file": "src/app/constants/dictionaries-components.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -28619,11 +28724,11 @@
                 "name": "template",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
+                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Story<ChatBoxComponent>",
-                "defaultValue": "(args: ChatBoxComponent) => ({\n    props: args,\n})"
+                "type": "Story<ChatboxMessageComponent>",
+                "defaultValue": "(args: ChatboxMessageComponent) => ({\n    props: args,\n})"
             },
             {
                 "name": "template",
@@ -30918,7 +31023,7 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "ClientChannel[]",
-                    "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        canQuit: true,\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50' },\n                content: 'Bonjour!',\n                date: new Date(),\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        canQuit: true,\n        messages: [],\n    },\n]"
+                    "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        canQuit: true,\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50', email: '' },\n                content: 'Bonjour!',\n                date: new Date(),\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        canQuit: true,\n        messages: [],\n    },\n]"
                 },
                 {
                     "name": "primary",
@@ -31726,18 +31831,6 @@
                     "defaultValue": "(args: ChatboxMessageComponent) => ({\n    props: args,\n})"
                 }
             ],
-            "src/environments/environment.prod.ts": [
-                {
-                    "name": "environment",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/environments/environment.prod.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "object",
-                    "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
-                }
-            ],
             "src/environments/environment.ts": [
                 {
                     "name": "environment",
@@ -31748,6 +31841,18 @@
                     "deprecationMessage": "",
                     "type": "object",
                     "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
+                }
+            ],
+            "src/environments/environment.prod.ts": [
+                {
+                    "name": "environment",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/environments/environment.prod.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "object",
+                    "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
                 }
             ],
             "src/app/constants/fun-facts-scrabble-constants.ts": [
@@ -32293,6 +32398,28 @@
                 }
             ],
             "src/app/components/icon/icon.component.stories.ts": [
+                {
+                    "name": "primary",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/icon/icon.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "template.bind({})"
+                },
+                {
+                    "name": "template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/icon/icon.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story<IconComponent>",
+                    "defaultValue": "(args: IconComponent) => ({\n    props: args,\n})"
+                }
+            ],
+            "src/app/components/signup-container/signup-container.component.stories.ts": [
                 {
                     "name": "primary",
                     "ctype": "miscellaneous",
@@ -34563,7 +34690,7 @@
                 "linktype": "component",
                 "name": "SignupContainerComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/12",
+                "coverageCount": "0/15",
                 "status": "low"
             },
             {
@@ -34656,6 +34783,36 @@
                 "name": "UploadEvent",
                 "coveragePercent": 0,
                 "coverageCount": "0/2",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/constants/authentification-constants.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "matchValidator",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/constants/authentification-constants.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "PASSWORD_REGEX",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/constants/authentification-constants.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "USERNAME_MAX_LENGTH",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
                 "status": "low"
             },
             {
@@ -37225,6 +37382,15 @@
                 "name": "ChatboxWrapperComponent",
                 "coveragePercent": 0,
                 "coverageCount": "0/8",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/wrappers/signup-wrapper/signup-wrapper.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "SignupWrapperComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/6",
                 "status": "low"
             },
             {
