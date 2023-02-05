@@ -9,14 +9,12 @@ import { Service } from 'typedi';
 
 @Service()
 export class AuthentificationService {
-    constructor(private databaseService: DatabaseService) {}
+    constructor(private databaseService: DatabaseService) { }
 
     async login(credentials: Credentials): Promise<string | void> {
         const user = await this.getUserByEmail(credentials.email);
         const match = await bcrypt.compare(credentials.password, user.password);
-        if (match) {
-            return this.generateAccessToken(user.idUser);
-        }
+        if (match) return this.generateAccessToken(user.idUser);
     }
 
     async signUp(user: User): Promise<string> {
