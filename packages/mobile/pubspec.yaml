@@ -41,6 +41,12 @@ dependencies:
     get_it: ^7.2.0
     email_validator: ^2.1.17
     flutter_dotenv: ^5.0.2
+    flutter_chat_ui: ^1.6.6
+    file_picker: ^5.2.5
+    path_provider: ^2.0.12
+    open_filex: ^4.3.2
+    uuid: ^3.0.7
+    image_picker: ^0.8.6+1
 
 dev_dependencies:
     flutter_test:
