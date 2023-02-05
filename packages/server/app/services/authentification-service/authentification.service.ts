@@ -3,7 +3,7 @@ import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds'
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
 import { UserCredentials, UserDatabase } from '@common/models/user';
-import * as bcrypt from 'bcrypt';
+import * as bcryptjs from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { Service } from 'typedi';
 
@@ -13,12 +13,12 @@ export class AuthentificationService {
 
     async login(credentials: UserCredentials): Promise<string | void> {
         const user = await this.getUserByEmail(credentials.email);
-        const match = await bcrypt.compare(credentials.password, user.password);
+        const match = await bcryptjs.compare(credentials.password, user.password);
         if (match) return this.generateAccessToken(user.idUser);
     }
 
     async signUp(user: UserDatabase): Promise<string> {
-        const hash = await bcrypt.hash(user.password, SALTROUNDS);
+        const hash = await bcryptjs.hash(user.password, SALTROUNDS);
         const data = await this.insertUser({ ...user, password: hash });
 
         return this.generateAccessToken(data.idUser);
