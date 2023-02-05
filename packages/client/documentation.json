@@ -26219,13 +26219,13 @@
         },
         {
             "name": "AppModule",
-            "id": "module-AppModule-e10feb65271954df6c03f3bae30c537707abdbaba952428c0514a82620864a07f2c09359e72d846dc0f88f5542740a93fcfd46c8106a32733362d0e334e0da46",
+            "id": "module-AppModule-267340fc29c83734653a4bae4f9f7fb6ba19768dde3e27523c59256d7a40f83f7b4a621f23a1fcbfb3ed92a3224b5a64baa84e0a4df562a465004cc0e01616f2",
             "description": "<p>Main module that is used in main.ts.\nAll automatically generated components will appear in this module.\nPlease do not move this module in the module folder.\nOtherwise Angular Cli will not know in which module to put new component</p>\n",
             "deprecationMessage": "",
             "deprecated": false,
             "file": "src/app/app.module.ts",
             "methods": [],
-            "sourceCode": "import { ScrollingModule } from '@angular/cdk/scrolling';\nimport { registerLocaleData } from '@angular/common';\nimport { HttpClientModule } from '@angular/common/http';\nimport localeFr from '@angular/common/locales/fr';\nimport { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';\nimport { FormsModule, ReactiveFormsModule } from '@angular/forms';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { BrowserAnimationsModule } from '@angular/platform-browser/animations';\nimport { BoardComponent } from '@app/components/board/board.component';\nimport { SquareComponent } from '@app/components/square/square.component';\nimport { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';\nimport { TileComponent } from '@app/components/tile/tile.component';\nimport { AppRoutingModule } from '@app/modules/app-routing.module';\nimport { AppMaterialModule } from '@app/modules/material.module';\nimport { AppComponent } from '@app/pages/app/app.component';\nimport { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';\nimport { GamePageComponent } from '@app/pages/game-page/game-page.component';\nimport { HomePageComponent } from '@app/pages/home-page/home-page.component';\nimport { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';\nimport { AdminDictionariesComponent } from './components/admin-dictionaries-component/admin-dictionaries.component';\nimport { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';\nimport { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';\nimport { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';\nimport { ChatBoxComponent } from './components/chatbox/chatbox.component';\nimport { CommunicationBoxComponent } from './components/communication-box/communication-box.component';\nimport { ConvertDialogComponent } from './components/convert-dialog/convert-dialog.component';\nimport { CreateVirtualPlayerComponent } from './components/create-virtual-player-dialog/create-virtual-player-dialog.component';\nimport { DefaultDialogComponent } from './components/default-dialog/default-dialog.component';\nimport { DeleteDictionaryDialogComponent } from './components/delete-dictionary-dialog/delete-dictionary-dialog.component';\nimport { DeleteVirtualPlayerDialogComponent } from './components/delete-virtual-player-dialog/delete-virtual-player-dialog.component';\nimport { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';\nimport { IconComponent } from './components/icon/icon.component';\nimport { InformationBoxComponent } from './components/information-box/information-box.component';\nimport { LobbyInfoComponent } from './components/lobby-info/lobby-info.component';\nimport { ModifyDictionaryComponent } from './components/modify-dictionary-dialog/modify-dictionary-dialog.component';\nimport { NameFieldComponent } from './components/name-field/name-field.component';\nimport { ObjectiveBoxComponent } from './components/objective-box/objective-box.component';\nimport { ObjectiveComponent } from './components/objective/objective.component';\nimport { PageHeaderComponent } from './components/page-header/page-header.component';\nimport { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';\nimport { UpdateVirtualPlayerComponent } from './components/update-virtual-player-dialog/update-virtual-player-dialog.component';\nimport { UploadDictionaryComponent } from './components/upload-dictionary/upload-dictionary.component';\nimport { AdminPageComponent } from './pages/admin-page/admin-page.component';\nimport { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';\nimport { HighScoresPageComponent } from './pages/high-scores-page/high-scores-page.component';\nimport { LoadingPageComponent } from './pages/loading-page/loading-page.component';\nimport { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';\nimport { DurationPipe } from './pipes/duration/duration.pipe';\nimport { InitializerService } from './services/initializer-service/initializer.service';\nimport { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';\nimport { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';\nimport { IconButtonComponent } from './components/icon-button/icon-button.component';\nimport { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';\nimport { AlertComponent } from './components/alert/alert.component';\nimport { SignUpPageComponent } from './pages/signup-page/signup-page.component';\nimport { SignupWrapperComponent } from './wrappers/signup-wrapper/signup-wrapper.component';\nimport { SignupContainerComponent } from './components/signup-container/signup-container.component';\n\nregisterLocaleData(localeFr);\n\n/**\n * Main module that is used in main.ts.\n * All automatically generated components will appear in this module.\n * Please do not move this module in the module folder.\n * Otherwise Angular Cli will not know in which module to put new component\n */\n@NgModule({\n    declarations: [\n        AppComponent,\n        GamePageComponent,\n        HomePageComponent,\n        SignUpPageComponent,\n        SquareComponent,\n        TileComponent,\n        InformationBoxComponent,\n        CommunicationBoxComponent,\n        BoardComponent,\n        TileRackComponent,\n        LobbyPageComponent,\n        LobbyInfoComponent,\n        CreateWaitingPageComponent,\n        JoinWaitingPageComponent,\n        GameCreationPageComponent,\n        DefaultDialogComponent,\n        IconComponent,\n        NameFieldComponent,\n        TimerSelectionComponent,\n        PageHeaderComponent,\n        HighScoresPageComponent,\n        HighScoreBoxComponent,\n        ConvertDialogComponent,\n        AdminPageComponent,\n        AdminVirtualPlayersComponent,\n        CreateVirtualPlayerComponent,\n        UpdateVirtualPlayerComponent,\n        DeleteVirtualPlayerDialogComponent,\n        AdminDictionariesComponent,\n        ModifyDictionaryComponent,\n        UploadDictionaryComponent,\n        DeleteDictionaryDialogComponent,\n        AdminHighScoresComponent,\n        AdminGameHistoryComponent,\n        DurationPipe,\n        ObjectiveComponent,\n        ObjectiveBoxComponent,\n        LoadingPageComponent,\n        ChatBoxComponent,\n        ChatboxContainerComponent,\n        ChatboxMessageComponent,\n        IconButtonComponent,\n        ChatboxWrapperComponent,\n        AlertComponent,\n        SignupWrapperComponent,\n        SignupContainerComponent,\n    ],\n    imports: [\n        AppMaterialModule,\n        AppRoutingModule,\n        BrowserAnimationsModule,\n        BrowserModule,\n        FormsModule,\n        ReactiveFormsModule,\n        HttpClientModule,\n        ScrollingModule,\n    ],\n    providers: [\n        InitializerService,\n        {\n            provide: APP_INITIALIZER,\n            useFactory: (initializer: InitializerService) => () => initializer.initialize(),\n            deps: [InitializerService],\n            multi: true,\n        },\n        {\n            provide: LOCALE_ID,\n            useValue: 'fr-CA',\n        },\n    ],\n    bootstrap: [AppComponent],\n})\nexport class AppModule {}\n",
+            "sourceCode": "import { ScrollingModule } from '@angular/cdk/scrolling';\nimport { registerLocaleData } from '@angular/common';\nimport { HttpClientModule } from '@angular/common/http';\nimport localeFr from '@angular/common/locales/fr';\nimport { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';\nimport { FormsModule, ReactiveFormsModule } from '@angular/forms';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { BrowserAnimationsModule } from '@angular/platform-browser/animations';\nimport { BoardComponent } from '@app/components/board/board.component';\nimport { SquareComponent } from '@app/components/square/square.component';\nimport { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';\nimport { TileComponent } from '@app/components/tile/tile.component';\nimport { AppRoutingModule } from '@app/modules/app-routing.module';\nimport { AppMaterialModule } from '@app/modules/material.module';\nimport { AppComponent } from '@app/pages/app/app.component';\nimport { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';\nimport { GamePageComponent } from '@app/pages/game-page/game-page.component';\nimport { HomePageComponent } from '@app/pages/home-page/home-page.component';\nimport { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';\nimport { AdminDictionariesComponent } from './components/admin-dictionaries-component/admin-dictionaries.component';\nimport { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';\nimport { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';\nimport { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';\nimport { ChatBoxComponent } from './components/chatbox/chatbox.component';\nimport { CommunicationBoxComponent } from './components/communication-box/communication-box.component';\nimport { ConvertDialogComponent } from './components/convert-dialog/convert-dialog.component';\nimport { CreateVirtualPlayerComponent } from './components/create-virtual-player-dialog/create-virtual-player-dialog.component';\nimport { DefaultDialogComponent } from './components/default-dialog/default-dialog.component';\nimport { DeleteDictionaryDialogComponent } from './components/delete-dictionary-dialog/delete-dictionary-dialog.component';\nimport { DeleteVirtualPlayerDialogComponent } from './components/delete-virtual-player-dialog/delete-virtual-player-dialog.component';\nimport { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';\nimport { IconComponent } from './components/icon/icon.component';\nimport { InformationBoxComponent } from './components/information-box/information-box.component';\nimport { LobbyInfoComponent } from './components/lobby-info/lobby-info.component';\nimport { ModifyDictionaryComponent } from './components/modify-dictionary-dialog/modify-dictionary-dialog.component';\nimport { NameFieldComponent } from './components/name-field/name-field.component';\nimport { ObjectiveBoxComponent } from './components/objective-box/objective-box.component';\nimport { ObjectiveComponent } from './components/objective/objective.component';\nimport { PageHeaderComponent } from './components/page-header/page-header.component';\nimport { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';\nimport { UpdateVirtualPlayerComponent } from './components/update-virtual-player-dialog/update-virtual-player-dialog.component';\nimport { UploadDictionaryComponent } from './components/upload-dictionary/upload-dictionary.component';\nimport { AdminPageComponent } from './pages/admin-page/admin-page.component';\nimport { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';\nimport { HighScoresPageComponent } from './pages/high-scores-page/high-scores-page.component';\nimport { LoadingPageComponent } from './pages/loading-page/loading-page.component';\nimport { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';\nimport { DurationPipe } from './pipes/duration/duration.pipe';\nimport { InitializerService } from './services/initializer-service/initializer.service';\nimport { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';\nimport { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';\nimport { IconButtonComponent } from './components/icon-button/icon-button.component';\nimport { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';\nimport { AlertComponent } from './components/alert/alert.component';\n\nregisterLocaleData(localeFr);\n\n/**\n * Main module that is used in main.ts.\n * All automatically generated components will appear in this module.\n * Please do not move this module in the module folder.\n * Otherwise Angular Cli will not know in which module to put new component\n */\n@NgModule({\n    declarations: [\n        AppComponent,\n        GamePageComponent,\n        HomePageComponent,\n        SquareComponent,\n        TileComponent,\n        InformationBoxComponent,\n        CommunicationBoxComponent,\n        BoardComponent,\n        TileRackComponent,\n        LobbyPageComponent,\n        LobbyInfoComponent,\n        CreateWaitingPageComponent,\n        JoinWaitingPageComponent,\n        GameCreationPageComponent,\n        DefaultDialogComponent,\n        IconComponent,\n        NameFieldComponent,\n        TimerSelectionComponent,\n        PageHeaderComponent,\n        HighScoresPageComponent,\n        HighScoreBoxComponent,\n        ConvertDialogComponent,\n        AdminPageComponent,\n        AdminVirtualPlayersComponent,\n        CreateVirtualPlayerComponent,\n        UpdateVirtualPlayerComponent,\n        DeleteVirtualPlayerDialogComponent,\n        AdminDictionariesComponent,\n        ModifyDictionaryComponent,\n        UploadDictionaryComponent,\n        DeleteDictionaryDialogComponent,\n        AdminHighScoresComponent,\n        AdminGameHistoryComponent,\n        DurationPipe,\n        ObjectiveComponent,\n        ObjectiveBoxComponent,\n        LoadingPageComponent,\n        ChatBoxComponent,\n        ChatboxContainerComponent,\n        ChatboxMessageComponent,\n        IconButtonComponent,\n        ChatboxWrapperComponent,\n        AlertComponent,\n    ],\n    imports: [\n        AppMaterialModule,\n        AppRoutingModule,\n        BrowserAnimationsModule,\n        BrowserModule,\n        FormsModule,\n        ReactiveFormsModule,\n        HttpClientModule,\n        ScrollingModule,\n    ],\n    providers: [\n        InitializerService,\n        {\n            provide: APP_INITIALIZER,\n            useFactory: (initializer: InitializerService) => () => initializer.initialize(),\n            deps: [InitializerService],\n            multi: true,\n        },\n        {\n            provide: LOCALE_ID,\n            useValue: 'fr-CA',\n        },\n    ],\n    bootstrap: [AppComponent],\n})\nexport class AppModule {}\n",
             "children": [
                 {
                     "type": "providers",
@@ -28280,7 +28280,7 @@
                 "name": "primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
@@ -28419,7 +28419,7 @@
                 "name": "SECONDS_IN_MINUTE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/classes/round/timer.ts",
+                "file": "src/app/pipes/duration/duration.pipe.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -28429,7 +28429,7 @@
                 "name": "SECONDS_IN_MINUTE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/pipes/duration/duration.pipe.ts",
+                "file": "src/app/classes/round/timer.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -28619,11 +28619,11 @@
                 "name": "template",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Story<ChatboxMessageComponent>",
-                "defaultValue": "(args: ChatboxMessageComponent) => ({\n    props: args,\n})"
+                "type": "Story<ChatBoxComponent>",
+                "defaultValue": "(args: ChatBoxComponent) => ({\n    props: args,\n})"
             },
             {
                 "name": "template",
@@ -32297,28 +32297,6 @@
                     "name": "primary",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "src/app/components/icon/icon.component.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "",
-                    "defaultValue": "template.bind({})"
-                },
-                {
-                    "name": "template",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/app/components/icon/icon.component.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story<IconComponent>",
-                    "defaultValue": "(args: IconComponent) => ({\n    props: args,\n})"
-                }
-            ],
-            "src/app/components/signup-container/signup-container.component.stories.ts": [
-                {
-                    "name": "primary",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
                     "file": "src/app/components/signup-container/signup-container.component.stories.ts",
                     "deprecated": false,
                     "deprecationMessage": "",
@@ -34678,36 +34656,6 @@
                 "name": "UploadEvent",
                 "coveragePercent": 0,
                 "coverageCount": "0/2",
-                "status": "low"
-            },
-            {
-                "filePath": "src/app/constants/authentification-constants.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "matchValidator",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/app/constants/authentification-constants.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "PASSWORD_REGEX",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/app/constants/authentification-constants.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "USERNAME_MAX_LENGTH",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
                 "status": "low"
             },
             {
@@ -37277,15 +37225,6 @@
                 "name": "ChatboxWrapperComponent",
                 "coveragePercent": 0,
                 "coverageCount": "0/8",
-                "status": "low"
-            },
-            {
-                "filePath": "src/app/wrappers/signup-wrapper/signup-wrapper.component.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "SignupWrapperComponent",
-                "coveragePercent": 0,
-                "coverageCount": "0/2",
                 "status": "low"
             },
             {

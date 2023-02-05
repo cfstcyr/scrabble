@@ -19,3 +19,5 @@ export type VirtualPlayerProfilesRequest = Request & { params: { level?: Virtual
 export type GameHistoriesRequest = Request & { params: { playerId: string } };
 
 export type LobbiesRequest = Request & { params: { playerId: string } };
+
+export type AuthenticateTokenRequest = Request & { params: { email: string; password: string } };
