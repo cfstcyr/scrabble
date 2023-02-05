@@ -3,7 +3,7 @@ import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds'
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
 import { Credentials, User } from '@common/models/user';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { Service } from 'typedi';
 
