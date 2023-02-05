@@ -41,6 +41,10 @@ export class SocketService {
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
 
+            socket.on('authenticate', (token) => {
+                // This.authentificationService.authenticate(token, socket.id);
+            });
+
             this.chatService.configureSocket(socket);
             socket.on('disconnect', () => {
                 this.sockets.delete(socket.id);
