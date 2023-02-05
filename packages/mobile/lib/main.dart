@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile/locator.dart';
-import 'package:provider/provider.dart';
 import 'package:mobile/pages/login-page.dart';
+import 'package:provider/provider.dart';
 
 import 'environments/environment.dart';
 
@@ -44,6 +44,11 @@ class MyAppState extends ChangeNotifier {}
 class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return LoginPage();
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Super Scrabble"),
+        ),
+        backgroundColor: Colors.white,
+        body: LoginPage());
   }
 }
