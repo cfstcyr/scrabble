@@ -57,7 +57,7 @@ class AccountAuthenticationController {
     Response res =
         await post(Uri.parse("${endpoint}/login"), body: credentials);
 
-    if (res.statusCode == 204) {
+    if (res.statusCode == 202) {
       return true;
     } else {
       return false;
