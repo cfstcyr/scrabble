@@ -52,9 +52,9 @@ class _LoginFormState extends State<LoginForm> {
     return Column(
       children: [
         SizedBox(height: 20),
-        Padding(padding: EdgeInsets.only(top: 1.0)),
+        Padding(padding: EdgeInsets.only(top: 0)),
         Container(
-          height: 330,
+          height: 340,
           width: 580,
           decoration: BoxDecoration(
               border: Border.all(
@@ -118,8 +118,19 @@ class _LoginFormState extends State<LoginForm> {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(
-                              left: 50.0, right: 0, top: 30, bottom: 0),
+                              left: 50.0, right: 0, top: 30.0, bottom: 0),
                           child: Row(children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            CreateAccountPage()));
+                              },
+                              child: Text(CREATE_ACCOUNT_LABEL_FR),
+                            ),
+                            SizedBox(width: 100),
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.push(
@@ -145,17 +156,6 @@ class _LoginFormState extends State<LoginForm> {
                                         fontSize: 15),
                               ),
                             ),
-                            SizedBox(width: 50),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            CreateAccountPage()));
-                              },
-                              child: Text('Se créer un compte'),
-                            )
                           ]),
                         )
                       ],
@@ -170,7 +170,7 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Future<void> validateUsername() async {
+  validateUsername() {
     if (usernameHandler.controller.text.isEmpty) {
       setState(() {
         usernameHandler.errorMessage = USERNAME_EMPTY_FR;
@@ -188,7 +188,7 @@ class _LoginFormState extends State<LoginForm> {
         password: passwordHandler.controller.text);
 
     if (true) {
-      // await accountService.login(credentials))
+      // TODO await accountService.login(credentials))
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => HomePage()));
     }

@@ -43,24 +43,3 @@ class MainTitle extends StatelessWidget {
     ]);
   }
 }
-
-// return Scaffold(
-//       backgroundColor: Colors.white,
-//       appBar: AppBar(
-//         title: const Text("Création d'un compte"),
-//       ),
-//       body: SingleChildScrollView(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             Center(
-//               child: Column(
-//                 children: [
-//                   CreateAccountForm()
-//                   ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
