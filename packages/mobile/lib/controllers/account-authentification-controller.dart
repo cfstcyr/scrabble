@@ -4,6 +4,8 @@ import 'package:http/http.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/environments/environment.dart';
 
+import '../classes/login.dart';
+
 class AccountAuthenticationController {
   AccountAuthenticationController._privateConstructor();
 
@@ -49,5 +51,16 @@ class AccountAuthenticationController {
     // } else {
     //   return false;
     // }
+  }
+
+  Future<bool> login(LoginData credentials) async {
+    Response res =
+        await post(Uri.parse("${endpoint}/login"), body: credentials);
+
+    if (res.statusCode == 204) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

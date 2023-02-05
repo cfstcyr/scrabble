@@ -52,9 +52,9 @@ class _LoginFormState extends State<LoginForm> {
     return Column(
       children: [
         SizedBox(height: 20),
-        Padding(padding: EdgeInsets.only(top: 1.0)),
+        Padding(padding: EdgeInsets.only(top: 0)),
         Container(
-          height: 390,
+          height: 340,
           width: 580,
           decoration: BoxDecoration(
               border: Border.all(
