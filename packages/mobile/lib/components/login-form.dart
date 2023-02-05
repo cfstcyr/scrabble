@@ -128,7 +128,7 @@ class _LoginFormState extends State<LoginForm> {
                                         builder: (context) =>
                                             CreateAccountPage()));
                               },
-                              child: Text('Se créer un compte'),
+                              child: Text(CREATE_ACCOUNT_LABEL_FR),
                             ),
                             SizedBox(width: 100),
                             ElevatedButton(
