@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';
 import { NAME_VALIDATION } from '@app/constants/name-validation';
@@ -9,7 +9,7 @@ import { UserCredentials } from '@common/models/user';
     templateUrl: './signup-container.component.html',
     styleUrls: ['./signup-container.component.scss'],
 })
-export class SignupContainerComponent {
+export class SignupContainerComponent implements OnChanges {
     @Input() isEmailTaken: boolean = false;
     @Input() isUsernameTaken: boolean = false;
     @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();
@@ -29,13 +29,19 @@ export class SignupContainerComponent {
                     Validators.minLength(1),
                     Validators.maxLength(USERNAME_MAX_LENGTH),
                     Validators.pattern(NAME_VALIDATION.rule),
+                    this.usernameTakenValidator(),
                 ]),
-                email: new FormControl('', [Validators.required, Validators.email]),
+                email: new FormControl('', [Validators.required, Validators.email, this.emailTakenValidator()]),
                 password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),
                 confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),
             },
             [matchValidator('password', 'confirmPassword')],
         );
+    }
+
+    ngOnChanges(): void {
+        this.signupForm.controls.email?.updateValueAndValidity();
+        this.signupForm.controls.username?.updateValueAndValidity();
     }
 
     onSubmit(): void {
@@ -71,6 +77,18 @@ export class SignupContainerComponent {
             const expectedValue = this.signupForm?.get('password')?.value;
 
             return inputValue && expectedValue && inputValue.value !== expectedValue ? { mismatch: true } : null;
+        };
+    }
+
+    private emailTakenValidator(): ValidatorFn {
+        return (): ValidationErrors | null => {
+            return this.isEmailTaken ? { emailTaken: true } : null;
+        };
+    }
+
+    private usernameTakenValidator(): ValidatorFn {
+        return (): ValidationErrors | null => {
+            return this.isUsernameTaken ? { usernameTaken: true } : null;
         };
     }
 }

@@ -24220,7 +24220,7 @@
         },
         {
             "name": "SignupContainerComponent",
-            "id": "component-SignupContainerComponent-38d7c024b8dccd11b61b558418bae5d3ab07379e316d5fc286756e19b17f62058fef9943f131a5d809427a8651d8857108aa66c3c49e760f8513d3d51a6a2825",
+            "id": "component-SignupContainerComponent-87fd3c7ce3b31f9e72e62e5f66076c18fb6e7aeef523946838110b306d172ef98d13064a27c4df2a850b723169ea9310ead506433a5b9cd39674463be8453c56",
             "file": "src/app/components/signup-container/signup-container.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -24318,12 +24318,25 @@
             ],
             "methodsClass": [
                 {
+                    "name": "emailTakenValidator",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "ValidatorFn",
+                    "typeParameters": [],
+                    "line": 78,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "modifierKind": [
+                        121
+                    ]
+                },
+                {
                     "name": "fieldMatchValidator",
                     "args": [],
                     "optional": false,
                     "returnType": "ValidatorFn",
                     "typeParameters": [],
-                    "line": 64,
+                    "line": 70,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "modifierKind": [
@@ -24336,7 +24349,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 56,
+                    "line": 60,
                     "deprecated": false,
                     "deprecationMessage": ""
                 },
@@ -24346,7 +24359,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 60,
+                    "line": 65,
                     "deprecated": false,
                     "deprecationMessage": ""
                 },
@@ -24356,7 +24369,7 @@
                     "optional": false,
                     "returnType": "boolean",
                     "typeParameters": [],
-                    "line": 52,
+                    "line": 56,
                     "deprecated": false,
                     "deprecationMessage": ""
                 },
@@ -24366,9 +24379,22 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 41,
+                    "line": 42,
                     "deprecated": false,
                     "deprecationMessage": ""
+                },
+                {
+                    "name": "usernameTakenValidator",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "ValidatorFn",
+                    "typeParameters": [],
+                    "line": 84,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "modifierKind": [
+                        121
+                    ]
                 }
             ],
             "deprecated": false,
@@ -24378,7 +24404,7 @@
             "description": "",
             "rawdescription": "\n",
             "type": "component",
-            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';\nimport { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';\nimport { NAME_VALIDATION } from '@app/constants/name-validation';\nimport { UserCredentials } from '@common/models/user';\n\n@Component({\n    selector: 'app-signup-container',\n    templateUrl: './signup-container.component.html',\n    styleUrls: ['./signup-container.component.scss'],\n})\nexport class SignupContainerComponent {\n    @Input() isEmailTaken: boolean = false;\n    @Input() isUsernameTaken: boolean = false;\n    @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();\n    @Output() checkUsernameUnicity: EventEmitter<string> = new EventEmitter();\n    @Output() signup: EventEmitter<UserCredentials> = new EventEmitter();\n\n    signupForm: FormGroup;\n    arePasswordsShown: boolean = false;\n\n    private hasBeenSubmitted: boolean = false;\n\n    constructor() {\n        this.signupForm = new FormGroup(\n            {\n                username: new FormControl('', [\n                    Validators.required,\n                    Validators.minLength(1),\n                    Validators.maxLength(USERNAME_MAX_LENGTH),\n                    Validators.pattern(NAME_VALIDATION.rule),\n                ]),\n                email: new FormControl('', [Validators.required, Validators.email]),\n                password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),\n                confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),\n            },\n            [matchValidator('password', 'confirmPassword')],\n        );\n    }\n\n    onSubmit(): void {\n        this.hasBeenSubmitted = true;\n        const userCredentials: UserCredentials = {\n            email: this.signupForm.get('email')?.value,\n            username: this.signupForm.get('username')?.value,\n            password: this.signupForm.get('password')?.value,\n        };\n\n        this.signup.next(userCredentials);\n    }\n\n    isFormValid(): boolean {\n        return !this.hasBeenSubmitted || this.signupForm?.valid;\n    }\n\n    handleEmailLoseFocus(): void {\n        this.checkEmailUnicity.next(this.signupForm.get('email')?.value);\n    }\n\n    handleUsernameLoseFocus(): void {\n        this.checkUsernameUnicity.next(this.signupForm.get('username')?.value);\n    }\n\n    private fieldMatchValidator(): ValidatorFn {\n        return (inputValue: AbstractControl): ValidationErrors | null => {\n            const expectedValue = this.signupForm?.get('password')?.value;\n\n            return inputValue && expectedValue && inputValue.value !== expectedValue ? { mismatch: true } : null;\n        };\n    }\n}\n",
+            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';\nimport { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';\nimport { NAME_VALIDATION } from '@app/constants/name-validation';\nimport { UserCredentials } from '@common/models/user';\n\n@Component({\n    selector: 'app-signup-container',\n    templateUrl: './signup-container.component.html',\n    styleUrls: ['./signup-container.component.scss'],\n})\nexport class SignupContainerComponent {\n    @Input() isEmailTaken: boolean = false;\n    @Input() isUsernameTaken: boolean = false;\n    @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();\n    @Output() checkUsernameUnicity: EventEmitter<string> = new EventEmitter();\n    @Output() signup: EventEmitter<UserCredentials> = new EventEmitter();\n\n    signupForm: FormGroup;\n    arePasswordsShown: boolean = false;\n\n    private hasBeenSubmitted: boolean = false;\n\n    constructor() {\n        this.signupForm = new FormGroup(\n            {\n                username: new FormControl('', [\n                    Validators.required,\n                    Validators.minLength(1),\n                    Validators.maxLength(USERNAME_MAX_LENGTH),\n                    Validators.pattern(NAME_VALIDATION.rule),\n                    this.usernameTakenValidator(),\n                ]),\n                email: new FormControl('', [Validators.required, Validators.email, this.emailTakenValidator()]),\n                password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),\n                confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),\n            },\n            [matchValidator('password', 'confirmPassword')],\n        );\n    }\n\n    onSubmit(): void {\n        this.hasBeenSubmitted = true;\n\n        if (this.signupForm.invalid) return;\n\n        const userCredentials: UserCredentials = {\n            email: this.signupForm.get('email')?.value,\n            username: this.signupForm.get('username')?.value,\n            password: this.signupForm.get('password')?.value,\n        };\n\n        this.signup.next(userCredentials);\n    }\n\n    isFormValid(): boolean {\n        return !this.hasBeenSubmitted || this.signupForm?.valid;\n    }\n\n    handleEmailLoseFocus(): void {\n        if (this.signupForm.get('email')?.invalid) return;\n        this.checkEmailUnicity.next(this.signupForm.get('email')?.value);\n    }\n\n    handleUsernameLoseFocus(): void {\n        if (this.signupForm.get('username')?.invalid) return;\n        this.checkUsernameUnicity.next(this.signupForm.get('username')?.value);\n    }\n\n    private fieldMatchValidator(): ValidatorFn {\n        return (inputValue: AbstractControl): ValidationErrors | null => {\n            const expectedValue = this.signupForm?.get('password')?.value;\n\n            return inputValue && expectedValue && inputValue.value !== expectedValue ? { mismatch: true } : null;\n        };\n    }\n\n    private emailTakenValidator(): ValidatorFn {\n        return (): ValidationErrors | null => {\n            return this.isEmailTaken ? { emailTaken: true } : null;\n        };\n    }\n\n    private usernameTakenValidator(): ValidatorFn {\n        return (): ValidationErrors | null => {\n            return this.isUsernameTaken ? { usernameTaken: true } : null;\n        };\n    }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
@@ -27405,21 +27431,21 @@
                 "name": "environment",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/environments/environment.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "object",
-                "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
-            },
-            {
-                "name": "environment",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "src/environments/environment.prod.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "object",
                 "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
+            },
+            {
+                "name": "environment",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/environments/environment.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "object",
+                "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
             },
             {
                 "name": "ERROR_SNACK_BAR_CONFIG",
@@ -28524,7 +28550,7 @@
                 "name": "SECONDS_IN_MINUTE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/pipes/duration/duration.pipe.ts",
+                "file": "src/app/classes/round/timer.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -28534,7 +28560,7 @@
                 "name": "SECONDS_IN_MINUTE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/classes/round/timer.ts",
+                "file": "src/app/pipes/duration/duration.pipe.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -31831,18 +31857,6 @@
                     "defaultValue": "(args: ChatboxMessageComponent) => ({\n    props: args,\n})"
                 }
             ],
-            "src/environments/environment.ts": [
-                {
-                    "name": "environment",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/environments/environment.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "object",
-                    "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
-                }
-            ],
             "src/environments/environment.prod.ts": [
                 {
                     "name": "environment",
@@ -31853,6 +31867,18 @@
                     "deprecationMessage": "",
                     "type": "object",
                     "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
+                }
+            ],
+            "src/environments/environment.ts": [
+                {
+                    "name": "environment",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/environments/environment.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "object",
+                    "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
                 }
             ],
             "src/app/constants/fun-facts-scrabble-constants.ts": [
@@ -34690,7 +34716,7 @@
                 "linktype": "component",
                 "name": "SignupContainerComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/15",
+                "coverageCount": "0/17",
                 "status": "low"
             },
             {
