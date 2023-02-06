@@ -75,6 +75,17 @@ fdescribe('LoginContainerComponent', () => {
         });
     });
 
+    describe('ngOnChanges', () => {
+        it('should open snackbar if credentials are invalid', () => {
+            const spy = spyOn<any>(component['snackBar'], 'open');
+            component.areCredentialsInvalid = true;
+
+            component.ngOnChanges();
+
+            expect(spy).toHaveBeenCalled();
+        });
+    });
+
     describe('onSubmit', () => {
         describe('HAPPY PATH - Form is valid', () => {
             it('should emit user credentials', () => {
