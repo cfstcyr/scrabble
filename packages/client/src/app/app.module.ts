@@ -55,6 +55,9 @@ import { AlertComponent } from './components/alert/alert.component';
 import { SignUpPageComponent } from './pages/signup-page/signup-page.component';
 import { SignupWrapperComponent } from './wrappers/signup-wrapper/signup-wrapper.component';
 import { SignupContainerComponent } from './components/signup-container/signup-container.component';
+import { LogginWrapperComponent } from './wrappers/login-wrapper/login-wrapper.component';
+import { LoginContainerComponent } from './components/login-container/login-container.component';
+import { LoginPageComponent } from './pages/login-page/login-page.component';
 
 registerLocaleData(localeFr);
 
@@ -70,6 +73,7 @@ registerLocaleData(localeFr);
         GamePageComponent,
         HomePageComponent,
         SignUpPageComponent,
+        LoginPageComponent,
         SquareComponent,
         TileComponent,
         InformationBoxComponent,
@@ -112,6 +116,8 @@ registerLocaleData(localeFr);
         AlertComponent,
         SignupWrapperComponent,
         SignupContainerComponent,
+        LogginWrapperComponent,
+        LoginContainerComponent,
     ],
     imports: [
         AppMaterialModule,
