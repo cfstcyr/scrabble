@@ -13,7 +13,8 @@ void setUpLocator() {
       () => AccountAuthenticationService());
   getIt.registerLazySingleton<AccountAuthenticationController>(
       () => AccountAuthenticationController());
-  getIt.registerLazySingleton<SocketService>(() => SocketService());
   getIt.registerLazySingleton<ChatController>(() => ChatController());
+  getIt.registerLazySingleton<SocketService>(() => SocketService());
+
   getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());
 }

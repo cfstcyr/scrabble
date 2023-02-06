@@ -1,16 +1,20 @@
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import '../constants/socket-events.dart';
+
 class SocketService {
   SocketService._privateConstructor();
   static final SocketService _instance = SocketService._privateConstructor();
-
-  factory SocketService() {
-    return _instance;
-  }
-  IO.Socket socket = IO.io('http://localhost:3000', <String, dynamic>{
+  final IO.Socket socket = IO.io(SERVER_URL_TEST, <String, dynamic>{
     'transports': ['websocket'],
     'autoConnect': false,
   });
+  factory SocketService() {
+    return _instance;
+  }
+  // SocketService {
+  //   initSocket();
+  // }
 
   Future<void> initSocket() async {
     print('Connecting to chat service');
