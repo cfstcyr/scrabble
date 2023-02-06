@@ -26,10 +26,10 @@ class _ChatPageState extends State<ChatPage> {
   });
   @override
   void initState() {
-    socketService.initSocket();
     super.initState();
     // _loadMessages();
     _listenMessages();
+    socket.connect();
   }
 
   @override
