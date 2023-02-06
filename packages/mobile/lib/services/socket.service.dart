@@ -7,12 +7,10 @@ class SocketService {
   factory SocketService() {
     return _instance;
   }
-  static IO.Socket socket = socket = IO.io(
-      'https://d42d-2402-e280-222f-95e-99f0-5a9b-e95-2ca2.ngrok.io',
-      <String, dynamic>{
-        'transports': ['websocket'],
-        'autoConnect': false,
-      });
+  IO.Socket socket = IO.io('http://localhost:3000', <String, dynamic>{
+    'transports': ['websocket'],
+    'autoConnect': false,
+  });
 
   Future<void> initSocket() async {
     print('Connecting to chat service');
@@ -21,6 +19,10 @@ class SocketService {
     socket.onConnect((_) {
       print('connected to websocket');
     });
+  }
+
+  Future<void> sendMessage(String message) async {
+    socket.emit('channel:newMessage', message);
   }
 }
 
