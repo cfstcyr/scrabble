@@ -10,10 +10,12 @@ import { ChatboxMessageComponent } from './chatbox-message.component';
 const USER_1: PublicUser = {
     username: '1',
     avatar: '1',
+    email: '1',
 };
 const USER_2: PublicUser = {
     username: '2',
     avatar: '2',
+    email: '2',
 };
 
 describe('ChatboxMessageComponent', () => {

@@ -31,7 +31,6 @@ import { TimerSelectionComponent } from '@app/components/timer-selection/timer-s
 import { INVALID_DICTIONARY_ID } from '@app/constants/controllers-errors';
 import { DEFAULT_PLAYER } from '@app/constants/game-constants';
 import { GameMode } from '@app/constants/game-mode';
-import { DEFAULT_TIMER_VALUE } from '@app/constants/pages-constants';
 import { MOCK_PLAYER_PROFILES, MOCK_PLAYER_PROFILE_MAP } from '@app/constants/service-test-constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { LoadingPageComponent } from '@app/pages/loading-page/loading-page.component';
@@ -258,23 +257,6 @@ describe('GameCreationPageComponent', () => {
             component.ngOnDestroy();
             expect(ngUnsubscribeNextSpy).toHaveBeenCalled();
             expect(ngUnsubscribeCompleteSpy).toHaveBeenCalled();
-        });
-    });
-
-    describe('getDefaultTimerValue', () => {
-        it('should return the equivalent number', () => {
-            spyOn<any>(window['localStorage'], 'getItem').and.returnValue('1');
-            expect(component['getDefaultTimerValue']()).toEqual(1);
-        });
-
-        it('should return the default value if the stored information is invalid', () => {
-            spyOn<any>(window['localStorage'], 'getItem').and.returnValue('a');
-            expect(component['getDefaultTimerValue']()).toEqual(DEFAULT_TIMER_VALUE);
-        });
-
-        it('should return the default value if there is no stored information', () => {
-            spyOn<any>(window['localStorage'], 'getItem').and.returnValue(null);
-            expect(component['getDefaultTimerValue']()).toEqual(DEFAULT_TIMER_VALUE);
         });
     });
 

@@ -8,12 +8,11 @@ import { DICTIONARY_DELETED, DICTIONARY_REQUIRED } from '@app/constants/componen
 import { INVALID_DICTIONARY_ID } from '@app/constants/controllers-errors';
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
-import { DEFAULT_TIMER_VALUE } from '@app/constants/pages-constants';
-import { DICTIONARY_NAME_KEY, PLAYER_NAME_KEY, TIMER_KEY } from '@app/constants/session-storage-constants';
 import { GameDispatcherService } from '@app/services';
 import { DictionaryService } from '@app/services/dictionary-service/dictionary.service';
 import { VirtualPlayerProfilesService } from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
 import { randomizeArray } from '@app/utils/randomize-array/randomize-array';
+import { gameSettings } from '@app/utils/settings';
 import { VirtualPlayer } from '@common/models/virtual-player';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
@@ -54,7 +53,7 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
         this.virtualPlayerLevels = VirtualPlayerLevel;
         this.dictionaryOptions = [];
         this.virtualPlayerNameMap = new Map();
-        this.playerName = window.localStorage.getItem(PLAYER_NAME_KEY) || '';
+        this.playerName = gameSettings.getPlayerName();
         this.playerNameValid = false;
         this.pageDestroyed$ = new Subject();
         this.gameParameters = new FormGroup({
@@ -62,7 +61,7 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
             gameMode: new FormControl(GameMode.Multiplayer, Validators.required),
             level: new FormControl(VirtualPlayerLevel.Beginner),
             virtualPlayerName: new FormControl(''),
-            timer: new FormControl(this.getDefaultTimerValue(), Validators.required),
+            timer: new FormControl(gameSettings.getTimer(), Validators.required),
             dictionary: new FormControl(undefined, [Validators.required]),
         });
 
@@ -83,8 +82,7 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
             this.dictionaryOptions = this.dictionaryService.getDictionaries();
             if (this.shouldSetToDefaultDictionary)
                 this.gameParameters.patchValue({
-                    dictionary:
-                        this.dictionaryOptions.find((d) => d.title === window.localStorage.getItem(DICTIONARY_NAME_KEY)) || this.dictionaryOptions[0],
+                    dictionary: this.dictionaryOptions.find((d) => d.title === gameSettings.getDictionaryName() || this.dictionaryOptions[0]),
                 });
         });
     }
@@ -130,9 +128,9 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
 
     onSubmit(): void {
         if (this.isFormValid()) {
-            window.localStorage.setItem(PLAYER_NAME_KEY, this.playerName);
-            window.localStorage.setItem(DICTIONARY_NAME_KEY, this.gameParameters.get('dictionary')?.value.title);
-            window.localStorage.setItem(TIMER_KEY, this.gameParameters.get('timer')?.value);
+            gameSettings.set('playerName', this.playerName);
+            gameSettings.set('dictionaryName', this.gameParameters.get('dictionary')?.value.title);
+            gameSettings.set('timer', this.gameParameters.get('timer')?.value);
             this.createGame();
         }
     }
@@ -164,12 +162,6 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
             if (!namesForLevel) this.virtualPlayerNameMap.set(profile.level as VirtualPlayerLevel, [profile.name]);
             else namesForLevel.push(profile.name);
         });
-    }
-
-    private getDefaultTimerValue(): number {
-        const INVALID = -1;
-        const time = Number.parseInt(window.localStorage.getItem(TIMER_KEY) || `${INVALID}`, 10);
-        return !Number.isNaN(time) && time > INVALID ? time : DEFAULT_TIMER_VALUE;
     }
 
     private createGame(): void {
