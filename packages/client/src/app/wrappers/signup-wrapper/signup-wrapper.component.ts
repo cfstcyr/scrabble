@@ -10,21 +10,18 @@ export class SignupWrapperComponent {
     isEmailTaken: boolean = false;
     isUsernameTaken: boolean = false;
 
+    // eslint-disable-next-line no-unused-vars
     handleSignup(usercredentials: UserCredentials): void {
-        // eslint-disable-next-line no-console
-        console.log(usercredentials);
         // TODO: Add call to AuthentificationService
     }
 
+    // eslint-disable-next-line no-unused-vars
     handleCheckEmailUnicity(email: string): void {
-        // eslint-disable-next-line no-console
-        console.log(email);
         // TODO: Add handle call to backend
     }
 
+    // eslint-disable-next-line no-unused-vars
     handleCheckUsernameUnicity(username: string): void {
-        // eslint-disable-next-line no-console
-        console.log(username);
         // TODO: Add handle call to backend
     }
 }
