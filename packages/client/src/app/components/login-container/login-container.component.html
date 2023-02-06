@@ -1,32 +1,46 @@
 <div class="login-container">
     <mat-card>
         <div class="header">
-            <h2> Connexion </h2>
+            <h2>Connexion</h2>
         </div>
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="outline" [formGroup]="loginForm">
                 <mat-label><app-icon icon="envelope"></app-icon> Courriel</mat-label>
-                <input matInput id="email" type="email" formControlName="email" autocomplete="off"/>
+                <input
+                    matInput
+                    id="email"
+                    type="email"
+                    formControlName="email"
+                    autocomplete="off"
+                    (ngModelChange)="toggleOffInvalidCredentials()"
+                    (valueChanges)="toggleOffInvalidCredentials()"
+                />
             </mat-form-field>
 
-            <mat-form-field
-                appearance="outline"
-                [formGroup]="loginForm"
-            >
+            <mat-form-field appearance="outline" [formGroup]="loginForm">
                 <mat-label><app-icon icon="lock"></app-icon> Mot de passe</mat-label>
-                <input matInput id="password" [type]="isPasswordShown ? 'text' : 'password'" formControlName="password" autocomplete="off" />
+                <input
+                    matInput
+                    id="password"
+                    [type]="isPasswordShown ? 'text' : 'password'"
+                    formControlName="password"
+                    autocomplete="off"
+                    (ngModelChange)="toggleOffInvalidCredentials()"
+                    (valueChanges)="toggleOffInvalidCredentials()"
+                />
             </mat-form-field>
 
             <mat-card class="error-card" *ngIf="areCredentialsInvalid">
                 <p id="invalid-credentials">Identifiants invalides</p>
-                <button mat-flat-button id="square-button" (click)="handleCloseErrorBox()"><strong>X</strong></button>
+                <button mat-flat-button id="square-button" (click)="toggleOffInvalidCredentials()"><strong>X</strong></button>
             </mat-card>
             <!-- <p class="field-error" *ngIf="invalidCredentials">Identifiants invalides</p> -->
 
-
             <div class="buttons">
-                <mat-checkbox [(ngModel)]="isPasswordShown" [ngModelOptions]="{ standalone: true }" color="primary"> Afficher les mots de passe</mat-checkbox>
+                <mat-checkbox [(ngModel)]="isPasswordShown" [ngModelOptions]="{ standalone: true }" color="primary">
+                    Afficher les mots de passe</mat-checkbox
+                >
 
                 <div
                     class="button-container"

@@ -22,10 +22,7 @@ export class LoginContainerComponent implements OnChanges {
     }
 
     ngOnChanges(): void {
-        if (this.areCredentialsInvalid) {
-            this.loginForm.controls.email?.markAsPristine();
-            this.loginForm.controls.password?.markAsPristine();
-        }
+        this.handleInvalidCredentials();
     }
 
     onSubmit(): void {
@@ -43,7 +40,20 @@ export class LoginContainerComponent implements OnChanges {
         return this.loginForm?.valid && (this.loginForm.controls.email?.dirty || this.loginForm.controls.password?.dirty);
     }
 
-    handleCloseErrorBox(): void {
+    toggleOffInvalidCredentials(): void {
         this.areCredentialsInvalid = false;
+        this.handleInvalidCredentials();
+    }
+
+    private handleInvalidCredentials(): void {
+        if (this.areCredentialsInvalid) {
+            this.loginForm.controls.email?.setErrors({ errors: true });
+            this.loginForm.controls.password?.setErrors({ errors: true });
+
+            this.loginForm.updateValueAndValidity();
+        } else {
+            this.loginForm.controls.email?.updateValueAndValidity();
+            this.loginForm.controls.password?.updateValueAndValidity();
+        }
     }
 }
