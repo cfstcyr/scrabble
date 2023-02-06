@@ -16,6 +16,8 @@ import DatabaseService from '@app/services/database-service/database.service';
 import { AuthentificationService } from './authentification.service';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import { ALREADY_LOGGED } from '@app/constants/controllers-errors';
+import { fail } from 'assert';
 
 const expect = chai.expect;
 chai.use(spies);
@@ -45,6 +47,7 @@ describe('AuthentificationService', () => {
 
     it('should be defined', () => {
         expect(authentificationService);
+        expect(authentificationService.map).to.exist;
     });
 
     it('should login the admin', () => {
@@ -76,8 +79,59 @@ describe('AuthentificationService', () => {
 
     it('validateSocket should verify token', async () => {
         chai.spy.on(jwt, 'verify', () => { });
-        authentificationService.authentificateSocket('3', 'token');
-        expect(jwt.verify).to.have.been.called;
+        authentificationService.map.clear();
+        authentificationService.map.set('token', '5');
+        authentificationService.disconnectSocket('5');
+        try {
+            authentificationService.authentificateSocket('3', 'token');
+        } catch (error) {
+            expect(error).to.equal(Error(ALREADY_LOGGED));
+            expect(jwt.verify).to.have.been.called;
+        }
+    });
+
+    it('authentificateSocket should add the token to the connection map', async () => {
+        chai.spy.on(jwt, 'verify', () => { });
+        authentificationService.map.clear();
+        authentificationService.map.set('token', '5');
+        authentificationService.disconnectSocket('5');
+        expect(authentificationService.map.get('token')).to.be.undefined;
+        try {
+            authentificationService.authentificateSocket('3', 'token');
+        } catch (error) {
+            expect(authentificationService.map.get('token')).to.equal('3');
+        }
+    });
+
+    it('authentificateSocket should throw connection error', async () => {
+        chai.spy.on(jwt, 'verify', () => { });
+        authentificationService.map.clear();
+        authentificationService.map.set('token', '3');
+        try {
+            authentificationService.authentificateSocket('3', 'token');
+        } catch (error) {
+            expect(error).to.equal(Error(ALREADY_LOGGED));
+        }
+    });
+
+    it('disconnectSocket should delete connection from map', async () => {
+        chai.spy.on(jwt, 'verify', () => { });
+        authentificationService.map.clear();
+        authentificationService.map.set('token', '3');
+        try {
+            authentificationService.disconnectSocket('3');
+        } catch (error) {
+            fail(error);
+        }
+        expect(authentificationService.map.get('token')).to.be.undefined;
+    });
+
+    it('disconnectSocket should throw error if connection does not exist', async () => {
+        chai.spy.on(jwt, 'verify', () => { });
+        authentificationService.map.clear();
+        authentificationService.map.set('token', '3');
+        authentificationService.disconnectSocket('3');
+        expect(authentificationService.map.get('3')).to.be.undefined;
     });
 
     describe('login', () => {

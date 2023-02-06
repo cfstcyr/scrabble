@@ -18,7 +18,7 @@ export class AuthentificationService {
     authentificateSocket(socketId: string, token: string): void {
         jwt.verify(token, env.TOKEN_SECRET);
 
-        if (this.map.get(token) !== socketId) throw new Error(ALREADY_LOGGED);
+        if (this.map.has(token) && this.map.get(token) !== socketId) throw new Error(ALREADY_LOGGED);
 
         this.map.set(token, socketId);
     }
