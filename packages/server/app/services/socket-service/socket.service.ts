@@ -39,25 +39,18 @@ export class SocketService {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
         this.sio.on('connection', (socket) => {
-            console.log('Socket with id ' + socket.id);
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
-
-            // Authetififcation
             socket.on('user:authentificate', (token: string) => {
-                console.log('Socket ' + socket.id + ' send the token' + token);
                 try {
                     this.authentificationService.authentificateSocket(socket.id, token);
                 } catch (error) {
-                    this.authentificationService.disconnectSocket(socket.id);
-                    this.sockets.delete(socket.id);
+                    this.handleDisconnect(socket);
+                }
             });
-
             this.chatService.configureSocket(socket);
             socket.on('disconnect', () => {
-                console.log('Socket ' + socket.id + ' disconnected');
-                this.authentificationService.disconnectSocket(socket.id);
-                this.sockets.delete(socket.id);
+                this.handleDisconnect(socket);
             });
         });
     }
@@ -123,5 +116,10 @@ export class SocketService {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
         if (isIdVirtualPlayer(id)) return;
         this.getSocket(id).emit(ev, ...args);
+    }
+
+    private handleDisconnect(socket: io.Socket): void {
+        this.authentificationService.disconnectSocket(socket.id);
+        this.sockets.delete(socket.id);
     }
 }
