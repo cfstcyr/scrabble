@@ -9,13 +9,6 @@ export const settings: SettingsFn = <T>(namespaceOrSpec: string | SettingsSpecs<
 
     const settingsStore = store.namespace(namespace ?? 'scrabble');
 
-    for (const key of Object.keys(specs)) {
-        const spec = specs[key as keyof typeof specs];
-        if (spec.validate && spec.defaultValue && !spec.validate(spec.defaultValue)) {
-            throw new Error(`Invalid default value for setting specs. Default value "${spec.defaultValue}" is invalid for validator.`);
-        }
-    }
-
     const get = <K extends keyof T>(key: K): T[K] => {
         return specs[key].parse(key as string, settingsStore.has(key) ? settingsStore.get(key) : undefined);
     };
