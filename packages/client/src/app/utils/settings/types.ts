@@ -117,6 +117,7 @@ export interface SettingsFn {
      * ```
      *
      * @param specs
+     * @param properties If setting properties.restricted, extended setters and getters functions will be unavailable.
      */
     <T, P extends SettingsProperties = SettingsProperties>(specs: SettingsSpecs<T>, properties?: P): P extends { restricted: true }
         ? RestrictedSettings<T>
@@ -142,7 +143,9 @@ export interface SettingsFn {
      * const myDate = mySettings.get('date');
      * ```
      *
+     * @param namespace Groups settings fields togethers
      * @param specs
+     * @param properties If setting properties.restricted, extended setters and getters functions will be unavailable.
      */
     <T, P extends SettingsProperties = SettingsProperties>(namespace: string, specs: SettingsSpecs<T>, properties?: P): P extends { restricted: true }
         ? RestrictedSettings<T>
