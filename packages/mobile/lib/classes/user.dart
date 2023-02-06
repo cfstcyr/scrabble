@@ -3,8 +3,12 @@ class PublicUser {
   final String avatar;
 
   PublicUser({required this.username, required this.avatar});
-}
 
+  Map<String, dynamic> toJson() => {
+        "username": username,
+        "avatar": avatar,
+      };
+}
 // export interface PublicUser {
 //   username: string;
 //   avatar: string;

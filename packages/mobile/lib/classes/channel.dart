@@ -12,4 +12,9 @@ class Channel {
       canQuit: json['canQuite'] as bool,
     );
   }
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "canQuit": canQuit,
+      };
 }
