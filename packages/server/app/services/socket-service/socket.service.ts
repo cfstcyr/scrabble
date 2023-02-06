@@ -7,6 +7,7 @@ import * as http from 'http';
 import { StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
 import { Service } from 'typedi';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import {
     CanceledGameEmitArgs,
     CleanupEmitArgs,
@@ -26,7 +27,7 @@ export class SocketService {
     private sio?: io.Server;
     private sockets: Map<string, io.Socket>;
 
-    constructor(private readonly chatService: ChatService) {
+    constructor(private readonly chatService: ChatService, private readonly authentificationService: AuthentificationService) {
         this.sockets = new Map();
     }
 
@@ -38,15 +39,19 @@ export class SocketService {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
         this.sio.on('connection', (socket) => {
+            console.log('Socket with id ' + socket.id);
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
 
-            socket.on('authenticate', (token) => {
-                // This.authentificationService.authenticate(token, socket.id);
+            // Authetififcation
+            socket.on('user:authentificate', (token: string) => {
+                console.log('Socket ' + socket.id + ' send the token' + token);
+                this.authentificationService.authentificateSocket(token, socket.id);
             });
 
             this.chatService.configureSocket(socket);
             socket.on('disconnect', () => {
+                console.log('Socket ' + socket.id + ' disconnected');
                 this.sockets.delete(socket.id);
             });
         });

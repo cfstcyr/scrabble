@@ -9,7 +9,19 @@ import { Service } from 'typedi';
 
 @Service()
 export class AuthentificationService {
-    constructor(private databaseService: DatabaseService) { }
+    map: Map<string, string>;
+    constructor(private databaseService: DatabaseService) {
+        this.map = new Map<string, string>();
+    }
+
+    async authentificateSocket(socketId: string, token: string): Promise<boolean> {
+        // jwt.verify(token, env.TOKEN_SECRET);
+        this.map.set(token, socketId);
+    }
+
+    disconnectSocket(socketId: string) {
+        this.map.delete(socketId);
+    }
 
     async login(credentials: Credentials): Promise<string | void> {
         const user = await this.getUserByEmail(credentials.email);
