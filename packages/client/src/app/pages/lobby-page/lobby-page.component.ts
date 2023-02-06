@@ -31,7 +31,7 @@ export class LobbyPageComponent implements OnInit, OnDestroy {
     private componentDestroyed$: Subject<boolean>;
 
     constructor(public gameDispatcherService: GameDispatcherService, public dialog: MatDialog, private snackBar: MatSnackBar) {
-        this.playerName = gameSettings.get('playerName');
+        this.playerName = gameSettings.getPlayerName();
         this.playerNameValid = false;
         this.lobbies = [];
         this.componentDestroyed$ = new Subject();

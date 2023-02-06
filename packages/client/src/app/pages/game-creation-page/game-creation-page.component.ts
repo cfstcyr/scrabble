@@ -53,7 +53,7 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
         this.virtualPlayerLevels = VirtualPlayerLevel;
         this.dictionaryOptions = [];
         this.virtualPlayerNameMap = new Map();
-        this.playerName = gameSettings.get('playerName');
+        this.playerName = gameSettings.getPlayerName();
         this.playerNameValid = false;
         this.pageDestroyed$ = new Subject();
         this.gameParameters = new FormGroup({
@@ -61,7 +61,7 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
             gameMode: new FormControl(GameMode.Multiplayer, Validators.required),
             level: new FormControl(VirtualPlayerLevel.Beginner),
             virtualPlayerName: new FormControl(''),
-            timer: new FormControl(gameSettings.get('timer'), Validators.required),
+            timer: new FormControl(gameSettings.getTimer(), Validators.required),
             dictionary: new FormControl(undefined, [Validators.required]),
         });
 
@@ -82,7 +82,7 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
             this.dictionaryOptions = this.dictionaryService.getDictionaries();
             if (this.shouldSetToDefaultDictionary)
                 this.gameParameters.patchValue({
-                    dictionary: this.dictionaryOptions.find((d) => d.title === gameSettings.get('dictionaryName') || this.dictionaryOptions[0]),
+                    dictionary: this.dictionaryOptions.find((d) => d.title === gameSettings.getDictionaryName() || this.dictionaryOptions[0]),
                 });
         });
     }
