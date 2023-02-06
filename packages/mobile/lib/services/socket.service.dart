@@ -16,10 +16,11 @@ class SocketService {
   Future<void> initSocket() async {
     print('Connecting to chat service');
 
-    await socket.connect();
+    socket.connect();
     socket.onConnect((_) {
       print('connected to websocket');
     });
+    socket.emit("connection");
     print(socket);
   }
 

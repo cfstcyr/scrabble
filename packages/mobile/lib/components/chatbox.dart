@@ -17,16 +17,18 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
-  final _user = const types.User(id: "socketId", firstName: "satoshi");
+
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
   ChatController chatController = getIt.get<ChatController>();
   SocketService socketService = getIt.get<SocketService>();
+  var _user;
   @override
   void initState() {
     super.initState();
-    // _loadMessages();
     socketService.initSocket();
     _listenMessages();
+    // TODO: Passer le userId dans l;initialisation du user
+    _user = types.User(id: "socketService.socket.id", firstName: "satoshi");
   }
 
   @override

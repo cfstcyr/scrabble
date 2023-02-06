@@ -29,7 +29,6 @@ export class ChatService {
 
     private sendMessage(channel: NoId<Channel>, socket: ServerSocket, chatMessage: ChatMessage): void {
         const foundChannel = this.getChannel(channel.name);
-
         if (!foundChannel) {
             socket.emit('error', CHANNEL_NAME_DOES_NOT_EXIST, StatusCodes.BAD_REQUEST);
             return;
