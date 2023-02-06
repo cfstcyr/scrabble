@@ -5,6 +5,7 @@ import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:uuid/uuid.dart';
 
+import '../controllers/chat.controller.dart';
 import '../locator.dart';
 
 class ChatPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
   final _user = const types.User(id: "socketId", firstName: "satoshi");
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
+  ChatController chatController = getIt.get<ChatController>();
   SocketService socketService = getIt.get<SocketService>();
   @override
   void initState() {
