@@ -15,6 +15,7 @@ import { Container } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 import { AuthentificationService } from './authentification.service';
 import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
 
 const expect = chai.expect;
 chai.use(spies);
@@ -71,6 +72,12 @@ describe('AuthentificationService', () => {
     it('validateUsername should return true with a unused username', async () => {
         const username = 'XXXXXXX';
         expect(await authentificationService.validateUsername(username)).to.be.true;
+    });
+
+    it('validateSocket should verify token', async () => {
+        chai.spy.on(jwt, 'verify', () => { });
+        authentificationService.authentificateSocket('3', 'token');
+        expect(jwt.verify).to.have.been.called;
     });
 
     describe('login', () => {

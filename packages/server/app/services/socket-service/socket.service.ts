@@ -46,12 +46,17 @@ export class SocketService {
             // Authetififcation
             socket.on('user:authentificate', (token: string) => {
                 console.log('Socket ' + socket.id + ' send the token' + token);
-                this.authentificationService.authentificateSocket(token, socket.id);
+                try {
+                    this.authentificationService.authentificateSocket(socket.id, token);
+                } catch (error) {
+                    this.authentificationService.disconnectSocket(socket.id);
+                    this.sockets.delete(socket.id);
             });
 
             this.chatService.configureSocket(socket);
             socket.on('disconnect', () => {
                 console.log('Socket ' + socket.id + ' disconnected');
+                this.authentificationService.disconnectSocket(socket.id);
                 this.sockets.delete(socket.id);
             });
         });

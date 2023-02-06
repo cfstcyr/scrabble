@@ -1,5 +1,5 @@
 import { TokenData } from '@app/classes/user/token-data';
-import { NO_LOGIN } from '@app/constants/controllers-errors';
+import { ALREADY_LOGGED, NO_LOGIN, NO_TOKEN } from '@app/constants/controllers-errors';
 import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
@@ -16,12 +16,18 @@ export class AuthentificationService {
     }
 
     async authentificateSocket(socketId: string, token: string): Promise<void> {
-        // jwt.verify(token, env.TOKEN_SECRET);
+        // const idUser = jwt.verify(token, env.TOKEN_SECRET);
+        const idUser = 1;
+        if (!idUser) throw new Error(NO_TOKEN);
+
+        if (this.map.has(token) && this.map.get(token) !== socketId) throw new Error(ALREADY_LOGGED);
         this.map.set(token, socketId);
     }
 
     disconnectSocket(socketId: string) {
-        this.map.delete(socketId);
+        this.map.forEach((value, key) => {
+            if (value === socketId) this.map.delete(key);
+        });
     }
 
     async login(credentials: Credentials): Promise<string | void> {
