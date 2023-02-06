@@ -1,5 +1,9 @@
 <div class="login-container">
     <mat-card>
+        <div class="header">
+            <h2> Connexion </h2>
+        </div>
+
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="outline" [formGroup]="loginForm">
                 <mat-label><app-icon icon="envelope"></app-icon> Courriel</mat-label>
@@ -13,6 +17,12 @@
                 <mat-label><app-icon icon="lock"></app-icon> Mot de passe</mat-label>
                 <input matInput id="password" [type]="isPasswordShown ? 'text' : 'password'" formControlName="password" autocomplete="off" />
             </mat-form-field>
+
+            <mat-card class="error-card" *ngIf="invalidCredentials">
+                <p id="invalid-credentials">Identifiants invalides</p>
+                <button mat-flat-button color="primary">X</button>
+            </mat-card>
+            <!-- <p class="field-error" *ngIf="invalidCredentials">Identifiants invalides</p> -->
 
 
             <div class="buttons">

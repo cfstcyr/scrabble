@@ -15,6 +15,15 @@ $border-radius: 6px;
         margin: 0 12px;
     }
 
+    .header {
+        display: flex;
+        justify-content: center;
+
+        h2 {
+            color: rgba(0, 0, 0, 0.87);
+        }
+    }
+
     form {
         
         mat-form-field {

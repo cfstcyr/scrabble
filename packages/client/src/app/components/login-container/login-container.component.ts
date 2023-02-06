@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UserCredentials } from '@common/models/user';
 
@@ -8,6 +8,7 @@ import { UserCredentials } from '@common/models/user';
     styleUrls: ['./login-container.component.scss'],
 })
 export class LoginContainerComponent {
+    @Input() invalidCredentials: boolean = false;
     @Output() login: EventEmitter<UserCredentials> = new EventEmitter();
 
     loginForm: FormGroup;
