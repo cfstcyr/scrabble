@@ -116,40 +116,6 @@ describe('LoginContainerComponent', () => {
         });
     });
 
-    describe('isFormValid', () => {
-        it('should return true if form is valid and email is dirty', () => {
-            setValidFormValues();
-            component.loginForm.controls.email?.markAsDirty();
-            component.loginForm.controls.password?.markAsPristine();
-
-            expect(component.isFormValid()).toBeTrue();
-        });
-
-        it('should return true if form is valid and password is dirty', () => {
-            setValidFormValues();
-            component.loginForm.controls.email?.markAsPristine();
-            component.loginForm.controls.password?.markAsDirty();
-
-            expect(component.isFormValid()).toBeTrue();
-        });
-
-        it('should return false if form is invalid even if controls are dirty', () => {
-            setInvalidFormValues();
-            component.loginForm.controls.email?.markAsDirty();
-            component.loginForm.controls.password?.markAsDirty();
-
-            expect(component.isFormValid()).toBeFalse();
-        });
-
-        it('should return false if controls are pristine even if form is valid', () => {
-            setValidFormValues();
-            component.loginForm.controls.email?.markAsPristine();
-            component.loginForm.controls.password?.markAsPristine();
-
-            expect(component.isFormValid()).toBeFalse();
-        });
-    });
-
     describe('toggleOffInvalidCredentials', () => {
         it('should clear error messsage', () => {
             component.errorMessage = 'error';

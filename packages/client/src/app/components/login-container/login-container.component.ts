@@ -40,10 +40,6 @@ export class LoginContainerComponent implements OnChanges {
         this.login.next(userCredentials);
     }
 
-    isFormValid(): boolean {
-        return this.loginForm?.valid && (this.loginForm.controls.email?.dirty || this.loginForm.controls.password?.dirty);
-    }
-
     toggleOffInvalidCredentials(): void {
         this.errorMessage = undefined;
         this.handleInvalidCredentials();
