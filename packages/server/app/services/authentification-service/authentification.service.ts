@@ -1,4 +1,5 @@
 import { TokenData } from '@app/classes/user/token-data';
+import { NO_LOGIN } from '@app/constants/controllers-errors';
 import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
@@ -14,7 +15,7 @@ export class AuthentificationService {
         this.map = new Map<string, string>();
     }
 
-    async authentificateSocket(socketId: string, token: string): Promise<boolean> {
+    async authentificateSocket(socketId: string, token: string): Promise<void> {
         // jwt.verify(token, env.TOKEN_SECRET);
         this.map.set(token, socketId);
     }
@@ -27,6 +28,7 @@ export class AuthentificationService {
         const user = await this.getUserByEmail(credentials.email);
         const match = await bcrypt.compare(credentials.password, user.password);
         if (match) return this.generateAccessToken(user.idUser);
+        throw new Error(NO_LOGIN);
     }
 
     async signUp(user: User): Promise<string> {
