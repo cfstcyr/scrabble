@@ -25,7 +25,7 @@ const DEFAULT_LOGIN: UserLoginCredentials = {
     email: 'jdg@machine.epm',
 };
 
-fdescribe('LoginContainerComponent', () => {
+describe('LoginContainerComponent', () => {
     let component: LoginContainerComponent;
     let fixture: ComponentFixture<LoginContainerComponent>;
 
