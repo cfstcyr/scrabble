@@ -80,3 +80,12 @@ $border-radius: 6px;
         }
     }
 }
+
+::ng-deep snack-bar-container.error {
+    background: lighten(tomato, 30%);
+    color: tomato;
+    
+    button {
+        color: tomato;
+    }
+}

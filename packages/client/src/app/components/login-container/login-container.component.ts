@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SNACK_BAR_ERROR_DURATION } from '@app/constants/dictionaries-components';
 import { UserLoginCredentials } from '@common/models/user';
 
 @Component({
@@ -14,7 +16,7 @@ export class LoginContainerComponent implements OnChanges {
     loginForm: FormGroup;
     isPasswordShown: boolean = false;
 
-    constructor() {
+    constructor(private readonly snackBar: MatSnackBar) {
         this.loginForm = new FormGroup({
             email: new FormControl('', [Validators.required]),
             password: new FormControl('', [Validators.required]),
@@ -47,6 +49,7 @@ export class LoginContainerComponent implements OnChanges {
 
     private handleInvalidCredentials(): void {
         if (this.areCredentialsInvalid) {
+            this.snackBar.open('Identifiants invalides', 'OK', { duration: SNACK_BAR_ERROR_DURATION, panelClass: ['error'] });
             this.loginForm.controls.email?.setErrors({ errors: true });
             this.loginForm.controls.password?.setErrors({ errors: true });
 
