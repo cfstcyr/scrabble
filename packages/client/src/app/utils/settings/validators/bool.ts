@@ -1,10 +1,5 @@
+import { parseBool } from '@app/utils/settings/utils';
 import { BoolValidator, SettingsSpec, ValidatorSpec } from './types';
-
-const parseBool = (v: unknown): boolean | undefined => {
-    if (v === true || v === 1 || v === '1' || v === 'true' || v === 't' || v === 'yes' || v === 'y') return true;
-    if (v === false || v === 0 || v === '0' || v === 'false' || v === 'f' || v === 'no' || v === 'n') return false;
-    return undefined;
-};
 
 export const bool: BoolValidator = <T extends boolean = boolean>(spec?: SettingsSpec<T>): ValidatorSpec<T> => {
     const parse = (key: string, value: unknown): T => {
