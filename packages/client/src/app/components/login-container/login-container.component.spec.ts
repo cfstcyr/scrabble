@@ -78,7 +78,7 @@ describe('LoginContainerComponent', () => {
     describe('ngOnChanges', () => {
         it('should open snackbar if credentials are invalid', () => {
             const spy = spyOn<any>(component['snackBar'], 'open');
-            component.areCredentialsInvalid = true;
+            component.errorMessage = 'error';
 
             component.ngOnChanges();
 
@@ -87,6 +87,14 @@ describe('LoginContainerComponent', () => {
     });
 
     describe('onSubmit', () => {
+        it('should call toggleOffInvalidCredentials', () => {
+            const spy = spyOn(component, 'toggleOffInvalidCredentials').and.callFake(() => {});
+            setInvalidFormValues();
+
+            component.onSubmit();
+
+            expect(spy).toHaveBeenCalled();
+        });
         describe('HAPPY PATH - Form is valid', () => {
             it('should emit user credentials', () => {
                 const loginSpy = spyOn(component.login, 'next').and.callFake(() => {});
@@ -143,12 +151,12 @@ describe('LoginContainerComponent', () => {
     });
 
     describe('toggleOffInvalidCredentials', () => {
-        it('should set areCredentialsInvalid to false', () => {
-            component.areCredentialsInvalid = true;
+        it('should clear error messsage', () => {
+            component.errorMessage = 'error';
 
             component.toggleOffInvalidCredentials();
 
-            expect(component.areCredentialsInvalid).toBeFalse();
+            expect(component.errorMessage).toBeUndefined();
         });
     });
 });

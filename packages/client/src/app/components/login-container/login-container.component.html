@@ -36,16 +36,7 @@
                     Afficher les mots de passe</mat-checkbox
                 >
 
-                <div
-                    class="button-container"
-                    matTooltip="Veuillez remplir tous les champs avec des données valides"
-                    [matTooltipDisabled]="isFormValid()"
-                    matTooltipPosition="above"
-                >
-                    <button mat-flat-button color="primary" type="submit" id="create-game-button" [disabled]="!isFormValid()" cdkFocusInitial>
-                        Se connecter
-                    </button>
-                </div>
+                <button mat-flat-button color="primary" type="submit" id="create-game-button" cdkFocusInitial>Se connecter</button>
             </div>
         </form>
     </mat-card>

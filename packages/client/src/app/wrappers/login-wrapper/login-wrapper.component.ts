@@ -7,7 +7,7 @@ import { UserLoginCredentials } from '@common/models/user';
     styleUrls: ['./login-wrapper.component.scss'],
 })
 export class LogginWrapperComponent {
-    areCredentialsInvalid: boolean = false;
+    errorMessage?: string = undefined;
 
     // eslint-disable-next-line no-unused-vars
     handleLogin(usercredentials: UserLoginCredentials): void {
