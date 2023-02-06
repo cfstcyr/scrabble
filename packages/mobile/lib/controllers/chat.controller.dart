@@ -1,13 +1,15 @@
 import 'package:mobile/services/socket.service.dart';
 
 import '../constants/socket-events.dart';
+import '../environments/environment.dart';
 import '../locator.dart';
 
-class ChatService {
-  ChatService._privateConstructor();
-  static final ChatService _instance = ChatService._privateConstructor();
+class ChatController {
+  ChatController._privateConstructor();
+  static final ChatController _instance = ChatController._privateConstructor();
+  final String endpoint = "${Environment().config.apiUrl}/channel";
 
-  factory ChatService() {
+  factory ChatController() {
     return _instance;
   }
   final socketService = getIt.get<SocketService>();

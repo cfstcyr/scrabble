@@ -59,30 +59,25 @@ class _ChatPageState extends State<ChatPage> {
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: const Uuid().v4(),
       text: message.text,
-      //TODO: Send the message via socket
     );
 
+    _sendMessage(message.text);
     _addMessage(textMessage);
   }
 
   Future<void> _listenMessages() async {
     socketService.socket.on('channel:newMessage', (message) {
       _handleNewMessage(message);
-    });
-    socketService.socket.on('allChats', (messages) {
-      print(messages);
-      setState(() {
-        _addMessage(messages);
-      });
+      _addMessage(message);
     });
   }
 
   void _sendMessage(String message) {
-    socketService.sendMessage(message);
+    print(message);
+    chatController.sendMessage(message);
   }
 
   void _handleNewMessage(types.Message message) async {
-    print(message);
     _addMessage(message);
     setState(() {});
   }
