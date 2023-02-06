@@ -158,7 +158,7 @@ export interface JSONValidator {
      *
      * ```typescript
      * settings({
-     *      myObject: json(),
+     *      myObject: json<MyType>(),
      * });
      * ```
      */
@@ -175,7 +175,7 @@ export interface JSONValidator {
      *
      * ```typescript
      * settings({
-     *      myObject: json({ default: new Date() }),
+     *      myObject: json<MyType>({ default: new Date() }),
      * });
      * ```
      */
@@ -192,7 +192,7 @@ export interface JSONValidator {
      *
      * ```typescript
      * settings({
-     *      myObject: json({ isRequired: true }),
+     *      myObject: json<MyType>({ isRequired: true }),
      * });
      * ```
      */
