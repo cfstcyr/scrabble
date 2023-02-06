@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UserCredentials } from '@common/models/user';
 
@@ -7,7 +7,7 @@ import { UserCredentials } from '@common/models/user';
     templateUrl: './login-container.component.html',
     styleUrls: ['./login-container.component.scss'],
 })
-export class LoginContainerComponent {
+export class LoginContainerComponent implements OnChanges {
     @Input() invalidCredentials: boolean = false;
     @Output() login: EventEmitter<UserCredentials> = new EventEmitter();
 
@@ -21,12 +21,19 @@ export class LoginContainerComponent {
         });
     }
 
+    ngOnChanges(): void {
+        if (this.invalidCredentials) {
+            this.loginForm.controls.email?.markAsPristine();
+            this.loginForm.controls.password?.markAsPristine();
+        }
+    }
+
     onSubmit(): void {
         if (this.loginForm.invalid) return;
 
         const userCredentials: UserCredentials = {
             email: this.loginForm.get('email')?.value,
-            username: this.loginForm.get('username')?.value,
+            username: '',
             password: this.loginForm.get('password')?.value,
         };
 
@@ -34,6 +41,11 @@ export class LoginContainerComponent {
     }
 
     isFormValid(): boolean {
-        return this.loginForm?.valid;
+        return this.loginForm?.valid && (this.loginForm.controls.email?.dirty || this.loginForm.controls.password?.dirty);
+    }
+
+    handleCloseErrorBox(): void {
+        this.invalidCredentials = false;
+        this.loginForm.controls.email.markAsPristine();
     }
 }

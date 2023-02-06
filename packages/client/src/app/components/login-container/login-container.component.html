@@ -20,7 +20,7 @@
 
             <mat-card class="error-card" *ngIf="invalidCredentials">
                 <p id="invalid-credentials">Identifiants invalides</p>
-                <button mat-flat-button id="square-button"><strong>X</strong></button>
+                <button mat-flat-button id="square-button" (click)="handleCloseErrorBox()"><strong>X</strong></button>
             </mat-card>
             <!-- <p class="field-error" *ngIf="invalidCredentials">Identifiants invalides</p> -->
 
