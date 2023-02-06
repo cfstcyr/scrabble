@@ -4,6 +4,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppMaterialModule } from '@app/modules/material.module';
 import { UserLoginCredentials } from '@common/models/user';
 
 import { LoginContainerComponent } from './login-container.component';
@@ -13,13 +25,29 @@ const DEFAULT_LOGIN: UserLoginCredentials = {
     email: 'jdg@machine.epm',
 };
 
-describe('LoginContainerComponent', () => {
+fdescribe('LoginContainerComponent', () => {
     let component: LoginContainerComponent;
     let fixture: ComponentFixture<LoginContainerComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [LoginContainerComponent],
+            imports: [
+                AppMaterialModule,
+                FormsModule,
+                MatFormFieldModule,
+                MatSelectModule,
+                MatDividerModule,
+                ReactiveFormsModule,
+                MatProgressSpinnerModule,
+                MatProgressBarModule,
+                MatTableModule,
+                MatDialogModule,
+                MatSnackBarModule,
+                BrowserAnimationsModule,
+                MatCardModule,
+            ],
+            providers: [MatSnackBar],
         }).compileComponents();
     });
 
@@ -103,11 +131,11 @@ describe('LoginContainerComponent', () => {
         });
     });
 
-    describe('handleCloseErrorBox', () => {
+    describe('toggleOffInvalidCredentials', () => {
         it('should set areCredentialsInvalid to false', () => {
             component.areCredentialsInvalid = true;
 
-            component.handleCloseErrorBox();
+            component.toggleOffInvalidCredentials();
 
             expect(component.areCredentialsInvalid).toBeFalse();
         });
