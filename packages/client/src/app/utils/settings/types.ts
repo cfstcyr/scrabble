@@ -1,6 +1,22 @@
 import { ValidatorSpec } from './validators';
 
-export interface Settings<T> {
+export type DynamicSettingsGet<T> = {
+    /**
+     * Get value from settings
+     */
+    [K in keyof T as `get${Capitalize<K extends string ? K : ''>}`]: () => T[K];
+};
+
+export type DynamicSettingsSet<T> = {
+    /**
+     * Get value from settings
+     */
+    [K in keyof T as `set${Capitalize<K extends string ? K : ''>}`]: (value: NonNullable<T[K]>) => void;
+};
+
+export type DynamicSettings<T> = DynamicSettingsGet<T> & DynamicSettingsSet<T>;
+
+export type Settings<T> = DynamicSettings<T> & {
     /**
      * Get value from settings
      *
@@ -70,7 +86,7 @@ export interface Settings<T> {
      * Removes all values from settings. (Only affect values in this instance of settings)
      */
     reset: () => void;
-}
+};
 
 export type SettingsSpecs<T> = { [K in keyof T]: ValidatorSpec<T[K]> };
 

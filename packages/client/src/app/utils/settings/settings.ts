@@ -1,5 +1,5 @@
 import store from 'store2';
-import { SettingsFn, SettingsSpecs } from './types';
+import { DynamicSettings, SettingsFn, SettingsSpecs } from './types';
 
 export const settings: SettingsFn = <T>(namespaceOrSpec: string | SettingsSpecs<T>, maybeSpecs?: SettingsSpecs<T>) => {
     const namespace = typeof namespaceOrSpec === 'string' ? namespaceOrSpec : undefined;
@@ -37,5 +37,16 @@ export const settings: SettingsFn = <T>(namespaceOrSpec: string | SettingsSpecs<
         settingsStore.clear();
     };
 
-    return { get, set, pipe, has, remove, reset };
+    const getters: DynamicSettings<T> = {} as DynamicSettings<T>;
+
+    for (const key of Object.keys(specs) as (keyof T)[]) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (getters[`get${String(key).substring(0, 1).toUpperCase()}${String(key).substring(1)}` as keyof DynamicSettings<T>] as any) = () => get(key);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (getters[`set${String(key).substring(0, 1).toUpperCase()}${String(key).substring(1)}` as keyof DynamicSettings<T>] as any) = (
+            value: NonNullable<T[typeof key]>,
+        ) => set(key, value);
+    }
+
+    return { get, set, pipe, has, remove, reset, ...getters };
 };
