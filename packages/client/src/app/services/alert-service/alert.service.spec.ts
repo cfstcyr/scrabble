@@ -2,7 +2,7 @@
 import { TestBed } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AlertType } from '@app/classes/alert/alert';
+import { Alert, AlertType } from '@app/classes/alert/alert';
 
 import { AlertService } from './alert.service';
 
@@ -64,6 +64,49 @@ describe('AlertService', () => {
             spyOn(service, 'alert');
             service.info('');
             expect(service.alert).toHaveBeenCalled();
+        });
+    });
+
+    describe('log', () => {
+        it('should log as Error when given error type', () => {
+            const alert: Alert = {
+                content: 'pas-content',
+                type: AlertType.Error,
+            };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const spy = spyOn(console, 'error');
+            service['log'](alert);
+            expect(spy).toHaveBeenCalled();
+        });
+        it('should log as Warn  when given warn type', () => {
+            const alert: Alert = {
+                content: 'pas-content',
+                type: AlertType.Warn,
+            };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const spy = spyOn(console, 'warn');
+            service['log'](alert);
+            expect(spy).toHaveBeenCalled();
+        });
+        it('should log as info when given info type', () => {
+            const alert: Alert = {
+                content: 'pas-content',
+                type: AlertType.Info,
+            };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const spy = spyOn(console, 'info');
+            service['log'](alert);
+            expect(spy).toHaveBeenCalled();
+        });
+        it('should log as log when given success type', () => {
+            const alert: Alert = {
+                content: 'pas-content',
+                type: AlertType.Success,
+            };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const spy = spyOn(console, 'log');
+            service['log'](alert);
+            expect(spy).toHaveBeenCalled();
         });
     });
 });

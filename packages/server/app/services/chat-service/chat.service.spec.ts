@@ -27,6 +27,7 @@ const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
 
 const PUBLIC_USER: PublicUser = {
+    email: 'bob@example.com',
     username: 'Bob',
     avatar: 'Gratton',
 };

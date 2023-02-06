@@ -34,7 +34,7 @@ const channels: ClientChannel[] = [
         canQuit: true,
         messages: [
             {
-                sender: { username: 'John', avatar: 'https://placedog.net/50' },
+                sender: { username: 'John', avatar: 'https://placedog.net/50', email: '' },
                 content: 'Bonjour!',
                 date: new Date(),
             },
