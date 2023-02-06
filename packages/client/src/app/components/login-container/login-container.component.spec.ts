@@ -4,12 +4,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UserCredentials } from '@common/models/user';
+import { UserLoginCredentials } from '@common/models/user';
 
 import { LoginContainerComponent } from './login-container.component';
 
-const DEFAULT_CREDENTIALS: UserCredentials = {
-    username: '',
+const DEFAULT_LOGIN: UserLoginCredentials = {
     password: 'Faour#103',
     email: 'jdg@machine.epm',
 };
@@ -31,7 +30,7 @@ describe('LoginContainerComponent', () => {
     });
 
     const setValidFormValues = () => {
-        component.loginForm.patchValue({ ...DEFAULT_CREDENTIALS });
+        component.loginForm.patchValue({ ...DEFAULT_LOGIN });
     };
 
     const setInvalidFormValues = () => {
@@ -55,7 +54,7 @@ describe('LoginContainerComponent', () => {
 
                 setValidFormValues();
                 component.onSubmit();
-                expect(loginSpy).toHaveBeenCalledWith(DEFAULT_CREDENTIALS);
+                expect(loginSpy).toHaveBeenCalledWith(DEFAULT_LOGIN);
             });
         });
 

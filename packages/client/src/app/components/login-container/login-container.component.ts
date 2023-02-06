@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { UserCredentials } from '@common/models/user';
+import { UserLoginCredentials } from '@common/models/user';
 
 @Component({
     selector: 'app-login-container',
@@ -9,7 +9,7 @@ import { UserCredentials } from '@common/models/user';
 })
 export class LoginContainerComponent implements OnChanges {
     @Input() areCredentialsInvalid: boolean = false;
-    @Output() login: EventEmitter<UserCredentials> = new EventEmitter();
+    @Output() login: EventEmitter<UserLoginCredentials> = new EventEmitter();
 
     loginForm: FormGroup;
     isPasswordShown: boolean = false;
@@ -31,9 +31,8 @@ export class LoginContainerComponent implements OnChanges {
     onSubmit(): void {
         if (this.loginForm.invalid) return;
 
-        const userCredentials: UserCredentials = {
+        const userCredentials: UserLoginCredentials = {
             email: this.loginForm.get('email')?.value,
-            username: '',
             password: this.loginForm.get('password')?.value,
         };
 
