@@ -14,6 +14,7 @@ import {
     GamePlayController,
     HighScoresController,
     VirtualPlayerProfilesController,
+    AuthentificationController,
 } from './controllers';
 import { errorHandler } from './middlewares/error-handler';
 import DatabaseService from './services/database-service/database.service';
@@ -31,6 +32,7 @@ export class Application {
         private readonly highScoreController: HighScoresController,
         private readonly virtualPlayerProfileController: VirtualPlayerProfilesController,
         private readonly databaseService: DatabaseService,
+        private readonly authetificationController: AuthentificationController,
     ) {
         this.app = express();
 
@@ -48,6 +50,7 @@ export class Application {
         this.gameHistoryController.route(this.app);
         this.gamePlayController.route(this.app);
         this.highScoreController.route(this.app);
+        this.authetificationController.route(this.app);
         this.virtualPlayerProfileController.route(this.app);
 
         this.errorHandling();

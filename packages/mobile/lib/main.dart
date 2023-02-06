@@ -1,10 +1,22 @@
-import 'package:english_words/english_words.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'home-page.dart';
-import 'login.dart';
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-void main() {
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/pages/login-page.dart';
+import 'package:provider/provider.dart';
+
+import 'environments/environment.dart';
+
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
+  const String environment = String.fromEnvironment(
+    'ENVIRONMENT',
+    defaultValue: Environment.DEV,
+  );
+  Environment().initConfig(environment);
+  setUpLocator();
+
   runApp(MyApp());
 }
 
@@ -27,83 +39,16 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyAppState extends ChangeNotifier {
-    var showSideBar = true;
+class MyAppState extends ChangeNotifier {}
 
-    toggleHide() {
-      showSideBar = !showSideBar;
-    }
-}
-
-
-class MainPage extends StatefulWidget {
-  @override
-  State<MainPage> createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  var selectedIndex = 0; 
-
+class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
-    Widget page;
-    switch (selectedIndex) {
-      case 0:
-        page = HomePage();
-        break;
-      case 1:
-        page = LoginPage();
-        break;
-      default:
-        throw UnimplementedError('no widget for $selectedIndex');
-    }
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Scaffold(
-          body: Row(
-            children: [
-              SafeArea(
-                child: NavigationRail(
-                    leading: FloatingActionButton(
-                    elevation: 0,
-                    onPressed: () {
-                      setState(() {
-                        appState.toggleHide();
-                    });
-                    },
-                    child: appState.showSideBar ? Icon(Icons.arrow_left_sharp):Icon(Icons.arrow_right_alt_sharp),
-                  ),
-                  extended: appState.showSideBar,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text('Home'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.login),
-                      label: Text('Log in'),
-                    ),
-                  ],
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (value) {
-                      setState(() {
-                      selectedIndex = value;
-                    });
-                  },
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  child: page,
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Super Scrabble"),
+        ),
+        backgroundColor: Colors.white,
+        body: LoginPage());
   }
 }
