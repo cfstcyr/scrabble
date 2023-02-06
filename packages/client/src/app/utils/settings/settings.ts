@@ -1,5 +1,3 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-/* eslint-disable no-redeclare */
 import store from 'store2';
 import { SettingsFn, SettingsSpecs } from './types';
 
