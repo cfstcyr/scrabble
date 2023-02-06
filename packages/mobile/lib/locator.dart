@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:mobile/services/account-authentification-service.dart';
+import 'package:mobile/services/chat.service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
@@ -13,5 +14,6 @@ void setUpLocator() {
   getIt.registerLazySingleton<AccountAuthenticationController>(
       () => AccountAuthenticationController());
   getIt.registerLazySingleton<SocketService>(() => SocketService());
+  getIt.registerLazySingleton<ChatService>(() => ChatService());
   getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());
 }
