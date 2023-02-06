@@ -25,6 +25,7 @@ export class ChatService {
         socket.on('channel:newMessage', this.handleNewMessage.bind(this));
 
         socket.emit('channel:init');
+        socket.emit('user:authentificate', 'token');
     }
 
     sendMessage(channel: Channel, content: string): void {

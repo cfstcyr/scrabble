@@ -17,6 +17,11 @@ export class ChatService {
     }
 
     configureSocket(socket: ServerSocket): void {
+        socket.on('user:authentificate', (token: string) => {
+            console.log('Socket ' + socket.id + ' send the token' + token);
+            // this.authentificationService.authentificateSocket(token, socket.id);
+        });
+
         socket.on('channel:newMessage', (channel: NoId<Channel>, chatMessage: ChatMessage) => this.sendMessage(channel, socket, chatMessage));
         socket.on('channel:newChannel', (channelName: string) => this.createChannel(channelName, socket));
         socket.on('channel:join', (channel: string) => this.joinChannel(channel, socket));
