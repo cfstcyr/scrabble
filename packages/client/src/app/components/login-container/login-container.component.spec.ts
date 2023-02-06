@@ -6,39 +6,36 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserCredentials } from '@common/models/user';
 
-import { SignupContainerComponent } from './login-container.component';
+import { LoginContainerComponent } from './login-container.component';
 
 const DEFAULT_CREDENTIALS: UserCredentials = {
-    username: 'Ahmad',
+    username: '',
     password: 'Faour#103',
     email: 'jdg@machine.epm',
 };
 
-const INVALID_EMAIL = '69';
-const INVALID_USERNAME = '';
-
-describe('SignupContainerComponent', () => {
-    let component: SignupContainerComponent;
-    let fixture: ComponentFixture<SignupContainerComponent>;
+describe('LoginContainerComponent', () => {
+    let component: LoginContainerComponent;
+    let fixture: ComponentFixture<LoginContainerComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SignupContainerComponent],
+            declarations: [LoginContainerComponent],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SignupContainerComponent);
+        fixture = TestBed.createComponent(LoginContainerComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
     const setValidFormValues = () => {
-        component.loginForm.patchValue({ ...DEFAULT_CREDENTIALS, confirmPassword: DEFAULT_CREDENTIALS.password });
+        component.loginForm.patchValue({ ...DEFAULT_CREDENTIALS });
     };
 
     const setInvalidFormValues = () => {
-        component.loginForm.patchValue({ ...DEFAULT_CREDENTIALS, confirmPassword: `${DEFAULT_CREDENTIALS.password}-invalid` });
+        component.loginForm.patchValue({ email: '', password: '' });
     };
 
     it('should create', () => {
@@ -52,112 +49,68 @@ describe('SignupContainerComponent', () => {
     });
 
     describe('onSubmit', () => {
-        it('should set hasBeenSubmitted to true', () => {
-            component['hasBeenSubmitted'] = false;
-            component.onSubmit();
-
-            expect(component['hasBeenSubmitted']).toBeTrue();
-        });
-
         describe('HAPPY PATH - Form is valid', () => {
             it('should emit user credentials', () => {
-                const signupSpy = spyOn(component.signup, 'next').and.callFake(() => {});
+                const loginSpy = spyOn(component.login, 'next').and.callFake(() => {});
 
                 setValidFormValues();
                 component.onSubmit();
-                expect(signupSpy).toHaveBeenCalledWith(DEFAULT_CREDENTIALS);
+                expect(loginSpy).toHaveBeenCalledWith(DEFAULT_CREDENTIALS);
             });
         });
 
         describe('SAD PATH - Form is invalid', () => {
             it('should NOT emit user credentials', () => {
-                const signupSpy = spyOn(component.signup, 'next').and.callFake(() => {});
+                const loginSpy = spyOn(component.login, 'next').and.callFake(() => {});
 
-                component.loginForm.patchValue({ ...DEFAULT_CREDENTIALS, confirmPassword: `${DEFAULT_CREDENTIALS.password}-invalid` });
+                setInvalidFormValues();
                 component.onSubmit();
-                expect(signupSpy).not.toHaveBeenCalled();
+                expect(loginSpy).not.toHaveBeenCalled();
             });
         });
     });
 
     describe('isFormValid', () => {
-        it('should return true if form has NOT been submitted', () => {
-            setInvalidFormValues();
-            component['hasBeenSubmitted'] = false;
-
-            expect(component.isFormValid()).toBeTrue();
-        });
-
-        it('should return true if form is valid', () => {
+        it('should return true if form is valid and email is dirty', () => {
             setValidFormValues();
-            component['hasBeenSubmitted'] = false;
+            component.loginForm.controls.email?.markAsDirty();
+            component.loginForm.controls.password?.markAsPristine();
 
             expect(component.isFormValid()).toBeTrue();
         });
 
-        it('should return false if form is invalid or has been submitted', () => {
+        it('should return true if form is valid and password is dirty', () => {
+            setValidFormValues();
+            component.loginForm.controls.email?.markAsPristine();
+            component.loginForm.controls.password?.markAsDirty();
+
+            expect(component.isFormValid()).toBeTrue();
+        });
+
+        it('should return false if form is invalid even if controls are dirty', () => {
             setInvalidFormValues();
-            component['hasBeenSubmitted'] = true;
+            component.loginForm.controls.email?.markAsDirty();
+            component.loginForm.controls.password?.markAsDirty();
+
+            expect(component.isFormValid()).toBeFalse();
+        });
+
+        it('should return false if controls are pristine even if form is valid', () => {
+            setValidFormValues();
+            component.loginForm.controls.email?.markAsPristine();
+            component.loginForm.controls.password?.markAsPristine();
 
             expect(component.isFormValid()).toBeFalse();
         });
     });
 
-    describe('handleEmailLoseFocus', () => {
-        let checkEmailSpy: any;
+    describe('handleCloseErrorBox', () => {
+        it('should set areCredentialsInvalid to false', () => {
+            component.areCredentialsInvalid = true;
 
-        beforeEach(() => {
-            checkEmailSpy = spyOn(component.checkEmailUnicity, 'next').and.callFake(() => {});
-        });
+            component.handleCloseErrorBox();
 
-        describe('HAPPY-PATH - Email is valid', () => {
-            it('should emit checkEmailUnicity event', () => {
-                setValidFormValues();
-                const expectedEmail = component.loginForm.get('email')?.value;
-
-                component.handleEmailLoseFocus();
-
-                expect(checkEmailSpy).toHaveBeenCalledWith(expectedEmail);
-            });
-        });
-
-        describe('SAD-PATH - Email is invalid', () => {
-            it('should NOT emit checkEmailUnicity event', () => {
-                component.loginForm.get('email')?.patchValue(INVALID_EMAIL);
-
-                component.handleEmailLoseFocus();
-
-                expect(checkEmailSpy).not.toHaveBeenCalled();
-            });
-        });
-    });
-
-    describe('handleUsernameLoseFocus', () => {
-        let checkUsernameSpy: any;
-
-        beforeEach(() => {
-            checkUsernameSpy = spyOn(component.checkUsernameUnicity, 'next').and.callFake(() => {});
-        });
-
-        describe('HAPPY-PATH - Username is valid', () => {
-            it('should emit checkUsernameUnicity event', () => {
-                setValidFormValues();
-                const expectedUsername = component.loginForm.get('username')?.value;
-
-                component.handleUsernameLoseFocus();
-
-                expect(checkUsernameSpy).toHaveBeenCalledWith(expectedUsername);
-            });
-        });
-
-        describe('SAD-PATH - Username is invalid', () => {
-            it('should NOT emit checkUsernameUnicity event', () => {
-                component.loginForm.get('username')?.patchValue(INVALID_USERNAME);
-
-                component.handleUsernameLoseFocus();
-
-                expect(checkUsernameSpy).not.toHaveBeenCalled();
-            });
+            expect(component.areCredentialsInvalid).toBeFalse();
         });
     });
 });

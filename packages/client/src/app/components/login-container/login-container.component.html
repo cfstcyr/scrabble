@@ -18,7 +18,7 @@
                 <input matInput id="password" [type]="isPasswordShown ? 'text' : 'password'" formControlName="password" autocomplete="off" />
             </mat-form-field>
 
-            <mat-card class="error-card" *ngIf="invalidCredentials">
+            <mat-card class="error-card" *ngIf="areCredentialsInvalid">
                 <p id="invalid-credentials">Identifiants invalides</p>
                 <button mat-flat-button id="square-button" (click)="handleCloseErrorBox()"><strong>X</strong></button>
             </mat-card>

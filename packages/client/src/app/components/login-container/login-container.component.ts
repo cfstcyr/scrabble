@@ -8,7 +8,7 @@ import { UserCredentials } from '@common/models/user';
     styleUrls: ['./login-container.component.scss'],
 })
 export class LoginContainerComponent implements OnChanges {
-    @Input() invalidCredentials: boolean = false;
+    @Input() areCredentialsInvalid: boolean = false;
     @Output() login: EventEmitter<UserCredentials> = new EventEmitter();
 
     loginForm: FormGroup;
@@ -22,7 +22,7 @@ export class LoginContainerComponent implements OnChanges {
     }
 
     ngOnChanges(): void {
-        if (this.invalidCredentials) {
+        if (this.areCredentialsInvalid) {
             this.loginForm.controls.email?.markAsPristine();
             this.loginForm.controls.password?.markAsPristine();
         }
@@ -45,7 +45,6 @@ export class LoginContainerComponent implements OnChanges {
     }
 
     handleCloseErrorBox(): void {
-        this.invalidCredentials = false;
-        this.loginForm.controls.email.markAsPristine();
+        this.areCredentialsInvalid = false;
     }
 }

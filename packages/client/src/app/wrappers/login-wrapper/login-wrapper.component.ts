@@ -7,8 +7,7 @@ import { UserCredentials } from '@common/models/user';
     styleUrls: ['./login-wrapper.component.scss'],
 })
 export class LogginWrapperComponent {
-    isEmailTaken: boolean = false;
-    isUsernameTaken: boolean = false;
+    areCredentialsInvalid: boolean = false;
 
     // eslint-disable-next-line no-unused-vars
     handleLogin(usercredentials: UserCredentials): void {
