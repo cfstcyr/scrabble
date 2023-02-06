@@ -16,7 +16,7 @@ export type DynamicSettingsSet<T> = {
 
 export type DynamicSettings<T> = DynamicSettingsGet<T> & DynamicSettingsSet<T>;
 
-export type Settings<T> = DynamicSettings<T> & {
+export type RestrictedSettings<T> = {
     /**
      * Get value from settings
      *
@@ -88,7 +88,13 @@ export type Settings<T> = DynamicSettings<T> & {
     reset: () => void;
 };
 
+export type Settings<T> = DynamicSettings<T> & RestrictedSettings<T>;
+
 export type SettingsSpecs<T> = { [K in keyof T]: ValidatorSpec<T[K]> };
+
+interface SettingsProperties {
+    restricted?: boolean;
+}
 
 export interface SettingsFn {
     /**
@@ -112,7 +118,9 @@ export interface SettingsFn {
      *
      * @param specs
      */
-    <T>(specs: SettingsSpecs<T>): Settings<T>;
+    <T, P extends SettingsProperties = SettingsProperties>(specs: SettingsSpecs<T>, properties?: P): P extends { restricted: true }
+        ? RestrictedSettings<T>
+        : Settings<T>;
 
     /**
      * Creates settings instance in namespace
@@ -136,5 +144,7 @@ export interface SettingsFn {
      *
      * @param specs
      */
-    <T>(namespace: string, specs: SettingsSpecs<T>): Settings<T>;
+    <T, P extends SettingsProperties = SettingsProperties>(namespace: string, specs: SettingsSpecs<T>, properties?: P): P extends { restricted: true }
+        ? RestrictedSettings<T>
+        : Settings<T>;
 }
