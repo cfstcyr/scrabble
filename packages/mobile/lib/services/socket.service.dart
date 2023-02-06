@@ -12,9 +12,6 @@ class SocketService {
   factory SocketService() {
     return _instance;
   }
-  // SocketService {
-  //   initSocket();
-  // }
 
   Future<void> initSocket() async {
     print('Connecting to chat service');

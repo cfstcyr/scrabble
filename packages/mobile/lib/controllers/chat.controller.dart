@@ -8,11 +8,13 @@ class ChatController {
   ChatController._privateConstructor();
   static final ChatController _instance = ChatController._privateConstructor();
   final String endpoint = "${Environment().config.apiUrl}/channel";
-
+  final socketService = getIt.get<SocketService>();
   factory ChatController() {
     return _instance;
   }
-  final socketService = getIt.get<SocketService>();
+  ChatController._internal() {
+    socketService.initSocket();
+  }
 
   Future<void> sendMessage(String message) async {
     socketService.emitEvent(CHANNEL_NEW_MESSAGE, message);

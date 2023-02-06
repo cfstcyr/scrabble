@@ -25,6 +25,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     // _loadMessages();
+    socketService.initSocket();
     _listenMessages();
   }
 
