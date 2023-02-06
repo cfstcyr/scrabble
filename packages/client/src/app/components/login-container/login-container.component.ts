@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { INVALID_CREDENTIALS } from '@app/constants/authentification-constants';
 import { SNACK_BAR_ERROR_DURATION } from '@app/constants/dictionaries-components';
 import { UserLoginCredentials } from '@common/models/user';
 
@@ -49,7 +50,7 @@ export class LoginContainerComponent implements OnChanges {
 
     private handleInvalidCredentials(): void {
         if (this.areCredentialsInvalid) {
-            this.snackBar.open('Identifiants invalides', 'OK', { duration: SNACK_BAR_ERROR_DURATION, panelClass: ['error'] });
+            this.snackBar.open(INVALID_CREDENTIALS, 'OK', { duration: SNACK_BAR_ERROR_DURATION, panelClass: ['error'] });
             this.loginForm.controls.email?.setErrors({ errors: true });
             this.loginForm.controls.password?.setErrors({ errors: true });
 
