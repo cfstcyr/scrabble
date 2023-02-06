@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { Setting, settings } from './settings';
+import { settings } from './settings';
+import { Settings } from './types';
 import { num } from './validators';
 
 describe('settings', () => {
-    let mySettings: Setting<{ test: number | undefined }>;
+    let mySettings: Settings<{ test: number | undefined }>;
 
     beforeEach(() => {
         mySettings = settings({

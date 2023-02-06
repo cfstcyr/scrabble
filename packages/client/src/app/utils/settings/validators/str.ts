@@ -1,20 +1,6 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-/* eslint-disable no-redeclare */
-import {
-    SettingsSpec,
-    SettingsSpecDefaultValue,
-    SettingsSpecRequired,
-    SettingsSpecUndefined,
-    ValidatorSpec,
-    ValidatorSpecDefaultValue,
-    ValidatorSpecRequired,
-    ValidatorSpecUndefined,
-} from './types';
+import { SettingsSpec, StringValidator, ValidatorSpec } from './types';
 
-export function str(spec?: SettingsSpecUndefined): ValidatorSpecUndefined<string | undefined>;
-export function str(spec: SettingsSpecDefaultValue<string>): ValidatorSpecDefaultValue<string>;
-export function str(spec: SettingsSpecRequired): ValidatorSpecRequired<string>;
-export function str(spec?: SettingsSpec<string>): ValidatorSpec<string> {
+export const str: StringValidator = (spec?: SettingsSpec<string>): ValidatorSpec<string> => {
     const parse = (key: string, value: unknown): string => {
         const s = { default: undefined, isRequired: false, ...((spec ?? {}) as SettingsSpec<string>) };
 
@@ -33,4 +19,4 @@ export function str(spec?: SettingsSpec<string>): ValidatorSpec<string> {
     };
 
     return { parse };
-}
+};

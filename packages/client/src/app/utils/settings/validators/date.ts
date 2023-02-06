@@ -1,20 +1,6 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-/* eslint-disable no-redeclare */
-import {
-    SettingsSpec,
-    SettingsSpecDefaultValue,
-    SettingsSpecRequired,
-    SettingsSpecUndefined,
-    ValidatorSpec,
-    ValidatorSpecDefaultValue,
-    ValidatorSpecRequired,
-    ValidatorSpecUndefined,
-} from './types';
+import { DateValidator, SettingsSpec, ValidatorSpec } from './types';
 
-export function date<T extends Date | undefined = Date | undefined>(spec?: SettingsSpecUndefined): ValidatorSpecUndefined<T>;
-export function date<T extends Date = Date>(spec: SettingsSpecDefaultValue<T>): ValidatorSpecDefaultValue<T>;
-export function date<T extends Date = Date>(spec: SettingsSpecRequired): ValidatorSpecRequired<T>;
-export function date<T extends Date = Date>(spec?: SettingsSpec<T>): ValidatorSpec<T> {
+export const date: DateValidator = <T extends Date = Date>(spec?: SettingsSpec<T>): ValidatorSpec<T> => {
     const parse = (key: string, value: unknown): T => {
         const s = { default: undefined, isRequired: false, ...((spec ?? {}) as SettingsSpec<T>) };
 
@@ -35,4 +21,4 @@ export function date<T extends Date = Date>(spec?: SettingsSpec<T>): ValidatorSp
     };
 
     return { parse };
-}
+};

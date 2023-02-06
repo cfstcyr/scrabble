@@ -1,21 +1,7 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-/* eslint-disable no-redeclare */
-import {
-    SettingsSpec,
-    SettingsSpecDefaultValue,
-    SettingsSpecRequired,
-    SettingsSpecUndefined,
-    ValidatorSpec,
-    ValidatorSpecDefaultValue,
-    ValidatorSpecRequired,
-    ValidatorSpecUndefined,
-} from './types';
+import { JSONValidator, SettingsSpec, ValidatorSpec } from './types';
 
-export function json<T extends object | undefined = object | undefined>(spec?: SettingsSpecUndefined): ValidatorSpecUndefined<T>;
-export function json<T extends object = object>(spec: SettingsSpecDefaultValue<T>): ValidatorSpecDefaultValue<T>;
-export function json<T extends object = object>(spec: SettingsSpecRequired): ValidatorSpecRequired<T>;
-export function json<T extends object = object>(spec?: SettingsSpec<T>): ValidatorSpec<T> {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const json: JSONValidator = <T extends object = object>(spec?: SettingsSpec<T>): ValidatorSpec<T> => {
     const parse = (key: string, value: unknown): T => {
         const s = { default: undefined, isRequired: false, ...((spec ?? {}) as SettingsSpec<T>) };
 
@@ -44,4 +30,4 @@ export function json<T extends object = object>(spec?: SettingsSpec<T>): Validat
     };
 
     return { parse };
-}
+};

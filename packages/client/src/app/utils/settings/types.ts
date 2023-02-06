@@ -1,0 +1,124 @@
+import { ValidatorSpec } from './validators';
+
+export interface Settings<T> {
+    /**
+     * Get value from settings
+     *
+     * @param key
+     * @returns
+     */
+    get: <K extends keyof T>(key: K) => T[K];
+
+    /**
+     * Set value to settings
+     *
+     * @param key
+     * @param value
+     */
+    set: <K extends keyof T>(key: K, value: NonNullable<T[K]>) => void;
+
+    /**
+     * Pipe value from settings through a series of operators and sets its value.
+     *
+     * **Example usage :**
+     * ```typescript
+     * // Get value from settings, multiply it by 4, max its value by 12, then store its value in the settings and returns it.
+     * const updatedNumber = mySettings.get(
+     *      'number',
+     *      (value) => (value ?? 1) * 4,
+     *      (value) => Math.max(value, 12),
+     * );
+     * ```
+     *
+     * **Example with operators :**
+     * ```typescript
+     * const clamp =
+     *      (min: number, max: number) =>
+     *      (value: number | undefined) =>
+     *          Math.min(max, Math.max(value ?? 0));
+     *
+     * // Get value from settings, clamp it between 0 and 10, then store its value in the settings and returns it.
+     * const updatedNumber = mySettings.get('number', clamp(0, 10));
+     * ```
+     *
+     * @param key
+     * @param callback
+     * @returns Value returned by the operators
+     */
+    pipe: <K extends keyof T>(
+        key: K,
+        operator0: (value: T[K]) => NonNullable<T[K]>,
+        ...operators: ((value: NonNullable<T[K]>) => NonNullable<T[K]>)[]
+    ) => NonNullable<T[K]>;
+
+    /**
+     * Check whether a key has a value set.
+     *
+     * @param key
+     * @returns
+     */
+    has: <K extends keyof T>(key: K) => boolean;
+
+    /**
+     * Removes value from settings
+     *
+     * @param key
+     */
+    remove: <K extends keyof T>(key: K) => void;
+
+    /**
+     * Removes all values from settings. (Only affect values in this instance of settings)
+     */
+    reset: () => void;
+}
+
+export type SettingsSpecs<T> = { [K in keyof T]: ValidatorSpec<T[K]> };
+
+export interface SettingsFn {
+    /**
+     * Creates settings instance
+     *
+     * **Example :**
+     * ```typescript
+     * const mySettings = settings({
+     *      number: num(),
+     *      string: str({ default: '' }),
+     *      date: date({ isRequired: true }),
+     * });
+     *
+     * // Returns number or undefined
+     * const myNumber = mySettings.get('number');
+     * // Returns string or default value
+     * const myString = mySettings.get('string');
+     * // Returns date of throw if not present
+     * const myDate = mySettings.get('date');
+     * ```
+     *
+     * @param specs
+     */
+    <T>(specs: SettingsSpecs<T>): Settings<T>;
+
+    /**
+     * Creates settings instance in namespace
+     *
+     * **Example :**
+     * ```typescript
+     * // Values will be saved as `my-namespace.VALUE`
+     * const mySettings = settings('my-namespace', {
+     *      number: num(),
+     *      string: str({ default: '' }),
+     *      date: date({ isRequired: true }),
+     * });
+     *
+     * // Returns number or undefined
+     * const myNumber = mySettings.get('number');
+     * // Returns string or default value
+     * const myString = mySettings.get('string');
+     * // Returns date of throw if not present
+     * const myDate = mySettings.get('date');
+     * ```
+     *
+     * @param specs
+     */
+    <T>(namespace: string, specs: SettingsSpecs<T>): Settings<T>;
+}

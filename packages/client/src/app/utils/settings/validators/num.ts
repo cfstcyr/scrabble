@@ -1,20 +1,6 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-/* eslint-disable no-redeclare */
-import {
-    SettingsSpec,
-    SettingsSpecDefaultValue,
-    SettingsSpecRequired,
-    SettingsSpecUndefined,
-    ValidatorSpec,
-    ValidatorSpecDefaultValue,
-    ValidatorSpecRequired,
-    ValidatorSpecUndefined,
-} from './types';
+import { NumberValidator, SettingsSpec, ValidatorSpec } from './types';
 
-export function num(spec?: SettingsSpecUndefined): ValidatorSpecUndefined<number | undefined>;
-export function num(spec: SettingsSpecDefaultValue<number>): ValidatorSpecDefaultValue<number>;
-export function num(spec: SettingsSpecRequired): ValidatorSpecRequired<number>;
-export function num(spec?: SettingsSpec<number>): ValidatorSpec<number> {
+export const num: NumberValidator = (spec?: SettingsSpec<number>): ValidatorSpec<number> => {
     const parse = (key: string, value: unknown): number => {
         const s = { default: undefined, isRequired: false, ...((spec ?? {}) as SettingsSpec<number>) };
 
@@ -33,4 +19,4 @@ export function num(spec?: SettingsSpec<number>): ValidatorSpec<number> {
     };
 
     return { parse };
-}
+};
