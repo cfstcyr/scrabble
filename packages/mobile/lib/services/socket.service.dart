@@ -1,11 +1,14 @@
+import 'package:mobile/environments/environment.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../constants/socket-events.dart';
+import '../environments/environnement-config.dart';
 
 class SocketService {
   SocketService._privateConstructor();
+  final String webSocketUrl = "${Environment().config.webSocketUrl}";
   static final SocketService _instance = SocketService._privateConstructor();
-  final IO.Socket socket = IO.io(SERVER_URL, <String, dynamic>{
+  final IO.Socket socket = IO.io(, <String, dynamic>{
     'transports': ['websocket'],
     'autoConnect': false,
   });
