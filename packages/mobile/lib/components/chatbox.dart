@@ -26,7 +26,10 @@ class _ChatPageState extends State<ChatPage> {
   ChatController chatController = getIt.get<ChatController>();
   SocketService socketService = getIt.get<SocketService>();
   // TODO: Set les infos des users avec les vrais infos
-  final _user = types.User(id: "UserId", firstName: "satoshi");
+  final userData =
+      PublicUser(username: "hardcoded:username", avatar: "hardcoded:avatar");
+  final _user = types.User(id: "UserId", firstName: "hardcoded:username");
+
   final channel = Channel(id: "id_channel", name: "principal", canQuit: false);
   @override
   void initState() {
@@ -71,11 +74,8 @@ class _ChatPageState extends State<ChatPage> {
         text: message.text,
       );
 
-      // TODO: Enlever le ?? "userTest" quand les infos du user seront bien set , idem pour avatar
       final messageData = ChatMessage(
-        sender: PublicUser(
-            username: _user.firstName ?? "hardcoded:username",
-            avatar: "hardcoded:avatar"),
+        sender: userData,
         content: message.text,
         date: DateTime.now().toString(),
       );
