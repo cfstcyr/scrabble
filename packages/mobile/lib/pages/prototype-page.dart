@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/chatbox.dart';
 
+import '../components/invalid-connection-popup.dart';
+
 class PrototypePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,9 @@ class PrototypePage extends StatelessWidget {
             children: [
               SizedBox(width: 10), // c'est un spacing fancy
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  showInvalidConnectionPopup(context);
+                },
                 child: Text('NeFaitRien'),
               ),
               SizedBox(width: 10), // c'est un spacing fancy
