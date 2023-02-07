@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:mobile/controllers/chat.controller.dart';
+import 'package:mobile/controllers/channel.controller.dart';
 import 'package:mobile/services/account-authentification-service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -13,7 +13,7 @@ void setUpLocator() {
       () => AccountAuthenticationService());
   getIt.registerLazySingleton<AccountAuthenticationController>(
       () => AccountAuthenticationController());
-  getIt.registerLazySingleton<ChatController>(() => ChatController());
+  getIt.registerLazySingleton<ChannelController>(() => ChannelController());
   getIt.registerLazySingleton<SocketService>(() => SocketService());
 
   getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());

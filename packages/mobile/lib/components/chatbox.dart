@@ -8,7 +8,7 @@ import 'package:mobile/services/theme-color-service.dart';
 import 'package:uuid/uuid.dart';
 
 import '../classes/chat-message.dart';
-import '../controllers/chat.controller.dart';
+import '../controllers/channel.controller.dart';
 import '../locator.dart';
 
 class ChatPage extends StatefulWidget {
@@ -23,7 +23,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
   //TODO: Enlever le chat controller,  Add un Channel Service a la place qui lui parle au controller
-  ChatController chatController = getIt.get<ChatController>();
+  ChannelController channelController = getIt.get<ChannelController>();
   SocketService socketService = getIt.get<SocketService>();
   // TODO: Set les infos des users avec les vrais infos
   final userData =
@@ -87,7 +87,7 @@ class _ChatPageState extends State<ChatPage> {
 
   void _sendMessage(Channel channel, ChatMessage message) {
     print(message);
-    chatController.sendMessage(channel, message);
+    channelController.sendMessage(channel, message);
   }
 
   void _handleNewMessage(types.Message message) async {
