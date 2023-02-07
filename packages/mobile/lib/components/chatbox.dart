@@ -93,7 +93,7 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {});
   }
 
-  //TODO: Add ce listener dans le controller
+  //TODO:  Add ce listener dans le controller
   Future<void> _listenMessages() async {
     socketService.socket.on('channel:newMessage', (message) {
       _handleNewMessage(message);
