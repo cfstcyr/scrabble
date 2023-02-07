@@ -63,25 +63,26 @@ class _ChatPageState extends State<ChatPage> {
   void _handleSendPressed(types.PartialText message) {
     // TODO: Refactor cette duplication de code, textMessage est utilisé
     // pour l'affichage de store des messages par le package  et messageData pour le event: channel:newMessage
+    if (message.text != "") {
+      final textMessage = types.TextMessage(
+        author: _user,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        id: const Uuid().v4(),
+        text: message.text,
+      );
 
-    final textMessage = types.TextMessage(
-      author: _user,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: const Uuid().v4(),
-      text: message.text,
-    );
+      // TODO: Enlever le ?? "userTest" quand les infos du user seront bien set , idem pour avatar
+      final messageData = ChatMessage(
+        sender: PublicUser(
+            username: _user.firstName ?? "hardcoded:username",
+            avatar: "hardcoded:avatar"),
+        content: message.text,
+        date: DateTime.now().toString(),
+      );
 
-    // TODO: Enlever le ?? "userTest" quand les infos du user seront bien set , idem pour avatar
-    final messageData = ChatMessage(
-      sender: PublicUser(
-          username: _user.firstName ?? "hardcoded:username",
-          avatar: "hardcoded:avatar"),
-      content: message.text,
-      date: DateTime.now().toString(),
-    );
-
-    _sendMessage(channel, messageData);
-    _addMessage(textMessage);
+      _sendMessage(channel, messageData);
+      _addMessage(textMessage);
+    }
   }
 
   void _sendMessage(Channel channel, ChatMessage message) {
