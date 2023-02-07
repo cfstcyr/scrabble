@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UserCredentials } from '@common/models/user';
+import { UserSignupInformation } from '@common/models/user';
 
 @Component({
     selector: 'app-signup-wrapper',
@@ -11,7 +11,7 @@ export class SignupWrapperComponent {
     isUsernameTaken: boolean = false;
 
     // eslint-disable-next-line no-unused-vars
-    handleSignup(usercredentials: UserCredentials): void {
+    handleSignup(usercredentials: UserSignupInformation): void {
         // TODO: Add call to AuthentificationService
     }
 
