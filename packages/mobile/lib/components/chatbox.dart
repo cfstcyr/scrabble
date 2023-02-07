@@ -22,6 +22,7 @@ class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
 
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
+  //TODO: Enlever le chat controller,  Add un Channel Service a la place qui lui parle au controller
   ChatController chatController = getIt.get<ChatController>();
   SocketService socketService = getIt.get<SocketService>();
   // TODO: Set les infos des users avec les vrais infos
