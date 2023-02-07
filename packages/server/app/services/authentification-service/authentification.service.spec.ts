@@ -5,7 +5,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { User } from '@common/models/user';
+import { UserDatabase } from '@common/models/user';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -20,7 +20,7 @@ const expect = chai.expect;
 chai.use(spies);
 chai.use(chaiAsPromised);
 
-const ADMIN_USER: User = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: 1 };
+const ADMIN_USER: UserDatabase = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: 1 };
 
 describe('AuthentificationService', () => {
     let testingUnit: ServicesTestingUnit;
