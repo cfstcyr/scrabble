@@ -14,10 +14,10 @@ import { SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 import { AuthentificationService } from './authentification.service';
-import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { ALREADY_LOGGED } from '@app/constants/controllers-errors';
 import { fail } from 'assert';
+import * as bcryptjs from 'bcryptjs';
 
 const expect = chai.expect;
 chai.use(spies);

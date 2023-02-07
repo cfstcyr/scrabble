@@ -5,8 +5,6 @@ import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
 import { UserCredentials, UserDatabase } from '@common/models/user';
 import * as bcryptjs from 'bcryptjs';
-import { Credentials, User } from '@common/models/user';
-import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { Service } from 'typedi';
 
@@ -31,7 +29,7 @@ export class AuthentificationService {
         });
     }
 
-    async login(credentials: Credentials): Promise<string | void> {
+    async login(credentials: UserCredentials): Promise<string | void> {
         const user = await this.getUserByEmail(credentials.email);
         const match = await bcryptjs.compare(credentials.password, user.password);
         if (match) return this.generateAccessToken(user.idUser);
@@ -75,7 +73,7 @@ export class AuthentificationService {
         });
     }
 
-    private async insertUser(user: User): Promise<TokenData> {
+    private async insertUser(user: UserDatabase): Promise<TokenData> {
         return new Promise((resolve, reject) => {
             this.table
                 .returning('idUser')
