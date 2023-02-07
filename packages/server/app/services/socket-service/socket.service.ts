@@ -18,7 +18,7 @@ import {
     NewMessageEmitArgs,
     RejectEmitArgs,
     SocketEmitEvents,
-    StartGameEmitArgs,
+    StartGameEmitArgs
 } from './socket-types';
 
 @Service()
@@ -38,7 +38,6 @@ export class SocketService {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
         this.sio.on('connection', (socket) => {
-            console.log('server' + 'letsgoooo');
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
 
