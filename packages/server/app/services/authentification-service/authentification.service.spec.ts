@@ -5,7 +5,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { User } from '@common/models/user';
+import { UserDatabase } from '@common/models/user';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -23,7 +23,7 @@ const expect = chai.expect;
 chai.use(spies);
 chai.use(chaiAsPromised);
 
-const ADMIN_USER: User = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: 1 };
+const ADMIN_USER: UserDatabase = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: 1 };
 
 describe('AuthentificationService', () => {
     let testingUnit: ServicesTestingUnit;
@@ -51,7 +51,7 @@ describe('AuthentificationService', () => {
     });
 
     it('should login the admin', () => {
-        const admin = { email: 'admin@admin.com', password: 'admin' };
+        const admin = { email: 'admin@admin.com', password: 'admin', username: 'admin' };
         expect(authentificationService.login(admin)).to.exist;
     });
 
@@ -141,7 +141,7 @@ describe('AuthentificationService', () => {
                 const expectedAccessToken = 'ACCESS';
                 chai.spy.on(databaseServiceStub, 'getUser', () => ADMIN_USER);
                 chai.spy.on(authentificationService, 'generateAccessToken', () => expectedAccessToken);
-                chai.spy.on(bcrypt, 'compare', () => true);
+                chai.spy.on(bcryptjs, 'compare', () => true);
 
                 expect(authentificationService.login(ADMIN_USER)).to.eventually.equal(expectedAccessToken);
             });
@@ -150,7 +150,7 @@ describe('AuthentificationService', () => {
         describe('SAD PATH', () => {
             it('should NOT return access token on password match', async () => {
                 chai.spy.on(databaseServiceStub, 'getUser', () => ADMIN_USER);
-                chai.spy.on(bcrypt, 'compare', () => false);
+                chai.spy.on(bcryptjs, 'compare', () => false);
 
                 expect(authentificationService.login(ADMIN_USER)).to.eventually.not.exist;
             });

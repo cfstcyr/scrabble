@@ -1,16 +1,16 @@
-export interface PublicUser {
+export interface User {
+  idUser: number;
+  hash: string;
+  salt: string;
+  email: string;
   username: string;
   avatar: string;
 }
 
-export interface User {
-  idUser: number;
-  email: string;
+export interface UserCredentials extends Pick<User, 'email' | 'username'> {
   password: string;
-  username: string;
 }
 
-export interface Credentials {
-  email: string,
-  password: string
-}
+export type PublicUser = Omit<User, 'idUser' | 'hash' | 'salt'>;
+
+export interface UserDatabase extends UserCredentials, Pick<User, 'idUser'> {}

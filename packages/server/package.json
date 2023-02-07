@@ -49,6 +49,7 @@
         "@common": "out/common"
     },
     "dependencies": {
+        "@types/bcryptjs": "^2.4.2",
         "@types/mock-fs": "^4.13.1",
         "@types/uuid": "^8.3.4",
         "ajv": "^8.11.0",

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/create-account-page.dart';
+
+import '../components/login-form.dart';
+import '../constants/login-constants.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -10,18 +12,6 @@ class LoginPage extends StatelessWidget {
         children: [
           MainTitle(),
           SizedBox(height: 10),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(width: 10), // c'est un spacing fancy
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAccountPage()));
-                },
-                child: Text('Se créer un compte'),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -39,12 +29,17 @@ class MainTitle extends StatelessWidget {
     var style = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
-    return Card(
-      color: theme.colorScheme.primary,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Text('LoginPage', style: style),
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Image.asset(LOGO_PATH, height: 80, width: 120),
+        ),
       ),
-    );
+      SizedBox(height: 10),
+      Card(
+        child: LoginForm(),
+      ),
+    ]);
   }
 }

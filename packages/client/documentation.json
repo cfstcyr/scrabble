@@ -11557,7 +11557,7 @@
         },
         {
             "name": "UserService",
-            "id": "injectable-UserService-d92069136df2081e1449ae8816e7f36c5e457a02ebaee5473893c8badac2e4ea43e350ef56648fc7f8d3bcb462d60ecce06fa8f1fbecba37b8e8f072da8d598c",
+            "id": "injectable-UserService-27b95a8d8123d77129a0f93113c56d39ad866d5fb0e0c3fdc5ec1a1ee6f964d6363c290c3708890ed4acc69f0a6a4694704029709643b154a09f0677784d656f",
             "file": "src/app/services/user-service/user.service.ts",
             "properties": [
                 {
@@ -11584,7 +11584,7 @@
                     "optional": false,
                     "returnType": "boolean",
                     "typeParameters": [],
-                    "line": 20,
+                    "line": 21,
                     "deprecated": false,
                     "deprecationMessage": "",
                     "jsdoctags": [
@@ -11604,7 +11604,7 @@
             "deprecationMessage": "",
             "description": "",
             "rawdescription": "\n",
-            "sourceCode": "import { Injectable } from '@angular/core';\nimport { PublicUser } from '@common/models/user';\n\n@Injectable({\n    providedIn: 'root',\n})\nexport class UserService {\n    user: PublicUser;\n\n    constructor() {\n        // TODO: user real user\n        this.user = {\n            // eslint-disable-next-line @typescript-eslint/no-magic-numbers\n            username: `User ${Math.floor(Math.random() * 1000)}`,\n            // eslint-disable-next-line @typescript-eslint/no-magic-numbers\n            avatar: `https://placedog.net/${Math.floor(Math.random() * 20 + 50)}`,\n        };\n    }\n\n    isUser(u: PublicUser | string) {\n        return (typeof u === 'string' ? u : u.username) === this.user.username;\n    }\n}\n",
+            "sourceCode": "import { Injectable } from '@angular/core';\nimport { PublicUser } from '@common/models/user';\n\n@Injectable({\n    providedIn: 'root',\n})\nexport class UserService {\n    user: PublicUser;\n\n    constructor() {\n        // TODO: user real user\n        this.user = {\n            // eslint-disable-next-line @typescript-eslint/no-magic-numbers\n            username: `User ${Math.floor(Math.random() * 1000)}`,\n            // eslint-disable-next-line @typescript-eslint/no-magic-numbers\n            avatar: `https://placedog.net/${Math.floor(Math.random() * 20 + 50)}`,\n            email: 'test@test.com',\n        };\n    }\n\n    isUser(u: PublicUser | string) {\n        return (typeof u === 'string' ? u : u.username) === this.user.username;\n    }\n}\n",
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
@@ -22069,7 +22069,7 @@
                 }
             ],
             "stylesData": "",
-            "templateData": "<div id=\"page-content\">\n    <div id=\"tiles\">\n        <app-tile [tile]=\"{ letter: 'C', value: 3 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'I', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'L', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'H', value: 4 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'M', value: 2 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'E', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'G', value: 2 }\"></app-tile>\n    </div>\n\n    <div class=\"content\">\n        <img src=\"https://bit.ly/3m206ss\" alt=\"Logo Scrabble\" />\n        <section id=\"button-group\" class=\"justified\">\n            <button mat-flat-button color=\"primary\" routerLink=\"/lobby\">Rejoindre une partie</button>\n            <button mat-flat-button color=\"primary\" routerLink=\"/game-creation\">Créer une partie</button>\n            <button mat-flat-button color=\"primary\" routerLink=\"/high-scores\">Meilleurs scores</button>\n        </section>\n        <div class=\"footer-item\">\n            <h4 class=\"team-name\">Équipe 212</h4>\n            <p>\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/thomas-tr%C3%A9panier/\"\n                        ><app-tile [tile]=\"{ letter: 'T', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >homas Trépanier</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/rachad-chazbek-a06489212/\"\n                        ><app-tile [tile]=\"{ letter: 'R', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >achad Chazbek</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/cfstcyr/\"\n                        ><app-tile [tile]=\"{ letter: 'C', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >harles-François St-Cyr</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/ahmed-mewloud-b0a481195/\"\n                        ><app-tile [tile]=\"{ letter: 'A', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >hmed Mewloud</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/raphael-salvas/\"\n                        ><app-tile [tile]=\"{ letter: 'R', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >aphael Salvas</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/bourdache-amine-26b67a22a/\"\n                        ><app-tile [tile]=\"{ letter: 'A', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >mine Bourdache</span\n                >\n            </p>\n        </div>\n    </div>\n\n    <div id=\"background\" style=\"background: url('assets/img/board_background.svg')\"></div>\n</div>\n"
+            "templateData": "<div id=\"page-content\">\n    <div id=\"tiles\">\n        <app-tile [tile]=\"{ letter: 'C', value: 3 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'I', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'L', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'H', value: 4 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'M', value: 2 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'E', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'G', value: 2 }\"></app-tile>\n    </div>\n\n    <div class=\"content\">\n        <img src=\"https://bit.ly/3m206ss\" alt=\"Logo Scrabble\" />\n        <section id=\"button-group\" class=\"justified\">\n            <button mat-flat-button color=\"primary\" routerLink=\"/signup\">Inscription</button>\n            <button mat-flat-button color=\"primary\" routerLink=\"/lobby\">Rejoindre une partie</button>\n            <button mat-flat-button color=\"primary\" routerLink=\"/game-creation\">Créer une partie</button>\n            <button mat-flat-button color=\"primary\" routerLink=\"/high-scores\">Meilleurs scores</button>\n        </section>\n        <div class=\"footer-item\">\n            <h4 class=\"team-name\">Équipe 212</h4>\n            <p>\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/thomas-tr%C3%A9panier/\"\n                        ><app-tile [tile]=\"{ letter: 'T', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >homas Trépanier</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/rachad-chazbek-a06489212/\"\n                        ><app-tile [tile]=\"{ letter: 'R', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >achad Chazbek</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/cfstcyr/\"\n                        ><app-tile [tile]=\"{ letter: 'C', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >harles-François St-Cyr</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/ahmed-mewloud-b0a481195/\"\n                        ><app-tile [tile]=\"{ letter: 'A', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >hmed Mewloud</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/raphael-salvas/\"\n                        ><app-tile [tile]=\"{ letter: 'R', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >aphael Salvas</span\n                >\n                <span\n                    ><a class=\"home-tile-name\" href=\"https://www.linkedin.com/in/bourdache-amine-26b67a22a/\"\n                        ><app-tile [tile]=\"{ letter: 'A', value: 0 }\" [hideValue]=\"true\"></app-tile></a\n                    >mine Bourdache</span\n                >\n            </p>\n        </div>\n    </div>\n\n    <div id=\"background\" style=\"background: url('assets/img/board_background.svg')\"></div>\n</div>\n"
         },
         {
             "name": "IconButtonComponent",
@@ -24219,6 +24219,397 @@
             "templateData": "<mat-card class=\"header\">\n    <div class=\"content\">\n        <div class=\"back-btn\" [routerLink]=\"'/'\">\n            <app-icon icon=\"arrow-left\" styling=\"solid\"></app-icon>\n            <img src=\"https://bit.ly/3m206ss\" />\n        </div>\n    \n        <div class=\"title\">{{ title }}</div>\n\n        <a [routerLink]=\"buttonRoute\" class=\"link\">{{ button }}</a>\n    </div>\n</mat-card>\n"
         },
         {
+            "name": "SignupContainerComponent",
+            "id": "component-SignupContainerComponent-87fd3c7ce3b31f9e72e62e5f66076c18fb6e7aeef523946838110b306d172ef98d13064a27c4df2a850b723169ea9310ead506433a5b9cd39674463be8453c56",
+            "file": "src/app/components/signup-container/signup-container.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-signup-container",
+            "styleUrls": [
+                "./signup-container.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./signup-container.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "isEmailTaken",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 13,
+                    "type": "boolean",
+                    "decorators": []
+                },
+                {
+                    "name": "isUsernameTaken",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 14,
+                    "type": "boolean",
+                    "decorators": []
+                }
+            ],
+            "outputsClass": [
+                {
+                    "name": "checkEmailUnicity",
+                    "defaultValue": "new EventEmitter()",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 15,
+                    "type": "EventEmitter<string>"
+                },
+                {
+                    "name": "checkUsernameUnicity",
+                    "defaultValue": "new EventEmitter()",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 16,
+                    "type": "EventEmitter<string>"
+                },
+                {
+                    "name": "signup",
+                    "defaultValue": "new EventEmitter()",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 17,
+                    "type": "EventEmitter<UserCredentials>"
+                }
+            ],
+            "propertiesClass": [
+                {
+                    "name": "arePasswordsShown",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 20
+                },
+                {
+                    "name": "hasBeenSubmitted",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 22,
+                    "modifierKind": [
+                        121
+                    ]
+                },
+                {
+                    "name": "signupForm",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "FormGroup",
+                    "optional": false,
+                    "description": "",
+                    "line": 19
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "emailTakenValidator",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "ValidatorFn",
+                    "typeParameters": [],
+                    "line": 78,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "modifierKind": [
+                        121
+                    ]
+                },
+                {
+                    "name": "fieldMatchValidator",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "ValidatorFn",
+                    "typeParameters": [],
+                    "line": 70,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "modifierKind": [
+                        121
+                    ]
+                },
+                {
+                    "name": "handleEmailLoseFocus",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 60,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "handleUsernameLoseFocus",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 65,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "isFormValid",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "boolean",
+                    "typeParameters": [],
+                    "line": 56,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "onSubmit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 42,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                },
+                {
+                    "name": "usernameTakenValidator",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "ValidatorFn",
+                    "typeParameters": [],
+                    "line": 84,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "modifierKind": [
+                        121
+                    ]
+                }
+            ],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';\nimport { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';\nimport { NAME_VALIDATION } from '@app/constants/name-validation';\nimport { UserCredentials } from '@common/models/user';\n\n@Component({\n    selector: 'app-signup-container',\n    templateUrl: './signup-container.component.html',\n    styleUrls: ['./signup-container.component.scss'],\n})\nexport class SignupContainerComponent {\n    @Input() isEmailTaken: boolean = false;\n    @Input() isUsernameTaken: boolean = false;\n    @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();\n    @Output() checkUsernameUnicity: EventEmitter<string> = new EventEmitter();\n    @Output() signup: EventEmitter<UserCredentials> = new EventEmitter();\n\n    signupForm: FormGroup;\n    arePasswordsShown: boolean = false;\n\n    private hasBeenSubmitted: boolean = false;\n\n    constructor() {\n        this.signupForm = new FormGroup(\n            {\n                username: new FormControl('', [\n                    Validators.required,\n                    Validators.minLength(1),\n                    Validators.maxLength(USERNAME_MAX_LENGTH),\n                    Validators.pattern(NAME_VALIDATION.rule),\n                    this.usernameTakenValidator(),\n                ]),\n                email: new FormControl('', [Validators.required, Validators.email, this.emailTakenValidator()]),\n                password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),\n                confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),\n            },\n            [matchValidator('password', 'confirmPassword')],\n        );\n    }\n\n    onSubmit(): void {\n        this.hasBeenSubmitted = true;\n\n        if (this.signupForm.invalid) return;\n\n        const userCredentials: UserCredentials = {\n            email: this.signupForm.get('email')?.value,\n            username: this.signupForm.get('username')?.value,\n            password: this.signupForm.get('password')?.value,\n        };\n\n        this.signup.next(userCredentials);\n    }\n\n    isFormValid(): boolean {\n        return !this.hasBeenSubmitted || this.signupForm?.valid;\n    }\n\n    handleEmailLoseFocus(): void {\n        if (this.signupForm.get('email')?.invalid) return;\n        this.checkEmailUnicity.next(this.signupForm.get('email')?.value);\n    }\n\n    handleUsernameLoseFocus(): void {\n        if (this.signupForm.get('username')?.invalid) return;\n        this.checkUsernameUnicity.next(this.signupForm.get('username')?.value);\n    }\n\n    private fieldMatchValidator(): ValidatorFn {\n        return (inputValue: AbstractControl): ValidationErrors | null => {\n            const expectedValue = this.signupForm?.get('password')?.value;\n\n            return inputValue && expectedValue && inputValue.value !== expectedValue ? { mismatch: true } : null;\n        };\n    }\n\n    private emailTakenValidator(): ValidatorFn {\n        return (): ValidationErrors | null => {\n            return this.isEmailTaken ? { emailTaken: true } : null;\n        };\n    }\n\n    private usernameTakenValidator(): ValidatorFn {\n        return (): ValidationErrors | null => {\n            return this.isUsernameTaken ? { usernameTaken: true } : null;\n        };\n    }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "@import '../../style/variables.scss';\n\n$border-radius: 6px;\n\n::ng-deep .mat-tooltip {\n    font-size: small;\n}\n\n.signup-container {\n    max-width: 625px;\n    width: 100%;\n    margin: 0 auto;\n\n    & > mat-card {\n        margin: 0 12px;\n    }\n\n    form {\n        \n        mat-form-field {\n            width: 100%;\n        }\n\n        .field-error {\n            margin-top: -1.5em;\n            padding-left: 0.25em;\n            color: tomato;\n            font-size: small;\n        }\n    }\n\n    .buttons {\n        display: flex;\n        justify-content: space-between;\n\n        button {\n            font-size: 1.2em;\n            padding: 6px 16px;\n        }\n    }\n}\n",
+                    "styleUrl": "./signup-container.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "args": [],
+                "line": 22
+            },
+            "templateData": "<div class=\"signup-container\">\n    <mat-card>\n        <form [formGroup]=\"signupForm\" (ngSubmit)=\"onSubmit()\">\n            <mat-form-field appearance=\"outline\" [formGroup]=\"signupForm\">\n                <mat-label><app-icon icon=\"envelope\"></app-icon> Courriel</mat-label>\n                <input matInput id=\"email\" type=\"email\" formControlName=\"email\" autocomplete=\"off\" (blur)=\"handleEmailLoseFocus()\"/>\n            </mat-form-field>\n            <p class=\"field-error\" *ngIf=\"isEmailTaken\">Ce courriel est déjà utilisé</p>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Votre nom doit être entre 1 et 40 caractères sans caractères spéciaux\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"user\"></app-icon> Pseudonyme</mat-label>\n                <input matInput id=\"username\" type=\"text\" formControlName=\"username\" autocomplete=\"off\" (blur)=\"handleUsernameLoseFocus()\"/>\n            </mat-form-field>\n            <p class=\"field-error\" *ngIf=\"isUsernameTaken\">Ce pseudonyme est déjà utilisé</p>\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Au moins huit caractères comprenant au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 symbole\"\n                matTooltipPosition=\"above\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Mot de passe</mat-label>\n                <input matInput id=\"password\" [type]=\"arePasswordsShown ? 'text' : 'password'\" formControlName=\"password\" autocomplete=\"off\" />\n            </mat-form-field>\n\n\n            <mat-form-field\n                appearance=\"outline\"\n                [formGroup]=\"signupForm\"\n                matTooltip=\"Le mot de passe entré doit être le même que celui ci-dessus\"\n                matTooltipPosition=\"above\"\n                [matTooltipDisabled]=\"!signupForm.getError('mismatch')\"\n            >\n                <mat-label><app-icon icon=\"lock\"></app-icon> Confirmer </mat-label>\n                <input\n                    matInput\n                    id=\"confirmPassword\"\n                    [type]=\"arePasswordsShown ? 'text' : 'password'\"\n                    formControlName=\"confirmPassword\"\n                    autocomplete=\"off\"\n                />\n            </mat-form-field>\n\n\n            <div class=\"buttons\">\n                <mat-checkbox [(ngModel)]=\"arePasswordsShown\" [ngModelOptions]=\"{ standalone: true }\" color=\"primary\"> Afficher les mots de passe</mat-checkbox>\n\n                <div\n                    class=\"button-container\"\n                    matTooltip=\"Veuillez remplir tous les champs avec des données valides\"\n                    [matTooltipDisabled]=\"isFormValid()\"\n                    matTooltipPosition=\"above\"\n                >\n                    <button mat-flat-button color=\"primary\" type=\"submit\" id=\"create-game-button\" [disabled]=\"!isFormValid()\" cdkFocusInitial>\n                        Créer son compte\n                    </button>\n                </div>\n            </div>\n        </form>\n    </mat-card>\n</div>\n"
+        },
+        {
+            "name": "SignUpPageComponent",
+            "id": "component-SignUpPageComponent-901e1231d7d43b11109ef51bd956a0cb536dd91aa7c66c4e902c53829db42c037e3e9c175c47eaa358d0819cd7bdf0831118eb2142f083251b0f5084ce7c5ec1",
+            "file": "src/app/pages/signup-page/signup-page.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-signup-page",
+            "styleUrls": [
+                "./signup-page.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./signup-page.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component } from '@angular/core';\n\n@Component({\n    selector: 'app-signup-page',\n    templateUrl: './signup-page.component.html',\n    styleUrls: ['./signup-page.component.scss'],\n})\nexport class SignUpPageComponent {}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "#tiles {\n    height: 100%;\n    width: 100%;\n    position: absolute;\n    z-index: -1;\n    overflow: hidden;\n    app-tile {\n        position: absolute;\n        &:nth-child(1) {\n            height: calc(8vw + 8vh);\n            width: calc(8vw + 8vh);\n            bottom: -3vh;\n            left: 4vw;\n            font-size: calc(4vw + 4vh);\n            transform: rotate(-7deg);\n        }\n        &:nth-child(2) {\n            height: calc(5vw + 5vh);\n            width: calc(5vw + 5vh);\n            bottom: 20vh;\n            left: 6vw;\n            font-size: calc(2.5vw + 2.5vh);\n            transform: rotate(7deg);\n        }\n        &:nth-child(3) {\n            height: calc(6vw + 6vh);\n            width: calc(6vw + 6vh);\n            top: 50%;\n            right: 4vw;\n            font-size: calc(3vw + 3vh);\n            transform: rotate(5deg) translateY(-50%);\n        }\n        &:nth-child(4) {\n            height: calc(3vw + 3vh);\n            width: calc(3vw + 3vh);\n            top: 3vh;\n            right: 4vw;\n            font-size: calc(1.5vw + 1.5vh);\n            transform: rotate(8deg);\n        }\n        &:nth-child(5) {\n            height: calc(10vw + 10vh);\n            width: calc(10vw + 10vh);\n            top: 8vh;\n            left: -2vw;\n            font-size: calc(5vw + 5vh);\n            transform: rotate(16deg);\n        }\n        &:nth-child(6) {\n            height: calc(7vw + 7vh);\n            width: calc(7vw + 7vh);\n            top: 14vh;\n            right: 3vw;\n            font-size: calc(3.5vw + 3.5vh);\n            transform: rotate(-4deg);\n        }\n        &:nth-child(7) {\n            height: calc(12vw + 12vh);\n            width: calc(12vw + 12vh);\n            bottom: -4vh;\n            right: -3vw;\n            font-size: calc(6vw + 6vh);\n            transform: rotate(-10deg);\n        }\n    }\n}\n#page-content {\n    height: 100%;\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n    overflow: hidden;\n    .content {\n        height: 100%;\n        display: flex;\n        justify-content: center;\n\n        app-page-header {\n            display: contents;\n        }\n\n        app-signup-wrapper {\n            display: flex;\n            justify-content: center;\n            align-items: center;\n        }\n    }\n    #background {\n        content: '';\n        position: absolute;\n        height: 100%;\n        width: 100%;\n        background-position: center !important;\n        background-size: cover !important;\n        opacity: 0.3;\n        z-index: -2;\n    }\n}\n",
+                    "styleUrl": "./signup-page.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "templateData": "<div id=\"page-content\">\n    <div id=\"tiles\">\n        <app-tile [tile]=\"{ letter: 'C', value: 3 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'I', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'L', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'H', value: 4 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'M', value: 2 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'E', value: 1 }\"></app-tile>\n        <app-tile [tile]=\"{ letter: 'G', value: 2 }\"></app-tile>\n    </div>\n\n    <div class=\"content\">\n        <!-- TODO: Route to /login -->\n        <app-page-header title=\"Créer un compte\" button=\"Se connecter\" buttonRoute=\"/home\"></app-page-header>\n\n        <br />\n\n        <app-signup-wrapper></app-signup-wrapper>\n    </div>\n\n    <div id=\"background\" style=\"background: url('assets/img/board_background.svg')\"></div>\n</div>\n"
+        },
+        {
+            "name": "SignupWrapperComponent",
+            "id": "component-SignupWrapperComponent-4ac07a929076603d0709e05457b31e9679ca985e18952f5844e60a2a2c06db5b435faf3204442d79284352209f4811bb5485492df669800ade6b17ca383e933f",
+            "file": "src/app/wrappers/signup-wrapper/signup-wrapper.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-signup-wrapper",
+            "styleUrls": [
+                "./signup-wrapper.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./signup-wrapper.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "isEmailTaken",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 10
+                },
+                {
+                    "name": "isUsernameTaken",
+                    "defaultValue": "false",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "boolean",
+                    "optional": false,
+                    "description": "",
+                    "line": 11
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "handleCheckEmailUnicity",
+                    "args": [
+                        {
+                            "name": "email",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 19,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "email",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "handleCheckUsernameUnicity",
+                    "args": [
+                        {
+                            "name": "username",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 25,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "username",
+                            "type": "string",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "handleSignup",
+                    "args": [
+                        {
+                            "name": "usercredentials",
+                            "type": "UserCredentials",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 13,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "usercredentials",
+                            "type": "UserCredentials",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { Component } from '@angular/core';\nimport { UserCredentials } from '@common/models/user';\n\n@Component({\n    selector: 'app-signup-wrapper',\n    templateUrl: './signup-wrapper.component.html',\n    styleUrls: ['./signup-wrapper.component.scss'],\n})\nexport class SignupWrapperComponent {\n    isEmailTaken: boolean = false;\n    isUsernameTaken: boolean = false;\n\n    handleSignup(usercredentials: UserCredentials): void {\n        // eslint-disable-next-line no-console\n        console.log(usercredentials);\n        // TODO: Add call to AuthentificationService\n    }\n\n    handleCheckEmailUnicity(email: string): void {\n        // eslint-disable-next-line no-console\n        console.log(email);\n        // TODO: Add handle call to backend\n    }\n\n    handleCheckUsernameUnicity(username: string): void {\n        // eslint-disable-next-line no-console\n        console.log(username);\n        // TODO: Add handle call to backend\n    }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "",
+                    "styleUrl": "./signup-wrapper.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "templateData": "<app-signup-container\n    [isEmailTaken]=\"isEmailTaken\"\n    [isUsernameTaken]=\"isUsernameTaken\"\n    (checkEmailUnicity)=\"handleCheckEmailUnicity($event)\"\n    (checkUsernameUnicity)=\"handleCheckUsernameUnicity($event)\"\n    (signup)=\"handleSignup($event)\"\n></app-signup-container>\n"
+        },
+        {
             "name": "SquareComponent",
             "id": "component-SquareComponent-2bfb14d75cb1829513817c933dee27e7c092987310086bbe5bad53466985d62014c153ffd4de34df5d26c27df12c91521c8e6b35992dcf2f7b2810bc588ea035",
             "file": "src/app/components/square/square.component.ts",
@@ -25923,13 +26314,13 @@
     "modules": [
         {
             "name": "AppMaterialModule",
-            "id": "module-AppMaterialModule-d7bb73f813c6d51971078d0f2c729606cf6a043e9ffed4491aed61e67f0ffbcdaf3d0918f982757a080ad5c71f62a771aea61d0b6eca815e0693ccbe45e4e5e1",
+            "id": "module-AppMaterialModule-cf33f6168f7a2ce6a7982cc8cb92a5e82a6a172e7b7fd2f59dac015023d7eedc0aa95c73f11e18633d825778e0070e29c9469a98f2ab1dd8017cbef6c638b4c3",
             "description": "<p>Material module\nIMPORTANT : IMPORT ONLY USED MODULES !!!!!!</p>\n",
             "deprecationMessage": "",
             "deprecated": false,
             "file": "src/app/modules/material.module.ts",
             "methods": [],
-            "sourceCode": "import { NgModule } from '@angular/core';\n// import { MatAutocompleteModule } from '@angular/material/autocomplete';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatButtonToggleModule } from '@angular/material/button-toggle';\nimport { MatCardModule } from '@angular/material/card';\n// import { MatCheckboxModule } from '@angular/material/checkbox';\nimport { MatChipsModule } from '@angular/material/chips';\n// import { MatDatepickerModule } from '@angular/material/datepicker';\nimport { MatDialogModule } from '@angular/material/dialog';\nimport { MatDividerModule } from '@angular/material/divider';\nimport { MatExpansionModule } from '@angular/material/expansion';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatGridListModule } from '@angular/material/grid-list';\nimport { MatIconModule } from '@angular/material/icon';\nimport { MatInputModule } from '@angular/material/input';\nimport { MatListModule } from '@angular/material/list';\n// import { MatMenuModule } from '@angular/material/menu';\nimport { MatPaginatorModule } from '@angular/material/paginator';\nimport { MatProgressBarModule } from '@angular/material/progress-bar';\nimport { MatProgressSpinnerModule } from '@angular/material/progress-spinner';\nimport { MatRadioModule } from '@angular/material/radio';\nimport { MatSelectModule } from '@angular/material/select';\n// import { MatSidenavModule } from '@angular/material/sidenav';\nimport { MatSlideToggleModule } from '@angular/material/slide-toggle';\n// import { MatSliderModule } from '@angular/material/slider';\nimport { MatSnackBarModule } from '@angular/material/snack-bar';\nimport { MatSortModule } from '@angular/material/sort';\nimport { MatStepperModule } from '@angular/material/stepper';\nimport { MatTableModule } from '@angular/material/table';\nimport { MatTabsModule } from '@angular/material/tabs';\nimport { MatToolbarModule } from '@angular/material/toolbar';\nimport { MatTooltipModule } from '@angular/material/tooltip';\n\nconst modules = [\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    // MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n];\n\n/**\n * Material module\n * IMPORTANT : IMPORT ONLY USED MODULES !!!!!!\n */\n@NgModule({\n    imports: [...modules],\n    exports: [...modules],\n    providers: [],\n})\nexport class AppMaterialModule {}\n",
+            "sourceCode": "import { NgModule } from '@angular/core';\n// import { MatAutocompleteModule } from '@angular/material/autocomplete';\nimport { MatButtonModule } from '@angular/material/button';\nimport { MatButtonToggleModule } from '@angular/material/button-toggle';\nimport { MatCardModule } from '@angular/material/card';\nimport { MatCheckboxModule } from '@angular/material/checkbox';\nimport { MatChipsModule } from '@angular/material/chips';\n// import { MatDatepickerModule } from '@angular/material/datepicker';\nimport { MatDialogModule } from '@angular/material/dialog';\nimport { MatDividerModule } from '@angular/material/divider';\nimport { MatExpansionModule } from '@angular/material/expansion';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatGridListModule } from '@angular/material/grid-list';\nimport { MatIconModule } from '@angular/material/icon';\nimport { MatInputModule } from '@angular/material/input';\nimport { MatListModule } from '@angular/material/list';\n// import { MatMenuModule } from '@angular/material/menu';\nimport { MatPaginatorModule } from '@angular/material/paginator';\nimport { MatProgressBarModule } from '@angular/material/progress-bar';\nimport { MatProgressSpinnerModule } from '@angular/material/progress-spinner';\nimport { MatRadioModule } from '@angular/material/radio';\nimport { MatSelectModule } from '@angular/material/select';\n// import { MatSidenavModule } from '@angular/material/sidenav';\nimport { MatSlideToggleModule } from '@angular/material/slide-toggle';\n// import { MatSliderModule } from '@angular/material/slider';\nimport { MatSnackBarModule } from '@angular/material/snack-bar';\nimport { MatSortModule } from '@angular/material/sort';\nimport { MatStepperModule } from '@angular/material/stepper';\nimport { MatTableModule } from '@angular/material/table';\nimport { MatTabsModule } from '@angular/material/tabs';\nimport { MatToolbarModule } from '@angular/material/toolbar';\nimport { MatTooltipModule } from '@angular/material/tooltip';\n\nconst modules = [\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n];\n\n/**\n * Material module\n * IMPORTANT : IMPORT ONLY USED MODULES !!!!!!\n */\n@NgModule({\n    imports: [...modules],\n    exports: [...modules],\n    providers: [],\n})\nexport class AppMaterialModule {}\n",
             "children": [
                 {
                     "type": "providers",
@@ -25959,13 +26350,13 @@
         },
         {
             "name": "AppModule",
-            "id": "module-AppModule-267340fc29c83734653a4bae4f9f7fb6ba19768dde3e27523c59256d7a40f83f7b4a621f23a1fcbfb3ed92a3224b5a64baa84e0a4df562a465004cc0e01616f2",
+            "id": "module-AppModule-e10feb65271954df6c03f3bae30c537707abdbaba952428c0514a82620864a07f2c09359e72d846dc0f88f5542740a93fcfd46c8106a32733362d0e334e0da46",
             "description": "<p>Main module that is used in main.ts.\nAll automatically generated components will appear in this module.\nPlease do not move this module in the module folder.\nOtherwise Angular Cli will not know in which module to put new component</p>\n",
             "deprecationMessage": "",
             "deprecated": false,
             "file": "src/app/app.module.ts",
             "methods": [],
-            "sourceCode": "import { ScrollingModule } from '@angular/cdk/scrolling';\nimport { registerLocaleData } from '@angular/common';\nimport { HttpClientModule } from '@angular/common/http';\nimport localeFr from '@angular/common/locales/fr';\nimport { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';\nimport { FormsModule, ReactiveFormsModule } from '@angular/forms';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { BrowserAnimationsModule } from '@angular/platform-browser/animations';\nimport { BoardComponent } from '@app/components/board/board.component';\nimport { SquareComponent } from '@app/components/square/square.component';\nimport { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';\nimport { TileComponent } from '@app/components/tile/tile.component';\nimport { AppRoutingModule } from '@app/modules/app-routing.module';\nimport { AppMaterialModule } from '@app/modules/material.module';\nimport { AppComponent } from '@app/pages/app/app.component';\nimport { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';\nimport { GamePageComponent } from '@app/pages/game-page/game-page.component';\nimport { HomePageComponent } from '@app/pages/home-page/home-page.component';\nimport { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';\nimport { AdminDictionariesComponent } from './components/admin-dictionaries-component/admin-dictionaries.component';\nimport { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';\nimport { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';\nimport { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';\nimport { ChatBoxComponent } from './components/chatbox/chatbox.component';\nimport { CommunicationBoxComponent } from './components/communication-box/communication-box.component';\nimport { ConvertDialogComponent } from './components/convert-dialog/convert-dialog.component';\nimport { CreateVirtualPlayerComponent } from './components/create-virtual-player-dialog/create-virtual-player-dialog.component';\nimport { DefaultDialogComponent } from './components/default-dialog/default-dialog.component';\nimport { DeleteDictionaryDialogComponent } from './components/delete-dictionary-dialog/delete-dictionary-dialog.component';\nimport { DeleteVirtualPlayerDialogComponent } from './components/delete-virtual-player-dialog/delete-virtual-player-dialog.component';\nimport { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';\nimport { IconComponent } from './components/icon/icon.component';\nimport { InformationBoxComponent } from './components/information-box/information-box.component';\nimport { LobbyInfoComponent } from './components/lobby-info/lobby-info.component';\nimport { ModifyDictionaryComponent } from './components/modify-dictionary-dialog/modify-dictionary-dialog.component';\nimport { NameFieldComponent } from './components/name-field/name-field.component';\nimport { ObjectiveBoxComponent } from './components/objective-box/objective-box.component';\nimport { ObjectiveComponent } from './components/objective/objective.component';\nimport { PageHeaderComponent } from './components/page-header/page-header.component';\nimport { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';\nimport { UpdateVirtualPlayerComponent } from './components/update-virtual-player-dialog/update-virtual-player-dialog.component';\nimport { UploadDictionaryComponent } from './components/upload-dictionary/upload-dictionary.component';\nimport { AdminPageComponent } from './pages/admin-page/admin-page.component';\nimport { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';\nimport { HighScoresPageComponent } from './pages/high-scores-page/high-scores-page.component';\nimport { LoadingPageComponent } from './pages/loading-page/loading-page.component';\nimport { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';\nimport { DurationPipe } from './pipes/duration/duration.pipe';\nimport { InitializerService } from './services/initializer-service/initializer.service';\nimport { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';\nimport { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';\nimport { IconButtonComponent } from './components/icon-button/icon-button.component';\nimport { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';\nimport { AlertComponent } from './components/alert/alert.component';\n\nregisterLocaleData(localeFr);\n\n/**\n * Main module that is used in main.ts.\n * All automatically generated components will appear in this module.\n * Please do not move this module in the module folder.\n * Otherwise Angular Cli will not know in which module to put new component\n */\n@NgModule({\n    declarations: [\n        AppComponent,\n        GamePageComponent,\n        HomePageComponent,\n        SquareComponent,\n        TileComponent,\n        InformationBoxComponent,\n        CommunicationBoxComponent,\n        BoardComponent,\n        TileRackComponent,\n        LobbyPageComponent,\n        LobbyInfoComponent,\n        CreateWaitingPageComponent,\n        JoinWaitingPageComponent,\n        GameCreationPageComponent,\n        DefaultDialogComponent,\n        IconComponent,\n        NameFieldComponent,\n        TimerSelectionComponent,\n        PageHeaderComponent,\n        HighScoresPageComponent,\n        HighScoreBoxComponent,\n        ConvertDialogComponent,\n        AdminPageComponent,\n        AdminVirtualPlayersComponent,\n        CreateVirtualPlayerComponent,\n        UpdateVirtualPlayerComponent,\n        DeleteVirtualPlayerDialogComponent,\n        AdminDictionariesComponent,\n        ModifyDictionaryComponent,\n        UploadDictionaryComponent,\n        DeleteDictionaryDialogComponent,\n        AdminHighScoresComponent,\n        AdminGameHistoryComponent,\n        DurationPipe,\n        ObjectiveComponent,\n        ObjectiveBoxComponent,\n        LoadingPageComponent,\n        ChatBoxComponent,\n        ChatboxContainerComponent,\n        ChatboxMessageComponent,\n        IconButtonComponent,\n        ChatboxWrapperComponent,\n        AlertComponent,\n    ],\n    imports: [\n        AppMaterialModule,\n        AppRoutingModule,\n        BrowserAnimationsModule,\n        BrowserModule,\n        FormsModule,\n        ReactiveFormsModule,\n        HttpClientModule,\n        ScrollingModule,\n    ],\n    providers: [\n        InitializerService,\n        {\n            provide: APP_INITIALIZER,\n            useFactory: (initializer: InitializerService) => () => initializer.initialize(),\n            deps: [InitializerService],\n            multi: true,\n        },\n        {\n            provide: LOCALE_ID,\n            useValue: 'fr-CA',\n        },\n    ],\n    bootstrap: [AppComponent],\n})\nexport class AppModule {}\n",
+            "sourceCode": "import { ScrollingModule } from '@angular/cdk/scrolling';\nimport { registerLocaleData } from '@angular/common';\nimport { HttpClientModule } from '@angular/common/http';\nimport localeFr from '@angular/common/locales/fr';\nimport { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';\nimport { FormsModule, ReactiveFormsModule } from '@angular/forms';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { BrowserAnimationsModule } from '@angular/platform-browser/animations';\nimport { BoardComponent } from '@app/components/board/board.component';\nimport { SquareComponent } from '@app/components/square/square.component';\nimport { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';\nimport { TileComponent } from '@app/components/tile/tile.component';\nimport { AppRoutingModule } from '@app/modules/app-routing.module';\nimport { AppMaterialModule } from '@app/modules/material.module';\nimport { AppComponent } from '@app/pages/app/app.component';\nimport { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';\nimport { GamePageComponent } from '@app/pages/game-page/game-page.component';\nimport { HomePageComponent } from '@app/pages/home-page/home-page.component';\nimport { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';\nimport { AdminDictionariesComponent } from './components/admin-dictionaries-component/admin-dictionaries.component';\nimport { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';\nimport { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';\nimport { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';\nimport { ChatBoxComponent } from './components/chatbox/chatbox.component';\nimport { CommunicationBoxComponent } from './components/communication-box/communication-box.component';\nimport { ConvertDialogComponent } from './components/convert-dialog/convert-dialog.component';\nimport { CreateVirtualPlayerComponent } from './components/create-virtual-player-dialog/create-virtual-player-dialog.component';\nimport { DefaultDialogComponent } from './components/default-dialog/default-dialog.component';\nimport { DeleteDictionaryDialogComponent } from './components/delete-dictionary-dialog/delete-dictionary-dialog.component';\nimport { DeleteVirtualPlayerDialogComponent } from './components/delete-virtual-player-dialog/delete-virtual-player-dialog.component';\nimport { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';\nimport { IconComponent } from './components/icon/icon.component';\nimport { InformationBoxComponent } from './components/information-box/information-box.component';\nimport { LobbyInfoComponent } from './components/lobby-info/lobby-info.component';\nimport { ModifyDictionaryComponent } from './components/modify-dictionary-dialog/modify-dictionary-dialog.component';\nimport { NameFieldComponent } from './components/name-field/name-field.component';\nimport { ObjectiveBoxComponent } from './components/objective-box/objective-box.component';\nimport { ObjectiveComponent } from './components/objective/objective.component';\nimport { PageHeaderComponent } from './components/page-header/page-header.component';\nimport { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';\nimport { UpdateVirtualPlayerComponent } from './components/update-virtual-player-dialog/update-virtual-player-dialog.component';\nimport { UploadDictionaryComponent } from './components/upload-dictionary/upload-dictionary.component';\nimport { AdminPageComponent } from './pages/admin-page/admin-page.component';\nimport { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';\nimport { HighScoresPageComponent } from './pages/high-scores-page/high-scores-page.component';\nimport { LoadingPageComponent } from './pages/loading-page/loading-page.component';\nimport { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';\nimport { DurationPipe } from './pipes/duration/duration.pipe';\nimport { InitializerService } from './services/initializer-service/initializer.service';\nimport { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';\nimport { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';\nimport { IconButtonComponent } from './components/icon-button/icon-button.component';\nimport { ChatboxWrapperComponent } from './wrappers/chatbox-wrapper/chatbox-wrapper.component';\nimport { AlertComponent } from './components/alert/alert.component';\nimport { SignUpPageComponent } from './pages/signup-page/signup-page.component';\nimport { SignupWrapperComponent } from './wrappers/signup-wrapper/signup-wrapper.component';\nimport { SignupContainerComponent } from './components/signup-container/signup-container.component';\n\nregisterLocaleData(localeFr);\n\n/**\n * Main module that is used in main.ts.\n * All automatically generated components will appear in this module.\n * Please do not move this module in the module folder.\n * Otherwise Angular Cli will not know in which module to put new component\n */\n@NgModule({\n    declarations: [\n        AppComponent,\n        GamePageComponent,\n        HomePageComponent,\n        SignUpPageComponent,\n        SquareComponent,\n        TileComponent,\n        InformationBoxComponent,\n        CommunicationBoxComponent,\n        BoardComponent,\n        TileRackComponent,\n        LobbyPageComponent,\n        LobbyInfoComponent,\n        CreateWaitingPageComponent,\n        JoinWaitingPageComponent,\n        GameCreationPageComponent,\n        DefaultDialogComponent,\n        IconComponent,\n        NameFieldComponent,\n        TimerSelectionComponent,\n        PageHeaderComponent,\n        HighScoresPageComponent,\n        HighScoreBoxComponent,\n        ConvertDialogComponent,\n        AdminPageComponent,\n        AdminVirtualPlayersComponent,\n        CreateVirtualPlayerComponent,\n        UpdateVirtualPlayerComponent,\n        DeleteVirtualPlayerDialogComponent,\n        AdminDictionariesComponent,\n        ModifyDictionaryComponent,\n        UploadDictionaryComponent,\n        DeleteDictionaryDialogComponent,\n        AdminHighScoresComponent,\n        AdminGameHistoryComponent,\n        DurationPipe,\n        ObjectiveComponent,\n        ObjectiveBoxComponent,\n        LoadingPageComponent,\n        ChatBoxComponent,\n        ChatboxContainerComponent,\n        ChatboxMessageComponent,\n        IconButtonComponent,\n        ChatboxWrapperComponent,\n        AlertComponent,\n        SignupWrapperComponent,\n        SignupContainerComponent,\n    ],\n    imports: [\n        AppMaterialModule,\n        AppRoutingModule,\n        BrowserAnimationsModule,\n        BrowserModule,\n        FormsModule,\n        ReactiveFormsModule,\n        HttpClientModule,\n        ScrollingModule,\n    ],\n    providers: [\n        InitializerService,\n        {\n            provide: APP_INITIALIZER,\n            useFactory: (initializer: InitializerService) => () => initializer.initialize(),\n            deps: [InitializerService],\n            multi: true,\n        },\n        {\n            provide: LOCALE_ID,\n            useValue: 'fr-CA',\n        },\n    ],\n    bootstrap: [AppComponent],\n})\nexport class AppModule {}\n",
             "children": [
                 {
                     "type": "providers",
@@ -26090,6 +26481,15 @@
                             "name": "PageHeaderComponent"
                         },
                         {
+                            "name": "SignUpPageComponent"
+                        },
+                        {
+                            "name": "SignupContainerComponent"
+                        },
+                        {
+                            "name": "SignupWrapperComponent"
+                        },
+                        {
                             "name": "SquareComponent"
                         },
                         {
@@ -26140,13 +26540,13 @@
         },
         {
             "name": "AppRoutingModule",
-            "id": "module-AppRoutingModule-b79d5ef86f02c8ce3aad04cb6cc092cd78173082222bf8b3a5b97966130d0b2da103aec7bd2c80e45d6665de7787660e0f6bda90613b9325e80ca7225df48a83",
+            "id": "module-AppRoutingModule-4c675bb637b98ea62ae8ebb4a04fd74be778b88fb624d82f3b4546361fc0839660cda24289e03735ea00b3e0171175c54440a02dd315a395ace28b4ed6c292c0",
             "description": "",
             "deprecationMessage": "",
             "deprecated": false,
             "file": "src/app/modules/app-routing.module.ts",
             "methods": [],
-            "sourceCode": "import { NgModule } from '@angular/core';\nimport { RouterModule, Routes } from '@angular/router';\nimport { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';\nimport { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';\nimport { GameCreationPageComponent } from '@app/pages/game-creation-page/game-creation-page.component';\nimport { GamePageComponent } from '@app/pages/game-page/game-page.component';\nimport { HighScoresPageComponent } from '@app/pages/high-scores-page/high-scores-page.component';\nimport { HomePageComponent } from '@app/pages/home-page/home-page.component';\nimport { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';\nimport { LobbyPageComponent } from '@app/pages/lobby-page/lobby-page.component';\n\nconst routes: Routes = [\n    { path: '', redirectTo: '/home', pathMatch: 'full' },\n    { path: 'home', component: HomePageComponent },\n    { path: 'game', component: GamePageComponent },\n    { path: 'game-creation', component: GameCreationPageComponent },\n    { path: 'lobby', component: LobbyPageComponent },\n    { path: 'waiting-room', component: CreateWaitingPageComponent },\n    { path: 'join-waiting-room', component: JoinWaitingPageComponent },\n    { path: 'high-scores', component: HighScoresPageComponent },\n    { path: 'admin', component: AdminPageComponent },\n    { path: '**', redirectTo: '/home' },\n];\n\n@NgModule({\n    imports: [RouterModule.forRoot(routes, { useHash: true })],\n    exports: [RouterModule],\n})\nexport class AppRoutingModule {}\n",
+            "sourceCode": "import { NgModule } from '@angular/core';\nimport { RouterModule, Routes } from '@angular/router';\nimport { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';\nimport { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';\nimport { GameCreationPageComponent } from '@app/pages/game-creation-page/game-creation-page.component';\nimport { GamePageComponent } from '@app/pages/game-page/game-page.component';\nimport { HighScoresPageComponent } from '@app/pages/high-scores-page/high-scores-page.component';\nimport { HomePageComponent } from '@app/pages/home-page/home-page.component';\nimport { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';\nimport { LobbyPageComponent } from '@app/pages/lobby-page/lobby-page.component';\nimport { SignUpPageComponent } from '@app/pages/signup-page/signup-page.component';\n\nconst routes: Routes = [\n    { path: '', redirectTo: '/home', pathMatch: 'full' },\n    { path: 'signup', component: SignUpPageComponent },\n    { path: 'home', component: HomePageComponent },\n    { path: 'game', component: GamePageComponent },\n    { path: 'game-creation', component: GameCreationPageComponent },\n    { path: 'lobby', component: LobbyPageComponent },\n    { path: 'waiting-room', component: CreateWaitingPageComponent },\n    { path: 'join-waiting-room', component: JoinWaitingPageComponent },\n    { path: 'high-scores', component: HighScoresPageComponent },\n    { path: 'admin', component: AdminPageComponent },\n    { path: '**', redirectTo: '/home' },\n];\n\n@NgModule({\n    imports: [RouterModule.forRoot(routes, { useHash: true })],\n    exports: [RouterModule],\n})\nexport class AppRoutingModule {}\n",
             "children": [
                 {
                     "type": "providers",
@@ -26385,7 +26785,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "ClientChannel[]",
-                "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        canQuit: true,\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50' },\n                content: 'Bonjour!',\n                date: new Date(),\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        canQuit: true,\n        messages: [],\n    },\n]"
+                "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        canQuit: true,\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50', email: '' },\n                content: 'Bonjour!',\n                date: new Date(),\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        canQuit: true,\n        messages: [],\n    },\n]"
             },
             {
                 "name": "CODE_HTML_TAG",
@@ -27031,21 +27431,21 @@
                 "name": "environment",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/environments/environment.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "object",
-                "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
-            },
-            {
-                "name": "environment",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
                 "file": "src/environments/environment.prod.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "object",
                 "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
+            },
+            {
+                "name": "environment",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/environments/environment.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "object",
+                "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
             },
             {
                 "name": "ERROR_SNACK_BAR_CONFIG",
@@ -27346,6 +27746,16 @@
                 "deprecationMessage": "",
                 "type": "number",
                 "defaultValue": "1"
+            },
+            {
+                "name": "matchValidator",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/constants/authentification-constants.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "(source: string, target: string): ValidatorFn => {\n    return (control: AbstractControl): ValidationErrors | null => {\n        const sourceCtrl = control.get(source);\n        const targetCtrl = control.get(target);\n\n        return sourceCtrl && targetCtrl && sourceCtrl.value !== targetCtrl.value ? { mismatch: true } : null;\n    };\n}"
             },
             {
                 "name": "MAX_COL_NUMBER",
@@ -27655,7 +28065,7 @@
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "[]",
-                "defaultValue": "[\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    // MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n]"
+                "defaultValue": "[\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n]"
             },
             {
                 "name": "MULTIPLIER_COLOR_MAP",
@@ -27898,6 +28308,16 @@
                 "defaultValue": "'v'"
             },
             {
+                "name": "PASSWORD_REGEX",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/constants/authentification-constants.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\\\\$&*~]).{8,}$')"
+            },
+            {
                 "name": "PERCENT",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -27971,7 +28391,7 @@
                 "name": "primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
@@ -27991,7 +28411,7 @@
                 "name": "primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
+                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
@@ -28002,6 +28422,16 @@
                 "ctype": "miscellaneous",
                 "subtype": "variable",
                 "file": "src/app/components/icon/icon.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "",
+                "defaultValue": "template.bind({})"
+            },
+            {
+                "name": "primary",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/components/signup-container/signup-container.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "",
@@ -28120,7 +28550,7 @@
                 "name": "SECONDS_IN_MINUTE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/pipes/duration/duration.pipe.ts",
+                "file": "src/app/classes/round/timer.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -28130,7 +28560,7 @@
                 "name": "SECONDS_IN_MINUTE",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/classes/round/timer.ts",
+                "file": "src/app/pipes/duration/duration.pipe.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "type": "number",
@@ -28300,11 +28730,11 @@
                 "name": "template",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
+                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Story<ChatboxMessageComponent>",
-                "defaultValue": "(args: ChatboxMessageComponent) => ({\n    props: args,\n})"
+                "type": "Story<ChatBoxComponent>",
+                "defaultValue": "(args: ChatBoxComponent) => ({\n    props: args,\n})"
             },
             {
                 "name": "template",
@@ -28320,11 +28750,11 @@
                 "name": "template",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/components/chatbox/chatbox.component.stories.ts",
+                "file": "src/app/components/chatbox-message/chatbox-message.component.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Story<ChatBoxComponent>",
-                "defaultValue": "(args: ChatBoxComponent) => ({\n    props: args,\n})"
+                "type": "Story<ChatboxMessageComponent>",
+                "defaultValue": "(args: ChatboxMessageComponent) => ({\n    props: args,\n})"
             },
             {
                 "name": "template",
@@ -28335,6 +28765,16 @@
                 "deprecationMessage": "",
                 "type": "Story<IconComponent>",
                 "defaultValue": "(args: IconComponent) => ({\n    props: args,\n})"
+            },
+            {
+                "name": "template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/components/signup-container/signup-container.component.stories.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "Story<SignupContainerComponent>",
+                "defaultValue": "(args: SignupContainerComponent) => ({\n    props: args,\n})"
             },
             {
                 "name": "TEST_DICTIONARY",
@@ -28435,6 +28875,16 @@
                 "deprecationMessage": "",
                 "type": "string",
                 "defaultValue": "'450px'"
+            },
+            {
+                "name": "USERNAME_MAX_LENGTH",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/constants/authentification-constants.ts",
+                "deprecated": false,
+                "deprecationMessage": "",
+                "type": "number",
+                "defaultValue": "40"
             },
             {
                 "name": "VALID_MULTIPLIERS",
@@ -30599,7 +31049,7 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "ClientChannel[]",
-                    "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        canQuit: true,\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50' },\n                content: 'Bonjour!',\n                date: new Date(),\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        canQuit: true,\n        messages: [],\n    },\n]"
+                    "defaultValue": "[\n    {\n        id: '1',\n        name: 'Chat 1',\n        canQuit: true,\n        messages: [\n            {\n                sender: { username: 'John', avatar: 'https://placedog.net/50', email: '' },\n                content: 'Bonjour!',\n                date: new Date(),\n            },\n        ],\n    },\n    {\n        id: '2',\n        name: 'Chat 2',\n        canQuit: true,\n        messages: [],\n    },\n]"
                 },
                 {
                     "name": "primary",
@@ -31407,18 +31857,6 @@
                     "defaultValue": "(args: ChatboxMessageComponent) => ({\n    props: args,\n})"
                 }
             ],
-            "src/environments/environment.ts": [
-                {
-                    "name": "environment",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/environments/environment.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "object",
-                    "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
-                }
-            ],
             "src/environments/environment.prod.ts": [
                 {
                     "name": "environment",
@@ -31429,6 +31867,18 @@
                     "deprecationMessage": "",
                     "type": "object",
                     "defaultValue": "{\n    production: true,\n    // serverUrl: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000/api',\n    // serverUrlWebsocket: 'http://ec2-15-222-3-253.ca-central-1.compute.amazonaws.com:3000',\n    serverUrl: 'http://api.scrabble.cfstcyr.com/api',\n    serverUrlWebsocket: 'http://api.scrabble.cfstcyr.com',\n}"
+                }
+            ],
+            "src/environments/environment.ts": [
+                {
+                    "name": "environment",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/environments/environment.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "object",
+                    "defaultValue": "{\n    production: false,\n    serverUrlWebsocket: 'http://localhost:3000/',\n    serverUrl: 'http://localhost:3000/api',\n}"
                 }
             ],
             "src/app/constants/fun-facts-scrabble-constants.ts": [
@@ -31681,6 +32131,38 @@
                     "defaultValue": "new Map([\n    [2, COLORS.Word2x],\n    [3, COLORS.Word3x],\n])"
                 }
             ],
+            "src/app/constants/authentification-constants.ts": [
+                {
+                    "name": "matchValidator",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/constants/authentification-constants.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "(source: string, target: string): ValidatorFn => {\n    return (control: AbstractControl): ValidationErrors | null => {\n        const sourceCtrl = control.get(source);\n        const targetCtrl = control.get(target);\n\n        return sourceCtrl && targetCtrl && sourceCtrl.value !== targetCtrl.value ? { mismatch: true } : null;\n    };\n}"
+                },
+                {
+                    "name": "PASSWORD_REGEX",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/constants/authentification-constants.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\\\\$&*~]).{8,}$')"
+                },
+                {
+                    "name": "USERNAME_MAX_LENGTH",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/constants/authentification-constants.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "number",
+                    "defaultValue": "40"
+                }
+            ],
             "src/app/constants/name-validation.ts": [
                 {
                     "name": "MAX_LENGTH",
@@ -31808,7 +32290,7 @@
                     "deprecated": false,
                     "deprecationMessage": "",
                     "type": "[]",
-                    "defaultValue": "[\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    // MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n]"
+                    "defaultValue": "[\n    // MatAutocompleteModule,\n    MatButtonModule,\n    MatButtonToggleModule,\n    MatCardModule,\n    MatCheckboxModule,\n    // MatCheckboxModule,\n    MatChipsModule,\n    // MatDatepickerModule,\n    MatDialogModule,\n    MatExpansionModule,\n    MatFormFieldModule,\n    MatGridListModule,\n    MatIconModule,\n    MatInputModule,\n    MatListModule,\n    // MatMenuModule,\n    MatPaginatorModule,\n    MatProgressBarModule,\n    MatProgressSpinnerModule,\n    MatRadioModule,\n    MatSelectModule,\n    // MatSidenavModule,\n    // MatSliderModule,\n    MatSlideToggleModule,\n    MatSnackBarModule,\n    MatSortModule,\n    MatStepperModule,\n    MatTableModule,\n    MatTabsModule,\n    MatToolbarModule,\n    MatTooltipModule,\n    MatDividerModule,\n]"
                 }
             ],
             "src/app/constants/name-field.ts": [
@@ -31961,6 +32443,28 @@
                     "deprecationMessage": "",
                     "type": "Story<IconComponent>",
                     "defaultValue": "(args: IconComponent) => ({\n    props: args,\n})"
+                }
+            ],
+            "src/app/components/signup-container/signup-container.component.stories.ts": [
+                {
+                    "name": "primary",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/signup-container/signup-container.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "",
+                    "defaultValue": "template.bind({})"
+                },
+                {
+                    "name": "template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/components/signup-container/signup-container.component.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Story<SignupContainerComponent>",
+                    "defaultValue": "(args: SignupContainerComponent) => ({\n    props: args,\n})"
                 }
             ],
             "src/app/constants/tile-font-size-constants.ts": [
@@ -33263,6 +33767,10 @@
                         "pathMatch": "full"
                     },
                     {
+                        "path": "signup",
+                        "component": "SignUpPageComponent"
+                    },
+                    {
                         "path": "home",
                         "component": "HomePageComponent"
                     },
@@ -34183,6 +34691,35 @@
                 "status": "low"
             },
             {
+                "filePath": "src/app/components/signup-container/signup-container.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "primary",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/signup-container/signup-container.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "template",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/components/signup-container/signup-container.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "SignupContainerComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/17",
+                "status": "low"
+            },
+            {
                 "filePath": "src/app/components/square/square.component.ts",
                 "type": "component",
                 "linktype": "component",
@@ -34272,6 +34809,36 @@
                 "name": "UploadEvent",
                 "coveragePercent": 0,
                 "coverageCount": "0/2",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/constants/authentification-constants.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "matchValidator",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/constants/authentification-constants.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "PASSWORD_REGEX",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/constants/authentification-constants.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "USERNAME_MAX_LENGTH",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
                 "status": "low"
             },
             {
@@ -36367,6 +36934,15 @@
                 "status": "low"
             },
             {
+                "filePath": "src/app/pages/signup-page/signup-page.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "SignUpPageComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
                 "filePath": "src/app/pipes/duration/duration.pipe.ts",
                 "type": "pipe",
                 "linktype": "pipe",
@@ -36832,6 +37408,15 @@
                 "name": "ChatboxWrapperComponent",
                 "coveragePercent": 0,
                 "coverageCount": "0/8",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/wrappers/signup-wrapper/signup-wrapper.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "SignupWrapperComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/6",
                 "status": "low"
             },
             {

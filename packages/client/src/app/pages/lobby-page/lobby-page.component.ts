@@ -12,8 +12,8 @@ import {
     DIALOG_FULL_CONTENT,
     DIALOG_FULL_TITLE,
 } from '@app/constants/pages-constants';
-import { PLAYER_NAME_KEY } from '@app/constants/session-storage-constants';
 import { GameDispatcherService } from '@app/services/';
+import { gameSettings } from '@app/utils/settings';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -31,7 +31,7 @@ export class LobbyPageComponent implements OnInit, OnDestroy {
     private componentDestroyed$: Subject<boolean>;
 
     constructor(public gameDispatcherService: GameDispatcherService, public dialog: MatDialog, private snackBar: MatSnackBar) {
-        this.playerName = window.localStorage.getItem(PLAYER_NAME_KEY) || '';
+        this.playerName = gameSettings.getPlayerName();
         this.playerNameValid = false;
         this.lobbies = [];
         this.componentDestroyed$ = new Subject();
@@ -56,7 +56,7 @@ export class LobbyPageComponent implements OnInit, OnDestroy {
     }
 
     joinLobby(lobbyId: string): void {
-        window.localStorage.setItem(PLAYER_NAME_KEY, this.playerName);
+        gameSettings.set('playerName', this.playerName);
         this.gameDispatcherService.handleJoinLobby(this.lobbies.filter((lobby) => lobby.lobbyId === lobbyId)[0], this.playerName);
     }
 

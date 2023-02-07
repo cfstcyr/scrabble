@@ -14,6 +14,7 @@ export class UserService {
             username: `User ${Math.floor(Math.random() * 1000)}`,
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             avatar: `https://placedog.net/${Math.floor(Math.random() * 20 + 50)}`,
+            email: 'test@test.com',
         };
     }
 
