@@ -88,7 +88,7 @@ describe('LoginContainerComponent', () => {
 
     describe('onSubmit', () => {
         it('should call toggleOffInvalidCredentials', () => {
-            const spy = spyOn(component, 'toggleOffInvalidCredentials').and.callFake(() => {});
+            const spy = spyOn(component, 'clearErrorMessage').and.callFake(() => {});
             setInvalidFormValues();
 
             component.onSubmit();
@@ -120,7 +120,7 @@ describe('LoginContainerComponent', () => {
         it('should clear error messsage', () => {
             component.errorMessage = 'error';
 
-            component.toggleOffInvalidCredentials();
+            component.clearErrorMessage();
 
             expect(component.errorMessage).toBeUndefined();
         });

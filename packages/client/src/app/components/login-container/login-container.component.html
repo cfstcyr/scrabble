@@ -13,8 +13,8 @@
                     type="email"
                     formControlName="email"
                     autocomplete="off"
-                    (ngModelChange)="toggleOffInvalidCredentials()"
-                    (valueChanges)="toggleOffInvalidCredentials()"
+                    (ngModelChange)="clearErrorMessage()"
+                    (valueChanges)="clearErrorMessage()"
                 />
             </mat-form-field>
 
@@ -26,8 +26,8 @@
                     [type]="isPasswordShown ? 'text' : 'password'"
                     formControlName="password"
                     autocomplete="off"
-                    (ngModelChange)="toggleOffInvalidCredentials()"
-                    (valueChanges)="toggleOffInvalidCredentials()"
+                    (ngModelChange)="clearErrorMessage()"
+                    (valueChanges)="clearErrorMessage()"
                 />
             </mat-form-field>
 
@@ -36,7 +36,7 @@
                     Afficher les mots de passe</mat-checkbox
                 >
 
-                <button mat-flat-button color="primary" type="submit" id="create-game-button" cdkFocusInitial>Se connecter</button>
+                <button mat-flat-button color="primary" type="submit" cdkFocusInitial>Se connecter</button>
             </div>
         </form>
     </mat-card>

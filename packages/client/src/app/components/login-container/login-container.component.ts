@@ -28,7 +28,7 @@ export class LoginContainerComponent implements OnChanges {
     }
 
     onSubmit(): void {
-        this.toggleOffInvalidCredentials();
+        this.clearErrorMessage();
 
         if (this.loginForm.invalid) return;
 
@@ -40,7 +40,7 @@ export class LoginContainerComponent implements OnChanges {
         this.login.next(userCredentials);
     }
 
-    toggleOffInvalidCredentials(): void {
+    clearErrorMessage(): void {
         this.errorMessage = undefined;
         this.handleInvalidCredentials();
     }
