@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthenticationController } from '@app/controllers/authentication-controller/authentication.controller';
 import { authenticationSettings } from '@app/utils/settings';
 import { Credentials, PublicUser, UserSession } from '@common/models/user';
@@ -29,7 +30,7 @@ describe('AuthenticationService', () => {
     beforeEach(() => {
         authenticationController = jasmine.createSpyObj('AuthenticationController', ['login', 'signup', 'validateToken']);
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, MatSnackBarModule],
             providers: [{ provide: AuthenticationController, useValue: authenticationController }],
         });
         service = TestBed.inject(AuthenticationService);

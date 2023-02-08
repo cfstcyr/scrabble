@@ -1,69 +1,75 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import SocketService from '@app/services/socket-service/socket.service';
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, of, Observable } from 'rxjs';
 import { DatabaseService } from '@app/services/database-service/database.service';
-import { ConnectionState, InitializeState } from '@app/classes/connection-state-service/connection-state';
-import { DEFAULT_STATE_VALUE } from '@app/constants/services-errors';
+import { AppState, InitializeState } from '@app/classes/connection-state-service/connection-state';
+import {
+    RECONNECTION_DELAY,
+    RECONNECTION_RETRIES,
+    STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE,
+    STATE_ERROR_SERVER_NOT_CONNECTED_MESSAGE,
+    STATE_LOADING_MESSAGE,
+} from '@app/constants/services-errors';
+import { catchError, delay, map, retryWhen, take, takeWhile, tap } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
 })
-export class InitializerService implements OnDestroy {
-    private state$: BehaviorSubject<InitializeState>;
-    private destroyed$: Subject<boolean>;
+export class InitializerService {
+    state: BehaviorSubject<AppState>;
 
     constructor(private readonly socketService: SocketService, private readonly databaseService: DatabaseService) {
-        this.state$ = new BehaviorSubject(DEFAULT_STATE_VALUE);
-        this.destroyed$ = new Subject();
-
-        this.socketService.subscribe(this.destroyed$, (state) => this.handleSocketUpdate(state));
-        this.databaseService.subscribe(this.destroyed$, (state) => this.handleDatabaseUpdate(state));
-    }
-
-    ngOnDestroy(): void {
-        this.destroyed$.next(true);
-        this.destroyed$.complete();
+        this.state = new BehaviorSubject<AppState>({
+            state: InitializeState.Loading,
+            message: STATE_LOADING_MESSAGE,
+        });
     }
 
     initialize(): void {
-        this.socketService.connectSocket();
+        (async () => {
+            await this.connectToSocket().toPromise();
+
+            const connectedToDatabase = await this.pingDatabase().toPromise();
+
+            if (!connectedToDatabase) {
+                this.state.next({
+                    state: InitializeState.Error,
+                    message: STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE,
+                });
+
+                return;
+            }
+
+            this.state.next({ state: InitializeState.Ready });
+        })();
     }
 
-    subscribe(destroy$: Observable<boolean>, next: (state: InitializeState) => void): Subscription {
-        return this.state$.pipe(takeUntil(destroy$)).subscribe(next);
-    }
-
-    private isStateError(): boolean {
-        return [InitializeState.DatabaseNotReachable, InitializeState.ServerNotReachable].includes(this.state$.value);
-    }
-
-    private handleSocketUpdate(state: ConnectionState): void {
-        switch (state) {
-            case ConnectionState.Connected:
-                if (this.state$.value !== InitializeState.Ready) {
-                    this.state$.next(InitializeState.Loading);
-                    this.databaseService.checkDatabase();
+    private connectToSocket(): Observable<boolean> {
+        return this.socketService.connectSocket().pipe(
+            tap((connected) => {
+                if (!connected) {
+                    this.state.next({
+                        state: InitializeState.Trying,
+                        message: STATE_ERROR_SERVER_NOT_CONNECTED_MESSAGE,
+                    });
                 }
-                break;
-            case ConnectionState.Error:
-                this.state$.next(InitializeState.ServerNotReachable);
-                break;
-        }
+            }),
+            takeWhile((connected) => !connected),
+        );
     }
 
-    private handleDatabaseUpdate(state: ConnectionState): void {
-        switch (state) {
-            case ConnectionState.Connected:
-                if (this.canSwitchToReadyFromDatabaseUpdate()) this.state$.next(InitializeState.Ready);
-                break;
-            case ConnectionState.Error:
-                if (!this.isStateError()) this.state$.next(InitializeState.DatabaseNotReachable);
-                break;
-        }
-    }
-
-    private canSwitchToReadyFromDatabaseUpdate(): boolean {
-        return this.state$.value !== InitializeState.Ready && this.state$.value !== InitializeState.ServerNotReachable;
+    private pingDatabase(): Observable<boolean> {
+        return this.databaseService.ping().pipe(
+            retryWhen((errors) => {
+                this.state.next({
+                    state: InitializeState.Trying,
+                    message: STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE,
+                });
+                return errors.pipe(delay(RECONNECTION_DELAY), take(RECONNECTION_RETRIES));
+            }),
+            map(() => true),
+            catchError(() => of(false)),
+            take(1),
+        );
     }
 }

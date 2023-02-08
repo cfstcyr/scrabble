@@ -1,33 +1,36 @@
 import { Injectable } from '@angular/core';
-import { ConnectionState } from '@app/classes/connection-state-service/connection-state';
-import ConnectionStateService from '@app/classes/connection-state-service/connection-state-service';
 import { SOCKET_ID_UNDEFINED } from '@app/constants/services-errors';
 import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { ClientSocket } from '@app/classes/communication/socket-type';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { authenticationSettings } from '@app/utils/settings';
+import { Observable, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export default class SocketService extends ConnectionStateService {
+export default class SocketService {
     socket: ClientSocket;
+    socketError: Subject<{ message: string; code: number }> = new Subject();
 
-    constructor(private alertService: AlertService) {
-        super();
-    }
+    constructor(private alertService: AlertService) {}
 
-    connectSocket(): void {
+    connectSocket(): Observable<boolean> {
+        const subject = new Subject<boolean>();
+
         if (this.socket) this.socket.disconnect();
 
         this.socket = this.getSocket();
 
-        this.socket.on('connect', () => this.nextState(ConnectionState.Connected));
-        this.socket.on('connect_error', () => this.nextState(ConnectionState.Error));
+        this.socket.on('connect', () => subject.next(true));
+        this.socket.on('connect_error', () => subject.next(false));
 
         this.socket.on('error', (message: string, code: number) => {
+            this.socketError.next({ message, code });
             this.alertService.error(message, { log: `Error ${code}: ${message}` });
         });
+
+        return subject.asObservable();
     }
 
     getId(): string {
@@ -49,11 +52,9 @@ export default class SocketService extends ConnectionStateService {
         return io(environment.serverUrlWebsocket, {
             transports: ['websocket'],
             upgrade: false,
-            auth: this.getSocketAuth(),
+            auth: {
+                token: authenticationSettings.getToken(),
+            },
         });
-    }
-
-    private getSocketAuth(): { token: string | undefined } {
-        return { token: authenticationSettings.getToken() };
     }
 }

@@ -1,6 +1,5 @@
 import { Message } from '@app/classes/communication/message';
 import { SYSTEM_ID } from './game-constants';
-import { InitializeState } from '@app/classes/connection-state-service/connection-state';
 import { environment } from 'src/environments/environment';
 
 export const MISSING_PLAYER_DATA_TO_INITIALIZE = 'Certaines informations sont manquantes pour créer le joueur';
@@ -24,5 +23,11 @@ export const WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE = (gameId: string): Message =
     };
 };
 
+export const RECONNECTION_DELAY = 1500;
+export const RECONNECTION_RETRIES = 3;
+
 export const DB_CONNECTED_ENDPOINT = `${environment.serverUrl}/database/is-connected`;
-export const DEFAULT_STATE_VALUE: InitializeState = InitializeState.Loading;
+
+export const STATE_LOADING_MESSAGE = "Chargement de l'application";
+export const STATE_ERROR_SERVER_NOT_CONNECTED_MESSAGE = "Impossible d'établir une connexion avec le serveur";
+export const STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE = "Impossible d'établir une connexion avec la base de donnée";
