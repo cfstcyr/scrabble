@@ -38,7 +38,7 @@ describe('SocketService', () => {
         });
 
         it('should call nextState with connected on connect', (done) => {
-            service.initializeService();
+            service.connectSocket();
 
             socket.on('connect', () => {
                 expect(nextStateSpy).toHaveBeenCalledOnceWith(ConnectionState.Connected);
@@ -49,7 +49,7 @@ describe('SocketService', () => {
         });
 
         it('should call nextState with Error on connect_error', (done) => {
-            service.initializeService();
+            service.connectSocket();
 
             socket.on('connect_error', () => {
                 expect(nextStateSpy).toHaveBeenCalledOnceWith(ConnectionState.Error);

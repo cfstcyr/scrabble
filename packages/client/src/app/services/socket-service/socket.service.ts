@@ -6,6 +6,7 @@ import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { ClientSocket } from '@app/classes/communication/socket-type';
 import { AlertService } from '@app/services/alert-service/alert.service';
+import { authenticationSettings } from '@app/utils/settings';
 @Injectable({
     providedIn: 'root',
 })
@@ -16,9 +17,13 @@ export default class SocketService extends ConnectionStateService {
         super();
     }
 
-    initializeService(): void {
+    connectSocket(): void {
+        if (this.socket) this.socket.disconnect();
+
         this.socket = this.getSocket();
-        this.socket.on('connect', () => this.nextState(ConnectionState.Connected)).on('connect_error', () => this.nextState(ConnectionState.Error));
+
+        this.socket.on('connect', () => this.nextState(ConnectionState.Connected));
+        this.socket.on('connect_error', () => this.nextState(ConnectionState.Error));
 
         this.socket.on('error', (message: string, code: number) => {
             this.alertService.error(message, { log: `Error ${code}: ${message}` });
@@ -41,6 +46,14 @@ export default class SocketService extends ConnectionStateService {
 
     private getSocket(): ClientSocket {
         // This line cannot be tested since it would connect to the real socket in the tests since it is impossible to mock io()
-        return io(environment.serverUrlWebsocket, { transports: ['websocket'], upgrade: false });
+        return io(environment.serverUrlWebsocket, {
+            transports: ['websocket'],
+            upgrade: false,
+            auth: this.getSocketAuth(),
+        });
+    }
+
+    private getSocketAuth(): { token: string | undefined } {
+        return { token: authenticationSettings.getToken() };
     }
 }

@@ -27,7 +27,7 @@ export class InitializerService implements OnDestroy {
     }
 
     initialize(): void {
-        this.socketService.initializeService();
+        this.socketService.connectSocket();
     }
 
     subscribe(destroy$: Observable<boolean>, next: (state: InitializeState) => void): Subscription {
