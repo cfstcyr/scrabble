@@ -21,6 +21,9 @@ import {
     SocketEmitEvents,
     StartGameEmitArgs,
 } from './socket-types';
+import { NextFunction } from 'express';
+import { token } from 'morgan';
+import { env } from 'process';
 
 @Service()
 export class SocketService {
@@ -38,17 +41,36 @@ export class SocketService {
     handleSockets(): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
+        this.sio.use(async (socket: io.Socket, next: NextFunction) => {
+            console.log('Received Socket connection' + socket.id);
+            const token = socket.handshake.auth;
+            if (token) {
+                try {
+                    const userId = jwt.verify(token, env.TOKEN_SECRET);
+
+                    // Get UserId form DB
+                    // Do double Connection Verrification on Users Set
+                    return next();
+                } catch (err) {
+                    return next(new Error(err));
+                }
+            } else {
+                next(new Error('Token is missing'));
+            }
+        });
+
         this.sio.on('connection', (socket) => {
+            const wrap = (middleware) => (socket, next) => middleware(socket.request, {}, next);
+
             console.log('server' + 'letsgoooo');
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
-            socket.on('user:authentificate', (token: string) => {
-                try {
-                    this.authentificationService.authentificateSocket(socket.id, token);
-                } catch (error) {
-                    this.handleDisconnect(socket);
-                }
-            });
+
+            try {
+                this.authentificationService.authentificateSocket(socket.id, token);
+            } catch (error) {
+                this.handleDisconnect(socket);
+            }
             this.chatService.configureSocket(socket);
             socket.on('disconnect', () => {
                 this.handleDisconnect(socket);
