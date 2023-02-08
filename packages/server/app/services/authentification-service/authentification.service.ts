@@ -10,24 +10,36 @@ import { Service } from 'typedi';
 
 @Service()
 export class AuthentificationService {
-    map: Map<string, string>;
+    connectedUsers: Set<TokenData>;
     constructor(private databaseService: DatabaseService) {
-        this.map = new Map<string, string>();
+        // thiss.map = new Map<string, string>();
+        this.connectedUsers = new Set<UserDatabase>();
     }
 
-    authentificateSocket(socketId: string, token: string): void {
-        jwt.verify(token, env.TOKEN_SECRET);
-
-        if (this.map.has(token) && this.map.get(token) !== socketId) throw new Error(ALREADY_LOGGED);
-
-        this.map.set(token, socketId);
+    async authentificateSocket(socketId: string, token: string): Promise<void> {
+        const idUser = jwt.verify(token, env.TOKEN_SECRET) as TokenData;
+        if (this.connectedUsers.has(idUser)) throw new Error(ALREADY_LOGGED);
+        this.connectedUsers.add(idUser);
     }
 
-    disconnectSocket(socketId: string) {
-        this.map.forEach((value, key) => {
-            if (value === socketId) this.map.delete(key);
-        });
+    async disconnect(socketId: string, token: string): Promise<void> {
+        const idUser = jwt.verify(token, env.TOKEN_SECRET) as TokenData;
+        this.connectedUsers.delete(idUser);
     }
+
+    // authentificateSocket(socketId: string, token: string): void {
+    //     jwt.verify(token, env.TOKEN_SECRET);
+
+    //     if (this.map.has(token) && this.map.get(token) !== socketId) throw new Error(ALREADY_LOGGED);
+
+    //     this.map.set(token, socketId);
+    // // }
+
+    // disconnectSocket(socketId: string) {
+    //     this.map.forEach((value, key) => {
+    //         if (value === socketId) this.map.delete(key);
+    //     });
+    // }
 
     async login(credentials: UserLoginCredentials): Promise<string | void> {
         const user = await this.getUserByEmail(credentials.email);

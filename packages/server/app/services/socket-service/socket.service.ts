@@ -22,8 +22,6 @@ import {
     StartGameEmitArgs,
 } from './socket-types';
 import { NextFunction } from 'express';
-import { token } from 'morgan';
-import { env } from 'process';
 
 @Service()
 export class SocketService {
@@ -44,9 +42,12 @@ export class SocketService {
         this.sio.use(async (socket: io.Socket, next: NextFunction) => {
             console.log('Received Socket connection' + socket.id);
             const token = socket.handshake.auth;
+
+            console.log('Token is :', token);
             if (token) {
                 try {
-                    const userId = jwt.verify(token, env.TOKEN_SECRET);
+                    this.authentificationService.authentificateSocket(socket.id, token.value);
+                    // const userId = jwt.verify(token, env.TOKEN_SECRET);
 
                     // Get UserId form DB
                     // Do double Connection Verrification on Users Set
@@ -60,17 +61,17 @@ export class SocketService {
         });
 
         this.sio.on('connection', (socket) => {
-            const wrap = (middleware) => (socket, next) => middleware(socket.request, {}, next);
+            // const wrap = (middleware) => (socket, next) => middleware(socket.request, {}, next);
 
             console.log('server' + 'letsgoooo');
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
 
-            try {
-                this.authentificationService.authentificateSocket(socket.id, token);
-            } catch (error) {
-                this.handleDisconnect(socket);
-            }
+            // try {
+            //     this.authentificationService.authentificateSocket(socket.id, token);
+            // } catch (error) {
+            //     this.handleDisconnect(socket);
+            // }
             this.chatService.configureSocket(socket);
             socket.on('disconnect', () => {
                 this.handleDisconnect(socket);
