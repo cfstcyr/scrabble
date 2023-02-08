@@ -30,6 +30,7 @@ class _ChatPageState extends State<ChatPage> {
       PublicUser(username: "hardcoded:username", avatar: "hardcoded:avatar");
   final _user = types.User(id: "UserId", firstName: "hardcoded:username");
 
+// TODO: ENLEVER VALEURS HARD CODE
   final channel = Channel(id: "id_channel", name: "principal", canQuit: false);
   @override
   void initState() {
@@ -97,9 +98,9 @@ class _ChatPageState extends State<ChatPage> {
 
   //TODO:  Add ce listener dans le controller
   Future<void> _listenMessages() async {
-    socketService.socket.on('channel:newMessage', (message) {
-      _handleNewMessage(message);
-      _addMessage(message);
+    socketService.socket.on('channel:newMessage', (channelMessage) {
+      _handleNewMessage(channelMessage);
+      _addMessage(channelMessage);
     });
   }
 }

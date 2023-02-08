@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ClientSocket } from '@app/classes/communication/socket-type';
-import { Channel } from '@common/models/chat/channel';
-import { ChatMessage } from '@common/models/chat/chat-message';
-import SocketService from '@app/services/socket-service/socket.service';
 import { ClientChannel } from '@app/classes/chat/channel';
+import { ClientSocket } from '@app/classes/communication/socket-type';
+import SocketService from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user.service';
+import { Channel } from '@common/models/chat/channel';
+import { ChannelMessage } from '@common/models/chat/chat-message';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -28,10 +28,13 @@ export class ChatService {
     }
 
     sendMessage(channel: Channel, content: string): void {
-        this.socketService.socket.emit('channel:newMessage', channel, {
-            content,
-            sender: this.userService.user,
-            date: new Date(),
+        this.socketService.socket.emit('channel:newMessage', {
+            channel,
+            message: {
+                content,
+                sender: this.userService.user,
+                date: new Date(),
+            },
         });
     }
 
@@ -58,8 +61,9 @@ export class ChatService {
         if (index >= 0) this.channels.splice(index, 1);
     }
 
-    handleNewMessage(channelId: string, message: ChatMessage): void {
-        const channel = this.getChannel(channelId);
+    handleNewMessage(channelMessage: ChannelMessage): void {
+        const message = channelMessage.message;
+        const channel = this.getChannel(channelMessage.channel.id);
         channel.messages.push({
             ...message,
             date: new Date(message.date),
