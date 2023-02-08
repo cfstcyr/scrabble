@@ -4,11 +4,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UserCredentials } from '@common/models/user';
+import { UserSignupInformation } from '@common/models/user';
 
 import { SignupContainerComponent } from './signup-container.component';
 
-const DEFAULT_CREDENTIALS: UserCredentials = {
+const DEFAULT_CREDENTIALS: UserSignupInformation = {
     username: 'Ahmad',
     password: 'Faour#103',
     email: 'jdg@machine.epm',

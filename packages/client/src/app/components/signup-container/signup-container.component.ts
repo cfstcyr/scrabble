@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';
 import { NAME_VALIDATION } from '@app/constants/name-validation';
-import { UserCredentials } from '@common/models/user';
+import { UserSignupInformation } from '@common/models/user';
 
 @Component({
     selector: 'app-signup-container',
@@ -14,7 +14,7 @@ export class SignupContainerComponent implements OnChanges {
     @Input() isUsernameTaken: boolean = false;
     @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();
     @Output() checkUsernameUnicity: EventEmitter<string> = new EventEmitter();
-    @Output() signup: EventEmitter<UserCredentials> = new EventEmitter();
+    @Output() signup: EventEmitter<UserSignupInformation> = new EventEmitter();
 
     signupForm: FormGroup;
     arePasswordsShown: boolean = false;
@@ -49,13 +49,13 @@ export class SignupContainerComponent implements OnChanges {
 
         if (this.signupForm.invalid) return;
 
-        const userCredentials: UserCredentials = {
+        const userSignupInformation: UserSignupInformation = {
             email: this.signupForm.get('email')?.value,
             username: this.signupForm.get('username')?.value,
             password: this.signupForm.get('password')?.value,
         };
 
-        this.signup.next(userCredentials);
+        this.signup.next(userSignupInformation);
     }
 
     isFormValid(): boolean {

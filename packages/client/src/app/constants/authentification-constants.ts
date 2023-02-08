@@ -11,3 +11,5 @@ export const matchValidator = (source: string, target: string): ValidatorFn => {
         return sourceCtrl && targetCtrl && sourceCtrl.value !== targetCtrl.value ? { mismatch: true } : null;
     };
 };
+
+export const INVALID_CREDENTIALS = 'Identifiants invalides';

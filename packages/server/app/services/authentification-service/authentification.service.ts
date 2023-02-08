@@ -3,7 +3,7 @@ import { ALREADY_LOGGED, NO_LOGIN } from '@app/constants/controllers-errors';
 import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
-import { UserCredentials, UserDatabase } from '@common/models/user';
+import { UserDatabase, UserLoginCredentials } from '@common/models/user';
 import * as bcryptjs from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { Service } from 'typedi';
@@ -29,7 +29,7 @@ export class AuthentificationService {
         });
     }
 
-    async login(credentials: UserCredentials): Promise<string | void> {
+    async login(credentials: UserLoginCredentials): Promise<string | void> {
         const user = await this.getUserByEmail(credentials.email);
         const match = await bcryptjs.compare(credentials.password, user.password);
         if (match) return this.generateAccessToken(user.idUser);
