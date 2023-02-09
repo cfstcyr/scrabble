@@ -12,6 +12,7 @@ import { TypeOfId } from '@common/types/id';
 import { getSocketNameFromChannel } from '@app/utils/socket';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { User } from '@common/models/user';
 
 @Service()
 export class ChatService {
@@ -111,8 +112,8 @@ export class ChatService {
 
         // This method is used to subscribe to a channel of join an already subscribed channel.
         // We only need to add to the table if not already there.
-        if ((await this.userChatTable.select('*').where({ idChannel, idUser: user.idUser })).length === 0) {
-            await this.userChatTable.insert({ idChannel: channel.idChannel, idUser: user.idUser });
+        if (await this.isUserInChannel(idChannel, user.idUser)) {
+            await this.userChatTable.insert({ idChannel, idUser: user.idUser });
         }
 
         socket.join(getSocketNameFromChannel(channel));
@@ -128,13 +129,15 @@ export class ChatService {
         if (!channel) {
             throw new HttpException(CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
         }
-        if (!socket.rooms.has(getSocketNameFromChannel(channel))) {
-            throw new HttpException(NOT_IN_CHANNEL, StatusCodes.BAD_REQUEST);
+
+        if (socket.rooms.has(getSocketNameFromChannel(channel))) {
+            socket.leave(getSocketNameFromChannel(channel));
         }
 
-        await this.userChatTable.delete().where({ idChannel, idUser: user.idUser });
+        if (await this.isUserInChannel(idChannel, user.idUser)) {
+            await this.userChatTable.delete().where({ idChannel, idUser: user.idUser });
+        }
 
-        socket.leave(getSocketNameFromChannel(channel));
         socket.emit('channel:quit', channel);
     }
 
@@ -179,6 +182,10 @@ export class ChatService {
                 await this.channelTable.insert(channel);
             }
         }
+    }
+
+    private async isUserInChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<boolean> {
+        return (await this.userChatTable.select('*').where({ idChannel, idUser })).length === 0;
     }
 
     private get channelTable() {
