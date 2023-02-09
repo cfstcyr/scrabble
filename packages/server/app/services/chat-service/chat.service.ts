@@ -28,9 +28,6 @@ export class ChatService {
     }
 
     configureSocket(socket: ServerSocket): void {
-        // TODO: handle errors in a better way. rn, if errors occurs outside of those handled, nothing will be thrown/handled.
-        //       Listeners should be able to throw their errors instead of calling socket.emit, then a handler would call socket.emit properly.
-
         socket.on('channel:newMessage', async (channelMessage: ChannelMessage) => {
             try {
                 await this.sendMessage(channelMessage, socket);
