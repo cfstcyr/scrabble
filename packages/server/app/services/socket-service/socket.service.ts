@@ -1,4 +1,5 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { NO_TOKEN } from '@app/constants/controllers-errors';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ChatService } from '@app/services/chat-service/chat.service';
@@ -55,7 +56,7 @@ export class SocketService {
                     return next(new Error(err));
                 }
             } else {
-                next(new Error('Token is missing'));
+                next(new Error(NO_TOKEN));
             }
         });
 
