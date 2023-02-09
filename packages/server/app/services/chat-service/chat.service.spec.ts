@@ -4,32 +4,59 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
 import { ServerSocket } from '@app/classes/communication/socket-type';
-import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_NAME_DOES_NOT_EXIST, NOT_IN_CHANNEL } from '@app/constants/services-errors';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
-import { Delay } from '@app/utils/delay/delay';
 import { ChatClientEvents, ChatServerEvents } from '@common/events/chat.event';
-import { Channel } from '@common/models/chat/channel';
-import { ChatMessage } from '@common/models/chat/chat-message';
-import { PublicUser } from '@common/models/user';
-import * as chai from 'chai';
-import { expect } from 'chai';
 import { createServer, Server } from 'http';
-import { StatusCodes } from 'http-status-codes';
 import { AddressInfo } from 'net';
 import * as io from 'socket.io';
 import { io as ioClient, Socket as ClientSocket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { ChatService } from './chat.service';
+import * as Sinon from 'sinon';
+import { expect } from 'chai';
+import { DEFAULT_CHANNELS } from '@app/constants/chat';
+import { Channel } from '@common/models/chat/channel';
+import { ChatMessage } from '@common/models/chat/chat-message';
+import { PublicUser, User } from '@common/models/user';
+import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
+import { Delay } from '@app/utils/delay/delay';
+import { StatusCodes } from 'http-status-codes';
+import { getSocketNameFromChannel } from '@app/utils/socket';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import DatabaseService from '@app/services/database-service/database.service';
+import { USER_TABLE } from '@app/constants/services-constants/database-const';
 
 // const TIMEOUT_DELAY = 10000;
 const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
 
-const PUBLIC_USER: PublicUser = {
-    email: 'bob@example.com',
-    username: 'Bob',
+const USER: User = {
     avatar: 'Gratton',
+    email: 'bob@example.com',
+    hash: '',
+    idUser: 1,
+    salt: '',
+    username: 'Bob',
+};
+
+const PUBLIC_USER: PublicUser = {
+    email: USER.email,
+    username: USER.username,
+    avatar: USER.avatar,
+};
+
+const testChannel: Channel = {
+    idChannel: 0,
+    name: 'test',
+    canQuit: true,
+    private: false,
+    default: false,
+};
+const expectedMessage: ChatMessage = {
+    sender: PUBLIC_USER,
+    content: 'message cool',
+    date: new Date(),
 };
 
 class TestClass {
@@ -39,7 +66,7 @@ class TestClass {
 
 describe('ChatService', () => {
     afterEach(() => {
-        chai.spy.restore();
+        Sinon.restore();
     });
 
     let service: ChatService;
@@ -48,9 +75,26 @@ describe('ChatService', () => {
     let serverSocket: ServerSocket;
     let clientSocket: ClientSocket<ChatServerEvents, ChatClientEvents>;
     let testingUnit: ServicesTestingUnit;
+    let databaseService: DatabaseService;
 
-    beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withStubbed(DictionaryService).withStubbedPrototypes(Application, { bindRoutes: undefined });
+    const insertChannel = async (channel: Channel) => {
+        await service['channelTable'].insert(channel);
+    };
+
+    const resetChannels = async () => {
+        await service['userChatTable'].delete();
+        await service['channelTable'].delete();
+    };
+
+    beforeEach(async () => {
+        testingUnit = new ServicesTestingUnit()
+            .withStubbed(DictionaryService)
+            .withStubbed(AuthentificationService, {
+                authenticateSocket: Promise.resolve(USER),
+            })
+            .withStubbedPrototypes(Application, { bindRoutes: undefined });
+        await testingUnit.withMockDatabaseService();
+        databaseService = Container.get(DatabaseService);
     });
 
     beforeEach((done) => {
@@ -72,52 +116,65 @@ describe('ChatService', () => {
         testingUnit.restore();
     });
 
-    describe('configureSocket', () => {
-        const testChannel: Channel = {
-            id: '0',
-            name: 'test',
-            canQuit: true,
-        };
-        const expectedMessage: ChatMessage = {
-            sender: PUBLIC_USER,
-            content: 'Gratton',
-            date: new Date(),
-        };
+    describe('initialize', () => {
+        it('should create default channels', async () => {
+            expect(await service.getChannels()).to.have.length(0);
 
+            await service.initialize();
+
+            expect(await service.getChannels()).to.have.length(DEFAULT_CHANNELS.length);
+        });
+
+        it('should not create default channels if already exists', async () => {
+            await service.initialize();
+
+            expect(await service.getChannels()).to.have.length(DEFAULT_CHANNELS.length);
+
+            await service.initialize();
+
+            expect(await service.getChannels()).to.have.length(DEFAULT_CHANNELS.length);
+        });
+    });
+
+    describe('configureSocket', () => {
         beforeEach(() => {
             service.configureSocket(serverSocket);
-            service['channels'].push(testChannel);
+            insertChannel(testChannel);
+            databaseService.knex<User>(USER_TABLE).insert(USER);
         });
 
         describe('channel:newMessage', () => {
             describe('HAPPY - PATH', () => {
                 it('should not emit message to client NOT in channel', async () => {
                     const testClass = new TestClass();
-                    const funcSpy = chai.spy.on(testClass, 'testFunc');
+                    const funcSpy = Sinon.spy(testClass, 'testFunc');
 
                     clientSocket.on('channel:newMessage', () => {
                         testClass.testFunc();
                     });
                     clientSocket.on('end' as any, async () => Promise.resolve());
 
-                    clientSocket.emit('channel:newMessage', { channel: testChannel, message: expectedMessage });
+                    clientSocket.emit('channel:newMessage', { idChannel: testChannel.idChannel, message: expectedMessage });
                     await Delay.for(RESPONSE_DELAY);
 
-                    expect(funcSpy).not.to.have.been.called();
+                    expect(funcSpy.called).to.be.false;
                     serverSocket.emit('end' as any);
                 });
             });
             describe('SAD PATH', () => {
-                it('should throw error if channel does NOT exist', (done) => {
-                    service['channels'] = [];
-                    clientSocket.on('error' as any, (err: string, code: number) => {
-                        expect(err).to.equal(CHANNEL_NAME_DOES_NOT_EXIST);
-                        expect(code).to.equal(StatusCodes.BAD_REQUEST);
-                        done();
-                    });
-                    serverSocket.join(testChannel.name);
+                it('should throw error if channel does NOT exist', async () => {
+                    await resetChannels();
 
-                    clientSocket.emit('channel:newMessage', { channel: testChannel, message: expectedMessage });
+                    return new Promise((resolve) => {
+                        clientSocket.on('error' as any, (err: string, code: number) => {
+                            expect(err).to.equal(CHANNEL_DOES_NOT_EXISTS);
+                            expect(code).to.equal(StatusCodes.BAD_REQUEST);
+                            resolve();
+                        });
+                        serverSocket.join(getSocketNameFromChannel(testChannel));
+
+                        clientSocket.emit('channel:newMessage', { idChannel: testChannel.idChannel, message: expectedMessage });
+                    });
                 });
 
                 it('should throw error if user not in channel', (done) => {
@@ -126,9 +183,9 @@ describe('ChatService', () => {
                         expect(code).to.equal(StatusCodes.FORBIDDEN);
                         done();
                     });
-                    serverSocket.leave(testChannel.name);
+                    serverSocket.leave(getSocketNameFromChannel(testChannel));
 
-                    clientSocket.emit('channel:newMessage', { channel: testChannel, message: expectedMessage });
+                    clientSocket.emit('channel:newMessage', { idChannel: testChannel.idChannel, message: expectedMessage });
                 });
             });
         });
@@ -136,17 +193,17 @@ describe('ChatService', () => {
         describe('channel:createChannel', () => {
             describe('HAPPY PATH', () => {
                 it("should add channel to list of channels if it doesn't exist", async () => {
-                    service['channels'] = [];
+                    await resetChannels();
+
                     clientSocket.emit('channel:newChannel', testChannel.name);
 
                     await Delay.for(RESPONSE_DELAY);
 
-                    expect(service['channels'].map((c) => c.name)).to.contain(testChannel.name);
+                    expect(await service['channelTable'].select('*').where({ name: testChannel.name })).to.have.length(1);
                 });
             });
             describe('SAD PATH', () => {
                 it('should throw error if channel already exist', (done) => {
-                    service['channels'] = [testChannel];
                     clientSocket.on('error' as any, (err: string, code: number) => {
                         expect(err).to.equal(ALREADY_EXISTING_CHANNEL_NAME);
                         expect(code).to.equal(StatusCodes.FORBIDDEN);
@@ -161,23 +218,26 @@ describe('ChatService', () => {
         describe('channel:join', () => {
             describe('HAPPY PATH', () => {
                 it('should add socket to channel room', async () => {
-                    clientSocket.emit('channel:join', testChannel.name);
+                    clientSocket.emit('channel:join', testChannel.idChannel);
 
                     await Delay.for(RESPONSE_DELAY);
 
-                    expect(serverSocket.rooms.has(testChannel.name)).to.be.true;
+                    expect(serverSocket.rooms.has(getSocketNameFromChannel(testChannel))).to.be.true;
                 });
             });
             describe('SAD PATH', () => {
-                it('should throw error if channel does NOT exist', (done) => {
-                    service['channels'] = [];
-                    clientSocket.on('error' as any, (err: string, code: number) => {
-                        expect(err).to.equal(CHANNEL_NAME_DOES_NOT_EXIST);
-                        expect(code).to.equal(StatusCodes.BAD_REQUEST);
-                        done();
-                    });
+                it('should throw error if channel does NOT exist', async () => {
+                    await resetChannels();
 
-                    clientSocket.emit('channel:join', testChannel.name);
+                    return new Promise((resolve) => {
+                        clientSocket.on('error' as any, (err: string, code: number) => {
+                            expect(err).to.equal(CHANNEL_DOES_NOT_EXISTS);
+                            expect(code).to.equal(StatusCodes.BAD_REQUEST);
+                            resolve();
+                        });
+
+                        clientSocket.emit('channel:join', testChannel.idChannel);
+                    });
                 });
                 it('should throw error if user already in channel', (done) => {
                     clientSocket.on('error' as any, (err: string, code: number) => {
@@ -185,9 +245,9 @@ describe('ChatService', () => {
                         expect(code).to.equal(StatusCodes.BAD_REQUEST);
                         done();
                     });
-                    serverSocket.join(testChannel.name);
+                    serverSocket.join(getSocketNameFromChannel(testChannel));
 
-                    clientSocket.emit('channel:join', testChannel.name);
+                    clientSocket.emit('channel:join', testChannel.idChannel);
                 });
             });
         });
@@ -195,26 +255,29 @@ describe('ChatService', () => {
         describe('channel:quit', () => {
             describe('HAPPY PATH', () => {
                 it('should remove socket from channel room of room exists', async () => {
-                    serverSocket.join(testChannel.name);
+                    serverSocket.join(getSocketNameFromChannel(testChannel));
 
-                    clientSocket.emit('channel:quit', testChannel.name);
+                    clientSocket.emit('channel:quit', testChannel.idChannel);
 
                     await Delay.for(RESPONSE_DELAY);
 
-                    expect(serverSocket.rooms.has(testChannel.name)).to.be.false;
+                    expect(serverSocket.rooms.has(getSocketNameFromChannel(testChannel))).to.be.false;
                 });
             });
             describe('SAD PATH', () => {
-                it('should throw error if channel does NOT exist', (done) => {
-                    service['channels'] = [];
-                    clientSocket.on('error' as any, (err: string, code: number) => {
-                        expect(err).to.equal(CHANNEL_NAME_DOES_NOT_EXIST);
-                        expect(code).to.equal(StatusCodes.BAD_REQUEST);
-                        done();
-                    });
-                    serverSocket.join(testChannel.name);
+                it('should throw error if channel does NOT exist', async () => {
+                    await resetChannels();
 
-                    clientSocket.emit('channel:quit', testChannel.name);
+                    return new Promise((resolve) => {
+                        clientSocket.on('error' as any, (err: string, code: number) => {
+                            expect(err).to.equal(CHANNEL_DOES_NOT_EXISTS);
+                            expect(code).to.equal(StatusCodes.BAD_REQUEST);
+                            resolve();
+                        });
+                        serverSocket.join(getSocketNameFromChannel(testChannel));
+
+                        clientSocket.emit('channel:quit', testChannel.idChannel);
+                    });
                 });
                 it('should throw error if user NOT in channel', (done) => {
                     clientSocket.on('error' as any, (err: string, code: number) => {
@@ -222,9 +285,9 @@ describe('ChatService', () => {
                         expect(code).to.equal(StatusCodes.BAD_REQUEST);
                         done();
                     });
-                    serverSocket.leave(testChannel.name);
+                    serverSocket.leave(getSocketNameFromChannel(testChannel));
 
-                    clientSocket.emit('channel:quit', testChannel.name);
+                    clientSocket.emit('channel:quit', testChannel.idChannel);
                 });
             });
         });

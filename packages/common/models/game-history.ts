@@ -1,4 +1,4 @@
-import { NoId } from '../types/no-id';
+import { NoId } from '../types/id';
 
 export interface GameHistoryPlayer {
     idGameHistoryPlayer: number;

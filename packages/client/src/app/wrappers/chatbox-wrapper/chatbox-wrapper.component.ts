@@ -26,11 +26,7 @@ export class ChatboxWrapperComponent {
         this.chatService.createChannel(channelName);
     }
 
-    handleJoinChannel(channelName: string): void {
-        this.chatService.joinChannel(channelName);
-    }
-
-    handleQuitChannel(channelName: string): void {
-        this.chatService.quitChannel(channelName);
+    handleQuitChannel(channel: Channel): void {
+        this.chatService.quitChannel(channel.idChannel);
     }
 }

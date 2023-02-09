@@ -1,3 +1,4 @@
+import { WithIdOf } from "../../types/id";
 import { PublicUser } from "../user";
 import { Channel } from "./channel";
 
@@ -7,7 +8,6 @@ export interface ChatMessage {
     date: Date;
 }
 
-export interface ChannelMessage {
+export interface ChannelMessage extends WithIdOf<Channel> {
     message: ChatMessage;
-    channel: Channel;
 }

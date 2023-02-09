@@ -18,7 +18,7 @@ import {
     NewMessageEmitArgs,
     RejectEmitArgs,
     SocketEmitEvents,
-    StartGameEmitArgs
+    StartGameEmitArgs,
 } from './socket-types';
 
 @Service()

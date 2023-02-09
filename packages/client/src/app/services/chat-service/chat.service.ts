@@ -5,6 +5,7 @@ import SocketService from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user.service';
 import { Channel } from '@common/models/chat/channel';
 import { ChannelMessage } from '@common/models/chat/chat-message';
+import { TypeOfId } from '@common/types/id';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -29,7 +30,7 @@ export class ChatService {
 
     sendMessage(channel: Channel, content: string): void {
         this.socketService.socket.emit('channel:newMessage', {
-            channel,
+            idChannel: channel.idChannel,
             message: {
                 content,
                 sender: this.userService.user,
@@ -42,12 +43,12 @@ export class ChatService {
         this.socketService.socket.emit('channel:newChannel', channelName);
     }
 
-    joinChannel(channel: string): void {
-        this.socketService.socket.emit('channel:join', channel);
+    joinChannel(idChannel: TypeOfId<Channel>): void {
+        this.socketService.socket.emit('channel:join', idChannel);
     }
 
-    quitChannel(channel: string): void {
-        this.socketService.socket.emit('channel:quit', channel);
+    quitChannel(idChannel: TypeOfId<Channel>): void {
+        this.socketService.socket.emit('channel:quit', idChannel);
     }
 
     handleJoinChannel(channel: Channel): void {
@@ -57,23 +58,23 @@ export class ChatService {
     }
 
     handleChannelQuit(channel: Channel): void {
-        const index = this.channels.findIndex(({ id }) => id === channel.id);
+        const index = this.channels.findIndex(({ idChannel }) => idChannel === channel.idChannel);
         if (index >= 0) this.channels.splice(index, 1);
     }
 
     handleNewMessage(channelMessage: ChannelMessage): void {
         const message = channelMessage.message;
-        const channel = this.getChannel(channelMessage.channel.id);
+        const channel = this.getChannel(channelMessage.idChannel);
         channel.messages.push({
             ...message,
             date: new Date(message.date),
         });
     }
 
-    private getChannel(id: string): ClientChannel {
-        const index = this.channels.findIndex((c) => id === c.id);
+    private getChannel(idChannel: TypeOfId<Channel>): ClientChannel {
+        const index = this.channels.findIndex((c) => idChannel === c.idChannel);
 
-        if (index < 0) throw new Error(`No channel with ID "${id}"`);
+        if (index < 0) throw new Error(`No channel with ID "${idChannel}"`);
 
         return this.channels[index];
     }

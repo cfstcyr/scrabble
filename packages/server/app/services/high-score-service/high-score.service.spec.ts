@@ -8,7 +8,7 @@ import { GameType } from '@app/classes/game/game-type';
 import { HIGH_SCORE_COUNT } from '@app/constants/game-constants';
 import { DEFAULT_HIGH_SCORES_RELATIVE_PATH, HIGH_SCORE_PLAYER_TABLE, HIGH_SCORE_TABLE } from '@app/constants/services-constants/database-const';
 import { join } from 'path';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 import { HighScore, HighScorePlayer, HighScoresData, HighScoreWithPlayers } from '@common/models/high-score';
 
 const HIGH_SCORE_CLASSIC_1: NoId<HighScoreWithPlayers> = {
