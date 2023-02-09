@@ -5,7 +5,7 @@ import { USER_TABLE } from '@app/constants/services-constants/database-const';
 import { NO_TOKEN, TOKEN_INVALID } from '@app/constants/services-errors';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
-import { User, UserDatabase, UserLoginCredentials } from '@common/models/user';
+import { UserDatabase, UserLoginCredentials } from '@common/models/user';
 import * as bcryptjs from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
@@ -40,11 +40,11 @@ export class AuthentificationService {
     }
 
     // eslint-disable-next-line no-unused-vars
-    async getUserFromToken(token: string): Promise<User | undefined> {
+    async getUserFromToken(token: string): Promise<UserDatabase | undefined> {
         return undefined;
     }
 
-    async authenticateSocket(socket: Socket): Promise<User> {
+    async authenticateSocket(socket: Socket): Promise<UserDatabase> {
         const token = socket.handshake.auth.token;
 
         if (!token) throw new HttpException(NO_TOKEN, StatusCodes.UNAUTHORIZED);

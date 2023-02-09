@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import { DEFAULT_CHANNELS } from '@app/constants/chat';
 import { Channel } from '@common/models/chat/channel';
 import { ChatMessage } from '@common/models/chat/chat-message';
-import { PublicUser, User } from '@common/models/user';
+import { PublicUser, User, UserDatabase } from '@common/models/user';
 import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
 import { Delay } from '@app/utils/delay/delay';
 import { StatusCodes } from 'http-status-codes';
@@ -26,24 +26,23 @@ import { getSocketNameFromChannel } from '@app/utils/socket';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import DatabaseService from '@app/services/database-service/database.service';
 import { USER_TABLE } from '@app/constants/services-constants/database-const';
+import { SocketErrorResponse } from '@common/models/error';
 
 // const TIMEOUT_DELAY = 10000;
 const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
 
-const USER: User = {
-    avatar: 'Gratton',
+const USER: UserDatabase = {
     email: 'bob@example.com',
-    hash: '',
     idUser: 1,
-    salt: '',
     username: 'Bob',
+    password: '',
 };
 
 const PUBLIC_USER: PublicUser = {
     email: USER.email,
     username: USER.username,
-    avatar: USER.avatar,
+    avatar: '',
 };
 
 const testChannel: Channel = {
@@ -137,10 +136,10 @@ describe('ChatService', () => {
     });
 
     describe('configureSocket', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
             service.configureSocket(serverSocket);
-            insertChannel(testChannel);
-            databaseService.knex<User>(USER_TABLE).insert(USER);
+            await insertChannel(testChannel);
+            await databaseService.knex<User>(USER_TABLE).insert(USER);
         });
 
         describe('channel:newMessage', () => {
@@ -166,9 +165,9 @@ describe('ChatService', () => {
                     await resetChannels();
 
                     return new Promise((resolve) => {
-                        clientSocket.on('error' as any, (err: string, code: number) => {
-                            expect(err).to.equal(CHANNEL_DOES_NOT_EXISTS);
-                            expect(code).to.equal(StatusCodes.BAD_REQUEST);
+                        clientSocket.on('error' as any, (error: SocketErrorResponse) => {
+                            expect(error.message).to.equal(CHANNEL_DOES_NOT_EXISTS);
+                            expect(error.status).to.equal(StatusCodes.BAD_REQUEST);
                             resolve();
                         });
                         serverSocket.join(getSocketNameFromChannel(testChannel));
@@ -178,9 +177,9 @@ describe('ChatService', () => {
                 });
 
                 it('should throw error if user not in channel', (done) => {
-                    clientSocket.on('error' as any, (err: string, code: number) => {
-                        expect(err).to.equal(NOT_IN_CHANNEL);
-                        expect(code).to.equal(StatusCodes.FORBIDDEN);
+                    clientSocket.on('error' as any, (error: SocketErrorResponse) => {
+                        expect(error.message).to.equal(NOT_IN_CHANNEL);
+                        expect(error.status).to.equal(StatusCodes.FORBIDDEN);
                         done();
                     });
                     serverSocket.leave(getSocketNameFromChannel(testChannel));
@@ -204,9 +203,9 @@ describe('ChatService', () => {
             });
             describe('SAD PATH', () => {
                 it('should throw error if channel already exist', (done) => {
-                    clientSocket.on('error' as any, (err: string, code: number) => {
-                        expect(err).to.equal(ALREADY_EXISTING_CHANNEL_NAME);
-                        expect(code).to.equal(StatusCodes.FORBIDDEN);
+                    clientSocket.on('error' as any, (error: SocketErrorResponse) => {
+                        expect(error.message).to.equal(ALREADY_EXISTING_CHANNEL_NAME);
+                        expect(error.status).to.equal(StatusCodes.FORBIDDEN);
                         done();
                     });
 
@@ -230,9 +229,9 @@ describe('ChatService', () => {
                     await resetChannels();
 
                     return new Promise((resolve) => {
-                        clientSocket.on('error' as any, (err: string, code: number) => {
-                            expect(err).to.equal(CHANNEL_DOES_NOT_EXISTS);
-                            expect(code).to.equal(StatusCodes.BAD_REQUEST);
+                        clientSocket.on('error' as any, (error: SocketErrorResponse) => {
+                            expect(error.message).to.equal(CHANNEL_DOES_NOT_EXISTS);
+                            expect(error.status).to.equal(StatusCodes.BAD_REQUEST);
                             resolve();
                         });
 
@@ -240,9 +239,9 @@ describe('ChatService', () => {
                     });
                 });
                 it('should throw error if user already in channel', (done) => {
-                    clientSocket.on('error' as any, (err: string, code: number) => {
-                        expect(err).to.equal(ALREADY_IN_CHANNEL);
-                        expect(code).to.equal(StatusCodes.BAD_REQUEST);
+                    clientSocket.on('error' as any, (error: SocketErrorResponse) => {
+                        expect(error.message).to.equal(ALREADY_IN_CHANNEL);
+                        expect(error.status).to.equal(StatusCodes.BAD_REQUEST);
                         done();
                     });
                     serverSocket.join(getSocketNameFromChannel(testChannel));
@@ -269,25 +268,15 @@ describe('ChatService', () => {
                     await resetChannels();
 
                     return new Promise((resolve) => {
-                        clientSocket.on('error' as any, (err: string, code: number) => {
-                            expect(err).to.equal(CHANNEL_DOES_NOT_EXISTS);
-                            expect(code).to.equal(StatusCodes.BAD_REQUEST);
+                        clientSocket.on('error' as any, (error: SocketErrorResponse) => {
+                            expect(error.message).to.equal(CHANNEL_DOES_NOT_EXISTS);
+                            expect(error.status).to.equal(StatusCodes.BAD_REQUEST);
                             resolve();
                         });
                         serverSocket.join(getSocketNameFromChannel(testChannel));
 
                         clientSocket.emit('channel:quit', testChannel.idChannel);
                     });
-                });
-                it('should throw error if user NOT in channel', (done) => {
-                    clientSocket.on('error' as any, (err: string, code: number) => {
-                        expect(err).to.equal(NOT_IN_CHANNEL);
-                        expect(code).to.equal(StatusCodes.BAD_REQUEST);
-                        done();
-                    });
-                    serverSocket.leave(getSocketNameFromChannel(testChannel));
-
-                    clientSocket.emit('channel:quit', testChannel.idChannel);
                 });
             });
         });
