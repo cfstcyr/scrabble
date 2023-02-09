@@ -2,6 +2,7 @@ import { HttpException } from '@app/classes/http-exception/http-exception';
 import { TokenData } from '@app/classes/user/token-data';
 import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds';
 import { USER_TABLE } from '@app/constants/services-constants/database-const';
+import { NO_TOKEN, TOKEN_INVALID } from '@app/constants/services-errors';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
 import { User, UserDatabase, UserLoginCredentials } from '@common/models/user';
@@ -44,9 +45,13 @@ export class AuthentificationService {
     }
 
     async authenticateSocket(socket: Socket): Promise<User> {
-        const user = socket.handshake.auth.token ? await this.getUserFromToken(socket.handshake.auth.token) : undefined;
+        const token = socket.handshake.auth.token;
 
-        if (!user) throw new HttpException('Token missing or invalid', StatusCodes.UNAUTHORIZED);
+        if (!token) throw new HttpException(NO_TOKEN, StatusCodes.UNAUTHORIZED);
+
+        const user = await this.getUserFromToken(socket.handshake.auth.token);
+
+        if (!user) throw new HttpException(TOKEN_INVALID, StatusCodes.UNAUTHORIZED);
 
         return user;
     }

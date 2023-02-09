@@ -1,10 +1,13 @@
+import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { ChatService } from '@app/services/chat-service/chat.service';
+import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
+import { SocketErrorResponse } from '@common/models/error';
 import * as http from 'http';
-import { StatusCodes } from 'http-status-codes';
+import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
 import { Service } from 'typedi';
 import {
@@ -28,6 +31,27 @@ export class SocketService {
 
     constructor(private readonly chatService: ChatService) {
         this.sockets = new Map();
+    }
+
+    static handleError(error: Error, socket: ServerSocket): void {
+        const status = error instanceof HttpException ? error.status : StatusCodes.INTERNAL_SERVER_ERROR;
+
+        const response: SocketErrorResponse = {
+            message: error.message,
+            error: getReasonPhrase(status),
+            status,
+        };
+
+        if (env.isDev) {
+            response.stack = error.stack?.split('\n');
+        }
+
+        if (!env.isProd) {
+            // eslint-disable-next-line no-console
+            console.error(error);
+        }
+
+        socket.emit('error', response);
     }
 
     initialize(server: http.Server): void {

@@ -6,6 +6,7 @@ import { io } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 import { ClientSocket } from '@app/classes/communication/socket-type';
 import { AlertService } from '@app/services/alert-service/alert.service';
+import { SocketErrorResponse } from '@common/models/error';
 @Injectable({
     providedIn: 'root',
 })
@@ -20,8 +21,8 @@ export default class SocketService extends ConnectionStateService {
         this.socket = this.getSocket();
         this.socket.on('connect', () => this.nextState(ConnectionState.Connected)).on('connect_error', () => this.nextState(ConnectionState.Error));
 
-        this.socket.on('error', (message: string, code: number) => {
-            this.alertService.error(message, { log: `Error ${code}: ${message}` });
+        this.socket.on('error', (error: SocketErrorResponse) => {
+            this.alertService.error(error.message, { log: `Error ${error.status} ${error.error}: ${error.message}` });
         });
     }
 

@@ -1,12 +1,6 @@
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { DEFAULT_CHANNELS } from '@app/constants/chat';
-import {
-    ALREADY_EXISTING_CHANNEL_NAME,
-    ALREADY_IN_CHANNEL,
-    CHANNEL_DOES_NOT_EXISTS,
-    NOT_IN_CHANNEL,
-    UNKNOWN_ERROR_JOINING_CHANNEL,
-} from '@app/constants/services-errors';
+import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
 import { Channel, ChannelCreation, UserChannel } from '@common/models/chat/channel';
 import { ChannelMessage } from '@common/models/chat/chat-message';
 import { StatusCodes } from 'http-status-codes';
@@ -16,6 +10,8 @@ import { CHANNEL_TABLE, USER_CHANNEL_TABLE } from '@app/constants/services-const
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { TypeOfId } from '@common/types/id';
 import { getSocketNameFromChannel } from '@app/utils/socket';
+import { SocketService } from '@app/services/socket-service/socket.service';
+import { HttpException } from '@app/classes/http-exception/http-exception';
 
 @Service()
 export class ChatService {
@@ -35,20 +31,40 @@ export class ChatService {
         // TODO: handle errors in a better way. rn, if errors occurs outside of those handled, nothing will be thrown/handled.
         //       Listeners should be able to throw their errors instead of calling socket.emit, then a handler would call socket.emit properly.
 
-        socket.on('channel:newMessage', (channelMessage: ChannelMessage) => {
-            this.sendMessage(channelMessage, socket);
+        socket.on('channel:newMessage', async (channelMessage: ChannelMessage) => {
+            try {
+                await this.sendMessage(channelMessage, socket);
+            } catch (error) {
+                SocketService.handleError(error, socket);
+            }
         });
-        socket.on('channel:newChannel', (channelName: string) => {
-            this.createChannel({ name: channelName }, socket);
+        socket.on('channel:newChannel', async (channelName: string) => {
+            try {
+                await this.createChannel({ name: channelName }, socket);
+            } catch (error) {
+                SocketService.handleError(error, socket);
+            }
         });
-        socket.on('channel:join', (idChannel: TypeOfId<Channel>) => {
-            this.joinChannel(idChannel, socket);
+        socket.on('channel:join', async (idChannel: TypeOfId<Channel>) => {
+            try {
+                await this.joinChannel(idChannel, socket);
+            } catch (error) {
+                SocketService.handleError(error, socket);
+            }
         });
-        socket.on('channel:quit', (idChannel: TypeOfId<Channel>) => {
-            this.quitChannel(idChannel, socket);
+        socket.on('channel:quit', async (idChannel: TypeOfId<Channel>) => {
+            try {
+                await this.quitChannel(idChannel, socket);
+            } catch (error) {
+                SocketService.handleError(error, socket);
+            }
         });
         socket.on('channel:init', async () => {
-            this.initChannels(socket);
+            try {
+                await this.initChannels(socket);
+            } catch (error) {
+                SocketService.handleError(error, socket);
+            }
         });
     }
 
@@ -56,13 +72,11 @@ export class ChatService {
         const channel = await this.getChannel(channelMessage.idChannel);
 
         if (!channel) {
-            socket.emit('error', CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
-            return;
+            throw new HttpException(CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
         }
 
         if (!socket.rooms.has(getSocketNameFromChannel(channel))) {
-            socket.emit('error', NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
-            return;
+            throw new HttpException(NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
         }
 
         socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
@@ -74,8 +88,7 @@ export class ChatService {
         await this.authenticationService.authenticateSocket(socket);
 
         if (!(await this.isChannelNameAvailable(channel))) {
-            socket.emit('error', ALREADY_EXISTING_CHANNEL_NAME, StatusCodes.FORBIDDEN);
-            return;
+            throw new HttpException(ALREADY_EXISTING_CHANNEL_NAME, StatusCodes.FORBIDDEN);
         }
 
         const newChannel = await this.saveChannel(channel);
@@ -92,20 +105,14 @@ export class ChatService {
         const channel = await this.getChannel(idChannel);
 
         if (!channel) {
-            socket.emit('error', CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
-            return;
+            throw new HttpException(CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
         }
 
         if (socket.rooms.has(getSocketNameFromChannel(channel))) {
-            socket.emit('error', ALREADY_IN_CHANNEL, StatusCodes.BAD_REQUEST);
-            return;
+            throw new HttpException(ALREADY_IN_CHANNEL, StatusCodes.BAD_REQUEST);
         }
 
-        try {
-            await this.userChatTable.insert({ idChannel: channel.idChannel, idUser: user.idUser });
-        } catch (e) {
-            socket.emit('error', UNKNOWN_ERROR_JOINING_CHANNEL, StatusCodes.INTERNAL_SERVER_ERROR);
-        }
+        await this.userChatTable.insert({ idChannel: channel.idChannel, idUser: user.idUser });
 
         socket.join(getSocketNameFromChannel(channel));
         socket.emit('channel:join', channel);
@@ -118,12 +125,10 @@ export class ChatService {
         const channel = await this.getChannel(idChannel);
 
         if (!channel) {
-            socket.emit('error', CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
-            return;
+            throw new HttpException(CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
         }
         if (!socket.rooms.has(getSocketNameFromChannel(channel))) {
-            socket.emit('error', NOT_IN_CHANNEL, StatusCodes.BAD_REQUEST);
-            return;
+            throw new HttpException(NOT_IN_CHANNEL, StatusCodes.BAD_REQUEST);
         }
 
         await this.userChatTable.delete().where({ idChannel, idUser: user.idUser });

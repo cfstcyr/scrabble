@@ -44,3 +44,6 @@ export const ALREADY_EXISTING_CHANNEL_NAME = 'Le canal que vous voulez créer ex
 export const ALREADY_IN_CHANNEL = 'Vous appartenez déjà à ce canal';
 export const NOT_IN_CHANNEL = "Vous n'êtes pas dans ce canal";
 export const UNKNOWN_ERROR_JOINING_CHANNEL = 'Il y a eu une erreur en rejoignant le chat';
+
+export const NO_TOKEN = 'Vous devez être connecté pour faire cet action';
+export const TOKEN_INVALID = 'Votre session est expiré. Veuillez vous reconnecter';
