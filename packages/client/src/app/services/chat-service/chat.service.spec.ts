@@ -3,10 +3,10 @@ import { TestBed } from '@angular/core/testing';
 import { ClientChannel } from '@app/classes/chat/channel';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
 import SocketService from '@app/services/socket-service/socket.service';
-import { Channel } from '@common/models/chat/channel';
-import { ChatMessage } from '@common/models/chat/chat-message';
-import { Socket } from 'socket.io-client';
 import { UserService } from '@app/services/user-service/user.service';
+import { Channel } from '@common/models/chat/channel';
+import { ChannelMessage, ChatMessage } from '@common/models/chat/chat-message';
+import { Socket } from 'socket.io-client';
 
 import { ChatService } from './chat.service';
 
@@ -109,7 +109,7 @@ describe('ChatService', () => {
                 canQuit: true,
             };
             service.channels = [channel];
-            service.handleNewMessage(channel.id, {} as ChatMessage);
+            service.handleNewMessage({ channel, message: {} as ChatMessage } as ChannelMessage);
             expect(service.channels[0].messages.length).toEqual(1);
         });
     });

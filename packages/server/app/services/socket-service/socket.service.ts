@@ -1,13 +1,16 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ChatService } from '@app/services/chat-service/chat.service';
+import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
+import { NextFunction } from 'express';
 import * as http from 'http';
 import { StatusCodes } from 'http-status-codes';
+import * as jwt from 'jsonwebtoken';
 import * as io from 'socket.io';
 import { Service } from 'typedi';
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import {
     CanceledGameEmitArgs,
     CleanupEmitArgs,
@@ -19,11 +22,8 @@ import {
     NewMessageEmitArgs,
     RejectEmitArgs,
     SocketEmitEvents,
-    StartGameEmitArgs,
+    StartGameEmitArgs
 } from './socket-types';
-import { NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
-import { env } from '@app/utils/environment/environment';
 
 @Service()
 export class SocketService {
@@ -60,8 +60,6 @@ export class SocketService {
         });
 
         this.sio.on('connection', (socket) => {
-            // const wrap = (middleware) => (socket, next) => middleware(socket.request, {}, next);
-
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
             this.chatService.configureSocket(socket);

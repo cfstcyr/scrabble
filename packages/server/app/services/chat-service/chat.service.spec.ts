@@ -100,7 +100,7 @@ describe('ChatService', () => {
                     });
                     clientSocket.on('end' as any, async () => Promise.resolve());
 
-                    clientSocket.emit('channel:newMessage', testChannel, expectedMessage);
+                    clientSocket.emit('channel:newMessage', { channel: testChannel, message: expectedMessage });
                     await Delay.for(RESPONSE_DELAY);
 
                     expect(funcSpy).not.to.have.been.called();
@@ -117,7 +117,7 @@ describe('ChatService', () => {
                     });
                     serverSocket.join(testChannel.name);
 
-                    clientSocket.emit('channel:newMessage', testChannel, expectedMessage);
+                    clientSocket.emit('channel:newMessage', { channel: testChannel, message: expectedMessage });
                 });
 
                 it('should throw error if user not in channel', (done) => {
@@ -128,7 +128,7 @@ describe('ChatService', () => {
                     });
                     serverSocket.leave(testChannel.name);
 
-                    clientSocket.emit('channel:newMessage', testChannel, expectedMessage);
+                    clientSocket.emit('channel:newMessage', { channel: testChannel, message: expectedMessage });
                 });
             });
         });

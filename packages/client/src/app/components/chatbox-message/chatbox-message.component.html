@@ -36,10 +36,17 @@
         </div>
         <div class="chatbox-message__input">
             <form class="chatbox-message__input__form" [formGroup]="messageForm" (ngSubmit)="onMessageSubmit()" novalidate>
-                <input type="text" formControlName="message" class="chatbox-message__input__form__control" placeholder="Aa" [maxlength]="512">
+                <input 
+                    type="text"
+                    formControlName="message"
+                    class="chatbox-message__input__form__control"
+                    placeholder="Aa"
+                    [maxlength]="512"
+                >
             </form>
     
-            <app-icon-button (click)="onEmojiClick('👍')">👍</app-icon-button>
+            <app-icon-button *ngIf="isInputEmpty" (click)="onEmojiClick('👍')" class="chatbox-message__input__button">👍</app-icon-button>
+            <app-icon-button *ngIf="!isInputEmpty" (click)="onMessageSubmit()" class="chatbox-message__input__button"><app-icon icon="paper-plane" styling="solid"></app-icon></app-icon-button>
         </div>
     </div>
 </app-chatbox>

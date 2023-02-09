@@ -2,8 +2,7 @@ import { ServerSocket } from '@app/classes/communication/socket-type';
 import { GENERAL_CHANNEL } from '@app/constants/chat';
 import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_NAME_DOES_NOT_EXIST, NOT_IN_CHANNEL } from '@app/constants/services-errors';
 import { Channel } from '@common/models/chat/channel';
-import { ChatMessage } from '@common/models/chat/chat-message';
-import { NoId } from '@common/types/no-id';
+import { ChannelMessage } from '@common/models/chat/chat-message';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 
@@ -17,7 +16,7 @@ export class ChatService {
     }
 
     configureSocket(socket: ServerSocket): void {
-        socket.on('channel:newMessage', (channel: NoId<Channel>, chatMessage: ChatMessage) => this.sendMessage(channel, socket, chatMessage));
+        socket.on('channel:newMessage', (channelMessage: ChannelMessage) => this.sendMessage(channelMessage, socket));
         socket.on('channel:newChannel', (channelName: string) => this.createChannel(channelName, socket));
         socket.on('channel:join', (channel: string) => this.joinChannel(channel, socket));
         socket.on('channel:quit', (channel: string) => this.quitChannel(channel, socket));
@@ -27,19 +26,21 @@ export class ChatService {
         });
     }
 
-    private sendMessage(channel: NoId<Channel>, socket: ServerSocket, chatMessage: ChatMessage): void {
-        const foundChannel = this.getChannel(channel.name);
+    private sendMessage(channelMessage: ChannelMessage, socket: ServerSocket): void {
+        // eslint-disable-next-line no-console
+        const channel = channelMessage.channel;
+        const foundChannel = this.getChannel(channel?.name);
         if (!foundChannel) {
             socket.emit('error', CHANNEL_NAME_DOES_NOT_EXIST, StatusCodes.BAD_REQUEST);
             return;
         }
 
-        if (!socket.rooms.has(channel.name)) {
+        if (!socket.rooms.has(channel?.name)) {
             socket.emit('error', NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
             return;
         }
 
-        socket.to(channel.name).emit('channel:newMessage', foundChannel?.id, chatMessage);
+        socket.to(channel.name).emit('channel:newMessage', channelMessage);
         // TODO: Save message in DB
     }
 
