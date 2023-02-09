@@ -8,7 +8,7 @@ import { GameType } from '@app/constants/game-type';
 import { HighScoresController } from '@app/controllers/high-score-controller/high-score.controller';
 import SocketService from '@app/services/socket-service/socket.service';
 import { HighScoreWithPlayers, SingleHighScore } from '@common/models/high-score';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 import { Subject } from 'rxjs';
 import HighScoresService from './high-score.service';
 

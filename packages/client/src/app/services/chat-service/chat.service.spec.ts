@@ -67,8 +67,7 @@ describe('ChatService', () => {
     describe('joinChannel', () => {
         it('should emit to channel:join', () => {
             spyOn(socket, 'emit');
-            const channel = 'my channel';
-            service.joinChannel(channel);
+            service.joinChannel(1);
             expect(socket.emit).toHaveBeenCalled();
         });
     });
@@ -89,10 +88,12 @@ describe('ChatService', () => {
     describe('handleChannelQuit', () => {
         it('should remove channel', () => {
             const channel: ClientChannel = {
-                id: '1',
+                idChannel: 1,
                 name: 'channel',
                 messages: [],
                 canQuit: true,
+                private: false,
+                default: false,
             };
             service.channels = [channel];
             service.handleChannelQuit(channel);
@@ -103,13 +104,15 @@ describe('ChatService', () => {
     describe('handleNewMessage', () => {
         it('should add message', () => {
             const channel: ClientChannel = {
-                id: '1',
+                idChannel: 1,
                 name: 'channel',
                 messages: [],
                 canQuit: true,
+                private: false,
+                default: false,
             };
             service.channels = [channel];
-            service.handleNewMessage({ channel, message: {} as ChatMessage } as ChannelMessage);
+            service.handleNewMessage({ idChannel: channel.idChannel, message: {} as ChatMessage } as ChannelMessage);
             expect(service.channels[0].messages.length).toEqual(1);
         });
     });

@@ -11,16 +11,20 @@ import { IconComponent } from '@app/components/icon/icon.component';
 import { ChatboxContainerComponent } from './chatbox-container.component';
 
 const CHANNEL_1: ClientChannel = {
-    id: '1',
+    idChannel: 1,
     name: '1',
     messages: [],
     canQuit: true,
+    private: false,
+    default: false,
 };
 const CHANNEL_2: ClientChannel = {
-    id: '2',
+    idChannel: 2,
     name: '2',
     messages: [],
     canQuit: true,
+    private: false,
+    default: false,
 };
 
 describe('ChatboxContainerComponent', () => {
@@ -111,15 +115,6 @@ describe('ChatboxContainerComponent', () => {
             spyOn(component.createChannel, 'next');
             component.handleCreateChannel();
             expect(component.createChannel.next).toHaveBeenCalled();
-        });
-    });
-
-    describe('handleJoinChannel', () => {
-        it('should emit to joinChannel', () => {
-            component.joinChannelForm.setValue({ joinChannel: 'abc' });
-            spyOn(component.joinChannel, 'next');
-            component.handleJoinChannel();
-            expect(component.joinChannel.next).toHaveBeenCalled();
         });
     });
 });
