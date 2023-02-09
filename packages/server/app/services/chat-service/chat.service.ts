@@ -109,7 +109,11 @@ export class ChatService {
             throw new HttpException(ALREADY_IN_CHANNEL, StatusCodes.BAD_REQUEST);
         }
 
-        await this.userChatTable.insert({ idChannel: channel.idChannel, idUser: user.idUser });
+        // This method is used to subscribe to a channel of join an already subscribed channel.
+        // We only need to add to the table if not already there.
+        if ((await this.userChatTable.select('*').where({ idChannel, idUser: user.idUser })).length === 0) {
+            await this.userChatTable.insert({ idChannel: channel.idChannel, idUser: user.idUser });
+        }
 
         socket.join(getSocketNameFromChannel(channel));
         socket.emit('channel:join', channel);
