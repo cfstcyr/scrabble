@@ -22,6 +22,8 @@ import {
     StartGameEmitArgs,
 } from './socket-types';
 import { NextFunction } from 'express';
+import * as jwt from 'jsonwebtoken';
+import { env } from '@app/utils/environment/environment';
 
 @Service()
 export class SocketService {
@@ -39,18 +41,15 @@ export class SocketService {
     handleSockets(): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
-        this.sio.use(async (socket: io.Socket, next: NextFunction) => {
-            console.log('Received Socket connection' + socket.id);
-            const token = socket.handshake.auth;
+        this.sio.use((socket: io.Socket, next: NextFunction) => {
+            // Remove comment when auth is added client side
+            // const token = socket.handshake.auth.token;
 
-            console.log('Token is :', token);
+            const token = jwt.sign({ idUser: 1 }, env.TOKEN_SECRET);
+
             if (token) {
                 try {
-                    this.authentificationService.authentificateSocket(socket.id, token.value);
-                    // const userId = jwt.verify(token, env.TOKEN_SECRET);
-
-                    // Get UserId form DB
-                    // Do double Connection Verrification on Users Set
+                    this.authentificationService.authentificateSocket(socket.id, token);
                     return next();
                 } catch (err) {
                     return next(new Error(err));
@@ -63,15 +62,8 @@ export class SocketService {
         this.sio.on('connection', (socket) => {
             // const wrap = (middleware) => (socket, next) => middleware(socket.request, {}, next);
 
-            console.log('server' + 'letsgoooo');
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
-
-            // try {
-            //     this.authentificationService.authentificateSocket(socket.id, token);
-            // } catch (error) {
-            //     this.handleDisconnect(socket);
-            // }
             this.chatService.configureSocket(socket);
             socket.on('disconnect', () => {
                 this.handleDisconnect(socket);
