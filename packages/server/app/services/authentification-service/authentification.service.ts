@@ -6,37 +6,29 @@ import { env } from '@app/utils/environment/environment';
 import { UserDatabase, UserLoginCredentials } from '@common/models/user';
 import * as bcryptjs from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import { Socket } from 'socket.io';
 import { Service } from 'typedi';
 
 @Service()
 export class AuthentificationService {
-    connectedUsersMap: Map<string, number>;
+    connectedUsers: Map<string, number>;
 
     constructor(private databaseService: DatabaseService) {
-        this.connectedUsersMap = new Map();
+        this.connectedUsers = new Map();
     }
 
-    async authentificateSocket(socketId: string, token: string): Promise<void> {
+    async authentificateSocket(socket: Socket, token: string): Promise<void> {
         const idUser = jwt.verify(token, env.TOKEN_SECRET) as TokenData;
 
-        this.connectedUsersMap.forEach((value) => {
+        this.connectedUsers.forEach((value) => {
             if (value === idUser.idUser) throw new Error(ALREADY_LOGGED);
         });
-
-        this.connectedUsersMap.set(socketId, idUser.idUser);
+        this.connectedUsers.set(socket.id, idUser.idUser);
     }
 
     async disconnectSocket(socketId: string): Promise<void> {
-        this.connectedUsersMap.delete(socketId);
+        this.connectedUsers.delete(socketId);
     }
-
-    // authentificateSocket(socketId: string, token: string): void {
-    //     jwt.verify(token, env.TOKEN_SECRET);
-
-    //     if (this.map.has(token) && this.map.get(token) !== socketId) throw new Error(ALREADY_LOGGED);
-
-    //     this.map.set(token, socketId);
-    // // }
 
     async login(credentials: UserLoginCredentials): Promise<string | void> {
         const user = await this.getUserByEmail(credentials.email);

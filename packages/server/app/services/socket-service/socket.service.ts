@@ -49,7 +49,7 @@ export class SocketService {
 
             if (token) {
                 try {
-                    this.authentificationService.authentificateSocket(socket.id, token);
+                    this.authentificationService.authentificateSocket(socket, token);
                     return next();
                 } catch (err) {
                     return next(new Error(err));
