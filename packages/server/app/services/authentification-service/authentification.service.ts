@@ -24,6 +24,8 @@ export class AuthentificationService {
             if (value === idUser.idUser) throw new Error(ALREADY_LOGGED);
         });
         this.connectedUsers.set(socket.id, idUser.idUser);
+
+        socket.data.idUser = idUser;
     }
 
     async disconnectSocket(socketId: string): Promise<void> {
