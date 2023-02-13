@@ -88,8 +88,24 @@ export default class ActionPlace extends ActionPlay {
             gameObjective: objectiveUpdateResult ? objectiveUpdateResult.updateData : undefined,
         };
 
-        if (this.game.isPlayer1(this.player)) response.player1 = playerData;
-        else response.player2 = playerData;
+        const playerNumber = this.game.getPlayerNumber(this.player);
+
+        switch (playerNumber) {
+            case 1: {
+                response.player1 = playerData;
+                break;
+            }
+            case 2: {
+                response.player2 = playerData;
+                break;
+            }
+            case 3: {
+                response.player3 = playerData;
+                break;
+            }
+            default:
+                response.player4 = playerData;
+        }
         return response;
     }
 

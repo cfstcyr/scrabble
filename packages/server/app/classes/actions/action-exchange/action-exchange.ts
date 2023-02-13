@@ -37,9 +37,24 @@ export default class ActionExchange extends ActionPlay {
         const playerUpdate: PlayerData = { id: this.player.id, tiles: this.player.tiles };
 
         const response: GameUpdateData = {};
+        const playerNumber = this.game.getPlayerNumber(this.player);
 
-        if (this.game.isPlayer1(this.player)) response.player1 = playerUpdate;
-        else response.player2 = playerUpdate;
+        switch (playerNumber) {
+            case 1: {
+                response.player1 = playerUpdate;
+                break;
+            }
+            case 2: {
+                response.player2 = playerUpdate;
+                break;
+            }
+            case 3: {
+                response.player3 = playerUpdate;
+                break;
+            }
+            default:
+                response.player4 = playerUpdate;
+        }
 
         return response;
     }

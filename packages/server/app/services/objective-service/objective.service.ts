@@ -85,9 +85,8 @@ export default class ObjectivesService {
 
     private addPlayerObjectivesToUpdateData(game: Game, player: Player, updateData: GameObjectivesData): GameObjectivesData {
         const playerObjectivesData: ObjectiveData[] = player.getObjectives().map((objective: AbstractObjective) => objective.convertToData());
-        return game.isPlayer1(player)
-            ? { ...updateData, player1Objectives: playerObjectivesData }
-            : { ...updateData, player2Objectives: playerObjectivesData };
+        // Hack since we unused
+        return { ...updateData, player1Objectives: playerObjectivesData };
     }
 
     private createObjectivesPool(): AbstractObjective[] {

@@ -13,13 +13,22 @@ export class CreateGameService {
     constructor(private activeGameService: ActiveGameService) {}
     async createSoloGame(config: GameConfigData): Promise<StartGameData> {
         const gameId = uuidv4();
-
-        const readyGameConfig = this.generateReadyGameConfig(
-            config.virtualPlayerLevel === VirtualPlayerLevel.Beginner
-                ? new BeginnerVirtualPlayer(gameId, config.virtualPlayerName as string)
-                : new ExpertVirtualPlayer(gameId, config.virtualPlayerName as string),
-            this.generateGameConfig(config),
-        );
+        let readyGameConfig;
+        if (config.virtualPlayerLevel === VirtualPlayerLevel.Beginner) {
+            readyGameConfig = this.generateReadyGameConfig(
+                new BeginnerVirtualPlayer(gameId, config.virtualPlayerName as string),
+                new BeginnerVirtualPlayer(gameId, config.virtualPlayerName as string),
+                new BeginnerVirtualPlayer(gameId, config.virtualPlayerName as string),
+                this.generateGameConfig(config),
+            );
+        } else {
+            readyGameConfig = this.generateReadyGameConfig(
+                new ExpertVirtualPlayer(gameId, config.virtualPlayerName as string),
+                new ExpertVirtualPlayer(gameId, config.virtualPlayerName as string),
+                new ExpertVirtualPlayer(gameId, config.virtualPlayerName as string),
+                this.generateGameConfig(config),
+            );
+        }
 
         return this.activeGameService.beginGame(gameId, readyGameConfig);
     }
@@ -39,10 +48,12 @@ export class CreateGameService {
         };
     }
 
-    private generateReadyGameConfig(player2: Player, gameConfig: GameConfig): ReadyGameConfig {
+    private generateReadyGameConfig(player2: Player, player3: Player, player4: Player, gameConfig: GameConfig): ReadyGameConfig {
         return {
             ...gameConfig,
             player2,
+            player3,
+            player4,
         };
     }
 }

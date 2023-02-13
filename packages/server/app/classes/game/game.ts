@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable max-lines */
 import Board from '@app/classes/board/board';
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
-import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { GameObjectivesData } from '@app/classes/communication/objective-data';
 import { RoundData } from '@app/classes/communication/round-data';
@@ -14,7 +15,7 @@ import TileReserve from '@app/classes/tile/tile-reserve';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { END_GAME_HEADER_MESSAGE, START_TILES_AMOUNT } from '@app/constants/classes-constants';
-import { IS_REQUESTING, WINNER_MESSAGE } from '@app/constants/game-constants';
+import { WINNER_MESSAGE } from '@app/constants/game-constants';
 import { INVALID_PLAYER_ID_FOR_GAME } from '@app/constants/services-errors';
 import BoardService from '@app/services/board-service/board.service';
 import ObjectivesService from '@app/services/objective-service/objective.service';
@@ -22,9 +23,11 @@ import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual
 import { NoIdGameHistoryWithPlayers } from '@common/models/game-history';
 import { StatusCodes } from 'http-status-codes';
 import { Container } from 'typedi';
+import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { ReadyGameConfig, StartGameData } from './game-config';
 import { GameMode } from './game-mode';
 import { GameType } from './game-type';
+// TODO: Changer de place
 export const GAME_OVER_PASS_THRESHOLD = 6;
 export const WIN = 1;
 export const LOSE = -1;
@@ -125,10 +128,9 @@ export default class Game {
 
     isPlayerWinner(currentPlayer: Player): boolean {
         const opponents = this.getOpponentPlayers(currentPlayer);
-        for (const opponent of opponents)
-        {
+        for (const opponent of opponents) {
             if (currentPlayer.score < opponent.score) {
-                return false
+                return false;
             }
         }
         return true;
@@ -165,27 +167,48 @@ export default class Game {
 
     getPlayer(playerId: string): Player {
         if (this.isPlayerFromGame(playerId)) {
-            if (this.player1.id === playerId) return this.player1;
-            else if (this.player2.id === playerId) return this.player2;
-            else if (this.player3.id === playerId) return this.player3;
-            else return this.player4;
+            switch (playerId) {
+                case this.player1.id:
+                    return this.player1;
+                case this.player2.id:
+                    return this.player2;
+                case this.player3.id:
+                    return this.player3;
+                default:
+                    return this.player4;
+            }
         }
         throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
     }
 
-    getOpponentPlayers(player: string | Player) : Player[] {
+    getPlayerNumber(player: Player): number {
+        if (this.isPlayerFromGame(player)) {
+            switch (player) {
+                case this.player1:
+                    return 1;
+                case this.player2:
+                    return 2;
+                case this.player3:
+                    return 3;
+                default:
+                    return 4;
+            }
+        }
+        throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+    }
+
+    getOpponentPlayers(player: string | Player): Player[] {
         const opponentPlayers: Player[] = [];
 
         if (this.isPlayerFromGame(player)) {
-            if ((player instanceof Player && this.player1 === player) || this.player1.id !== player) opponentPlayers.push(this.player1);
-            if ((player instanceof Player && this.player2 === player) || this.player2.id !== player) opponentPlayers.push(this.player2);
-            if ((player instanceof Player && this.player3 === player) || this.player3.id !== player) opponentPlayers.push(this.player3);
-            if ((player instanceof Player && this.player4 === player) || this.player4.id !== player) opponentPlayers.push(this.player4);
+            if ((player instanceof Player && this.player1 !== player) || this.player1.id !== player) opponentPlayers.push(this.player1);
+            if ((player instanceof Player && this.player2 !== player) || this.player2.id !== player) opponentPlayers.push(this.player2);
+            if ((player instanceof Player && this.player3 !== player) || this.player3.id !== player) opponentPlayers.push(this.player3);
+            if ((player instanceof Player && this.player4 !== player) || this.player4.id !== player) opponentPlayers.push(this.player4);
             return opponentPlayers;
         }
         throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
     }
-
 
     replacePlayer(playerId: string, newPlayer: Player): GameUpdateData {
         if (!this.isPlayerFromGame(playerId)) throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
@@ -220,27 +243,39 @@ export default class Game {
 
     areGameOverConditionsMet(): boolean {
         // TODO : refactor end of game conditions
-        return !this.player1.hasTilesLeft() || !this.player2.hasTilesLeft() || !this.player3.hasTilesLeft() || !this.player4.hasTilesLeft() || this.roundManager.getPassCounter() >= GAME_OVER_PASS_THRESHOLD;
+        return (
+            !this.player1.hasTilesLeft() ||
+            !this.player2.hasTilesLeft() ||
+            !this.player3.hasTilesLeft() ||
+            !this.player4.hasTilesLeft() ||
+            this.roundManager.getPassCounter() >= GAME_OVER_PASS_THRESHOLD
+        );
     }
 
     // winnerName was if someone leave s to hard code the name of the other player left as a winner
     endOfGame(): number[] {
         this.gameIsOver = true;
 
-        const finalScores  = this.getEndOfGameScores();
-        
+        const finalScores = this.getEndOfGameScores();
+
         this.completeGameHistory();
         return finalScores;
     }
 
-    // endGameMessage(winnerName: string | undefined): FeedbackMessage[] {
-    //     const messages: string[] = [END_GAME_HEADER_MESSAGE, this.player1.endGameMessage(), this.player2.endGameMessage()];
-    //     const winnerNames: string[] = winnerName ? [winnerName] : this.computeWinners();
-    //     messages.push(WINNER_MESSAGE(winnerNames.join(' et ')));
-    //     return messages.map((message: string) => {
-    //         return { message };
-    //     });
-    // }
+    endGameMessage(): FeedbackMessage[] {
+        const messages: string[] = [
+            END_GAME_HEADER_MESSAGE,
+            this.player1.endGameMessage(),
+            this.player2.endGameMessage(),
+            this.player3.endGameMessage(),
+            this.player4.endGameMessage(),
+        ];
+        const winnerNames: string[] = this.computeWinners();
+        messages.push(WINNER_MESSAGE(winnerNames.join(' et ')));
+        return messages.map((message: string) => {
+            return { message };
+        });
+    }
 
     // isPlayer1(player: string | Player): boolean {
     //     return player instanceof Player ? this.player1.id === player.id : this.player1.id === player;
@@ -274,44 +309,42 @@ export default class Game {
 
     computeWinners(): string[] {
         const winners: string[] = [];
-        if (this.isPlayerWinner(this.player1))
-            winners.push(this.player1.name);
-        if (this.isPlayerWinner(this.player2))
-            winners.push(this.player2.name);
-        if (this.isPlayerWinner(this.player3))
-            winners.push(this.player3.name);
-        if (this.isPlayerWinner(this.player4))
-            winners.push(this.player4.name);
+        if (this.isPlayerWinner(this.player1)) winners.push(this.player1.name);
+        if (this.isPlayerWinner(this.player2)) winners.push(this.player2.name);
+        if (this.isPlayerWinner(this.player3)) winners.push(this.player3.name);
+        if (this.isPlayerWinner(this.player4)) winners.push(this.player4.name);
 
         return winners;
     }
 
-    private computeEndOfGameScore(playerHasWon: boolean[], playerPointsToDeduct: number[]): number[] 
-    {
-        // TODO: Change error
+    private computeEndOfGameScore(playerHasWon: boolean[], playerPointsToDeduct: number[]): number[] {
         const players = this.getPlayerArray();
-        if (playerHasWon.length !== players.length || playerPointsToDeduct.length !== players.length) throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        if (playerHasWon.length !== players.length || playerPointsToDeduct.length !== players.length)
+            // TODO: Change error message
+            throw new HttpException('incoherence dans la taille des listes', StatusCodes.FORBIDDEN);
 
-        for (let i=0; i < players.length; i++){
-            if (playerHasWon[i] === true)
-            {
-                for (let j=0; j < players.length; j++){
-                    if (i !==j)
-                    {
-                        players[i].score += WIN * playerPointsToDeduct[j];
+        for (let i = 0; i < players.length; i++) {
+            if (playerHasWon[i] === true) {
+                for (let j = 0; j < players.length; j++) {
+                    if (i !== j) {
+                        players[i].score += playerPointsToDeduct[j];
                     }
                 }
+            } else {
+                players[i].score -= playerPointsToDeduct[i];
             }
-            else {
-                players[i].score += LOSE * playerPointsToDeduct[i];
-            }
-        } 
+        }
         return [this.player1.score, this.player2.score, this.player3.score, this.player4.score];
     }
 
     private getEndOfGameScores(): number[] {
         const playerHasWon = [!this.player1.hasTilesLeft(), !this.player2.hasTilesLeft(), !this.player3.hasTilesLeft(), !this.player4.hasTilesLeft()];
-        const playerPointsToDeduct = [this.player1.getTileRackPoints(), this.player2.getTileRackPoints(), this.player3.getTileRackPoints(), this.player4.getTileRackPoints()];
+        const playerPointsToDeduct = [
+            this.player1.getTileRackPoints(),
+            this.player2.getTileRackPoints(),
+            this.player3.getTileRackPoints(),
+            this.player4.getTileRackPoints(),
+        ];
         return this.computeEndOfGameScore(playerHasWon, playerPointsToDeduct);
     }
 
@@ -322,12 +355,11 @@ export default class Game {
     }
 
     private isPlayerFromGame(player: string | Player): boolean {
-        if (player instanceof Player){
+        if (player instanceof Player) {
             return this.player1 === player || this.player2 === player || this.player3 === player || this.player4 === player;
         }
         return this.player1.id === player || this.player2.id === player || this.player3.id === player || this.player4.id === player;
     }
-
 
     private initializeObjectives(): void {
         if (this.gameType === GameType.Classic) return;
@@ -339,7 +371,7 @@ export default class Game {
         this.player4.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player2Objective);
     }
 
-    private getPlayerArray() : Player[] {
+    private getPlayerArray(): Player[] {
         return [this.player1, this.player2, this.player3, this.player4];
     }
 }
