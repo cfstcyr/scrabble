@@ -22,39 +22,82 @@ class CreateLobbyPage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  ElevatedButton(
-                      onPressed: () {
-                        //TODO
-                      },
-                      child: Text("Quitter le groupe")),
                   Expanded(
-                    child: SizedBox(height: 15.0, child: PlayerCase()),
+                    child: SizedBox(height: 5.0, child: PlayerCase()),
                   ),
-                  Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.green,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
-                      child: Column(
-                        children: [
-                          Center(child: Text("Parametres")),
-                          ElevatedButton.icon(
-                              onPressed: () {
-                                //TODO AJUSTER TEMPS
-                              },
-                              icon: Icon(Icons.timer),
-                              label: Text('1:00'))
-                        ],
-                      )),
+                  Expanded(
+                    child: SizedBox(height: 5.0, child: WaitingRoom()),
+                  ),
+                  Parameters(),
+                  GroupGestion(),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class Parameters extends StatelessWidget {
+  const Parameters({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.green,
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(20))),
+        child: Column(
+          children: [
+            Center(
+                child: Text(
+                    "Parametres")), // TODO: ENLEVER CENTER ENLEVE LESPACE AUTOUR DE PARAMETRES
+            ElevatedButton.icon(
+                onPressed: () {
+                  //TODO AJUSTER TEMPS
+                },
+                icon: Icon(Icons.timer),
+                label: Text('1:00'))
+          ],
+        ));
+  }
+}
+
+class GroupGestion extends StatelessWidget {
+  const GroupGestion({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+          child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton.icon(
+              onPressed: () {
+                //TODO AJUSTER TEMPS
+              },
+              icon: Icon(Icons.keyboard_arrow_left_sharp),
+              label: Text('Quitter le groupe')),
+          ElevatedButton.icon(
+              onPressed: () {
+                //TODO AJUSTER TEMPS
+              },
+              icon: Icon(Icons.start),
+              label: Text('Commencer la partie'))
+        ],
+      )),
     );
   }
 }
@@ -70,30 +113,97 @@ class PlayerCase extends StatelessWidget {
     var style = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
-    return ListView(
-      children: List.generate(
-        playerList.length,
-        (index) => Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(playerList[index].username),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                //TODO
-              },
-              child: Text('Accepter'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                //TODO
-              },
-              child: Text('Refuser'),
-            ),
-          ],
+    return Container(
+      decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.green,
+          ),
+          borderRadius: BorderRadius.all(Radius.circular(20))),
+      child: ListView(
+        children: List.generate(
+          playerList.length,
+          (index) => Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(playerList[index].username),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  //TODO
+                },
+                child: Text('Accepter'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  //TODO
+                },
+                child: Text('Refuser'),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+}
+
+class WaitingRoom extends StatelessWidget {
+  const WaitingRoom({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
+    // TODO : ICON DIFFERENT QUAND TA UN JOUEUR VS NON
+    // IconData icon;
+    // if (appState.favorites.contains(pair)) {
+    //   icon = Icons.favorite;
+    // } else {
+    //   icon = Icons.favorite_border;
+    // }
+
+    return Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.green,
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(20))),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.person),
+                    label: Text('Player 1')),
+                ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.person),
+                    label: Text('Player 1')),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.person),
+                    label: Text('Player 1')),
+                ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.person),
+                    label: Text('Player 1')),
+              ],
+            ),
+          ],
+        ));
   }
 }
 
