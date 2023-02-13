@@ -13,19 +13,19 @@ class CreateLobbyPage extends StatelessWidget {
           widthFactor: 0.5,
           heightFactor: 0.4,
           child: Container(
+            // color: Colors.green.shade900, // TODO ENLEVER DECORATION ET VOIR SI BACKGROUND VERT MIEUX
             decoration: BoxDecoration(
                 border: Border.all(
                   color: Colors.green,
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(20))),
+                borderRadius: BorderRadius.all(Radius.circular(5.0))),
             alignment: Alignment.center,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Expanded(
-                    child: SizedBox(height: 5.0, child: PlayerCase()),
+                    child: SizedBox(height: 5.0, child: PlayerWaitingList()),
                   ),
                   Expanded(
                     child: SizedBox(height: 5.0, child: WaitingRoom()),
@@ -54,7 +54,7 @@ class Parameters extends StatelessWidget {
             border: Border.all(
               color: Colors.green,
             ),
-            borderRadius: BorderRadius.all(Radius.circular(20))),
+            borderRadius: BorderRadius.all(Radius.circular(5))),
         child: Column(
           children: [
             Center(
@@ -88,12 +88,14 @@ class GroupGestion extends StatelessWidget {
               onPressed: () {
                 //TODO AJUSTER TEMPS
               },
+              style: setStyleActionButtons(),
               icon: Icon(Icons.keyboard_arrow_left_sharp),
               label: Text('Annuler la partie')),
           ElevatedButton.icon(
               onPressed: () {
                 //TODO AJUSTER TEMPS
               },
+              style: setStyleActionButtons(),
               icon: Icon(Icons.start),
               label: Text('Démarrer la partie'))
         ],
@@ -102,8 +104,8 @@ class GroupGestion extends StatelessWidget {
   }
 }
 
-class PlayerCase extends StatelessWidget {
-  const PlayerCase({
+class PlayerWaitingList extends StatelessWidget {
+  const PlayerWaitingList({
     super.key,
   });
 
@@ -118,52 +120,54 @@ class PlayerCase extends StatelessWidget {
           border: Border.all(
             color: Colors.green,
           ),
-          borderRadius: BorderRadius.all(Radius.circular(20))),
-      child: ListView(
-        children: List.generate(
-          playerList.length,
-          (index) => Row(
-            children: <Widget>[
-              Expanded(
-                child: Padding(
-                  padding:
-                      EdgeInsets.only(left: 5.0, right: 5.0, top: 0, bottom: 0),
-                  child: Text(playerList[index].username),
-                ),
+          borderRadius: BorderRadius.all(Radius.circular(5.0))),
+      child: ListView.builder(
+        itemCount: playerWaitingList.length,
+        itemBuilder: (_, int index) {
+          return Padding(
+            padding: const EdgeInsets.all(3.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.green,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(5.0))),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: 5.0, right: 5.0, top: 0, bottom: 0),
+                      child: Text(playerWaitingList[index].username),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: 5.0, right: 5.0, top: 0, bottom: 0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        //TODO
+                      },
+                      style: setStyleActionButtons(),
+                      child: Text('Accepter'),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: 5.0, right: 5.0, top: 0, bottom: 0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        //TODO
+                      },
+                      style: setStyleActionButtons(),
+                      child: Text('Refuser'),
+                    ),
+                  ),
+                ],
               ),
-              Padding(
-                padding:
-                    EdgeInsets.only(left: 5.0, right: 5.0, top: 0, bottom: 0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    //TODO
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green.shade900,
-                      foregroundColor: Colors.white,
-                      shape: BeveledRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(2)))),
-                  child: Text('Accepter'),
-                ),
-              ),
-              Padding(
-                padding:
-                    EdgeInsets.only(left: 5.0, right: 5.0, top: 0, bottom: 0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    //TODO
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green.shade900,
-                      foregroundColor: Colors.white,
-                      shape: BeveledRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(2)))),
-                  child: Text('Refuser'),
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -188,7 +192,7 @@ class WaitingRoom extends StatelessWidget {
             border: Border.all(
               color: Colors.green,
             ),
-            borderRadius: BorderRadius.all(Radius.circular(20))),
+            borderRadius: BorderRadius.all(Radius.circular(5))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -231,6 +235,7 @@ class WaitingRoom extends StatelessWidget {
                   // TODO: a voir comment on veux ca
                 },
                 icon: Icon(Icons.filter_list_alt),
+                style: setStyleActionButtons(),
                 label: Text('Remplir les vides')),
           ],
         ));
@@ -241,6 +246,10 @@ List<PlayerView> playerWaitingList = [
 // TODO : requete joueurs lobby
   PlayerView(username: "michel"),
   PlayerView(username: "ppman"),
+  PlayerView(username: "ppman1"),
+  PlayerView(username: "ppman2"),
+  PlayerView(username: "ppman3"),
+  PlayerView(username: "ppman4"),
 ];
 
 List<PlayerView> playerList = [
@@ -264,4 +273,12 @@ String setPlayerName(int index) {
   return playerList.length > index
       ? playerList[index].username
       : "Player $index";
+}
+
+ButtonStyle setStyleActionButtons() {
+  return ElevatedButton.styleFrom(
+      backgroundColor: Colors.green.shade900,
+      foregroundColor: Colors.white,
+      shape: BeveledRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(2))));
 }
