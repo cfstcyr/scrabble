@@ -4,7 +4,7 @@ import { BaseController } from '@app/controllers/base-controller';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { NO_LOGIN, NO_SIGNUP } from '@app/constants/controllers-errors';
+import { NO_LOGIN, NO_SIGNUP, NO_VALIDATE } from '@app/constants/controllers-errors';
 import { authenticateToken } from '@app/middlewares/authentificate-token';
 
 @Service()
@@ -28,8 +28,13 @@ export class AuthentificationController extends BaseController {
                 .catch(() => next(new HttpException(NO_SIGNUP, StatusCodes.FORBIDDEN)));
         });
 
-        router.get('/validate', authenticateToken, async (req, res) => {
-            res.sendStatus(StatusCodes.OK);
+        router.get('/validate', authenticateToken, async (req, res, next) => {
+            try {
+                const token = this.authentificationservice.generateAccessToken(req.body.user);
+                res.send({ token }).status(StatusCodes.OK).end();
+            } catch {
+                next(new HttpException(NO_VALIDATE));
+            }
         });
 
         router.post('/validateUsername', async (req, res, next) => {

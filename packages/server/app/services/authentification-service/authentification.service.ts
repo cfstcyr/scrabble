@@ -17,6 +17,10 @@ export class AuthentificationService {
         this.connectedUsers = new Map();
     }
 
+    generateAccessToken = (idUser: number): string => {
+        return jwt.sign(idUser.toString(), env.TOKEN_SECRET);
+    };
+
     async authentificateSocket(socket: Socket, token: string): Promise<void> {
         const idUser = jwt.verify(token, env.TOKEN_SECRET) as TokenData;
 
@@ -89,8 +93,4 @@ export class AuthentificationService {
     private get table() {
         return this.databaseService.knex<UserDatabase>('User');
     }
-
-    private generateAccessToken = (idUser: number): string => {
-        return jwt.sign(idUser.toString(), env.TOKEN_SECRET);
-    };
 }
