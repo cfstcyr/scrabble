@@ -7,10 +7,19 @@ import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { Service } from 'typedi';
 import { v4 as uuidv4 } from 'uuid';
+import { ChatService } from '@app/services/chat-service/chat.service';
+import { SocketService } from '@app/services/socket-service/socket.service';
+import { ServerSocket } from '@app/classes/communication/socket-type';
+import { GROUP_CHANNEL } from '@app/constants/chat';
+import { Channel } from '@common/models/chat/channel';
 
 @Service()
 export class CreateGameService {
-    constructor(private activeGameService: ActiveGameService) {}
+    constructor(
+        private activeGameService: ActiveGameService,
+        private readonly chatService: ChatService,
+        private readonly socketService: SocketService,
+    ) {}
     async createSoloGame(config: GameConfigData): Promise<StartGameData> {
         const gameId = uuidv4();
 
@@ -24,9 +33,14 @@ export class CreateGameService {
         return this.activeGameService.beginGame(gameId, readyGameConfig);
     }
 
-    createMultiplayerGame(configData: GameConfigData): WaitingRoom {
+    async createMultiplayerGame(configData: GameConfigData): Promise<WaitingRoom> {
         const config = this.generateGameConfig(configData);
-        return new WaitingRoom(config);
+
+        // TODO: Use playerId to socketId map to get the socket.
+        const creatorSocket: ServerSocket = this.socketService.getSocket(config.player1.id);
+        const channel: Channel = await this.chatService.createChannel(GROUP_CHANNEL, creatorSocket);
+
+        return new WaitingRoom(config, channel.idChannel);
     }
 
     private generateGameConfig(configData: GameConfigData): GameConfig {

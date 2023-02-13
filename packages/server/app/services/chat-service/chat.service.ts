@@ -66,23 +66,7 @@ export class ChatService {
         });
     }
 
-    private async sendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
-        const channel = await this.getChannel(channelMessage.idChannel);
-
-        if (!channel) {
-            throw new HttpException(CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
-        }
-
-        if (!socket.rooms.has(getSocketNameFromChannel(channel))) {
-            throw new HttpException(NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
-        }
-
-        socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
-
-        // TODO: Save message in DB
-    }
-
-    private async createChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel | undefined> {
+    async createChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel> {
         await this.authenticationService.authenticateSocket(socket);
 
         if (!(await this.isChannelNameAvailable(channel))) {
@@ -98,7 +82,7 @@ export class ChatService {
         return newChannel;
     }
 
-    private async joinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<Channel | undefined> {
+    async joinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<Channel> {
         const user = await this.authenticationService.authenticateSocket(socket);
         const channel = await this.getChannel(idChannel);
 
@@ -122,7 +106,7 @@ export class ChatService {
         return channel;
     }
 
-    private async quitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
+    async quitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
         const user = await this.authenticationService.authenticateSocket(socket);
         const channel = await this.getChannel(idChannel);
 
@@ -139,6 +123,22 @@ export class ChatService {
         }
 
         socket.emit('channel:quit', channel);
+    }
+
+    private async sendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
+        const channel = await this.getChannel(channelMessage.idChannel);
+
+        if (!channel) {
+            throw new HttpException(CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
+        }
+
+        if (!socket.rooms.has(getSocketNameFromChannel(channel))) {
+            throw new HttpException(NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
+        }
+
+        socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
+
+        // TODO: Save message in DB
     }
 
     private async initChannels(socket: ServerSocket): Promise<void> {

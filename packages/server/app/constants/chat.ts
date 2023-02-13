@@ -7,4 +7,11 @@ export const GENERAL_CHANNEL: ChannelCreation = {
     default: true,
 };
 
+export const GROUP_CHANNEL: ChannelCreation = {
+    name: 'Groupe de partie',
+    canQuit: false,
+    private: true,
+    default: false,
+};
+
 export const DEFAULT_CHANNELS: ChannelCreation[] = [GENERAL_CHANNEL];

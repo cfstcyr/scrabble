@@ -22,6 +22,8 @@ import { convertToLobbyData } from '@app/utils/convert-to-lobby-data/convert-to-
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
+import { ChatService } from '@app/services/chat-service/chat.service';
+import { ServerSocket } from '@app/classes/communication/socket-type';
 
 @Service()
 export class GameDispatcherService {
@@ -34,6 +36,7 @@ export class GameDispatcherService {
         private activeGameService: ActiveGameService,
         private dictionaryService: DictionaryService,
         private virtualPlayerService: VirtualPlayerService,
+        private readonly chatService: ChatService,
     ) {
         this.waitingRooms = [];
         this.lobbiesRoom = new Room();
@@ -67,7 +70,7 @@ export class GameDispatcherService {
     }
 
     async createMultiplayerGame(config: GameConfigData): Promise<LobbyData> {
-        const waitingRoom = this.createGameService.createMultiplayerGame(config);
+        const waitingRoom = await this.createGameService.createMultiplayerGame(config);
         this.dictionaryService.useDictionary(config.dictionary.id);
 
         this.addToWaitingRoom(waitingRoom);
@@ -88,7 +91,7 @@ export class GameDispatcherService {
         return waitingRoom.getConfig();
     }
 
-    acceptJoinRequest(waitingRoomId: string, playerId: string, opponentName: string): ReadyGameConfig {
+    async acceptJoinRequest(waitingRoomId: string, playerId: string, opponentName: string): Promise<ReadyGameConfig> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
@@ -105,6 +108,10 @@ export class GameDispatcherService {
             ...waitingRoom.getConfig(),
             player2: waitingRoom.joinedPlayer,
         };
+
+        // TODO: Use playerId to socketId map to get the socket.
+        const joinerSocket: ServerSocket = this.socketService.getSocket(waitingRoom.joinedPlayer.id);
+        await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), joinerSocket);
 
         return config;
     }
@@ -125,17 +132,23 @@ export class GameDispatcherService {
         return [rejectedPlayer, waitingRoom.getConfig().player1.name];
     }
 
-    leaveLobbyRequest(waitingRoomId: string, playerId: string): [string, string] {
+    async leaveLobbyRequest(waitingRoomId: string, playerId: string): Promise<[string, string]> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         if (waitingRoom.joinedPlayer === undefined) {
             throw new HttpException(NO_OPPONENT_IN_WAITING_GAME, StatusCodes.BAD_REQUEST);
         } else if (waitingRoom.joinedPlayer.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
+
+        // TODO: Use playerId to socketId map to get the socket.
+        const leaverSocket: ServerSocket = this.socketService.getSocket(waitingRoom.joinedPlayer.id);
+        await this.chatService.quitChannel(waitingRoom.getGroupChannelId(), leaverSocket);
+
         const leaverName = waitingRoom.joinedPlayer.name;
         const hostPlayerId = waitingRoom.getConfig().player1.id;
 
         waitingRoom.joinedPlayer = undefined;
+
         return [hostPlayerId, leaverName];
     }
 

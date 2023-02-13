@@ -167,9 +167,9 @@ export class GameDispatcherController extends BaseController {
         this.handleLobbiesUpdate();
     }
 
-    private handleLeave(gameId: string, playerId: string): void {
+    private async handleLeave(gameId: string, playerId: string): Promise<void> {
         if (this.gameDispatcherService.isGameInWaitingRooms(gameId)) {
-            const result = this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
+            const result = await this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
             this.socketService.emitToSocket(result[0], 'joinerLeaveGame', { name: result[1] });
             this.handleLobbiesUpdate();
             return;
@@ -245,7 +245,7 @@ export class GameDispatcherController extends BaseController {
 
     private async handleAcceptRequest(gameId: string, playerId: string, playerName: string): Promise<void> {
         if (playerName === undefined) throw new HttpException(PLAYER_NAME_REQUIRED, StatusCodes.BAD_REQUEST);
-        const gameConfig = this.gameDispatcherService.acceptJoinRequest(gameId, playerId, playerName);
+        const gameConfig = await this.gameDispatcherService.acceptJoinRequest(gameId, playerId, playerName);
         const startGameData = await this.activeGameService.beginGame(gameId, gameConfig);
 
         this.socketService.addToRoom(startGameData.player2.id, gameId);
