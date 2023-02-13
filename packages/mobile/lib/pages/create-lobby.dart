@@ -226,6 +226,12 @@ class WaitingRoom extends StatelessWidget {
                     label: Text(setPlayerName(3))),
               ],
             ),
+            ElevatedButton.icon(
+                onPressed: () {
+                  // TODO: a voir comment on veux ca
+                },
+                icon: Icon(Icons.filter_list_alt),
+                label: Text('Remplir les vides')),
           ],
         ));
   }
