@@ -1,12 +1,13 @@
-class Player {
+import 'package:flutter/material.dart';
+
+class PlayerView {
   final String username;
+  final IconData icon;
 
-  Player({
-    required this.username,
-  });
+  PlayerView({required this.username, this.icon = Icons.person});
 
-  factory Player.fromJson(Map<String, dynamic> json) {
-    return Player(
+  factory PlayerView.fromJson(Map<String, dynamic> json) {
+    return PlayerView(
       username: json['username'] as String,
     );
   }
