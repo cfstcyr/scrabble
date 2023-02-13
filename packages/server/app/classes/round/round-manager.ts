@@ -4,6 +4,7 @@ import { RoundData } from '@app/classes/communication/round-data';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
 import { INVALID_PLAYER_TO_REPLACE, NO_FIRST_ROUND_EXISTS } from '@app/constants/services-errors';
+import { Random } from '@app/utils/random/random';
 import { StatusCodes } from 'http-status-codes';
 import { CompletedRound, Round } from './round';
 
@@ -12,15 +13,19 @@ const SECONDS_TO_MILLISECONDS = 1000;
 export default class RoundManager {
     private player1: Player;
     private player2: Player;
+    private player3: Player;
+    private player4: Player;
     private currentRound: Round;
     private completedRounds: CompletedRound[];
     private maxRoundTime: number;
     private passCounter: number;
 
-    constructor(maxRoundTime: number, player1: Player, player2: Player) {
+    constructor(maxRoundTime: number, player1: Player, player2: Player, player3: Player, player4: Player) {
         this.maxRoundTime = maxRoundTime;
         this.player1 = player1;
         this.player2 = player2;
+        this.player3 = player3;
+        this.player4 = player4;
         this.completedRounds = [];
         this.passCounter = 0;
     }
@@ -80,6 +85,8 @@ export default class RoundManager {
 
         if (oldPlayerId === this.player1.id) this.player1 = newPlayer;
         else if (oldPlayerId === this.player2.id) this.player2 = newPlayer;
+        else if (oldPlayerId === this.player3.id) this.player3 = newPlayer;
+        else if (oldPlayerId === this.player4.id) this.player4 = newPlayer;
         else throw new HttpException(INVALID_PLAYER_TO_REPLACE, StatusCodes.NOT_FOUND);
     }
 
@@ -91,8 +98,15 @@ export default class RoundManager {
 
     private getNextPlayer(): Player {
         if (this.currentRound === undefined) {
-            return Math.round(Math.random()) === 0 ? this.player1 : this.player2;
+            const startPlayerNumber = Random.randomIntFromInterval(1,4);
+            if (startPlayerNumber === 1) return this.player1;
+            else if (startPlayerNumber === 2) return this.player2;
+            else if (startPlayerNumber === 3) return this.player3;
+            else if (startPlayerNumber === 4) return this.player4;
         }
-        return this.currentRound.player === this.player1 ? this.player2 : this.player1;
+        if (this.currentRound.player === this.player1) return this.player2;
+        else if (this.currentRound.player === this.player2) return this.player3;
+        else if (this.currentRound.player === this.player3) return this.player4;
+        else return this.player1;
     }
 }

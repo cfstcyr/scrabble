@@ -29,11 +29,15 @@ export interface GameConfig {
 
 export interface ReadyGameConfig extends GameConfig {
     player2: Player;
+    player3: Player;
+    player4: Player;
 }
 
 export interface StartGameData {
     player1: PlayerData;
     player2: PlayerData;
+    player3: PlayerData;
+    player4: PlayerData;
     gameType: GameType;
     gameMode: GameMode;
     maxRoundTime: number;
