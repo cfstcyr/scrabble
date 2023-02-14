@@ -77,7 +77,6 @@ export default class Game {
         game.isAddedToDatabase = false;
         game.gameIsOver = false;
 
-        game.initializeObjectives();
         await game.tileReserve.init();
 
         game.player1.tiles = game.tileReserve.getTiles(START_TILES_AMOUNT);

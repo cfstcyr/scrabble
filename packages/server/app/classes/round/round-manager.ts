@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Action, ActionPass } from '@app/classes/actions';
 import { PlayerData } from '@app/classes/communication/player-data';
 import { RoundData } from '@app/classes/communication/round-data';
@@ -83,11 +84,26 @@ export default class RoundManager {
     replacePlayer(oldPlayerId: string, newPlayer: Player): void {
         if (oldPlayerId === this.currentRound.player.id) this.currentRound.player = newPlayer;
 
-        if (oldPlayerId === this.player1.id) this.player1 = newPlayer;
-        else if (oldPlayerId === this.player2.id) this.player2 = newPlayer;
-        else if (oldPlayerId === this.player3.id) this.player3 = newPlayer;
-        else if (oldPlayerId === this.player4.id) this.player4 = newPlayer;
-        else throw new HttpException(INVALID_PLAYER_TO_REPLACE, StatusCodes.NOT_FOUND);
+        switch (oldPlayerId) {
+            case this.player1.id: {
+                this.player1 = newPlayer;
+                break;
+            }
+            case this.player2.id: {
+                this.player2 = newPlayer;
+                break;
+            }
+            case this.player3.id: {
+                this.player3 = newPlayer;
+                break;
+            }
+            case this.player4.id: {
+                this.player4 = newPlayer;
+                break;
+            }
+            default:
+                throw new HttpException(INVALID_PLAYER_TO_REPLACE, StatusCodes.NOT_FOUND);
+        }
     }
 
     private saveCompletedRound(round: Round, actionPlayed: Action): void {
@@ -98,15 +114,28 @@ export default class RoundManager {
 
     private getNextPlayer(): Player {
         if (this.currentRound === undefined) {
-            const startPlayerNumber = Random.randomIntFromInterval(1,4);
-            if (startPlayerNumber === 1) return this.player1;
-            else if (startPlayerNumber === 2) return this.player2;
-            else if (startPlayerNumber === 3) return this.player3;
-            else if (startPlayerNumber === 4) return this.player4;
+            const startPlayerNumber = Random.randomIntFromInterval(1, 4);
+            switch (startPlayerNumber) {
+                case 1:
+                    return this.player1;
+                case 2:
+                    return this.player2;
+                case 3:
+                    return this.player3;
+                case 4:
+                    return this.player4;
+                // No default
+            }
         }
-        if (this.currentRound.player === this.player1) return this.player2;
-        else if (this.currentRound.player === this.player2) return this.player3;
-        else if (this.currentRound.player === this.player3) return this.player4;
-        else return this.player1;
+        switch (this.currentRound.player) {
+            case this.player1:
+                return this.player2;
+            case this.player2:
+                return this.player3;
+            case this.player3:
+                return this.player4;
+            default:
+                return this.player1;
+        }
     }
 }

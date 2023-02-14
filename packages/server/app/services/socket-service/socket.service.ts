@@ -107,6 +107,7 @@ export class SocketService {
     emitToSocket(id: string, ev: '_test_event', ...args: unknown[]): void;
     emitToSocket<T>(id: string, ev: SocketEmitEvents, ...args: T[]): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
+
         if (isIdVirtualPlayer(id)) return;
         this.getSocket(id).emit(ev, ...args);
     }
@@ -121,6 +122,11 @@ export class SocketService {
     emitToRoomNoSender(id: string, socketSenderId: string, ev: '_test_event', ...args: unknown[]): void;
     emitToRoomNoSender<T>(room: string, socketSenderId: string, ev: SocketEmitEvents, ...args: T[]): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
+        if (isIdVirtualPlayer(socketSenderId)) {
+            this.sio.to(room).emit(ev, ...args);
+            return;
+        }
+
         this.getSocket(socketSenderId)
             .to(room)
             .emit(ev, ...args);

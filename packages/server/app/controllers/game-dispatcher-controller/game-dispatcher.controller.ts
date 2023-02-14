@@ -27,6 +27,7 @@ import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
+import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -248,8 +249,16 @@ export class GameDispatcherController extends BaseController {
         const gameConfig = this.gameDispatcherService.acceptJoinRequest(gameId, playerId, playerName);
         const startGameData = await this.activeGameService.beginGame(gameId, gameConfig);
 
+        // TODO: This is currently only working for 2 player
         this.socketService.addToRoom(startGameData.player2.id, gameId);
         this.socketService.emitToRoom(gameId, 'startGame', startGameData);
+
+        // TODO Probably not supposed to go there
+        if (isIdVirtualPlayer(startGameData.round.playerData.id)) {
+            this.gameDispatcherService
+                .getVirtualPlayerService()
+                .triggerVirtualPlayerTurn(startGameData, this.activeGameService.getGame(gameId, startGameData.round.playerData.id));
+        }
     }
 
     private handleRejectRequest(gameId: string, playerId: string, playerName: string): void {
