@@ -24,7 +24,7 @@ export class ChatService {
         private readonly authenticationService: AuthentificationService,
         private readonly socketService: SocketService,
     ) {
-        this.socketService.listenToInitialisationEvent(this.configureSocket);
+        this.socketService.listenToInitialisationEvent(this.configureSocket.bind(this));
     }
 
     async initialize(): Promise<void> {
@@ -93,9 +93,11 @@ export class ChatService {
 
     async emptyChannel(idChannel: TypeOfId<Channel>): Promise<void> {
         // TODO: Use socketId to playerId map to get socketId of player
-        const playerIdsInChannel: Pick<UserChannel, 'idUser'>[] = await this.userChatTable.select('idUser').where(idChannel);
-        playerIdsInChannel.forEach((userChannel) => {
-            const socket: ServerSocket = this.socketService.getSocket(userChannel.idUser.toString());
+        const playerIdsInChannel: number[] = (await this.userChatTable.select('idUser').where({ idChannel })).map(
+            (userChannel) => userChannel.idUser,
+        );
+        playerIdsInChannel.forEach((idUser) => {
+            const socket: ServerSocket = this.socketService.getSocket(idUser.toString());
             this.handleQuitChannel(idChannel, socket);
         });
     }
