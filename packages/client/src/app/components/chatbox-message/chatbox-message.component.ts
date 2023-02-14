@@ -26,6 +26,7 @@ export interface DisplayGroup {
 export class ChatboxMessageComponent extends ChatBoxComponent {
     @Input() messages: ChatMessage[] = [];
     @Output() sendMessage: EventEmitter<string> = new EventEmitter();
+    isInputEmpty: boolean = true;
     messageForm: FormGroup;
     onlyHasEmoji = onlyHasEmoji;
 
@@ -33,6 +34,10 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
         super();
         this.messageForm = this.formBuilder.group({
             message: new FormControl('', [Validators.required]),
+        });
+
+        this.messageForm.valueChanges.subscribe(() => {
+            this.isInputEmpty = this.messageForm.value.message.length === 0;
         });
     }
 

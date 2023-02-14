@@ -33,25 +33,25 @@ primary.args = {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         ...new Array(15)
             .fill(0)
-            .map<ChatMessage>(() => ({ content: 'hey', sender: { username: 'John', avatar: '' }, date: new Date(2001, 5, 29, 10, 43) })),
+            .map<ChatMessage>(() => ({ content: 'hey', sender: { username: 'John', avatar: '', email: '' }, date: new Date(2001, 5, 29, 10, 43) })),
         {
             content: 'bonjour',
-            sender: { username: 'Guy', avatar: '' },
+            sender: { username: 'Guy', avatar: '', email: '' },
             date: new Date(2001, 5, 29, 10, 45),
         },
         {
             content: 'hola',
-            sender: { username: 'Me', avatar: '' },
+            sender: { username: 'Me', avatar: '', email: '' },
             date: new Date(2001, 5, 29, 10, 45),
         },
         {
             content: 'sup',
-            sender: { username: 'Me', avatar: '' },
+            sender: { username: 'Me', avatar: '', email: '' },
             date: new Date(2001, 5, 29, 10, 47),
         },
         {
             content: 'Exercitation cupidatat officia ut aliqua adipiscing irure culpa anim duis eiusmod ullamco',
-            sender: { username: 'Guy', avatar: '' },
+            sender: { username: 'Guy', avatar: '', email: '' },
             date: new Date(2001, 5, 29, 10, 47),
         },
     ],

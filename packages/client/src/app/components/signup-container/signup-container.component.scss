@@ -1,0 +1,50 @@
+@import '../../style/variables.scss';
+
+$border-radius: 6px;
+
+::ng-deep .mat-tooltip {
+    font-size: small;
+}
+
+.signup-container {
+    max-width: 625px;
+    width: 100%;
+    margin: 0 auto;
+
+    & > mat-card {
+        margin: 0 12px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: center;
+
+        h2 {
+            color: rgba(0, 0, 0, 0.87);
+        }
+    }
+
+    form {
+        
+        mat-form-field {
+            width: 100%;
+        }
+
+        .field-error {
+            margin-top: -1.5em;
+            padding-left: 0.25em;
+            color: tomato;
+            font-size: small;
+        }
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: space-between;
+
+        button {
+            font-size: 1.2em;
+            padding: 6px 16px;
+        }
+    }
+}
