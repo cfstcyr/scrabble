@@ -1,11 +1,11 @@
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { Service } from 'typedi';
-import { BaseController } from '@app/controllers/base-controller';
-import { Router } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { NO_LOGIN, NO_SIGNUP, NO_VALIDATE } from '@app/constants/controllers-errors';
+import { BaseController } from '@app/controllers/base-controller';
 import { authenticateToken } from '@app/middlewares/authentificate-token';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { Service } from 'typedi';
 
 @Service()
 export class AuthentificationController extends BaseController {
@@ -17,21 +17,22 @@ export class AuthentificationController extends BaseController {
         router.post('/login', async (req, res, next) => {
             this.authentificationservice
                 .login(req.body)
-                .then((token) => res.send({ token }).status(StatusCodes.OK).end())
+                .then((data) => res.send(data).status(StatusCodes.OK).end())
                 .catch(() => next(new HttpException(NO_LOGIN, StatusCodes.BAD_REQUEST)));
         });
 
         router.post('/signUp', async (req, res, next) => {
             this.authentificationservice
                 .signUp(req.body)
-                .then((token) => res.send({ token }).status(StatusCodes.CREATED).end())
+                .then((data) => res.send(data).status(StatusCodes.CREATED).end())
                 .catch(() => next(new HttpException(NO_SIGNUP, StatusCodes.FORBIDDEN)));
         });
 
         router.get('/validate', authenticateToken, async (req, res, next) => {
             try {
                 const token = this.authentificationservice.generateAccessToken(req.body.user);
-                res.send({ token }).status(StatusCodes.OK).end();
+                const user = await this.authentificationservice.getUserById(req.body.user);
+                res.send({ token, user }).status(StatusCodes.OK).end();
             } catch {
                 next(new HttpException(NO_VALIDATE));
             }
