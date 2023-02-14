@@ -36,9 +36,9 @@ export class ChatService {
                 SocketService.handleError(error, socket);
             }
         });
-        socket.on('channel:newChannel', async (channelName: string) => {
+        socket.on('channel:newChannel', async (channel: ChannelCreation) => {
             try {
-                await this.createChannel({ name: channelName }, socket);
+                await this.createChannel(channel, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }

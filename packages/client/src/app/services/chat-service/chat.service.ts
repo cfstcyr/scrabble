@@ -40,7 +40,7 @@ export class ChatService {
     }
 
     createChannel(channelName: string): void {
-        this.socketService.socket.emit('channel:newChannel', channelName);
+        this.socketService.socket.emit('channel:newChannel', { name: channelName });
     }
 
     joinChannel(idChannel: TypeOfId<Channel>): void {
