@@ -96,7 +96,7 @@ describe('AuthentificationController', () => {
         });
         describe('POST /authentification/validate', () => {
             it('validate should return 401', async () => {
-                return supertest(expressApp).get('/api/authentification/validate').expect(StatusCodes.UNAUTHORIZED);
+                return supertest(expressApp).post('/api/authentification/validate').expect(StatusCodes.UNAUTHORIZED);
             });
 
             it('validateUsername should return 403', async () => {

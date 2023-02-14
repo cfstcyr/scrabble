@@ -3,13 +3,11 @@ import { NO_TOKEN } from '@app/constants/controllers-errors';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ChatService } from '@app/services/chat-service/chat.service';
-import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
 import { NextFunction } from 'express';
 import * as http from 'http';
 import { StatusCodes } from 'http-status-codes';
-import * as jwt from 'jsonwebtoken';
 import * as io from 'socket.io';
 import { Service } from 'typedi';
 import {
@@ -42,15 +40,12 @@ export class SocketService {
     handleSockets(): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
-        this.sio.use((socket: io.Socket, next: NextFunction) => {
-            // Remove comment when auth is added client side
-            // const token = socket.handshake.auth.token;
-
-            const token = jwt.sign({ idUser: 1 }, env.TOKEN_SECRET);
+        this.sio.use(async (socket: io.Socket, next: NextFunction) => {
+            const token = socket.handshake.auth.token;
 
             if (token) {
                 try {
-                    this.authentificationService.authentificateSocket(socket, token);
+                    await this.authentificationService.authentificateSocket(socket, token);
                     return next();
                 } catch (err) {
                     return next(new Error(err));
