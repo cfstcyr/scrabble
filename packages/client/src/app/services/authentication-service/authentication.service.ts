@@ -1,29 +1,27 @@
 import { Injectable } from '@angular/core';
 import { AuthenticationController } from '@app/controllers/authentication-controller/authentication.controller';
 import { authenticationSettings } from '@app/utils/settings';
-import { Credentials, PublicUser, UserSession } from '@common/models/user';
+import { UserLoginCredentials, UserSession, UserSignupInformation } from '@common/models/user';
 import { ErrorResponse } from '@common/models/error';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { HttpStatusCode } from '@angular/common/http';
 import SocketService from '@app/services/socket-service/socket.service';
+import { UserService } from '@app/services/user-service/user.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthenticationService {
-    private user: PublicUser | undefined;
-
-    constructor(private readonly authenticationController: AuthenticationController, private readonly socketService: SocketService) {
+    constructor(
+        private readonly authenticationController: AuthenticationController,
+        private readonly userService: UserService,
+        private readonly socketService: SocketService,
+    ) {
         this.socketService.socketError.subscribe(this.handleSocketError.bind(this));
     }
 
-    getUser(): PublicUser {
-        if (!this.user) throw new Error('You need to be logged in to perform this action');
-        return this.user;
-    }
-
-    login(credentials: Credentials): Observable<UserSession> {
+    login(credentials: UserLoginCredentials): Observable<UserSession> {
         return this.authenticationController.login(credentials).pipe(
             tap(this.handleUserSession.bind(this)),
             catchError((err: ErrorResponse) => {
@@ -32,7 +30,7 @@ export class AuthenticationService {
         );
     }
 
-    signup(credentials: Credentials): Observable<UserSession> {
+    signup(credentials: UserSignupInformation): Observable<UserSession> {
         return this.authenticationController.signup(credentials).pipe(
             tap(this.handleUserSession.bind(this)),
             catchError((err: ErrorResponse) => {
@@ -43,7 +41,8 @@ export class AuthenticationService {
 
     signOut(): void {
         authenticationSettings.remove('token');
-        this.user = undefined;
+        this.socketService.disconnect();
+        this.userService.user.next(undefined);
     }
 
     validateToken(): Observable<boolean> {
@@ -62,9 +61,17 @@ export class AuthenticationService {
         );
     }
 
+    validateUsername(username: string): Observable<boolean> {
+        return this.authenticationController.validateUsername(username).pipe(map((res) => res.isAvailable));
+    }
+
+    validateEmail(email: string): Observable<boolean> {
+        return this.authenticationController.validateEmail(email).pipe(map((res) => res.isAvailable));
+    }
+
     private handleUserSession(session: UserSession): void {
         authenticationSettings.setToken(session.token);
-        this.user = session.user;
+        this.userService.user.next(session.user);
         this.socketService.connectSocket();
     }
 

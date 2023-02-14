@@ -12,17 +12,22 @@ import { Observable, Subject } from 'rxjs';
 export default class SocketService {
     socket: ClientSocket;
     socketError: Subject<{ message: string; code: number }> = new Subject();
+    onConnect: Subject<ClientSocket> = new Subject();
+    onDisconnect: Subject<void> = new Subject();
 
     constructor(private alertService: AlertService) {}
 
     connectSocket(): Observable<boolean> {
         const subject = new Subject<boolean>();
 
-        if (this.socket) this.socket.disconnect();
+        this.disconnect();
 
         this.socket = this.getSocket();
 
-        this.socket.on('connect', () => subject.next(true));
+        this.socket.on('connect', () => {
+            subject.next(true);
+            this.onConnect.next(this.socket);
+        });
         this.socket.on('connect_error', () => subject.next(false));
 
         this.socket.on('error', (message: string, code: number) => {
@@ -31,6 +36,13 @@ export default class SocketService {
         });
 
         return subject.asObservable();
+    }
+
+    disconnect(): void {
+        if (this.socket) {
+            this.socket.disconnect();
+            this.onDisconnect.next();
+        }
     }
 
     getId(): string {

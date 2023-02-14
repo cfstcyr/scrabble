@@ -19,9 +19,25 @@ export class InitializerService {
     state: BehaviorSubject<AppState>;
 
     constructor(private readonly socketService: SocketService, private readonly databaseService: DatabaseService) {
+        // this.state = new BehaviorSubject<AppState>({
+        //     state: InitializeState.Loading,
+        //     message: STATE_LOADING_MESSAGE,
+        // });
         this.state = new BehaviorSubject<AppState>({
+            state: InitializeState.Ready,
+        });
+    }
+
+    load() {
+        this.state.next({
             state: InitializeState.Loading,
             message: STATE_LOADING_MESSAGE,
+        });
+    }
+
+    ready() {
+        this.state.next({
+            state: InitializeState.Ready,
         });
     }
 

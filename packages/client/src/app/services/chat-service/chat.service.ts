@@ -11,12 +11,23 @@ import { Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class ChatService {
-    channels: ClientChannel[] = [];
+    ready: Subject<boolean> = new Subject();
+    channels: ClientChannel[];
     joinedChannel: Subject<ClientChannel>;
 
     constructor(private readonly socketService: SocketService, private readonly userService: UserService) {
-        this.configureSocket(this.socketService.socket);
-        this.joinedChannel = new Subject();
+        this.socketService.onConnect.subscribe((socket) => {
+            this.channels = [];
+            this.joinedChannel = new Subject();
+            this.configureSocket(socket);
+            this.ready.next(true);
+        });
+
+        this.socketService.onDisconnect.subscribe(() => {
+            this.ready.next(false);
+            this.channels = [];
+            this.joinedChannel = new Subject();
+        });
     }
 
     configureSocket(socket: ClientSocket): void {
@@ -32,7 +43,7 @@ export class ChatService {
             channel,
             message: {
                 content,
-                sender: this.userService.user,
+                sender: this.userService.getUser(),
                 date: new Date(),
             },
         });

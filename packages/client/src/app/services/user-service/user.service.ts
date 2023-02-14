@@ -1,24 +1,28 @@
 import { Injectable } from '@angular/core';
 import { PublicUser } from '@common/models/user';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
 })
 export class UserService {
-    user: PublicUser;
+    user: BehaviorSubject<PublicUser | undefined>;
 
     constructor() {
-        // TODO: user real user
-        this.user = {
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            username: `User ${Math.floor(Math.random() * 1000)}`,
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            avatar: `https://placedog.net/${Math.floor(Math.random() * 20 + 50)}`,
-            email: 'test@test.com',
-        };
+        this.user = new BehaviorSubject<PublicUser | undefined>(undefined);
+    }
+
+    isConnected(): Observable<boolean> {
+        return this.user.pipe(map((user) => !!user));
+    }
+
+    getUser(): PublicUser {
+        if (!this.user.value) throw new Error('You need to be logged in to perform this action');
+        return this.user.value;
     }
 
     isUser(u: PublicUser | string) {
-        return (typeof u === 'string' ? u : u.username) === this.user.username;
+        return (typeof u === 'string' ? u : u.username) === this.user.value?.username;
     }
 }

@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AlertService } from '@app/services/alert-service/alert.service';
+import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserSignupInformation } from '@common/models/user';
 
 @Component({
@@ -10,18 +13,38 @@ export class SignupWrapperComponent {
     isEmailTaken: boolean = false;
     isUsernameTaken: boolean = false;
 
-    // eslint-disable-next-line no-unused-vars
-    handleSignup(usercredentials: UserSignupInformation): void {
-        // TODO: Add call to AuthentificationService
+    constructor(
+        private readonly authenticationService: AuthenticationService,
+        private readonly alertService: AlertService,
+        private readonly router: Router,
+    ) {}
+
+    handleSignup(userCredentials: UserSignupInformation): void {
+        this.authenticationService.signup(userCredentials).subscribe(
+            () => {
+                this.router.navigate(['/home']);
+            },
+            (message) => {
+                this.alertService.error(message);
+            },
+        );
     }
 
-    // eslint-disable-next-line no-unused-vars
     handleCheckEmailUnicity(email: string): void {
-        // TODO: Add handle call to backend
+        this.authenticationService.validateEmail(email).subscribe(
+            (isAvailable) => (this.isEmailTaken = !isAvailable),
+            (error) => {
+                this.alertService.error("Impossible de vérifier l'unicicité de l'adresse courriel", { log: error });
+            },
+        );
     }
 
-    // eslint-disable-next-line no-unused-vars
     handleCheckUsernameUnicity(username: string): void {
-        // TODO: Add handle call to backend
+        this.authenticationService.validateUsername(username).subscribe(
+            (isAvailable) => (this.isUsernameTaken = !isAvailable),
+            (error) => {
+                this.alertService.error("Impossible de vérifier l'unicicité du pseudonyme", { log: error });
+            },
+        );
     }
 }

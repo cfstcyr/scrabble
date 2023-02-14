@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AlertService } from '@app/services/alert-service/alert.service';
+import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserLoginCredentials } from '@common/models/user';
 
 @Component({
@@ -6,11 +9,21 @@ import { UserLoginCredentials } from '@common/models/user';
     templateUrl: './login-wrapper.component.html',
     styleUrls: ['./login-wrapper.component.scss'],
 })
-export class LogginWrapperComponent {
-    errorMessage?: string = undefined;
+export class LoginWrapperComponent {
+    constructor(
+        private readonly authenticationService: AuthenticationService,
+        private readonly alertService: AlertService,
+        private readonly router: Router,
+    ) {}
 
-    // eslint-disable-next-line no-unused-vars
-    handleLogin(usercredentials: UserLoginCredentials): void {
-        // TODO: Add call to AuthentificationService
+    handleLogin(userCredentials: UserLoginCredentials): void {
+        this.authenticationService.login(userCredentials).subscribe(
+            () => {
+                this.router.navigate(['/home']);
+            },
+            (message) => {
+                this.alertService.error(message);
+            },
+        );
     }
 }

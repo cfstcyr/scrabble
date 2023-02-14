@@ -10,10 +10,12 @@ import { Observable } from 'rxjs';
     styleUrls: ['./chatbox-wrapper.component.scss'],
 })
 export class ChatboxWrapperComponent {
+    ready: Observable<boolean>;
     channels: ClientChannel[];
     joinedChannel: Observable<ClientChannel>;
 
     constructor(private readonly chatService: ChatService) {
+        this.ready = this.chatService.ready;
         this.channels = this.chatService.channels;
         this.joinedChannel = this.chatService.joinedChannel;
     }
