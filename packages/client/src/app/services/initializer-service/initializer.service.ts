@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import SocketService from '@app/services/socket-service/socket.service';
 import { BehaviorSubject, of, Observable } from 'rxjs';
 import { DatabaseService } from '@app/services/database-service/database.service';
 import { AppState, InitializeState } from '@app/classes/connection-state-service/connection-state';
@@ -7,10 +6,11 @@ import {
     RECONNECTION_DELAY,
     RECONNECTION_RETRIES,
     STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE,
-    STATE_ERROR_SERVER_NOT_CONNECTED_MESSAGE,
     STATE_LOADING_MESSAGE,
 } from '@app/constants/services-errors';
-import { catchError, delay, map, retryWhen, take, takeWhile, tap } from 'rxjs/operators';
+import { catchError, delay, map, retryWhen, take } from 'rxjs/operators';
+import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root',
@@ -18,13 +18,14 @@ import { catchError, delay, map, retryWhen, take, takeWhile, tap } from 'rxjs/op
 export class InitializerService {
     state: BehaviorSubject<AppState>;
 
-    constructor(private readonly socketService: SocketService, private readonly databaseService: DatabaseService) {
-        // this.state = new BehaviorSubject<AppState>({
-        //     state: InitializeState.Loading,
-        //     message: STATE_LOADING_MESSAGE,
-        // });
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly authenticationService: AuthenticationService,
+        private readonly router: Router,
+    ) {
         this.state = new BehaviorSubject<AppState>({
-            state: InitializeState.Ready,
+            state: InitializeState.Loading,
+            message: STATE_LOADING_MESSAGE,
         });
     }
 
@@ -43,8 +44,6 @@ export class InitializerService {
 
     initialize(): void {
         (async () => {
-            await this.connectToSocket().toPromise();
-
             const connectedToDatabase = await this.pingDatabase().toPromise();
 
             if (!connectedToDatabase) {
@@ -56,22 +55,14 @@ export class InitializerService {
                 return;
             }
 
+            const tokenValidated = await this.authenticationService.validateToken().toPromise();
+
+            if (!tokenValidated) {
+                this.router.navigate(['/login']);
+            }
+
             this.state.next({ state: InitializeState.Ready });
         })();
-    }
-
-    private connectToSocket(): Observable<boolean> {
-        return this.socketService.connectSocket().pipe(
-            tap((connected) => {
-                if (!connected) {
-                    this.state.next({
-                        state: InitializeState.Trying,
-                        message: STATE_ERROR_SERVER_NOT_CONNECTED_MESSAGE,
-                    });
-                }
-            }),
-            takeWhile((connected) => !connected),
-        );
     }
 
     private pingDatabase(): Observable<boolean> {

@@ -2,7 +2,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { registerLocaleData } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -46,7 +46,7 @@ import { HighScoresPageComponent } from './pages/high-scores-page/high-scores-pa
 import { LoadingPageComponent } from './pages/loading-page/loading-page.component';
 import { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';
 import { DurationPipe } from './pipes/duration/duration.pipe';
-// import { InitializerService } from './services/initializer-service/initializer.service';
+import { InitializerService } from './services/initializer-service/initializer.service';
 import { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';
 import { ChatboxMessageComponent } from './components/chatbox-message/chatbox-message.component';
 import { IconButtonComponent } from './components/icon-button/icon-button.component';
@@ -130,13 +130,13 @@ registerLocaleData(localeFr);
         ScrollingModule,
     ],
     providers: [
-        // InitializerService,
-        // {
-        //     provide: APP_INITIALIZER,
-        //     useFactory: (initializer: InitializerService) => () => initializer.initialize(),
-        //     deps: [InitializerService],
-        //     multi: true,
-        // },
+        InitializerService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: (initializer: InitializerService) => () => initializer.initialize(),
+            deps: [InitializerService],
+            multi: true,
+        },
         {
             provide: LOCALE_ID,
             useValue: 'fr-CA',
