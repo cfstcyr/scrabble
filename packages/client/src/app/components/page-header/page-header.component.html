@@ -7,10 +7,23 @@
             </button>
         </div>
 
-        <div class="title">{{ title }}</div>
+        <div class="title">
+            {{ title }}
+            <ng-content select="[header-title]"></ng-content>
+        </div>
 
         <div class="right">
             <ng-content select="[header-button]"></ng-content>
+            <app-header-btn *ngIf="user | async" [matMenuTriggerFor]="userMenu">
+                <div class="user-container">
+                    <p class="username">{{ username | async }}</p>
+                    <img src="{{ avatar | async }}" class="avatar">
+                </div>
+            </app-header-btn>
+
+            <mat-menu #userMenu="matMenu">
+                <button mat-menu-item (click)="signOut()">Se déconnecter</button>
+            </mat-menu>
         </div>
     </div>
 </mat-card>

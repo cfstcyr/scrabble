@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class AuthenticationController extends AbstractController {
     constructor(private readonly http: HttpClient) {
-        super('/authenticate');
+        super('/authentification');
     }
 
     login(credentials: UserLoginCredentials): Observable<UserSession> {
@@ -21,7 +21,7 @@ export class AuthenticationController extends AbstractController {
     }
 
     validateToken(token: string): Observable<UserSession> {
-        return this.http.post<UserSession>(this.url('/validateToken'), { token });
+        return this.http.post<UserSession>(this.url('/validate'), { token });
     }
 
     validateUsername(username: string): Observable<{ isAvailable: boolean }> {

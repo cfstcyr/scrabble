@@ -4,7 +4,7 @@
     position: fixed;
     width: 100%;
     z-index: 10;
-    padding: 16px 24px;
+    padding: 8px 24px;
     box-sizing: border-box;
 
     .content {
@@ -21,6 +21,7 @@
             gap: 1em;
             border: none;
             padding: 0;
+            cursor: pointer;
 
             app-icon {
                 color: $primary;
@@ -36,6 +37,7 @@
         .left, .right {
             display: flex;
             gap: 12px;
+            align-items: center;
         }
 
         .right {
@@ -44,6 +46,26 @@
 
         .title {
             font-size: 1.5em;
+        }
+
+        .user-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .username {
+                margin: 0;
+                font-size: 1.1em;
+                font-weight: 500;
+            }
+
+            .avatar {
+                height: 32px;
+                width: 32px;
+                object-fit: cover;
+                background-color: gray;
+                border-radius: 16px;
+            }
         }
     }
 }

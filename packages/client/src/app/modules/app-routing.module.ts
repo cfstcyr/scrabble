@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Route, RouterModule, Routes } from '@angular/router';
 import { PrivateRouteGuard } from '@app/guard/private-route/private-route.guard';
 import { PublicRouteGuard } from '@app/guard/public-route/public-route.guard';
 import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
@@ -13,18 +13,28 @@ import { LobbyPageComponent } from '@app/pages/lobby-page/lobby-page.component';
 import { LoginPageComponent } from '@app/pages/login-page/login-page.component';
 import { SignUpPageComponent } from '@app/pages/signup-page/signup-page.component';
 
+const privateRoute: Route = {
+    canActivate: [PrivateRouteGuard],
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+};
+
+const publicRoute: Route = {
+    canActivate: [PublicRouteGuard],
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+};
+
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
-    { path: 'signup', component: SignUpPageComponent, canActivate: [PublicRouteGuard] },
-    { path: 'login', component: LoginPageComponent, canActivate: [PublicRouteGuard] },
-    { path: 'home', component: HomePageComponent, canActivate: [PrivateRouteGuard] },
-    { path: 'game', component: GamePageComponent, canActivate: [PrivateRouteGuard] },
-    { path: 'game-creation', component: GameCreationPageComponent, canActivate: [PrivateRouteGuard] },
-    { path: 'lobby', component: LobbyPageComponent, canActivate: [PrivateRouteGuard] },
-    { path: 'waiting-room', component: CreateWaitingPageComponent, canActivate: [PrivateRouteGuard] },
-    { path: 'join-waiting-room', component: JoinWaitingPageComponent, canActivate: [PrivateRouteGuard] },
-    { path: 'high-scores', component: HighScoresPageComponent, canActivate: [PrivateRouteGuard] },
-    { path: 'admin', component: AdminPageComponent, canActivate: [PrivateRouteGuard] },
+    { path: 'signup', component: SignUpPageComponent, ...publicRoute },
+    { path: 'login', component: LoginPageComponent, ...publicRoute },
+    { path: 'home', component: HomePageComponent, ...privateRoute },
+    { path: 'game', component: GamePageComponent, ...privateRoute },
+    { path: 'game-creation', component: GameCreationPageComponent, ...privateRoute },
+    { path: 'lobby', component: LobbyPageComponent, ...privateRoute },
+    { path: 'waiting-room', component: CreateWaitingPageComponent, ...privateRoute },
+    { path: 'join-waiting-room', component: JoinWaitingPageComponent, ...privateRoute },
+    { path: 'high-scores', component: HighScoresPageComponent, ...privateRoute },
+    { path: 'admin', component: AdminPageComponent, ...privateRoute },
     { path: '**', redirectTo: '/home' },
 ];
 

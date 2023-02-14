@@ -31,3 +31,9 @@ export const DB_CONNECTED_ENDPOINT = `${environment.serverUrl}/database/is-conne
 export const STATE_LOADING_MESSAGE = "Chargement de l'application";
 export const STATE_ERROR_SERVER_NOT_CONNECTED_MESSAGE = "Impossible d'établir une connexion avec le serveur";
 export const STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE = "Impossible d'établir une connexion avec la base de donnée";
+
+export const INVALID_CONNECTION_TITLE = 'Vous êtes déjà connecté';
+export const INVALID_CONNECTION_CONTENT =
+    // eslint-disable-next-line max-len
+    "Vous ne pouvez pas être connecté au même compte plus d'une fois. Veuillez vous connecter avec un autre compte ou rafraichir cette page lorsque vous vous serez déconnecté.";
+export const INVALID_CONNECTION_RETURN = 'Se déconnecter';

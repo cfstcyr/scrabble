@@ -3,6 +3,9 @@ import { BehaviorSubject, of, Observable } from 'rxjs';
 import { DatabaseService } from '@app/services/database-service/database.service';
 import { AppState, InitializeState } from '@app/classes/connection-state-service/connection-state';
 import {
+    INVALID_CONNECTION_CONTENT,
+    INVALID_CONNECTION_RETURN,
+    INVALID_CONNECTION_TITLE,
     RECONNECTION_DELAY,
     RECONNECTION_RETRIES,
     STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE,
@@ -10,6 +13,9 @@ import {
 } from '@app/constants/services-errors';
 import { catchError, delay, map, retryWhen, take } from 'rxjs/operators';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 
 @Injectable({
     providedIn: 'root',
@@ -17,7 +23,12 @@ import { AuthenticationService } from '@app/services/authentication-service/auth
 export class InitializerService {
     state: BehaviorSubject<AppState>;
 
-    constructor(private readonly databaseService: DatabaseService, private readonly authenticationService: AuthenticationService) {
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly authenticationService: AuthenticationService,
+        private readonly router: Router,
+        private readonly dialog: MatDialog,
+    ) {
         this.state = new BehaviorSubject<AppState>({
             state: InitializeState.Loading,
             message: STATE_LOADING_MESSAGE,
@@ -50,9 +61,16 @@ export class InitializerService {
                 return;
             }
 
-            await this.authenticationService.validateToken().toPromise();
+            const validation = await this.authenticationService.validateToken().toPromise();
 
-            this.state.next({ state: InitializeState.Ready });
+            if (validation !== true && validation.alreadyConnected) {
+                this.handleInvalidConnection();
+            } else {
+                // Force reactivate guard to redirect if needed
+                this.router.navigate([this.router.url], { queryParams: { redirect: true } });
+
+                this.state.next({ state: InitializeState.Ready });
+            }
         })();
     }
 
@@ -69,5 +87,27 @@ export class InitializerService {
             catchError(() => of(false)),
             take(1),
         );
+    }
+
+    private handleInvalidConnection(): void {
+        this.dialog.open(DefaultDialogComponent, {
+            closeOnNavigation: true,
+            disableClose: true,
+            data: {
+                title: INVALID_CONNECTION_TITLE,
+                content: INVALID_CONNECTION_CONTENT,
+                buttons: [
+                    {
+                        content: INVALID_CONNECTION_RETURN,
+                        closeDialog: true,
+                        action: () => {
+                            this.authenticationService.signOut();
+                            this.router.navigate(['/login']);
+                            this.state.next({ state: InitializeState.Ready });
+                        },
+                    },
+                ],
+            },
+        });
     }
 }

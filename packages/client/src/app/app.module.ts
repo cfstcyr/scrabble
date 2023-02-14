@@ -1,6 +1,6 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { registerLocaleData } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import localeFr from '@angular/common/locales/fr';
 import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -59,6 +59,7 @@ import { LoginWrapperComponent } from './wrappers/login-wrapper/login-wrapper.co
 import { LoginContainerComponent } from './components/login-container/login-container.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { HeaderBtnComponent } from './components/header-btn/header-btn.component';
+import { AuthenticationInterceptor } from './middlewares/authentication';
 
 registerLocaleData(localeFr);
 
@@ -143,6 +144,7 @@ registerLocaleData(localeFr);
             provide: LOCALE_ID,
             useValue: 'fr-CA',
         },
+        { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
     ],
     bootstrap: [AppComponent],
 })

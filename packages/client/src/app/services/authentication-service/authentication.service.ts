@@ -2,12 +2,17 @@ import { Injectable } from '@angular/core';
 import { AuthenticationController } from '@app/controllers/authentication-controller/authentication.controller';
 import { authenticationSettings } from '@app/utils/settings';
 import { UserLoginCredentials, UserSession, UserSignupInformation } from '@common/models/user';
-import { ErrorResponse } from '@common/models/error';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { HttpStatusCode } from '@angular/common/http';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import SocketService from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user.service';
+
+interface ValidateTokenError {
+    noToken?: true;
+    alreadyConnected?: true;
+    unknownError?: true;
+}
 
 @Injectable({
     providedIn: 'root',
@@ -24,8 +29,8 @@ export class AuthenticationService {
     login(credentials: UserLoginCredentials): Observable<UserSession> {
         return this.authenticationController.login(credentials).pipe(
             tap(this.handleUserSession.bind(this)),
-            catchError((err: ErrorResponse) => {
-                throw new Error(err.message);
+            catchError((err: HttpErrorResponse) => {
+                throw new Error(err.error.message);
             }),
         );
     }
@@ -33,8 +38,8 @@ export class AuthenticationService {
     signup(credentials: UserSignupInformation): Observable<UserSession> {
         return this.authenticationController.signup(credentials).pipe(
             tap(this.handleUserSession.bind(this)),
-            catchError((err: ErrorResponse) => {
-                throw new Error(err.message);
+            catchError((err: HttpErrorResponse) => {
+                throw new Error(err.error.message);
             }),
         );
     }
@@ -45,22 +50,26 @@ export class AuthenticationService {
         this.userService.user.next(undefined);
     }
 
-    validateToken(): Observable<boolean> {
+    validateToken(): Observable<true | ValidateTokenError> {
         const token = authenticationSettings.getToken();
 
         if (!token) {
             authenticationSettings.remove('token');
-            return of(false);
+            return of({ noToken: true });
         }
 
         return this.authenticationController.validateToken(token).pipe(
-            map((session) => {
+            map<UserSession, true>((session) => {
                 this.handleUserSession(session);
                 return true;
             }),
-            catchError(() => {
-                authenticationSettings.remove('token');
-                return of(false);
+            catchError<true, Observable<ValidateTokenError>>((err: HttpErrorResponse) => {
+                if (err.status === HttpStatusCode.Unauthorized) {
+                    return of({ alreadyConnected: true });
+                } else {
+                    authenticationSettings.remove('token');
+                    return of({ unknownError: true });
+                }
             }),
         );
     }

@@ -5,29 +5,43 @@ import SocketService from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user.service';
 import { Channel } from '@common/models/chat/channel';
 import { ChannelMessage } from '@common/models/chat/chat-message';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ChatService {
     ready: Subject<boolean> = new Subject();
-    channels: ClientChannel[];
     joinedChannel: Subject<ClientChannel>;
+    channelsA: BehaviorSubject<Map<string, ClientChannel>>;
 
     constructor(private readonly socketService: SocketService, private readonly userService: UserService) {
+        this.channelsA = new BehaviorSubject(new Map());
+        this.joinedChannel = new Subject();
+
         this.socketService.onConnect.subscribe((socket) => {
-            this.channels = [];
-            this.joinedChannel = new Subject();
+            this.channelsA.next(new Map());
             this.configureSocket(socket);
             this.ready.next(true);
         });
 
         this.socketService.onDisconnect.subscribe(() => {
             this.ready.next(false);
-            this.channels = [];
-            this.joinedChannel = new Subject();
+            this.channelsA.next(new Map());
         });
+    }
+
+    getChannelsId(): Observable<string[]> {
+        return this.channelsA.pipe(map((channels) => [...channels.keys()]));
+    }
+
+    getChannels(): Observable<ClientChannel[]> {
+        return this.channelsA.pipe(map((channels) => [...channels.values()]));
+    }
+
+    getChannel(id: string): Observable<ClientChannel | undefined> {
+        return this.channelsA.pipe(map((channels) => channels.get(id)));
     }
 
     configureSocket(socket: ClientSocket): void {
@@ -62,29 +76,21 @@ export class ChatService {
 
     handleJoinChannel(channel: Channel): void {
         const newChannel = { ...channel, messages: [] };
-        this.channels.push(newChannel);
+        this.channelsA.value.set(channel.name, newChannel);
+        this.channelsA.next(this.channelsA.value);
         this.joinedChannel.next(newChannel);
     }
 
     handleChannelQuit(channel: Channel): void {
-        const index = this.channels.findIndex(({ id }) => id === channel.id);
-        if (index >= 0) this.channels.splice(index, 1);
+        this.channelsA.value.delete(channel.name);
+        this.channelsA.next(this.channelsA.value);
+        // const index = this.channels.findIndex(({ id }) => id === channel.id);
+        // if (index >= 0) this.channels.splice(index, 1);
     }
 
     handleNewMessage(channelMessage: ChannelMessage): void {
         const message = channelMessage.message;
-        const channel = this.getChannel(channelMessage.channel.id);
-        channel.messages.push({
-            ...message,
-            date: new Date(message.date),
-        });
-    }
-
-    private getChannel(id: string): ClientChannel {
-        const index = this.channels.findIndex((c) => id === c.id);
-
-        if (index < 0) throw new Error(`No channel with ID "${id}"`);
-
-        return this.channels[index];
+        this.channelsA.value.get(channelMessage.channel.name)?.messages.push({ ...message, date: new Date(message.date) });
+        this.channelsA.next(this.channelsA.value);
     }
 }
