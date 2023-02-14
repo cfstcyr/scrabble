@@ -1,11 +1,11 @@
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
-import { ChatService } from '@app/services/chat-service/chat.service';
 import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
 import { SocketErrorResponse } from '@common/models/error';
+import { EventEmitter } from 'events';
 import * as http from 'http';
 import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
@@ -28,9 +28,11 @@ import {
 export class SocketService {
     private sio?: io.Server;
     private sockets: Map<string, io.Socket>;
+    private configureSocketsEvent: EventEmitter;
 
-    constructor(private readonly chatService: ChatService) {
+    constructor() {
         this.sockets = new Map();
+        this.configureSocketsEvent = new EventEmitter();
     }
 
     static handleError(error: Error, socket: ServerSocket): void {
@@ -65,7 +67,7 @@ export class SocketService {
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
 
-            this.chatService.configureSocket(socket);
+            this.configureSocketsEvent.emit('initialisation', socket);
             socket.on('disconnect', () => {
                 this.sockets.delete(socket.id);
             });
@@ -133,5 +135,9 @@ export class SocketService {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
         if (isIdVirtualPlayer(id)) return;
         this.getSocket(id).emit(ev, ...args);
+    }
+
+    listenToInitialisationEvent(callback: (socket: ServerSocket) => void): void {
+        this.configureSocketsEvent.addListener('initialisation', callback);
     }
 }

@@ -19,7 +19,9 @@ import { INVALID_PLAYER_ID_FOR_GAME } from '@app/constants/services-errors';
 import BoardService from '@app/services/board-service/board.service';
 import ObjectivesService from '@app/services/objective-service/objective.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { Channel } from '@common/models/chat/channel';
 import { NoIdGameHistoryWithPlayers } from '@common/models/game-history';
+import { TypeOfId } from '@common/types/id';
 import { StatusCodes } from 'http-status-codes';
 import { Container } from 'typedi';
 import { ReadyGameConfig, StartGameData } from './game-config';
@@ -44,6 +46,11 @@ export default class Game {
     gameHistory: NoIdGameHistoryWithPlayers;
     private tileReserve: TileReserve;
     private id: string;
+    private readonly groupChannelId: TypeOfId<Channel>;
+
+    constructor(groupChannelId: TypeOfId<Channel>) {
+        this.groupChannelId = groupChannelId;
+    }
 
     static injectServices(): void {
         if (!Game.boardService) {
@@ -54,8 +61,8 @@ export default class Game {
         }
     }
 
-    static async createGame(id: string, config: ReadyGameConfig): Promise<Game> {
-        const game = new Game();
+    static async createGame(id: string, groupChannelId: TypeOfId<Channel>, config: ReadyGameConfig): Promise<Game> {
+        const game = new Game(groupChannelId);
 
         game.id = id;
         game.player1 = config.player1;
@@ -127,6 +134,10 @@ export default class Game {
 
     getId(): string {
         return this.id;
+    }
+
+    getGroupChannelId(): TypeOfId<Channel> {
+        return this.groupChannelId;
     }
 
     getConnectedRealPlayers(): Player[] {

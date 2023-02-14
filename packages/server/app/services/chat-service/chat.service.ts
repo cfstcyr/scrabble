@@ -13,12 +13,19 @@ import { getSocketNameFromChannel } from '@app/utils/socket';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { User } from '@common/models/user';
+import { PlayerData } from '@app/classes/communication/player-data';
 
 @Service()
 export class ChatService {
     private defaultChannels = DEFAULT_CHANNELS;
 
-    constructor(private readonly databaseService: DatabaseService, private readonly authenticationService: AuthentificationService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly authenticationService: AuthentificationService,
+        private readonly socketService: SocketService,
+    ) {
+        this.socketService.listenToInitialisationEvent(this.configureSocket);
+    }
 
     async initialize(): Promise<void> {
         await this.createDefaultChannels();
@@ -31,42 +38,85 @@ export class ChatService {
     configureSocket(socket: ServerSocket): void {
         socket.on('channel:newMessage', async (channelMessage: ChannelMessage) => {
             try {
-                await this.sendMessage(channelMessage, socket);
+                await this.handleSendMessage(channelMessage, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
         });
         socket.on('channel:newChannel', async (channelName: string) => {
             try {
-                await this.createChannel({ name: channelName }, socket);
+                await this.handleCreateChannel({ name: channelName }, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
         });
         socket.on('channel:join', async (idChannel: TypeOfId<Channel>) => {
             try {
-                await this.joinChannel(idChannel, socket);
+                await this.handleJoinChannel(idChannel, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
         });
         socket.on('channel:quit', async (idChannel: TypeOfId<Channel>) => {
             try {
-                await this.quitChannel(idChannel, socket);
+                await this.handleQuitChannel(idChannel, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
         });
         socket.on('channel:init', async () => {
             try {
-                await this.initChannels(socket);
+                await this.handleInitChannels(socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
         });
     }
 
-    async createChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel> {
+    async createChannel(channel: ChannelCreation, playerId: TypeOfId<PlayerData>): Promise<Channel> {
+        // TODO: Use socketId to playerId map to get socketId of player
+        const socket: ServerSocket = this.socketService.getSocket(playerId);
+        return this.handleCreateChannel(channel, socket);
+    }
+
+    async joinChannel(idChannel: TypeOfId<Channel>, playerId: TypeOfId<PlayerData>): Promise<void> {
+        // TODO: Use socketId to playerId map to get socketId of player
+        const socket: ServerSocket = this.socketService.getSocket(playerId);
+        this.handleJoinChannel(idChannel, socket);
+    }
+
+    async quitChannel(idChannel: TypeOfId<Channel>, playerId: TypeOfId<PlayerData>): Promise<void> {
+        // TODO: Use socketId to playerId map to get socketId of player
+        const socket: ServerSocket = this.socketService.getSocket(playerId);
+        this.handleQuitChannel(idChannel, socket);
+    }
+
+    async emptyChannel(idChannel: TypeOfId<Channel>): Promise<void> {
+        // TODO: Use socketId to playerId map to get socketId of player
+        const playerIdsInChannel: Pick<UserChannel, 'idUser'>[] = await this.userChatTable.select('idUser').where(idChannel);
+        playerIdsInChannel.forEach((userChannel) => {
+            const socket: ServerSocket = this.socketService.getSocket(userChannel.idUser.toString());
+            this.handleQuitChannel(idChannel, socket);
+        });
+    }
+
+    private async handleSendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
+        const channel = await this.getChannel(channelMessage.idChannel);
+
+        if (!channel) {
+            throw new HttpException(CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
+        }
+
+        if (!socket.rooms.has(getSocketNameFromChannel(channel))) {
+            throw new HttpException(NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
+        }
+
+        socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
+
+        // TODO: Save message in DB
+    }
+
+    private async handleCreateChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel> {
         await this.authenticationService.authenticateSocket(socket);
 
         if (!(await this.isChannelNameAvailable(channel))) {
@@ -77,12 +127,12 @@ export class ChatService {
 
         socket.emit('channel:newChannel', newChannel);
 
-        this.joinChannel(newChannel.idChannel, socket);
+        this.handleJoinChannel(newChannel.idChannel, socket);
 
         return newChannel;
     }
 
-    async joinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<Channel> {
+    private async handleJoinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<Channel> {
         const user = await this.authenticationService.authenticateSocket(socket);
         const channel = await this.getChannel(idChannel);
 
@@ -106,7 +156,7 @@ export class ChatService {
         return channel;
     }
 
-    async quitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
+    private async handleQuitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
         const user = await this.authenticationService.authenticateSocket(socket);
         const channel = await this.getChannel(idChannel);
 
@@ -125,23 +175,7 @@ export class ChatService {
         socket.emit('channel:quit', channel);
     }
 
-    private async sendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
-        const channel = await this.getChannel(channelMessage.idChannel);
-
-        if (!channel) {
-            throw new HttpException(CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
-        }
-
-        if (!socket.rooms.has(getSocketNameFromChannel(channel))) {
-            throw new HttpException(NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
-        }
-
-        socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
-
-        // TODO: Save message in DB
-    }
-
-    private async initChannels(socket: ServerSocket): Promise<void> {
+    private async handleInitChannels(socket: ServerSocket): Promise<void> {
         const user = await this.authenticationService.authenticateSocket(socket);
         const channels = await this.channelTable
             .select('idChannel')
@@ -149,7 +183,7 @@ export class ChatService {
             .where(`${USER_CHANNEL_TABLE}.idUser`, user.idUser)
             .orWhere({ default: true });
 
-        await Promise.all(channels.map(async ({ idChannel }) => this.joinChannel(idChannel, socket)));
+        await Promise.all(channels.map(async ({ idChannel }) => this.handleJoinChannel(idChannel, socket)));
     }
 
     private async getChannel(idChannel: TypeOfId<Channel>): Promise<Channel | undefined> {

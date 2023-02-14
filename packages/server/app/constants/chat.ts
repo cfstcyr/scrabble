@@ -15,3 +15,5 @@ export const GROUP_CHANNEL: ChannelCreation = {
 };
 
 export const DEFAULT_CHANNELS: ChannelCreation[] = [GENERAL_CHANNEL];
+
+export const NO_GROUP_CHANNEL_ID_NEEDED = -1;
