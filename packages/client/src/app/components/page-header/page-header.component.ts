@@ -6,6 +6,7 @@ import { Component, Input } from '@angular/core';
     styleUrls: ['./page-header.component.scss'],
 })
 export class PageHeaderComponent {
+    @Input() hideBackButton: boolean = false;
     @Input() title: string = 'SCRABBLE';
     @Input() button: string = '';
     @Input() buttonRoute: string = '/';

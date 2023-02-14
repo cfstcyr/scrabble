@@ -58,6 +58,7 @@ import { SignupContainerComponent } from './components/signup-container/signup-c
 import { LoginWrapperComponent } from './wrappers/login-wrapper/login-wrapper.component';
 import { LoginContainerComponent } from './components/login-container/login-container.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
+import { HeaderBtnComponent } from './components/header-btn/header-btn.component';
 
 registerLocaleData(localeFr);
 
@@ -118,6 +119,7 @@ registerLocaleData(localeFr);
         SignupContainerComponent,
         LoginWrapperComponent,
         LoginContainerComponent,
+        HeaderBtnComponent,
     ],
     imports: [
         AppMaterialModule,

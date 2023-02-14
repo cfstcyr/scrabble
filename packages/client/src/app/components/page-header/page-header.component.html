@@ -1,12 +1,16 @@
 <mat-card class="header">
     <div class="content">
-        <div class="back-btn" [routerLink]="'/'">
-            <app-icon icon="arrow-left" styling="solid"></app-icon>
-            <img src="https://bit.ly/3m206ss" />
+        <div class="left">
+            <button *ngIf="!hideBackButton" class="back-btn" [routerLink]="'/'">
+                <app-icon icon="arrow-left" styling="solid"></app-icon>
+                <img src="https://bit.ly/3m206ss" />
+            </button>
         </div>
-    
+
         <div class="title">{{ title }}</div>
 
-        <a [routerLink]="buttonRoute" class="link">{{ button }}</a>
+        <div class="right">
+            <ng-content select="[header-button]"></ng-content>
+        </div>
     </div>
 </mat-card>

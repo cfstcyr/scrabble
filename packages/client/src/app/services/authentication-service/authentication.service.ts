@@ -48,7 +48,10 @@ export class AuthenticationService {
     validateToken(): Observable<boolean> {
         const token = authenticationSettings.getToken();
 
-        if (!token) return of(false);
+        if (!token) {
+            authenticationSettings.remove('token');
+            return of(false);
+        }
 
         return this.authenticationController.validateToken(token).pipe(
             map((session) => {
@@ -56,6 +59,7 @@ export class AuthenticationService {
                 return true;
             }),
             catchError(() => {
+                authenticationSettings.remove('token');
                 return of(false);
             }),
         );

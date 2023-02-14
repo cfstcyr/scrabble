@@ -10,7 +10,6 @@ import {
 } from '@app/constants/services-errors';
 import { catchError, delay, map, retryWhen, take } from 'rxjs/operators';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
-import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root',
@@ -18,11 +17,7 @@ import { Router } from '@angular/router';
 export class InitializerService {
     state: BehaviorSubject<AppState>;
 
-    constructor(
-        private readonly databaseService: DatabaseService,
-        private readonly authenticationService: AuthenticationService,
-        private readonly router: Router,
-    ) {
+    constructor(private readonly databaseService: DatabaseService, private readonly authenticationService: AuthenticationService) {
         this.state = new BehaviorSubject<AppState>({
             state: InitializeState.Loading,
             message: STATE_LOADING_MESSAGE,
@@ -55,11 +50,7 @@ export class InitializerService {
                 return;
             }
 
-            const tokenValidated = await this.authenticationService.validateToken().toPromise();
-
-            if (!tokenValidated) {
-                this.router.navigate(['/login']);
-            }
+            await this.authenticationService.validateToken().toPromise();
 
             this.state.next({ state: InitializeState.Ready });
         })();
