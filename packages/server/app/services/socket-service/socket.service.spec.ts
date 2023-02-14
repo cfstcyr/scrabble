@@ -16,6 +16,7 @@ import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { SocketService } from './socket.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 
 const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
@@ -92,7 +93,7 @@ describe('SocketService', () => {
         });
 
         it('should configure sockets of ChatService', async () => {
-            testingUnit.getStubbedInstance(ChatService).configureSocket.callsFake(() => {});
+            testingUnit.getStubbedInstance(ChatService).configureSocket.callsFake(() => { });
             service.handleSockets();
             clientSocket.connect();
 
@@ -285,7 +286,7 @@ describe('SocketService', () => {
         let service: SocketService;
 
         beforeEach(async () => {
-            service = new SocketService(Container.get(ChatService));
+            service = new SocketService(Container.get(ChatService), Container.get(AuthentificationService));
         });
 
         describe('handleSockets', () => {
