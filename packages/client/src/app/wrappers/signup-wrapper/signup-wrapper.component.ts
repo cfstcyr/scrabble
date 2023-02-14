@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { CANNOT_VERIFY_EMAIL_UNICITY, CANNOT_VERIFY_USERNAME_UNICITY } from '@app/constants/authentification-constants';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserSignupInformation } from '@common/models/user';
@@ -34,7 +35,7 @@ export class SignupWrapperComponent {
         this.authenticationService.validateEmail(email).subscribe(
             (isAvailable) => (this.isEmailTaken = !isAvailable),
             (error) => {
-                this.alertService.error("Impossible de vérifier l'unicicité de l'adresse courriel", { log: error });
+                this.alertService.error(CANNOT_VERIFY_EMAIL_UNICITY, { log: error });
             },
         );
     }
@@ -43,7 +44,7 @@ export class SignupWrapperComponent {
         this.authenticationService.validateUsername(username).subscribe(
             (isAvailable) => (this.isUsernameTaken = !isAvailable),
             (error) => {
-                this.alertService.error("Impossible de vérifier l'unicicité du pseudonyme", { log: error });
+                this.alertService.error(CANNOT_VERIFY_USERNAME_UNICITY, { log: error });
             },
         );
     }
