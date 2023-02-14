@@ -285,7 +285,7 @@ describe('SocketService', () => {
         let service: SocketService;
 
         beforeEach(async () => {
-            service = new SocketService(Container.get(ChatService));
+            service = new SocketService();
         });
 
         describe('handleSockets', () => {

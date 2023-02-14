@@ -11,6 +11,7 @@ import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constant
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
+import Container from 'typedi';
 import { ActiveGameService } from './active-game.service';
 
 const expect = chai.expect;
@@ -21,6 +22,7 @@ chai.use(chaiAsPromised);
 const DEFAULT_PLAYER_1 = new Player('id1', 'player1');
 const DEFAULT_PLAYER_2 = new Player('id2', 'player2');
 const DEFAULT_ID = 'gameId';
+const DEFAULT_GAME_CHANNEL_ID = 1;
 const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     player1: DEFAULT_PLAYER_1,
     player2: DEFAULT_PLAYER_2,
@@ -44,7 +46,7 @@ describe('ActiveGameService', () => {
     let activeGameService: ActiveGameService;
 
     beforeEach(() => {
-        activeGameService = new ActiveGameService();
+        activeGameService = Container.get(ActiveGameService);
     });
 
     it('should create', () => {
@@ -69,12 +71,12 @@ describe('ActiveGameService', () => {
 
         it('should add a game to activeGame list', async () => {
             expect(activeGameService['activeGames']).to.be.empty;
-            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_MULTIPLAYER_CONFIG);
+            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG);
             expect(activeGameService['activeGames']).to.have.lengthOf(1);
         });
 
         it('should call Game.createGame', async () => {
-            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_MULTIPLAYER_CONFIG);
+            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG);
             expect(spy).to.have.been.called();
         });
     });
@@ -82,7 +84,7 @@ describe('ActiveGameService', () => {
     describe('getGame', () => {
         beforeEach(async () => {
             chai.spy.on(Game, 'createMultiplayerGame', async () => Promise.resolve(DEFAULT_GAME));
-            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_MULTIPLAYER_CONFIG);
+            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG);
         });
 
         afterEach(() => {
@@ -111,7 +113,7 @@ describe('ActiveGameService', () => {
     describe('removeGame', () => {
         beforeEach(async () => {
             chai.spy.on(Game, 'createMultiplayerGame', async () => Promise.resolve(DEFAULT_GAME));
-            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_MULTIPLAYER_CONFIG);
+            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG);
         });
 
         afterEach(() => {

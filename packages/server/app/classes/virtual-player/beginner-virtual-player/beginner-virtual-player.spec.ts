@@ -45,6 +45,8 @@ const testEvaluatedPlacements: ScoredWordPlacement[] = [
 
 const TEST_SELECT_COUNT = 3;
 
+const DEFAULT_GAME_CHANNEL_ID = 1;
+
 describe('BeginnerVirtualPlayer', () => {
     let beginnerVirtualPlayer: BeginnerVirtualPlayer;
 
@@ -70,7 +72,7 @@ describe('BeginnerVirtualPlayer', () => {
         let TEST_GAME: Game;
 
         beforeEach(() => {
-            TEST_GAME = new Game();
+            TEST_GAME = new Game(DEFAULT_GAME_CHANNEL_ID);
             spy.on(beginnerVirtualPlayer['activeGameService'], 'getGame', () => {
                 return TEST_GAME;
             });

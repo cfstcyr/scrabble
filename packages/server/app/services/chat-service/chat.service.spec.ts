@@ -27,6 +27,7 @@ import { AuthentificationService } from '@app/services/authentification-service/
 import DatabaseService from '@app/services/database-service/database.service';
 import { USER_TABLE } from '@app/constants/services-constants/database-const';
 import { SocketErrorResponse } from '@common/models/error';
+import { SocketService } from '@app/services/socket-service/socket.service';
 
 // const TIMEOUT_DELAY = 10000;
 const RESPONSE_DELAY = 400;
@@ -91,6 +92,7 @@ describe('ChatService', () => {
             .withStubbed(AuthentificationService, {
                 authenticateSocket: Promise.resolve(USER),
             })
+            .withStubbed(SocketService)
             .withStubbedPrototypes(Application, { bindRoutes: undefined });
         await testingUnit.withMockDatabaseService();
         databaseService = Container.get(DatabaseService);
@@ -113,6 +115,16 @@ describe('ChatService', () => {
         serverSocket.disconnect();
         clientSocket.close();
         testingUnit.restore();
+    });
+
+    describe.only('constructor', () => {
+        it('should call configureSockets when configureSocketsEvent emit initiliasation', () => {
+            const spy = Sinon.spy(service, 'configureSocket');
+            const socketServiceStub = testingUnit.getStubbedInstance(SocketService);
+
+            socketServiceStub['configureSocketsEvent'].emit('initiliasation', serverSocket);
+            expect(spy).to.have.been.called.with(serverSocket);
+        });
     });
 
     describe('initialize', () => {

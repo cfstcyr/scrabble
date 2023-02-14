@@ -20,6 +20,7 @@ import Player from './player';
 chai.use(spies);
 
 const ID = 'id';
+const DEFAULT_GAME_CHANNEL_ID = 1;
 const DEFAULT_NAME = 'player';
 
 describe('Player', () => {
@@ -128,7 +129,9 @@ describe('Player', () => {
 
     it('validateObjectives should call objective service to validate objectives', async () => {
         const serviceSpy = chai.spy.on(player['objectiveService'], 'validatePlayerObjectives', () => {});
-        const validationParameters: ObjectiveValidationParameters = { game: new Game() } as unknown as ObjectiveValidationParameters;
+        const validationParameters: ObjectiveValidationParameters = {
+            game: new Game(DEFAULT_GAME_CHANNEL_ID),
+        } as unknown as ObjectiveValidationParameters;
         player.validateObjectives(validationParameters);
         expect(serviceSpy).to.have.been.called.with(player, validationParameters.game, validationParameters);
     });

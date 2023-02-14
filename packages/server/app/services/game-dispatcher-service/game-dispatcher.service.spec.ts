@@ -40,6 +40,7 @@ const expect = chai.expect;
 const DEFAULT_PLAYER_NAME = 'newKidOnTheBlock';
 const DEFAULT_PLAYER_ID = 'id';
 const DEFAULT_GAME_ID = 'gameId';
+const DEFAULT_GAME_CHANNEL_ID = 1;
 const DEFAULT_OPPONENT_ID = 'opponent_id';
 const DEFAULT_OPPONENT_NAME = 'opponent';
 const DEFAULT_OPPONENT_ID_2 = 'opponent_id_2';
@@ -102,7 +103,7 @@ const DEFAULT_MULTIPLAYER_CONFIG: GameConfig = {
     dictionary: TEST_DICTIONARY,
 };
 
-const DEFAULT_WAITING_ROOM = new WaitingRoom(DEFAULT_MULTIPLAYER_CONFIG);
+const DEFAULT_WAITING_ROOM = new WaitingRoom(DEFAULT_MULTIPLAYER_CONFIG, DEFAULT_GAME_CHANNEL_ID);
 
 chai.use(spies);
 chai.use(chaiAsPromised);
@@ -291,21 +292,23 @@ describe('GameDispatcherService', () => {
         it(' should throw error when playerId is invalid', () => {
             const invalidId = 'invalidId';
 
-            expect(() => gameDispatcherService.acceptJoinRequest(id, invalidId, DEFAULT_OPPONENT_NAME)).to.be.throw(INVALID_PLAYER_ID_FOR_GAME);
+            expect(async () => gameDispatcherService.acceptJoinRequest(id, invalidId, DEFAULT_OPPONENT_NAME)).to.eventually.be.throw(
+                INVALID_PLAYER_ID_FOR_GAME,
+            );
         });
 
         it(' should throw error when playerId is invalid', () => {
             gameDispatcherService.rejectJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
 
-            expect(() => gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME)).to.be.throw(
-                NO_OPPONENT_IN_WAITING_GAME,
-            );
+            expect(async () =>
+                gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME),
+            ).to.eventually.be.throw(NO_OPPONENT_IN_WAITING_GAME);
         });
 
         it(' should throw error when playerId is invalid', () => {
-            expect(() => gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME_2)).to.be.throw(
-                OPPONENT_NAME_DOES_NOT_MATCH,
-            );
+            expect(async () =>
+                gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME_2),
+            ).to.eventually.be.throw(OPPONENT_NAME_DOES_NOT_MATCH);
         });
     });
 
@@ -371,13 +374,13 @@ describe('GameDispatcherService', () => {
 
         it('should throw if playerId is invalid', () => {
             const invalidId = 'invalidId';
-            expect(() => gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
+            expect(async () => gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.eventually.throw(INVALID_PLAYER_ID_FOR_GAME);
         });
 
         it('should throw if player is undefined', () => {
             waitingRoom.joinedPlayer = undefined;
             const invalidId = 'invalidId';
-            expect(() => gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.throw(NO_OPPONENT_IN_WAITING_GAME);
+            expect(async () => gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.eventually.throw(NO_OPPONENT_IN_WAITING_GAME);
         });
 
         it('should return the [hostPlayerId, leaverName]', () => {
@@ -414,7 +417,7 @@ describe('GameDispatcherService', () => {
         it('should return right amount', () => {
             const NTH_GAMES = 5;
             for (let i = 0; i < NTH_GAMES; ++i) {
-                const newRoom = new WaitingRoom(DEFAULT_MULTIPLAYER_CONFIG);
+                const newRoom = new WaitingRoom(DEFAULT_MULTIPLAYER_CONFIG, DEFAULT_GAME_CHANNEL_ID);
                 gameDispatcherService['addToWaitingRoom'](newRoom);
             }
 
@@ -431,7 +434,7 @@ describe('GameDispatcherService', () => {
             });
 
             for (let i = 0; i < NTH_GAMES; ++i) {
-                const newRoom = new WaitingRoom(DEFAULT_MULTIPLAYER_CONFIG);
+                const newRoom = new WaitingRoom(DEFAULT_MULTIPLAYER_CONFIG, DEFAULT_GAME_CHANNEL_ID);
                 newRoom['id'] = i as unknown as string;
                 gameDispatcherService['addToWaitingRoom'](newRoom);
                 testIds.push(newRoom['id']);
@@ -477,7 +480,7 @@ describe('GameDispatcherService', () => {
         let waitingRooms: WaitingRoom[];
 
         beforeEach(() => {
-            waitingRooms = [new WaitingRoom(config)];
+            waitingRooms = [new WaitingRoom(config, DEFAULT_GAME_CHANNEL_ID)];
             gameDispatcherService['waitingRooms'] = waitingRooms;
         });
 
