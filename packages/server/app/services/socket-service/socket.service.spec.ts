@@ -25,6 +25,7 @@ const DEFAULT_ROOM = 'default_room';
 const INVALID_ROOM_NAME = 'invalid_room';
 const INVALID_ID = 'invalid-id';
 const DEFAULT_ARGS = 'data';
+const DEFAULT_TOKEN = 'token';
 
 const getSocketId = async (socket: Socket) => {
     const DELAY = 5;
@@ -54,6 +55,7 @@ describe('SocketService', () => {
             testingUnit = new ServicesTestingUnit()
                 .withStubbed(DictionaryService)
                 .withStubbed(ChatService)
+                .withStubbed(AuthentificationService, { authentificateSocket: Promise.resolve() })
                 .withStubbedPrototypes(Application, { bindRoutes: undefined });
         });
 
@@ -61,7 +63,7 @@ describe('SocketService', () => {
             server = Container.get(Server);
             server.init();
             service = server['socketService'];
-            clientSocket = ioClient(SERVER_URL + Server['appPort']);
+            clientSocket = ioClient(SERVER_URL + Server['appPort'], { auth: { token: DEFAULT_TOKEN } });
             service.handleSockets();
         });
 
@@ -93,7 +95,7 @@ describe('SocketService', () => {
         });
 
         it('should configure sockets of ChatService', async () => {
-            testingUnit.getStubbedInstance(ChatService).configureSocket.callsFake(() => { });
+            testingUnit.getStubbedInstance(ChatService).configureSocket.callsFake(() => {});
             service.handleSockets();
             clientSocket.connect();
 

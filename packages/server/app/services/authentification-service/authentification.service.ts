@@ -31,10 +31,10 @@ export class AuthentificationService {
 
         this.connectedUsers.connect(socket.id, idUser);
 
-        socket.data.idUser = await this.getUserById(idUser);
+        socket.data.user = await this.getUserById(idUser);
     }
 
-    async disconnectSocket(socketId: string): Promise<void> {
+    disconnectSocket(socketId: string): void {
         this.connectedUsers.disconnect(socketId);
     }
 
