@@ -34,7 +34,6 @@ export class ChatService {
         socket.on('channel:join', this.handleJoinChannel.bind(this));
         socket.on('channel:quit', this.handleChannelQuit.bind(this));
         socket.on('channel:newMessage', this.handleNewMessage.bind(this));
-
         socket.emit('channel:init');
     }
 

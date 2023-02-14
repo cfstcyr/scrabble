@@ -15,7 +15,9 @@ export interface UserLoginCredentials extends Omit<UserSignupInformation, 'usern
 
 export type PublicUser = Omit<User, 'idUser' | 'hash' | 'salt'>;
 
-export interface UserDatabase extends UserSignupInformation, Pick<User, 'idUser'> {}
+export interface UserDatabase extends UserSignupInformation, Pick<User, 'idUser'> {
+  avatar: string
+}
 
 export interface UserSession {
   token: string;

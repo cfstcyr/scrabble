@@ -1,27 +1,57 @@
 import { TokenData } from '@app/classes/user/token-data';
+import { ALREADY_LOGGED, NO_LOGIN } from '@app/constants/controllers-errors';
 import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
-import { UserDatabase, UserLoginCredentials } from '@common/models/user';
+import { PublicUser, UserDatabase, UserLoginCredentials } from '@common/models/user';
 import * as bcryptjs from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import { Socket } from 'socket.io';
 import { Service } from 'typedi';
 
 @Service()
 export class AuthentificationService {
-    constructor(private databaseService: DatabaseService) {}
+    connectedUsers: Map<string, number>;
 
-    async login(credentials: UserLoginCredentials): Promise<string | void> {
-        const user = await this.getUserByEmail(credentials.email);
-        const match = await bcryptjs.compare(credentials.password, user.password);
-        if (match) return this.generateAccessToken(user.idUser);
+    constructor(private databaseService: DatabaseService) {
+        this.connectedUsers = new Map();
     }
 
-    async signUp(user: UserDatabase): Promise<string> {
+    generateAccessToken = (idUser: number): string => {
+        return jwt.sign(idUser.toString(), env.TOKEN_SECRET);
+    };
+
+    async authentificateSocket(socket: Socket, token: string): Promise<void> {
+        const idUser = jwt.verify(token, env.TOKEN_SECRET) as TokenData;
+
+        this.connectedUsers.forEach((value) => {
+            if (value === idUser.idUser) throw new Error(ALREADY_LOGGED);
+        });
+        this.connectedUsers.set(socket.id, idUser.idUser);
+
+        socket.data.idUser = await this.getUserById(idUser.idUser);
+    }
+
+    async disconnectSocket(socketId: string): Promise<void> {
+        this.connectedUsers.delete(socketId);
+    }
+
+    async login(credentials: UserLoginCredentials): Promise<{ token: string; user: PublicUser }> {
+        const user = await this.getUserByEmail(credentials.email);
+        const match = await bcryptjs.compare(credentials.password, user.password);
+        if (match) {
+            const token = this.generateAccessToken(user.idUser);
+            return { token, user: { email: user.email, username: user.username, avatar: user.avatar } };
+        }
+        throw new Error(NO_LOGIN);
+    }
+
+    async signUp(user: UserDatabase): Promise<{ token: string; user: PublicUser }> {
         const hash = await bcryptjs.hash(user.password, SALTROUNDS);
         const data = await this.insertUser({ ...user, password: hash });
+        const token = this.generateAccessToken(data.idUser);
 
-        return this.generateAccessToken(data.idUser);
+        return { token, user: { email: user.email, username: user.username, avatar: user.avatar } };
     }
 
     async getUserByEmail(email: string): Promise<UserDatabase> {
@@ -30,6 +60,36 @@ export class AuthentificationService {
                 .where('email', email)
                 .select('*')
                 .then((data) => resolve(data[0]))
+                .catch((err) => reject(err));
+        });
+    }
+
+    async getUserById(idUser: number): Promise<PublicUser> {
+        return new Promise((resolve, reject) => {
+            this.table
+                .where('idUser', idUser)
+                .select('username', 'email', 'avatar')
+                .then((data) => resolve(data[0]))
+                .catch((err) => reject(err));
+        });
+    }
+
+    async validateUsername(username: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.table
+                .where('username', username)
+                .select('*')
+                .then((data) => resolve(data.length === 0))
+                .catch((err) => reject(err));
+        });
+    }
+
+    async validateEmail(email: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.table
+                .where('email', email)
+                .select('*')
+                .then((data) => resolve(data.length === 0))
                 .catch((err) => reject(err));
         });
     }
@@ -47,8 +107,4 @@ export class AuthentificationService {
     private get table() {
         return this.databaseService.knex<UserDatabase>('User');
     }
-
-    private generateAccessToken = (idUser: number): string => {
-        return jwt.sign(idUser.toString(), env.TOKEN_SECRET);
-    };
 }
