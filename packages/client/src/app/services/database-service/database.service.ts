@@ -13,7 +13,7 @@ export class DatabaseService {
     ping(): Observable<void> {
         return this.http.get(DB_CONNECTED_ENDPOINT).pipe(
             map(() => {
-                /**/
+                /* map to void because we don't want a return type. Its either a response or an error. */
             }),
         );
     }
