@@ -18,6 +18,6 @@ export const NO_SIGNUP = 'Could not sign up with credentials';
 export const NO_TOKEN = 'Token is missing';
 export const TOKEN_IS_INVALID = 'Token is invalid';
 export const NO_VALIDATE = 'Could generate a token';
-export const ALREADY_LOGGED = 'User already logged';
+export const ALREADY_LOGGED = "L'utilisateur est déjà connecté";
 export const SOCKET_ID_IS_REQUIRED = 'Socket ID is required';
 export const USER_ID_IS_REQUIRED = 'User ID is required';
