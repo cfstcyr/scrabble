@@ -724,14 +724,12 @@ describe('GameDispatcherController', () => {
     describe('handleLeave', () => {
         let isGameInWaitingRoomsSpy: unknown;
         let emitToSocketSpy: unknown;
-        // let emitToRoomSpy: unknown;
         let activeGameServiceStub: SinonStubbedInstance<ActiveGameService>;
         let gameStub: SinonStubbedInstance<Game>;
         let player: Player;
 
         beforeEach(() => {
             emitToSocketSpy = chai.spy.on(controller['socketService'], 'emitToSocket', () => {});
-            // emitToRoomSpy = chai.spy.on(controller['socketService'], 'emitToRoom', () => {});
 
             activeGameServiceStub = createStubInstance(ActiveGameService);
             gameStub = createStubInstance(Game);
