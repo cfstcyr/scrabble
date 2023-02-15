@@ -147,14 +147,14 @@ export class GameDispatcherService {
         return [hostPlayerId, leaverName];
     }
 
-    cancelGame(waitingRoomId: string, playerId: string): void {
+    async cancelGame(waitingRoomId: string, playerId: string): Promise<void> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
 
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
         this.dictionaryService.stopUsingDictionary(waitingRoom.getConfig().dictionary.id);
-        this.chatService.emptyChannel(waitingRoom.getGroupChannelId());
+        await this.chatService.emptyChannel(waitingRoom.getGroupChannelId());
 
         const index = this.waitingRooms.indexOf(waitingRoom);
         this.waitingRooms.splice(index, 1);

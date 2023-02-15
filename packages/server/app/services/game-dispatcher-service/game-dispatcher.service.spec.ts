@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-unused-expressions, no-unused-expressions */
@@ -33,6 +34,7 @@ import * as spies from 'chai-spies';
 import * as sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
+import { ChatService } from '@app/services/chat-service/chat.service';
 import { GameDispatcherService } from './game-dispatcher.service';
 
 const expect = chai.expect;
@@ -117,7 +119,7 @@ describe('GameDispatcherService', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService();
+        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(ChatService);
     });
 
     beforeEach(() => {
@@ -284,29 +286,41 @@ describe('GameDispatcherService', () => {
         it('should remove waitingRoom', async () => {
             expect(gameDispatcherService['waitingRooms'].filter((g) => g.getId() === id)).to.not.be.empty;
 
-            gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
+            await gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
 
             expect(gameDispatcherService['waitingRooms'].filter((g) => g.getId() === id)).to.be.empty;
         });
 
-        it(' should throw error when playerId is invalid', () => {
-            const invalidId = 'invalidId';
+        it("should make user join group's channel", async () => {
+            const stubbedJoinedPlayer = sinon.createStubInstance(Player);
+            stubbedJoinedPlayer.name = DEFAULT_OPPONENT_NAME;
+            stubbedJoinedPlayer.id = DEFAULT_OPPONENT_ID;
+            DEFAULT_WAITING_ROOM.joinedPlayer = stubbedJoinedPlayer as unknown as Player;
 
-            expect(async () => gameDispatcherService.acceptJoinRequest(id, invalidId, DEFAULT_OPPONENT_NAME)).to.eventually.be.throw(
-                INVALID_PLAYER_ID_FOR_GAME,
-            );
+            const chatServiceStub = testingUnit.getStubbedInstance(ChatService);
+            chatServiceStub.joinChannel.callsFake(async () => {});
+
+            await gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
+
+            expect(chatServiceStub.joinChannel.calledWith(DEFAULT_GAME_CHANNEL_ID, stubbedJoinedPlayer.id)).to.be.true;
         });
 
-        it(' should throw error when playerId is invalid', () => {
+        it('should throw error when playerId is invalid', async () => {
+            const invalidId = 'invalidId';
+
+            expect(gameDispatcherService.acceptJoinRequest(id, invalidId, DEFAULT_OPPONENT_NAME)).to.eventually.throw(INVALID_PLAYER_ID_FOR_GAME);
+        });
+
+        it(' should throw error when playerId is invalid', async () => {
             gameDispatcherService.rejectJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
 
-            expect(async () =>
+            expect(
                 gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME),
             ).to.eventually.be.throw(NO_OPPONENT_IN_WAITING_GAME);
         });
 
-        it(' should throw error when playerId is invalid', () => {
-            expect(async () =>
+        it(' should throw error when playerId is invalid', async () => {
+            expect(
                 gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME_2),
             ).to.eventually.be.throw(OPPONENT_NAME_DOES_NOT_MATCH);
         });
@@ -355,6 +369,7 @@ describe('GameDispatcherService', () => {
     describe('leaveLobbyRequest', () => {
         let id: string;
         let waitingRoom: WaitingRoom;
+        let chatServiceStub: SinonStubbedInstance<ChatService>;
 
         beforeEach(() => {
             gameDispatcherService['waitingRooms'] = [DEFAULT_WAITING_ROOM];
@@ -364,27 +379,39 @@ describe('GameDispatcherService', () => {
             });
             waitingRoom = gameDispatcherService['waitingRooms'].filter((g) => g.getId() === id)[0];
             DEFAULT_WAITING_ROOM.joinedPlayer = DEFAULT_OPPONENT;
+
+            chatServiceStub = testingUnit.getStubbedInstance(ChatService);
+            chatServiceStub.quitChannel.callsFake(async () => {});
         });
 
-        it('should remove joinedPlayer from waitingRoom', () => {
+        it("should disconnect joinedPlayer from group's channel", async () => {
+            sinon.stub(DEFAULT_WAITING_ROOM, 'getGroupChannelId').returns(DEFAULT_GAME_CHANNEL_ID);
+            const expectedId = DEFAULT_WAITING_ROOM.joinedPlayer?.id;
+
+            await gameDispatcherService.leaveLobbyRequest(id, DEFAULT_OPPONENT.id);
+
+            expect(chatServiceStub.quitChannel.calledWith(DEFAULT_WAITING_ROOM.getGroupChannelId(), expectedId)).to.be.true;
+        });
+
+        it('should remove joinedPlayer from waitingRoom', async () => {
             expect(waitingRoom.joinedPlayer).to.not.be.undefined;
-            gameDispatcherService.leaveLobbyRequest(id, DEFAULT_OPPONENT_ID);
+            await gameDispatcherService.leaveLobbyRequest(id, DEFAULT_OPPONENT_ID);
             expect(waitingRoom.joinedPlayer).to.be.undefined;
         });
 
-        it('should throw if playerId is invalid', () => {
+        it('should throw if playerId is invalid', async () => {
             const invalidId = 'invalidId';
-            expect(async () => gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.eventually.throw(INVALID_PLAYER_ID_FOR_GAME);
+            expect(gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.eventually.throw(INVALID_PLAYER_ID_FOR_GAME);
         });
 
-        it('should throw if player is undefined', () => {
+        it('should throw if player is undefined', async () => {
             waitingRoom.joinedPlayer = undefined;
             const invalidId = 'invalidId';
-            expect(async () => gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.eventually.throw(NO_OPPONENT_IN_WAITING_GAME);
+            expect(gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.eventually.throw(NO_OPPONENT_IN_WAITING_GAME);
         });
 
-        it('should return the [hostPlayerId, leaverName]', () => {
-            expect(gameDispatcherService.leaveLobbyRequest(id, DEFAULT_OPPONENT_ID)).to.deep.equal([
+        it('should return the [hostPlayerId, leaverName]', async () => {
+            expect(await gameDispatcherService.leaveLobbyRequest(id, DEFAULT_OPPONENT_ID)).to.deep.equal([
                 DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId,
                 DEFAULT_OPPONENT_NAME,
             ]);
@@ -402,14 +429,25 @@ describe('GameDispatcherService', () => {
             });
         });
 
-        it('should remove waiting game from list', () => {
-            gameDispatcherService.cancelGame(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId);
+        it('should remove waiting game from list', async () => {
+            await gameDispatcherService.cancelGame(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId);
             expect(gameDispatcherService['waitingRooms'].filter((g) => g.getId() === id)).to.be.empty;
         });
 
-        it('should throw if playerId is invalid', () => {
+        it("should empty the group's channel", async () => {
+            const chatServiceStub = testingUnit.getStubbedInstance(ChatService);
+            chatServiceStub.emptyChannel.callsFake(async () => {});
+
+            sinon.stub(DEFAULT_WAITING_ROOM, 'getGroupChannelId').returns(DEFAULT_GAME_CHANNEL_ID);
+
+            await gameDispatcherService.cancelGame(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId);
+
+            expect(chatServiceStub.emptyChannel.calledWith(DEFAULT_WAITING_ROOM.getGroupChannelId())).to.be.true;
+        });
+
+        it('should throw if playerId is invalid', async () => {
             const invalidId = 'invalidId';
-            expect(() => gameDispatcherService.cancelGame(id, invalidId)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
+            expect(gameDispatcherService.cancelGame(id, invalidId)).to.eventually.throw(INVALID_PLAYER_ID_FOR_GAME);
         });
     });
 

@@ -108,11 +108,11 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.delete('/:gameId/players/:playerId/cancel', (req: GameRequest, res: Response, next) => {
+        router.delete('/:gameId/players/:playerId/cancel', async (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
 
             try {
-                this.handleCancelGame(gameId, playerId);
+                await this.handleCancelGame(gameId, playerId);
 
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
@@ -158,12 +158,12 @@ export class GameDispatcherController extends BaseController {
         });
     }
 
-    private handleCancelGame(gameId: string, playerId: string): void {
+    private async handleCancelGame(gameId: string, playerId: string): Promise<void> {
         const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
         if (waitingRoom.joinedPlayer) {
             this.socketService.emitToSocket(waitingRoom.joinedPlayer.id, 'canceledGame', { name: waitingRoom.getConfig().player1.name });
         }
-        this.gameDispatcherService.cancelGame(gameId, playerId);
+        await this.gameDispatcherService.cancelGame(gameId, playerId);
 
         this.handleLobbiesUpdate();
     }

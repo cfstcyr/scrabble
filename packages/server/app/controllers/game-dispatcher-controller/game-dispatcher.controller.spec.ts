@@ -693,30 +693,30 @@ describe('GameDispatcherController', () => {
             chai.spy.restore();
         });
 
-        it('should call gameDispatcherService.getMultiplayerGameFromId', () => {
-            controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+        it('should call gameDispatcherService.getMultiplayerGameFromId', async () => {
+            await controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
             expect(getGameFromIdSpy).to.have.been.called.with(DEFAULT_GAME_ID);
         });
 
-        it('should call socketService.emitToSocket', () => {
+        it('should call socketService.emitToSocket', async () => {
             waitingRoomStub.joinedPlayer = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME);
-            controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            await controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
             expect(emitToSocketSpy).to.have.been.called();
         });
 
-        it('should not call socketService.emitToSocket', () => {
+        it('should not call socketService.emitToSocket', async () => {
             waitingRoomStub.joinedPlayer = undefined;
-            controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            await controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
             expect(emitToSocketSpy).to.not.have.been.called();
         });
 
-        it('should call gameDispatcherService.cancelGame', () => {
-            controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+        it('should call gameDispatcherService.cancelGame', async () => {
+            await controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
             expect(cancelGameSpy).to.have.been.called.with(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
         });
 
-        it('should call handleLobbiesUpdate', () => {
-            controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+        it('should call handleLobbiesUpdate', async () => {
+            await controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
             expect(handleLobbiesUpdateSpy).to.have.been.called();
         });
     });
