@@ -48,7 +48,7 @@ export class AuthentificationService {
             const token = this.generateAccessToken(user.idUser);
             return { token, user: { email: user.email, username: user.username, avatar: user.avatar } };
         }
-        throw new Error(NO_LOGIN);
+        throw new HttpException(NO_LOGIN, StatusCodes.NOT_ACCEPTABLE);
     }
 
     async signUp(user: UserDatabase): Promise<UserSession> {

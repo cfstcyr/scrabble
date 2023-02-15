@@ -1,6 +1,12 @@
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { CANNOT_VERIFY_EMAIL_UNICITY, CANNOT_VERIFY_USERNAME_UNICITY } from '@app/constants/authentification-constants';
+import {
+    CANNOT_VERIFY_EMAIL_UNICITY,
+    CANNOT_VERIFY_USERNAME_UNICITY,
+    INVALID_SIGNUP_INFORMATION,
+    SIGNUP_ERROR,
+} from '@app/constants/authentification-constants';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
@@ -26,8 +32,8 @@ export class SignupWrapperComponent {
             () => {
                 this.router.navigate([ROUTE_HOME]);
             },
-            (message) => {
-                this.alertService.error(message);
+            (error: HttpErrorResponse) => {
+                this.alertService.error(error.status === HttpStatusCode.NotAcceptable ? INVALID_SIGNUP_INFORMATION : SIGNUP_ERROR);
             },
         );
     }

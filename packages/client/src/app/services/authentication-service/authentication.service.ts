@@ -22,21 +22,11 @@ export class AuthenticationService {
     }
 
     login(credentials: UserLoginCredentials): Observable<UserSession> {
-        return this.authenticationController.login(credentials).pipe(
-            tap(this.handleUserSession.bind(this)),
-            catchError((err: HttpErrorResponse) => {
-                throw new Error(err.error.message);
-            }),
-        );
+        return this.authenticationController.login(credentials).pipe(tap(this.handleUserSession.bind(this)));
     }
 
     signup(credentials: UserSignupInformation): Observable<UserSession> {
-        return this.authenticationController.signup(credentials).pipe(
-            tap(this.handleUserSession.bind(this)),
-            catchError((err: HttpErrorResponse) => {
-                throw new Error(err.error.message);
-            }),
-        );
+        return this.authenticationController.signup(credentials).pipe(tap(this.handleUserSession.bind(this)));
     }
 
     signOut(): void {

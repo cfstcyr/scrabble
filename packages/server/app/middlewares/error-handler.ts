@@ -22,7 +22,7 @@ export const errorHandler = (error: Error, req: express.Request, res: express.Re
 
     if (!env.isProd) {
         // eslint-disable-next-line no-console
-        console.error(error);
+        console.error('\x1b[1m\x1b[3m<< Handled error >>\x1b[0m', error);
     }
 
     res.status(status).json(response);

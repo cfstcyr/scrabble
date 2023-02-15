@@ -4,6 +4,8 @@ import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserLoginCredentials } from '@common/models/user';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { INVALID_CREDENTIALS, LOGIN_ERROR } from '@app/constants/authentification-constants';
 
 @Component({
     selector: 'app-login-wrapper',
@@ -22,8 +24,8 @@ export class LoginWrapperComponent {
             () => {
                 this.router.navigate([ROUTE_HOME]);
             },
-            (message) => {
-                this.alertService.error(message);
+            (error: HttpErrorResponse) => {
+                this.alertService.error(error.status === HttpStatusCode.NotAcceptable ? INVALID_CREDENTIALS : LOGIN_ERROR, { log: error.error });
             },
         );
     }
