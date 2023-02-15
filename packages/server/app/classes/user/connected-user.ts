@@ -33,16 +33,24 @@ export class ConnectedUser {
         return socketId ? this.socketUserMap.has(socketId) : userId ? this.userSocketMap.has(userId) : false;
     }
 
-    getSocketId(id: SocketId | UserId): SocketId | undefined {
+    getSocketId(id: SocketId | UserId): SocketId {
         const { socketId, userId } = this.resolveIds(id);
 
-        return socketId ? socketId : userId ? this.userSocketMap.get(userId) : undefined;
+        const foundSocketId = socketId ? socketId : userId ? this.userSocketMap.get(userId) : undefined;
+
+        if (!foundSocketId) throw new Error(`No socket id found for user id "${id}."`);
+
+        return foundSocketId;
     }
 
-    getUserId(id: SocketId | UserId): UserId | undefined {
+    getUserId(id: SocketId | UserId): UserId {
         const { socketId, userId } = this.resolveIds(id);
 
-        return userId ? userId : socketId ? this.socketUserMap.get(socketId) : undefined;
+        const foundUserId = userId ? userId : socketId ? this.socketUserMap.get(socketId) : undefined;
+
+        if (!foundUserId) throw new Error(`No user id found for socket id "${id}."`);
+
+        return foundUserId;
     }
 
     private resolveIds(id: SocketId | UserId): { socketId: SocketId | undefined; userId: UserId | undefined } {
