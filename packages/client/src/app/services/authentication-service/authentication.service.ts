@@ -8,6 +8,7 @@ import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import SocketService from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user.service';
 import { TokenValidation } from '@app/classes/authentication/token-validation';
+import { StatusError } from '@common/models/error';
 
 @Injectable({
     providedIn: 'root',
@@ -73,8 +74,8 @@ export class AuthenticationService {
         this.socketService.connectSocket();
     }
 
-    private handleSocketError({ code }: { message: string; code: number }): void {
-        if (code === HttpStatusCode.Unauthorized) {
+    private handleSocketError({ status }: StatusError): void {
+        if (status === HttpStatusCode.Unauthorized) {
             this.signOut();
         }
     }
