@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AbstractController } from '@app/controllers/abstract-controller';
-import { UserLoginCredentials, UserSession, UserSignupInformation } from '@common/models/user';
+import { UserFieldValidation, UserLoginCredentials, UserSession, UserSignupInformation } from '@common/models/user';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -24,11 +24,11 @@ export class AuthenticationController extends AbstractController {
         return this.http.post<UserSession>(this.url('/validate'), { token });
     }
 
-    validateUsername(username: string): Observable<{ isAvailable: boolean }> {
-        return this.http.post<{ isAvailable: boolean }>(this.url('/validateUsername'), { username });
+    validateUsername(username: string): Observable<UserFieldValidation> {
+        return this.http.post<UserFieldValidation>(this.url('/validateUsername'), { username });
     }
 
-    validateEmail(email: string): Observable<{ isAvailable: boolean }> {
-        return this.http.post<{ isAvailable: boolean }>(this.url('/validateEmail'), { email });
+    validateEmail(email: string): Observable<UserFieldValidation> {
+        return this.http.post<UserFieldValidation>(this.url('/validateEmail'), { email });
     }
 }

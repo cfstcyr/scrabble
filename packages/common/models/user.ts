@@ -23,3 +23,7 @@ export interface UserSession {
   token: string;
   user: PublicUser;
 }
+
+export interface UserFieldValidation {
+  isAvailable: boolean;
+}
