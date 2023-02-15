@@ -16,8 +16,8 @@
             <ng-content select="[header-button]"></ng-content>
             <app-header-btn *ngIf="user | async" [matMenuTriggerFor]="userMenu">
                 <div class="user-container">
-                    <p class="username">{{ username | async }}</p>
-                    <img src="{{ avatar | async }}" class="avatar">
+                    <p class="username">{{ getUsername() | async }}</p>
+                    <img src="{{ getAvatar() | async }}" class="avatar">
                 </div>
             </app-header-btn>
 
