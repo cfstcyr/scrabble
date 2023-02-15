@@ -17,7 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { UserLoginCredentials } from '@common/models/user';
-import { IconComponent } from '../icon/icon.component';
+import { IconComponent } from '@app/components/icon/icon.component';
 
 import { LoginContainerComponent } from './login-container.component';
 
