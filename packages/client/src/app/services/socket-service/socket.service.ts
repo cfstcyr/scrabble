@@ -19,24 +19,24 @@ export default class SocketService {
     constructor(private alertService: AlertService) {}
 
     connectSocket(): Observable<boolean> {
-        const subject = new Subject<boolean>();
+        const isReady = new Subject<boolean>();
 
         this.disconnect();
 
         this.socket = this.getSocket();
 
         this.socket.on('connect', () => {
-            subject.next(true);
+            isReady.next(true);
             this.onConnect.next(this.socket);
         });
-        this.socket.on('connect_error', () => subject.next(false));
+        this.socket.on('connect_error', () => isReady.next(false));
 
         this.socket.on('error', (message: string, status: number) => {
             this.socketError.next({ message, status });
             this.alertService.error(message, { log: `Error ${status}: ${message}` });
         });
 
-        return subject.asObservable();
+        return isReady.asObservable();
     }
 
     disconnect(): void {
