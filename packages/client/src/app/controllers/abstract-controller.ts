@@ -8,16 +8,13 @@ export class AbstractController {
     }
 
     url(path: `/${string}`): string {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         return this.join(this.baseUrl, path);
     }
 
     private join(base: string, path: string = '/'): string {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         path = path.endsWith('/') ? path.substring(-1) : path;
         path = path.startsWith('/') ? path : `/${path}`;
 
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         return `${base.endsWith('/') ? base.substring(-1) : base}${path}`;
     }
 }

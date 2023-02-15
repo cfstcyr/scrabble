@@ -64,7 +64,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
 
     showChannel(channel: ClientChannel): void {
         this.openedChannels.push(channel);
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         this.openedChannels = this.openedChannels.slice(-1 * MAX_OPEN_CHAT);
         this.closeMenu();
     }
@@ -82,7 +81,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
         this.channelMenuIsOpen = !this.channelMenuIsOpen;
 
         if (this.channelMenuIsOpen) {
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             this.openedChannels = this.openedChannels.slice(-1);
         }
     }
