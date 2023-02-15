@@ -15,7 +15,7 @@ export class UserService {
     }
 
     isConnected(): Observable<boolean> {
-        return this.user.pipe(map((user) => !!user));
+        return this.user.pipe(map((user) => Boolean(user)));
     }
 
     getUser(): PublicUser {
