@@ -17,12 +17,6 @@ const CHANNEL_1: ClientChannel = {
     messages: [],
     canQuit: true,
 };
-// const CHANNEL_2: ClientChannel = {
-//     id: '2',
-//     name: '2',
-//     messages: [],
-//     canQuit: true,
-// };
 
 describe('ChatboxContainerComponent', () => {
     let component: ChatboxContainerComponent;
