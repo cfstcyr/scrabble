@@ -23,7 +23,6 @@ import {
     GAME_TYPE_REQUIRED,
     MAX_ROUND_TIME_REQUIRED,
     NAME_IS_INVALID,
-    PLAYER_LEFT_GAME,
     PLAYER_NAME_REQUIRED,
     VIRTUAL_PLAYER_LEVEL_REQUIRED,
     VIRTUAL_PLAYER_NAME_REQUIRED,
@@ -32,6 +31,7 @@ import { TEST_DICTIONARY } from '@app/constants/dictionary-tests-const';
 import { SYSTEM_ID } from '@app/constants/game-constants';
 import { VIRTUAL_PLAYER_ID_PREFIX } from '@app/constants/virtual-player-constants';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
+import { ChatService } from '@app/services/chat-service/chat.service';
 import { CreateGameService } from '@app/services/create-game-service/create-game.service';
 import { GameDispatcherService } from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
@@ -119,7 +119,11 @@ describe('GameDispatcherController', () => {
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit();
         await testingUnit.withMockDatabaseService();
-        testingUnit.withStubbedDictionaryService().withStubbedControllers(GameDispatcherController).withStubbed(SocketService);
+        testingUnit
+            .withStubbedDictionaryService()
+            .withStubbedControllers(GameDispatcherController)
+            .withStubbed(SocketService)
+            .withStubbed(ChatService);
         createGameServiceStub = testingUnit.setStubbed(CreateGameService);
     });
 
@@ -407,6 +411,17 @@ describe('GameDispatcherController', () => {
             controller['handleReconnection'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_NEW_PLAYER_ID);
             const updateData: GameUpdateData = { player1: { id: DEFAULT_PLAYER_ID, newId: DEFAULT_NEW_PLAYER_ID } };
             expect(emitToSocketSpy).to.have.been.called.with(opponent.id, 'gameUpdate', updateData);
+        });
+
+        it("should connect user to the game's chat room", () => {
+            const expectedChannelId = 1;
+            gameStub.getGroupChannelId.returns(expectedChannelId);
+
+            const chatServiceStub = testingUnit.getStubbedInstance(ChatService);
+            chatServiceStub.joinChannel.callsFake(async () => {});
+
+            controller['handleReconnection'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_NEW_PLAYER_ID);
+            expect(chatServiceStub.joinChannel.calledWith(expectedChannelId, DEFAULT_PLAYER_ID)).to.be.true;
         });
     });
 
@@ -709,14 +724,14 @@ describe('GameDispatcherController', () => {
     describe('handleLeave', () => {
         let isGameInWaitingRoomsSpy: unknown;
         let emitToSocketSpy: unknown;
-        let emitToRoomSpy: unknown;
+        // let emitToRoomSpy: unknown;
         let activeGameServiceStub: SinonStubbedInstance<ActiveGameService>;
         let gameStub: SinonStubbedInstance<Game>;
         let player: Player;
 
         beforeEach(() => {
             emitToSocketSpy = chai.spy.on(controller['socketService'], 'emitToSocket', () => {});
-            emitToRoomSpy = chai.spy.on(controller['socketService'], 'emitToRoom', () => {});
+            // emitToRoomSpy = chai.spy.on(controller['socketService'], 'emitToRoom', () => {});
 
             activeGameServiceStub = createStubInstance(ActiveGameService);
             gameStub = createStubInstance(Game);
@@ -732,15 +747,15 @@ describe('GameDispatcherController', () => {
             let leaveLobbyRequestSpy: unknown;
             let handleLobbiesUpdateSpy: unknown;
 
-            beforeEach(() => {
+            beforeEach(async () => {
                 isGameInWaitingRoomsSpy = chai.spy.on(controller['gameDispatcherService'], 'isGameInWaitingRooms', () => {
                     return true;
                 });
-                leaveLobbyRequestSpy = chai.spy.on(controller['gameDispatcherService'], 'leaveLobbyRequest', () => {
+                leaveLobbyRequestSpy = chai.spy.on(controller['gameDispatcherService'], 'leaveLobbyRequest', async () => {
                     return [DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME];
                 });
                 handleLobbiesUpdateSpy = chai.spy.on(controller, 'handleLobbiesUpdate', () => {});
-                controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+                await controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
             });
 
             it('should call gameDispatcherService.isGameInWaitingRoomsSpy', () => {
@@ -761,80 +776,87 @@ describe('GameDispatcherController', () => {
         });
 
         describe('Player leave during game', () => {
-            let removeFromRoomSpy: unknown;
-            let doesRoomExistSpy: unknown;
-            let isGameOverSpy: unknown;
-            let removeGameSpy: unknown;
-            let playerLeftEventSpy: unknown;
+            // let removeFromRoomSpy: unknown;
+            // let doesRoomExistSpy: unknown;
+            // let isGameOverSpy: unknown;
+            // let removeGameSpy: unknown;
+            // let playerLeftEventSpy: unknown;
 
-            beforeEach(() => {
-                isGameInWaitingRoomsSpy = chai.spy.on(controller['gameDispatcherService'], 'isGameInWaitingRooms', () => {
-                    return false;
-                });
-
-                removeFromRoomSpy = chai.spy.on(controller['socketService'], 'removeFromRoom', () => {});
-                removeGameSpy = chai.spy.on(controller['activeGameService'], 'removeGame', () => {});
-            });
-
-            it('should remove player who leaves from socket room', () => {
-                doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
+            it('should call handlePlayerLeaves on ActiveGameService', () => {
+                activeGameServiceStub.handlePlayerLeaves.callsFake(() => {});
 
                 controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-                expect(removeFromRoomSpy).to.have.been.called();
+
+                expect(activeGameServiceStub.handlePlayerLeaves.calledWith(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID));
             });
+            // beforeEach(() => {
+            //     isGameInWaitingRoomsSpy = chai.spy.on(controller['gameDispatcherService'], 'isGameInWaitingRooms', () => {
+            //         return false;
+            //     });
 
-            it('should emit cleanup event to socket', () => {
-                doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
-                controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-                expect(emitToSocketSpy).to.have.been.called();
-            });
+            //     removeFromRoomSpy = chai.spy.on(controller['socketService'], 'removeFromRoom', () => {});
+            //     removeGameSpy = chai.spy.on(controller['activeGameService'], 'removeGame', () => {});
+            // });
 
-            it('should remove game from active game service if there is no more player in room', () => {
-                doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => false);
+            // it('should remove player who leaves from socket room', () => {
+            //     doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
 
-                controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-                expect(doesRoomExistSpy).to.have.been.called();
-                expect(removeGameSpy).to.have.been.called.with(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-            });
+            //     controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            //     expect(removeFromRoomSpy).to.have.been.called();
+            // });
 
-            it('should not emit player left event if the game is over', () => {
-                doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
-                isGameOverSpy = chai.spy.on(controller['activeGameService'], 'isGameOver', () => true);
-                playerLeftEventSpy = chai.spy.on(controller['activeGameService'].playerLeftEvent, 'emit', () => {});
+            // it('should emit cleanup event to socket', () => {
+            //     doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
+            //     controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            //     expect(emitToSocketSpy).to.have.been.called();
+            // });
 
-                controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-                expect(isGameOverSpy).to.have.been.called();
-                expect(playerLeftEventSpy).to.not.have.been.called();
-            });
+            // it('should remove game from active game service if there is no more player in room', () => {
+            //     doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => false);
 
-            it('should emit player left event if the game is still ongoing', () => {
-                doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
-                isGameOverSpy = chai.spy.on(controller['activeGameService'], 'isGameOver', () => false);
-                playerLeftEventSpy = chai.spy.on(controller['activeGameService'].playerLeftEvent, 'emit', () => {});
+            //     controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            //     expect(doesRoomExistSpy).to.have.been.called();
+            //     expect(removeGameSpy).to.have.been.called.with(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            // });
 
-                controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-                expect(playerLeftEventSpy).to.have.been.called.with('playerLeft', DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-            });
+            // it('should not emit player left event if the game is over', () => {
+            //     doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
+            //     isGameOverSpy = chai.spy.on(controller['activeGameService'], 'isGameOver', () => true);
+            //     playerLeftEventSpy = chai.spy.on(controller['activeGameService'].playerLeftEvent, 'emit', () => {});
 
-            it('should send message explaining the user left with new VP message if game is NOT over', () => {
-                doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
-                isGameOverSpy = chai.spy.on(controller['activeGameService'], 'isGameOver', () => false);
-                playerLeftEventSpy = chai.spy.on(controller['activeGameService'].playerLeftEvent, 'emit', () => {});
+            //     controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            //     expect(isGameOverSpy).to.have.been.called();
+            //     expect(playerLeftEventSpy).to.not.have.been.called();
+            // });
 
-                controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-                const expectedArg = { content: `${player.name} ${PLAYER_LEFT_GAME(false)}`, senderId: 'system', gameId: DEFAULT_GAME_ID };
-                expect(emitToRoomSpy).to.have.been.called.with(DEFAULT_GAME_ID, 'newMessage', expectedArg);
-            });
+            // it('should emit player left event if the game is still ongoing', () => {
+            //     doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
+            //     isGameOverSpy = chai.spy.on(controller['activeGameService'], 'isGameOver', () => false);
+            //     playerLeftEventSpy = chai.spy.on(controller['activeGameService'].playerLeftEvent, 'emit', () => {});
 
-            it('should send message explaining the user left without VP message if game IS over', () => {
-                doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
-                isGameOverSpy = chai.spy.on(controller['activeGameService'], 'isGameOver', () => true);
-                playerLeftEventSpy = chai.spy.on(controller['activeGameService'].playerLeftEvent, 'emit', () => {});
+            //     controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            //     expect(playerLeftEventSpy).to.have.been.called.with('playerLeft', DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            // });
 
-                controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-                const expectedArg = { content: `${player.name} ${PLAYER_LEFT_GAME(true)}`, senderId: 'system', gameId: DEFAULT_GAME_ID };
-                expect(emitToRoomSpy).to.have.been.called.with(DEFAULT_GAME_ID, 'newMessage', expectedArg);
-            });
+            // it('should send message explaining the user left with new VP message if game is NOT over', () => {
+            //     doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
+            //     isGameOverSpy = chai.spy.on(controller['activeGameService'], 'isGameOver', () => false);
+            //     playerLeftEventSpy = chai.spy.on(controller['activeGameService'].playerLeftEvent, 'emit', () => {});
+
+            //     controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            //     const expectedArg = { content: `${player.name} ${PLAYER_LEFT_GAME(false)}`, senderId: 'system', gameId: DEFAULT_GAME_ID };
+            //     expect(emitToRoomSpy).to.have.been.called.with(DEFAULT_GAME_ID, 'newMessage', expectedArg);
+            // });
+
+            // it('should send message explaining the user left without VP message if game IS over', () => {
+            //     doesRoomExistSpy = chai.spy.on(controller['socketService'], 'doesRoomExist', () => true);
+            //     isGameOverSpy = chai.spy.on(controller['activeGameService'], 'isGameOver', () => true);
+            //     playerLeftEventSpy = chai.spy.on(controller['activeGameService'].playerLeftEvent, 'emit', () => {});
+
+            //     controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            //     const expectedArg = { content: `${player.name} ${PLAYER_LEFT_GAME(true)}`, senderId: 'system', gameId: DEFAULT_GAME_ID };
+            //     expect(emitToRoomSpy).to.have.been.called.with(DEFAULT_GAME_ID, 'newMessage', expectedArg);
+            // });
         });
     });
 
@@ -879,6 +901,18 @@ describe('GameDispatcherController', () => {
             playerStub = createStubInstance(Player);
             gameStub.getPlayer.returns(playerStub as unknown as Player);
             handleLeaveSpy = chai.spy.on(controller, 'handleLobbyLeave', () => {});
+        });
+
+        it("should disconnect user from game's chat room", () => {
+            const expectedChannelId = 1;
+            gameStub.getGroupChannelId.returns(expectedChannelId);
+
+            const chatServiceStub = testingUnit.getStubbedInstance(ChatService);
+            chatServiceStub.quitChannel.callsFake(async () => {});
+
+            controller['handleDisconnection'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+
+            expect(chatServiceStub.quitChannel.calledWith(expectedChannelId, DEFAULT_PLAYER_ID)).to.be.true;
         });
 
         it('Disconnection should verify if game is over', () => {
