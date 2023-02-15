@@ -12,15 +12,24 @@ import { PageHeaderComponent } from './page-header.component';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { Location } from '@angular/common';
 import { ROUTE_LOGIN } from '@app/constants/routes-constants';
+import { UserService } from '@app/services/user-service/user.service';
+import { PublicUser } from '@common/models/user';
 
 @Component({
     template: '',
 })
 class TestComponent {}
 
+const DEFAULT_USER: PublicUser = {
+    username: 'username',
+    email: 'email',
+    avatar: 'avatar',
+};
+
 describe('PageHeaderComponent', () => {
     let component: PageHeaderComponent;
     let fixture: ComponentFixture<PageHeaderComponent>;
+    let userService: UserService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -33,7 +42,7 @@ describe('PageHeaderComponent', () => {
                 MatSnackBarModule,
                 MatMenuModule,
             ],
-            providers: [AuthenticationService],
+            providers: [AuthenticationService, UserService],
         }).compileComponents();
     });
 
@@ -41,6 +50,7 @@ describe('PageHeaderComponent', () => {
         fixture = TestBed.createComponent(PageHeaderComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        userService = TestBed.inject(UserService);
     });
 
     it('should create', () => {
@@ -69,5 +79,41 @@ describe('PageHeaderComponent', () => {
 
             expect(location.path()).toEqual(ROUTE_LOGIN);
         }));
+    });
+
+    describe('getUsername', () => {
+        it('should pass username if has user', (done) => {
+            userService.user.next(DEFAULT_USER);
+
+            component.getUsername().subscribe((username) => {
+                expect(username).toEqual(DEFAULT_USER.username);
+                done();
+            });
+        });
+
+        it('should pass undefined if has no user', (done) => {
+            component.getUsername().subscribe((username) => {
+                expect(username).toBeUndefined();
+                done();
+            });
+        });
+    });
+
+    describe('getAvatar', () => {
+        it('should pass avatar if has user', (done) => {
+            userService.user.next(DEFAULT_USER);
+
+            component.getAvatar().subscribe((avatar) => {
+                expect(avatar).toEqual(DEFAULT_USER.avatar);
+                done();
+            });
+        });
+
+        it('should pass undefined if has no user', (done) => {
+            component.getAvatar().subscribe((avatar) => {
+                expect(avatar).toBeUndefined();
+                done();
+            });
+        });
     });
 });

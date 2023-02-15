@@ -18,8 +18,6 @@ export class PageHeaderComponent {
     @Input() button: string = '';
     @Input() buttonRoute: string = '/';
     user: Observable<PublicUser | undefined>;
-    username: Observable<string | undefined>;
-    avatar: Observable<string | undefined>;
 
     constructor(
         private readonly userService: UserService,
@@ -27,12 +25,18 @@ export class PageHeaderComponent {
         private readonly router: Router,
     ) {
         this.user = this.userService.user;
-        this.username = this.userService.user.pipe(map((u) => u?.username));
-        this.avatar = this.userService.user.pipe(map((u) => u?.avatar));
     }
 
-    signOut() {
+    signOut(): void {
         this.authenticationService.signOut();
         this.router.navigate([ROUTE_LOGIN]);
+    }
+
+    getUsername(): Observable<string | undefined> {
+        return this.userService.user.pipe(map((u) => u?.username));
+    }
+
+    getAvatar(): Observable<string | undefined> {
+        return this.userService.user.pipe(map((u) => u?.avatar));
     }
 }
