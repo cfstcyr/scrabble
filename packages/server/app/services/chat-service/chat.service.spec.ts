@@ -21,7 +21,7 @@ import { DEFAULT_CHANNELS } from '@app/constants/chat';
 import { Channel, ChannelCreation } from '@common/models/chat/channel';
 import { ChatMessage } from '@common/models/chat/chat-message';
 import { PublicUser, User, UserDatabase } from '@common/models/user';
-import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
+import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, BOARD_CONFIG_UNDEFINED_AT, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
 import { Delay } from '@app/utils/delay/delay';
 import { StatusCodes } from 'http-status-codes';
 import { getSocketNameFromChannel } from '@app/utils/socket';
@@ -32,6 +32,7 @@ import { SocketErrorResponse } from '@common/models/error';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { TypeOfId } from '@common/types/id';
 import { PlayerData } from '@app/classes/communication/player-data';
+import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 
 // const TIMEOUT_DELAY = 10000;
 const RESPONSE_DELAY = 400;
@@ -127,11 +128,11 @@ describe('ChatService', () => {
     });
 
     describe('constructor', () => {
-        it('should configureSocket when configureSocketsEvent emit initialisation', async () => {
+        it(`should configureSocket when configureSocketsEvent emits ${SOCKET_CONFIGURE_EVENT_NAME}`, async () => {
             const stub = Sinon.stub(service, 'handleInitChannels' as any).callsFake(() => {});
             const socketService = Container.get(SocketService);
 
-            socketService['configureSocketsEvent'].emit('initialisation', serverSocket);
+            socketService['configureSocketsEvent'].emit(SOCKET_CONFIGURE_EVENT_NAME, serverSocket);
 
             clientSocket.emit('channel:init');
             await Delay.for(RESPONSE_DELAY);
