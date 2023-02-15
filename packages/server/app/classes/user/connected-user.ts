@@ -45,7 +45,7 @@ export class ConnectedUser {
         return userId ? userId : socketId ? this.socketUserMap.get(socketId) : undefined;
     }
 
-    private resolveIds(id: SocketId | UserId) {
+    private resolveIds(id: SocketId | UserId): { socketId: SocketId | undefined; userId: UserId | undefined } {
         let socketId: SocketId | undefined;
         let userId: UserId | undefined;
 
