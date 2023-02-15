@@ -1,6 +1,5 @@
 import { Message } from '@app/classes/communication/message';
 import { SYSTEM_ID } from './game-constants';
-import { environment } from 'src/environments/environment';
 
 export const MISSING_PLAYER_DATA_TO_INITIALIZE = 'Certaines informations sont manquantes pour créer le joueur';
 export const NO_LOCAL_PLAYER = "Aucun joueur local n'a encore été défini";
@@ -25,8 +24,6 @@ export const WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE = (gameId: string): Message =
 
 export const RECONNECTION_DELAY = 1500;
 export const RECONNECTION_RETRIES = 3;
-
-export const DB_CONNECTED_ENDPOINT = `${environment.serverUrl}/database/is-connected`;
 
 export const STATE_LOADING_MESSAGE = "Chargement de l'application";
 export const STATE_ERROR_SERVER_NOT_CONNECTED_MESSAGE = "Impossible d'établir une connexion avec le serveur.";

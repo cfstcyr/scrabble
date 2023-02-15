@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { DB_CONNECTED_ENDPOINT } from '@app/constants/services-errors';
+import { environment } from 'src/environments/environment';
 
 import { DatabaseService } from './database.service';
 
@@ -34,7 +34,7 @@ describe('DatabaseService', () => {
                 },
             );
 
-            const req = http.expectOne(DB_CONNECTED_ENDPOINT);
+            const req = http.expectOne(`${environment.serverUrl}/database/is-connected`);
             req.flush({});
         });
 
@@ -50,7 +50,7 @@ describe('DatabaseService', () => {
                 },
             );
 
-            const req = http.expectOne(DB_CONNECTED_ENDPOINT);
+            const req = http.expectOne(`${environment.serverUrl}/database/is-connected`);
             req.error(new ErrorEvent(''));
         });
     });
