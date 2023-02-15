@@ -64,17 +64,6 @@ describe('AuthenticationService', () => {
             expect(authenticationSettings.getToken()).toEqual(DEFAULT_TOKEN);
         });
 
-        // it('should set user', () => {
-        //     const subject = new Subject<UserSession>();
-        //     authenticationController.login.and.returnValue(subject);
-
-        //     service.login(DEFAULT_CREDENTIALS).subscribe();
-
-        //     subject.next(DEFAULT_USER_SESSION);
-
-        //     expect(service.getUser()).toEqual(DEFAULT_USER);
-        // });
-
         it('should throw if login is invalid', (done) => {
             const subject = new Subject<UserSession>();
             authenticationController.login.and.returnValue(subject);
@@ -105,17 +94,6 @@ describe('AuthenticationService', () => {
 
             expect(authenticationSettings.getToken()).toEqual(DEFAULT_TOKEN);
         });
-
-        // it('should set user', () => {
-        //     const subject = new Subject<UserSession>();
-        //     authenticationController.signup.and.returnValue(subject);
-
-        //     service.signup(DEFAULT_CREDENTIALS).subscribe();
-
-        //     subject.next(DEFAULT_USER_SESSION);
-
-        //     expect(service.getUser()).toEqual(DEFAULT_USER);
-        // });
 
         it('should throw if signup is invalid', (done) => {
             const subject = new Subject<UserSession>();
@@ -151,11 +129,6 @@ describe('AuthenticationService', () => {
             service.signOut();
             expect(authenticationSettings.getToken()).toBeUndefined();
         });
-
-        // it('should remove user', () => {
-        //     service.signOut();
-        //     expect(() => service.getUser()).toThrow();
-        // });
     });
 
     describe('validateToken', () => {
