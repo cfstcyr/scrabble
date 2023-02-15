@@ -5,7 +5,7 @@ import { ALREADY_LOGGED, NO_LOGIN, NO_VALIDATE } from '@app/constants/controller
 import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
-import { PublicUser, UserDatabase, UserLoginCredentials } from '@common/models/user';
+import { PublicUser, UserDatabase, UserLoginCredentials, UserSession } from '@common/models/user';
 import * as bcryptjs from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
@@ -38,7 +38,7 @@ export class AuthentificationService {
         this.connectedUsers.disconnect(socketId);
     }
 
-    async login(credentials: UserLoginCredentials): Promise<{ token: string; user: PublicUser }> {
+    async login(credentials: UserLoginCredentials): Promise<UserSession> {
         const user = await this.getUserByEmail(credentials.email);
 
         if (this.connectedUsers.isConnected(user.idUser)) throw new HttpException(ALREADY_LOGGED, StatusCodes.UNAUTHORIZED);
@@ -51,7 +51,7 @@ export class AuthentificationService {
         throw new Error(NO_LOGIN);
     }
 
-    async signUp(user: UserDatabase): Promise<{ token: string; user: PublicUser }> {
+    async signUp(user: UserDatabase): Promise<UserSession> {
         const hash = await bcryptjs.hash(user.password, SALTROUNDS);
         const data = await this.insertUser({ ...user, password: hash });
         const token = this.generateAccessToken(data.idUser);
@@ -59,7 +59,7 @@ export class AuthentificationService {
         return { token, user: { email: user.email, username: user.username, avatar: user.avatar } };
     }
 
-    async validate(idUser: number): Promise<{ token: string; user: PublicUser }> {
+    async validate(idUser: number): Promise<UserSession> {
         if (this.connectedUsers.isConnected(idUser)) throw new HttpException(ALREADY_LOGGED, StatusCodes.UNAUTHORIZED);
 
         let token;

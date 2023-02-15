@@ -17,21 +17,21 @@ export class AuthentificationController extends BaseController {
         router.post('/login', async (req, res, next) => {
             this.authentificationservice
                 .login(req.body)
-                .then((data) => res.send(data).status(StatusCodes.OK).end())
+                .then((session) => res.send(session).status(StatusCodes.OK).end())
                 .catch((e) => next(e));
         });
 
         router.post('/signUp', async (req, res, next) => {
             this.authentificationservice
                 .signUp(req.body)
-                .then((data) => res.send(data).status(StatusCodes.CREATED).end())
+                .then((session) => res.send(session).status(StatusCodes.CREATED).end())
                 .catch((e) => next(e));
         });
 
         router.post('/validate', authenticateToken, async (req, res, next) => {
             this.authentificationservice
                 .validate(req.body.idUser)
-                .then((data) => res.send(data).status(StatusCodes.CREATED).end())
+                .then((session) => res.send(session).status(StatusCodes.CREATED).end())
                 .catch((e) => next(e));
         });
 
