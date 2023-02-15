@@ -11,6 +11,7 @@ import { HeaderBtnComponent } from '@app/components/header-btn/header-btn.compon
 import { PageHeaderComponent } from './page-header.component';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { Location } from '@angular/common';
+import { ROUTE_LOGIN } from '@app/constants/routes-constants';
 
 @Component({
     template: '',
@@ -66,7 +67,7 @@ describe('PageHeaderComponent', () => {
 
             tick();
 
-            expect(location.path()).toEqual('/login');
+            expect(location.path()).toEqual(ROUTE_LOGIN);
         }));
     });
 });

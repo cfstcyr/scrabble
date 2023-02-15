@@ -20,6 +20,7 @@ import { TEST_DICTIONARY } from '@app/constants/controller-test-constants';
 import { DEFAULT_PLAYER } from '@app/constants/game-constants';
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
+import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { INVALID_ROUND_DATA_PLAYER, NO_CURRENT_ROUND } from '@app/constants/services-errors';
 import { ActionService } from '@app/services/action-service/action.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
@@ -524,7 +525,7 @@ describe('RoundManagerService', () => {
 
         it('RoundTimeout should not timeout if user is not on /game', fakeAsync(() => {
             const router: Router = TestBed.inject(Router);
-            router.navigateByUrl('/home');
+            router.navigateByUrl(ROUTE_HOME);
             tick();
 
             service['roundTimeout']();

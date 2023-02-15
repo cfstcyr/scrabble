@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CANNOT_VERIFY_EMAIL_UNICITY, CANNOT_VERIFY_USERNAME_UNICITY } from '@app/constants/authentification-constants';
+import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserSignupInformation } from '@common/models/user';
@@ -23,7 +24,7 @@ export class SignupWrapperComponent {
     handleSignup(userCredentials: UserSignupInformation): void {
         this.authenticationService.signup(userCredentials).subscribe(
             () => {
-                this.router.navigate(['/home']);
+                this.router.navigate([ROUTE_HOME]);
             },
             (message) => {
                 this.alertService.error(message);

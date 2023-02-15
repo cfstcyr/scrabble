@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { ROUTE_LOGIN } from '@app/constants/routes-constants';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserService } from '@app/services/user-service/user.service';
 import { PublicUser } from '@common/models/user';
@@ -32,6 +33,6 @@ export class PageHeaderComponent {
 
     signOut() {
         this.authenticationService.signOut();
-        this.router.navigate(['/login']);
+        this.router.navigate([ROUTE_LOGIN]);
     }
 }

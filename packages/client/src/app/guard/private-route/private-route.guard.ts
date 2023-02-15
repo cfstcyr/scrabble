@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
+import { ROUTE_LOGIN } from '@app/constants/routes-constants';
 import { UserService } from '@app/services/user-service/user.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -14,7 +15,7 @@ export class PrivateRouteGuard implements CanActivate {
         return this.userService.isConnected().pipe(
             map((isConnected) => {
                 if (isConnected) return true;
-                this.router.navigate(['/login']);
+                this.router.navigate([ROUTE_LOGIN]);
                 return false;
             }),
         );

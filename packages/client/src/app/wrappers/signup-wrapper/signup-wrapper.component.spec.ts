@@ -7,6 +7,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SignupContainerComponent } from '@app/components/signup-container/signup-container.component';
+import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserSession, UserSignupInformation } from '@common/models/user';
@@ -68,7 +69,7 @@ describe('SignupWrapperComponent', () => {
 
             tick();
 
-            expect(location.path()).toEqual('/home');
+            expect(location.path()).toEqual(ROUTE_HOME);
         }));
 
         it('should call error on error', () => {

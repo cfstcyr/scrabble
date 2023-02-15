@@ -6,6 +6,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LoginContainerComponent } from '@app/components/login-container/login-container.component';
+import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserLoginCredentials, UserSession } from '@common/models/user';
@@ -64,7 +65,7 @@ describe('LoginWrapperComponent', () => {
 
             tick();
 
-            expect(location.path()).toEqual('/home');
+            expect(location.path()).toEqual(ROUTE_HOME);
         }));
 
         it('should call error on error', () => {

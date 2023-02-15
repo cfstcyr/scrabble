@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { TokenValidation } from '@app/classes/authentication/token-validation';
+import { ROUTE_LOGIN } from '@app/constants/routes-constants';
 
 @Injectable({
     providedIn: 'root',
@@ -90,7 +91,7 @@ export class InitializerService {
                         closeDialog: true,
                         action: () => {
                             this.authenticationService.signOut();
-                            this.router.navigate(['/login']);
+                            this.router.navigate([ROUTE_LOGIN]);
                             this.state.next({ state: InitializeState.Ready });
                         },
                     },
