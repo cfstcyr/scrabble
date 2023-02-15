@@ -1,5 +1,6 @@
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
@@ -67,7 +68,7 @@ export class SocketService {
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
 
-            this.configureSocketsEvent.emit('initialisation', socket);
+            this.configureSocketsEvent.emit(SOCKET_CONFIGURE_EVENT_NAME, socket);
             socket.on('disconnect', () => {
                 this.sockets.delete(socket.id);
             });
@@ -138,6 +139,6 @@ export class SocketService {
     }
 
     listenToInitialisationEvent(callback: (socket: ServerSocket) => void): void {
-        this.configureSocketsEvent.addListener('initialisation', callback);
+        this.configureSocketsEvent.addListener(SOCKET_CONFIGURE_EVENT_NAME, callback);
     }
 }
