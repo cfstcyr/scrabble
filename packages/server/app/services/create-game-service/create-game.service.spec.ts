@@ -9,6 +9,7 @@ import Player from '@app/classes/player/player';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import * as BeginnerVirtualPlayer from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import * as ExpertVirtualPlayer from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
+import { GROUP_CHANNEL } from '@app/constants/chat';
 import { TEST_DICTIONARY } from '@app/constants/dictionary-tests-const';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
@@ -19,6 +20,7 @@ import * as sinon from 'sinon';
 import { SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
 import * as uuid from 'uuid';
+import { ChatService } from '@app/services/chat-service/chat.service';
 import { CreateGameService } from './create-game.service';
 
 chai.use(spies);
@@ -64,7 +66,7 @@ describe('CreateGameService', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(() => {
-        testingUnit = new ServicesTestingUnit();
+        testingUnit = new ServicesTestingUnit().withStubbed(ChatService);
         activeGameServiceStub = testingUnit.setStubbed(ActiveGameService);
         activeGameServiceStub.beginGame.resolves();
         createGameService = Container.get(CreateGameService);
@@ -138,12 +140,21 @@ describe('CreateGameService', () => {
     });
 
     describe('createMultiplayerGame', () => {
-        it('should call activeGameService.beginGame', () => {
+        let chatServiceStub: SinonStubbedInstance<ChatService>;
+
+        beforeEach(() => {
             spy.on(createGameService, 'generateGameConfig', () => {
-                return;
+                return DEFAULT_GAME_CONFIG;
             });
-            const newWaitingRoom = createGameService.createMultiplayerGame(DEFAULT_GAME_CONFIG_DATA);
+            chatServiceStub = testingUnit.getStubbedInstance(ChatService);
+            chatServiceStub.createChannel.resolves({ ...GROUP_CHANNEL, idChannel: 1, canQuit: true, default: false, private: true });
+        });
+
+        it('should return waiting room with config and channel id', async () => {
+            const newWaitingRoom = await createGameService.createMultiplayerGame(DEFAULT_GAME_CONFIG_DATA);
             expect(newWaitingRoom).to.be.an.instanceof(WaitingRoom);
+            expect(newWaitingRoom['config']).to.deep.equal(DEFAULT_GAME_CONFIG);
+            expect(newWaitingRoom['groupChannelId']).to.equal(1);
         });
     });
 
