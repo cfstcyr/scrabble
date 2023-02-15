@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LOGIN_REQUIRED } from '@app/constants/services-errors';
 import { PublicUser } from '@common/models/user';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -18,7 +19,7 @@ export class UserService {
     }
 
     getUser(): PublicUser {
-        if (!this.user.value) throw new Error('You need to be logged in to perform this action');
+        if (!this.user.value) throw new Error(LOGIN_REQUIRED);
         return this.user.value;
     }
 

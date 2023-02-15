@@ -7,10 +7,11 @@ import { Subject } from 'rxjs';
 import { DatabaseService } from '@app/services/database-service/database.service';
 import { InitializerService } from './initializer.service';
 import { STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE } from '@app/constants/services-errors';
-import { AuthenticationService, TokenValidation } from '@app/services/authentication-service/authentication.service';
+import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import Delay from '@app/utils/delay/delay';
+import { TokenValidation } from '@app/classes/authentication/token-validation';
 
 describe('InitializerService', () => {
     let service: InitializerService;
@@ -85,7 +86,37 @@ describe('InitializerService', () => {
             setTimeout(() => {
                 dbSubject.error('error');
                 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            }, 10);
+            }, 40);
+        });
+
+        it('should handle invalid connection on already connected', (done) => {
+            const dialog = TestBed.inject(MatDialog);
+            const spy = spyOn(dialog, 'open');
+            const validateSubject = new Subject<TokenValidation>();
+            const dbSubject = new Subject<void>();
+
+            authenticationService.validateToken.and.returnValue(validateSubject);
+
+            databaseService.ping.and.returnValue(dbSubject);
+
+            service.initialize();
+
+            (async () => {
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                await Delay.for(10);
+                dbSubject.next();
+
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                await Delay.for(10);
+                validateSubject.next(TokenValidation.AlreadyConnected);
+                validateSubject.complete();
+
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                await Delay.for(10);
+
+                expect(spy).toHaveBeenCalled();
+                done();
+            })();
         });
     });
 });

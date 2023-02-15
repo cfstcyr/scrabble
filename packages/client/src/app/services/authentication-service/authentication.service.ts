@@ -7,13 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import SocketService from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user.service';
-
-export enum TokenValidation {
-    Ok,
-    NoToken,
-    AlreadyConnected,
-    UnknownError,
-}
+import { TokenValidation } from '@app/classes/authentication/token-validation';
 
 @Injectable({
     providedIn: 'root',

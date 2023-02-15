@@ -6,8 +6,9 @@ import { authenticationSettings } from '@app/utils/settings';
 import { PublicUser, UserLoginCredentials, UserSession, UserSignupInformation } from '@common/models/user';
 import { Subject } from 'rxjs';
 import { UserService } from '@app/services/user-service/user.service';
-import { AuthenticationService, TokenValidation } from './authentication.service';
+import { AuthenticationService } from './authentication.service';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { TokenValidation } from '@app/classes/authentication/token-validation';
 
 const DEFAULT_TOKEN = 'my-token';
 const DEFAULT_CREDENTIALS: UserLoginCredentials = {

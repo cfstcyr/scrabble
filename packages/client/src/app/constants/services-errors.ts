@@ -37,3 +37,5 @@ export const INVALID_CONNECTION_CONTENT =
     // eslint-disable-next-line max-len
     "Vous ne pouvez pas être connecté au même compte plus d'une fois. Veuillez vous connecter avec un autre compte ou rafraichir cette page lorsque vous vous serez déconnecté.";
 export const INVALID_CONNECTION_RETURN = 'Se déconnecter';
+
+export const LOGIN_REQUIRED = 'You need to be logged in to perform this action';

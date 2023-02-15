@@ -32,16 +32,8 @@ export class ChatService {
         });
     }
 
-    getChannelsId(): Observable<string[]> {
-        return this.channels.pipe(map((channels) => [...channels.keys()]));
-    }
-
     getChannels(): Observable<ClientChannel[]> {
         return this.channels.pipe(map((channels) => [...channels.values()]));
-    }
-
-    getChannel(id: string): Observable<ClientChannel | undefined> {
-        return this.channels.pipe(map((channels) => channels.get(id)));
     }
 
     configureSocket(socket: ClientSocket): void {
@@ -84,8 +76,6 @@ export class ChatService {
     handleChannelQuit(channel: Channel): void {
         this.channels.value.delete(channel.name);
         this.channels.next(this.channels.value);
-        // const index = this.channels.findIndex(({ id }) => id === channel.id);
-        // if (index >= 0) this.channels.splice(index, 1);
     }
 
     handleNewMessage(channelMessage: ChannelMessage): void {

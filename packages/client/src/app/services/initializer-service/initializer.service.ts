@@ -12,10 +12,11 @@ import {
     STATE_LOADING_MESSAGE,
 } from '@app/constants/services-errors';
 import { catchError, delay, map, retryWhen, take } from 'rxjs/operators';
-import { AuthenticationService, TokenValidation } from '@app/services/authentication-service/authentication.service';
+import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { TokenValidation } from '@app/classes/authentication/token-validation';
 
 @Injectable({
     providedIn: 'root',
@@ -32,19 +33,6 @@ export class InitializerService {
         this.state = new BehaviorSubject<AppState>({
             state: InitializeState.Loading,
             message: STATE_LOADING_MESSAGE,
-        });
-    }
-
-    load() {
-        this.state.next({
-            state: InitializeState.Loading,
-            message: STATE_LOADING_MESSAGE,
-        });
-    }
-
-    ready() {
-        this.state.next({
-            state: InitializeState.Ready,
         });
     }
 

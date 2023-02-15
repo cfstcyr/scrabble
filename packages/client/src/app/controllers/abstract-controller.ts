@@ -7,7 +7,7 @@ export class AbstractController {
         this.baseUrl = basePath ? this.join(environment.serverUrl, basePath) : environment.serverUrl;
     }
 
-    protected url(path: `/${string}`): string {
+    url(path: `/${string}`): string {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         return this.join(this.baseUrl, path);
     }
