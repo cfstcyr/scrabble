@@ -11,7 +11,6 @@ import { TEST_DICTIONARY } from '@app/constants/dictionary-tests-const';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
-import Container from 'typedi';
 import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
 import { ActiveGameService } from './active-game.service';
 import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
@@ -19,6 +18,7 @@ import { SinonStubbedInstance } from 'sinon';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as Sinon from 'sinon';
+import { Container } from 'typedi';
 
 const expect = chai.expect;
 
