@@ -5,7 +5,6 @@ import { AuthenticationController } from '@app/controllers/authentication-contro
 import { authenticationSettings } from '@app/utils/settings';
 import { PublicUser, UserLoginCredentials, UserSession, UserSignupInformation } from '@common/models/user';
 import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { UserService } from '@app/services/user-service/user.service';
 import { AuthenticationService, TokenValidation } from './authentication.service';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
@@ -77,13 +76,7 @@ describe('AuthenticationService', () => {
 
         it('should throw if login is invalid', (done) => {
             const subject = new Subject<UserSession>();
-            authenticationController.login.and.returnValue(
-                subject.pipe(
-                    map(() => {
-                        throw new Error();
-                    }),
-                ),
-            );
+            authenticationController.login.and.returnValue(subject);
 
             service.login(DEFAULT_CREDENTIALS).subscribe(
                 () => {
@@ -96,7 +89,7 @@ describe('AuthenticationService', () => {
                 },
             );
 
-            subject.next(DEFAULT_USER_SESSION);
+            subject.error(new Error());
         });
     });
 
@@ -125,13 +118,7 @@ describe('AuthenticationService', () => {
 
         it('should throw if signup is invalid', (done) => {
             const subject = new Subject<UserSession>();
-            authenticationController.signup.and.returnValue(
-                subject.pipe(
-                    map(() => {
-                        throw new Error();
-                    }),
-                ),
-            );
+            authenticationController.signup.and.returnValue(subject);
 
             service.signup(DEFAULT_SIGNUP_INFO).subscribe(
                 () => {
@@ -144,7 +131,7 @@ describe('AuthenticationService', () => {
                 },
             );
 
-            subject.next(DEFAULT_USER_SESSION);
+            subject.error(new Error());
         });
     });
 
@@ -199,41 +186,27 @@ describe('AuthenticationService', () => {
         it('should return AlreadyConnected if error is Unauthorized', (done) => {
             authenticationSettings.setToken(DEFAULT_TOKEN);
             const subject = new Subject<UserSession>();
-            authenticationController.validateToken.and.returnValue(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                subject.pipe(
-                    map(() => {
-                        // eslint-disable-next-line @typescript-eslint/no-throw-literal
-                        throw new HttpErrorResponse({ status: HttpStatusCode.Unauthorized });
-                    }),
-                ),
-            );
+            authenticationController.validateToken.and.returnValue(subject);
 
             service.validateToken().subscribe((val) => {
                 expect(val).toEqual(TokenValidation.AlreadyConnected);
                 done();
             });
 
-            subject.next(DEFAULT_USER_SESSION);
+            subject.error(new HttpErrorResponse({ status: HttpStatusCode.Unauthorized }));
         });
 
         it('should return UnknownError if token is invalid', (done) => {
             authenticationSettings.setToken(DEFAULT_TOKEN);
             const subject = new Subject<UserSession>();
-            authenticationController.validateToken.and.returnValue(
-                subject.pipe(
-                    map(() => {
-                        throw new Error();
-                    }),
-                ),
-            );
+            authenticationController.validateToken.and.returnValue(subject);
 
             service.validateToken().subscribe((val) => {
                 expect(val).toEqual(TokenValidation.UnknownError);
                 done();
             });
 
-            subject.next(DEFAULT_USER_SESSION);
+            subject.error(new Error());
         });
     });
 });
