@@ -12,7 +12,7 @@ import {
     STATE_LOADING_MESSAGE,
 } from '@app/constants/services-errors';
 import { catchError, delay, map, retryWhen, take } from 'rxjs/operators';
-import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
+import { AuthenticationService, TokenValidation } from '@app/services/authentication-service/authentication.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
@@ -63,7 +63,7 @@ export class InitializerService {
 
             const validation = await this.authenticationService.validateToken().toPromise();
 
-            if (validation !== true && validation.alreadyConnected) {
+            if (validation === TokenValidation.AlreadyConnected) {
                 this.handleInvalidConnection();
             } else {
                 // Force reactivate guard to redirect if needed

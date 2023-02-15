@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppComponent } from '@app/pages/app/app.component';
@@ -7,7 +8,7 @@ import { AppComponent } from '@app/pages/app/app.component';
 describe('AppComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [AppRoutingModule, HttpClientTestingModule, MatSnackBarModule],
+            imports: [AppRoutingModule, HttpClientTestingModule, MatSnackBarModule, MatDialogModule],
             declarations: [AppComponent],
         }).compileComponents();
     });

@@ -12,12 +12,14 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LobbyInfo } from '@app/classes/communication';
+import { HeaderBtnComponent } from '@app/components/header-btn/header-btn.component';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { LobbyInfoComponent } from '@app/components/lobby-info/lobby-info.component';
 import { NameFieldComponent } from '@app/components/name-field/name-field.component';
@@ -68,7 +70,7 @@ describe('LobbyPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [LobbyPageComponent, NameFieldComponent, LobbyInfoComponent, IconComponent, PageHeaderComponent],
+            declarations: [LobbyPageComponent, NameFieldComponent, LobbyInfoComponent, IconComponent, PageHeaderComponent, HeaderBtnComponent],
             imports: [
                 MatInputModule,
                 MatFormFieldModule,
@@ -86,6 +88,7 @@ describe('LobbyPageComponent', () => {
                     { path: 'join-waiting-room', component: TestComponent },
                     { path: 'lobby', component: LobbyPageComponent },
                 ]),
+                MatMenuModule,
             ],
             providers: [
                 GameDispatcherService,

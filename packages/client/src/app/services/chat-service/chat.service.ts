@@ -14,34 +14,34 @@ import { map } from 'rxjs/operators';
 export class ChatService {
     ready: Subject<boolean> = new Subject();
     joinedChannel: Subject<ClientChannel>;
-    channelsA: BehaviorSubject<Map<string, ClientChannel>>;
+    channels: BehaviorSubject<Map<string, ClientChannel>>;
 
     constructor(private readonly socketService: SocketService, private readonly userService: UserService) {
-        this.channelsA = new BehaviorSubject(new Map());
+        this.channels = new BehaviorSubject(new Map());
         this.joinedChannel = new Subject();
 
         this.socketService.onConnect.subscribe((socket) => {
-            this.channelsA.next(new Map());
+            this.channels.next(new Map());
             this.configureSocket(socket);
             this.ready.next(true);
         });
 
         this.socketService.onDisconnect.subscribe(() => {
             this.ready.next(false);
-            this.channelsA.next(new Map());
+            this.channels.next(new Map());
         });
     }
 
     getChannelsId(): Observable<string[]> {
-        return this.channelsA.pipe(map((channels) => [...channels.keys()]));
+        return this.channels.pipe(map((channels) => [...channels.keys()]));
     }
 
     getChannels(): Observable<ClientChannel[]> {
-        return this.channelsA.pipe(map((channels) => [...channels.values()]));
+        return this.channels.pipe(map((channels) => [...channels.values()]));
     }
 
     getChannel(id: string): Observable<ClientChannel | undefined> {
-        return this.channelsA.pipe(map((channels) => channels.get(id)));
+        return this.channels.pipe(map((channels) => channels.get(id)));
     }
 
     configureSocket(socket: ClientSocket): void {
@@ -76,21 +76,21 @@ export class ChatService {
 
     handleJoinChannel(channel: Channel): void {
         const newChannel = { ...channel, messages: [] };
-        this.channelsA.value.set(channel.name, newChannel);
-        this.channelsA.next(this.channelsA.value);
+        this.channels.value.set(channel.name, newChannel);
+        this.channels.next(this.channels.value);
         this.joinedChannel.next(newChannel);
     }
 
     handleChannelQuit(channel: Channel): void {
-        this.channelsA.value.delete(channel.name);
-        this.channelsA.next(this.channelsA.value);
+        this.channels.value.delete(channel.name);
+        this.channels.next(this.channels.value);
         // const index = this.channels.findIndex(({ id }) => id === channel.id);
         // if (index >= 0) this.channels.splice(index, 1);
     }
 
     handleNewMessage(channelMessage: ChannelMessage): void {
         const message = channelMessage.message;
-        this.channelsA.value.get(channelMessage.channel.name)?.messages.push({ ...message, date: new Date(message.date) });
-        this.channelsA.next(this.channelsA.value);
+        this.channels.value.get(channelMessage.channel.name)?.messages.push({ ...message, date: new Date(message.date) });
+        this.channels.next(this.channels.value);
     }
 }

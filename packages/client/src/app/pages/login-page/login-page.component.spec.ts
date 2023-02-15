@@ -1,5 +1,10 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HeaderBtnComponent } from '@app/components/header-btn/header-btn.component';
 import { TileComponent } from '@app/components/tile/tile.component';
+import { LoginWrapperComponent } from '@app/wrappers/login-wrapper/login-wrapper.component';
 import { LoginPageComponent } from './login-page.component';
 
 describe('LoginPageComponent', () => {
@@ -8,7 +13,8 @@ describe('LoginPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [LoginPageComponent, TileComponent],
+            imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule],
+            declarations: [LoginPageComponent, TileComponent, HeaderBtnComponent, LoginWrapperComponent],
         }).compileComponents();
     });
 

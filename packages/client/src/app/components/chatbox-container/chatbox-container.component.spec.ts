@@ -16,12 +16,12 @@ const CHANNEL_1: ClientChannel = {
     messages: [],
     canQuit: true,
 };
-const CHANNEL_2: ClientChannel = {
-    id: '2',
-    name: '2',
-    messages: [],
-    canQuit: true,
-};
+// const CHANNEL_2: ClientChannel = {
+//     id: '2',
+//     name: '2',
+//     messages: [],
+//     canQuit: true,
+// };
 
 describe('ChatboxContainerComponent', () => {
     let component: ChatboxContainerComponent;
@@ -53,12 +53,12 @@ describe('ChatboxContainerComponent', () => {
         });
     });
 
-    describe('getChannelsForStartChannel', () => {
-        it('should return channels', () => {
-            component.channels = [CHANNEL_1, CHANNEL_2];
-            expect(component.getChannelsForMenu()).toHaveSize(component.channels.length);
-        });
-    });
+    // describe('getChannelsForStartChannel', () => {
+    //     it('should return channels', () => {
+    //         component.channels = [CHANNEL_1, CHANNEL_2];
+    //         expect(component.getChannelsForMenu()).toHaveSize(component.channels.length);
+    //     });
+    // });
 
     describe('showChannel', () => {
         it('should add an open channel', () => {

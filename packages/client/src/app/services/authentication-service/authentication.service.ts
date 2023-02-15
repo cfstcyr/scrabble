@@ -8,10 +8,11 @@ import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import SocketService from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user.service';
 
-interface ValidateTokenError {
-    noToken?: true;
-    alreadyConnected?: true;
-    unknownError?: true;
+export enum TokenValidation {
+    Ok,
+    NoToken,
+    AlreadyConnected,
+    UnknownError,
 }
 
 @Injectable({
@@ -50,25 +51,25 @@ export class AuthenticationService {
         this.userService.user.next(undefined);
     }
 
-    validateToken(): Observable<true | ValidateTokenError> {
+    validateToken(): Observable<TokenValidation> {
         const token = authenticationSettings.getToken();
 
         if (!token) {
             authenticationSettings.remove('token');
-            return of({ noToken: true });
+            return of(TokenValidation.NoToken);
         }
 
         return this.authenticationController.validateToken(token).pipe(
-            map<UserSession, true>((session) => {
+            map((session) => {
                 this.handleUserSession(session);
-                return true;
+                return TokenValidation.Ok;
             }),
-            catchError<true, Observable<ValidateTokenError>>((err: HttpErrorResponse) => {
+            catchError((err: HttpErrorResponse) => {
                 if (err.status === HttpStatusCode.Unauthorized) {
-                    return of({ alreadyConnected: true });
+                    return of(TokenValidation.AlreadyConnected);
                 } else {
                     authenticationSettings.remove('token');
-                    return of({ unknownError: true });
+                    return of(TokenValidation.UnknownError);
                 }
             }),
         );
