@@ -14,5 +14,5 @@ export const matchValidator = (source: string, target: string): ValidatorFn => {
 
 export const INVALID_CREDENTIALS = 'Identifiants invalides';
 
-export const CANNOT_VERIFY_EMAIL_UNICITY = "Impossible de vérifier l'unicicité de l'adresse courriel";
-export const CANNOT_VERIFY_USERNAME_UNICITY = "Impossible de vérifier l'unicicité du pseudonyme";
+export const CANNOT_VERIFY_EMAIL_UNICITY = 'Le courriel est déjà utilisé';
+export const CANNOT_VERIFY_USERNAME_UNICITY = 'Le pseudonyme est déjà utilisé';
