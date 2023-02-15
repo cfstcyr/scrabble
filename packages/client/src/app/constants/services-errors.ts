@@ -29,8 +29,10 @@ export const RECONNECTION_RETRIES = 3;
 export const DB_CONNECTED_ENDPOINT = `${environment.serverUrl}/database/is-connected`;
 
 export const STATE_LOADING_MESSAGE = "Chargement de l'application";
-export const STATE_ERROR_SERVER_NOT_CONNECTED_MESSAGE = "Impossible d'établir une connexion avec le serveur";
+export const STATE_ERROR_SERVER_NOT_CONNECTED_MESSAGE = "Impossible d'établir une connexion avec le serveur.";
 export const STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE = "Impossible d'établir une connexion avec la base de donnée";
+export const STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE_TRY_AGAIN =
+    "Impossible d'établir une connexion avec la base de donnée.\nVeuillez réessayer ultérieurement.";
 
 export const INVALID_CONNECTION_TITLE = 'Vous êtes déjà connecté';
 export const INVALID_CONNECTION_CONTENT =

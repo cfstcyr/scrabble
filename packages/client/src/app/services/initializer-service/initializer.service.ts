@@ -9,6 +9,7 @@ import {
     RECONNECTION_DELAY,
     RECONNECTION_RETRIES,
     STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE,
+    STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE_TRY_AGAIN,
     STATE_LOADING_MESSAGE,
 } from '@app/constants/services-errors';
 import { catchError, delay, map, retryWhen, take } from 'rxjs/operators';
@@ -44,7 +45,7 @@ export class InitializerService {
             if (!connectedToDatabase) {
                 this.state.next({
                     state: InitializeState.Error,
-                    message: STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE,
+                    message: STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE_TRY_AGAIN,
                 });
 
                 return;
