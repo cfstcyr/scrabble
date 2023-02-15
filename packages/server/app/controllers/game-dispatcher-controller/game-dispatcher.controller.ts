@@ -176,7 +176,7 @@ export class GameDispatcherController extends BaseController {
             return;
         }
 
-        this.activeGameService.handlePlayerLeaves(gameId, playerId);
+        await this.activeGameService.handlePlayerLeaves(gameId, playerId);
     }
 
     private handlePlayerLeftFeedback(gameId: string, endOfGameMessages: string[], updatedData: GameUpdateData): void {

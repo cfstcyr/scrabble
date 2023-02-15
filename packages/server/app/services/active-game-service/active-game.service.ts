@@ -55,9 +55,9 @@ export class ActiveGameService {
         return this.getGame(gameId, playerId).gameIsOver;
     }
 
-    handlePlayerLeaves(gameId: string, playerId: string): void {
+    async handlePlayerLeaves(gameId: string, playerId: string): Promise<void> {
         const game: Game = this.getGame(gameId, playerId);
-        this.chatService.quitChannel(game.getGroupChannelId(), playerId);
+        await this.chatService.quitChannel(game.getGroupChannelId(), playerId);
 
         // Check if there is no player left --> cleanup server and client
         try {
