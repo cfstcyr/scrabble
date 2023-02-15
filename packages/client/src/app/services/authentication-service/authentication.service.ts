@@ -22,11 +22,11 @@ export class AuthenticationService {
     }
 
     login(credentials: UserLoginCredentials): Observable<UserSession> {
-        return this.authenticationController.login(credentials).pipe(tap(this.handleUserSession.bind(this)));
+        return this.authenticationController.login(credentials).pipe(tap(this.handleUserSessionInitialisation.bind(this)));
     }
 
     signup(credentials: UserSignupInformation): Observable<UserSession> {
-        return this.authenticationController.signup(credentials).pipe(tap(this.handleUserSession.bind(this)));
+        return this.authenticationController.signup(credentials).pipe(tap(this.handleUserSessionInitialisation.bind(this)));
     }
 
     signOut(): void {
@@ -45,7 +45,7 @@ export class AuthenticationService {
 
         return this.authenticationController.validateToken(token).pipe(
             map((session) => {
-                this.handleUserSession(session);
+                this.handleUserSessionInitialisation(session);
                 return TokenValidation.Ok;
             }),
             catchError((err: HttpErrorResponse) => {
@@ -67,7 +67,7 @@ export class AuthenticationService {
         return this.authenticationController.validateEmail(email).pipe(map((res) => res.isAvailable));
     }
 
-    private handleUserSession(session: UserSession): void {
+    private handleUserSessionInitialisation(session: UserSession): void {
         authenticationSettings.setToken(session.token);
         this.userService.user.next(session.user);
         this.socketService.connectSocket();
