@@ -38,4 +38,4 @@ export const INVALID_CONNECTION_CONTENT =
     "Vous ne pouvez pas être connecté au même compte plus d'une fois.\nVeuillez vous connecter avec un autre compte ou rafraichir cette page lorsque vous vous serez déconnecté.";
 export const INVALID_CONNECTION_RETURN = 'Se déconnecter';
 
-export const LOGIN_REQUIRED = 'You need to be logged in to perform this action';
+export const LOGIN_REQUIRED = 'Vous devez être connecté pour performer cet action.';
