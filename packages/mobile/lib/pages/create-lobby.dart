@@ -9,33 +9,45 @@ class CreateLobbyPage extends StatelessWidget {
       body: FractionallySizedBox(
         widthFactor: 1,
         heightFactor: 1,
-        child: FractionallySizedBox(
-          widthFactor: 0.5,
-          heightFactor: 0.4,
-          child: Container(
-            // color: Colors.green.shade900, // TODO ENLEVER DECORATION ET VOIR SI BACKGROUND VERT MIEUX
-            decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.green,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Flexible(
+              flex: 1,
+              child: FractionallySizedBox(
+                widthFactor: 0.6,
+                heightFactor: 0.55,
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.black,
+                      ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: <Widget>[
+                        Expanded(
+                          child: SizedBox(height: 5.0, child: WaitingRoom()),
+                        ),
+                        Parameters(),
+                        GroupGestion(),
+                      ],
+                    ),
+                  ),
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(5.0))),
-            alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: SizedBox(height: 5.0, child: PlayerWaitingList()),
-                  ),
-                  Expanded(
-                    child: SizedBox(height: 5.0, child: WaitingRoom()),
-                  ),
-                  Parameters(),
-                  GroupGestion(),
-                ],
               ),
             ),
-          ),
+            Flexible(
+              flex: 1,
+              child: FractionallySizedBox(
+                  widthFactor: 0.6,
+                  heightFactor: 0.6,
+                  child: PlayerWaitingList()),
+            ),
+          ],
         ),
       ),
     );
@@ -49,25 +61,32 @@ class Parameters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.green,
-            ),
-            borderRadius: BorderRadius.all(Radius.circular(5))),
-        child: Column(
-          children: [
-            Center(
-                child: Text(
-                    "Parametres")), // TODO: ENLEVER CENTER ENLEVE LESPACE AUTOUR DE PARAMETRES
-            ElevatedButton.icon(
+    return Padding(
+      padding: EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 40.0),
+      child: Container(
+          child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 0, right: 25.0, top: 0, bottom: 0),
+            child: ElevatedButton.icon(
                 onPressed: () {
                   //TODO AJUSTER TEMPS
                 },
+                style: setStyleRoomButtons(),
                 icon: Icon(Icons.timer),
-                label: Text('1:00'))
-          ],
-        ));
+                label: Text('1:00')),
+          ),
+          ElevatedButton.icon(
+              onPressed: () {
+                //TODO AJUSTER TEMPS
+              },
+              style: setStyleRoomButtons(),
+              icon: Icon(Icons.precision_manufacturing_outlined),
+              label: Text('Expert'))
+        ],
+      )),
+    );
   }
 }
 
@@ -115,59 +134,75 @@ class PlayerWaitingList extends StatelessWidget {
     var style = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.green,
-          ),
-          borderRadius: BorderRadius.all(Radius.circular(5.0))),
-      child: ListView.builder(
-        itemCount: playerWaitingList.length,
-        itemBuilder: (_, int index) {
-          return Padding(
-            padding: const EdgeInsets.all(3.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.green,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(5.0))),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Padding(
+    return Padding(
+      padding: EdgeInsets.only(left: 30.0, right: 0, top: 0, bottom: 0),
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.black,
+            ),
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.all(Radius.circular(5.0))),
+        child: ListView.builder(
+          itemCount: playerWaitingList.length,
+          itemBuilder: (_, int index) {
+            return Padding(
+              padding: EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: 15.0, right: 0, top: 10.0, bottom: 10.0),
+                      child: setAvatar("images/avatar-12.png"),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            left: 15.0, right: 5.0, top: 0, bottom: 0),
+                        child: Text(playerWaitingList[index].username),
+                      ),
+                    ),
+                    Padding(
                       padding: EdgeInsets.only(
                           left: 5.0, right: 5.0, top: 0, bottom: 0),
-                      child: Text(playerWaitingList[index].username),
+                      child: Container(
+                        child: IconButton(
+                          onPressed: () {
+                            //TODO
+                          },
+                          icon: Icon(Icons.check),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey.shade200,
+                              foregroundColor: Colors.green.shade900,
+                              shape: CircleBorder()),
+                        ),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: 5.0, right: 5.0, top: 0, bottom: 0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        //TODO
-                      },
-                      style: setStyleActionButtons(),
-                      child: Text('Accepter'),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: 5.0, right: 15.0, top: 0, bottom: 0),
+                      child: IconButton(
+                        onPressed: () {
+                          //TODO
+                        },
+                        icon: Icon(Icons.clear_outlined),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey.shade200,
+                            foregroundColor: Colors.black,
+                            shape: CircleBorder()),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: 5.0, right: 5.0, top: 0, bottom: 0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        //TODO
-                      },
-                      style: setStyleActionButtons(),
-                      child: Text('Refuser'),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -186,59 +221,70 @@ class WaitingRoom extends StatelessWidget {
     );
     // TODO : ICON DIFFERENT QUAND TA UN JOUEUR VS NON
 
-    return Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.green,
-            ),
-            borderRadius: BorderRadius.all(Radius.circular(5))),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding:
-                      EdgeInsets.only(left: 5.0, right: 5.0, top: 0, bottom: 0),
-                  child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: Icon(setPlayerIcon(0)),
-                      label: Text(setPlayerName(0))),
-                ),
-                ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(setPlayerIcon(1)),
-                    label: Text(setPlayerName(1))),
-              ],
-            ),
-            Text("vs"),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                    padding: EdgeInsets.only(
-                        left: 5.0, right: 5.0, top: 0, bottom: 0),
+    return Padding(
+      padding: EdgeInsets.only(left: 0, right: 0, top: 50.0, bottom: 50.0),
+      child: Container(
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    height: 50,
+                    width: 125,
                     child: ElevatedButton.icon(
                         onPressed: () {},
+                        style: setStyleRoomButtons(),
+                        icon: setAvatar("images/avatar-12.png"),
+                        label: Text(setPlayerName(0))),
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: 125,
+                    child: ElevatedButton.icon(
+                        onPressed: () {},
+                        style: setStyleRoomButtons(),
+                        icon: setAvatar("images/avatar-12.png"),
+                        label: Text(setPlayerName(1))),
+                  ),
+                ],
+              ),
+              Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    height: 50,
+                    width: 125,
+                    child: ElevatedButton.icon(
+                        onPressed: () {},
+                        style: setStyleRoomButtons(),
                         icon: Icon(setPlayerIcon(2)),
-                        label: Text(setPlayerName(2)))),
-                ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(setPlayerIcon(3)),
-                    label: Text(setPlayerName(3))),
-              ],
-            ),
-            ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: a voir comment on veux ca
-                },
-                icon: Icon(Icons.filter_list_alt),
-                style: setStyleActionButtons(),
-                label: Text('Remplir les vides')),
-          ],
-        ));
+                        label: Text(setPlayerName(2))),
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: 125,
+                    child: ElevatedButton.icon(
+                        onPressed: () {},
+                        style: setStyleRoomButtons(),
+                        icon: Icon(setPlayerIcon(3)),
+                        label: Text(setPlayerName(3))),
+                  ),
+                ],
+              ),
+              // ElevatedButton.icon(
+              //     onPressed: () {
+              //       // TODO: a voir comment on veux ca
+              //     },
+              //     icon: Icon(Icons.filter_list_alt),
+              //     style: setStyleActionButtons(),
+              //     label: Text('Remplir les vides')),
+            ],
+          )),
+    );
   }
 }
 
@@ -281,4 +327,27 @@ ButtonStyle setStyleActionButtons() {
       foregroundColor: Colors.white,
       shape: BeveledRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(2))));
+}
+
+ButtonStyle setStyleWaitingListButtons() {
+  return ElevatedButton.styleFrom(
+      foregroundColor: Colors.black, shape: CircleBorder());
+}
+
+ButtonStyle setStyleRoomButtons() {
+  return ElevatedButton.styleFrom(
+    backgroundColor: Colors.grey.shade200,
+    foregroundColor: Colors.green.shade900,
+  );
+}
+
+CircleAvatar setAvatar(String path) {
+  return CircleAvatar(
+      backgroundColor: Colors.transparent,
+      child: SizedBox(
+          child: ClipOval(
+        child: Image.asset(
+          path, //TODO IMAGES PAS POSSIBLE COTE SERVEUR BCS ON DOIT LES RAJOUTER 1 PAR 1 DANS LE pubspec.yaml
+        ),
+      )));
 }
