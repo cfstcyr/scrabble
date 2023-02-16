@@ -122,15 +122,6 @@ describe('ChatboxContainerComponent', () => {
         });
     });
 
-    describe('handleJoinChannel', () => {
-        it('should emit to joinChannel', () => {
-            component.joinChannelForm.setValue({ joinChannel: 'abc' });
-            spyOn(component.joinChannel, 'next');
-            component.handleJoinChannel();
-            expect(component.joinChannel.next).toHaveBeenCalled();
-        });
-    });
-
     describe('handleQuitChannel', () => {
         it('should open dialog', () => {
             const dialog = TestBed.inject(MatDialog);

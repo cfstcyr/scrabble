@@ -18,16 +18,20 @@ const USER: PublicUser = {
     username: 'username',
 };
 const CHANNEL_1: ClientChannel = {
-    id: '1',
+    idChannel: 1,
     name: '1',
     messages: [],
     canQuit: false,
+    private: false,
+    default: false,
 };
 const CHANNEL_2: ClientChannel = {
-    id: '2',
+    idChannel: 2,
     name: '2',
     messages: [],
     canQuit: false,
+    private: false,
+    default: false,
 };
 
 describe('ChatService', () => {
@@ -109,8 +113,8 @@ describe('ChatService', () => {
     describe('getChannels', () => {
         it('should pass all channels', (done) => {
             const map = new Map([
-                [CHANNEL_1.id, CHANNEL_1],
-                [CHANNEL_2.id, CHANNEL_2],
+                [CHANNEL_1.idChannel, CHANNEL_1],
+                [CHANNEL_2.idChannel, CHANNEL_2],
             ]);
             service.channels.next(map);
 
@@ -184,7 +188,7 @@ describe('ChatService', () => {
                 private: false,
                 default: false,
             };
-            service.channels.next(new Map([[channel.name, channel]]));
+            service.channels.next(new Map([[channel.idChannel, channel]]));
             service.handleChannelQuit(channel);
             expect(service.channels.value.size).toEqual(0);
         });
@@ -200,9 +204,10 @@ describe('ChatService', () => {
                 private: false,
                 default: false,
             };
-            service.channels = [channel];
+
+            service.channels.next(new Map([[channel.idChannel, channel]]));
             service.handleNewMessage({ idChannel: channel.idChannel, message: {} as ChatMessage } as ChannelMessage);
-            expect(service.channels[0].messages.length).toEqual(1);
+            expect(service.channels.value.get(channel.idChannel)?.messages.length).toEqual(1);
         });
     });
 });
