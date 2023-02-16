@@ -111,7 +111,7 @@ const VALID_PLACEMENT: WordPlacement = {
     orientation: DEFAULT_ORIENTATION,
 };
 
-describe.only('ActionPlace', () => {
+describe('ActionPlace', () => {
     let gameStub: SinonStubbedInstance<Game>;
     let tileReserveStub: SinonStubbedInstance<TileReserve>;
     let boardStub: SinonStubbedInstance<Board>;
@@ -338,7 +338,7 @@ describe.only('ActionPlace', () => {
             it('should return update with player 4', () => {
                 gameStub.getPlayerNumber.returns(4);
                 const update: GameUpdateData = action.execute()!;
-                expect(update.player3).to.exist;
+                expect(update.player4).to.exist;
             });
 
             it('should execute with a blank tile', () => {

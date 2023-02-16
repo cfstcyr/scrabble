@@ -24,7 +24,7 @@ import * as spies from 'chai-spies';
 import * as sinon from 'sinon';
 import { createStubInstance, SinonStub, SinonStubbedInstance, stub } from 'sinon';
 import { Container } from 'typedi';
-import Game, { GAME_OVER_PASS_THRESHOLD } from './game';
+import Game from './game';
 import { ReadyGameConfig, StartGameData } from './game-config';
 import { GameMode } from './game-mode';
 import { GameType } from './game-type';
@@ -239,24 +239,29 @@ describe('Game', () => {
         });
 
         describe('getConnectedRealPlayers', () => {
-            it('should return both players if they are both real and connected', () => {
+            it('should return all players if they are both real and connected', () => {
                 game.player1.isConnected = true;
                 game.player2.isConnected = true;
                 game.player3.isConnected = true;
-                expect(game.getConnectedRealPlayers()).to.deep.equal([DEFAULT_PLAYER_1, DEFAULT_PLAYER_2, DEFAULT_PLAYER_3]);
+                game.player4.isConnected = true;
+                expect(game.getConnectedRealPlayers()).to.deep.equal([DEFAULT_PLAYER_1, DEFAULT_PLAYER_2, DEFAULT_PLAYER_3, DEFAULT_PLAYER_4]);
             });
 
             it('should return the player that is still connected (Player 1)', () => {
                 game.player1.isConnected = true;
                 game.player2.isConnected = false;
+                game.player3.isConnected = false;
+                game.player4.isConnected = false;
                 expect(game.getConnectedRealPlayers()).to.deep.equal([DEFAULT_PLAYER_1]);
             });
 
-            it('should return the player that a real player ', () => {
+            it('should return the players that are real players and conencted ', () => {
                 game.player1 = DEFAULT_VIRTUAL_PLAYER;
                 game.player1.isConnected = true;
                 game.player2.isConnected = true;
-                expect(game.getConnectedRealPlayers()).to.deep.equal([DEFAULT_PLAYER_2]);
+                game.player3.isConnected = false;
+                game.player4.isConnected = true;
+                expect(game.getConnectedRealPlayers()).to.deep.equal([DEFAULT_PLAYER_2, DEFAULT_PLAYER_4]);
             });
         });
     });
@@ -279,8 +284,8 @@ describe('Game', () => {
             game.roundManager = roundManagerStub as unknown as RoundManager;
             game.player1 = player1Stub as unknown as Player;
             game.player2 = player2Stub as unknown as Player;
-            game.player3 = player2Stub as unknown as Player;
-            game.player4 = player2Stub as unknown as Player;
+            game.player3 = player3Stub as unknown as Player;
+            game.player4 = player4Stub as unknown as Player;
             game.player1.tiles = [
                 { letter: 'A', value: 0 },
                 { letter: 'B', value: 0 },
@@ -301,43 +306,40 @@ describe('Game', () => {
             player2Stub.hasTilesLeft.returns(true);
             player3Stub.hasTilesLeft.returns(true);
             player4Stub.hasTilesLeft.returns(true);
-
-            roundManagerStub.getPassCounter.returns(0);
         });
 
-        it('should not be gameOver passCount lower than threshold and both players have tiles', () => {
-            roundManagerStub.getPassCounter.returns(GAME_OVER_PASS_THRESHOLD - 1);
+        it('should not be gameOver passCount lower than threshold and all players have tiles', () => {
+            roundManagerStub.verifyIfGameOver.returns(false);
             expect(game.areGameOverConditionsMet()).to.be.false;
         });
 
         it('should be gameOver passCount is equal to threshold', () => {
-            roundManagerStub.getPassCounter.returns(GAME_OVER_PASS_THRESHOLD);
-
+            roundManagerStub.verifyIfGameOver.returns(true);
             expect(game.areGameOverConditionsMet()).to.be.true;
         });
 
         it('should be gameOver when player 1 has no tiles', () => {
+            roundManagerStub.verifyIfGameOver.returns(false);
             player1Stub.hasTilesLeft.returns(false);
             expect(game.areGameOverConditionsMet()).to.be.true;
-            expect(game.roundManager.getPassCounter()).to.equal(0);
         });
 
         it('should gameOver when player 2 has no tiles', () => {
+            roundManagerStub.verifyIfGameOver.returns(false);
             player2Stub.hasTilesLeft.returns(false);
             expect(game.areGameOverConditionsMet()).to.be.true;
-            expect(game.roundManager.getPassCounter()).to.equal(0);
         });
 
         it('should gameOver when player 3 has no tiles', () => {
+            roundManagerStub.verifyIfGameOver.returns(false);
             player3Stub.hasTilesLeft.returns(false);
             expect(game.areGameOverConditionsMet()).to.be.true;
-            expect(game.roundManager.getPassCounter()).to.equal(0);
         });
 
         it('should gameOver when player 4 has no tiles', () => {
+            roundManagerStub.verifyIfGameOver.returns(false);
             player4Stub.hasTilesLeft.returns(false);
             expect(game.areGameOverConditionsMet()).to.be.true;
-            expect(game.roundManager.getPassCounter()).to.equal(0);
         });
     });
 
@@ -360,9 +362,9 @@ describe('Game', () => {
             newPlayerStub = createStubInstance(Player);
             player1Stub.id = DEFAULT_PLAYER_1_ID;
             player2Stub.id = DEFAULT_PLAYER_2_ID;
-            player3Stub.id = DEFAULT_PLAYER_2_ID;
-            player4Stub.id = DEFAULT_PLAYER_2_ID;
-            newPlayerStub.id = DEFAULT_PLAYER_2_ID;
+            player3Stub.id = DEFAULT_PLAYER_3_ID;
+            player4Stub.id = DEFAULT_PLAYER_4_ID;
+            newPlayerStub.id = NEW_PLAYER_ID;
             game.roundManager = roundManagerStub as unknown as RoundManager;
             game.player1 = player1Stub as unknown as Player;
             game.player2 = player2Stub as unknown as Player;
@@ -395,6 +397,24 @@ describe('Game', () => {
             expect(newPlayerStub.copyPlayerInfo.calledOnceWith(player2Stub)).to.be.true;
             expect(game.player1).to.equal(player1Stub);
             expect(game.player2).to.equal(newPlayerStub);
+        });
+
+        it('should update the player3 if called with its id', () => {
+            player3Stub.copyPlayerInfo.returns({ id: NEW_PLAYER_ID });
+            chai.spy.on(game.roundManager, 'replacePlayer', () => {});
+            game.replacePlayer(DEFAULT_PLAYER_3_ID, newPlayerStub as unknown as Player);
+
+            expect(newPlayerStub.copyPlayerInfo.calledOnceWith(player3Stub)).to.be.true;
+            expect(game.player3).to.equal(newPlayerStub);
+        });
+
+        it('should update the player4 if called with its id', () => {
+            player4Stub.copyPlayerInfo.returns({ id: NEW_PLAYER_ID });
+            chai.spy.on(game.roundManager, 'replacePlayer', () => {});
+            game.replacePlayer(DEFAULT_PLAYER_4_ID, newPlayerStub as unknown as Player);
+
+            expect(newPlayerStub.copyPlayerInfo.calledOnceWith(player4Stub)).to.be.true;
+            expect(game.player4).to.equal(newPlayerStub);
         });
 
         it('should call roundManager.replacePlayer', () => {
@@ -455,13 +475,18 @@ describe('Game', () => {
             game.player3 = player3Stub as unknown as Player;
             game.player4 = player4Stub as unknown as Player;
 
+            player1Stub.hasTilesLeft.returns(true);
+            player2Stub.hasTilesLeft.returns(true);
+            player3Stub.hasTilesLeft.returns(true);
+            player4Stub.hasTilesLeft.returns(true);
+
             chai.spy.on(game, 'completeGameHistory', () => {
                 return;
             });
         });
 
-        it('should deduct points from all players if the getPassCounter is exceeded', () => {
-            roundManagerStub.getPassCounter.returns(GAME_OVER_PASS_THRESHOLD);
+        it('should deduct points from all players if the verifyIfGameOver is true', () => {
+            roundManagerStub.verifyIfGameOver.returns(true);
             game.endOfGame();
             expect(game.player1.score).to.equal(PLAYER_1_SCORE - PLAYER_1_TILE_SCORE);
             expect(game.player2.score).to.equal(PLAYER_2_SCORE - PLAYER_2_TILE_SCORE);
@@ -470,7 +495,7 @@ describe('Game', () => {
         });
 
         it('should deduct points from player2,3,4 and add them to player1 if player 1 has no tiles', () => {
-            roundManagerStub.getPassCounter.returns(0);
+            roundManagerStub.verifyIfGameOver.returns(false);
             player1Stub.hasTilesLeft.returns(false);
             player2Stub.hasTilesLeft.returns(true);
             player3Stub.hasTilesLeft.returns(true);
@@ -485,7 +510,7 @@ describe('Game', () => {
         });
 
         it('should deduct points from player 1,3,4 and add them to player2 if player 2 has no tiles', () => {
-            roundManagerStub.getPassCounter.returns(0);
+            roundManagerStub.verifyIfGameOver.returns(false);
             player1Stub.hasTilesLeft.returns(true);
             player2Stub.hasTilesLeft.returns(false);
             player3Stub.hasTilesLeft.returns(true);
@@ -709,6 +734,10 @@ describe('Game', () => {
             player2Stub.name = PLAYER_2_NAME;
             player3Stub.name = PLAYER_3_NAME;
             player4Stub.name = PLAYER_4_NAME;
+            player1Stub.id = DEFAULT_PLAYER_1_ID;
+            player2Stub.id = DEFAULT_PLAYER_2_ID;
+            player3Stub.id = DEFAULT_PLAYER_3_ID;
+            player4Stub.id = DEFAULT_PLAYER_4_ID;
             game.player1 = player1Stub as unknown as Player;
             game.player2 = player2Stub as unknown as Player;
             game.player3 = player3Stub as unknown as Player;
@@ -850,6 +879,30 @@ describe('Game', () => {
                 round: roundManagerStub.convertRoundToRoundData(round),
             };
             expect(result).to.deep.equal(expectedMultiplayerGameData);
+        });
+    });
+
+    describe('getPlayerNumber', () => {
+        let game: Game;
+        const invalidPlayer = new Player('invalid', 'invalid');
+        beforeEach(() => {
+            game = new Game();
+            game.player1 = DEFAULT_PLAYER_1;
+            game.player2 = DEFAULT_PLAYER_2;
+            game.player3 = DEFAULT_PLAYER_3;
+            game.player4 = DEFAULT_PLAYER_4;
+        });
+
+        it('should return the correct number', () => {
+            expect(game.getPlayerNumber(game.player1)).to.equal(1);
+            expect(game.getPlayerNumber(game.player2)).to.equal(2);
+            expect(game.getPlayerNumber(game.player3)).to.equal(3);
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            expect(game.getPlayerNumber(game.player4)).to.equal(4);
+        });
+
+        it('should throw if given an invalid player', () => {
+            expect(() => game.getPlayerNumber(invalidPlayer)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
         });
     });
 
