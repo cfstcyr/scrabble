@@ -6,7 +6,7 @@ exports.up = async function(knex) {
     await knex.schema.createTable('Channel', (table) => {
         table.increments('idChannel').notNullable().primary();
         table.string('name', 40).notNullable();
-        table.boolean('canQuit').notNullable().defaultTo(false);
+        table.boolean('canQuit').notNullable().defaultTo(true);
         table.boolean('private').notNullable().defaultTo(false);
         table.boolean('default').notNullable().defaultTo(false);
     });

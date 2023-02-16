@@ -34,7 +34,7 @@ export class ChatService {
     }
 
     getChannels(): Observable<ClientChannel[]> {
-        return this.channels.pipe(map((channels) => [...channels.values()]));
+        return this.channels.pipe(map((channels) => [...channels.values()].sort((a, b) => (a.name > b.name ? 1 : -1))));
     }
 
     configureSocket(socket: ClientSocket): void {

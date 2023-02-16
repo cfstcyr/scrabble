@@ -38,9 +38,7 @@ export class ChatPersistenceService {
     }
 
     async leaveChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<void> {
-        if (await this.isUserInChannel(idChannel, idUser)) {
-            await this.userChatTable.delete().where({ idChannel, idUser });
-        }
+        await this.userChatTable.delete().where({ idChannel, idUser });
     }
 
     async isChannelNameAvailable(channel: ChannelCreation): Promise<boolean> {
