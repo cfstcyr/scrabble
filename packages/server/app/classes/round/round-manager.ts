@@ -7,6 +7,7 @@ import Player from '@app/classes/player/player';
 import { INVALID_PLAYER_TO_REPLACE, NO_FIRST_ROUND_EXISTS } from '@app/constants/services-errors';
 import { Random } from '@app/utils/random/random';
 import { StatusCodes } from 'http-status-codes';
+import { AbstractVirtualPlayer } from '../virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { CompletedRound, Round } from './round';
 
 const SECONDS_TO_MILLISECONDS = 1000;
@@ -109,7 +110,21 @@ export default class RoundManager {
     private saveCompletedRound(round: Round, actionPlayed: Action): void {
         const now = new Date();
         this.passCounter = actionPlayed instanceof ActionPass ? this.passCounter + 1 : 0;
+        this.passCounter = actionPlayed instanceof ActionPass ? this.passCounter + 1 : 0;
+
         this.completedRounds.push({ ...round, completedTime: now, actionPlayed });
+    }
+
+    private verifyPasses(): boolean {
+        const NUMBER_OF_PLAYERS_IN_GAME = 4;
+        const NUMBER_OF_PASSING_ROUNDS_FOR_END_GAME = 2;
+        for (let i = 0; i < NUMBER_OF_PASSING_ROUNDS_FOR_END_GAME * NUMBER_OF_PLAYERS_IN_GAME; i++) {
+            const round = this.completedRounds[this.completedRounds.length - 1 - i];
+            if (round.player instanceof AbstractVirtualPlayer) continue;
+            if (round.actionPlayed instanceof ActionPass) continue;
+            return false;
+        }
+        return true;
     }
 
     private getNextPlayer(): Player {

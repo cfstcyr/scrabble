@@ -23,6 +23,8 @@ const MAX_TRIES = 100;
 const DEFAULT_MAX_ROUND_TIME = 1;
 const DEFAULT_PLAYER_1 = new Player('player-1', 'Player 1');
 const DEFAULT_PLAYER_2 = new Player('player-2', 'Player 2');
+const DEFAULT_PLAYER_3 = new Player('player-3', 'Player 3');
+const DEFAULT_PLAYER_4 = new Player('player-4', 'Player 4');
 const NEW_PLAYER = { id: 'newplayer-1', name: 'newplayer 1' };
 
 describe('RoundManager', () => {
@@ -32,7 +34,7 @@ describe('RoundManager', () => {
     let gameStub: SinonStubbedInstance<Game>;
 
     beforeEach(() => {
-        roundManager = new RoundManager(DEFAULT_MAX_ROUND_TIME, DEFAULT_PLAYER_1, DEFAULT_PLAYER_2);
+        roundManager = new RoundManager(DEFAULT_MAX_ROUND_TIME, DEFAULT_PLAYER_1, DEFAULT_PLAYER_2, DEFAULT_PLAYER_3, DEFAULT_PLAYER_4);
         actionStub = createStubInstance(ActionPass);
         action = actionStub as unknown as Action;
         gameStub = createStubInstance(Game);
@@ -76,6 +78,30 @@ describe('RoundManager', () => {
         it('should return the other player if not first round (player 2)', () => {
             roundManager['currentRound'] = {
                 player: DEFAULT_PLAYER_2,
+                startTime: new Date(),
+                limitTime: new Date(),
+            };
+
+            const player = roundManager['getNextPlayer']();
+
+            expect(player).to.equal(DEFAULT_PLAYER_3);
+        });
+
+        it('should return the other player if not first round (player 3)', () => {
+            roundManager['currentRound'] = {
+                player: DEFAULT_PLAYER_3,
+                startTime: new Date(),
+                limitTime: new Date(),
+            };
+
+            const player = roundManager['getNextPlayer']();
+
+            expect(player).to.equal(DEFAULT_PLAYER_4);
+        });
+
+        it('should return the other player if not first round (player 4)', () => {
+            roundManager['currentRound'] = {
+                player: DEFAULT_PLAYER_4,
                 startTime: new Date(),
                 limitTime: new Date(),
             };
