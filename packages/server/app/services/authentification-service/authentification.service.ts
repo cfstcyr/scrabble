@@ -66,7 +66,7 @@ export class AuthentificationService {
 
         try {
             token = this.generateAccessToken(idUser);
-        } catch (e) {
+        } catch {
             throw new HttpException(NO_VALIDATE);
         }
         const user = await this.getUserById(idUser);
