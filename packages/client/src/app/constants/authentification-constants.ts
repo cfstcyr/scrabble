@@ -13,3 +13,9 @@ export const matchValidator = (source: string, target: string): ValidatorFn => {
 };
 
 export const INVALID_CREDENTIALS = 'Identifiants invalides';
+export const INVALID_SIGNUP_INFORMATION = 'Certains champs sont invalides';
+export const LOGIN_ERROR = 'Erreur lors de la connexion';
+export const SIGNUP_ERROR = 'Erreur lors de la création du compte';
+
+export const CANNOT_VERIFY_EMAIL_UNICITY = 'Le courriel est déjà utilisé';
+export const CANNOT_VERIFY_USERNAME_UNICITY = 'Le pseudonyme est déjà utilisé';

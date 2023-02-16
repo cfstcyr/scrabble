@@ -4,4 +4,5 @@
     (sendMessage)="handleSendMessage($event)"
     (createChannel)="handleCreateChannel($event)"
     (quitChannel)="handleQuitChannel($event)"
+    *ngIf="ready | async"
 ></app-chatbox-container>
