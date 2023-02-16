@@ -76,7 +76,7 @@ export class ChatService {
         // TODO: Save message in DB
     }
 
-    private async createChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel | undefined> {
+    private async createChannel(channel: ChannelCreation, socket: ServerSocket): Promise<void> {
         if (!(await this.chatPersistenceService.isChannelNameAvailable(channel))) {
             throw new HttpException(ALREADY_EXISTING_CHANNEL_NAME, StatusCodes.FORBIDDEN);
         }
@@ -86,11 +86,9 @@ export class ChatService {
         socket.emit('channel:newChannel', newChannel);
 
         this.joinChannel(newChannel.idChannel, socket);
-
-        return newChannel;
     }
 
-    private async joinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<Channel | undefined> {
+    private async joinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
         const user: ServerUser = socket.data.user;
         const channel = await this.chatPersistenceService.getChannel(idChannel);
 
@@ -108,8 +106,6 @@ export class ChatService {
 
         socket.join(getSocketNameFromChannel(channel));
         socket.emit('channel:join', channel);
-
-        return channel;
     }
 
     private async quitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
