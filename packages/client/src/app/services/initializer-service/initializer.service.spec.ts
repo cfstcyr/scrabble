@@ -2,27 +2,35 @@
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ConnectionState, InitializeState } from '@app/classes/connection-state-service/connection-state';
-import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
-import SocketService from '@app/services/socket-service/socket.service';
-import { Socket } from 'socket.io-client';
+import { InitializeState } from '@app/classes/connection-state-service/connection-state';
+import { Subject } from 'rxjs';
+import { DatabaseService } from '@app/services/database-service/database.service';
 import { InitializerService } from './initializer.service';
+import { STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE } from '@app/constants/services-errors';
+import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import Delay from '@app/utils/delay/delay';
+import { TokenValidation } from '@app/classes/authentication/token-validation';
 
 describe('InitializerService', () => {
     let service: InitializerService;
-    let socketServiceMock: SocketService;
-    let socketHelper: SocketTestHelper;
+    let databaseService: jasmine.SpyObj<DatabaseService>;
+    let authenticationService: jasmine.SpyObj<AuthenticationService>;
 
     beforeEach(() => {
-        socketHelper = new SocketTestHelper();
-        socketServiceMock = new SocketService(jasmine.createSpyObj('AlertService', ['alert', 'error', 'warn', 'success', 'info']));
-        socketServiceMock['socket'] = socketHelper as unknown as Socket;
+        databaseService = jasmine.createSpyObj('DatabaseService', ['ping']);
+        authenticationService = jasmine.createSpyObj('AuthenticationService', ['validateToken', 'signOut']);
     });
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
-            providers: [InitializerService, { provide: SocketService, useValue: socketServiceMock }],
+            imports: [HttpClientTestingModule, RouterTestingModule, MatDialogModule],
+            providers: [
+                InitializerService,
+                { provide: DatabaseService, useValue: databaseService },
+                { provide: AuthenticationService, useValue: authenticationService },
+            ],
         });
         service = TestBed.inject(InitializerService);
     });
@@ -31,152 +39,84 @@ describe('InitializerService', () => {
         expect(service).toBeTruthy();
     });
 
-    describe('constructor', () => {
-        it('should call handleSocketUpdate on socket update', () => {
-            const spy = spyOn<any>(service, 'handleSocketUpdate');
-            service['socketService']['nextState'](ConnectionState.Loading);
-            expect(spy).toHaveBeenCalled();
-        });
-
-        it('should call handleDatabaseUpdate on db update', () => {
-            const spy = spyOn<any>(service, 'handleDatabaseUpdate');
-            service['databaseService']['nextState'](ConnectionState.Loading);
-            expect(spy).toHaveBeenCalled();
-        });
-    });
-
-    describe('ngOnDestroy', () => {
-        it('should call next and complete', () => {
-            const nextSpy = spyOn(service['destroyed$'], 'next');
-            const completeSpy = spyOn(service['destroyed$'], 'complete');
-
-            service.ngOnDestroy();
-
-            expect(nextSpy).toHaveBeenCalledOnceWith(true);
-            expect(completeSpy).toHaveBeenCalled();
-        });
-    });
-
     describe('initialize', () => {
-        it('should call socketService.initializeService', () => {
-            const spy = spyOn(service['socketService'], 'initializeService');
-            service.initialize();
-            expect(spy).toHaveBeenCalled();
-        });
-    });
+        it('should emit Ready on success', (done) => {
+            const validateSubject = new Subject<TokenValidation>();
+            const dbSubject = new Subject<void>();
 
-    describe('isStateError', () => {
-        it('should return true if is error', () => {
-            const errors = [InitializeState.DatabaseNotReachable, InitializeState.ServerNotReachable];
+            authenticationService.validateToken.and.returnValue(validateSubject);
 
-            for (const error of errors) {
-                service['state$'].next(error);
-                expect(service['isStateError']()).toBeTrue();
-            }
-        });
+            databaseService.ping.and.returnValue(dbSubject);
 
-        it('should return false if is not error', () => {
-            const states = [InitializeState.Ready, InitializeState.Loading];
-
-            for (const state of states) {
-                service['state$'].next(state);
-                expect(service['isStateError']()).toBeFalse();
-            }
-        });
-    });
-
-    describe('handleSocketUpdate', () => {
-        let checkDatabaseSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            checkDatabaseSpy = spyOn(service['databaseService'], 'checkDatabase');
-        });
-
-        it('should set state to loading and check database if connected', () => {
-            service['state$'].next(InitializeState.ServerNotReachable);
-
-            service['handleSocketUpdate'](ConnectionState.Connected);
-
-            expect(checkDatabaseSpy).toHaveBeenCalled();
-            expect(service['state$'].value).toEqual(InitializeState.Loading);
-        });
-
-        it('should not set state to loading and check database if connected if state is ready', () => {
-            service['state$'].next(InitializeState.Ready);
-
-            service['handleSocketUpdate'](ConnectionState.Connected);
-
-            expect(checkDatabaseSpy).not.toHaveBeenCalled();
-            expect(service['state$'].value).toEqual(InitializeState.Ready);
-        });
-
-        it('should set state to ServerNotReachable if error', () => {
-            service['state$'].next(InitializeState.Ready);
-
-            service['handleSocketUpdate'](ConnectionState.Error);
-
-            expect(checkDatabaseSpy).not.toHaveBeenCalled();
-            expect(service['state$'].value).toEqual(InitializeState.ServerNotReachable);
-        });
-    });
-
-    describe('handleDatabaseUpdate', () => {
-        let canSwitchToReadyFromDatabaseUpdateSpy: jasmine.Spy;
-        let isStateError: jasmine.Spy;
-
-        beforeEach(() => {
-            canSwitchToReadyFromDatabaseUpdateSpy = spyOn<any>(service, 'canSwitchToReadyFromDatabaseUpdate').and.returnValue(true);
-            isStateError = spyOn<any>(service, 'isStateError').and.returnValue(false);
-        });
-
-        it('should set state to ready if connected and canSwitchToReadyFromDatabaseUpdate', () => {
-            service['state$'].next(InitializeState.Loading);
-
-            service['handleDatabaseUpdate'](ConnectionState.Connected);
-
-            expect(service['state$'].value).toEqual(InitializeState.Ready);
-        });
-
-        it('should not set state to ready if connected and not canSwitchToReadyFromDatabaseUpdate', () => {
-            service['state$'].next(InitializeState.Loading);
-            canSwitchToReadyFromDatabaseUpdateSpy.and.returnValue(false);
-
-            service['handleDatabaseUpdate'](ConnectionState.Connected);
-
-            expect(service['state$'].value).toEqual(InitializeState.Loading);
-        });
-
-        it('should set state to DatabaseNotReachable if error', () => {
-            service['state$'].next(InitializeState.Loading);
-
-            service['handleDatabaseUpdate'](ConnectionState.Error);
-
-            expect(service['state$'].value).toEqual(InitializeState.DatabaseNotReachable);
-        });
-
-        it('should not set state to DatabaseNotReachable if error is already an error', () => {
-            service['state$'].next(InitializeState.Loading);
-            isStateError.and.returnValue(true);
-
-            service['handleDatabaseUpdate'](ConnectionState.Error);
-
-            expect(service['state$'].value).toEqual(InitializeState.Loading);
-        });
-    });
-
-    describe('canSwitchToReadyFromDatabaseUpdate', () => {
-        const tests: [state: InitializeState, expected: boolean][] = [
-            [InitializeState.DatabaseNotReachable, true],
-            [InitializeState.Loading, true],
-            [InitializeState.Ready, false],
-            [InitializeState.ServerNotReachable, false],
-        ];
-
-        for (const [state, expected] of tests) {
-            it(`should return ${expected} if ${state}`, () => {
-                service['state$'].next(state);
-                expect(service['canSwitchToReadyFromDatabaseUpdate']()).toEqual(expected);
+            service.state.subscribe((state) => {
+                if (state.state === InitializeState.Ready) {
+                    expect(true).toBeTrue();
+                    done();
+                }
             });
-        }
+
+            service.initialize();
+
+            (async () => {
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                await Delay.for(10);
+                dbSubject.next();
+
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                await Delay.for(10);
+                validateSubject.next(TokenValidation.Ok);
+                validateSubject.complete();
+            })();
+        });
+
+        it('should emit Trying DB on DB error', (done) => {
+            const dbSubject = new Subject<void>();
+
+            databaseService.ping.and.returnValue(dbSubject);
+
+            service.state.subscribe((state) => {
+                if (state.state === InitializeState.Trying && state.message === STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE) {
+                    expect(true).toBeTrue();
+                    done();
+                }
+            });
+
+            service.initialize();
+
+            setTimeout(() => {
+                dbSubject.error('error');
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            }, 40);
+        });
+
+        it('should handle invalid connection on already connected', (done) => {
+            const dialog = TestBed.inject(MatDialog);
+            const spy = spyOn(dialog, 'open');
+            const validateSubject = new Subject<TokenValidation>();
+            const dbSubject = new Subject<void>();
+
+            authenticationService.validateToken.and.returnValue(validateSubject);
+
+            databaseService.ping.and.returnValue(dbSubject);
+
+            service.initialize();
+
+            (async () => {
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                await Delay.for(10);
+                dbSubject.next();
+
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                await Delay.for(10);
+                validateSubject.next(TokenValidation.AlreadyConnected);
+                validateSubject.complete();
+
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                await Delay.for(10);
+
+                expect(spy).toHaveBeenCalled();
+                done();
+            })();
+        });
     });
 });

@@ -1,12 +1,29 @@
 <mat-card class="header">
     <div class="content">
-        <div class="back-btn" [routerLink]="'/'">
-            <app-icon icon="arrow-left" styling="solid"></app-icon>
-            <img src="https://bit.ly/3m206ss" />
+        <div class="left">
+            <button *ngIf="!hideBackButton" class="back-btn" [routerLink]="'/'">
+                <app-icon icon="arrow-left" styling="solid"></app-icon>
+                <img src="https://bit.ly/3m206ss" />
+            </button>
         </div>
-    
-        <div class="title">{{ title }}</div>
 
-        <a [routerLink]="buttonRoute" class="link">{{ button }}</a>
+        <div class="title">
+            {{ title }}
+            <ng-content select="[header-title]"></ng-content>
+        </div>
+
+        <div class="right">
+            <ng-content select="[header-button]"></ng-content>
+            <app-header-btn *ngIf="user | async" [matMenuTriggerFor]="userMenu">
+                <div class="user-container">
+                    <p class="username">{{ getUsername() | async }}</p>
+                    <img src="{{ getAvatar() | async }}" class="avatar">
+                </div>
+            </app-header-btn>
+
+            <mat-menu #userMenu="matMenu">
+                <button mat-menu-item (click)="signOut()">Se déconnecter</button>
+            </mat-menu>
+        </div>
     </div>
 </mat-card>

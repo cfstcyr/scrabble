@@ -1,69 +1,103 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import SocketService from '@app/services/socket-service/socket.service';
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, of, Observable } from 'rxjs';
 import { DatabaseService } from '@app/services/database-service/database.service';
-import { ConnectionState, InitializeState } from '@app/classes/connection-state-service/connection-state';
-import { DEFAULT_STATE_VALUE } from '@app/constants/services-errors';
+import { AppState, InitializeState } from '@app/classes/connection-state-service/connection-state';
+import {
+    INVALID_CONNECTION_CONTENT,
+    INVALID_CONNECTION_RETURN,
+    INVALID_CONNECTION_TITLE,
+    RECONNECTION_DELAY,
+    RECONNECTION_RETRIES,
+    STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE,
+    STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE_TRY_AGAIN,
+    STATE_LOADING_MESSAGE,
+} from '@app/constants/services-errors';
+import { catchError, delay, map, retryWhen, take } from 'rxjs/operators';
+import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { TokenValidation } from '@app/classes/authentication/token-validation';
+import { ROUTE_LOGIN } from '@app/constants/routes-constants';
 
 @Injectable({
     providedIn: 'root',
 })
-export class InitializerService implements OnDestroy {
-    private state$: BehaviorSubject<InitializeState>;
-    private destroyed$: Subject<boolean>;
+export class InitializerService {
+    state: BehaviorSubject<AppState>;
 
-    constructor(private readonly socketService: SocketService, private readonly databaseService: DatabaseService) {
-        this.state$ = new BehaviorSubject(DEFAULT_STATE_VALUE);
-        this.destroyed$ = new Subject();
-
-        this.socketService.subscribe(this.destroyed$, (state) => this.handleSocketUpdate(state));
-        this.databaseService.subscribe(this.destroyed$, (state) => this.handleDatabaseUpdate(state));
-    }
-
-    ngOnDestroy(): void {
-        this.destroyed$.next(true);
-        this.destroyed$.complete();
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly authenticationService: AuthenticationService,
+        private readonly router: Router,
+        private readonly dialog: MatDialog,
+    ) {
+        this.state = new BehaviorSubject<AppState>({
+            state: InitializeState.Loading,
+            message: STATE_LOADING_MESSAGE,
+        });
     }
 
     initialize(): void {
-        this.socketService.initializeService();
+        (async () => {
+            const connectedToDatabase = await this.pingDatabase().toPromise();
+
+            if (!connectedToDatabase) {
+                this.state.next({
+                    state: InitializeState.Error,
+                    message: STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE_TRY_AGAIN,
+                });
+
+                return;
+            }
+
+            const validation = await this.authenticationService.validateToken().toPromise();
+
+            if (validation === TokenValidation.AlreadyConnected) {
+                this.handleInvalidConnection();
+            } else {
+                // Force reactivate guard to redirect if needed
+                this.router.navigate([this.router.url], { queryParams: { redirect: true } });
+
+                this.state.next({ state: InitializeState.Ready });
+            }
+        })();
     }
 
-    subscribe(destroy$: Observable<boolean>, next: (state: InitializeState) => void): Subscription {
-        return this.state$.pipe(takeUntil(destroy$)).subscribe(next);
+    private pingDatabase(): Observable<boolean> {
+        return this.databaseService.ping().pipe(
+            retryWhen((errors) => {
+                this.state.next({
+                    state: InitializeState.Trying,
+                    message: STATE_ERROR_DATABASE_NOT_CONNECTED_MESSAGE,
+                });
+                return errors.pipe(delay(RECONNECTION_DELAY), take(RECONNECTION_RETRIES));
+            }),
+            map(() => true),
+            catchError(() => of(false)),
+            take(1),
+        );
     }
 
-    private isStateError(): boolean {
-        return [InitializeState.DatabaseNotReachable, InitializeState.ServerNotReachable].includes(this.state$.value);
-    }
-
-    private handleSocketUpdate(state: ConnectionState): void {
-        switch (state) {
-            case ConnectionState.Connected:
-                if (this.state$.value !== InitializeState.Ready) {
-                    this.state$.next(InitializeState.Loading);
-                    this.databaseService.checkDatabase();
-                }
-                break;
-            case ConnectionState.Error:
-                this.state$.next(InitializeState.ServerNotReachable);
-                break;
-        }
-    }
-
-    private handleDatabaseUpdate(state: ConnectionState): void {
-        switch (state) {
-            case ConnectionState.Connected:
-                if (this.canSwitchToReadyFromDatabaseUpdate()) this.state$.next(InitializeState.Ready);
-                break;
-            case ConnectionState.Error:
-                if (!this.isStateError()) this.state$.next(InitializeState.DatabaseNotReachable);
-                break;
-        }
-    }
-
-    private canSwitchToReadyFromDatabaseUpdate(): boolean {
-        return this.state$.value !== InitializeState.Ready && this.state$.value !== InitializeState.ServerNotReachable;
+    private handleInvalidConnection(): void {
+        this.dialog.open(DefaultDialogComponent, {
+            closeOnNavigation: true,
+            disableClose: true,
+            data: {
+                title: INVALID_CONNECTION_TITLE,
+                content: INVALID_CONNECTION_CONTENT,
+                buttons: [
+                    {
+                        content: INVALID_CONNECTION_RETURN,
+                        closeDialog: true,
+                        action: () => {
+                            this.authenticationService.signOut();
+                            this.router.navigate([ROUTE_LOGIN]);
+                            this.state.next({ state: InitializeState.Ready });
+                        },
+                    },
+                ],
+            },
+        });
     }
 }

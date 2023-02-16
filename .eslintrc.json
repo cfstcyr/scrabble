@@ -2,14 +2,7 @@
     "root": false,
     "extends": "eslint:recommended",
     "ignorePatterns": ["projects/**/*"],
-    "plugins": [
-        "deprecation",
-        "prettier",
-        "import",
-        "eslint-plugin-jsdoc",
-        "eslint-plugin-prefer-arrow",
-        "eslint-plugin-unicorn"
-    ],
+    "plugins": ["deprecation", "prettier", "import", "eslint-plugin-jsdoc", "eslint-plugin-prefer-arrow", "eslint-plugin-unicorn"],
     "overrides": [
         {
             "files": ["*.ts"],
@@ -114,7 +107,7 @@
                 "@typescript-eslint/no-magic-numbers": [
                     "error",
                     {
-                        "ignore": [0, 1, 2, 3],
+                        "ignore": [-1, 0, 1, 2, 3, 4],
                         "ignoreArrayIndexes": true,
                         "ignoreEnums": true
                     }

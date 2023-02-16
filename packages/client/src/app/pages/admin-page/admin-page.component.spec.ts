@@ -7,6 +7,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -68,6 +69,7 @@ describe('AdminPageComponent', () => {
                 MatSnackBarModule,
                 MatDialogModule,
                 MatDividerModule,
+                MatMenuModule,
             ],
             providers: [{ provide: HighScoresService, useValue: highScoreService }],
         }).compileComponents();

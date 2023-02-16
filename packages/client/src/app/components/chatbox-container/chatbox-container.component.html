@@ -40,7 +40,7 @@
                 <div class="chatbox-container__section">
                     <p class="chatbox-container__section__title">Mes canaux</p>
                     <div class="chatbox-container__my-channels__content">
-                        <div class="chatbox-container__my-channels__item" *ngFor="let channel of getChannelsForMenu()" >
+                        <div class="chatbox-container__my-channels__item" *ngFor="let channel of getChannelsForMenu() | async" >
                             <button
                                 [disabled]="!channel.canOpen"
                                 (click)="showChannel(channel)"

@@ -134,7 +134,6 @@ describe('SquareView', () => {
             'AbstractScoreMultiplier',
             {
                 getMultiplier: () => {
-                    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
                     return -1;
                 },
                 getMultiplierEffect: () => {
@@ -159,7 +158,6 @@ describe('SquareView', () => {
             'AbstractScoreMultiplier',
             {
                 getMultiplier: () => {
-                    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
                     return -1;
                 },
                 getMultiplierEffect: () => {

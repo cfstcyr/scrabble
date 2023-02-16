@@ -5,4 +5,5 @@
     (createChannel)="handleCreateChannel($event)"
     (joinChannel)="handleJoinChannel($event)"
     (quitChannel)="handleQuitChannel($event)"
+    *ngIf="ready | async"
 ></app-chatbox-container>

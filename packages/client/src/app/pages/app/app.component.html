@@ -1,12 +1,24 @@
-<ng-container [ngSwitch]="state">
-    <router-outlet *ngSwitchCase="states.Ready"></router-outlet>
+<ng-container [ngSwitch]="state | async">
+    <app-loading-page 
+        *ngSwitchCase="states.Loading"
+        [message]="(message | async) ?? undefined"
+        [isLoading]="true"
+    ></app-loading-page>
 
-    <app-loading-page *ngSwitchCase="states.Loading"></app-loading-page>
+    <app-loading-page
+        *ngSwitchCase="states.Error"
+        [message]="(message | async) ?? undefined"
+        [isError]="true"
+    ></app-loading-page>
 
-    <app-loading-page *ngSwitchCase="states.ServerNotReachable" [error]="state" [isTrying]="true"></app-loading-page>
+    <app-loading-page
+        *ngSwitchCase="states.Trying"
+        [message]="(message | async) ?? undefined"
+        [isTrying]="true"
+    ></app-loading-page>
 
-    <app-loading-page *ngSwitchDefault [error]="state"></app-loading-page>
-
-    <app-chatbox-wrapper *ngSwitchCase="states.Ready"></app-chatbox-wrapper>
+    <ng-container *ngSwitchCase="states.Ready">
+        <router-outlet></router-outlet>
+        <app-chatbox-wrapper *ngSwitchCase="states.Ready"></app-chatbox-wrapper>
+    </ng-container>
 </ng-container>
-
