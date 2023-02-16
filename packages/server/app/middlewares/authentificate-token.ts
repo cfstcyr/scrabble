@@ -1,5 +1,5 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { NO_TOKEN, TOKEN_IS_INVALID } from '@app/constants/controllers-errors';
+import { NO_TOKEN, TOKEN_INVALID } from '@app/constants/services-errors';
 import { env } from '@app/utils/environment/environment';
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -19,6 +19,6 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
         req.body = { ...req.body, idUser };
         next();
     } catch (error) {
-        next(new HttpException(TOKEN_IS_INVALID, StatusCodes.NOT_ACCEPTABLE));
+        next(new HttpException(TOKEN_INVALID, StatusCodes.NOT_ACCEPTABLE));
     }
 };

@@ -1,7 +1,6 @@
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { NO_TOKEN } from '@app/constants/controllers-errors';
-import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
+import { INVALID_ID_FOR_SOCKET, NO_TOKEN, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { env } from '@app/utils/environment/environment';
