@@ -1,8 +1,5 @@
 import { SOCKET_ID_IS_REQUIRED, USER_ID_IS_REQUIRED } from '@app/constants/controllers-errors';
-
-type UserId = number;
-type SocketId = string;
-
+import { SocketId, UserId } from './connected-user-types';
 export class ConnectedUser {
     private socketUserMap: Map<SocketId, UserId>;
     private userSocketMap: Map<UserId, SocketId>;
