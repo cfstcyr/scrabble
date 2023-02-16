@@ -71,8 +71,8 @@ describe('ConnectedUser', () => {
             expect(connectedUser.getSocketId(DEFAULT_USER_ID)).to.equal(DEFAULT_SOCKET_ID);
         });
 
-        it('it should return undefined if is not connected', () => {
-            expect(connectedUser.getSocketId(DEFAULT_USER_ID)).to.be.undefined;
+        it('it should throw if is not connected', () => {
+            expect(() => connectedUser.getSocketId(DEFAULT_USER_ID)).to.throw();
         });
     });
 
@@ -84,8 +84,8 @@ describe('ConnectedUser', () => {
             expect(connectedUser.getUserId(DEFAULT_USER_ID)).to.equal(DEFAULT_USER_ID);
         });
 
-        it('it should return undefined if is not connected', () => {
-            expect(connectedUser.getUserId(DEFAULT_SOCKET_ID)).to.be.undefined;
+        it('it should throw if is not connected', () => {
+            expect(() => connectedUser.getUserId(DEFAULT_SOCKET_ID)).to.throw();
         });
     });
 });
