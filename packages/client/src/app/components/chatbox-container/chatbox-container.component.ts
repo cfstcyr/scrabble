@@ -53,7 +53,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
             map<ClientChannel[], ViewClientChannel[]>((channels) =>
                 channels.map((channel) => ({
                     ...channel,
-                    canOpen: !this.openedChannels.find((c) => channel.id === c.id),
+                    canOpen: !this.openedChannels.find((c) => channel.idChannel === c.idChannel),
                 })),
             ),
         );

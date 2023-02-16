@@ -5,15 +5,15 @@ import { environment } from 'src/environments/environment';
 import { ClientSocket } from '@app/classes/communication/socket-type';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { authenticationSettings } from '@app/utils/settings';
-import { StatusError } from '@common/models/error';
 import { Observable, Subject } from 'rxjs';
 import { SocketErrorResponse } from '@common/models/error';
+
 @Injectable({
     providedIn: 'root',
 })
 export default class SocketService {
     socket: ClientSocket;
-    socketError: Subject<StatusError> = new Subject();
+    socketError: Subject<SocketErrorResponse> = new Subject();
     onConnect: Subject<ClientSocket> = new Subject();
     onDisconnect: Subject<void> = new Subject();
 
@@ -35,9 +35,9 @@ export default class SocketService {
         });
         this.socket.on('connect_error', () => isReady.next(false));
 
-        this.socket.on('error', (message: string, status: number) => {
-            this.socketError.next({ message, status });
-            this.alertService.error(message, { log: `Error ${status}: ${message}` });
+        this.socket.on('error', (error: SocketErrorResponse) => {
+            this.socketError.next(error);
+            this.alertService.error(error.message, { log: `Error ${error.status}: ${error.message}` });
         });
 
         return isReady.asObservable();

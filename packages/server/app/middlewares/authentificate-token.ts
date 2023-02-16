@@ -10,7 +10,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        return next(new HttpException(NO_TOKEN, StatusCodes.UNAUTHORIZED));
+        return next(new HttpException(NO_TOKEN, StatusCodes.NOT_ACCEPTABLE));
     }
 
     try {
@@ -19,6 +19,6 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
         req.body = { ...req.body, idUser };
         next();
     } catch (error) {
-        next(new HttpException(TOKEN_IS_INVALID, StatusCodes.UNAUTHORIZED));
+        next(new HttpException(TOKEN_IS_INVALID, StatusCodes.NOT_ACCEPTABLE));
     }
 };

@@ -15,7 +15,7 @@ import { TypeOfId } from '@common/types/id';
 export class ChatService {
     ready: Subject<boolean> = new Subject();
     joinedChannel: Subject<ClientChannel>;
-    channels: BehaviorSubject<Map<string, ClientChannel>>;
+    channels: BehaviorSubject<Map<TypeOfId<Channel>, ClientChannel>>;
 
     constructor(private readonly socketService: SocketService, private readonly userService: UserService) {
         this.channels = new BehaviorSubject(new Map());
@@ -69,27 +69,19 @@ export class ChatService {
 
     handleJoinChannel(channel: Channel): void {
         const newChannel = { ...channel, messages: [] };
-        this.channels.value.set(channel.name, newChannel);
+        this.channels.value.set(channel.idChannel, newChannel);
         this.channels.next(this.channels.value);
         this.joinedChannel.next(newChannel);
     }
 
     handleChannelQuit(channel: Channel): void {
-        this.channels.value.delete(channel.name);
+        this.channels.value.delete(channel.idChannel);
         this.channels.next(this.channels.value);
     }
 
     handleNewMessage(channelMessage: ChannelMessage): void {
         const message = channelMessage.message;
-        this.channels.value.get(channelMessage.channel.name)?.messages.push({ ...message, date: new Date(message.date) });
+        this.channels.value.get(channelMessage.idChannel)?.messages.push({ ...message, date: new Date(message.date) });
         this.channels.next(this.channels.value);
-    }
-
-    private getChannel(idChannel: TypeOfId<Channel>): ClientChannel {
-        const index = this.channels.findIndex((c) => idChannel === c.idChannel);
-
-        if (index < 0) throw new Error(`No channel with ID "${idChannel}"`);
-
-        return this.channels[index];
     }
 }

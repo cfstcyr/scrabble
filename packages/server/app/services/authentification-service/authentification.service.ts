@@ -4,10 +4,9 @@ import { TokenData } from '@app/classes/user/token-data';
 import { ALREADY_LOGGED, NO_LOGIN, NO_VALIDATE } from '@app/constants/controllers-errors';
 import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds';
 import { USER_TABLE } from '@app/constants/services-constants/database-const';
-import { NO_TOKEN, TOKEN_INVALID } from '@app/constants/services-errors';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
-import { PublicUser, UserDatabase, UserLoginCredentials, UserSession } from '@common/models/user';
+import { ServerUser, UserDatabase, UserLoginCredentials, UserSession } from '@common/models/user';
 import * as bcryptjs from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
@@ -86,11 +85,11 @@ export class AuthentificationService {
         });
     }
 
-    async getUserById(idUser: number): Promise<PublicUser> {
+    async getUserById(idUser: number): Promise<ServerUser> {
         return new Promise((resolve, reject) => {
             this.table
                 .where('idUser', idUser)
-                .select('username', 'email', 'avatar')
+                .select('username', 'email', 'avatar', 'idUser')
                 .then((data) => resolve(data[0]))
                 .catch((err) => reject(err));
         });

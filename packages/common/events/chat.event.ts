@@ -8,7 +8,7 @@ export interface ChatServerEvents {
     'channel:join': (channel: Channel) => void;
     'channel:quit': (channel: Channel) => void;
 }
-  
+
 export interface ChatClientEvents {
     'channel:newMessage': (message: ChannelMessage) => void;
     'channel:newChannel': (channel: ChannelCreation) => void;
@@ -16,4 +16,3 @@ export interface ChatClientEvents {
     'channel:quit': (idChannel: TypeOfId<Channel>) => void;
     'channel:init': () => void;
 }
-  
