@@ -13,7 +13,7 @@ export class ChatPersistenceService {
         return this.channelTable.select();
     }
 
-    async getChannel(idChannel: TypeOfId<Channel>): Promise<Channel> {
+    async getChannel(idChannel: TypeOfId<Channel>): Promise<Channel | undefined> {
         return (await this.channelTable.select('*').where({ idChannel }))[0];
     }
 
@@ -32,7 +32,7 @@ export class ChatPersistenceService {
     }
 
     async joinChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<void> {
-        if (await this.isUserInChannel(idChannel, idUser)) {
+        if (!(await this.isUserInChannel(idChannel, idUser))) {
             await this.userChatTable.insert({ idChannel, idUser });
         }
     }
@@ -44,29 +44,31 @@ export class ChatPersistenceService {
     async isChannelNameAvailable(channel: ChannelCreation): Promise<boolean> {
         if (channel.private) return true;
 
-        const [{ count }] = (await this.channelTable.count('* as count').where({ name: channel.name })) as unknown as { count: number | string }[];
+        const [{ count }] = (await this.channelTable.count('* as count').where({ name: channel.name, private: false })) as unknown as {
+            count: number | string;
+        }[];
 
         return count === 0 || count === '0';
     }
 
     async createDefaultChannels(channels: ChannelCreation[]): Promise<void> {
         for (const channel of channels) {
-            const found = await this.channelTable.select('idChannel', 'name').where(channel);
+            const found = await this.channelTable.select('idChannel', 'name', 'default').where({ name: channel.name, private: false });
             let insertNew = found.length === 0;
 
-            if (found.length > 0 && found[0].name !== channel.name) {
+            if (found.length > 0 && (found[0].name !== channel.name || !found[0].default)) {
                 await this.channelTable.delete().where({ idChannel: found[0].idChannel });
                 insertNew = true;
             }
 
             if (insertNew) {
-                await this.channelTable.insert(channel);
+                await this.channelTable.insert({ ...channel, default: true });
             }
         }
     }
 
     private async isUserInChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<boolean> {
-        return (await this.userChatTable.select('*').where({ idChannel, idUser })).length === 0;
+        return (await this.userChatTable.select('*').where({ idChannel, idUser })).length > 0;
     }
 
     private get channelTable() {
