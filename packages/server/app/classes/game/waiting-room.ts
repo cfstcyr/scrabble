@@ -1,6 +1,7 @@
 import Player from '@app/classes/player/player';
+import { GAME_ALREADY_FULL } from '@app/constants/classes-errors';
 import { StatusCodes } from 'http-status-codes';
-import { HttpException } from '../http-exception/http-exception';
+import { HttpException } from '@app/classes/http-exception/http-exception';
 import { GameConfig } from './game-config';
 import Room from './room';
 
@@ -33,6 +34,6 @@ export default class WaitingRoom extends Room {
             this.joinedPlayer4 = player;
             return;
         }
-        throw new HttpException('La partie est deja remplie', StatusCodes.FORBIDDEN);
+        throw new HttpException(GAME_ALREADY_FULL, StatusCodes.FORBIDDEN);
     }
 }

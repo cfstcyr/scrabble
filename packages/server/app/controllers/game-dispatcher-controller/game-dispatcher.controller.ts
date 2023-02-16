@@ -28,6 +28,7 @@ import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -293,24 +294,9 @@ export class GameDispatcherController extends BaseController {
 
         const newPlayerData: PlayerData = { id: playerId, newId: newPlayerId };
 
-        const playerNumber = game.getPlayerNumber(player);
-        let gameUpdateData: GameUpdateData;
-        switch (playerNumber) {
-            case 1: {
-                gameUpdateData = { player1: newPlayerData };
-                break;
-            }
-            case 2: {
-                gameUpdateData = { player2: newPlayerData };
-                break;
-            }
-            case 3: {
-                gameUpdateData = { player3: newPlayerData };
-                break;
-            }
-            default:
-                gameUpdateData = { player4: newPlayerData };
-        }
+        const gameUpdateData: GameUpdateData = {};
+        fillPlayerData(gameUpdateData, game.getPlayerNumber(player), newPlayerData);
+
         this.socketService.emitToRoomNoSender(gameId, newPlayerId, 'gameUpdate', gameUpdateData);
     }
 

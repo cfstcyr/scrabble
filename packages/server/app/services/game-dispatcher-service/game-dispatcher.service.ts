@@ -6,14 +6,7 @@ import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import { GOOD_LUCK_MESSAGE } from '@app/constants/game-constants';
-import {
-    CANNOT_HAVE_SAME_NAME,
-    // INVALID_PLAYER_ID_FOR_GAME,
-    NO_GAME_FOUND_WITH_ID,
-    // NO_OPPONENT_IN_WAITING_GAME,
-    // OPPONENT_NAME_DOES_NOT_MATCH,
-    // PLAYER_ALREADY_TRYING_TO_JOIN,
-} from '@app/constants/services-errors';
+import { CANNOT_HAVE_SAME_NAME, INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { CreateGameService } from '@app/services/create-game-service/create-game.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
@@ -99,9 +92,9 @@ export class GameDispatcherService {
     // eslint-disable-next-line no-unused-vars
     acceptJoinRequest(waitingRoomId: string, playerId: string, opponentName: string): ReadyGameConfig {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
-        // if (waitingRoom.getConfig().player1.id !== playerId) {
-        //     throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
-        // }
+        if (waitingRoom.getConfig().player1.id !== playerId) {
+            throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        }
         // else if (waitingRoom.joinedPlayer === undefined) {
         //     throw new HttpException(NO_OPPONENT_IN_WAITING_GAME, StatusCodes.BAD_REQUEST);
         // } else if (waitingRoom.joinedPlayer.name !== opponentName) {
@@ -166,9 +159,9 @@ export class GameDispatcherService {
     cancelGame(waitingRoomId: string, playerId: string): void {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
 
-        // if (waitingRoom.getConfig().player1.id !== playerId) {
-        //     throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
-        // }
+        if (waitingRoom.getConfig().player1.id !== playerId) {
+            throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        }
         this.dictionaryService.stopUsingDictionary(waitingRoom.getConfig().dictionary.id);
 
         const index = this.waitingRooms.indexOf(waitingRoom);
@@ -177,7 +170,7 @@ export class GameDispatcherService {
 
     getAvailableWaitingRooms(): LobbyData[] {
         const waitingRooms = this.waitingRooms.filter(
-            (g) => g.joinedPlayer2 === undefined || g.joinedPlayer3 === undefined || g.joinedPlayer4 === undefined,
+            (lobby) => lobby.joinedPlayer2 === undefined || lobby.joinedPlayer3 === undefined || lobby.joinedPlayer4 === undefined,
         );
         const lobbyData: LobbyData[] = [];
         for (const room of waitingRooms) {

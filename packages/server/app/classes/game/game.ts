@@ -27,10 +27,7 @@ import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { ReadyGameConfig, StartGameData } from './game-config';
 import { GameMode } from './game-mode';
 import { GameType } from './game-type';
-// TODO: Changer de place
-export const GAME_OVER_PASS_THRESHOLD = 6;
-export const WIN = 1;
-export const LOSE = -1;
+import { INVALID_LIST_LENGTH } from '@app/constants/classes-errors';
 
 export default class Game {
     private static boardService: BoardService;
@@ -165,7 +162,7 @@ export default class Game {
     }
 
     getPlayer(playerId: string): Player {
-        if (this.isPlayerFromGame(playerId)) {
+        if (this.isPlayerIdFromGame(playerId)) {
             switch (playerId) {
                 case this.player1.id:
                     return this.player1;
@@ -181,36 +178,36 @@ export default class Game {
     }
 
     getPlayerNumber(player: Player): number {
-        if (this.isPlayerFromGame(player)) {
-            switch (player) {
-                case this.player1:
-                    return 1;
-                case this.player2:
-                    return 2;
-                case this.player3:
-                    return 3;
-                default:
-                    return 4;
-            }
+        if (!this.isPlayerIdFromGame(player.id)) {
+            throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
-        throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        switch (player) {
+            case this.player1:
+                return 1;
+            case this.player2:
+                return 2;
+            case this.player3:
+                return 3;
+            default:
+                return 4;
+        }
     }
 
     getOpponentPlayers(player: string | Player): Player[] {
         const opponentPlayers: Player[] = [];
-
-        if (this.isPlayerFromGame(player)) {
-            if ((player instanceof Player && this.player1 !== player) || this.player1.id !== player) opponentPlayers.push(this.player1);
-            if ((player instanceof Player && this.player2 !== player) || this.player2.id !== player) opponentPlayers.push(this.player2);
-            if ((player instanceof Player && this.player3 !== player) || this.player3.id !== player) opponentPlayers.push(this.player3);
-            if ((player instanceof Player && this.player4 !== player) || this.player4.id !== player) opponentPlayers.push(this.player4);
-            return opponentPlayers;
+        const playerId = player instanceof Player ? player.id : player;
+        if (!this.isPlayerIdFromGame(playerId)) {
+            throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
-        throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        if (this.player1.id !== playerId) opponentPlayers.push(this.player1);
+        if (this.player2.id !== playerId) opponentPlayers.push(this.player2);
+        if (this.player3.id !== playerId) opponentPlayers.push(this.player3);
+        if (this.player4.id !== playerId) opponentPlayers.push(this.player4);
+        return opponentPlayers;
     }
 
     replacePlayer(playerId: string, newPlayer: Player): GameUpdateData {
-        if (!this.isPlayerFromGame(playerId)) throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        if (!this.isPlayerIdFromGame(playerId)) throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
 
         const updatedData: GameUpdateData = {};
         switch (playerId) {
@@ -241,17 +238,15 @@ export default class Game {
     }
 
     areGameOverConditionsMet(): boolean {
-        // TODO : refactor end of game conditions
         return (
             !this.player1.hasTilesLeft() ||
             !this.player2.hasTilesLeft() ||
             !this.player3.hasTilesLeft() ||
             !this.player4.hasTilesLeft() ||
-            this.roundManager.getPassCounter() >= GAME_OVER_PASS_THRESHOLD
+            this.roundManager.verifyIfGameOver()
         );
     }
 
-    // winnerName was if someone leave s to hard code the name of the other player left as a winner
     endOfGame(): number[] {
         this.gameIsOver = true;
 
@@ -275,10 +270,6 @@ export default class Game {
             return { message };
         });
     }
-
-    // isPlayer1(player: string | Player): boolean {
-    //     return player instanceof Player ? this.player1.id === player.id : this.player1.id === player;
-    // }
 
     createStartGameData(): StartGameData {
         const tileReserve: TileReserveData[] = [];
@@ -319,11 +310,10 @@ export default class Game {
     private computeEndOfGameScore(playerHasWon: boolean[], playerPointsToDeduct: number[]): number[] {
         const players = this.getPlayerArray();
         if (playerHasWon.length !== players.length || playerPointsToDeduct.length !== players.length)
-            // TODO: Change error message
-            throw new HttpException('incoherence dans la taille des listes', StatusCodes.FORBIDDEN);
+            throw new HttpException(INVALID_LIST_LENGTH, StatusCodes.FORBIDDEN);
 
         for (let i = 0; i < players.length; i++) {
-            if (playerHasWon[i] === true) {
+            if (playerHasWon[i]) {
                 for (let j = 0; j < players.length; j++) {
                     if (i !== j) {
                         players[i].score += playerPointsToDeduct[j];
@@ -353,11 +343,8 @@ export default class Game {
         });
     }
 
-    private isPlayerFromGame(player: string | Player): boolean {
-        if (player instanceof Player) {
-            return this.player1 === player || this.player2 === player || this.player3 === player || this.player4 === player;
-        }
-        return this.player1.id === player || this.player2.id === player || this.player3.id === player || this.player4.id === player;
+    private isPlayerIdFromGame(playerId: string): boolean {
+        return this.player1.id === playerId || this.player2.id === playerId || this.player3.id === playerId || this.player4.id === playerId;
     }
 
     private initializeObjectives(): void {

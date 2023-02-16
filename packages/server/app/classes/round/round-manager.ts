@@ -7,8 +7,9 @@ import Player from '@app/classes/player/player';
 import { INVALID_PLAYER_TO_REPLACE, NO_FIRST_ROUND_EXISTS } from '@app/constants/services-errors';
 import { Random } from '@app/utils/random/random';
 import { StatusCodes } from 'http-status-codes';
-import { AbstractVirtualPlayer } from '../virtual-player/abstract-virtual-player/abstract-virtual-player';
+import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { CompletedRound, Round } from './round';
+import { NUMBER_OF_PASSING_ROUNDS_TO_END_GAME, NUMBER_OF_PLAYERS_IN_GAME } from '@app/constants/classes-constants';
 
 const SECONDS_TO_MILLISECONDS = 1000;
 
@@ -20,7 +21,6 @@ export default class RoundManager {
     private currentRound: Round;
     private completedRounds: CompletedRound[];
     private maxRoundTime: number;
-    private passCounter: number;
 
     constructor(maxRoundTime: number, player1: Player, player2: Player, player3: Player, player4: Player) {
         this.maxRoundTime = maxRoundTime;
@@ -29,7 +29,6 @@ export default class RoundManager {
         this.player3 = player3;
         this.player4 = player4;
         this.completedRounds = [];
-        this.passCounter = 0;
     }
 
     convertRoundToRoundData(round: Round): RoundData {
@@ -78,10 +77,6 @@ export default class RoundManager {
         return this.maxRoundTime;
     }
 
-    getPassCounter(): number {
-        return this.passCounter;
-    }
-
     replacePlayer(oldPlayerId: string, newPlayer: Player): void {
         if (oldPlayerId === this.currentRound.player.id) this.currentRound.player = newPlayer;
 
@@ -107,24 +102,22 @@ export default class RoundManager {
         }
     }
 
-    private saveCompletedRound(round: Round, actionPlayed: Action): void {
-        const now = new Date();
-        this.passCounter = actionPlayed instanceof ActionPass ? this.passCounter + 1 : 0;
-        this.passCounter = actionPlayed instanceof ActionPass ? this.passCounter + 1 : 0;
+    verifyIfGameOver(): boolean {
+        if (this.completedRounds.length < NUMBER_OF_PASSING_ROUNDS_TO_END_GAME * NUMBER_OF_PLAYERS_IN_GAME) return false;
 
-        this.completedRounds.push({ ...round, completedTime: now, actionPlayed });
-    }
-
-    private verifyPasses(): boolean {
-        const NUMBER_OF_PLAYERS_IN_GAME = 4;
-        const NUMBER_OF_PASSING_ROUNDS_FOR_END_GAME = 2;
-        for (let i = 0; i < NUMBER_OF_PASSING_ROUNDS_FOR_END_GAME * NUMBER_OF_PLAYERS_IN_GAME; i++) {
+        for (let i = 0; i < NUMBER_OF_PASSING_ROUNDS_TO_END_GAME * NUMBER_OF_PLAYERS_IN_GAME; i++) {
             const round = this.completedRounds[this.completedRounds.length - 1 - i];
             if (round.player instanceof AbstractVirtualPlayer) continue;
-            if (round.actionPlayed instanceof ActionPass) continue;
-            return false;
+            if (!(round.actionPlayed instanceof ActionPass)) {
+                return false;
+            }
         }
         return true;
+    }
+
+    private saveCompletedRound(round: Round, actionPlayed: Action): void {
+        const now = new Date();
+        this.completedRounds.push({ ...round, completedTime: now, actionPlayed });
     }
 
     private getNextPlayer(): Player {

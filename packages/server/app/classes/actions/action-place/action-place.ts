@@ -16,6 +16,7 @@ import { ScoredWordPlacement, WordPlacement } from '@app/classes/word-finding';
 import { IN_UPPER_CASE } from '@app/constants/classes-constants';
 import { ScoreCalculatorService } from '@app/services/score-calculator-service/score-calculator.service';
 import { WordsVerificationService } from '@app/services/words-verification-service/words-verification.service';
+import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
 import { PlacementToString } from '@app/utils/placement-to-string/placement-to-string';
 import { StringConversion } from '@app/utils/string-conversion/string-conversion';
 import { StatusCodes } from 'http-status-codes';
@@ -88,24 +89,8 @@ export default class ActionPlace extends ActionPlay {
             gameObjective: objectiveUpdateResult ? objectiveUpdateResult.updateData : undefined,
         };
 
-        const playerNumber = this.game.getPlayerNumber(this.player);
+        fillPlayerData(response, this.game.getPlayerNumber(this.player), playerData);
 
-        switch (playerNumber) {
-            case 1: {
-                response.player1 = playerData;
-                break;
-            }
-            case 2: {
-                response.player2 = playerData;
-                break;
-            }
-            case 3: {
-                response.player3 = playerData;
-                break;
-            }
-            default:
-                response.player4 = playerData;
-        }
         return response;
     }
 
