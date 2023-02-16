@@ -23,6 +23,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DictionarySummary } from '@app/classes/communication/dictionary-summary';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
+import { HeaderBtnComponent } from '@app/components/header-btn/header-btn.component';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { NameFieldComponent } from '@app/components/name-field/name-field.component';
 import { PageHeaderComponent } from '@app/components/page-header/page-header.component';
@@ -108,6 +109,7 @@ describe('GameCreationPageComponent', () => {
                 PageHeaderComponent,
                 LoadingPageComponent,
                 TileComponent,
+                HeaderBtnComponent,
             ],
             imports: [
                 AppMaterialModule,

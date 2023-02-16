@@ -46,6 +46,6 @@ describe('authenticateToken', () => {
         sinon.stub(jwt, 'verify');
         req.headers.authorization = 'Bearer valid_token';
         authenticateToken(req, res, next);
-        expect(req.body).to.have.property('user');
+        expect(req.body).to.have.property('idUser');
     });
 });

@@ -1,5 +1,5 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { NO_LOGIN, NO_TOKEN } from '@app/constants/controllers-errors';
+import { NO_TOKEN, TOKEN_IS_INVALID } from '@app/constants/controllers-errors';
 import { env } from '@app/utils/environment/environment';
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -9,15 +9,16 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (token === undefined || token === null) {
+    if (!token) {
         return next(new HttpException(NO_TOKEN, StatusCodes.UNAUTHORIZED));
     }
 
     try {
-        const idUser = jwt.verify(token, env.TOKEN_SECRET);
-        req.body = { ...req.body, user: idUser };
+        const idUser = Number(jwt.verify(token, env.TOKEN_SECRET));
+
+        req.body = { ...req.body, idUser };
         next();
     } catch (error) {
-        next(new HttpException(NO_LOGIN, StatusCodes.UNAUTHORIZED));
+        next(new HttpException(TOKEN_IS_INVALID, StatusCodes.UNAUTHORIZED));
     }
 };

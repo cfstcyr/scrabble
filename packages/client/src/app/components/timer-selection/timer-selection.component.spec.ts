@@ -116,7 +116,6 @@ describe('TimerSelectionComponent', () => {
 
         it('changeTimerValue should not set timerValue below minimum value allowed', () => {
             component.timerValue = MINIMUM_TIMER_VALUE;
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             delta = -1;
             component['changeTimerValue'](delta);
             expect(component.timerValue).toEqual(MINIMUM_TIMER_VALUE);

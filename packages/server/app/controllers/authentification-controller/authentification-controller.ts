@@ -1,5 +1,5 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { NO_LOGIN, NO_SIGNUP, NO_VALIDATE } from '@app/constants/controllers-errors';
+import { NO_SIGNUP } from '@app/constants/controllers-errors';
 import { BaseController } from '@app/controllers/base-controller';
 import { authenticateToken } from '@app/middlewares/authentificate-token';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
@@ -17,25 +17,22 @@ export class AuthentificationController extends BaseController {
         router.post('/login', async (req, res, next) => {
             this.authentificationservice
                 .login(req.body)
-                .then((data) => res.send(data).status(StatusCodes.OK).end())
-                .catch(() => next(new HttpException(NO_LOGIN, StatusCodes.BAD_REQUEST)));
+                .then((session) => res.send(session).status(StatusCodes.OK).end())
+                .catch((e) => next(e));
         });
 
         router.post('/signUp', async (req, res, next) => {
             this.authentificationservice
                 .signUp(req.body)
-                .then((data) => res.send(data).status(StatusCodes.CREATED).end())
-                .catch(() => next(new HttpException(NO_SIGNUP, StatusCodes.FORBIDDEN)));
+                .then((session) => res.send(session).status(StatusCodes.CREATED).end())
+                .catch((e) => next(e));
         });
 
-        router.get('/validate', authenticateToken, async (req, res, next) => {
-            try {
-                const token = this.authentificationservice.generateAccessToken(req.body.user);
-                const user = await this.authentificationservice.getUserById(req.body.user);
-                res.send({ token, user }).status(StatusCodes.OK).end();
-            } catch {
-                next(new HttpException(NO_VALIDATE));
-            }
+        router.post('/validate', authenticateToken, async (req, res, next) => {
+            this.authentificationservice
+                .validate(req.body.idUser)
+                .then((session) => res.send(session).status(StatusCodes.CREATED).end())
+                .catch((e) => next(e));
         });
 
         router.post('/validateUsername', async (req, res, next) => {

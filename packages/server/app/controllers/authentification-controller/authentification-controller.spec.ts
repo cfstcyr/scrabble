@@ -63,7 +63,7 @@ describe('AuthentificationController', () => {
 
             it('should return 400 on failed login', async () => {
                 chai.spy.on(authentificationServiceStub, 'login', async () => {
-                    throw new HttpException('NOT FOUND', StatusCodes.NOT_FOUND);
+                    throw new HttpException('Error', StatusCodes.BAD_REQUEST);
                 });
                 return supertest(expressApp)
                     .post('/api/authentification/login')
@@ -86,7 +86,7 @@ describe('AuthentificationController', () => {
 
             it('should return 403 on failed signup', async () => {
                 chai.spy.on(authentificationServiceStub, 'signUp', async () => {
-                    throw new HttpException('NOT FOUND', StatusCodes.NOT_FOUND);
+                    throw new HttpException('FORBIDDEN', StatusCodes.FORBIDDEN);
                 });
                 return supertest(expressApp)
                     .post('/api/authentification/signUp')
@@ -96,7 +96,7 @@ describe('AuthentificationController', () => {
         });
         describe('POST /authentification/validate', () => {
             it('validate should return 401', async () => {
-                return supertest(expressApp).get('/api/authentification/validate').expect(StatusCodes.UNAUTHORIZED);
+                return supertest(expressApp).post('/api/authentification/validate').expect(StatusCodes.UNAUTHORIZED);
             });
 
             it('validateUsername should return 403', async () => {
