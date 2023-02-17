@@ -21,7 +21,7 @@ import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
 import { GameHistoryService } from '@app/services/game-history-service/game-history.service';
 import { GameHistoryWithPlayers } from '@common/models/game-history';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 import { AdminGameHistoryComponent } from './admin-game-history.component';
 
 describe('AdminGameHistoryComponent', () => {

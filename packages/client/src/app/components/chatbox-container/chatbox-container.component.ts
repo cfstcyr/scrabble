@@ -18,8 +18,8 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     @Input() joinedChannel: Observable<ClientChannel> = new Observable();
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
-    @Output() joinChannel: EventEmitter<string> = new EventEmitter();
-    @Output() quitChannel: EventEmitter<string> = new EventEmitter();
+    @Output() joinChannel: EventEmitter<Channel> = new EventEmitter();
+    @Output() quitChannel: EventEmitter<Channel> = new EventEmitter();
     @ViewChild('createChannelInput') createChannelInput: ElementRef<HTMLInputElement>;
     @ViewChild('joinChannelInput') joinChannelInput: ElementRef<HTMLInputElement>;
     createChannelForm: FormGroup;
@@ -33,9 +33,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
 
         this.createChannelForm = this.formBuilder.group({
             createChannel: new FormControl(''),
-        });
-        this.joinChannelForm = this.formBuilder.group({
-            joinChannel: new FormControl(''),
         });
     }
 
@@ -56,7 +53,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
             map<ClientChannel[], ViewClientChannel[]>((channels) =>
                 channels.map((channel) => ({
                     ...channel,
-                    canOpen: !this.openedChannels.find((c) => channel.id === c.id),
+                    canOpen: !this.openedChannels.find((c) => channel.idChannel === c.idChannel),
                 })),
             ),
         );
@@ -69,7 +66,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     }
 
     minimizeChannel(channel: ClientChannel): void {
-        const index = this.openedChannels.findIndex(({ id }) => channel.id === id);
+        const index = this.openedChannels.findIndex(({ idChannel }) => channel.idChannel === idChannel);
         if (index >= 0) this.openedChannels.splice(index, 1);
     }
 
@@ -102,19 +99,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
         this.createChannelInput?.nativeElement?.blur();
     }
 
-    handleJoinChannel(): void {
-        if (!this.joinChannelForm.valid) return;
-
-        const channelName = this.joinChannelForm.value.joinChannel.trim();
-
-        if (channelName.length === 0) return;
-
-        this.joinChannel.next(channelName);
-        this.joinChannelForm.reset();
-        this.joinChannelForm.setErrors({ joinChannel: false });
-        this.joinChannelInput?.nativeElement?.blur();
-    }
-
     handleQuitChannel(channel: ClientChannel): void {
         this.dialog.open(DefaultDialogComponent, {
             data: {
@@ -130,7 +114,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                         closeDialog: true,
                         action: () => {
                             this.minimizeChannel(channel);
-                            this.quitChannel.emit(channel.name);
+                            this.quitChannel.emit(channel);
                         },
                     },
                 ],

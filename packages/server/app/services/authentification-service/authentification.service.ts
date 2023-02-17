@@ -3,9 +3,11 @@ import { ConnectedUser } from '@app/classes/user/connected-user';
 import { TokenData } from '@app/classes/user/token-data';
 import { ALREADY_LOGGED, NO_LOGIN, NO_VALIDATE } from '@app/constants/controllers-errors';
 import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds';
+import { USER_TABLE } from '@app/constants/services-constants/database-const';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
-import { PublicUser, UserDatabase, UserLoginCredentials, UserSession } from '@common/models/user';
+import { ServerUser, User, UserDatabase, UserLoginCredentials, UserSession } from '@common/models/user';
+import { TypeOfId } from '@common/types/id';
 import * as bcryptjs from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
@@ -20,7 +22,7 @@ export class AuthentificationService {
         this.connectedUsers = new ConnectedUser();
     }
 
-    generateAccessToken = (idUser: number): string => {
+    generateAccessToken = (idUser: TypeOfId<User>): string => {
         return jwt.sign(idUser.toString(), env.TOKEN_SECRET);
     };
 
@@ -59,7 +61,7 @@ export class AuthentificationService {
         return { token, user: { email: user.email, username: user.username, avatar: user.avatar } };
     }
 
-    async validate(idUser: number): Promise<UserSession> {
+    async validate(idUser: TypeOfId<User>): Promise<UserSession> {
         if (this.connectedUsers.isConnected(idUser)) throw new HttpException(ALREADY_LOGGED, StatusCodes.UNAUTHORIZED);
 
         let token;
@@ -84,11 +86,11 @@ export class AuthentificationService {
         });
     }
 
-    async getUserById(idUser: number): Promise<PublicUser> {
+    async getUserById(idUser: TypeOfId<User>): Promise<ServerUser> {
         return new Promise((resolve, reject) => {
             this.table
                 .where('idUser', idUser)
-                .select('username', 'email', 'avatar')
+                .select('username', 'email', 'avatar', 'idUser')
                 .then((data) => resolve(data[0]))
                 .catch((err) => reject(err));
         });
@@ -125,6 +127,6 @@ export class AuthentificationService {
     }
 
     private get table() {
-        return this.databaseService.knex<UserDatabase>('User');
+        return this.databaseService.knex<UserDatabase>(USER_TABLE);
     }
 }

@@ -4,7 +4,7 @@ import { ServicesTestingUnit } from '@app/services/service-testing-unit/services
 import GameHistoriesService from './game-history.service';
 import { Container } from 'typedi';
 import { GameHistoryPlayer, NoIdGameHistoryWithPlayers } from '@common/models/game-history';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 
 const DEFAULT_PLAYER_1: NoId<GameHistoryPlayer, 'playerIndex'> = {
     name: 'p1',

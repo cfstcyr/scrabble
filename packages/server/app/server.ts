@@ -25,7 +25,7 @@ export class Server {
     }
 
     async setupDatabase(): Promise<void> {
-        return this.application.setupDatabase();
+        return this.application.setupServices();
     }
 
     init(): void {
