@@ -5,7 +5,7 @@ import { PlayerName } from '@app/classes/communication/player-name';
 import { StartGameData } from '@app/classes/game/game-config';
 import { NoIdGameHistoryWithPlayers } from '@common/models/game-history';
 import { HighScoreWithPlayers } from '@common/models/high-score';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 
 export type SocketEmitEvents =
     | 'gameUpdate'

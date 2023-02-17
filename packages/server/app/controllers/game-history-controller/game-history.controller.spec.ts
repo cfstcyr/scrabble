@@ -9,7 +9,7 @@ import { GameHistoriesController } from '@app/controllers/game-history-controlle
 import GameHistoriesService from '@app/services/game-history-service/game-history.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { GameHistoryPlayer, NoIdGameHistoryWithPlayers } from '@common/models/game-history';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';

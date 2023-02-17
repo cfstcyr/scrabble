@@ -1,8 +1,8 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { Action, ActionExchange, ActionPass } from '@app/classes/actions';
-import ActionHint from '@app/classes/actions/action-hint/action-hint';
+import { Action, ActionPass, ActionPlace } from '@app/classes/actions';
 import Game from '@app/classes/game/game';
 import Player from '@app/classes/player/player';
 import { INVALID_PLAYER_TO_REPLACE, NO_FIRST_ROUND_EXISTS } from '@app/constants/services-errors';
@@ -11,6 +11,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
 import * as sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import { CompletedRound, Round } from './round';
 import RoundManager from './round-manager';
 
@@ -23,6 +24,9 @@ const MAX_TRIES = 100;
 const DEFAULT_MAX_ROUND_TIME = 1;
 const DEFAULT_PLAYER_1 = new Player('player-1', 'Player 1');
 const DEFAULT_PLAYER_2 = new Player('player-2', 'Player 2');
+const DEFAULT_PLAYER_3 = new Player('player-3', 'Player 3');
+const DEFAULT_PLAYER_4 = new Player('player-4', 'Player 4');
+const VIRTUAL_PLAYER_1 = new BeginnerVirtualPlayer('player-5', 'Player 5');
 const NEW_PLAYER = { id: 'newplayer-1', name: 'newplayer 1' };
 
 describe('RoundManager', () => {
@@ -32,7 +36,7 @@ describe('RoundManager', () => {
     let gameStub: SinonStubbedInstance<Game>;
 
     beforeEach(() => {
-        roundManager = new RoundManager(DEFAULT_MAX_ROUND_TIME, DEFAULT_PLAYER_1, DEFAULT_PLAYER_2);
+        roundManager = new RoundManager(DEFAULT_MAX_ROUND_TIME, DEFAULT_PLAYER_1, DEFAULT_PLAYER_2, DEFAULT_PLAYER_3, DEFAULT_PLAYER_4);
         actionStub = createStubInstance(ActionPass);
         action = actionStub as unknown as Action;
         gameStub = createStubInstance(Game);
@@ -82,6 +86,30 @@ describe('RoundManager', () => {
 
             const player = roundManager['getNextPlayer']();
 
+            expect(player).to.equal(DEFAULT_PLAYER_3);
+        });
+
+        it('should return the other player if not first round (player 3)', () => {
+            roundManager['currentRound'] = {
+                player: DEFAULT_PLAYER_3,
+                startTime: new Date(),
+                limitTime: new Date(),
+            };
+
+            const player = roundManager['getNextPlayer']();
+
+            expect(player).to.equal(DEFAULT_PLAYER_4);
+        });
+
+        it('should return the other player if not first round (player 4)', () => {
+            roundManager['currentRound'] = {
+                player: DEFAULT_PLAYER_4,
+                startTime: new Date(),
+                limitTime: new Date(),
+            };
+
+            const player = roundManager['getNextPlayer']();
+
             expect(player).to.equal(DEFAULT_PLAYER_1);
         });
     });
@@ -103,14 +131,6 @@ describe('RoundManager', () => {
             roundManager.nextRound(action);
 
             expect(spy).to.have.been.called();
-        });
-    });
-
-    describe('getPassCounter', () => {
-        it('should return passCounter', () => {
-            const expected = 8008135;
-            roundManager['passCounter'] = expected;
-            expect(roundManager.getPassCounter()).to.equal(expected);
         });
     });
 
@@ -145,7 +165,7 @@ describe('RoundManager', () => {
     });
 
     describe('getMaxRoundTime', () => {
-        it('should return passCounter', () => {
+        it('should return maxRoundTime', () => {
             const expected = 8008135;
             roundManager['maxRoundTime'] = expected;
             expect(roundManager.getMaxRoundTime()).to.equal(expected);
@@ -154,38 +174,11 @@ describe('RoundManager', () => {
 
     describe('saveCompletedRound', () => {
         it('should increment counter when action played is ActionPass', () => {
-            const initial = 0;
-            roundManager['passCounter'] = initial;
+            expect(roundManager['completedRounds'].length).to.equal(0);
             const round: Round = { player: DEFAULT_PLAYER_1, startTime: new Date(), limitTime: new Date() };
             const actionPlayed: Action = new ActionPass(round.player, gameStub as unknown as Game);
             roundManager['saveCompletedRound'](round, actionPlayed);
-
-            expect(roundManager.getPassCounter()).to.equal(initial + 1);
-        });
-        it('should not increment counter when action played is not ActionPass', () => {
-            const initial = 0;
-            roundManager['passCounter'] = initial;
-            const round: Round = { player: DEFAULT_PLAYER_1, startTime: new Date(), limitTime: new Date() };
-            const actionPlayed: Action = new ActionHint(round.player, gameStub as unknown as Game);
-            roundManager['saveCompletedRound'](round, actionPlayed);
-
-            expect(roundManager.getPassCounter()).to.equal(initial);
-        });
-
-        it('should reset to 0 if play something other than ActionPass', () => {
-            const initial = 0;
-            roundManager['passCounter'] = initial;
-            const round: Round = { player: DEFAULT_PLAYER_1, startTime: new Date(), limitTime: new Date() };
-
-            const actionPass: Action = new ActionPass(round.player, gameStub as unknown as Game);
-            roundManager['saveCompletedRound'](round, actionPass);
-
-            expect(roundManager.getPassCounter()).to.equal(initial + 1);
-
-            const actionExchange: Action = new ActionExchange(round.player, gameStub as unknown as Game, []);
-            roundManager['saveCompletedRound'](round, actionExchange);
-
-            expect(roundManager.getPassCounter()).to.equal(0);
+            expect(roundManager['completedRounds'].length).to.equal(1);
         });
     });
 
@@ -225,10 +218,14 @@ describe('RoundManager', () => {
     describe('replacePlayer', () => {
         let player1: Player;
         let player2: Player;
+        let player3: Player;
+        let player4: Player;
         let newPlayer: Player;
         beforeEach(() => {
             player1 = new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.name);
             player2 = new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.name);
+            player3 = new Player(DEFAULT_PLAYER_3.id, DEFAULT_PLAYER_3.name);
+            player4 = new Player(DEFAULT_PLAYER_4.id, DEFAULT_PLAYER_4.name);
             newPlayer = new Player(NEW_PLAYER.id, NEW_PLAYER.name);
 
             const round: Round = {
@@ -239,6 +236,8 @@ describe('RoundManager', () => {
             roundManager['currentRound'] = round;
             roundManager['player1'] = player1;
             roundManager['player2'] = player2;
+            roundManager['player3'] = player3;
+            roundManager['player4'] = player4;
         });
 
         it('should replace the player in the current round', () => {
@@ -256,11 +255,85 @@ describe('RoundManager', () => {
             expect(roundManager['player2']).to.equal(newPlayer);
         });
 
+        it('should replace the correct player (player4) in the round manager', () => {
+            roundManager.replacePlayer(DEFAULT_PLAYER_3.id, newPlayer);
+            expect(roundManager['player3']).to.equal(newPlayer);
+        });
+
+        it('should replace the correct player (player4) in the round manager', () => {
+            roundManager.replacePlayer(DEFAULT_PLAYER_4.id, newPlayer);
+            expect(roundManager['player4']).to.equal(newPlayer);
+        });
+
         it('should throw if it is an invalid id', () => {
             const result = () => {
                 roundManager.replacePlayer('badId', newPlayer);
             };
             expect(result).to.throw(INVALID_PLAYER_TO_REPLACE);
+        });
+    });
+
+    describe('verifyIfGameOver', () => {
+        const PASS_PLAYER1_ROUND: CompletedRound = {
+            player: DEFAULT_PLAYER_1,
+            actionPlayed: new ActionPass(DEFAULT_PLAYER_1, {} as unknown as Game),
+        } as unknown as CompletedRound;
+        const PLAY_PLAYER1_ROUND: CompletedRound = {
+            player: DEFAULT_PLAYER_1,
+            actionPlayed: {} as unknown as ActionPlace,
+        } as unknown as CompletedRound;
+        const PLAY_VIRTUAL1_ROUND: CompletedRound = {
+            player: VIRTUAL_PLAYER_1,
+            actionPlayed: {} as unknown as ActionPlace,
+        } as unknown as CompletedRound;
+
+        it('should return false if completedRounds has a length of less that 8', () => {
+            roundManager['completedRounds'] = [PASS_PLAYER1_ROUND, PASS_PLAYER1_ROUND, PASS_PLAYER1_ROUND];
+            expect(roundManager.verifyIfGameOver()).to.be.false;
+
+            roundManager['completedRounds'] = [
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+            ];
+            expect(roundManager.verifyIfGameOver()).to.be.false;
+        });
+
+        it('should return false if completedRounds has a real player that played in the last 8 rounds', () => {
+            roundManager['completedRounds'] = [
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PLAY_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+            ];
+            expect(roundManager.verifyIfGameOver()).to.be.false;
+        });
+
+        it('should return true if completedRounds only has a virtual player that played in the last 8 rounds', () => {
+            roundManager['completedRounds'] = [
+                PLAY_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PLAY_VIRTUAL1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+                PASS_PLAYER1_ROUND,
+            ];
+            expect(roundManager.verifyIfGameOver()).to.be.true;
         });
     });
 });

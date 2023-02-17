@@ -1,8 +1,8 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { env } from '@app/utils/environment/environment';
+import { ErrorResponse } from '@common/models/error';
 import * as express from 'express';
 import { getReasonPhrase, StatusCodes } from 'http-status-codes';
-import { ErrorResponse } from '@common/models/error';
 
 // eslint-disable-next-line no-unused-vars
 export const errorHandler = (error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -8,7 +8,7 @@ import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-he
 import { GameType } from '@app/constants/game-type';
 import SocketService from '@app/services/socket-service/socket.service';
 import { HighScoreWithPlayers } from '@common/models/high-score';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 import { of, Subject } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';

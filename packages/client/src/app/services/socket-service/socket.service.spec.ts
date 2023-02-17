@@ -9,6 +9,7 @@ import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-he
 import { SOCKET_ID_UNDEFINED } from '@app/constants/services-errors';
 import { SocketService } from '@app/services/';
 import { AlertService } from '@app/services/alert-service/alert.service';
+import { SocketErrorResponse } from '@common/models/error';
 
 describe('SocketService', () => {
     let service: SocketService;
@@ -57,7 +58,8 @@ describe('SocketService', () => {
             });
             service.connectSocket().subscribe();
 
-            socket.peerSideEmit('error');
+            const error: SocketErrorResponse = { error: '', message: '', status: 0 };
+            socket.peerSideEmit('error', error);
         });
     });
 

@@ -14,7 +14,7 @@ export class AlertService {
         const alert: Alert = { type, content, ...options };
         this.snackBar.openFromComponent(AlertComponent, {
             data: alert,
-            duration: 2000,
+            duration: 5000,
             panelClass: `alert--${type}`,
         });
         this.log(alert);

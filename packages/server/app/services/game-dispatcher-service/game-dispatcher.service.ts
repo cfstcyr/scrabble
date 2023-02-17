@@ -4,15 +4,9 @@ import Room from '@app/classes/game/room';
 import WaitingRoom from '@app/classes/game/waiting-room';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
+import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import { GOOD_LUCK_MESSAGE } from '@app/constants/game-constants';
-import {
-    CANNOT_HAVE_SAME_NAME,
-    INVALID_PLAYER_ID_FOR_GAME,
-    NO_GAME_FOUND_WITH_ID,
-    NO_OPPONENT_IN_WAITING_GAME,
-    OPPONENT_NAME_DOES_NOT_MATCH,
-    PLAYER_ALREADY_TRYING_TO_JOIN,
-} from '@app/constants/services-errors';
+import { CANNOT_HAVE_SAME_NAME, INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { CreateGameService } from '@app/services/create-game-service/create-game.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
@@ -41,6 +35,11 @@ export class GameDispatcherService {
 
     getLobbiesRoom(): Room {
         return this.lobbiesRoom;
+    }
+
+    // TODO: Remove this. Currently a hack to debug 4player
+    getVirtualPlayerService(): VirtualPlayerService {
+        return this.virtualPlayerService;
     }
 
     async createSoloGame(config: GameConfigData): Promise<void> {
@@ -77,68 +76,86 @@ export class GameDispatcherService {
 
     requestJoinGame(waitingRoomId: string, playerId: string, playerName: string): GameConfig {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
-        if (waitingRoom.joinedPlayer !== undefined) {
-            throw new HttpException(PLAYER_ALREADY_TRYING_TO_JOIN, StatusCodes.FORBIDDEN);
-        }
+        // TODO: See if we want to keep this
+        // if (waitingRoom.joinedPlayer !== undefined) {
+        //     throw new HttpException(PLAYER_ALREADY_TRYING_TO_JOIN, StatusCodes.FORBIDDEN);
+        // }
         if (waitingRoom.getConfig().player1.name === playerName) {
             throw new HttpException(CANNOT_HAVE_SAME_NAME, StatusCodes.FORBIDDEN);
         }
 
-        waitingRoom.joinedPlayer = new Player(playerId, playerName);
+        waitingRoom.fillNextEmptySpot(new Player(playerId, playerName));
         return waitingRoom.getConfig();
     }
 
+    // TODO : Refactor for 4 players
+    // eslint-disable-next-line no-unused-vars
     acceptJoinRequest(waitingRoomId: string, playerId: string, opponentName: string): ReadyGameConfig {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
-        } else if (waitingRoom.joinedPlayer === undefined) {
-            throw new HttpException(NO_OPPONENT_IN_WAITING_GAME, StatusCodes.BAD_REQUEST);
-        } else if (waitingRoom.joinedPlayer.name !== opponentName) {
-            throw new HttpException(OPPONENT_NAME_DOES_NOT_MATCH, StatusCodes.BAD_REQUEST);
         }
+        // else if (waitingRoom.joinedPlayer === undefined) {
+        //     throw new HttpException(NO_OPPONENT_IN_WAITING_GAME, StatusCodes.BAD_REQUEST);
+        // } else if (waitingRoom.joinedPlayer.name !== opponentName) {
+        //     throw new HttpException(OPPONENT_NAME_DOES_NOT_MATCH, StatusCodes.BAD_REQUEST);
+        // }
 
+        // TODO: Dont remove from waiting rooms
         const index = this.waitingRooms.indexOf(waitingRoom);
         this.waitingRooms.splice(index, 1);
+        // TODO: Dont use this, not all joined players are filled
 
         const config: ReadyGameConfig = {
             ...waitingRoom.getConfig(),
-            player2: waitingRoom.joinedPlayer,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            player2: waitingRoom.joinedPlayer2!,
+            // TODO: Dont hardcode new Virtual players
+            player3: new ExpertVirtualPlayer(waitingRoomId, 'VirtualPlayer3'),
+            player4: new ExpertVirtualPlayer(waitingRoomId, 'VirtualPlayer4'),
         };
 
         return config;
     }
 
+    // TODO : Refactor for 4 players
+    // eslint-disable-next-line no-unused-vars
     rejectJoinRequest(waitingRoomId: string, playerId: string, opponentName: string): [Player, string] {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
 
-        if (waitingRoom.getConfig().player1.id !== playerId) {
-            throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
-        } else if (waitingRoom.joinedPlayer === undefined) {
-            throw new HttpException(NO_OPPONENT_IN_WAITING_GAME, StatusCodes.BAD_REQUEST);
-        } else if (waitingRoom.joinedPlayer.name !== opponentName) {
-            throw new HttpException(OPPONENT_NAME_DOES_NOT_MATCH, StatusCodes.BAD_REQUEST);
-        }
+        // if (waitingRoom.getConfig().player1.id !== playerId) {
+        //     throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        // }
+        // else if (waitingRoom.joinedPlayer === undefined) {
+        //     throw new HttpException(NO_OPPONENT_IN_WAITING_GAME, StatusCodes.BAD_REQUEST);
+        // } else if (waitingRoom.joinedPlayer.name !== opponentName) {
+        //     throw new HttpException(OPPONENT_NAME_DOES_NOT_MATCH, StatusCodes.BAD_REQUEST);
+        // }
 
-        const rejectedPlayer = waitingRoom.joinedPlayer;
-        waitingRoom.joinedPlayer = undefined;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const rejectedPlayer = waitingRoom.joinedPlayer2!;
+        waitingRoom.joinedPlayer2 = undefined;
         return [rejectedPlayer, waitingRoom.getConfig().player1.name];
     }
 
+    // TODO : Refactor for 4 players
+    // eslint-disable-next-line no-unused-vars
     leaveLobbyRequest(waitingRoomId: string, playerId: string): [string, string] {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
-        if (waitingRoom.joinedPlayer === undefined) {
-            throw new HttpException(NO_OPPONENT_IN_WAITING_GAME, StatusCodes.BAD_REQUEST);
-        } else if (waitingRoom.joinedPlayer.id !== playerId) {
-            throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
-        }
-        const leaverName = waitingRoom.joinedPlayer.name;
+        // if (waitingRoom.joinedPlayer === undefined) {
+        //     throw new HttpException(NO_OPPONENT_IN_WAITING_GAME, StatusCodes.BAD_REQUEST);
+        // } else if (waitingRoom.joinedPlayer.id !== playerId) {
+        //     throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        // }
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const leaverName = waitingRoom.joinedPlayer2!.name;
         const hostPlayerId = waitingRoom.getConfig().player1.id;
 
-        waitingRoom.joinedPlayer = undefined;
+        waitingRoom.joinedPlayer2 = undefined;
         return [hostPlayerId, leaverName];
     }
 
+    // eslint-disable-next-line no-unused-vars
     cancelGame(waitingRoomId: string, playerId: string): void {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
 
@@ -152,7 +169,9 @@ export class GameDispatcherService {
     }
 
     getAvailableWaitingRooms(): LobbyData[] {
-        const waitingRooms = this.waitingRooms.filter((g) => g.joinedPlayer === undefined);
+        const waitingRooms = this.waitingRooms.filter(
+            (lobby) => lobby.joinedPlayer2 === undefined || lobby.joinedPlayer3 === undefined || lobby.joinedPlayer4 === undefined,
+        );
         const lobbyData: LobbyData[] = [];
         for (const room of waitingRooms) {
             lobbyData.push(convertToLobbyData(room.getConfig(), room.getId()));

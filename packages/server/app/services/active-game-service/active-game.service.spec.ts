@@ -20,10 +20,14 @@ chai.use(chaiAsPromised);
 
 const DEFAULT_PLAYER_1 = new Player('id1', 'player1');
 const DEFAULT_PLAYER_2 = new Player('id2', 'player2');
+const DEFAULT_PLAYER_3 = new Player('id3', 'player3');
+const DEFAULT_PLAYER_4 = new Player('id4', 'player4');
 const DEFAULT_ID = 'gameId';
 const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     player1: DEFAULT_PLAYER_1,
     player2: DEFAULT_PLAYER_2,
+    player3: DEFAULT_PLAYER_3,
+    player4: DEFAULT_PLAYER_4,
     gameType: GameType.Classic,
     gameMode: GameMode.Multiplayer,
     maxRoundTime: 1,
@@ -32,6 +36,8 @@ const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
 const DEFAULT_GAME = {
     player1: DEFAULT_PLAYER_1,
     player2: DEFAULT_PLAYER_2,
+    player3: DEFAULT_PLAYER_3,
+    player4: DEFAULT_PLAYER_4,
     id: DEFAULT_ID,
     gameIsOver: false,
 

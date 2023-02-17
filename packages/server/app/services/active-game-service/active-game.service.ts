@@ -29,7 +29,7 @@ export class ActiveGameService {
         if (filteredGames.length === 0) throw new HttpException(NO_GAME_FOUND_WITH_ID, StatusCodes.NOT_FOUND);
 
         const game = filteredGames[0];
-        if (game.player1.id === playerId || game.player2.id === playerId) return game;
+        if (game.player1.id === playerId || game.player2.id === playerId || game.player3.id === playerId || game.player4.id === playerId) return game;
         throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.NOT_FOUND);
     }
 

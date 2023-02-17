@@ -17,6 +17,7 @@ import {
     AuthentificationController,
 } from './controllers';
 import { errorHandler } from './middlewares/error-handler';
+import { ChatService } from './services/chat-service/chat.service';
 import DatabaseService from './services/database-service/database.service';
 
 @Service()
@@ -33,6 +34,7 @@ export class Application {
         private readonly virtualPlayerProfileController: VirtualPlayerProfilesController,
         private readonly databaseService: DatabaseService,
         private readonly authetificationController: AuthentificationController,
+        private readonly chatService: ChatService,
     ) {
         this.app = express();
 
@@ -56,8 +58,9 @@ export class Application {
         this.errorHandling();
     }
 
-    async setupDatabase(): Promise<void> {
-        return this.databaseService.setup();
+    async setupServices(): Promise<void> {
+        await this.databaseService.setup();
+        await this.chatService.initialize();
     }
 
     private config(): void {

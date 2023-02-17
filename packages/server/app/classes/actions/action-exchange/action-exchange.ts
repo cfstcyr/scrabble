@@ -7,6 +7,7 @@ import { PlayerData } from '@app/classes/communication/player-data';
 import Game from '@app/classes/game/game';
 import Player from '@app/classes/player/player';
 import { Tile } from '@app/classes/tile';
+import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
 
 export default class ActionExchange extends ActionPlay {
     private tilesToExchange: Tile[];
@@ -38,8 +39,7 @@ export default class ActionExchange extends ActionPlay {
 
         const response: GameUpdateData = {};
 
-        if (this.game.isPlayer1(this.player)) response.player1 = playerUpdate;
-        else response.player2 = playerUpdate;
+        fillPlayerData(response, this.game.getPlayerNumber(this.player), playerUpdate);
 
         return response;
     }

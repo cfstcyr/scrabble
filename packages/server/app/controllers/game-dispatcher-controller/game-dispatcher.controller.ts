@@ -18,7 +18,7 @@ import {
     VIRTUAL_PLAYER_LEVEL_REQUIRED,
     VIRTUAL_PLAYER_NAME_REQUIRED,
 } from '@app/constants/controllers-errors';
-import { IS_OPPONENT, IS_REQUESTING, SYSTEM_ID } from '@app/constants/game-constants';
+import { SYSTEM_ID } from '@app/constants/game-constants';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { GameDispatcherService } from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
@@ -27,6 +27,8 @@ import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
+import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -159,15 +161,14 @@ export class GameDispatcherController extends BaseController {
 
     private handleCancelGame(gameId: string, playerId: string): void {
         const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
-        if (waitingRoom.joinedPlayer) {
-            this.socketService.emitToSocket(waitingRoom.joinedPlayer.id, 'canceledGame', { name: waitingRoom.getConfig().player1.name });
-        }
+        this.socketService.emitToRoomNoSender(gameId, playerId, 'canceledGame', { name: waitingRoom.getConfig().player1.name });
         this.gameDispatcherService.cancelGame(gameId, playerId);
 
         this.handleLobbiesUpdate();
     }
 
     private handleLeave(gameId: string, playerId: string): void {
+        // TODO: Not only 1 socket probably
         if (this.gameDispatcherService.isGameInWaitingRooms(gameId)) {
             const result = this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
             this.socketService.emitToSocket(result[0], 'joinerLeaveGame', { name: result[1] });
@@ -186,7 +187,7 @@ export class GameDispatcherController extends BaseController {
         } catch (exception) {
             // catch errors caused by inexistent socket after client closed application
         }
-        const playerName = this.activeGameService.getGame(gameId, playerId).getPlayer(playerId, IS_REQUESTING).name;
+        const playerName = this.activeGameService.getGame(gameId, playerId).getPlayer(playerId).name;
 
         this.socketService.emitToRoom(gameId, 'newMessage', {
             content: `${playerName} ${PLAYER_LEFT_GAME(this.activeGameService.isGameOver(gameId, playerId))}`,
@@ -245,11 +246,20 @@ export class GameDispatcherController extends BaseController {
 
     private async handleAcceptRequest(gameId: string, playerId: string, playerName: string): Promise<void> {
         if (playerName === undefined) throw new HttpException(PLAYER_NAME_REQUIRED, StatusCodes.BAD_REQUEST);
+        // TODO: Dont start immediately
         const gameConfig = this.gameDispatcherService.acceptJoinRequest(gameId, playerId, playerName);
         const startGameData = await this.activeGameService.beginGame(gameId, gameConfig);
 
+        // TODO: This is currently only working for 2 player
         this.socketService.addToRoom(startGameData.player2.id, gameId);
         this.socketService.emitToRoom(gameId, 'startGame', startGameData);
+
+        // TODO Probably not supposed to go there
+        if (isIdVirtualPlayer(startGameData.round.playerData.id)) {
+            this.gameDispatcherService
+                .getVirtualPlayerService()
+                .triggerVirtualPlayerTurn(startGameData, this.activeGameService.getGame(gameId, startGameData.round.playerData.id));
+        }
     }
 
     private handleRejectRequest(gameId: string, playerId: string, playerName: string): void {
@@ -274,7 +284,7 @@ export class GameDispatcherController extends BaseController {
         const game = this.activeGameService.getGame(gameId, playerId);
 
         if (game.areGameOverConditionsMet()) throw new HttpException(GAME_IS_OVER, StatusCodes.FORBIDDEN);
-        const player = game.getPlayer(playerId, IS_REQUESTING);
+        const player = game.getPlayer(playerId);
         player.id = newPlayerId;
         player.isConnected = true;
         this.socketService.addToRoom(newPlayerId, gameId);
@@ -283,15 +293,18 @@ export class GameDispatcherController extends BaseController {
         this.socketService.emitToSocket(newPlayerId, 'startGame', data);
 
         const newPlayerData: PlayerData = { id: playerId, newId: newPlayerId };
-        const gameUpdateData: GameUpdateData = game.isPlayer1(player.id) ? { player1: newPlayerData } : { player2: newPlayerData };
-        this.socketService.emitToSocket(game.getPlayer(newPlayerId, IS_OPPONENT).id, 'gameUpdate', gameUpdateData);
+
+        const gameUpdateData: GameUpdateData = {};
+        fillPlayerData(gameUpdateData, game.getPlayerNumber(player), newPlayerData);
+
+        this.socketService.emitToRoomNoSender(gameId, newPlayerId, 'gameUpdate', gameUpdateData);
     }
 
     private handleDisconnection(gameId: string, playerId: string): void {
         const game = this.activeGameService.getGame(gameId, playerId);
 
         if (!game.areGameOverConditionsMet()) {
-            const disconnectedPlayer = game.getPlayer(playerId, IS_REQUESTING);
+            const disconnectedPlayer = game.getPlayer(playerId);
             disconnectedPlayer.isConnected = false;
             setTimeout(() => {
                 if (!disconnectedPlayer.isConnected) {

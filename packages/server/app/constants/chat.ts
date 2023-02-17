@@ -1,7 +1,10 @@
-import { Channel } from '@common/models/chat/channel';
+import { ChannelCreation } from '@common/models/chat/channel';
 
-export const GENERAL_CHANNEL: Channel = {
-    id: '1',
+export const GENERAL_CHANNEL: ChannelCreation = {
     name: 'general',
     canQuit: false,
+    private: false,
+    default: true,
 };
+
+export const DEFAULT_CHANNELS: ChannelCreation[] = [GENERAL_CHANNEL];
