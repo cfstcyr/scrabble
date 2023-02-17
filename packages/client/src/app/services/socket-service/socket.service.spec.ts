@@ -3,11 +3,13 @@
 /* eslint-disable dot-notation */
 import { TestBed } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { ConnectionState } from '@app/classes/connection-state-service/connection-state';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// import { ConnectionState } from '@app/classes/connection-state-service/connection-state';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
 import { SOCKET_ID_UNDEFINED } from '@app/constants/services-errors';
 import { SocketService } from '@app/services/';
 import { AlertService } from '@app/services/alert-service/alert.service';
+import { SocketErrorResponse } from '@common/models/error';
 
 describe('SocketService', () => {
     let service: SocketService;
@@ -15,7 +17,7 @@ describe('SocketService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [MatSnackBarModule],
+            imports: [MatSnackBarModule, BrowserAnimationsModule],
             providers: [AlertService],
         });
         service = TestBed.inject(SocketService);
@@ -30,33 +32,34 @@ describe('SocketService', () => {
         expect(service).toBeTruthy();
     });
 
-    describe('initializeService', () => {
-        let nextStateSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            nextStateSpy = spyOn<any>(service, 'nextState');
-        });
-
-        it('should call nextState with connected on connect', (done) => {
-            service.initializeService();
-
-            socket.on('connect', () => {
-                expect(nextStateSpy).toHaveBeenCalledOnceWith(ConnectionState.Connected);
+    describe('connectSocket', () => {
+        it('should emit true on connection', (done) => {
+            service.connectSocket().subscribe((connected) => {
+                expect(connected).toBeTrue();
                 done();
             });
 
             socket.peerSideEmit('connect');
         });
 
-        it('should call nextState with Error on connect_error', (done) => {
-            service.initializeService();
-
-            socket.on('connect_error', () => {
-                expect(nextStateSpy).toHaveBeenCalledOnceWith(ConnectionState.Error);
+        it('should emit false on connection fail', (done) => {
+            service.connectSocket().subscribe((connected) => {
+                expect(connected).toBeFalse();
                 done();
             });
 
             socket.peerSideEmit('connect_error');
+        });
+
+        it('should emit to socketError on error', (done) => {
+            service.socketError.subscribe(() => {
+                expect(true).toBeTrue();
+                done();
+            });
+            service.connectSocket().subscribe();
+
+            const error: SocketErrorResponse = { error: '', message: '', status: 0 };
+            socket.peerSideEmit('error', error);
         });
     });
 

@@ -7,3 +7,8 @@ export interface ErrorResponse {
 export interface SocketErrorResponse extends ErrorResponse {
     status: number;
 }
+
+export interface StatusError {
+    message: string;
+    status: number;
+}

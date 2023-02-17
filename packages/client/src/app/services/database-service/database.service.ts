@@ -1,21 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ConnectionState } from '@app/classes/connection-state-service/connection-state';
-import ConnectionStateService from '@app/classes/connection-state-service/connection-state-service';
-import { DB_CONNECTED_ENDPOINT } from '@app/constants/services-errors';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root',
 })
-export class DatabaseService extends ConnectionStateService {
-    constructor(private readonly http: HttpClient) {
-        super();
-    }
+export class DatabaseService {
+    constructor(private readonly http: HttpClient) {}
 
-    checkDatabase(): void {
-        this.http.get(DB_CONNECTED_ENDPOINT).subscribe(
-            () => this.nextState(ConnectionState.Connected),
-            () => this.nextState(ConnectionState.Error),
+    ping(): Observable<void> {
+        return this.http.get(`${environment.serverUrl}/database/is-connected`).pipe(
+            map(() => {
+                /* map to void because we don't want a return type. Its either a response or an error. */
+            }),
         );
     }
 }

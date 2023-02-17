@@ -121,7 +121,7 @@ describe('CreateGameService', () => {
 
             const stub = sinon.stub(ExpertVirtualPlayer, 'ExpertVirtualPlayer');
             await createGameService.createSoloGame(DEFAULT_GAME_CONFIG_DATA_EXPERT);
-            expect(stub.calledOnce).to.be.true;
+            expect(stub.callCount).to.be.equal(3);
         });
 
         it('should call generateReadyGameConfig', async () => {
@@ -169,10 +169,19 @@ describe('CreateGameService', () => {
     describe('generateReadyGameConfig', () => {
         it('should return a ReadyGameConfig', () => {
             const DEFAULT_PLAYER_2 = new Player('testid2', 'DJ TESTO');
-            const newReadyGameConfig = createGameService['generateReadyGameConfig'](DEFAULT_PLAYER_2, DEFAULT_GAME_CONFIG);
+            const DEFAULT_PLAYER_3 = new Player('testid3', 'DJ TESTO');
+            const DEFAULT_PLAYER_4 = new Player('testid4', 'DJ TESTO');
+            const newReadyGameConfig = createGameService['generateReadyGameConfig'](
+                DEFAULT_PLAYER_2,
+                DEFAULT_PLAYER_3,
+                DEFAULT_PLAYER_4,
+                DEFAULT_GAME_CONFIG,
+            );
             const DEFAULT_READY_GAME_CONFIG = {
                 ...DEFAULT_GAME_CONFIG,
                 player2: DEFAULT_PLAYER_2,
+                player3: DEFAULT_PLAYER_3,
+                player4: DEFAULT_PLAYER_4,
             };
             expect(newReadyGameConfig).to.deep.equal(DEFAULT_READY_GAME_CONFIG);
         });

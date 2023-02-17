@@ -2,7 +2,7 @@
 # automatiquement.
 .nyc_output/
 node_modules/
-false/
+false/ 
 
 # Exclusion des fichiers Javascripts
 out/

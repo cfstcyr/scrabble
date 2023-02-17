@@ -6,7 +6,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
 import { ServerSocket } from '@app/classes/communication/socket-type';
-import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { ChatClientEvents, ChatServerEvents } from '@common/events/chat.event';
 import { createServer, Server } from 'http';
@@ -25,9 +24,6 @@ import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, BOARD_CONFIG_UNDEFIN
 import { Delay } from '@app/utils/delay/delay';
 import { StatusCodes } from 'http-status-codes';
 import { getSocketNameFromChannel } from '@app/utils/socket';
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import DatabaseService from '@app/services/database-service/database.service';
-import { USER_TABLE } from '@app/constants/services-constants/database-const';
 import { SocketErrorResponse } from '@common/models/error';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { TypeOfId } from '@common/types/id';
@@ -43,6 +39,7 @@ const USER: UserDatabase = {
     idUser: 1,
     username: 'Bob',
     password: '',
+    avatar: '',
 };
 
 const PUBLIC_USER: PublicUser = {
@@ -86,26 +83,12 @@ describe('ChatService', () => {
     let serverSocket: ServerSocket;
     let clientSocket: ClientSocket<ChatServerEvents, ChatClientEvents>;
     let testingUnit: ServicesTestingUnit;
-    let databaseService: DatabaseService;
-
-    const insertChannel = async (channel: Channel) => {
-        await service['channelTable'].insert(channel);
-    };
-
-    const resetChannels = async () => {
-        await service['userChatTable'].delete();
-        await service['channelTable'].delete();
-    };
+    let chatPersistenceService: Sinon.SinonStubbedInstance<ChatPersistenceService>;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit()
-            .withStubbed(DictionaryService)
-            .withStubbed(AuthentificationService, {
-                authenticateSocket: Promise.resolve(USER),
-            })
-            .withStubbedPrototypes(Application, { bindRoutes: undefined });
+        testingUnit = new ServicesTestingUnit().withStubbed(ChatPersistenceService).withStubbedPrototypes(Application, { bindRoutes: undefined });
+        chatPersistenceService = testingUnit.setStubbed(ChatPersistenceService);
         await testingUnit.withMockDatabaseService();
-        databaseService = Container.get(DatabaseService);
     });
 
     beforeEach((done) => {
@@ -142,35 +125,23 @@ describe('ChatService', () => {
     });
 
     describe('initialize', () => {
-        it('should create default channels', async () => {
-            expect(await service.getChannels()).to.have.length(0);
-
+        it('should call createDefaultChannels', async () => {
             await service.initialize();
 
-            expect(await service.getChannels()).to.have.length(DEFAULT_CHANNELS.length);
-        });
-
-        it('should not create default channels if already exists', async () => {
-            await service.initialize();
-
-            expect(await service.getChannels()).to.have.length(DEFAULT_CHANNELS.length);
-
-            await service.initialize();
-
-            expect(await service.getChannels()).to.have.length(DEFAULT_CHANNELS.length);
+            expect(chatPersistenceService.createDefaultChannels.called).to.be.true;
         });
     });
 
     describe('configureSocket', () => {
         beforeEach(async () => {
             service.configureSocket(serverSocket);
-            await insertChannel(testChannel);
-            await databaseService.knex<User>(USER_TABLE).insert(USER);
         });
 
         describe('channel:newMessage', () => {
             describe('HAPPY - PATH', () => {
                 it('should not emit message to client NOT in channel', async () => {
+                    chatPersistenceService.getChannel.resolves(testChannel);
+
                     const testClass = new TestClass();
                     const funcSpy = Sinon.spy(testClass, 'testFunc');
 
@@ -188,8 +159,6 @@ describe('ChatService', () => {
             });
             describe('SAD PATH', () => {
                 it('should throw error if channel does NOT exist', async () => {
-                    await resetChannels();
-
                     return new Promise((resolve) => {
                         clientSocket.on('error' as any, (error: SocketErrorResponse) => {
                             expect(error.message).to.equal(CHANNEL_DOES_NOT_EXISTS);
@@ -203,6 +172,8 @@ describe('ChatService', () => {
                 });
 
                 it('should throw error if user not in channel', (done) => {
+                    chatPersistenceService.getChannel.resolves(testChannel);
+
                     clientSocket.on('error' as any, (error: SocketErrorResponse) => {
                         expect(error.message).to.equal(NOT_IN_CHANNEL);
                         expect(error.status).to.equal(StatusCodes.FORBIDDEN);
@@ -217,25 +188,27 @@ describe('ChatService', () => {
 
         describe('channel:createChannel', () => {
             describe('HAPPY PATH', () => {
-                it("should add channel to list of channels if it doesn't exist", async () => {
-                    await resetChannels();
+                it("should saveChannel of channels if it doesn't exist", async () => {
+                    chatPersistenceService.isChannelNameAvailable.resolves(true);
 
-                    clientSocket.emit('channel:newChannel', testChannel.name);
+                    clientSocket.emit('channel:newChannel', testChannel);
 
                     await Delay.for(RESPONSE_DELAY);
 
-                    expect(await service['channelTable'].select('*').where({ name: testChannel.name })).to.have.length(1);
+                    expect(chatPersistenceService.saveChannel.called).to.be.true;
                 });
             });
             describe('SAD PATH', () => {
                 it('should throw error if channel already exist', (done) => {
+                    chatPersistenceService.isChannelNameAvailable.resolves(false);
+
                     clientSocket.on('error' as any, (error: SocketErrorResponse) => {
                         expect(error.message).to.equal(ALREADY_EXISTING_CHANNEL_NAME);
                         expect(error.status).to.equal(StatusCodes.FORBIDDEN);
                         done();
                     });
 
-                    clientSocket.emit('channel:newChannel', testChannel.name);
+                    clientSocket.emit('channel:newChannel', testChannel);
                 });
             });
         });
@@ -243,6 +216,10 @@ describe('ChatService', () => {
         describe('channel:join', () => {
             describe('HAPPY PATH', () => {
                 it('should add socket to channel room', async () => {
+                    chatPersistenceService.getChannel.resolves(testChannel);
+                    chatPersistenceService.joinChannel.resolves();
+                    serverSocket.data.user = USER;
+
                     clientSocket.emit('channel:join', testChannel.idChannel);
 
                     await Delay.for(RESPONSE_DELAY);
@@ -252,8 +229,6 @@ describe('ChatService', () => {
             });
             describe('SAD PATH', () => {
                 it('should throw error if channel does NOT exist', async () => {
-                    await resetChannels();
-
                     return new Promise((resolve) => {
                         clientSocket.on('error' as any, (error: SocketErrorResponse) => {
                             expect(error.message).to.equal(CHANNEL_DOES_NOT_EXISTS);
@@ -265,6 +240,8 @@ describe('ChatService', () => {
                     });
                 });
                 it('should throw error if user already in channel', (done) => {
+                    chatPersistenceService.getChannel.resolves(testChannel);
+
                     clientSocket.on('error' as any, (error: SocketErrorResponse) => {
                         expect(error.message).to.equal(ALREADY_IN_CHANNEL);
                         expect(error.status).to.equal(StatusCodes.BAD_REQUEST);
@@ -280,6 +257,8 @@ describe('ChatService', () => {
         describe('channel:quit', () => {
             describe('HAPPY PATH', () => {
                 it('should remove socket from channel room of room exists', async () => {
+                    chatPersistenceService.getChannel.resolves(testChannel);
+
                     serverSocket.join(getSocketNameFromChannel(testChannel));
 
                     clientSocket.emit('channel:quit', testChannel.idChannel);
@@ -291,8 +270,6 @@ describe('ChatService', () => {
             });
             describe('SAD PATH', () => {
                 it('should throw error if channel does NOT exist', async () => {
-                    await resetChannels();
-
                     return new Promise((resolve) => {
                         clientSocket.on('error' as any, (error: SocketErrorResponse) => {
                             expect(error.message).to.equal(CHANNEL_DOES_NOT_EXISTS);

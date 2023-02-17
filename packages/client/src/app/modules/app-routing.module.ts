@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Route, RouterModule, Routes } from '@angular/router';
+import { PrivateRouteGuard } from '@app/guard/private-route/private-route.guard';
+import { PublicRouteGuard } from '@app/guard/public-route/public-route.guard';
 import { AdminPageComponent } from '@app/pages/admin-page/admin-page.component';
 import { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';
 import { GameCreationPageComponent } from '@app/pages/game-creation-page/game-creation-page.component';
@@ -11,18 +13,28 @@ import { LobbyPageComponent } from '@app/pages/lobby-page/lobby-page.component';
 import { LoginPageComponent } from '@app/pages/login-page/login-page.component';
 import { SignUpPageComponent } from '@app/pages/signup-page/signup-page.component';
 
+const privateRoute: Route = {
+    canActivate: [PrivateRouteGuard],
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+};
+
+const publicRoute: Route = {
+    canActivate: [PublicRouteGuard],
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+};
+
 const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
-    { path: 'signup', component: SignUpPageComponent },
-    { path: 'login', component: LoginPageComponent },
-    { path: 'home', component: HomePageComponent },
-    { path: 'game', component: GamePageComponent },
-    { path: 'game-creation', component: GameCreationPageComponent },
-    { path: 'lobby', component: LobbyPageComponent },
-    { path: 'waiting-room', component: CreateWaitingPageComponent },
-    { path: 'join-waiting-room', component: JoinWaitingPageComponent },
-    { path: 'high-scores', component: HighScoresPageComponent },
-    { path: 'admin', component: AdminPageComponent },
+    { path: 'signup', component: SignUpPageComponent, ...publicRoute },
+    { path: 'login', component: LoginPageComponent, ...publicRoute },
+    { path: 'home', component: HomePageComponent, ...privateRoute },
+    { path: 'game', component: GamePageComponent, ...privateRoute },
+    { path: 'game-creation', component: GameCreationPageComponent, ...privateRoute },
+    { path: 'lobby', component: LobbyPageComponent, ...privateRoute },
+    { path: 'waiting-room', component: CreateWaitingPageComponent, ...privateRoute },
+    { path: 'join-waiting-room', component: JoinWaitingPageComponent, ...privateRoute },
+    { path: 'high-scores', component: HighScoresPageComponent, ...privateRoute },
+    { path: 'admin', component: AdminPageComponent, ...privateRoute },
     { path: '**', redirectTo: '/home' },
 ];
 

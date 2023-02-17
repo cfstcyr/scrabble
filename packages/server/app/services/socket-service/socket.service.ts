@@ -1,10 +1,11 @@
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
-import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
+import { INVALID_ID_FOR_SOCKET, NO_TOKEN, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
+import { NextFunction } from 'express';
 import { SocketErrorResponse } from '@common/models/error';
 import { EventEmitter } from 'events';
 import * as http from 'http';
@@ -31,7 +32,7 @@ export class SocketService {
     private sockets: Map<string, io.Socket>;
     private configureSocketsEvent: EventEmitter;
 
-    constructor() {
+    constructor(private readonly authentificationService: AuthentificationService) {
         this.sockets = new Map();
         this.configureSocketsEvent = new EventEmitter();
     }
@@ -64,13 +65,28 @@ export class SocketService {
     handleSockets(): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
+        this.sio.use(async (socket: io.Socket, next: NextFunction) => {
+            const token = socket.handshake.auth.token;
+
+            if (token) {
+                try {
+                    await this.authentificationService.authentificateSocket(socket, token);
+                    return next();
+                } catch (err) {
+                    return next(new Error(err));
+                }
+            } else {
+                next(new Error(NO_TOKEN));
+            }
+        });
+
         this.sio.on('connection', (socket) => {
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
 
             this.configureSocketsEvent.emit(SOCKET_CONFIGURE_EVENT_NAME, socket);
             socket.on('disconnect', () => {
-                this.sockets.delete(socket.id);
+                this.handleDisconnect(socket);
             });
         });
     }
@@ -134,11 +150,39 @@ export class SocketService {
     emitToSocket(id: string, ev: '_test_event', ...args: unknown[]): void;
     emitToSocket<T>(id: string, ev: SocketEmitEvents, ...args: T[]): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
+
         if (isIdVirtualPlayer(id)) return;
         this.getSocket(id).emit(ev, ...args);
     }
 
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'gameUpdate', ...args: GameUpdateEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'joinRequest', ...args: JoinRequestEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'startGame', ...args: StartGameEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'canceledGame', ...args: CanceledGameEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'rejected', ...args: RejectEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'lobbiesUpdate', ...args: LobbiesUpdateEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: '_test_event', ...args: unknown[]): void;
+    emitToRoomNoSender<T>(room: string, socketSenderId: string, ev: SocketEmitEvents, ...args: T[]): void {
+        if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
+        if (isIdVirtualPlayer(socketSenderId)) {
+            this.sio.to(room).emit(ev, ...args);
+            return;
+        }
+
+        this.getSocket(socketSenderId)
+            .to(room)
+            .emit(ev, ...args);
+    }
+    
     listenToInitialisationEvent(callback: (socket: ServerSocket) => void): void {
         this.configureSocketsEvent.addListener(SOCKET_CONFIGURE_EVENT_NAME, callback);
     }
+
+    private handleDisconnect(socket: io.Socket): void {
+        this.authentificationService.disconnectSocket(socket.id);
+        this.sockets.delete(socket.id);
+    }
+
+
 }

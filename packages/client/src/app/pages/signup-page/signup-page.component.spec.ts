@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HeaderBtnComponent } from '@app/components/header-btn/header-btn.component';
 import { TileComponent } from '@app/components/tile/tile.component';
+import { LoginWrapperComponent } from '@app/wrappers/login-wrapper/login-wrapper.component';
 import { SignUpPageComponent } from './signup-page.component';
 
 describe('SignInPageComponent', () => {
@@ -8,7 +10,7 @@ describe('SignInPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SignUpPageComponent, TileComponent],
+            declarations: [SignUpPageComponent, TileComponent, HeaderBtnComponent, LoginWrapperComponent],
         }).compileComponents();
     });
 

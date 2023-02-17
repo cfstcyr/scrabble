@@ -4,6 +4,9 @@ import { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/consta
 import { NAME_VALIDATION } from '@app/constants/name-validation';
 import { UserSignupInformation } from '@common/models/user';
 
+const AVATAR_COUNT = 17;
+const AVATARS = new Array(AVATAR_COUNT).fill(0).map((_, i) => `/assets/img/avatars/avatar-${i + 1}.png`);
+
 @Component({
     selector: 'app-signup-container',
     templateUrl: './signup-container.component.html',
@@ -15,6 +18,7 @@ export class SignupContainerComponent implements OnChanges {
     @Output() checkEmailUnicity: EventEmitter<string> = new EventEmitter();
     @Output() checkUsernameUnicity: EventEmitter<string> = new EventEmitter();
     @Output() signup: EventEmitter<UserSignupInformation> = new EventEmitter();
+    avatars = AVATARS;
 
     signupForm: FormGroup;
     arePasswordsShown: boolean = false;
@@ -34,6 +38,7 @@ export class SignupContainerComponent implements OnChanges {
                 email: new FormControl('', [Validators.required, Validators.email, this.emailTakenValidator()]),
                 password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),
                 confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),
+                avatar: new FormControl('', [Validators.required]),
             },
             [matchValidator('password', 'confirmPassword')],
         );
@@ -53,6 +58,7 @@ export class SignupContainerComponent implements OnChanges {
             email: this.signupForm.get('email')?.value,
             username: this.signupForm.get('username')?.value,
             password: this.signupForm.get('password')?.value,
+            avatar: this.signupForm.get('avatar')?.value,
         };
 
         this.signup.next(userSignupInformation);

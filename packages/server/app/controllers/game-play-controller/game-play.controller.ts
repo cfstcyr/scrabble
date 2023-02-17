@@ -5,7 +5,7 @@ import { Message } from '@app/classes/communication/message';
 import { GameRequest } from '@app/classes/communication/request';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { CONTENT_REQUIRED, SENDER_REQUIRED } from '@app/constants/controllers-errors';
-import { INVALID_WORD_TIMEOUT, IS_OPPONENT, SYSTEM_ERROR_ID, SYSTEM_ID } from '@app/constants/game-constants';
+import { INVALID_WORD_TIMEOUT, SYSTEM_ERROR_ID, SYSTEM_ID } from '@app/constants/game-constants';
 import { COMMAND_IS_INVALID, OPPONENT_PLAYED_INVALID_WORD } from '@app/constants/services-errors';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { GamePlayService } from '@app/services/game-play-service/game-play.service';
@@ -121,8 +121,7 @@ export class GamePlayController extends BaseController {
             });
         }
         if (feedback.opponentFeedback.message) {
-            const opponentId = this.activeGameService.getGame(gameId, playerId).getPlayer(playerId, IS_OPPONENT).id;
-            this.socketService.emitToSocket(opponentId, 'newMessage', {
+            this.socketService.emitToRoomNoSender(gameId, playerId, 'newMessage', {
                 content: feedback.opponentFeedback.message,
                 senderId: SYSTEM_ID,
                 gameId,
@@ -164,8 +163,7 @@ export class GamePlayController extends BaseController {
 
             this.gameUpdate(gameId, this.gamePlayService.handleResetObjectives(gameId, playerId));
 
-            const opponentId = this.activeGameService.getGame(gameId, playerId).getPlayer(playerId, IS_OPPONENT).id;
-            this.socketService.emitToSocket(opponentId, 'newMessage', {
+            this.socketService.emitToRoomNoSender(gameId, playerId, 'newMessage', {
                 content: OPPONENT_PLAYED_INVALID_WORD,
                 senderId: SYSTEM_ID,
                 gameId,

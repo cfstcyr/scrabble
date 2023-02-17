@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBarModule, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { Alert, AlertType } from '@app/classes/alert/alert';
+import { IconComponent } from '@app/components/icon/icon.component';
 
 import { AlertComponent } from './alert.component';
 
@@ -16,7 +17,7 @@ describe('AlertComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [MatSnackBarModule],
-            declarations: [AlertComponent],
+            declarations: [AlertComponent, IconComponent],
             providers: [{ provide: MAT_SNACK_BAR_DATA, useValue: ALERT }],
         }).compileComponents();
     });

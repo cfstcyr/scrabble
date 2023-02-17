@@ -97,7 +97,7 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
     addMessage(content: string): void {
         this.messages.push({
             content,
-            sender: this.userService.user,
+            sender: this.userService.getUser(),
             date: new Date(),
         });
         this.sendMessage.next(content);

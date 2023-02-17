@@ -26,6 +26,8 @@ const DEFAULT_PLAYER1_NAME = 'p1';
 const DEFAULT_PLAYER1_ID = 'id1';
 const DEFAULT_PLAYER_1 = new Player(DEFAULT_PLAYER1_NAME, DEFAULT_PLAYER1_ID);
 const DEFAULT_PLAYER_2 = new Player('2', 'p2');
+const DEFAULT_PLAYER_3 = new Player('3', 'p3');
+const DEFAULT_PLAYER_4 = new Player('4', 'p4');
 const DEFAULT_GAME_ID = 'grossePartie';
 const DEFAULT_MAX_ROUND_TIME = 1;
 
@@ -44,6 +46,8 @@ const DEFAULT_STARTING_GAME_DATA: StartGameData = {
     tileReserve: [],
     player1: DEFAULT_GAME_CONFIG.player1.convertToPlayerData(),
     player2: DEFAULT_PLAYER_2.convertToPlayerData(),
+    player3: DEFAULT_PLAYER_3.convertToPlayerData(),
+    player4: DEFAULT_PLAYER_4.convertToPlayerData(),
     round: { playerData: { id: DEFAULT_PLAYER1_ID }, startTime: new Date(), limitTime: new Date() },
 };
 

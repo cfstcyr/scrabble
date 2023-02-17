@@ -15,3 +15,7 @@ export const SENDER_REQUIRED = 'message sender is required';
 
 export const NO_LOGIN = 'Could not login with credentials';
 export const NO_SIGNUP = 'Could not sign up with credentials';
+export const NO_VALIDATE = 'Could generate a token';
+export const ALREADY_LOGGED = "L'utilisateur est déjà connecté";
+export const SOCKET_ID_IS_REQUIRED = 'Socket ID is required';
+export const USER_ID_IS_REQUIRED = 'User ID is required';

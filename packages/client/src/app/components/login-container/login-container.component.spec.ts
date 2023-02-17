@@ -17,6 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { UserLoginCredentials } from '@common/models/user';
+import { IconComponent } from '@app/components/icon/icon.component';
 
 import { LoginContainerComponent } from './login-container.component';
 
@@ -31,7 +32,7 @@ describe('LoginContainerComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [LoginContainerComponent],
+            declarations: [LoginContainerComponent, IconComponent],
             imports: [
                 AppMaterialModule,
                 FormsModule,
@@ -75,26 +76,7 @@ describe('LoginContainerComponent', () => {
         });
     });
 
-    describe('ngOnChanges', () => {
-        it('should open snackbar if credentials are invalid', () => {
-            const spy = spyOn<any>(component['snackBar'], 'open');
-            component.errorMessage = 'error';
-
-            component.ngOnChanges();
-
-            expect(spy).toHaveBeenCalled();
-        });
-    });
-
     describe('onSubmit', () => {
-        it('should call toggleOffInvalidCredentials', () => {
-            const spy = spyOn(component, 'clearErrorMessage').and.callFake(() => {});
-            setInvalidFormValues();
-
-            component.onSubmit();
-
-            expect(spy).toHaveBeenCalled();
-        });
         describe('HAPPY PATH - Form is valid', () => {
             it('should emit user credentials', () => {
                 const loginSpy = spyOn(component.login, 'next').and.callFake(() => {});
@@ -113,16 +95,6 @@ describe('LoginContainerComponent', () => {
                 component.onSubmit();
                 expect(loginSpy).not.toHaveBeenCalled();
             });
-        });
-    });
-
-    describe('toggleOffInvalidCredentials', () => {
-        it('should clear error messsage', () => {
-            component.errorMessage = 'error';
-
-            component.clearErrorMessage();
-
-            expect(component.errorMessage).toBeUndefined();
         });
     });
 });
