@@ -20,7 +20,6 @@ class SocketService {
       print("${socket.id} + connected to websocket");
     });
     socket.emit("connection");
-
     socket.onDisconnect((_) => {print("${socket.id}  + disconnected")});
   }
 
