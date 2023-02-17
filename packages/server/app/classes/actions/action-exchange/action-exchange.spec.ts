@@ -74,6 +74,7 @@ describe('ActionExchange', () => {
         it('should call getTilesFromPlayer', () => {
             getTilesFromPlayerStub.returns([game.player1.tiles, []]);
 
+            gameStub.getPlayerNumber.returns(1);
             const action = new ActionExchange(game.player1, game, []);
             action.execute();
 
@@ -82,6 +83,7 @@ describe('ActionExchange', () => {
 
         it('should call swapTiles', () => {
             getTilesFromPlayerStub.returns([game.player1.tiles, []]);
+            gameStub.getPlayerNumber.returns(1);
 
             const action = new ActionExchange(game.player1, game, []);
             action.execute();

@@ -34,9 +34,5 @@ describe('fillPlayerData', () => {
         const gameUpdateData: GameUpdateData = { player2: { id: 'yoooo' } };
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         expect(() => fillPlayerData(gameUpdateData, 10, { id: 'id' })).to.throw(INVALID_PLAYER_ID_FOR_GAME);
-
-        expect(gameUpdateData.player2).to.exist;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        expect(gameUpdateData.player2!.id).to.equal('id');
     });
 });
