@@ -162,19 +162,21 @@ export default class Game {
     }
 
     getPlayer(playerId: string): Player {
-        if (this.isPlayerIdFromGame(playerId)) {
-            switch (playerId) {
-                case this.player1.id:
-                    return this.player1;
-                case this.player2.id:
-                    return this.player2;
-                case this.player3.id:
-                    return this.player3;
-                default:
-                    return this.player4;
-            }
+        if (!this.isPlayerIdFromGame(playerId)) {
+            throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
-        throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        switch (playerId) {
+            case this.player1.id:
+                return this.player1;
+            case this.player2.id:
+                return this.player2;
+            case this.player3.id:
+                return this.player3;
+            case this.player4.id:
+                return this.player4;
+            default:
+                throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        }
     }
 
     getPlayerNumber(player: Player): number {
@@ -188,8 +190,10 @@ export default class Game {
                 return 2;
             case this.player3:
                 return 3;
-            default:
+            case this.player4:
                 return 4;
+            default:
+                throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
     }
 

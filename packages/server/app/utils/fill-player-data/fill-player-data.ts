@@ -1,5 +1,8 @@
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { PlayerData } from '@app/classes/communication/player-data';
+import { HttpException } from '@app/classes/http-exception/http-exception';
+import { INVALID_PLAYER_ID_FOR_GAME } from '@app/constants/services-errors';
+import { StatusCodes } from 'http-status-codes';
 
 export const fillPlayerData = (gameUpdateData: GameUpdateData, playerNumber: number, playerData: PlayerData) => {
     switch (playerNumber) {
@@ -15,9 +18,12 @@ export const fillPlayerData = (gameUpdateData: GameUpdateData, playerNumber: num
             gameUpdateData.player3 = playerData;
             break;
         }
-        default: {
+        case 4: {
             gameUpdateData.player4 = playerData;
             break;
+        }
+        default: {
+            throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
     }
 };
