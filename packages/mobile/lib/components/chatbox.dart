@@ -103,9 +103,8 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleSendPressed(types.PartialText message) {
-    // TODO:  Refactor cette duplication de code, textMessage est utilisé
+    // TODO: Refactor cette duplication de code, textMessage est utilisé
     // pour l'affichage de store des messages par le package  et messageData pour le event: channel:newMessage
-
     if (message.text != "" && whiteSpace(message)) {
       final textMessage = types.TextMessage(
         author: _user,
@@ -147,7 +146,7 @@ class _ChatPageState extends State<ChatPage> {
     _addMessage(textMessage);
   }
 
-  //TODO:  Add ce listener dans le controller   .
+  //TODO:  Add ce listener dans le controller
   Future<void> _listenMessages() async {
     socketService.socket.on('channel:newMessage', (channelMessage) {
       _handleNewMessage(channelMessage);
