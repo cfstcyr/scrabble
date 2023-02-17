@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { GROUP_CHANNEL, NO_GROUP_CHANNEL_ID_NEEDED } from '@app/constants/chat';
 import { Channel } from '@common/models/chat/channel';
+import { UserId } from '@app/classes/user/connected-user-types';
 
 @Service()
 export class CreateGameService {
@@ -36,10 +37,10 @@ export class CreateGameService {
         return this.activeGameService.beginGame(gameId, NO_GROUP_CHANNEL_ID_NEEDED, readyGameConfig);
     }
 
-    async createMultiplayerGame(configData: GameConfigData): Promise<WaitingRoom> {
+    async createMultiplayerGame(configData: GameConfigData, userId: UserId): Promise<WaitingRoom> {
         const config = this.generateGameConfig(configData);
 
-        const channel: Channel = await this.chatService.createChannel(GROUP_CHANNEL, config.player1.id);
+        const channel: Channel = await this.chatService.createChannel(GROUP_CHANNEL, userId);
 
         return new WaitingRoom(config, channel.idChannel);
     }

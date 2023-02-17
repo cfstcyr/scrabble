@@ -17,6 +17,7 @@ import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { ChatService } from '@app/services/chat-service/chat.service';
+import { UserId } from '@app/classes/user/connected-user-types';
 
 @Service()
 export class GameDispatcherService {
@@ -67,8 +68,8 @@ export class GameDispatcherService {
         });
     }
 
-    async createMultiplayerGame(config: GameConfigData): Promise<LobbyData> {
-        const waitingRoom = await this.createGameService.createMultiplayerGame(config);
+    async createMultiplayerGame(config: GameConfigData, userId: UserId): Promise<LobbyData> {
+        const waitingRoom = await this.createGameService.createMultiplayerGame(config, userId);
         this.dictionaryService.useDictionary(config.dictionary.id);
 
         this.addToWaitingRoom(waitingRoom);

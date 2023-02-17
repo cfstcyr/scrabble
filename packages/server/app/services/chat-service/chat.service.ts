@@ -10,14 +10,19 @@ import { getSocketNameFromChannel } from '@app/utils/socket';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { ServerUser } from '@common/models/user';
-import { PlayerData } from '@app/classes/communication/player-data';
 import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { SocketId, UserId } from '@app/classes/user/connected-user-types';
 
 @Service()
 export class ChatService {
     private defaultChannels = DEFAULT_CHANNELS;
 
-    constructor(private readonly socketService: SocketService, private readonly chatPersistenceService: ChatPersistenceService) {
+    constructor(
+        private readonly socketService: SocketService,
+        private readonly chatPersistenceService: ChatPersistenceService,
+        private readonly authentificationService: AuthentificationService,
+    ) {
         this.socketService.listenToInitialisationEvent(this.configureSocket.bind(this));
     }
 
@@ -63,34 +68,36 @@ export class ChatService {
         });
     }
 
-    async createChannel(channel: ChannelCreation, playerId: TypeOfId<PlayerData>): Promise<Channel> {
-        // TODO: Use socketId to playerId map to get socketId of player
-        const socket: ServerSocket = this.socketService.getSocket(playerId);
+    async createChannel(channel: ChannelCreation, userId: UserId): Promise<Channel> {
+        const socketId: SocketId = this.authentificationService.connectedUsers.getSocketId(userId);
+        const socket: ServerSocket = this.socketService.getSocket(socketId);
         return this.handleCreateChannel(channel, socket);
     }
 
-    async joinChannel(idChannel: TypeOfId<Channel>, playerId: TypeOfId<PlayerData>): Promise<void> {
-        // TODO: Use socketId to playerId map to get socketId of player
+    // TODO: User userId when playerId has been replaced in requests !153
+    async joinChannel(idChannel: TypeOfId<Channel>, playerId: SocketId): Promise<void> {
         const socket: ServerSocket = this.socketService.getSocket(playerId);
-        this.handleJoinChannel(idChannel, socket);
+        return this.handleJoinChannel(idChannel, socket);
     }
 
-    async quitChannel(idChannel: TypeOfId<Channel>, playerId: TypeOfId<PlayerData>): Promise<void> {
-        // TODO: Use socketId to playerId map to get socketId of player
-        const socket: ServerSocket = this.socketService.getSocket(playerId);
-        this.handleQuitChannel(idChannel, socket);
+    // TODO: User userId when playerId has been replaced in requests !153
+    async quitChannel(idChannel: TypeOfId<Channel>, playerId: SocketId): Promise<void> {
+        try {
+            const socket: ServerSocket = this.socketService.getSocket(playerId);
+            return this.handleQuitChannel(idChannel, socket);
+        } catch {
+            // TODO Toggle on comment when userId parameter is given !153
+            // return await this.chatPersistenceService.leaveChannel(idChannel, userId);
+        }
     }
 
-    // eslint-disable-next-line no-unused-vars
     async emptyChannel(idChannel: TypeOfId<Channel>): Promise<void> {
-        // TODO: Use socketId to playerId map to get socketId of player
-        // const playerIdsInChannel: number[] = (await this.userChatTable.select('idUser').where({ idChannel })).map(
-        //     (userChannel) => userChannel.idUser,
-        // );
-        // playerIdsInChannel.forEach((idUser) => {
-        //     const socket: ServerSocket = this.socketService.getSocket(idUser.toString());
-        //     this.handleQuitChannel(idChannel, socket);
-        // });
+        const playerIdsInChannel: UserId[] = await this.chatPersistenceService.getChannelUserIds(idChannel);
+        playerIdsInChannel.forEach((userId) => {
+            const socketId: SocketId = this.authentificationService.connectedUsers.getSocketId(userId);
+            const socket: ServerSocket = this.socketService.getSocket(socketId);
+            this.handleQuitChannel(idChannel, socket);
+        });
     }
 
     private async handleSendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
