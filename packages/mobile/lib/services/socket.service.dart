@@ -4,6 +4,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 class SocketService {
   SocketService._privateConstructor();
   static final String webSocketUrl = "${Environment().config.webSocketUrl}";
+  final String endpoint = "${Environment().config.apiUrl}/authentification";
   static final SocketService _instance = SocketService._privateConstructor();
   final IO.Socket socket = IO.io(webSocketUrl, <String, dynamic>{
     'transports': ['websocket'],
@@ -14,17 +15,16 @@ class SocketService {
   }
 
   Future<void> initSocket() async {
-    print('Connecting to chat service');
-
     socket.connect();
     socket.onConnect((_) {
-      print('connected to websocket');
+      print("${socket.id} + connected to websocket");
     });
     socket.emit("connection");
-    print(socket);
+
+    socket.onDisconnect((_) => {print("${socket.id}  + disconnected")});
   }
 
-  Future<void> emitEvent(String eventName, dynamic data) async {
+  Future<void> emitEvent(String eventName, [dynamic data]) async {
     socket.emit(eventName, data);
   }
 }

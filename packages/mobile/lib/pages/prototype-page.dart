@@ -25,8 +25,10 @@ class PrototypePage extends StatelessWidget {
               SizedBox(width: 10), // c'est un spacing fancy
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ChatPage()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ChatPage(name: "name")));
                 },
                 child: Text('Amusez vous à clavarder'),
               ),
