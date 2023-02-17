@@ -117,7 +117,8 @@ export class GameDispatcherService {
             player4: new ExpertVirtualPlayer(waitingRoomId, 'VirtualPlayer4'),
         };
 
-        await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), waitingRoom.joinedPlayer.id);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), waitingRoom.joinedPlayer2!.id);
 
         return { ...config, idChannel: waitingRoom.getGroupChannelId() };
     }
@@ -141,7 +142,7 @@ export class GameDispatcherService {
         waitingRoom.joinedPlayer2 = undefined;
         return [rejectedPlayer, waitingRoom.getConfig().player1.name];
     }
-    
+
     // TODO : Refactor for 4 players
     // eslint-disable-next-line no-unused-vars
     async leaveLobbyRequest(waitingRoomId: string, playerId: string): Promise<[string, string]> {
@@ -151,12 +152,13 @@ export class GameDispatcherService {
         // } else if (waitingRoom.joinedPlayer.id !== playerId) {
         //     throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         // }
-        
-        await this.chatService.quitChannel(waitingRoom.getGroupChannelId(), waitingRoom.joinedPlayer.id);
-        
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await this.chatService.quitChannel(waitingRoom.getGroupChannelId(), waitingRoom.joinedPlayer2!.id);
+
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const leaverName = waitingRoom.joinedPlayer2!.name;
-        
+
         const hostPlayerId = waitingRoom.getConfig().player1.id;
 
         waitingRoom.joinedPlayer2 = undefined;

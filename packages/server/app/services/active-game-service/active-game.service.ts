@@ -10,7 +10,6 @@ import { Service } from 'typedi';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
-import { IS_REQUESTING } from '@app/constants/game-constants';
 
 @Service()
 export class ActiveGameService {
@@ -71,7 +70,7 @@ export class ActiveGameService {
         } catch (exception) {
             // catch errors caused by inexistent socket after client closed application
         }
-        const playerName = game.getPlayer(playerId, IS_REQUESTING).name;
+        const playerName = game.getPlayer(playerId).name;
 
         this.socketService.emitToRoom(gameId, 'newMessage', {
             content: `${playerName} ${PLAYER_LEFT_GAME(this.isGameOver(gameId, playerId))}`,

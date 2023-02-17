@@ -1,6 +1,9 @@
 import Player from '@app/classes/player/player';
+import { GAME_ALREADY_FULL } from '@app/constants/classes-errors';
 import { Channel } from '@common/models/chat/channel';
 import { TypeOfId } from '@common/types/id';
+import { StatusCodes } from 'http-status-codes';
+import { HttpException } from '@app/classes/http-exception/http-exception';
 import { GameConfig } from './game-config';
 import Room from './room';
 

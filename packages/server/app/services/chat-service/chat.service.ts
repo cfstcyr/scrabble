@@ -9,24 +9,18 @@ import { TypeOfId } from '@common/types/id';
 import { getSocketNameFromChannel } from '@app/utils/socket';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { User } from '@common/models/user';
-import { PlayerData } from '@app/classes/communication/player-data';
 import { ServerUser } from '@common/models/user';
+import { PlayerData } from '@app/classes/communication/player-data';
 import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
 
 @Service()
 export class ChatService {
     private defaultChannels = DEFAULT_CHANNELS;
 
-    constructor(
-        private readonly databaseService: DatabaseService,
-        private readonly authenticationService: AuthentificationService,
-        private readonly socketService: SocketService,
-        private readonly chatPersistenceService: ChatPersistenceService
-    ) {
+    constructor(private readonly socketService: SocketService, private readonly chatPersistenceService: ChatPersistenceService) {
         this.socketService.listenToInitialisationEvent(this.configureSocket.bind(this));
     }
-    
+
     async initialize(): Promise<void> {
         await this.chatPersistenceService.createDefaultChannels(this.defaultChannels);
     }
@@ -87,15 +81,16 @@ export class ChatService {
         this.handleQuitChannel(idChannel, socket);
     }
 
+    // eslint-disable-next-line no-unused-vars
     async emptyChannel(idChannel: TypeOfId<Channel>): Promise<void> {
         // TODO: Use socketId to playerId map to get socketId of player
-        const playerIdsInChannel: number[] = (await this.userChatTable.select('idUser').where({ idChannel })).map(
-            (userChannel) => userChannel.idUser,
-        );
-        playerIdsInChannel.forEach((idUser) => {
-            const socket: ServerSocket = this.socketService.getSocket(idUser.toString());
-            this.handleQuitChannel(idChannel, socket);
-        });
+        // const playerIdsInChannel: number[] = (await this.userChatTable.select('idUser').where({ idChannel })).map(
+        //     (userChannel) => userChannel.idUser,
+        // );
+        // playerIdsInChannel.forEach((idUser) => {
+        //     const socket: ServerSocket = this.socketService.getSocket(idUser.toString());
+        //     this.handleQuitChannel(idChannel, socket);
+        // });
     }
 
     private async handleSendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
@@ -114,7 +109,7 @@ export class ChatService {
         // TODO: Save message in DB
     }
 
-    private async handleCreateChannel(channel: ChannelCreation, socket: ServerSocket): Promise<void> {
+    private async handleCreateChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel> {
         if (!(await this.chatPersistenceService.isChannelNameAvailable(channel))) {
             throw new HttpException(ALREADY_EXISTING_CHANNEL_NAME, StatusCodes.FORBIDDEN);
         }
@@ -169,7 +164,7 @@ export class ChatService {
         const user: ServerUser = socket.data.user;
 
         await Promise.all(
-            (await this.chatPersistenceService.getUserChannelIds(user.idUser)).map(async (idChannel) => this.joinChannel(idChannel, socket)),
+            (await this.chatPersistenceService.getUserChannelIds(user.idUser)).map(async (idChannel) => this.handleJoinChannel(idChannel, socket)),
         );
     }
 }

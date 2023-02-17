@@ -19,7 +19,7 @@ export class Random {
         return array.splice(Math.floor(Math.random() * array.length), 1).pop();
     }
 
-    static randomIntFromInterval(min: number, max : number): number { 
-        return Math.floor(Math.random() * (max - min + 1) + min)
-      }
+    static randomIntFromInterval(min: number, max: number): number {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
 }

@@ -887,7 +887,7 @@ describe('Game', () => {
         let game: Game;
         const invalidPlayer = new Player('invalid', 'invalid');
         beforeEach(() => {
-            game = new Game();
+            game = new Game(DEFAULT_GAME_CHANNEL_ID);
             game.player1 = DEFAULT_PLAYER_1;
             game.player2 = DEFAULT_PLAYER_2;
             game.player3 = DEFAULT_PLAYER_3;

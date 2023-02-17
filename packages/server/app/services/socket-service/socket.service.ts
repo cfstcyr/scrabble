@@ -25,6 +25,7 @@ import {
     SocketEmitEvents,
     StartGameEmitArgs,
 } from './socket-types';
+import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 
 @Service()
 export class SocketService {
@@ -174,7 +175,7 @@ export class SocketService {
             .to(room)
             .emit(ev, ...args);
     }
-    
+
     listenToInitialisationEvent(callback: (socket: ServerSocket) => void): void {
         this.configureSocketsEvent.addListener(SOCKET_CONFIGURE_EVENT_NAME, callback);
     }
@@ -183,6 +184,4 @@ export class SocketService {
         this.authentificationService.disconnectSocket(socket.id);
         this.sockets.delete(socket.id);
     }
-
-
 }
