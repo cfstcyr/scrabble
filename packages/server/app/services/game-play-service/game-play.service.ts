@@ -14,7 +14,6 @@ import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import { MUST_HAVE_7_TILES_TO_SWAP } from '@app/constants/classes-errors';
-import { IS_OPPONENT, IS_REQUESTING } from '@app/constants/game-constants';
 import { INVALID_COMMAND, INVALID_PAYLOAD, NOT_PLAYER_TURN } from '@app/constants/services-errors';
 import { MINIMUM_TILES_LEFT_FOR_EXCHANGE } from '@app/constants/virtual-player-constants';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
@@ -44,7 +43,7 @@ export class GamePlayService {
 
     async playAction(gameId: string, playerId: string, actionData: ActionData): Promise<[void | GameUpdateData, void | FeedbackMessages]> {
         const game = this.activeGameService.getGame(gameId, playerId);
-        const player = game.getPlayer(playerId, IS_REQUESTING);
+        const player = game.getPlayer(playerId);
         if (player.id !== playerId) throw new HttpException(NOT_PLAYER_TURN, StatusCodes.FORBIDDEN);
         if (game.gameIsOver) return [undefined, undefined];
 
@@ -67,7 +66,7 @@ export class GamePlayService {
             if (updatedData) updatedData.round = nextRoundData;
             else updatedData = { round: nextRoundData };
             if (game.areGameOverConditionsMet()) {
-                endGameFeedback = await this.handleGameOver(undefined, game, updatedData);
+                endGameFeedback = await this.handleGameOver(game, updatedData);
             }
         }
         return [updatedData, { localPlayerFeedback, opponentFeedback, endGameFeedback }];
@@ -135,8 +134,8 @@ export class GamePlayService {
         return player instanceof ExpertVirtualPlayer || totalTilesLeft >= MINIMUM_TILES_LEFT_FOR_EXCHANGE;
     }
 
-    private async handleGameOver(winnerName: string | undefined, game: Game, updatedData: GameUpdateData): Promise<FeedbackMessage[]> {
-        const [updatedScorePlayer1, updatedScorePlayer2] = game.endOfGame(winnerName);
+    private async handleGameOver(game: Game, updatedData: GameUpdateData): Promise<FeedbackMessage[]> {
+        const [updatedScorePlayer1, updatedScorePlayer2, updatedScorePlayer3, updatedScorePlayer4] = game.endOfGame();
         if (!game.isAddedToDatabase) {
             const connectedRealPlayers = game.getConnectedRealPlayers();
             for (const player of connectedRealPlayers) {
@@ -152,19 +151,23 @@ export class GamePlayService {
         else updatedData.player1 = { id: game.player1.id, score: updatedScorePlayer1 };
         if (updatedData.player2) updatedData.player2.score = updatedScorePlayer2;
         else updatedData.player2 = { id: game.player2.id, score: updatedScorePlayer2 };
+        if (updatedData.player3) updatedData.player3.score = updatedScorePlayer3;
+        else updatedData.player3 = { id: game.player3.id, score: updatedScorePlayer3 };
+        if (updatedData.player4) updatedData.player4.score = updatedScorePlayer4;
+        else updatedData.player4 = { id: game.player4.id, score: updatedScorePlayer4 };
 
         updatedData.isGameOver = true;
-        updatedData.winners = winnerName ? [winnerName] : game.computeWinners();
-        return game.endGameMessage(winnerName);
+        updatedData.winners = game.computeWinners();
+        return game.endGameMessage();
     }
 
     private async handlePlayerLeftEvent(gameId: string, playerWhoLeftId: string): Promise<void> {
         const game = this.activeGameService.getGame(gameId, playerWhoLeftId);
-        const playerStillInGame = game.getPlayer(playerWhoLeftId, IS_OPPONENT);
+        const playersStillInGame = game.getOpponentPlayers(playerWhoLeftId);
 
-        if (isIdVirtualPlayer(playerStillInGame.id)) {
-            game.getPlayer(playerWhoLeftId, IS_REQUESTING).isConnected = false;
-            await this.handleGameOver(playerStillInGame.name, game, {});
+        if (playersStillInGame.every((playerStillInGame) => isIdVirtualPlayer(playerStillInGame.id))) {
+            game.getPlayer(playerWhoLeftId).isConnected = false;
+            await this.handleGameOver(game, {});
             this.activeGameService.removeGame(gameId, playerWhoLeftId);
             return;
         }
@@ -192,6 +195,13 @@ export class GamePlayService {
         if (newGameUpdateData.player2) {
             newGameUpdateData.player2.id = game.player2.id;
         }
+        if (newGameUpdateData.player3) {
+            newGameUpdateData.player3.id = game.player3.id;
+        }
+        if (newGameUpdateData.player4) {
+            newGameUpdateData.player4.id = game.player4.id;
+        }
+
         return newGameUpdateData;
     }
 

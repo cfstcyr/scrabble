@@ -49,3 +49,6 @@ export const NO_WORDS_FOUND = 'Aucun mot trouvé';
 export const FOUND_WORDS = '**Mots trouvés**';
 
 export const WORD_FINDING_BEGINNER_ACCEPTANCE_THRESHOLD = 0.7;
+
+export const NUMBER_OF_PLAYERS_IN_GAME = 4;
+export const NUMBER_OF_PASSING_ROUNDS_TO_END_GAME = 2;

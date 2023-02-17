@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -140,7 +141,7 @@ describe('ActionPlace', () => {
         gameStub.player2 = new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.name);
         gameStub.player1.tiles = TILES_PLAYER_1.map((t) => ({ ...t }));
         gameStub.player2.tiles = TILES_PLAYER_1.map((t) => ({ ...t }));
-        gameStub.isPlayer1.returns(true);
+        gameStub.getPlayerNumber.returns(1);
         boardStub.grid = BOARD.map((row) => row.map((s) => ({ ...s })));
         gameStub.dictionarySummary = { id: 'id' } as unknown as DictionarySummary;
 
@@ -323,9 +324,21 @@ describe('ActionPlace', () => {
             });
 
             it('should return update with player 2', () => {
-                gameStub.isPlayer1.returns(false);
+                gameStub.getPlayerNumber.returns(2);
                 const update: GameUpdateData = action.execute()!;
                 expect(update.player2).to.exist;
+            });
+
+            it('should return update with player 3', () => {
+                gameStub.getPlayerNumber.returns(3);
+                const update: GameUpdateData = action.execute()!;
+                expect(update.player3).to.exist;
+            });
+
+            it('should return update with player 4', () => {
+                gameStub.getPlayerNumber.returns(4);
+                const update: GameUpdateData = action.execute()!;
+                expect(update.player4).to.exist;
             });
 
             it('should execute with a blank tile', () => {
