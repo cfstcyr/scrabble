@@ -41,7 +41,8 @@ class _ChatPageState extends State<ChatPage> {
     channelController.init();
     _listenMessages();
     userData = PublicUser(username: name, avatar: "https://placedog.net/100");
-    _user = types.User(id: "UserId", firstName: name, imageUrl: "https://placedog.net/100");
+    _user = types.User(
+        id: "UserId", firstName: name, imageUrl: "https://placedog.net/100");
   }
 
   @override
@@ -95,7 +96,8 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   whiteSpace(types.PartialText message) {
-    var isWhitespace = message.text.trim().replaceAll(WHITESPACE_REGEX, '').isEmpty;
+    var isWhitespace =
+        message.text.trim().replaceAll(WHITESPACE_REGEX, '').isEmpty;
     var isValid = !isWhitespace;
     return isValid;
   }
@@ -129,7 +131,6 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleNewMessage(Map<String, dynamic> message) async {
-    //TODO: Distinguer entre les messages renvoyé par le serveur et les messages envoyé par les autres users
     final channelmessage = ChannelMessage.fromJson(message);
     var _sender = types.User(
         id: "",
