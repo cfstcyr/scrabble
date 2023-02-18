@@ -29,6 +29,9 @@ import { TypeOfId } from '@common/types/id';
 import { PlayerData } from '@app/classes/communication/player-data';
 import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { ConnectedUser } from '@app/classes/user/connected-user';
+import { EventEmitter } from 'stream';
 
 // const TIMEOUT_DELAY = 10000;
 const RESPONSE_DELAY = 400;
@@ -86,7 +89,11 @@ describe('ChatService', () => {
     let chatPersistenceService: Sinon.SinonStubbedInstance<ChatPersistenceService>;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbed(ChatPersistenceService).withStubbedPrototypes(Application, { bindRoutes: undefined });
+        testingUnit = new ServicesTestingUnit()
+            .withStubbed(ChatPersistenceService)
+            .withStubbed(AuthentificationService, undefined, { connectedUsers: new ConnectedUser() })
+            .withStubbed(SocketService)
+            .withStubbedPrototypes(Application, { bindRoutes: undefined });
         chatPersistenceService = testingUnit.setStubbed(ChatPersistenceService);
         await testingUnit.withMockDatabaseService();
     });
@@ -112,8 +119,17 @@ describe('ChatService', () => {
 
     describe('constructor', () => {
         it(`should configureSocket when configureSocketsEvent emits ${SOCKET_CONFIGURE_EVENT_NAME}`, async () => {
+            const socketService = testingUnit.getStubbedInstance(SocketService);
+            socketService['configureSocketsEvent'] = new EventEmitter();
+            socketService.listenToInitialisationEvent.restore();
+
+            service = new ChatService(
+                socketService as unknown as SocketService,
+                chatPersistenceService as unknown as ChatPersistenceService,
+                testingUnit.getStubbedInstance(AuthentificationService) as unknown as AuthentificationService,
+            );
+
             const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => {});
-            const socketService = Container.get(SocketService);
 
             socketService['configureSocketsEvent'].emit(SOCKET_CONFIGURE_EVENT_NAME, serverSocket);
 
@@ -288,7 +304,11 @@ describe('ChatService', () => {
     describe('createChannel', () => {
         it('should call handleCreateChannel', async () => {
             const stub = Sinon.stub(service, 'handleCreateChannel' as any).callsFake(async () => Promise.resolve());
-            Sinon.stub(Container.get(SocketService), 'getSocket').withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
+            // testingUnit.getStubbedInstance(AuthentificationService).connectedUsers = new ConnectedUser();
+            Sinon.stub(testingUnit.getStubbedInstance(AuthentificationService).connectedUsers, 'getSocketId')
+                .withArgs(USER.idUser)
+                .returns(DEFAULT_PLAYER_ID);
+            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
 
             await service['createChannel'](channelCreation, USER.idUser);
 
@@ -299,7 +319,7 @@ describe('ChatService', () => {
     describe('joinChannel', () => {
         it('should call handleJoinChannel', async () => {
             const stub = Sinon.stub(service, 'handleJoinChannel' as any).callsFake(async () => Promise.resolve());
-            Sinon.stub(Container.get(SocketService), 'getSocket').withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
+            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
 
             await service['joinChannel'](testChannel.idChannel, DEFAULT_PLAYER_ID);
 
@@ -310,7 +330,7 @@ describe('ChatService', () => {
     describe('quitChannel', () => {
         it('should call handleQuitChannel', async () => {
             const stub = Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
-            Sinon.stub(Container.get(SocketService), 'getSocket').withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
+            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
 
             await service['quitChannel'](testChannel.idChannel, DEFAULT_PLAYER_ID);
 
