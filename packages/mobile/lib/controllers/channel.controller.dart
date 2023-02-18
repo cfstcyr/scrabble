@@ -9,14 +9,14 @@ import '../locator.dart';
 
 class ChannelController {
   ChannelController._privateConstructor();
-  static final ChannelController _instance = ChannelController._privateConstructor();
+  static final ChannelController _instance =
+      ChannelController._privateConstructor();
   final String endpoint = "${Environment().config.apiUrl}/channel";
   final socketService = getIt.get<SocketService>();
   factory ChannelController() {
     return _instance;
   }
   ChannelController._internal() {
-    socketService.initSocket();
     init();
   }
 

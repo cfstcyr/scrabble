@@ -7,6 +7,7 @@ import 'package:mobile/classes/channel-message.dart';
 import 'package:mobile/classes/channel.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/channels.constants.dart';
+import 'package:mobile/constants/socket-events.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:uuid/uuid.dart';
@@ -148,13 +149,13 @@ class _ChatPageState extends State<ChatPage> {
 
   //TODO:  Add ce listener dans le controller
   Future<void> _listenMessages() async {
-    socketService.socket.on('channel:newMessage', (channelMessage) {
+    socketService.socket.on(CHANNEL_NEW_MESSAGE, (channelMessage) {
       _handleNewMessage(channelMessage);
     });
   }
 
   String generateAvatarUrl() {
-    final avatarUrl = "https://placedog.net/${Random().nextInt(1000)}";
+    final avatarUrl = "${AVATARS_URL}${Random().nextInt(1000)}";
     return avatarUrl;
   }
 }

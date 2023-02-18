@@ -13,7 +13,9 @@ class SocketService {
   factory SocketService() {
     return _instance;
   }
-
+  SocketService._internal() {
+    initSocket();
+  }
   Future<void> initSocket() async {
     socket.connect();
     socket.onConnect((_) {
