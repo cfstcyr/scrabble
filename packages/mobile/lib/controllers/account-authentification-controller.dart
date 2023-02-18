@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/constants/login-constants.dart';
 import 'package:mobile/environments/environment.dart';
 
 class AccountAuthenticationController {
@@ -53,16 +54,16 @@ class AccountAuthenticationController {
     // }
   }
 
-  Future<bool> login(UserLoginCredentials credentials) async {
+  Future<dynamic> login(UserLoginCredentials credentials) async {
     Response res =
         await post(Uri.parse("${endpoint}/login"), body: credentials);
 
     if (res.statusCode == HttpStatus.ok) {
-      return true;
+      return res.body as UserSession;
     } else if (res.statusCode == HttpStatus.notAcceptable) {
-      return false;
+      throw (LOGIN_FAILED);
     } else {
-      return false;
+      throw (ALREADY_LOGGED_IN_FR);
     }
   }
 }

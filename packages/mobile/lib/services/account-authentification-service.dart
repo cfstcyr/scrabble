@@ -1,7 +1,7 @@
 import 'package:mobile/classes/account.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/controllers/account-authentification-controller.dart';
 
-import '../classes/login.dart';
 import '../locator.dart';
 
 class AccountAuthenticationService {
@@ -43,7 +43,7 @@ class AccountAuthenticationService {
     // }
   }
 
-  Future<bool> login(LoginData credentials) async {
+  Future<bool> login(UserLoginCredentials credentials) async {
     return await accountAuthenticationController.login(credentials);
     // if (res.statusCode == 200) {
     //   return true;
