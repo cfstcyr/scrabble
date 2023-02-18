@@ -20,13 +20,13 @@ export abstract class BaseController {
 
     route(app: Application): void {
         app.use(this.path, this.router);
-        app.use(applyMiddlewareUnlessUrlStartsWith(PUBLIC_HTTP_REQUEST_URLS, authenticateToken));
+        app.use(applyMiddlewareUnless(PUBLIC_HTTP_REQUEST_URLS, authenticateToken));
     }
 
     protected abstract configure(router: Router): void;
 }
 
-const applyMiddlewareUnlessUrlStartsWith = (urls: string[], middleware: (req: Request, res: Response, next: NextFunction) => void) => {
+const applyMiddlewareUnless = (urls: string[], middleware: (req: Request, res: Response, next: NextFunction) => void) => {
     return (req: Request, res: Response, next: NextFunction) => {
         const url = req.url;
 
