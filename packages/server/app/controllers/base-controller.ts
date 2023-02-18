@@ -1,5 +1,5 @@
-import { VIRTUAL_PLAYER_ID_PREFIX } from '@app/constants/virtual-player-constants';
 import { authenticateToken } from '@app/middlewares/authentificate-token';
+import { doesRequestComeFromVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { Application, NextFunction, Request, Response, Router } from 'express';
 import { Token } from 'typedi';
 
@@ -35,8 +35,4 @@ const applyMiddlewareUnless = (urls: string[], middleware: (req: Request, res: R
 
         return middleware(req, res, next);
     };
-};
-
-const doesRequestComeFromVirtualPlayer = (url: string): boolean => {
-    return url.includes(VIRTUAL_PLAYER_ID_PREFIX) && url.includes('action');
 };
