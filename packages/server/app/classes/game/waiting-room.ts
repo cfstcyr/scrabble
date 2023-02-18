@@ -9,6 +9,8 @@ export default class WaitingRoom extends Room {
     joinedPlayer2?: Player;
     joinedPlayer3?: Player;
     joinedPlayer4?: Player;
+    requestingPlayers: Player[];
+
     private config: GameConfig;
 
     constructor(config: GameConfig) {
@@ -17,6 +19,7 @@ export default class WaitingRoom extends Room {
         this.joinedPlayer2 = undefined;
         this.joinedPlayer3 = undefined;
         this.joinedPlayer4 = undefined;
+        this.requestingPlayers = [];
     }
 
     getConfig(): GameConfig {

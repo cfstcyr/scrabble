@@ -21,6 +21,7 @@ import {
     JoinRequestEmitArgs,
     LobbiesUpdateEmitArgs,
     NewMessageEmitArgs,
+    PlayerJoinedEmitArgs,
     RejectEmitArgs,
     SocketEmitEvents,
     StartGameEmitArgs,
@@ -122,8 +123,10 @@ export class SocketService {
     /* eslint-disable no-dupe-class-members */
     emitToRoom(id: string, ev: 'gameUpdate', ...args: GameUpdateEmitArgs[]): void;
     emitToRoom(id: string, ev: 'joinRequest', ...args: JoinRequestEmitArgs[]): void;
+    emitToRoom(id: string, ev: 'player_joined', ...args: PlayerJoinedEmitArgs[]): void;
     emitToRoom(id: string, ev: 'startGame', ...args: StartGameEmitArgs[]): void;
     emitToRoom(id: string, ev: 'canceledGame', ...args: CanceledGameEmitArgs[]): void;
+    emitToRoom(id: string, ev: 'joinerLeaveGame', ...args: JoinerLeaveGameEmitArgs[]): void;
     emitToRoom(id: string, ev: 'rejected', ...args: RejectEmitArgs[]): void;
     emitToRoom(id: string, ev: 'lobbiesUpdate', ...args: LobbiesUpdateEmitArgs[]): void;
     emitToRoom(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
@@ -136,6 +139,7 @@ export class SocketService {
 
     emitToSocket(id: string, ev: 'gameUpdate', ...args: GameUpdateEmitArgs[]): void;
     emitToSocket(id: string, ev: 'joinRequest', ...args: JoinRequestEmitArgs[]): void;
+    emitToSocket(id: string, ev: 'player_joined', ...args: PlayerJoinedEmitArgs[]): void;
     emitToSocket(id: string, ev: 'startGame', ...args: StartGameEmitArgs[]): void;
     emitToSocket(id: string, ev: 'canceledGame', ...args: CanceledGameEmitArgs[]): void;
     emitToSocket(id: string, ev: 'joinerLeaveGame', ...args: JoinerLeaveGameEmitArgs[]): void;
@@ -154,6 +158,7 @@ export class SocketService {
 
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'gameUpdate', ...args: GameUpdateEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'joinRequest', ...args: JoinRequestEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'player_joined', ...args: PlayerJoinedEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'startGame', ...args: StartGameEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'canceledGame', ...args: CanceledGameEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'rejected', ...args: RejectEmitArgs[]): void;

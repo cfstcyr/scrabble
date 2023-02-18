@@ -15,8 +15,7 @@ export interface GameConfigData {
     gameMode: GameMode;
     maxRoundTime: number;
     dictionary: DictionarySummary;
-    virtualPlayerName?: string;
-    virtualPlayerLevel?: VirtualPlayerLevel;
+    virtualPlayerLevel: VirtualPlayerLevel;
 }
 
 export interface GameConfig {
