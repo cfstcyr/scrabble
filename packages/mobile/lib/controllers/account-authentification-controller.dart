@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:mobile/classes/account.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/environments/environment.dart';
-
-import '../classes/login.dart';
 
 class AccountAuthenticationController {
   AccountAuthenticationController._privateConstructor();
@@ -53,13 +53,14 @@ class AccountAuthenticationController {
     // }
   }
 
-  //TODO: Á tester dans la tache 94-LE-Verification-Auth
-  Future<bool> login(LoginData credentials) async {
+  Future<bool> login(UserLoginCredentials credentials) async {
     Response res =
         await post(Uri.parse("${endpoint}/login"), body: credentials);
 
-    if (res.statusCode == 202) {
+    if (res.statusCode == HttpStatus.ok) {
       return true;
+    } else if (res.statusCode == HttpStatus.notAcceptable) {
+      return false;
     } else {
       return false;
     }
