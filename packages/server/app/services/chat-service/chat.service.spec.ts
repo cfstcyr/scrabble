@@ -32,6 +32,7 @@ import { ChatPersistenceService } from '@app/services/chat-persistence-service/c
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ConnectedUser } from '@app/classes/user/connected-user';
 import { EventEmitter } from 'stream';
+import { GROUP_CHANNEL } from '@app/constants/chat';
 
 // const TIMEOUT_DELAY = 10000;
 const RESPONSE_DELAY = 400;
@@ -296,6 +297,66 @@ describe('ChatService', () => {
 
                         clientSocket.emit('channel:quit', testChannel.idChannel);
                     });
+                });
+            });
+        });
+
+        describe('channel:init', () => {
+            let quitChannelStub: Sinon.SinonStub;
+            let joinChannelStub: Sinon.SinonStub;
+
+            beforeEach(() => {
+                quitChannelStub = Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
+                joinChannelStub = Sinon.stub(service, 'handleJoinChannel' as any).callsFake(async () => Promise.resolve());
+                chatPersistenceService.getChannelIdsWithPropertiesForUserId.resolves([]);
+                chatPersistenceService.getUserChannelIds.resolves([]);
+            });
+
+            describe('HAPPY PATH', () => {
+                it('should quit remaining group channels', async () => {
+                    serverSocket.data.user = USER;
+                    chatPersistenceService.getChannelIdsWithPropertiesForUserId
+                        .withArgs(GROUP_CHANNEL, USER.idUser)
+                        .resolves([testChannel.idChannel]);
+
+                    clientSocket.emit('channel:init');
+
+                    await Delay.for(RESPONSE_DELAY);
+
+                    expect(quitChannelStub.calledWith(testChannel.idChannel, serverSocket)).to.be.true;
+                });
+
+                it('should not quit any channels if no channels are group channels', async () => {
+                    serverSocket.data.user = USER;
+                    chatPersistenceService.getChannelIdsWithPropertiesForUserId.withArgs(GROUP_CHANNEL, USER.idUser).resolves([]);
+
+                    clientSocket.emit('channel:init');
+
+                    await Delay.for(RESPONSE_DELAY);
+
+                    expect(quitChannelStub.called).to.be.false;
+                });
+
+                it('should join channels which the user is in', async () => {
+                    serverSocket.data.user = USER;
+                    chatPersistenceService.getUserChannelIds.withArgs(USER.idUser).resolves([testChannel.idChannel]);
+
+                    clientSocket.emit('channel:init');
+
+                    await Delay.for(RESPONSE_DELAY);
+
+                    expect(joinChannelStub.calledWith(testChannel.idChannel, serverSocket)).to.be.true;
+                });
+
+                it('should not join any channels if user is in no channels', async () => {
+                    serverSocket.data.user = USER;
+                    chatPersistenceService.getUserChannelIds.withArgs(USER.idUser).resolves([]);
+
+                    clientSocket.emit('channel:init');
+
+                    await Delay.for(RESPONSE_DELAY);
+
+                    expect(joinChannelStub.called).to.be.false;
                 });
             });
         });
