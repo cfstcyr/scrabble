@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/text-field-handler.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
@@ -112,29 +113,23 @@ class _LoginFormState extends State<LoginForm> {
                 SizedBox(width: 100),
                 ElevatedButton(
                   onPressed: () async => {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ChatPage(
-                                name: usernameHandler.controller.text)))
+                    //   Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //           builder: (context) => ChatPage(
+                    //               name: usernameHandler.controller.text)))
+                    // },
+                    await isLogged(UserLoginCredentials(
+                            email: usernameHandler.controller.text,
+                            password: passwordHandler.controller.text))
+                        ? {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatPage(
+                                        name: usernameHandler.controller.text)))
+                          }
                   },
-                  //   await authController.login(LoginData(
-                  //           username: usernameHandler.controller.text,
-                  //           password: passwordHandler.controller.text))
-                  //       ? {
-                  //           Navigator.push(
-                  //               context,
-                  //               MaterialPageRoute(
-                  //                   builder: (context) => ChatPage(
-                  //                       name: usernameHandler.controller.text)))
-                  //         }
-                  //       : {
-                  //           setState(() {
-                  //             usernameHandler.errorMessage =
-                  //                 ALREADY_LOGGED_IN_FR;
-                  //           })
-                  //         }
-                  // },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeColor,
                     shadowColor: Colors.black,
@@ -178,5 +173,17 @@ class _LoginFormState extends State<LoginForm> {
         usernameHandler.errorMessage = "";
       });
     }
+  }
+  isLogged(UserLoginCredentials credentials) async {
+    try{
+      await authController.login(credentials);
+      return true;
+    }
+    catch(e){
+                setState(() {
+                  usernameHandler.errorMessage =
+                      e.toString();
+                });
+              }
   }
 }
