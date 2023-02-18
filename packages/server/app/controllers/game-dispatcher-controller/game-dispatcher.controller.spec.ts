@@ -57,6 +57,7 @@ chai.use(chaiAsPromised);
 
 const DEFAULT_GAME_ID = 'gameId';
 const DEFAULT_PLAYER_ID = 'playerId';
+const DEFAULT_USER_ID = 1;
 const DEFAULT_NEW_PLAYER_ID = 'newPlayerId';
 const DEFAULT_MAX_ROUND_TIME = 1;
 
@@ -442,55 +443,59 @@ describe('GameDispatcherController', () => {
             const createGameServiceSpy = chai.spy.on(controller, 'handleCreateSoloGame', () => {
                 return;
             });
-            await controller['handleCreateGame'](DEFAULT_SOLO_GAME_CONFIG_DATA);
+            await controller['handleCreateGame'](DEFAULT_SOLO_GAME_CONFIG_DATA, DEFAULT_USER_ID);
             expect(createGameServiceSpy).to.have.been.called();
         });
 
         it('should call createMultiplayerGame', () => {
             const createGameServiceSpy = chai.spy.on(controller, 'handleCreateMultiplayerGame', () => DEFAULT_GAME_ID);
-            controller['handleCreateGame'](DEFAULT_GAME_CONFIG_DATA);
+            controller['handleCreateGame'](DEFAULT_GAME_CONFIG_DATA, DEFAULT_USER_ID);
             expect(createGameServiceSpy).to.have.been.called();
         });
 
         it('should throw if config.playerName is undefined', () => {
             const config = { ...DEFAULT_GAME_CONFIG_DATA, playerName: undefined, virtualPlayerLevel: VirtualPlayerLevel.Expert };
-            expect(controller['handleCreateGame'](config as unknown as GameConfigData)).to.be.rejectedWith(PLAYER_NAME_REQUIRED);
+            expect(controller['handleCreateGame'](config as unknown as GameConfigData, DEFAULT_USER_ID)).to.be.rejectedWith(PLAYER_NAME_REQUIRED);
         });
 
         it('should throw if config.gameType is undefined', () => {
             const config = { ...DEFAULT_GAME_CONFIG_DATA, gameType: undefined };
-            expect(controller['handleCreateGame'](config as unknown as GameConfigData)).to.be.rejectedWith(GAME_TYPE_REQUIRED);
+            expect(controller['handleCreateGame'](config as unknown as GameConfigData, DEFAULT_USER_ID)).to.be.rejectedWith(GAME_TYPE_REQUIRED);
         });
 
         it('should throw if config.gameMode is undefined', () => {
             const config = { ...DEFAULT_GAME_CONFIG_DATA, gameMode: undefined };
-            expect(controller['handleCreateGame'](config as unknown as GameConfigData)).to.be.rejectedWith(GAME_MODE_REQUIRED);
+            expect(controller['handleCreateGame'](config as unknown as GameConfigData, DEFAULT_USER_ID)).to.be.rejectedWith(GAME_MODE_REQUIRED);
         });
 
         it('should throw if config.maxRoundTime is undefined', () => {
             const config = { ...DEFAULT_GAME_CONFIG_DATA, maxRoundTime: undefined };
-            expect(controller['handleCreateGame'](config as unknown as GameConfigData)).to.be.rejectedWith(MAX_ROUND_TIME_REQUIRED);
+            expect(controller['handleCreateGame'](config as unknown as GameConfigData, DEFAULT_USER_ID)).to.be.rejectedWith(MAX_ROUND_TIME_REQUIRED);
         });
 
         it('should throw if config.dictionary is undefined', () => {
             const config = { ...DEFAULT_GAME_CONFIG_DATA, dictionary: undefined };
-            expect(controller['handleCreateGame'](config as unknown as GameConfigData)).to.be.rejectedWith(DICTIONARY_REQUIRED);
+            expect(controller['handleCreateGame'](config as unknown as GameConfigData, DEFAULT_USER_ID)).to.be.rejectedWith(DICTIONARY_REQUIRED);
         });
 
         it('should throw if config.playerName is invalid', () => {
             const playerName = '     ';
             const config = { ...DEFAULT_GAME_CONFIG_DATA, playerName };
-            expect(controller['handleCreateGame'](config as unknown as GameConfigData)).to.be.rejectedWith(NAME_IS_INVALID);
+            expect(controller['handleCreateGame'](config as unknown as GameConfigData, DEFAULT_USER_ID)).to.be.rejectedWith(NAME_IS_INVALID);
         });
 
         it('should throw if config.virtualPlayerName is undefined with solo game', () => {
             const config = { ...DEFAULT_GAME_CONFIG_DATA, gameMode: GameMode.Solo, virtualPlayerName: undefined };
-            expect(controller['handleCreateGame'](config as unknown as GameConfigData)).to.be.rejectedWith(VIRTUAL_PLAYER_NAME_REQUIRED);
+            expect(controller['handleCreateGame'](config as unknown as GameConfigData, DEFAULT_USER_ID)).to.be.rejectedWith(
+                VIRTUAL_PLAYER_NAME_REQUIRED,
+            );
         });
 
         it('should throw if config.virtualPlayerLevel is undefined with solo game', () => {
             const config = { ...DEFAULT_GAME_CONFIG_DATA, gameMode: GameMode.Solo, virtualPlayerLevel: undefined };
-            expect(controller['handleCreateGame'](config as unknown as GameConfigData)).to.be.rejectedWith(VIRTUAL_PLAYER_LEVEL_REQUIRED);
+            expect(controller['handleCreateGame'](config as unknown as GameConfigData, DEFAULT_USER_ID)).to.be.rejectedWith(
+                VIRTUAL_PLAYER_LEVEL_REQUIRED,
+            );
         });
     });
 
@@ -507,7 +512,7 @@ describe('GameDispatcherController', () => {
         });
 
         it('should call createSoloGame', async () => {
-            await controller['handleCreateGame'](DEFAULT_SOLO_GAME_CONFIG_DATA);
+            await controller['handleCreateGame'](DEFAULT_SOLO_GAME_CONFIG_DATA, DEFAULT_USER_ID);
             expect(createSoloGameSpy).to.have.been.called();
         });
     });
@@ -529,12 +534,12 @@ describe('GameDispatcherController', () => {
         });
 
         it('should call createMultiplayerGame', async () => {
-            await controller['handleCreateMultiplayerGame'](DEFAULT_SOLO_GAME_CONFIG_DATA);
+            await controller['handleCreateMultiplayerGame'](DEFAULT_SOLO_GAME_CONFIG_DATA, DEFAULT_USER_ID);
             expect(createGameServiceSpy).to.have.been.called();
         });
 
         it('should call handleLobbiesUpdate', async () => {
-            await controller['handleCreateMultiplayerGame'](DEFAULT_SOLO_GAME_CONFIG_DATA);
+            await controller['handleCreateMultiplayerGame'](DEFAULT_SOLO_GAME_CONFIG_DATA, DEFAULT_USER_ID);
             expect(handleLobbesUpdateSpy).to.have.been.called();
         });
     });

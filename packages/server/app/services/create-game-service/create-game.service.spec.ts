@@ -26,6 +26,7 @@ import { CreateGameService } from './create-game.service';
 chai.use(spies);
 
 const DEFAULT_PLAYER_ID = 'playerId';
+const DEFAULT_USER_ID = 1;
 
 const DEFAULT_MAX_ROUND_TIME = 1;
 
@@ -151,7 +152,7 @@ describe('CreateGameService', () => {
         });
 
         it('should return waiting room with config and channel id', async () => {
-            const newWaitingRoom = await createGameService.createMultiplayerGame(DEFAULT_GAME_CONFIG_DATA);
+            const newWaitingRoom = await createGameService.createMultiplayerGame(DEFAULT_GAME_CONFIG_DATA, DEFAULT_USER_ID);
             expect(newWaitingRoom).to.be.an.instanceof(WaitingRoom);
             expect(newWaitingRoom['config']).to.deep.equal(DEFAULT_GAME_CONFIG);
             expect(newWaitingRoom['groupChannelId']).to.equal(1);
@@ -161,7 +162,7 @@ describe('CreateGameService', () => {
     describe('generateGameConfig', () => {
         it('should call generateGameConfig', () => {
             const configSpy = spy.on(createGameService, 'generateGameConfig');
-            createGameService.createMultiplayerGame(DEFAULT_GAME_CONFIG_DATA);
+            createGameService.createMultiplayerGame(DEFAULT_GAME_CONFIG_DATA, DEFAULT_USER_ID);
             expect(configSpy).to.have.been.called();
         });
     });

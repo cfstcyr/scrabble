@@ -33,6 +33,7 @@ import { GameDispatcherService } from './game-dispatcher.service';
 
 const expect = chai.expect;
 
+const DEFAULT_USER_ID = 1;
 const DEFAULT_PLAYER_NAME1 = 'newKidOnTheBlock1';
 const DEFAULT_PLAYER_ID1 = 'id1';
 const DEFAULT_PLAYER_NAME2 = 'newKidOnTheBlock2';
@@ -216,7 +217,7 @@ describe('GameDispatcherService', () => {
         });
 
         it('should call appropriate methods', async () => {
-            await gameDispatcherService['createMultiplayerGame'](DEFAULT_SOLO_GAME_CONFIG_DATA);
+            await gameDispatcherService['createMultiplayerGame'](DEFAULT_SOLO_GAME_CONFIG_DATA, DEFAULT_USER_ID);
             expect(createMultiplayerGameSpy).to.have.been.called();
             expect(addToRoomSpy).to.have.been.called();
         });

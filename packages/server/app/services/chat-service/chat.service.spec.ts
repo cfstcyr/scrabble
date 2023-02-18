@@ -290,7 +290,7 @@ describe('ChatService', () => {
             const stub = Sinon.stub(service, 'handleCreateChannel' as any).callsFake(async () => Promise.resolve());
             Sinon.stub(Container.get(SocketService), 'getSocket').withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
 
-            await service['createChannel'](channelCreation, DEFAULT_PLAYER_ID);
+            await service['createChannel'](channelCreation, USER.idUser);
 
             expect(stub.calledWith(channelCreation, serverSocket)).to.be.true;
         });
