@@ -1,22 +1,39 @@
-import * as express from 'express';
+import { VIRTUAL_PLAYER_ID_PREFIX } from '@app/constants/virtual-player-constants';
+import { authenticateToken } from '@app/middlewares/authentificate-token';
+import { Application, NextFunction, Request, Response, Router } from 'express';
 import { Token } from 'typedi';
+
+const PUBLIC_HTTP_REQUEST_URLS = ['/api/authentification', '/api/database'];
 
 export const controllerToken = new Token<BaseController>('controllers');
 
 export abstract class BaseController {
-    private router: express.Router;
+    private router: Router;
     private path: string;
 
     constructor(path: string) {
-        this.router = express.Router();
+        this.router = Router();
         this.path = path;
 
         this.configure(this.router);
     }
 
-    route(app: express.Application): void {
+    route(app: Application): void {
         app.use(this.path, this.router);
+        app.use(applyMiddlewareUnlessUrlStartsWith(PUBLIC_HTTP_REQUEST_URLS, authenticateToken));
     }
 
-    protected abstract configure(router: express.Router): void;
+    protected abstract configure(router: Router): void;
 }
+
+const applyMiddlewareUnlessUrlStartsWith = (urls: string[], middleware: (req: Request, res: Response, next: NextFunction) => void) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const { playerId } = req.params;
+
+        console.log(playerId);
+        if (playerId && playerId.startsWith(VIRTUAL_PLAYER_ID_PREFIX)) return next();
+        if (urls.find((url) => req.url.startsWith(url))) return next();
+
+        return middleware(req, res, next);
+    };
+};
