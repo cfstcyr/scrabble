@@ -72,6 +72,21 @@ export class ChatPersistenceService {
         }
     }
 
+    async getChannelIdsWithPropertiesForUserId(channel: Partial<Channel>, idUser: UserId): Promise<TypeOfId<Channel>[]> {
+        const request = this.channelTable
+            .select(`${CHANNEL_TABLE}.idChannel`)
+            .leftJoin<UserChannel>(USER_CHANNEL_TABLE, `${CHANNEL_TABLE}.idChannel`, `${USER_CHANNEL_TABLE}.idChannel`)
+            .where(`${USER_CHANNEL_TABLE}.idUser`, idUser);
+
+        Object.keys(channel).forEach((key) => {
+            if (key === undefined) return;
+
+            request.andWhere({ [key]: channel[key] });
+        });
+
+        return (await request).map(({ idChannel }) => idChannel);
+    }
+
     private async isUserInChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<boolean> {
         return (await this.userChatTable.select('*').where({ idChannel, idUser })).length > 0;
     }
