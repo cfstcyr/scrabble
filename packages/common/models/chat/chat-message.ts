@@ -1,6 +1,6 @@
 import { WithIdOf } from "../../types/id";
 import { PublicUser } from "../user";
-import { Channel } from "./channel";
+import { Channel, UserChannel } from "./channel";
 
 export interface ChatMessage {
     sender: PublicUser;
@@ -10,4 +10,10 @@ export interface ChatMessage {
 
 export interface ChannelMessage extends WithIdOf<Channel> {
     message: ChatMessage;
+}
+
+export interface ChatHistoryMessage extends UserChannel {
+    idMessage: number;
+    date: Pick<ChatMessage, 'date'>;
+    content: Pick<ChatMessage, 'content'>;
 }
