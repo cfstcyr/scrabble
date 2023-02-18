@@ -338,53 +338,27 @@ describe('ChatService', () => {
         });
     });
 
-    // describe('emptyChannel', () => {
-    //     it('should make every userId in channel quit', async () => {
-    //         const expectedUser1 = { ...USER, idUser: 1, username: 'user1', email: 'email1' };
-    //         const expectedUser2 = { ...USER, idUser: 2, username: 'user2', email: 'email2' };
-    //         const expectedUser3 = { ...USER, idUser: 3, username: 'user3', email: 'email3' };
+    describe('emptyChannel', () => {
+        it('should make every userId in channel quit', async () => {
+            const expectedUserIds = [1, 2, 3];
+            chatPersistenceService.getChannelUserIds.resolves(expectedUserIds);
+            Sinon.stub(testingUnit.getStubbedInstance(AuthentificationService).connectedUsers, 'getSocketId').returns(DEFAULT_PLAYER_ID);
 
-    //         const userChannelTable = [
-    //             { idUser: expectedUser1.idUser, idChannel: testChannel.idChannel },
-    //             { idUser: expectedUser2.idUser, idChannel: testChannel.idChannel },
-    //             { idUser: expectedUser3.idUser, idChannel: testChannel.idChannel },
-    //         ];
+            const handleQuitStub = Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
+            testingUnit
+                .getStubbedInstance(SocketService)
+                .getSocket.onFirstCall()
+                .returns(expectedUserIds[0] as unknown as ServerSocket)
+                .onSecondCall()
+                .returns(expectedUserIds[1] as unknown as ServerSocket)
+                .onThirdCall()
+                .returns(expectedUserIds[2] as unknown as ServerSocket);
 
-    //         await service['channelTable'].insert(testChannel);
-    //         await databaseService.knex.insert([expectedUser1, expectedUser2, expectedUser3]).into(USER_TABLE);
-    //         await service['userChatTable'].insert(userChannelTable);
+            await service['emptyChannel'](testChannel.idChannel);
 
-    //         const stub = Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
-    //         Sinon.stub(Container.get(SocketService), 'getSocket')
-    //             .onFirstCall()
-    //             .returns(userChannelTable[0] as unknown as ServerSocket)
-    //             .onSecondCall()
-    //             .returns(userChannelTable[1] as unknown as ServerSocket)
-    //             .onThirdCall()
-    //             .returns(userChannelTable[2] as unknown as ServerSocket);
-
-    //         await service['emptyChannel'](testChannel.idChannel);
-
-    //         userChannelTable.forEach((userChannel) => {
-    //             expect(stub.calledWith(testChannel.idChannel, userChannel)).to.be.true;
-    //         });
-    //     });
-
-    //     it('should NOT make userId NOT in channel quit', async () => {
-    //         const expectedUser1 = { ...USER, idUser: 1, username: 'user1', email: 'email1' };
-    //         const differentChannel: Channel = { ...testChannel, name: 'different channel', idChannel: testChannel.idChannel + 1 };
-
-    //         const userChannelTable = [{ idUser: expectedUser1.idUser, idChannel: differentChannel.idChannel }];
-
-    //         await service['channelTable'].insert([testChannel, differentChannel]);
-    //         await databaseService.knex.insert([expectedUser1]).into(USER_TABLE);
-    //         await service['userChatTable'].insert(userChannelTable);
-
-    //         const stub = Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
-
-    //         await service['emptyChannel'](testChannel.idChannel);
-
-    //         expect(stub.called).to.be.false;
-    //     });
-    // });
+            expectedUserIds.forEach((userId) => {
+                expect(handleQuitStub.calledWith(testChannel.idChannel, userId)).to.be.true;
+            });
+        });
+    });
 });
