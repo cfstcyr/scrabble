@@ -87,7 +87,7 @@ describe('SignupContainerComponent', () => {
 
                 component.signupForm.patchValue({ ...DEFAULT_CREDENTIALS, confirmPassword: `${DEFAULT_CREDENTIALS.password}-invalid` });
                 component.onSubmit();
-                expect(touchedSpy).not.toHaveBeenCalled();
+                expect(touchedSpy).toHaveBeenCalled();
             });
         });
     });
