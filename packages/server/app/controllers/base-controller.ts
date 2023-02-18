@@ -28,12 +28,15 @@ export abstract class BaseController {
 
 const applyMiddlewareUnlessUrlStartsWith = (urls: string[], middleware: (req: Request, res: Response, next: NextFunction) => void) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        const { playerId } = req.params;
+        const url = req.url;
 
-        console.log(playerId);
-        if (playerId && playerId.startsWith(VIRTUAL_PLAYER_ID_PREFIX)) return next();
-        if (urls.find((url) => req.url.startsWith(url))) return next();
+        if (doesRequestComeFromVirtualPlayer(url)) return next();
+        if (urls.find((urlToFind) => url.startsWith(urlToFind))) return next();
 
         return middleware(req, res, next);
     };
+};
+
+const doesRequestComeFromVirtualPlayer = (url: string): boolean => {
+    return url.includes(VIRTUAL_PLAYER_ID_PREFIX) && url.includes('action');
 };
