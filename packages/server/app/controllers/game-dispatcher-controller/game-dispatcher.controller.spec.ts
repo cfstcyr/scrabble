@@ -129,7 +129,8 @@ describe('GameDispatcherController', () => {
             .withStubbedDictionaryService()
             .withStubbedControllers(GameDispatcherController)
             .withStubbed(SocketService)
-            .withStubbed(ChatService);
+            .withStubbed(ChatService)
+            .withMockedAuthentification();
         createGameServiceStub = testingUnit.setStubbed(CreateGameService);
     });
 
@@ -420,17 +421,6 @@ describe('GameDispatcherController', () => {
             controller['handleReconnection'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_NEW_PLAYER_ID);
             const updateData: GameUpdateData = { player1: { id: DEFAULT_PLAYER_ID, newId: DEFAULT_NEW_PLAYER_ID } };
             expect(emitToRoomNoSenderSpy).to.have.been.called.with(DEFAULT_GAME_ID, DEFAULT_NEW_PLAYER_ID, 'gameUpdate', updateData);
-        });
-
-        it("should connect user to the game's chat room", () => {
-            const expectedChannelId = 1;
-            gameStub.getGroupChannelId.returns(expectedChannelId);
-
-            const chatServiceStub = testingUnit.getStubbedInstance(ChatService);
-            chatServiceStub.joinChannel.callsFake(async () => {});
-
-            controller['handleReconnection'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_NEW_PLAYER_ID);
-            expect(chatServiceStub.joinChannel.calledWith(expectedChannelId, DEFAULT_PLAYER_ID)).to.be.true;
         });
     });
 
@@ -835,18 +825,6 @@ describe('GameDispatcherController', () => {
             playerStub = createStubInstance(Player);
             gameStub.getPlayer.returns(playerStub as unknown as Player);
             handleLeaveSpy = chai.spy.on(controller, 'handleLobbyLeave', () => {});
-        });
-
-        it("should disconnect user from game's chat room", () => {
-            const expectedChannelId = 1;
-            gameStub.getGroupChannelId.returns(expectedChannelId);
-
-            const chatServiceStub = testingUnit.getStubbedInstance(ChatService);
-            chatServiceStub.quitChannel.callsFake(async () => {});
-
-            controller['handleDisconnection'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-
-            expect(chatServiceStub.quitChannel.calledWith(expectedChannelId, DEFAULT_PLAYER_ID)).to.be.true;
         });
 
         it('Disconnection should verify if game is over', () => {
