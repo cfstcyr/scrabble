@@ -11,12 +11,20 @@ import { SocketService } from '@app/services/socket-service/socket.service';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { ServerUser } from '@common/models/user';
 import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { SocketId, UserId } from '@app/classes/user/connected-user-types';
 
 @Service()
 export class ChatService {
     private defaultChannels = DEFAULT_CHANNELS;
 
-    constructor(private readonly chatPersistenceService: ChatPersistenceService) {}
+    constructor(
+        private readonly socketService: SocketService,
+        private readonly chatPersistenceService: ChatPersistenceService,
+        private readonly authentificationService: AuthentificationService,
+    ) {
+        this.socketService.listenToInitialisationEvent(this.configureSocket.bind(this));
+    }
 
     async initialize(): Promise<void> {
         await this.chatPersistenceService.createDefaultChannels(this.defaultChannels);
@@ -25,28 +33,28 @@ export class ChatService {
     configureSocket(socket: ServerSocket): void {
         socket.on('channel:newMessage', async (channelMessage: ChannelMessage) => {
             try {
-                await this.sendMessage(channelMessage, socket);
+                await this.handleSendMessage(channelMessage, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
         });
         socket.on('channel:newChannel', async (channel: ChannelCreation) => {
             try {
-                await this.createChannel(channel, socket);
+                await this.handleCreateChannel(channel, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
         });
         socket.on('channel:join', async (idChannel: TypeOfId<Channel>) => {
             try {
-                await this.joinChannel(idChannel, socket);
+                await this.handleJoinChannel(idChannel, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
         });
         socket.on('channel:quit', async (idChannel: TypeOfId<Channel>) => {
             try {
-                await this.quitChannel(idChannel, socket);
+                await this.handleQuitChannel(idChannel, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
@@ -60,7 +68,39 @@ export class ChatService {
         });
     }
 
-    private async sendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
+    async createChannel(channel: ChannelCreation, userId: UserId): Promise<Channel> {
+        const socketId: SocketId = this.authentificationService.connectedUsers.getSocketId(userId);
+        const socket: ServerSocket = this.socketService.getSocket(socketId);
+        return this.handleCreateChannel(channel, socket);
+    }
+
+    // TODO: User userId when playerId has been replaced in requests !153
+    async joinChannel(idChannel: TypeOfId<Channel>, playerId: SocketId): Promise<void> {
+        const socket: ServerSocket = this.socketService.getSocket(playerId);
+        return this.handleJoinChannel(idChannel, socket);
+    }
+
+    // TODO: User userId when playerId has been replaced in requests !153
+    async quitChannel(idChannel: TypeOfId<Channel>, playerId: SocketId): Promise<void> {
+        try {
+            const socket: ServerSocket = this.socketService.getSocket(playerId);
+            return this.handleQuitChannel(idChannel, socket);
+        } catch {
+            // TODO Toggle on comment when userId parameter is given !153
+            // return await this.chatPersistenceService.leaveChannel(idChannel, userId);
+        }
+    }
+
+    async emptyChannel(idChannel: TypeOfId<Channel>): Promise<void> {
+        const playerIdsInChannel: UserId[] = await this.chatPersistenceService.getChannelUserIds(idChannel);
+        playerIdsInChannel.forEach((userId) => {
+            const socketId: SocketId = this.authentificationService.connectedUsers.getSocketId(userId);
+            const socket: ServerSocket = this.socketService.getSocket(socketId);
+            this.handleQuitChannel(idChannel, socket);
+        });
+    }
+
+    private async handleSendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
         const channel = await this.chatPersistenceService.getChannel(channelMessage.idChannel);
 
         if (!channel) {
@@ -76,7 +116,7 @@ export class ChatService {
         // TODO: Save message in DB
     }
 
-    private async createChannel(channel: ChannelCreation, socket: ServerSocket): Promise<void> {
+    private async handleCreateChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel> {
         if (!(await this.chatPersistenceService.isChannelNameAvailable(channel))) {
             throw new HttpException(ALREADY_EXISTING_CHANNEL_NAME, StatusCodes.FORBIDDEN);
         }
@@ -85,10 +125,12 @@ export class ChatService {
 
         socket.emit('channel:newChannel', newChannel);
 
-        this.joinChannel(newChannel.idChannel, socket);
+        this.handleJoinChannel(newChannel.idChannel, socket);
+
+        return newChannel;
     }
 
-    private async joinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
+    private async handleJoinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
         const user: ServerUser = socket.data.user;
         const channel = await this.chatPersistenceService.getChannel(idChannel);
 
@@ -108,7 +150,7 @@ export class ChatService {
         socket.emit('channel:join', channel);
     }
 
-    private async quitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
+    private async handleQuitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
         const user: ServerUser = socket.data.user;
         const channel = await this.chatPersistenceService.getChannel(idChannel);
 
@@ -129,7 +171,7 @@ export class ChatService {
         const user: ServerUser = socket.data.user;
 
         await Promise.all(
-            (await this.chatPersistenceService.getUserChannelIds(user.idUser)).map(async (idChannel) => this.joinChannel(idChannel, socket)),
+            (await this.chatPersistenceService.getUserChannelIds(user.idUser)).map(async (idChannel) => this.handleJoinChannel(idChannel, socket)),
         );
     }
 }

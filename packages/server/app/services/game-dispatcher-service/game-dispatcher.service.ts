@@ -1,5 +1,5 @@
 import { LobbyData } from '@app/classes/communication/lobby-data';
-import { GameConfig, GameConfigData, ReadyGameConfig } from '@app/classes/game/game-config';
+import { GameConfig, GameConfigData, ReadyGameConfig, ReadyGameConfigWithChannelId } from '@app/classes/game/game-config';
 import Room from '@app/classes/game/room';
 import WaitingRoom from '@app/classes/game/waiting-room';
 import { HttpException } from '@app/classes/http-exception/http-exception';
@@ -16,6 +16,8 @@ import { convertToLobbyData } from '@app/utils/convert-to-lobby-data/convert-to-
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
+import { ChatService } from '@app/services/chat-service/chat.service';
+import { UserId } from '@app/classes/user/connected-user-types';
 
 @Service()
 export class GameDispatcherService {
@@ -28,6 +30,7 @@ export class GameDispatcherService {
         private activeGameService: ActiveGameService,
         private dictionaryService: DictionaryService,
         private virtualPlayerService: VirtualPlayerService,
+        private readonly chatService: ChatService,
     ) {
         this.waitingRooms = [];
         this.lobbiesRoom = new Room();
@@ -65,8 +68,8 @@ export class GameDispatcherService {
         });
     }
 
-    async createMultiplayerGame(config: GameConfigData): Promise<LobbyData> {
-        const waitingRoom = this.createGameService.createMultiplayerGame(config);
+    async createMultiplayerGame(config: GameConfigData, userId: UserId): Promise<LobbyData> {
+        const waitingRoom = await this.createGameService.createMultiplayerGame(config, userId);
         this.dictionaryService.useDictionary(config.dictionary.id);
 
         this.addToWaitingRoom(waitingRoom);
@@ -90,7 +93,7 @@ export class GameDispatcherService {
 
     // TODO : Refactor for 4 players
     // eslint-disable-next-line no-unused-vars
-    acceptJoinRequest(waitingRoomId: string, playerId: string, opponentName: string): ReadyGameConfig {
+    async acceptJoinRequest(waitingRoomId: string, playerId: string, opponentName: string): Promise<ReadyGameConfigWithChannelId> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
@@ -115,7 +118,10 @@ export class GameDispatcherService {
             player4: new ExpertVirtualPlayer(waitingRoomId, 'VirtualPlayer4'),
         };
 
-        return config;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), waitingRoom.joinedPlayer2!.id);
+
+        return { ...config, idChannel: waitingRoom.getGroupChannelId() };
     }
 
     // TODO : Refactor for 4 players
@@ -140,29 +146,34 @@ export class GameDispatcherService {
 
     // TODO : Refactor for 4 players
     // eslint-disable-next-line no-unused-vars
-    leaveLobbyRequest(waitingRoomId: string, playerId: string): [string, string] {
+    async leaveLobbyRequest(waitingRoomId: string, playerId: string): Promise<[string, string]> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         // if (waitingRoom.joinedPlayer === undefined) {
         //     throw new HttpException(NO_OPPONENT_IN_WAITING_GAME, StatusCodes.BAD_REQUEST);
         // } else if (waitingRoom.joinedPlayer.id !== playerId) {
         //     throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         // }
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await this.chatService.quitChannel(waitingRoom.getGroupChannelId(), waitingRoom.joinedPlayer2!.id);
+
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const leaverName = waitingRoom.joinedPlayer2!.name;
+
         const hostPlayerId = waitingRoom.getConfig().player1.id;
 
         waitingRoom.joinedPlayer2 = undefined;
         return [hostPlayerId, leaverName];
     }
 
-    // eslint-disable-next-line no-unused-vars
-    cancelGame(waitingRoomId: string, playerId: string): void {
+    async cancelGame(waitingRoomId: string, playerId: string): Promise<void> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
 
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
         this.dictionaryService.stopUsingDictionary(waitingRoom.getConfig().dictionary.id);
+        await this.chatService.emptyChannel(waitingRoom.getGroupChannelId());
 
         const index = this.waitingRooms.indexOf(waitingRoom);
         this.waitingRooms.splice(index, 1);

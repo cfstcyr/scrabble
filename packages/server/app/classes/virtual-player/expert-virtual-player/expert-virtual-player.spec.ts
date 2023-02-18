@@ -14,13 +14,14 @@ import * as chai from 'chai';
 import { expect, spy } from 'chai';
 import { createStubInstance } from 'sinon';
 import { ExpertVirtualPlayer, MAX_EXPERT_CONSECUTIVE_EXCHANGES } from './expert-virtual-player';
+const DEFAULT_GAME_CHANNEL_ID = 1;
 
 describe('ExpertVirtualPlayer', () => {
     let expertVirtualPlayer: ExpertVirtualPlayer;
 
     beforeEach(async () => {
         expertVirtualPlayer = new ExpertVirtualPlayer(PLAYER_ID, PLAYER_NAME);
-        spy.on(ActiveGameService.prototype, 'getGame', () => new Game());
+        spy.on(ActiveGameService.prototype, 'getGame', () => new Game(DEFAULT_GAME_CHANNEL_ID));
         spy.on(Game.prototype, 'getTotalTilesLeft', () => 5);
     });
 

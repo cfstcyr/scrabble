@@ -34,6 +34,7 @@ chai.use(spies);
 chai.use(chaiAsPromised);
 
 const DEFAULT_GAME_ID = 'gameId';
+const DEFAULT_GAME_CHANNEL_ID = 1;
 
 const DEFAULT_PLAYER_1_ID = '1';
 const DEFAULT_PLAYER_2_ID = '2';
@@ -97,7 +98,7 @@ describe('Game', () => {
             objectiveInitspy = sinon.stub(Game.prototype, <any>'initializeObjectives').callsFake(() => {
                 return;
             });
-            game = await Game.createGame(DEFAULT_GAME_ID, DEFAULT_MULTIPLAYER_CONFIG);
+            game = await Game.createGame(DEFAULT_GAME_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG);
         });
 
         afterEach(() => {
@@ -140,7 +141,7 @@ describe('Game', () => {
         let tileReserveStub: SinonStubbedInstance<TileReserve>;
 
         beforeEach(async () => {
-            game = await Game.createGame(DEFAULT_GAME_ID, DEFAULT_MULTIPLAYER_CONFIG);
+            game = await Game.createGame(DEFAULT_GAME_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG);
             tileReserveStub = createStubInstance(TileReserve);
             game['tileReserve'] = tileReserveStub as unknown as TileReserve;
         });
@@ -275,7 +276,7 @@ describe('Game', () => {
         let player4Stub: SinonStubbedInstance<Player>;
 
         beforeEach(() => {
-            game = new Game();
+            game = new Game(DEFAULT_GAME_CHANNEL_ID);
             roundManagerStub = createStubInstance(RoundManager);
             player1Stub = createStubInstance(Player);
             player2Stub = createStubInstance(Player);
@@ -353,7 +354,7 @@ describe('Game', () => {
         let newPlayerStub: SinonStubbedInstance<Player>;
 
         beforeEach(() => {
-            game = new Game();
+            game = new Game(DEFAULT_GAME_CHANNEL_ID);
             roundManagerStub = createStubInstance(RoundManager);
             player1Stub = createStubInstance(Player);
             player2Stub = createStubInstance(Player);
@@ -442,7 +443,7 @@ describe('Game', () => {
         const PLAYER_3_TILE_SCORE = 20;
         const PLAYER_4_TILE_SCORE = 24;
         beforeEach(() => {
-            game = new Game();
+            game = new Game(DEFAULT_GAME_CHANNEL_ID);
             roundManagerStub = createStubInstance(RoundManager);
             player1Stub = createStubInstance(Player);
             player2Stub = createStubInstance(Player);
@@ -546,7 +547,7 @@ describe('Game', () => {
         const PLAYER_4_TILE_SCORE = 14;
 
         beforeEach(() => {
-            game = new Game();
+            game = new Game(DEFAULT_GAME_CHANNEL_ID);
             roundManagerStub = createStubInstance(RoundManager);
             player1Stub = createStubInstance(Player);
             player2Stub = createStubInstance(Player);
@@ -677,7 +678,7 @@ describe('Game', () => {
         const PLAYER_4_END_GAME_MESSAGE = 'player4 : SZZOS';
 
         beforeEach(() => {
-            game = new Game();
+            game = new Game(DEFAULT_GAME_CHANNEL_ID);
             player1Stub = createStubInstance(Player);
             player2Stub = createStubInstance(Player);
             player3Stub = createStubInstance(Player);
@@ -725,7 +726,7 @@ describe('Game', () => {
         const LOWER_SCORE = 1;
 
         beforeEach(() => {
-            game = new Game();
+            game = new Game(DEFAULT_GAME_CHANNEL_ID);
             player1Stub = createStubInstance(Player);
             player2Stub = createStubInstance(Player);
             player3Stub = createStubInstance(Player);
@@ -842,7 +843,7 @@ describe('Game', () => {
         let game: Game;
 
         beforeEach(() => {
-            game = new Game();
+            game = new Game(DEFAULT_GAME_CHANNEL_ID);
             board = new Board([[]]);
             roundManagerStub = createStubInstance(RoundManager);
             roundManagerStub.getMaxRoundTime.returns(DEFAULT_TIME);
@@ -886,7 +887,7 @@ describe('Game', () => {
         let game: Game;
         const invalidPlayer = new Player('invalid', 'invalid');
         beforeEach(() => {
-            game = new Game();
+            game = new Game(DEFAULT_GAME_CHANNEL_ID);
             game.player1 = DEFAULT_PLAYER_1;
             game.player2 = DEFAULT_PLAYER_2;
             game.player3 = DEFAULT_PLAYER_3;

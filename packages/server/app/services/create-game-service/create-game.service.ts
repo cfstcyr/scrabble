@@ -7,10 +7,14 @@ import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { Service } from 'typedi';
 import { v4 as uuidv4 } from 'uuid';
+import { ChatService } from '@app/services/chat-service/chat.service';
+import { GROUP_CHANNEL, NO_GROUP_CHANNEL_ID_NEEDED } from '@app/constants/chat';
+import { Channel } from '@common/models/chat/channel';
+import { UserId } from '@app/classes/user/connected-user-types';
 
 @Service()
 export class CreateGameService {
-    constructor(private activeGameService: ActiveGameService) {}
+    constructor(private activeGameService: ActiveGameService, private readonly chatService: ChatService) {}
     async createSoloGame(config: GameConfigData): Promise<StartGameData> {
         const gameId = uuidv4();
         let readyGameConfig;
@@ -30,12 +34,15 @@ export class CreateGameService {
             );
         }
 
-        return this.activeGameService.beginGame(gameId, readyGameConfig);
+        return this.activeGameService.beginGame(gameId, NO_GROUP_CHANNEL_ID_NEEDED, readyGameConfig);
     }
 
-    createMultiplayerGame(configData: GameConfigData): WaitingRoom {
+    async createMultiplayerGame(configData: GameConfigData, userId: UserId): Promise<WaitingRoom> {
         const config = this.generateGameConfig(configData);
-        return new WaitingRoom(config);
+
+        const channel: Channel = await this.chatService.createChannel(GROUP_CHANNEL, userId);
+
+        return new WaitingRoom(config, channel.idChannel);
     }
 
     private generateGameConfig(configData: GameConfigData): GameConfig {

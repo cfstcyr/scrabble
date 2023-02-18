@@ -4,6 +4,7 @@ import { Service } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 import { TypeOfId } from '@common/types/id';
 import { User } from '@common/models/user';
+import { UserId } from '@app/classes/user/connected-user-types';
 
 @Service()
 export class ChatPersistenceService {
@@ -25,6 +26,10 @@ export class ChatPersistenceService {
                 .where(`${USER_CHANNEL_TABLE}.idUser`, idUser)
                 .orWhere({ default: true })
         ).map(({ idChannel }) => idChannel);
+    }
+
+    async getChannelUserIds(idChannel: TypeOfId<Channel>): Promise<UserId[]> {
+        return (await this.userChatTable.select('idUser').where({ idChannel })).map((userChannel) => userChannel.idUser);
     }
 
     async saveChannel(channel: ChannelCreation): Promise<Channel> {
