@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
@@ -10,6 +11,7 @@ import { CHANNEL_TABLE, USER_CHANNEL_TABLE, USER_TABLE } from '@app/constants/se
 import { Channel, UserChannel } from '@common/models/chat/channel';
 import { Knex } from 'knex';
 import { UserDatabase } from '@common/models/user';
+import { UserId } from '@app/classes/user/connected-user-types';
 
 const CHANNEL_1: Channel = {
     idChannel: 1,
@@ -108,6 +110,50 @@ describe('ChatPersistenceService', () => {
             const channelIds = await service.getUserChannelIds(USER.idUser);
 
             expect(channelIds[0]).to.equal(CHANNEL_1.idChannel);
+        });
+    });
+
+    describe('getChannelUserIds', () => {
+        it('should make every userId in channel quit', async () => {
+            const expectedUser1 = { ...USER, idUser: 1, username: 'user1', email: 'email1' };
+            const expectedUser2 = { ...USER, idUser: 2, username: 'user2', email: 'email2' };
+            const expectedUser3 = { ...USER, idUser: 3, username: 'user3', email: 'email3' };
+            const expectedIds = [expectedUser1.idUser, expectedUser2.idUser, expectedUser3.idUser];
+
+            const userChannelTableExample = [
+                { idUser: expectedUser1.idUser, idChannel: CHANNEL_1.idChannel },
+                { idUser: expectedUser2.idUser, idChannel: CHANNEL_1.idChannel },
+                { idUser: expectedUser3.idUser, idChannel: CHANNEL_1.idChannel },
+            ];
+
+            await service['channelTable'].insert(CHANNEL_1);
+            await databaseService.knex.insert([expectedUser1, expectedUser2, expectedUser3]).into(USER_TABLE);
+            await service['userChatTable'].insert(userChannelTableExample);
+
+            const result: UserId[] = await service.getChannelUserIds(CHANNEL_1.idChannel);
+
+            expect(result).to.deep.equal(expectedIds);
+        });
+
+        it('should NOT make userId NOT in channel quit', async () => {
+            const userInChannel = { ...USER, idUser: 1, username: 'user1', email: 'email1' };
+            const userNotInChannel = { ...USER, idUser: 2, username: 'user2', email: 'email2' };
+
+            const differentChannel: Channel = { ...CHANNEL_1, name: 'different channel', idChannel: CHANNEL_1.idChannel + 1 };
+
+            const userChannelTableExample = [
+                { idUser: userInChannel.idUser, idChannel: CHANNEL_1.idChannel },
+                { idUser: userNotInChannel.idUser, idChannel: differentChannel.idChannel },
+            ];
+
+            await service['channelTable'].insert([CHANNEL_1, differentChannel]);
+            await databaseService.knex.insert([userInChannel, userNotInChannel]).into(USER_TABLE);
+            await service['userChatTable'].insert(userChannelTableExample);
+
+            const result = await service.getChannelUserIds(CHANNEL_1.idChannel);
+
+            expect(result).to.contain(userInChannel.idUser);
+            expect(result).not.to.contain(userNotInChannel.idUser);
         });
     });
 

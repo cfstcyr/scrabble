@@ -8,13 +8,14 @@ import { GAME_ALREADY_FULL } from '@app/constants/classes-errors';
 
 const ID = 'id';
 const DEFAULT_NAME = 'player';
+const DEFAULT_GAME_CHANNEL_ID = 1;
 
 describe('fillNextEmptySpot', () => {
     let room: WaitingRoom;
     let player: Player;
 
     beforeEach(() => {
-        room = new WaitingRoom({} as unknown as GameConfig);
+        room = new WaitingRoom({} as unknown as GameConfig, DEFAULT_GAME_CHANNEL_ID);
         player = new Player(ID, DEFAULT_NAME);
         player.tiles = [
             { value: 1, letter: 'A' },

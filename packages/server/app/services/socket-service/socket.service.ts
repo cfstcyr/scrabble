@@ -2,12 +2,12 @@ import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { INVALID_ID_FOR_SOCKET, NO_TOKEN, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { ChatService } from '@app/services/chat-service/chat.service';
 import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
 import { NextFunction } from 'express';
 import { SocketErrorResponse } from '@common/models/error';
+import { EventEmitter } from 'events';
 import * as http from 'http';
 import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
@@ -25,14 +25,17 @@ import {
     SocketEmitEvents,
     StartGameEmitArgs,
 } from './socket-types';
+import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 
 @Service()
 export class SocketService {
     private sio?: io.Server;
     private sockets: Map<string, io.Socket>;
+    private configureSocketsEvent: EventEmitter;
 
-    constructor(private readonly chatService: ChatService, private readonly authentificationService: AuthentificationService) {
+    constructor(private readonly authentificationService: AuthentificationService) {
         this.sockets = new Map();
+        this.configureSocketsEvent = new EventEmitter();
     }
 
     static handleError(error: Error, socket: ServerSocket): void {
@@ -81,7 +84,8 @@ export class SocketService {
         this.sio.on('connection', (socket) => {
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
-            this.chatService.configureSocket(socket);
+
+            this.configureSocketsEvent.emit(SOCKET_CONFIGURE_EVENT_NAME, socket);
             socket.on('disconnect', () => {
                 this.handleDisconnect(socket);
             });
@@ -170,6 +174,10 @@ export class SocketService {
         this.getSocket(socketSenderId)
             .to(room)
             .emit(ev, ...args);
+    }
+
+    listenToInitialisationEvent(callback: (socket: ServerSocket) => void): void {
+        this.configureSocketsEvent.addListener(SOCKET_CONFIGURE_EVENT_NAME, callback);
     }
 
     private handleDisconnect(socket: io.Socket): void {

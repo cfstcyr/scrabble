@@ -2,23 +2,28 @@ import Game from '@app/classes/game/game';
 import { ReadyGameConfig, StartGameData } from '@app/classes/game/game-config';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
+import { Channel } from '@common/models/chat/channel';
+import { TypeOfId } from '@common/types/id';
 import { EventEmitter } from 'events';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
+import { ChatService } from '@app/services/chat-service/chat.service';
+import { SocketService } from '@app/services/socket-service/socket.service';
+import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
 
 @Service()
 export class ActiveGameService {
     playerLeftEvent: EventEmitter;
     private activeGames: Game[];
 
-    constructor() {
+    constructor(private readonly socketService: SocketService, private readonly chatService: ChatService) {
         this.playerLeftEvent = new EventEmitter();
         this.activeGames = [];
         Game.injectServices();
     }
 
-    async beginGame(id: string, config: ReadyGameConfig): Promise<StartGameData> {
-        const game = await Game.createGame(id, config);
+    async beginGame(id: string, groupChannelId: TypeOfId<Channel>, config: ReadyGameConfig): Promise<StartGameData> {
+        const game = await Game.createGame(id, groupChannelId, config);
         this.activeGames.push(game);
         return game.createStartGameData();
     }
@@ -47,5 +52,34 @@ export class ActiveGameService {
 
     isGameOver(gameId: string, playerId: string): boolean {
         return this.getGame(gameId, playerId).gameIsOver;
+    }
+
+    async handlePlayerLeaves(gameId: string, playerId: string): Promise<void> {
+        const game: Game = this.getGame(gameId, playerId);
+        await this.chatService.quitChannel(game.getGroupChannelId(), playerId);
+
+        // Check if there is no player left --> cleanup server and client
+        try {
+            if (!this.socketService.doesRoomExist(gameId)) {
+                this.removeGame(gameId, playerId);
+                return;
+            }
+
+            this.socketService.removeFromRoom(playerId, gameId);
+            this.socketService.emitToSocket(playerId, 'cleanup');
+        } catch (exception) {
+            // catch errors caused by inexistent socket after client closed application
+        }
+        const playerName = game.getPlayer(playerId).name;
+
+        this.socketService.emitToRoom(gameId, 'newMessage', {
+            content: `${playerName} ${PLAYER_LEFT_GAME(this.isGameOver(gameId, playerId))}`,
+            senderId: 'system',
+            gameId,
+        });
+
+        if (this.isGameOver(gameId, playerId)) return;
+
+        this.playerLeftEvent.emit('playerLeft', gameId, playerId);
     }
 }

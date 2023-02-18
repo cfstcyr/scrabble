@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
@@ -14,7 +16,7 @@ import { Container } from 'typedi';
 import { ChatService } from './chat.service';
 import * as Sinon from 'sinon';
 import { expect } from 'chai';
-import { Channel } from '@common/models/chat/channel';
+import { Channel, ChannelCreation } from '@common/models/chat/channel';
 import { ChatMessage } from '@common/models/chat/chat-message';
 import { PublicUser, UserDatabase } from '@common/models/user';
 import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
@@ -22,7 +24,14 @@ import { Delay } from '@app/utils/delay/delay';
 import { StatusCodes } from 'http-status-codes';
 import { getSocketNameFromChannel } from '@app/utils/socket';
 import { SocketErrorResponse } from '@common/models/error';
+import { SocketService } from '@app/services/socket-service/socket.service';
+import { TypeOfId } from '@common/types/id';
+import { PlayerData } from '@app/classes/communication/player-data';
+import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { ConnectedUser } from '@app/classes/user/connected-user';
+import { EventEmitter } from 'stream';
 
 // const TIMEOUT_DELAY = 10000;
 const RESPONSE_DELAY = 400;
@@ -55,6 +64,12 @@ const expectedMessage: ChatMessage = {
     date: new Date(),
 };
 
+const DEFAULT_PLAYER_ID: TypeOfId<PlayerData> = '1';
+
+const channelCreation: ChannelCreation = {
+    name: 'test',
+};
+
 class TestClass {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     testFunc = () => {};
@@ -74,7 +89,11 @@ describe('ChatService', () => {
     let chatPersistenceService: Sinon.SinonStubbedInstance<ChatPersistenceService>;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbed(ChatPersistenceService).withStubbedPrototypes(Application, { bindRoutes: undefined });
+        testingUnit = new ServicesTestingUnit()
+            .withStubbed(ChatPersistenceService)
+            .withStubbed(AuthentificationService, undefined, { connectedUsers: new ConnectedUser() })
+            .withStubbed(SocketService)
+            .withStubbedPrototypes(Application, { bindRoutes: undefined });
         chatPersistenceService = testingUnit.setStubbed(ChatPersistenceService);
         await testingUnit.withMockDatabaseService();
     });
@@ -96,6 +115,29 @@ describe('ChatService', () => {
         serverSocket.disconnect();
         clientSocket.close();
         testingUnit.restore();
+    });
+
+    describe('constructor', () => {
+        it(`should configureSocket when configureSocketsEvent emits ${SOCKET_CONFIGURE_EVENT_NAME}`, async () => {
+            const socketService = testingUnit.getStubbedInstance(SocketService);
+            socketService['configureSocketsEvent'] = new EventEmitter();
+            socketService.listenToInitialisationEvent.restore();
+
+            service = new ChatService(
+                socketService as unknown as SocketService,
+                chatPersistenceService as unknown as ChatPersistenceService,
+                testingUnit.getStubbedInstance(AuthentificationService) as unknown as AuthentificationService,
+            );
+
+            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => {});
+
+            socketService['configureSocketsEvent'].emit(SOCKET_CONFIGURE_EVENT_NAME, serverSocket);
+
+            clientSocket.emit('channel:init');
+            await Delay.for(RESPONSE_DELAY);
+
+            expect(stub.calledWith(serverSocket)).to.be.true;
+        });
     });
 
     describe('initialize', () => {
@@ -255,6 +297,67 @@ describe('ChatService', () => {
                         clientSocket.emit('channel:quit', testChannel.idChannel);
                     });
                 });
+            });
+        });
+    });
+
+    describe('createChannel', () => {
+        it('should call handleCreateChannel', async () => {
+            const stub = Sinon.stub(service, 'handleCreateChannel' as any).callsFake(async () => Promise.resolve());
+            // testingUnit.getStubbedInstance(AuthentificationService).connectedUsers = new ConnectedUser();
+            Sinon.stub(testingUnit.getStubbedInstance(AuthentificationService).connectedUsers, 'getSocketId')
+                .withArgs(USER.idUser)
+                .returns(DEFAULT_PLAYER_ID);
+            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
+
+            await service['createChannel'](channelCreation, USER.idUser);
+
+            expect(stub.calledWith(channelCreation, serverSocket)).to.be.true;
+        });
+    });
+
+    describe('joinChannel', () => {
+        it('should call handleJoinChannel', async () => {
+            const stub = Sinon.stub(service, 'handleJoinChannel' as any).callsFake(async () => Promise.resolve());
+            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
+
+            await service['joinChannel'](testChannel.idChannel, DEFAULT_PLAYER_ID);
+
+            expect(stub.calledWith(testChannel.idChannel, serverSocket)).to.be.true;
+        });
+    });
+
+    describe('quitChannel', () => {
+        it('should call handleQuitChannel', async () => {
+            const stub = Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
+            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
+
+            await service['quitChannel'](testChannel.idChannel, DEFAULT_PLAYER_ID);
+
+            expect(stub.calledWith(testChannel.idChannel, serverSocket)).to.be.true;
+        });
+    });
+
+    describe('emptyChannel', () => {
+        it('should make every userId in channel quit', async () => {
+            const expectedUserIds = [1, 2, 3];
+            chatPersistenceService.getChannelUserIds.resolves(expectedUserIds);
+            Sinon.stub(testingUnit.getStubbedInstance(AuthentificationService).connectedUsers, 'getSocketId').returns(DEFAULT_PLAYER_ID);
+
+            const handleQuitStub = Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
+            testingUnit
+                .getStubbedInstance(SocketService)
+                .getSocket.onFirstCall()
+                .returns(expectedUserIds[0] as unknown as ServerSocket)
+                .onSecondCall()
+                .returns(expectedUserIds[1] as unknown as ServerSocket)
+                .onThirdCall()
+                .returns(expectedUserIds[2] as unknown as ServerSocket);
+
+            await service['emptyChannel'](testChannel.idChannel);
+
+            expectedUserIds.forEach((userId) => {
+                expect(handleQuitStub.calledWith(testChannel.idChannel, userId)).to.be.true;
             });
         });
     });

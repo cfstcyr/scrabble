@@ -23,6 +23,7 @@ import ObjectivesService from './objective.service';
 chai.use(spies);
 
 const DEFAULT_PLAYER: Player = new Player('id', 'name');
+const DEFAULT_GAME_CHANNEL_ID = 1;
 const OPPONENT: Player = new Player('op', 'opponent');
 
 describe('ObjectiveService', () => {
@@ -39,7 +40,7 @@ describe('ObjectiveService', () => {
         service = Container.get(ObjectivesService);
         findOpponentSpy = chai.spy.on(service, 'findOpponent', () => OPPONENT);
         player = DEFAULT_PLAYER;
-        game = new Game();
+        game = new Game(DEFAULT_GAME_CHANNEL_ID);
     });
 
     afterEach(() => {
