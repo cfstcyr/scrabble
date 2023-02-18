@@ -81,7 +81,8 @@ export class ChatPersistenceService {
         Object.keys(channel).forEach((key) => {
             if (key === undefined) return;
 
-            request.andWhere({ [key]: channel[key] });
+            const column = `${CHANNEL_TABLE}.${key}`;
+            request.andWhere({ [column]: channel[key] });
         });
 
         return (await request).map(({ idChannel }) => idChannel);
