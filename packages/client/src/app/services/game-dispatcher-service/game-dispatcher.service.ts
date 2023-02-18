@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LobbyInfo } from '@app/classes/communication/';
+import { LobbyInfo, PlayerData } from '@app/classes/communication/';
 import { DictionarySummary } from '@app/classes/communication/dictionary-summary';
 import { GameConfigData, InitializeGameData } from '@app/classes/communication/game-config';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
@@ -23,6 +23,8 @@ export default class GameDispatcherService implements OnDestroy {
 
     private gameCreationFailed$: Subject<HttpErrorResponse> = new Subject();
     private joinRequestEvent: Subject<string> = new Subject();
+    private playerJoinedGroupEvent: Subject<PlayerData> = new Subject();
+    private playerLeftGroupEvent: Subject<PlayerData> = new Subject();
     private canceledGameEvent: Subject<string> = new Subject();
     private lobbyFullEvent: Subject<void> = new Subject();
     private lobbiesUpdateEvent: Subject<LobbyInfo[]> = new Subject();
@@ -37,6 +39,12 @@ export default class GameDispatcherService implements OnDestroy {
     ) {
         this.gameDispatcherController.subscribeToJoinRequestEvent(this.serviceDestroyed$, (opponentName: string) =>
             this.handleJoinRequest(opponentName),
+        );
+        this.gameDispatcherController.subscribeToPlayerJoinedGroupEvent(this.serviceDestroyed$, (player: PlayerData) =>
+            this.handlePlayerJoinedRequest(player),
+        );
+        this.gameDispatcherController.subscribeToPlayerLeftGroupEvent(this.serviceDestroyed$, (player: PlayerData) =>
+            this.handlePlayerLeftRequest(player),
         );
         this.gameDispatcherController.subscribeToLobbyFullEvent(this.serviceDestroyed$, () => this.handleLobbyFull());
         this.gameDispatcherController.subscribeToLobbyRequestValidEvent(this.serviceDestroyed$, async () =>
@@ -128,12 +136,27 @@ export default class GameDispatcherService implements OnDestroy {
                 .subscribe({ next: undefined, error: (error: HttpErrorResponse) => this.gameCreationFailed$.next(error) });
     }
 
+    handleStart(): void {
+        if (this.getCurrentLobbyId())
+            this.gameDispatcherController
+                .handleStartGame(this.getCurrentLobbyId())
+                .subscribe({ next: undefined, error: (error: HttpErrorResponse) => this.gameCreationFailed$.next(error) });
+    }
+
     handleRejection(opponentName: string): void {
         if (this.getCurrentLobbyId()) this.gameDispatcherController.handleRejectionGameCreation(opponentName, this.getCurrentLobbyId());
     }
 
     subscribeToJoinRequestEvent(componentDestroyed$: Subject<boolean>, callback: (opponentName: string) => void): void {
         this.joinRequestEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
+    }
+
+    subscribeToPlayerJoinedGroupEvent(componentDestroyed$: Subject<boolean>, callback: (player: PlayerData) => void): void {
+        this.playerJoinedGroupEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
+    }
+
+    subscribeToPlayerLeftGroupEvent(componentDestroyed$: Subject<boolean>, callback: (player: PlayerData) => void): void {
+        this.playerLeftGroupEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
     }
 
     subscribeToCanceledGameEvent(componentDestroyed$: Subject<boolean>, callback: (hostName: string) => void): void {
@@ -176,6 +199,14 @@ export default class GameDispatcherService implements OnDestroy {
 
     private handleJoinRequest(opponentName: string): void {
         this.joinRequestEvent.next(opponentName);
+    }
+
+    private handlePlayerJoinedRequest(player: PlayerData): void {
+        this.playerJoinedGroupEvent.next(player);
+    }
+
+    private handlePlayerLeftRequest(player: PlayerData): void {
+        this.playerLeftGroupEvent.next(player);
     }
 
     private handleJoinerRejected(hostName: string): void {

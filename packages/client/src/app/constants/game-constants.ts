@@ -98,3 +98,5 @@ export const EXPECTED_COMMAND_WORD_COUNT = new Map<ActionType, number>([
 
 export const PLAYER_1_INDEX = 1;
 export const PLAYER_2_INDEX = 2;
+export const PLAYER_3_INDEX = 3;
+export const PLAYER_4_INDEX = 4;

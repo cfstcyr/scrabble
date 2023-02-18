@@ -30,6 +30,11 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     @Input() opponentName: string | undefined = undefined;
+    @Input() opponentName1: string | undefined = undefined;
+    @Input() opponentName2: string | undefined = undefined;
+    @Input() opponentName3: string | undefined = undefined;
+    @Input() requestingPlayers: string[] = [];
+
     isOpponentFound: boolean = false;
     waitingRoomMessage: string = HOST_WAITING_MESSAGE;
     roundTime: string = '1:00';
@@ -61,6 +66,10 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         this.funFact = getRandomFact();
 
         this.gameDispatcherService.subscribeToJoinRequestEvent(this.componentDestroyed$, (opponentName: string) => this.setOpponent(opponentName));
+        // this.gameDispatcherService.subscribeToPlayerJoinedGroupEvent(this.componentDestroyed$, (player: PlayerData) =>
+        //     this.setOpponent(player.name ?? ''),
+        // );
+
         this.playerLeavesService.subscribeToJoinerLeavesGameEvent(this.componentDestroyed$, (leaverName: string) => this.opponentLeft(leaverName));
         this.gameDispatcherService
             .observeGameCreationFailed()
@@ -78,11 +87,31 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
             .subscribe((convertResult: ConvertResult) => (this.isStartingGame = convertResult.isConverting));
     }
 
-    confirmOpponentToServer(): void {
+    startGame(): void {
         this.isStartingGame = true;
         if (this.opponentName) {
-            this.gameDispatcherService.handleConfirmation(this.opponentName);
+            this.gameDispatcherService.handleStart();
         }
+    }
+
+    confirmOpponentToServer2(name: string): void {
+        if (!this.opponentName1) this.opponentName1 = name;
+        else if (!this.opponentName2) this.opponentName2 = name;
+        else if (!this.opponentName3) this.opponentName3 = name;
+        const requestingPlayers = this.requestingPlayers.filter((playerName) => name === playerName);
+        const requestingPlayer = requestingPlayers[0];
+        const index = requestingPlayers.indexOf(requestingPlayer);
+        requestingPlayers.splice(index, 1);
+        this.gameDispatcherService.handleConfirmation(name);
+    }
+
+    confirmRejectionToServer2(name: string): void {
+        const requestingPlayers = this.requestingPlayers.filter((playerName) => name === playerName);
+        const requestingPlayer = requestingPlayers[0];
+        const index = requestingPlayers.indexOf(requestingPlayer);
+        requestingPlayers.splice(index, 1);
+        this.disconnectOpponent();
+        this.gameDispatcherService.handleRejection(name);
     }
 
     confirmRejectionToServer(): void {
@@ -93,6 +122,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     }
 
     private setOpponent(opponentName: string): void {
+        this.requestingPlayers.push(opponentName);
         this.opponentName = opponentName;
         this.waitingRoomMessage = this.opponentName + OPPONENT_FOUND_MESSAGE;
         this.isOpponentFound = true;

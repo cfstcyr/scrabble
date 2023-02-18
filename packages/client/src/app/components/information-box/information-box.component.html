@@ -45,4 +45,42 @@
             <span *ngIf="isPlayer1">C'est au tour de {{ getPlayer2().name }}</span>
         </p>
     </div>
+
+    <div class="player-container" id="player-3"  [ngClass]="{ active: isPlayer2Active, local: !isPlayer1 }">
+        <mat-card>
+            <p class="name-container">
+                <span class="score">{{ getPlayer3().score }} points</span>
+                <span class="name">{{ getPlayer3().name }}</span>
+                <app-icon *ngIf="!isPlayer1" [icon]="localPlayerIcon" styling="solid"></app-icon>
+            </p>
+    
+            <p *ngIf="getPlayer3().getTiles().length < maxTilesPerPlayer" class="tiles-left">
+                Tuiles restantes : {{ getPlayer3().getTiles().length }}
+            </p>
+        </mat-card>
+
+        <p class="local-player-active-indicator">
+            <span *ngIf="!isPlayer1">C'est votre tour</span>
+            <span *ngIf="isPlayer1">C'est au tour de {{ getPlayer3().name }}</span>
+        </p>
+    </div>
+
+    <div class="player-container" id="player-4"  [ngClass]="{ active: isPlayer2Active, local: !isPlayer1 }">
+        <mat-card>
+            <p class="name-container">
+                <span class="score">{{ getPlayer4().score }} points</span>
+                <span class="name">{{ getPlayer4().name }}</span>
+                <app-icon *ngIf="!isPlayer1" [icon]="localPlayerIcon" styling="solid"></app-icon>
+            </p>
+    
+            <p *ngIf="getPlayer4().getTiles().length < maxTilesPerPlayer" class="tiles-left">
+                Tuiles restantes : {{ getPlayer4().getTiles().length }}
+            </p>
+        </mat-card>
+
+        <p class="local-player-active-indicator">
+            <span *ngIf="!isPlayer1">C'est votre tour</span>
+            <span *ngIf="isPlayer1">C'est au tour de {{ getPlayer4().name }}</span>
+        </p>
+    </div>
 </div>

@@ -125,7 +125,12 @@ export default class GameService implements OnDestroy, IResetServiceData {
     private async initializeGame(localPlayerId: string, startGameData: StartGameData): Promise<void> {
         this.gameId = startGameData.gameId;
         this.gameType = startGameData.gameType;
-        this.playerContainer = new PlayerContainer(localPlayerId).initializePlayers(startGameData.player1, startGameData.player2);
+        this.playerContainer = new PlayerContainer(localPlayerId).initializePlayers(
+            startGameData.player1,
+            startGameData.player2,
+            startGameData.player3,
+            startGameData.player4,
+        );
         this.tileReserve = startGameData.tileReserve;
         this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
 
@@ -158,6 +163,12 @@ export default class GameService implements OnDestroy, IResetServiceData {
         }
         if (gameUpdateData.player2) {
             this.handleUpdatePlayerData(gameUpdateData.player2);
+        }
+        if (gameUpdateData.player3) {
+            this.handleUpdatePlayerData(gameUpdateData.player3);
+        }
+        if (gameUpdateData.player4) {
+            this.handleUpdatePlayerData(gameUpdateData.player4);
         }
         if (gameUpdateData.board) {
             this.boardService.updateBoard(gameUpdateData.board);

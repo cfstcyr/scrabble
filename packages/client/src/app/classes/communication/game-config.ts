@@ -28,6 +28,8 @@ export interface GameConfig {
 
 export interface ReadyGameConfig extends GameConfig {
     player2: PlayerData;
+    player3: PlayerData;
+    player4: PlayerData;
 }
 
 export interface StartGameData extends ReadyGameConfig {

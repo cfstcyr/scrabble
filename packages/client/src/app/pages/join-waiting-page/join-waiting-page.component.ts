@@ -1,7 +1,7 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationStart, Router } from '@angular/router';
-import { LobbyInfo } from '@app/classes/communication';
+import { LobbyInfo, PlayerData } from '@app/classes/communication';
 import { Timer } from '@app/classes/round/timer';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
@@ -29,6 +29,10 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
     currentName: string;
     funFact: string;
     roundTime: string;
+    opponentName1: string | undefined = undefined;
+    opponentName2: string | undefined = undefined;
+    opponentName3: string | undefined = undefined;
+
     private componentDestroyed$: Subject<boolean>;
 
     constructor(
@@ -59,6 +63,9 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
             }
         });
 
+        this.gameDispatcherService.subscribeToPlayerJoinedGroupEvent(this.componentDestroyed$, (player: PlayerData) => this.setOpponent(player));
+        this.gameDispatcherService.subscribeToPlayerLeftGroupEvent(this.componentDestroyed$, (player: PlayerData) => this.removeOpponent(player));
+
         this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, (hostName: string) => this.hostHasCanceled(hostName));
         this.gameDispatcherService.subscribeToJoinerRejectedEvent(this.componentDestroyed$, (hostName: string) => this.playerRejected(hostName));
     }
@@ -66,6 +73,19 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
+    }
+
+    private setOpponent(player: PlayerData) {
+        if (!this.opponentName1) this.opponentName1 = player.name ?? '';
+        else if (!this.opponentName2) this.opponentName2 = player.name ?? '';
+        else if (!this.opponentName3) this.opponentName3 = player.name ?? '';
+    }
+
+    private removeOpponent(player: PlayerData) {
+        // eslint-disable-next-line unicorn/prefer-switch
+        if (player.name === this.opponentName1) this.opponentName1 = undefined;
+        else if (player.name === this.opponentName2) this.opponentName2 = undefined;
+        else if (player.name === this.opponentName3) this.opponentName3 = undefined;
     }
 
     private routerChangeMethod(url: string): void {

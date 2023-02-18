@@ -1,0 +1,16 @@
+<mat-card class="content">
+    <div class="info">
+        <p class="name">{{ playerName }}</p>
+    </div>
+    <div
+        class="button-container"
+        matTooltipClass="example-tooltip-red"
+    >
+        <button mat-flat-button id="join-button" color="primary" (click)="accept()">
+            <app-icon icon="swords" size="lg"></app-icon> Accepter
+        </button>
+        <button mat-flat-button id="join-button" color="primary" (click)="reject()">
+            <app-icon icon="swords" size="lg"></app-icon> Refuser
+        </button>
+    </div>
+</mat-card>

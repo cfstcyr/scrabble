@@ -60,6 +60,7 @@ import { LoginContainerComponent } from './components/login-container/login-cont
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { HeaderBtnComponent } from './components/header-btn/header-btn.component';
 import { AuthenticationInterceptor } from './middlewares/authentication';
+import { JoinerListContainerComponent } from './components/joiner-list-container/joiner-list-container.component';
 
 registerLocaleData(localeFr);
 
@@ -121,6 +122,7 @@ registerLocaleData(localeFr);
         LoginWrapperComponent,
         LoginContainerComponent,
         HeaderBtnComponent,
+        JoinerListContainerComponent,
     ],
     imports: [
         AppMaterialModule,

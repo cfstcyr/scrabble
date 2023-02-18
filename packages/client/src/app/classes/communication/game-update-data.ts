@@ -7,6 +7,8 @@ import { RoundData } from './round-data';
 export default interface GameUpdateData {
     player1?: PlayerData;
     player2?: PlayerData;
+    player3?: PlayerData;
+    player4?: PlayerData;
     isGameOver?: boolean;
     winners?: string[];
     board?: Square[];

@@ -35,7 +35,7 @@
                 mat-flat-button
                 color="primary"
                 [disabled]="!isOpponentFound"
-                (click)="confirmOpponentToServer()"
+                (click)="startGame()"
             >
                 Démarrer la partie
             </button>
@@ -70,4 +70,20 @@
         <p id="intro">Le saviez-vous ?</p>
         <p id="fact">{{ funFact }}</p>
     </mat-card>
+
+    <div class="grid">
+        ACCEPTED PLAYERS
+        <p id="fact">{{ opponentName1 }}</p>
+        <p id="fact">{{ opponentName2 }}</p>
+        <p id="fact">{{ opponentName3 }}</p>
+    </div>
+
+
+    <div class="grid">
+        REQUESTING PLAYERS
+        <ng-container *ngFor="let requestingPlayer of requestingPlayers">
+            <app-joiner-list-container [playerName]="requestingPlayer" (acceptPlayerId)="confirmOpponentToServer2($event)" (refusePlayerId)="confirmRejectionToServer2($event)"></app-joiner-list-container>
+        </ng-container>
+    </div>
+
 </div>
