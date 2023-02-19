@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../components/group-gestion.dart';
+import '../components/group-management.dart';
 import '../components/parameters.dart';
 import '../components/player-waiting-list.dart';
 import '../components/waiting-room.dart';
@@ -36,7 +36,7 @@ class CreateLobbyPage extends StatelessWidget {
                           child: SizedBox(height: 5.0, child: WaitingRoom()),
                         ),
                         Parameters(),
-                        GroupGestion(),
+                        GroupManagement(),
                       ],
                     ),
                   ),

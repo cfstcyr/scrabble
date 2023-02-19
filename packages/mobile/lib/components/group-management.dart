@@ -4,8 +4,8 @@ import '../classes/user.dart';
 import '../constants/create-lobby-constants.dart';
 import '../view-methods/create-lobby-methods.dart';
 
-class GroupGestion extends StatelessWidget {
-  const GroupGestion({
+class GroupManagement extends StatelessWidget {
+  const GroupManagement({
     super.key,
   });
 
