@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../classes/player.dart';
+import '../classes/user.dart';
+import '../constants/create-lobby-constants.dart';
 
 class CreateLobbyPage extends StatelessWidget {
   @override
@@ -71,15 +72,16 @@ class Parameters extends StatelessWidget {
             padding: EdgeInsets.only(left: 0, right: 25.0, top: 0, bottom: 0),
             child: ElevatedButton.icon(
                 onPressed: () {
-                  //TODO AJUSTER TEMPS
+                  //TODO quand backend done
                 },
                 style: setStyleRoomButtons(),
                 icon: Icon(Icons.timer),
+                // TODO remove:: pas en cst car ne va plus exister quand on recoit info from backend
                 label: Text('1:00')),
           ),
           ElevatedButton.icon(
               onPressed: () {
-                //TODO AJUSTER TEMPS
+                //TODO quand backend done
               },
               style: setStyleRoomButtons(),
               icon: Icon(Icons.precision_manufacturing_outlined),
@@ -109,14 +111,14 @@ class GroupGestion extends StatelessWidget {
               },
               style: setStyleActionButtons(),
               icon: Icon(Icons.keyboard_arrow_left_sharp),
-              label: Text('Annuler la partie')),
+              label: Text(STOP_GAME_SETUP)),
           ElevatedButton.icon(
               onPressed: () {
                 //TODO AJUSTER TEMPS
               },
               style: setStyleActionButtons(),
               icon: Icon(Icons.start),
-              label: Text('Démarrer la partie'))
+              label: Text(START_GAME))
         ],
       )),
     );
@@ -158,7 +160,7 @@ class PlayerWaitingList extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(
                           left: 15.0, right: 0, top: 10.0, bottom: 10.0),
-                      child: setAvatar("images/avatar-12.png"),
+                      child: setPlayerIcon(index),
                     ),
                     Expanded(
                       child: Padding(
@@ -173,7 +175,7 @@ class PlayerWaitingList extends StatelessWidget {
                       child: Container(
                         child: IconButton(
                           onPressed: () {
-                            //TODO
+                            addPlayerToLobby(playerWaitingList[index]);
                           },
                           icon: Icon(Icons.check),
                           style: ElevatedButton.styleFrom(
@@ -188,7 +190,7 @@ class PlayerWaitingList extends StatelessWidget {
                           left: 5.0, right: 15.0, top: 0, bottom: 0),
                       child: IconButton(
                         onPressed: () {
-                          //TODO
+                          refusePlayer(playerWaitingList[index]);
                         },
                         icon: Icon(Icons.clear_outlined),
                         style: ElevatedButton.styleFrom(
@@ -237,7 +239,7 @@ class WaitingRoom extends StatelessWidget {
                     child: ElevatedButton.icon(
                         onPressed: () {},
                         style: setStyleRoomButtons(),
-                        icon: setAvatar("images/avatar-12.png"),
+                        icon: setPlayerIcon(0),
                         label: Text(setPlayerName(0))),
                   ),
                   SizedBox(
@@ -246,7 +248,7 @@ class WaitingRoom extends StatelessWidget {
                     child: ElevatedButton.icon(
                         onPressed: () {},
                         style: setStyleRoomButtons(),
-                        icon: setAvatar("images/avatar-12.png"),
+                        icon: setPlayerIcon(1),
                         label: Text(setPlayerName(1))),
                   ),
                 ],
@@ -261,7 +263,7 @@ class WaitingRoom extends StatelessWidget {
                     child: ElevatedButton.icon(
                         onPressed: () {},
                         style: setStyleRoomButtons(),
-                        icon: Icon(setPlayerIcon(2)),
+                        icon: setPlayerIcon(2),
                         label: Text(setPlayerName(2))),
                   ),
                   SizedBox(
@@ -270,49 +272,47 @@ class WaitingRoom extends StatelessWidget {
                     child: ElevatedButton.icon(
                         onPressed: () {},
                         style: setStyleRoomButtons(),
-                        icon: Icon(setPlayerIcon(3)),
+                        icon: setPlayerIcon(3),
                         label: Text(setPlayerName(3))),
                   ),
                 ],
               ),
-              // ElevatedButton.icon(
-              //     onPressed: () {
-              //       // TODO: a voir comment on veux ca
-              //     },
-              //     icon: Icon(Icons.filter_list_alt),
-              //     style: setStyleActionButtons(),
-              //     label: Text('Remplir les vides')),
             ],
           )),
     );
   }
 }
 
-List<PlayerView> playerWaitingList = [
+List<PublicUser> playerWaitingList = [
 // TODO : requete joueurs lobby
-  PlayerView(username: "michel"),
-  PlayerView(username: "ppman"),
-  PlayerView(username: "ppman1"),
-  PlayerView(username: "ppman2"),
-  PlayerView(username: "ppman3"),
-  PlayerView(username: "ppman4"),
+  PublicUser(username: "michel"),
+  PublicUser(username: "ppman"),
+  PublicUser(username: "ppman1"),
+  PublicUser(username: "ppman2"),
+  PublicUser(username: "ppman3"),
+  PublicUser(username: "ppman4"),
 ];
 
-List<PlayerView> playerList = [
+List<PublicUser> playerList = [
 // TODO : requete joueurs lobby
-  PlayerView(username: "michel"),
-  PlayerView(username: "ppman"),
+  PublicUser(username: "michel"),
 ];
 
-IconData fillWithVirtualPlayers() {
-  //TODO CALL METHODE POUR FILL DE VIRTUAL PLAYERS
-  return Icons.precision_manufacturing_outlined;
+Widget setPlayerIcon(int index) {
+  return playerList.length > index
+      ? setAvatar(playerList[index].avatar)
+      : Icon(Icons.question_mark);
 }
 
-IconData setPlayerIcon(int index) {
-  return playerList.length > index
-      ? playerList[index].icon
-      : Icons.question_mark;
+void addPlayerToLobby(PublicUser player) {
+  // TODO COTE SERVEUR req
+  if (playerList.length > 4) playerWaitingList.remove(player);
+  playerList.add(player);
+}
+
+void refusePlayer(PublicUser player) {
+  // TODO COTE SERVEUR req
+  playerWaitingList.remove(player);
 }
 
 String setPlayerName(int index) {
