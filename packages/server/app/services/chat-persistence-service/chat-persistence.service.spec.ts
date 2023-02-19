@@ -12,6 +12,8 @@ import { Channel, UserChannel } from '@common/models/chat/channel';
 import { Knex } from 'knex';
 import { UserDatabase } from '@common/models/user';
 import { UserId } from '@app/classes/user/connected-user-types';
+import * as sinon from 'sinon';
+import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
 
 const CHANNEL_1: Channel = {
     idChannel: 1,
@@ -42,6 +44,7 @@ describe('ChatPersistenceService', () => {
     let channelTable: () => Knex.QueryBuilder<Channel>;
     let userChannelTable: () => Knex.QueryBuilder<UserChannel>;
     let userTable: () => Knex.QueryBuilder<UserDatabase>;
+    let chatHistoryService: sinon.SinonStubbedInstance<ChatHistoryService>;
 
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withStubbedPrototypes(Application, { bindRoutes: undefined });
@@ -50,6 +53,7 @@ describe('ChatPersistenceService', () => {
         channelTable = () => databaseService.knex<Channel>(CHANNEL_TABLE);
         userChannelTable = () => databaseService.knex<UserChannel>(USER_CHANNEL_TABLE);
         userTable = () => databaseService.knex<UserDatabase>(USER_TABLE);
+        chatHistoryService = testingUnit.setStubbed(ChatHistoryService);
     });
 
     beforeEach(() => {
@@ -195,6 +199,20 @@ describe('ChatPersistenceService', () => {
             await service.leaveChannel(CHANNEL_1.idChannel, USER.idUser);
 
             expect(await userChannelTable().select().where({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser })).to.have.length(0);
+        });
+
+        it('should call deleteChannel history if channel is empty', async () => {
+            await userTable().insert(USER);
+            await channelTable().insert(CHANNEL_1);
+            await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
+
+            chatHistoryService.deleteChannelHistory.resolves();
+
+            service['isChannelEmpty'] = async () => Promise.resolve(true);
+
+            await service.leaveChannel(CHANNEL_1.idChannel, USER.idUser);
+
+            expect(chatHistoryService.deleteChannelHistory.calledOnce).to.be.true;
         });
     });
 
