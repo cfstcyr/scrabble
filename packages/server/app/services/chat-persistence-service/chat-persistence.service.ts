@@ -47,7 +47,7 @@ export class ChatPersistenceService {
         await this.userChatTable.delete().where({ idChannel, idUser });
 
         if (await this.isChannelEmpty(idChannel)) {
-            this.chatHistoryService.deleteChannelHistory(idChannel);
+            await this.chatHistoryService.deleteChannelHistory(idChannel);
         }
     }
 

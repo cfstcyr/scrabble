@@ -88,17 +88,20 @@ describe('ChatService', () => {
     let clientSocket: ClientSocket<ChatServerEvents, ChatClientEvents>;
     let testingUnit: ServicesTestingUnit;
     let chatPersistenceService: Sinon.SinonStubbedInstance<ChatPersistenceService>;
-    let chatHistoryService: Sinon.SinonStubbedInstance<ChatPersistenceService>;
+    let chatHistoryService: Sinon.SinonStubbedInstance<ChatHistoryService>;
 
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit()
             .withStubbed(ChatPersistenceService)
             .withStubbed(ChatHistoryService)
-            .withStubbed(AuthentificationService, undefined, { connectedUsers: new ConnectedUser() })
+            .withStubbed(AuthentificationService, undefined, {
+                connectedUsers: new ConnectedUser(), getUserById: () =>
+                    Promise.resolve(USER),
+            })
             .withStubbed(SocketService)
             .withStubbedPrototypes(Application, { bindRoutes: undefined });
-        chatHistoryService = testingUnit.setStubbed(ChatPersistenceService);
-        chatPersistenceService = testingUnit.setStubbed(ChatPersistenceService, chatHistoryService);
+        chatHistoryService = testingUnit.setStubbed(ChatHistoryService);
+        chatPersistenceService = testingUnit.setStubbed(ChatPersistenceService);
         await testingUnit.withMockDatabaseService();
     });
 
@@ -364,6 +367,26 @@ describe('ChatService', () => {
             expectedUserIds.forEach((userId) => {
                 expect(handleQuitStub.calledWith(testChannel.idChannel, userId)).to.be.true;
             });
+        });
+
+        it('should call deleteChannelHistory', async () => {
+            const expectedUserIds = [1, 2, 3];
+            chatPersistenceService.getChannelUserIds.resolves(expectedUserIds);
+            Sinon.stub(testingUnit.getStubbedInstance(AuthentificationService).connectedUsers, 'getSocketId').returns(DEFAULT_PLAYER_ID);
+
+            Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
+            testingUnit
+                .getStubbedInstance(SocketService)
+                .getSocket.onFirstCall()
+                .returns(expectedUserIds[0] as unknown as ServerSocket)
+                .onSecondCall()
+                .returns(expectedUserIds[1] as unknown as ServerSocket)
+                .onThirdCall()
+                .returns(expectedUserIds[2] as unknown as ServerSocket);
+
+            await service['emptyChannel'](testChannel.idChannel);
+
+            expect(chatHistoryService.deleteChannelHistory.calledWith(testChannel.idChannel)).to.be.true;
         });
     });
 });

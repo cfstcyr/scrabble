@@ -101,7 +101,7 @@ export class ChatService {
             this.handleQuitChannel(idChannel, socket);
         });
 
-        this.chatHistoryService.deleteChannelHistory(idChannel);
+        await this.chatHistoryService.deleteChannelHistory(idChannel);
     }
 
     private async handleSendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
@@ -115,9 +115,9 @@ export class ChatService {
             throw new HttpException(NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
         }
 
-        socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
+        await this.chatHistoryService.saveMessage(channelMessage);
 
-        this.chatHistoryService.saveMessage(channelMessage);
+        socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
     }
 
     private async handleCreateChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel> {
