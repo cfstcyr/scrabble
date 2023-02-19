@@ -92,7 +92,7 @@ class UserSession {
   factory UserSession.fromJson(Map<String, dynamic> json) {
     return UserSession(
       token: json['token'] as String,
-      user: json['user'] as PublicUser,
+      user: PublicUser.fromJson(json['user']),
     );
   }
 }
