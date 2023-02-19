@@ -13,6 +13,7 @@ import { ServerUser } from '@common/models/user';
 import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { SocketId, UserId } from '@app/classes/user/connected-user-types';
+import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
 
 @Service()
 export class ChatService {
@@ -22,6 +23,7 @@ export class ChatService {
         private readonly socketService: SocketService,
         private readonly chatPersistenceService: ChatPersistenceService,
         private readonly authentificationService: AuthentificationService,
+        private readonly chatHistoryService: ChatHistoryService,
     ) {
         this.socketService.listenToInitialisationEvent(this.configureSocket.bind(this));
     }
@@ -98,6 +100,8 @@ export class ChatService {
             const socket: ServerSocket = this.socketService.getSocket(socketId);
             this.handleQuitChannel(idChannel, socket);
         });
+
+        this.chatHistoryService.deleteChannelHistory(idChannel);
     }
 
     private async handleSendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
@@ -113,7 +117,7 @@ export class ChatService {
 
         socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
 
-        // TODO: Save message in DB
+        // TODO: Save message in DB with ChatHistoryService here
     }
 
     private async handleCreateChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel> {
@@ -133,6 +137,7 @@ export class ChatService {
     private async handleJoinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
         const user: ServerUser = socket.data.user;
         const channel = await this.chatPersistenceService.getChannel(idChannel);
+        const channelHistory = await this.chatHistoryService.getChannelHistory(idChannel);
 
         if (!channel) {
             throw new HttpException(CHANNEL_DOES_NOT_EXISTS, StatusCodes.BAD_REQUEST);
@@ -148,6 +153,7 @@ export class ChatService {
 
         socket.join(getSocketNameFromChannel(channel));
         socket.emit('channel:join', channel);
+        socket.emit('channel:history', channelHistory);
     }
 
     private async handleQuitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
