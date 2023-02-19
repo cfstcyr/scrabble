@@ -17,11 +17,13 @@ class AccountAuthenticationController {
     return _instance;
   }
 
-  final String endpoint = "${Environment().config.apiUrl}/account";
+  final String endpoint = "${Environment().config.apiUrl}/authentification";
   // final headers = {"Content-type": "application/json"};
 
   Future<bool> createAccount(Account account) async {
-    Response res = await post(Uri.parse(endpoint), body: jsonEncode(account));
+    Response res =
+        await post(Uri.parse("${endpoint}/signUp"), body: jsonEncode(account));
+    print(jsonEncode(account));
     // TODO: Remove hack
     return (res.statusCode == 200 || account.password == "qwe123Q!");
     // if (res.statusCode == 200) {
@@ -56,14 +58,14 @@ class AccountAuthenticationController {
 
   Future<dynamic> login(UserLoginCredentials credentials) async {
     Response res =
-        await post(Uri.parse("${endpoint}/login"), body: credentials);
+        await post(Uri.parse("${endpoint}/login"), body: credentials.toJson());
 
     if (res.statusCode == HttpStatus.ok) {
       return res.body as UserSession;
     } else if (res.statusCode == HttpStatus.notAcceptable) {
-      throw (LOGIN_FAILED);
+      return (LOGIN_FAILED);
     } else {
-      throw (ALREADY_LOGGED_IN_FR);
+      return (ALREADY_LOGGED_IN_FR);
     }
   }
 }

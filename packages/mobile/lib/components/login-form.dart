@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/classes/user.dart';
@@ -21,25 +22,26 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   bool isPasswordShown = false;
   bool isFirstSubmit = true;
+  late UserSession userSession;
   bool get isButtonEnabled => isFirstSubmit;
   SocketService socketService = getIt.get<SocketService>();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
   AccountAuthenticationController authController =
       getIt.get<AccountAuthenticationController>();
 
-  final usernameHandler = TextFieldHandler();
+  final emailHandler = TextFieldHandler();
   final passwordHandler = TextFieldHandler();
 
   @override
   void initState() {
     super.initState();
     socketService.initSocket();
-    usernameHandler.addListener(validateUsername);
+    emailHandler.addListener(validateEmail);
   }
 
   @override
   void dispose() {
-    usernameHandler.dispose();
+    emailHandler.dispose();
     passwordHandler.dispose();
     super.dispose();
   }
@@ -70,15 +72,15 @@ class _LoginFormState extends State<LoginForm> {
                   padding: EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 15.0, bottom: 0),
                   child: TextField(
-                    controller: usernameHandler.controller,
-                    focusNode: usernameHandler.focusNode,
+                    controller: emailHandler.controller,
+                    focusNode: emailHandler.focusNode,
                     obscureText: false,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: USERNAME_LABEL_FR,
-                      errorText: usernameHandler.errorMessage.isEmpty
+                      labelText: EMAIL_LABEL_FR,
+                      errorText: emailHandler.errorMessage.isEmpty
                           ? null
-                          : usernameHandler.errorMessage,
+                          : emailHandler.errorMessage,
                     ),
                   ),
                 ),
@@ -120,15 +122,17 @@ class _LoginFormState extends State<LoginForm> {
                     //               name: usernameHandler.controller.text)))
                     // },
                     await isLogged(UserLoginCredentials(
-                            email: usernameHandler.controller.text,
+                            email: emailHandler.controller.text,
                             password: passwordHandler.controller.text))
                         ? {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                        name: usernameHandler.controller.text)))
+                                  builder: (context) =>
+                                      ChatPage(name: userSession.user.username),
+                                ))
                           }
+                        : {}
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: themeColor,
@@ -163,27 +167,32 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  validateUsername() {
-    if (usernameHandler.controller.text.isEmpty) {
+  Future<void> validateEmail() async {
+    if (emailHandler.controller.text.isEmpty) {
       setState(() {
-        usernameHandler.errorMessage = USERNAME_EMPTY_FR;
+        emailHandler.errorMessage = EMAIL_EMPTY_FR;
+      });
+    } else if (!EmailValidator.validate(emailHandler.controller.text, true)) {
+      setState(() {
+        emailHandler.errorMessage = EMAIL_INVALID_FORMAT_FR;
       });
     } else {
       setState(() {
-        usernameHandler.errorMessage = "";
+        emailHandler.errorMessage = "";
       });
     }
   }
+
   isLogged(UserLoginCredentials credentials) async {
-    try{
-      await authController.login(credentials);
+    try {
+      print(credentials.toJson());
+      userSession = await authController.login(credentials);
       return true;
+    } catch (e) {
+      print("jnewjn");
+      // setState(() {
+      //   emailHandler.errorMessage = e.toString();
+      //};
     }
-    catch(e){
-                setState(() {
-                  usernameHandler.errorMessage =
-                      e.toString();
-                });
-              }
   }
 }
