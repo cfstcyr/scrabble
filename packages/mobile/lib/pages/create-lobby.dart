@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
 import '../constants/create-lobby-constants.dart';
@@ -125,11 +128,16 @@ class GroupGestion extends StatelessWidget {
   }
 }
 
-class PlayerWaitingList extends StatelessWidget {
+class PlayerWaitingList extends StatefulWidget {
   const PlayerWaitingList({
     super.key,
   });
 
+  @override
+  State<PlayerWaitingList> createState() => _PlayerWaitingListState();
+}
+
+class _PlayerWaitingListState extends State<PlayerWaitingList> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
@@ -160,7 +168,7 @@ class PlayerWaitingList extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(
                           left: 15.0, right: 0, top: 10.0, bottom: 10.0),
-                      child: setPlayerIcon(index),
+                      child: setWaitingPlayerIcon(index),
                     ),
                     Expanded(
                       child: Padding(
@@ -175,7 +183,18 @@ class PlayerWaitingList extends StatelessWidget {
                       child: Container(
                         child: IconButton(
                           onPressed: () {
-                            addPlayerToLobby(playerWaitingList[index]);
+                            setState(() {
+                              bool isAccepted =
+                                  addPlayerToLobby(playerWaitingList[index]);
+                              if (!isAccepted) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ErrorPopup(
+                                          errorMessage: FULL_LOBBY_ERROR)),
+                                );
+                              }
+                            });
                           },
                           icon: Icon(Icons.check),
                           style: ElevatedButton.styleFrom(
@@ -210,24 +229,28 @@ class PlayerWaitingList extends StatelessWidget {
   }
 }
 
-class WaitingRoom extends StatelessWidget {
+class WaitingRoom extends StatefulWidget {
   const WaitingRoom({
     super.key,
   });
 
+  @override
+  State<WaitingRoom> createState() => _WaitingRoomState();
+}
+
+class _WaitingRoomState extends State<WaitingRoom> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var style = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
-    // TODO : ICON DIFFERENT QUAND TA UN JOUEUR VS NON
 
     return Padding(
       padding: EdgeInsets.only(left: 0, right: 0, top: 50.0, bottom: 50.0),
       child: Container(
           alignment: Alignment.center,
-          child: Column(
+          child: handlePlayerListChange(Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(
@@ -278,10 +301,34 @@ class WaitingRoom extends StatelessWidget {
                 ],
               ),
             ],
-          )),
+          ))),
     );
   }
 }
+
+class ErrorPopup extends StatelessWidget {
+  final String errorMessage;
+
+  ErrorPopup({this.errorMessage = 'Erreur'});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Error'),
+      content: Text(errorMessage),
+      actions: [
+        TextButton(
+          child: Text('OK'),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    );
+  }
+}
+
+BehaviorSubject<List<PublicUser>> _playerList =
+    BehaviorSubject<List<PublicUser>>.seeded(playerList);
+Stream<List<PublicUser>> get _stream => _playerList.stream;
 
 List<PublicUser> playerWaitingList = [
 // TODO : requete joueurs lobby
@@ -299,15 +346,22 @@ List<PublicUser> playerList = [
 ];
 
 Widget setPlayerIcon(int index) {
-  return playerList.length > index
-      ? setAvatar(playerList[index].avatar)
+  return _playerList.value.length > index
+      ? setAvatar(_playerList.value[index].avatar)
       : Icon(Icons.question_mark);
 }
 
-void addPlayerToLobby(PublicUser player) {
+Widget setWaitingPlayerIcon(int index) {
+  return setAvatar(playerWaitingList[index].avatar);
+}
+
+bool addPlayerToLobby(PublicUser player) {
   // TODO COTE SERVEUR req
-  if (playerList.length > 4) playerWaitingList.remove(player);
+  if (playerList.length > 3) return false;
+  playerWaitingList.remove(player);
   playerList.add(player);
+  _playerList.add(playerList);
+  return true;
 }
 
 void refusePlayer(PublicUser player) {
@@ -316,8 +370,8 @@ void refusePlayer(PublicUser player) {
 }
 
 String setPlayerName(int index) {
-  return playerList.length > index
-      ? playerList[index].username
+  return _playerList.value.length > index
+      ? _playerList.value[index].username
       : "Player $index";
 }
 
@@ -350,4 +404,13 @@ CircleAvatar setAvatar(String path) {
           path, //TODO IMAGES PAS POSSIBLE COTE SERVEUR BCS ON DOIT LES RAJOUTER 1 PAR 1 DANS LE pubspec.yaml
         ),
       )));
+}
+
+StreamBuilder<List<PublicUser>> handlePlayerListChange(Widget widget) {
+  return StreamBuilder<List<PublicUser>>(
+    stream: _playerList,
+    builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
+      return widget;
+    },
+  );
 }
