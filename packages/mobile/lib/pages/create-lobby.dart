@@ -117,17 +117,28 @@ class GroupGestion extends StatelessWidget {
               style: setStyleActionButtons(),
               icon: Icon(Icons.keyboard_arrow_left_sharp),
               label: Text(STOP_GAME_SETUP)),
-          ElevatedButton.icon(
-              onPressed: () {
-                startGame(context);
-              },
-              style: setStyleActionButtons(),
-              icon: Icon(Icons.start),
-              label: Text(START_GAME))
+          handleStartGameButton()
         ],
       )),
     );
   }
+}
+
+StreamBuilder<List<PublicUser>> handleStartGameButton() {
+  return StreamBuilder<List<PublicUser>>(
+    stream: _playerList,
+    builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
+      return ElevatedButton.icon(
+          onPressed: _playerList.value.length < 2
+              ? null
+              : () {
+                  startGame(context);
+                },
+          style: setStyleActionButtons(),
+          icon: Icon(Icons.start),
+          label: Text(START_GAME));
+    },
+  );
 }
 
 class PlayerWaitingList extends StatefulWidget {
@@ -276,6 +287,75 @@ List<PublicUser> playerList = [
   PublicUser(username: "michel"),
 ];
 
+StreamBuilder<List<PublicUser>> handlePlayerListChange() {
+  return StreamBuilder<List<PublicUser>>(
+    stream: _playerList,
+    builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
+      Widget widget;
+      if (snapshot.hasError) {
+        widget = ErrorPopup(
+            errorMessage: 'Error: ${snapshot.error}'
+                'Stack trace: ${snapshot.stackTrace}');
+      } else {
+        widget = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  height: 50,
+                  width: 125,
+                  child: ElevatedButton.icon(
+                      onPressed: () {},
+                      style: setStyleRoomButtons(),
+                      icon: setPlayerIcon(0),
+                      label: Text(setPlayerName(0))),
+                ),
+                SizedBox(
+                  height: 50,
+                  width: 125,
+                  child: ElevatedButton.icon(
+                      onPressed: () {},
+                      style: setStyleRoomButtons(),
+                      icon: setPlayerIcon(1),
+                      label: Text(setPlayerName(1))),
+                ),
+              ],
+            ),
+            Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                    height: 50,
+                    width: 125,
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      style: setStyleRoomButtons(),
+                      icon: setPlayerIcon(2),
+                      label: Text(setPlayerName(2)),
+                    )),
+                SizedBox(
+                  height: 50,
+                  width: 125,
+                  child: ElevatedButton.icon(
+                      onPressed: () {},
+                      style: setStyleRoomButtons(),
+                      icon: setPlayerIcon(3),
+                      label: Text(setPlayerName(3))),
+                ),
+              ],
+            ),
+          ],
+        );
+        return widget;
+      }
+      return widget;
+    },
+  );
+}
+
 Widget setPlayerIcon(int index) {
   return _playerList.value.length > index
       ? setAvatar(_playerList.value[index].avatar)
@@ -350,141 +430,3 @@ void backOut(BuildContext context) {
     MaterialPageRoute(builder: (context) => PrototypePage()),
   );
 }
-
-StreamBuilder<List<PublicUser>> handlePlayerListChange() {
-  return StreamBuilder<List<PublicUser>>(
-    stream: _playerList,
-    builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
-      Widget widget;
-      if (snapshot.hasError) {
-        widget = ErrorPopup(
-            errorMessage: 'Error: ${snapshot.error}'
-                'Stack trace: ${snapshot.stackTrace}');
-      } else {
-        widget = Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SizedBox(
-                  height: 50,
-                  width: 125,
-                  child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(0),
-                      label: Text(setPlayerName(0))),
-                ),
-                SizedBox(
-                  height: 50,
-                  width: 125,
-                  child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(1),
-                      label: Text(setPlayerName(1))),
-                ),
-              ],
-            ),
-            Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SizedBox(
-                    height: 50,
-                    width: 125,
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(2),
-                      label: Text(setPlayerName(2)),
-                    )),
-                SizedBox(
-                  height: 50,
-                  width: 125,
-                  child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(3),
-                      label: Text(setPlayerName(3))),
-                ),
-              ],
-            ),
-          ],
-        );
-        return widget;
-      }
-      return widget;
-    },
-  );
-}
-      
-
-
-// StreamBuilder<List<PublicUser>> handlePlayerListChange() {
-//   return StreamBuilder<List<PublicUser>>(
-//     stream: _playerList,
-//     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
-//       Widget widget;
-//       if (snapshot.hasError) {
-//         widget = ErrorPopup(
-//             errorMessage: 'Error: ${snapshot.error}'
-//                 'Stack trace: ${snapshot.stackTrace}');
-//       } else {
-//         widget = Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//               children: [
-//                 SizedBox(
-//                   height: 50,
-//                   width: 125,
-//                   child: ElevatedButton.icon(
-//                       onPressed: () {},
-//                       style: setStyleRoomButtons(),
-//                       icon: setPlayerIcon(0),
-//                       label: Text(setPlayerName(0))),
-//                 ),
-//                 SizedBox(
-//                   height: 50,
-//                   width: 125,
-//                   child: ElevatedButton.icon(
-//                       onPressed: () {},
-//                       style: setStyleRoomButtons(),
-//                       icon: setPlayerIcon(1),
-//                       label: Text(setPlayerName(1))),
-//                 ),
-//               ],
-//             ),
-//             Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//               children: [
-//                 SizedBox(
-//                     height: 50,
-//                     width: 125,
-//                     child: ElevatedButton.icon(
-//                       onPressed: () {},
-//                       style: setStyleRoomButtons(),
-//                       icon: setPlayerIcon(2),
-//                       label: Text(setPlayerName(2)),
-//                     )),
-//                 SizedBox(
-//                   height: 50,
-//                   width: 125,
-//                   child: ElevatedButton.icon(
-//                       onPressed: () {},
-//                       style: setStyleRoomButtons(),
-//                       icon: setPlayerIcon(3),
-//                       label: Text(setPlayerName(3))),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         );
-//         return widget;
-//       }
-//     },);
-// }
