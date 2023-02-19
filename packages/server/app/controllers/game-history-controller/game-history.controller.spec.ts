@@ -53,7 +53,7 @@ describe('GameHistoriesController', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit();
+        testingUnit = new ServicesTestingUnit().withMockedAuthentification();
         await testingUnit.withMockDatabaseService();
         testingUnit.withStubbedDictionaryService().withStubbedControllers(GameHistoriesController);
         gameHistoriesServiceStub = testingUnit.setStubbed(GameHistoriesService);
