@@ -9,7 +9,7 @@ import { ChatHistoryService } from '@app/services/chat-history/chat-history.serv
 
 @Service()
 export class ChatPersistenceService {
-    constructor(private readonly databaseService: DatabaseService, private chatHistoryService: ChatHistoryService) { }
+    constructor(private readonly databaseService: DatabaseService, private chatHistoryService: ChatHistoryService) {}
 
     async getChannels(): Promise<Channel[]> {
         return this.channelTable.select();

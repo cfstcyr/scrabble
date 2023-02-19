@@ -5,34 +5,34 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
+import { PlayerData } from '@app/classes/communication/player-data';
 import { ServerSocket } from '@app/classes/communication/socket-type';
+import { ConnectedUser } from '@app/classes/user/connected-user';
+import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
+import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
+import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import { SocketService } from '@app/services/socket-service/socket.service';
+import { Delay } from '@app/utils/delay/delay';
+import { getSocketNameFromChannel } from '@app/utils/socket';
 import { ChatClientEvents, ChatServerEvents } from '@common/events/chat.event';
-import { createServer, Server } from 'http';
-import { AddressInfo } from 'net';
-import * as io from 'socket.io';
-import { io as ioClient, Socket as ClientSocket } from 'socket.io-client';
-import { Container } from 'typedi';
-import { ChatService } from './chat.service';
-import * as Sinon from 'sinon';
-import { expect } from 'chai';
 import { Channel, ChannelCreation } from '@common/models/chat/channel';
 import { ChatMessage } from '@common/models/chat/chat-message';
-import { PublicUser, UserDatabase } from '@common/models/user';
-import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
-import { Delay } from '@app/utils/delay/delay';
-import { StatusCodes } from 'http-status-codes';
-import { getSocketNameFromChannel } from '@app/utils/socket';
 import { SocketErrorResponse } from '@common/models/error';
-import { SocketService } from '@app/services/socket-service/socket.service';
+import { PublicUser, UserDatabase } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
-import { PlayerData } from '@app/classes/communication/player-data';
-import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
-import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { ConnectedUser } from '@app/classes/user/connected-user';
+import { expect } from 'chai';
+import { createServer, Server } from 'http';
+import { StatusCodes } from 'http-status-codes';
+import { AddressInfo } from 'net';
+import * as Sinon from 'sinon';
+import * as io from 'socket.io';
+import { io as ioClient, Socket as ClientSocket } from 'socket.io-client';
 import { EventEmitter } from 'stream';
-import { ChatHistoryService } from '../chat-history/chat-history.service';
+import { Container } from 'typedi';
+import { ChatService } from './chat.service';
 
 // const TIMEOUT_DELAY = 10000;
 const RESPONSE_DELAY = 400;
@@ -73,7 +73,7 @@ const channelCreation: ChannelCreation = {
 
 class TestClass {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    testFunc = () => { };
+    testFunc = () => {};
 }
 
 describe('ChatService', () => {
@@ -95,8 +95,8 @@ describe('ChatService', () => {
             .withStubbed(ChatPersistenceService)
             .withStubbed(ChatHistoryService)
             .withStubbed(AuthentificationService, undefined, {
-                connectedUsers: new ConnectedUser(), getUserById: () =>
-                    Promise.resolve(USER),
+                connectedUsers: new ConnectedUser(),
+                getUserById: async () => Promise.resolve(USER),
             })
             .withStubbed(SocketService)
             .withStubbedPrototypes(Application, { bindRoutes: undefined });
@@ -137,7 +137,7 @@ describe('ChatService', () => {
                 chatHistoryService as unknown as ChatHistoryService,
             );
 
-            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => { });
+            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => {});
 
             socketService['configureSocketsEvent'].emit(SOCKET_CONFIGURE_EVENT_NAME, serverSocket);
 

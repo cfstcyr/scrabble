@@ -1,17 +1,19 @@
-import { Application } from "@app/app";
-import { ConnectedUser } from "@app/classes/user/connected-user";
-import { CHANNEL_TABLE, CHAT_HISTORY_TABLE, USER_TABLE } from "@app/constants/services-constants/database-const";
-import { Channel } from "@common/models/chat/channel";
-import { ChatHistoryMessage, ChatMessage } from "@common/models/chat/chat-message";
-import { UserDatabase, PublicUser } from "@common/models/user";
-import { expect } from "chai";
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
+import { Application } from '@app/app';
+import { ConnectedUser } from '@app/classes/user/connected-user';
+import { CHANNEL_TABLE, CHAT_HISTORY_TABLE, USER_TABLE } from '@app/constants/services-constants/database-const';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import DatabaseService from '@app/services/database-service/database.service';
+import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import { Channel } from '@common/models/chat/channel';
+import { ChatHistoryMessage, ChatMessage } from '@common/models/chat/chat-message';
+import { PublicUser, UserDatabase } from '@common/models/user';
+import { expect } from 'chai';
 import { Knex } from 'knex';
-import Sinon = require("sinon");
-import Container from "typedi";
-import { AuthentificationService } from "../authentification-service/authentification.service";
-import DatabaseService from "../database-service/database.service";
-import { ServicesTestingUnit } from "../service-testing-unit/services-testing-unit.spec";
-import { ChatHistoryService } from "./chat-history.service";
+import * as Sinon from 'sinon';
+import { Container } from 'typedi';
+import { ChatHistoryService } from './chat-history.service';
 
 const USER: UserDatabase = {
     idUser: 1,
@@ -57,11 +59,10 @@ describe('ChatHistoryService', () => {
     let userTable: () => Knex.QueryBuilder<UserDatabase>;
     let channelTable: () => Knex.QueryBuilder<Channel>;
 
-
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit()
             .withStubbedPrototypes(Application, { bindRoutes: undefined })
-            .withStubbed(AuthentificationService, undefined, { connectedUsers: new ConnectedUser() })
+            .withStubbed(AuthentificationService, undefined, { connectedUsers: new ConnectedUser() });
         await testingUnit.withMockDatabaseService();
         databaseService = Container.get(DatabaseService);
         userTable = () => databaseService.knex<UserDatabase>(USER_TABLE);

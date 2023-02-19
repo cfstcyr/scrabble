@@ -8,7 +8,7 @@ import { AuthentificationService } from '@app/services/authentification-service/
 
 @Service()
 export class ChatHistoryService {
-    constructor(private databaseService: DatabaseService, private authentificationService: AuthentificationService) { }
+    constructor(private databaseService: DatabaseService, private authentificationService: AuthentificationService) {}
 
     async saveMessage(message: ChannelMessage): Promise<void> {
         const user = await this.authentificationService.getUserByEmail(message.message.sender.email);
