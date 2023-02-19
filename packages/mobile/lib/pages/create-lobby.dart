@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/prototype-page.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
+import '../components/error-pop-up.dart';
 import '../constants/create-lobby-constants.dart';
 
 class CreateLobbyPage extends StatelessWidget {
@@ -110,14 +112,14 @@ class GroupGestion extends StatelessWidget {
         children: [
           ElevatedButton.icon(
               onPressed: () {
-                //TODO AJUSTER TEMPS
+                backOut(context);
               },
               style: setStyleActionButtons(),
               icon: Icon(Icons.keyboard_arrow_left_sharp),
               label: Text(STOP_GAME_SETUP)),
           ElevatedButton.icon(
               onPressed: () {
-                //TODO AJUSTER TEMPS
+                startGame(context);
               },
               style: setStyleActionButtons(),
               icon: Icon(Icons.start),
@@ -247,82 +249,11 @@ class _WaitingRoomState extends State<WaitingRoom> {
     );
 
     return Padding(
-      padding: EdgeInsets.only(left: 0, right: 0, top: 50.0, bottom: 50.0),
-      child: Container(
+        padding: EdgeInsets.only(left: 0, right: 0, top: 50.0, bottom: 50.0),
+        child: Container(
           alignment: Alignment.center,
-          child: handlePlayerListChange(Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SizedBox(
-                    height: 50,
-                    width: 125,
-                    child: ElevatedButton.icon(
-                        onPressed: () {},
-                        style: setStyleRoomButtons(),
-                        icon: setPlayerIcon(0),
-                        label: Text(setPlayerName(0))),
-                  ),
-                  SizedBox(
-                    height: 50,
-                    width: 125,
-                    child: ElevatedButton.icon(
-                        onPressed: () {},
-                        style: setStyleRoomButtons(),
-                        icon: setPlayerIcon(1),
-                        label: Text(setPlayerName(1))),
-                  ),
-                ],
-              ),
-              Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SizedBox(
-                    height: 50,
-                    width: 125,
-                    child: ElevatedButton.icon(
-                        onPressed: () {},
-                        style: setStyleRoomButtons(),
-                        icon: setPlayerIcon(2),
-                        label: Text(setPlayerName(2))),
-                  ),
-                  SizedBox(
-                    height: 50,
-                    width: 125,
-                    child: ElevatedButton.icon(
-                        onPressed: () {},
-                        style: setStyleRoomButtons(),
-                        icon: setPlayerIcon(3),
-                        label: Text(setPlayerName(3))),
-                  ),
-                ],
-              ),
-            ],
-          ))),
-    );
-  }
-}
-
-class ErrorPopup extends StatelessWidget {
-  final String errorMessage;
-
-  ErrorPopup({this.errorMessage = 'Erreur'});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Error'),
-      content: Text(errorMessage),
-      actions: [
-        TextButton(
-          child: Text('OK'),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ],
-    );
+          child: handlePlayerListChange(),
+        ));
   }
 }
 
@@ -341,7 +272,7 @@ List<PublicUser> playerWaitingList = [
 ];
 
 List<PublicUser> playerList = [
-// TODO : requete joueurs lobby
+// TODO : requete joueurs lobby -- GET PROPRE USERNAME AVEC PAGE D'AVANT
   PublicUser(username: "michel"),
 ];
 
@@ -406,11 +337,154 @@ CircleAvatar setAvatar(String path) {
       )));
 }
 
-StreamBuilder<List<PublicUser>> handlePlayerListChange(Widget widget) {
+void startGame(BuildContext context) {
+  // TODO socket + redirection game page
+  _playerList.close();
+}
+
+void backOut(BuildContext context) {
+  // TODO socket close lobby
+  _playerList.close();
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => PrototypePage()),
+  );
+}
+
+StreamBuilder<List<PublicUser>> handlePlayerListChange() {
   return StreamBuilder<List<PublicUser>>(
     stream: _playerList,
     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
+      Widget widget;
+      if (snapshot.hasError) {
+        widget = ErrorPopup(
+            errorMessage: 'Error: ${snapshot.error}'
+                'Stack trace: ${snapshot.stackTrace}');
+      } else {
+        widget = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  height: 50,
+                  width: 125,
+                  child: ElevatedButton.icon(
+                      onPressed: () {},
+                      style: setStyleRoomButtons(),
+                      icon: setPlayerIcon(0),
+                      label: Text(setPlayerName(0))),
+                ),
+                SizedBox(
+                  height: 50,
+                  width: 125,
+                  child: ElevatedButton.icon(
+                      onPressed: () {},
+                      style: setStyleRoomButtons(),
+                      icon: setPlayerIcon(1),
+                      label: Text(setPlayerName(1))),
+                ),
+              ],
+            ),
+            Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                    height: 50,
+                    width: 125,
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      style: setStyleRoomButtons(),
+                      icon: setPlayerIcon(2),
+                      label: Text(setPlayerName(2)),
+                    )),
+                SizedBox(
+                  height: 50,
+                  width: 125,
+                  child: ElevatedButton.icon(
+                      onPressed: () {},
+                      style: setStyleRoomButtons(),
+                      icon: setPlayerIcon(3),
+                      label: Text(setPlayerName(3))),
+                ),
+              ],
+            ),
+          ],
+        );
+        return widget;
+      }
       return widget;
     },
   );
 }
+      
+
+
+// StreamBuilder<List<PublicUser>> handlePlayerListChange() {
+//   return StreamBuilder<List<PublicUser>>(
+//     stream: _playerList,
+//     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
+//       Widget widget;
+//       if (snapshot.hasError) {
+//         widget = ErrorPopup(
+//             errorMessage: 'Error: ${snapshot.error}'
+//                 'Stack trace: ${snapshot.stackTrace}');
+//       } else {
+//         widget = Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//               children: [
+//                 SizedBox(
+//                   height: 50,
+//                   width: 125,
+//                   child: ElevatedButton.icon(
+//                       onPressed: () {},
+//                       style: setStyleRoomButtons(),
+//                       icon: setPlayerIcon(0),
+//                       label: Text(setPlayerName(0))),
+//                 ),
+//                 SizedBox(
+//                   height: 50,
+//                   width: 125,
+//                   child: ElevatedButton.icon(
+//                       onPressed: () {},
+//                       style: setStyleRoomButtons(),
+//                       icon: setPlayerIcon(1),
+//                       label: Text(setPlayerName(1))),
+//                 ),
+//               ],
+//             ),
+//             Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//               children: [
+//                 SizedBox(
+//                     height: 50,
+//                     width: 125,
+//                     child: ElevatedButton.icon(
+//                       onPressed: () {},
+//                       style: setStyleRoomButtons(),
+//                       icon: setPlayerIcon(2),
+//                       label: Text(setPlayerName(2)),
+//                     )),
+//                 SizedBox(
+//                   height: 50,
+//                   width: 125,
+//                   child: ElevatedButton.icon(
+//                       onPressed: () {},
+//                       style: setStyleRoomButtons(),
+//                       icon: setPlayerIcon(3),
+//                       label: Text(setPlayerName(3))),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         );
+//         return widget;
+//       }
+//     },);
+// }
