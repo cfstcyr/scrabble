@@ -1,5 +1,4 @@
 import 'package:mobile/classes/account.dart';
-import 'package:mobile/classes/user.dart';
 import 'package:mobile/controllers/account-authentification-controller.dart';
 
 import '../locator.dart';
@@ -36,15 +35,6 @@ class AccountAuthenticationService {
 
   Future<bool> isUsernameUnique(String username) async {
     return await accountAuthenticationController.isUsernameUnique(username);
-    // if (res.statusCode == 200) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
-  }
-
-  Future<bool> login(UserLoginCredentials credentials) async {
-    return await accountAuthenticationController.login(credentials);
     // if (res.statusCode == 200) {
     //   return true;
     // } else {
