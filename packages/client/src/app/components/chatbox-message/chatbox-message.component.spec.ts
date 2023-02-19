@@ -21,16 +21,15 @@ const USER_2: PublicUser = {
 describe('ChatboxMessageComponent', () => {
     let component: ChatboxMessageComponent;
     let fixture: ComponentFixture<ChatboxMessageComponent>;
-    let userService: jasmine.SpyObj<UserService>;
 
     beforeEach(async () => {
-        userService = jasmine.createSpyObj('UserService', ['isUser']);
-
         await TestBed.configureTestingModule({
             imports: [ReactiveFormsModule],
-            providers: [FormBuilder, { provide: UserService, useValue: userService }],
+            providers: [FormBuilder, UserService],
             declarations: [ChatboxMessageComponent, ChatBoxComponent, IconComponent, IconButtonComponent],
         }).compileComponents();
+
+        TestBed.inject(UserService).user.next(USER_1);
     });
 
     beforeEach(() => {

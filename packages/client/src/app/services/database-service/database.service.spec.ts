@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HttpStatusCode } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ConnectionState } from '@app/classes/connection-state-service/connection-state';
-import { DB_CONNECTED_ENDPOINT } from '@app/constants/services-errors';
+import { environment } from 'src/environments/environment';
 
 import { DatabaseService } from './database.service';
 
@@ -23,23 +21,37 @@ describe('DatabaseService', () => {
         expect(service).toBeTruthy();
     });
 
-    describe('checkDatabase', () => {
-        it('should call nextState with connected on success', () => {
-            const spy = spyOn<any>(service, 'nextState');
+    describe('ping', () => {
+        it('should resolve if ok', (done) => {
+            service.ping().subscribe(
+                () => {
+                    expect(true).toBeTrue();
+                    done();
+                },
+                () => {
+                    expect(false).toBeTrue();
+                    done();
+                },
+            );
 
-            service.checkDatabase();
-
-            http.expectOne(DB_CONNECTED_ENDPOINT).flush({ status: HttpStatusCode.NoContent });
-            expect(spy).toHaveBeenCalledOnceWith(ConnectionState.Connected);
+            const req = http.expectOne(`${environment.serverUrl}/database/is-connected`);
+            req.flush({});
         });
 
-        it('should call nextState with error on error', () => {
-            const spy = spyOn<any>(service, 'nextState');
+        it('should resolve if ok', (done) => {
+            service.ping().subscribe(
+                () => {
+                    expect(false).toBeTrue();
+                    done();
+                },
+                () => {
+                    expect(true).toBeTrue();
+                    done();
+                },
+            );
 
-            service.checkDatabase();
-
-            http.expectOne(DB_CONNECTED_ENDPOINT).error(new ErrorEvent(''));
-            expect(spy).toHaveBeenCalledOnceWith(ConnectionState.Error);
+            const req = http.expectOne(`${environment.serverUrl}/database/is-connected`);
+            req.error(new ErrorEvent(''));
         });
     });
 });

@@ -47,4 +47,37 @@ $border-radius: 6px;
             padding: 6px 16px;
         }
     }
+
+    .avatar {
+        $img-size: 50px;
+
+        &__container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        &__input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        &__img {
+            height: $img-size;
+            width: $img-size;
+            border-radius: 100px;
+            cursor: pointer;
+            border: solid 2px transparent;
+            opacity: 0.75;
+        }
+    }
+
+    .avatar__input:checked + .avatar__img {
+        scale: 1.1;
+        border-color: $primary;
+        opacity: 1;
+    }
 }

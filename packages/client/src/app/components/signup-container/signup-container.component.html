@@ -49,6 +49,14 @@
                 />
             </mat-form-field>
 
+            <div class="avatar__container">
+                <label *ngFor="let avatar of avatars">
+                    <input type="radio" name="avatar" [value]="avatar" class="avatar__input" formControlName="avatar">
+                    <img [src]="avatar" class="avatar__img" />
+                </label>
+            </div>
+            
+            <br>
 
             <div class="buttons">
                 <mat-checkbox [(ngModel)]="arePasswordsShown" [ngModelOptions]="{ standalone: true }" color="primary"> Afficher les mots de passe</mat-checkbox>

@@ -2,12 +2,7 @@ import { HttpException } from '@app/classes/http-exception/http-exception';
 import { env } from '@app/utils/environment/environment';
 import * as express from 'express';
 import { getReasonPhrase, StatusCodes } from 'http-status-codes';
-
-interface ErrorResponse {
-    message: string;
-    error: string;
-    stack?: string[];
-}
+import { ErrorResponse } from '@common/models/error';
 
 // eslint-disable-next-line no-unused-vars
 export const errorHandler = (error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -27,7 +22,7 @@ export const errorHandler = (error: Error, req: express.Request, res: express.Re
 
     if (!env.isProd) {
         // eslint-disable-next-line no-console
-        console.error(error);
+        console.error('\x1b[1m\x1b[3m<< Handled error >>\x1b[0m', error);
     }
 
     res.status(status).json(response);

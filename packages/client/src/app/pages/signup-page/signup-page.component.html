@@ -10,7 +10,10 @@
     </div>
 
     <div class="content">
-        <app-page-header title="Créer un compte" button="Se connecter" buttonRoute="/login"></app-page-header>
+        <app-page-header title="Créer un compte" [hideBackButton]="true">
+            <app-header-btn link="/login" header-button>Se connecter</app-header-btn>
+        </app-page-header>
+
 
         <br />
 

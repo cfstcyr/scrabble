@@ -1,8 +1,11 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { NO_TOKEN } from '@app/constants/controllers-errors';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
+import { NextFunction } from 'express';
 import * as http from 'http';
 import { StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
@@ -18,7 +21,7 @@ import {
     NewMessageEmitArgs,
     RejectEmitArgs,
     SocketEmitEvents,
-    StartGameEmitArgs
+    StartGameEmitArgs,
 } from './socket-types';
 
 @Service()
@@ -26,7 +29,7 @@ export class SocketService {
     private sio?: io.Server;
     private sockets: Map<string, io.Socket>;
 
-    constructor(private readonly chatService: ChatService) {
+    constructor(private readonly chatService: ChatService, private readonly authentificationService: AuthentificationService) {
         this.sockets = new Map();
     }
 
@@ -37,13 +40,27 @@ export class SocketService {
     handleSockets(): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
+        this.sio.use(async (socket: io.Socket, next: NextFunction) => {
+            const token = socket.handshake.auth.token;
+
+            if (token) {
+                try {
+                    await this.authentificationService.authentificateSocket(socket, token);
+                    return next();
+                } catch (err) {
+                    return next(new Error(err));
+                }
+            } else {
+                next(new Error(NO_TOKEN));
+            }
+        });
+
         this.sio.on('connection', (socket) => {
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
-
             this.chatService.configureSocket(socket);
             socket.on('disconnect', () => {
-                this.sockets.delete(socket.id);
+                this.handleDisconnect(socket);
             });
         });
     }
@@ -109,5 +126,10 @@ export class SocketService {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
         if (isIdVirtualPlayer(id)) return;
         this.getSocket(id).emit(ev, ...args);
+    }
+
+    private handleDisconnect(socket: io.Socket): void {
+        this.authentificationService.disconnectSocket(socket.id);
+        this.sockets.delete(socket.id);
     }
 }

@@ -6,6 +6,8 @@ import { Component, Input } from '@angular/core';
     styleUrls: ['./loading-page.component.scss'],
 })
 export class LoadingPageComponent {
-    @Input() error?: string;
-    @Input() isTrying: boolean;
+    @Input() message?: string;
+    @Input() isError?: boolean;
+    @Input() isLoading: boolean = false;
+    @Input() isTrying: boolean = false;
 }

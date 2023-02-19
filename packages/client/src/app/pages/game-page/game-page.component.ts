@@ -23,6 +23,7 @@ import {
     MAX_CONFETTI_COUNT,
     MIN_CONFETTI_COUNT,
 } from '@app/constants/pages-constants';
+import { ROUTE_HOME } from '@app/constants/routes-constants';
 import {
     RACK_FONT_SIZE_INCREMENT,
     RACK_TILE_MAX_FONT_SIZE,
@@ -179,7 +180,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 buttons: [
                     {
                         content: buttonsContent[0],
-                        redirect: '/home',
+                        redirect: ROUTE_HOME,
                         style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
                         // We haven't been able to test that the right function is called because this
                         // arrow function creates a new instance of the function. We cannot spy on it.
@@ -205,7 +206,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
                     {
                         content: DIALOG_NO_ACTIVE_GAME_BUTTON,
                         closeDialog: false,
-                        redirect: '/home',
+                        redirect: ROUTE_HOME,
                         style: 'background-color: rgb(231, 231, 231)',
                         // We haven't been able to test that the right function is called because this
                         // arrow function creates a new instance of the function. We cannot spy on it.
@@ -225,7 +226,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 buttons: [
                     {
                         content: DIALOG_QUIT_BUTTON_CONFIRM,
-                        redirect: '/home',
+                        redirect: ROUTE_HOME,
                         style: 'background-color: rgb(231, 231, 231)',
                         // We haven't been able to test that the right function is called because this
                         // arrow function creates a new instance of the function. We cannot spy on it.

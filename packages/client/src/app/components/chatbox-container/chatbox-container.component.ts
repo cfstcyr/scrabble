@@ -5,17 +5,17 @@ import { ClientChannel, ViewClientChannel } from '@app/classes/chat/channel';
 import { CONFIRM_QUIT_CHANNEL, CONFIRM_QUIT_DIALOG_TITLE, MAX_OPEN_CHAT } from '@app/constants/chat-constants';
 import { Channel } from '@common/models/chat/channel';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { map, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-chatbox-container',
     templateUrl: './chatbox-container.component.html',
     styleUrls: ['./chatbox-container.component.scss'],
 })
-export class ChatboxContainerComponent implements OnInit, OnDestroy {
-    @Input() channels: ClientChannel[] = [];
-    @Input() joinedChannel: Observable<ClientChannel> = new Subject();
+export class ChatboxContainerComponent implements OnDestroy, OnInit {
+    @Input() channels: Observable<ClientChannel[]> = new Observable();
+    @Input() joinedChannel: Observable<ClientChannel> = new Observable();
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
     @Output() joinChannel: EventEmitter<string> = new EventEmitter();
@@ -51,16 +51,19 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.complete();
     }
 
-    getChannelsForMenu(): ViewClientChannel[] {
-        return this.channels.map<ViewClientChannel>((channel) => ({
-            ...channel,
-            canOpen: !this.openedChannels.find((c) => channel.id === c.id),
-        }));
+    getChannelsForMenu(): Observable<ViewClientChannel[]> {
+        return this.channels.pipe(
+            map<ClientChannel[], ViewClientChannel[]>((channels) =>
+                channels.map((channel) => ({
+                    ...channel,
+                    canOpen: !this.openedChannels.find((c) => channel.id === c.id),
+                })),
+            ),
+        );
     }
 
     showChannel(channel: ClientChannel): void {
         this.openedChannels.push(channel);
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         this.openedChannels = this.openedChannels.slice(-1 * MAX_OPEN_CHAT);
         this.closeMenu();
     }
@@ -78,7 +81,6 @@ export class ChatboxContainerComponent implements OnInit, OnDestroy {
         this.channelMenuIsOpen = !this.channelMenuIsOpen;
 
         if (this.channelMenuIsOpen) {
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             this.openedChannels = this.openedChannels.slice(-1);
         }
     }

@@ -1,16 +1,7 @@
 <div class="page">
-    <mat-card class="header">
-        <div class="content">
-            <div class="back-btn" [routerLink]="'/'">
-                <app-icon icon="arrow-left" styling="solid"></app-icon>
-                <img src="https://bit.ly/3m206ss" />
-            </div>
-
-            <div class="title">Sélection de partie</div>
-
-            <a routerLink="/game-creation" class="link">Créer une partie</a>
-        </div>
-    </mat-card>
+    <app-page-header title="Sélection de partie">
+        <app-header-btn link="/game-creation" header-button>Créer une partie</app-header-btn>
+    </app-page-header>
 
     <div class="container">
         <div class="steps">

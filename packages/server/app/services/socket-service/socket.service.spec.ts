@@ -16,6 +16,7 @@ import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
 import { SocketService } from './socket.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 
 const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
@@ -24,6 +25,7 @@ const DEFAULT_ROOM = 'default_room';
 const INVALID_ROOM_NAME = 'invalid_room';
 const INVALID_ID = 'invalid-id';
 const DEFAULT_ARGS = 'data';
+const DEFAULT_TOKEN = 'token';
 
 const getSocketId = async (socket: Socket) => {
     const DELAY = 5;
@@ -53,6 +55,7 @@ describe('SocketService', () => {
             testingUnit = new ServicesTestingUnit()
                 .withStubbed(DictionaryService)
                 .withStubbed(ChatService)
+                .withStubbed(AuthentificationService, { authentificateSocket: Promise.resolve() })
                 .withStubbedPrototypes(Application, { bindRoutes: undefined });
         });
 
@@ -60,7 +63,7 @@ describe('SocketService', () => {
             server = Container.get(Server);
             server.init();
             service = server['socketService'];
-            clientSocket = ioClient(SERVER_URL + Server['appPort']);
+            clientSocket = ioClient(SERVER_URL + Server['appPort'], { auth: { token: DEFAULT_TOKEN } });
             service.handleSockets();
         });
 
@@ -285,7 +288,7 @@ describe('SocketService', () => {
         let service: SocketService;
 
         beforeEach(async () => {
-            service = new SocketService(Container.get(ChatService));
+            service = new SocketService(Container.get(ChatService), Container.get(AuthentificationService));
         });
 
         describe('handleSockets', () => {

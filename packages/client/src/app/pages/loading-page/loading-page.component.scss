@@ -15,8 +15,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 24px;
-        gap: 24px;
+        padding: 36px;
+        gap: 36px;
         max-width: 300px;
 
         app-tile {
@@ -26,6 +26,13 @@
             font-size: 2.4em;
             transform: rotate(0deg);
         }
+
+        .messages {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
         p {
             margin: 0;
             font-size: 1.2em;
@@ -54,6 +61,10 @@
                 visibility: visible;
             }
 
+            &.message {
+                font-weight: 500;
+            }
+
             &.trying-message {
                 font-size: 1.1em;
                 opacity: 0.55;
@@ -61,7 +72,11 @@
         }
     }
 
-    &:not(.error),
+    &.error .message {
+        color: tomato;
+    }
+
+    &.is-loading,
     &.is-trying {
         mat-card app-tile {
             @keyframes loading {

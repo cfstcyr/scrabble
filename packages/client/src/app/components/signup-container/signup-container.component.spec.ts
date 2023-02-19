@@ -5,10 +5,13 @@
 /* eslint-disable dot-notation */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserSignupInformation } from '@common/models/user';
+import { IconComponent } from '@app/components/icon/icon.component';
 
 import { SignupContainerComponent } from './signup-container.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 const DEFAULT_CREDENTIALS: UserSignupInformation = {
+    avatar: 'avatar',
     username: 'Ahmad',
     password: 'Faour#103',
     email: 'jdg@machine.epm',
@@ -23,7 +26,8 @@ describe('SignupContainerComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SignupContainerComponent],
+            declarations: [SignupContainerComponent, IconComponent],
+            imports: [MatTooltipModule],
         }).compileComponents();
     });
 
