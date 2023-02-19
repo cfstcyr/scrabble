@@ -4,3 +4,4 @@ const String ALREADY_LOGGED_IN_FR =
     "déja connecté, Veuillez réesayer plus tard";
 const String LOGIN_FAILED =
     "Courriel ou Mot de passe Incorrect, Veuillez réessayer";
+const String AUTHORIZED = "Authorized";
