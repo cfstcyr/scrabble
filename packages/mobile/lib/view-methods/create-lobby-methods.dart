@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
-import '../pages/prototype-page.dart';
+import '../pages/home-page.dart';
 
 BehaviorSubject<List<PublicUser>> playerList$ =
     BehaviorSubject<List<PublicUser>>.seeded(playerList);
@@ -82,6 +82,6 @@ void backOut(BuildContext context) {
   playerList$.close();
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => PrototypePage()),
+    MaterialPageRoute(builder: (context) => HomePage()),
   );
 }

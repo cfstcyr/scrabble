@@ -7,7 +7,7 @@ import 'package:mobile/classes/channel-message.dart';
 import 'package:mobile/classes/channel.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/channels.constants.dart';
-import 'package:mobile/constants/socket-events.dart';
+import 'package:mobile/constants/socket-events/chat-events.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:uuid/uuid.dart';

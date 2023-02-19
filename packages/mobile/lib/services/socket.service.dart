@@ -1,3 +1,4 @@
+import 'package:mobile/classes/group.dart';
 import 'package:mobile/environments/environment.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -27,5 +28,9 @@ class SocketService {
 
   Future<void> emitEvent(String eventName, [dynamic data]) async {
     socket.emit(eventName, data);
+  }
+
+  on<T>(String eventName, dynamic Function(T arg) handler) {
+    socket.on(eventName, handler as dynamic);
   }
 }

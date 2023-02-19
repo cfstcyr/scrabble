@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:mobile/classes/channel-message.dart';
 import 'package:mobile/services/socket.service.dart';
 
-import '../constants/socket-events.dart';
+import '../constants/socket-events/chat-events.dart';
 import '../environments/environment.dart';
 import '../locator.dart';
 
