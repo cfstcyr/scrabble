@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:mobile/classes/account.dart';
+import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/login-constants.dart';
 import 'package:mobile/environments/environment.dart';
@@ -56,16 +57,23 @@ class AccountAuthenticationController {
     // }
   }
 
-  Future<dynamic> login(UserLoginCredentials credentials) async {
+  Future<LoginResponse> login(UserLoginCredentials credentials) async {
     Response res =
         await post(Uri.parse("${endpoint}/login"), body: credentials.toJson());
-
+    String message;
     if (res.statusCode == HttpStatus.ok) {
-      return res.body as UserSession;
+      message = AUTHORIZED;
     } else if (res.statusCode == HttpStatus.notAcceptable) {
-      return (LOGIN_FAILED);
+      message = LOGIN_FAILED;
     } else {
-      return (ALREADY_LOGGED_IN_FR);
+      message = ALREADY_LOGGED_IN_FR;
     }
+    LoginResponse loginResponse = LoginResponse(
+        userSession: res.statusCode == HttpStatus.ok
+            ? UserSession.fromJson(jsonDecode(res.body))
+            : Null as UserSession,
+        authorized: res.statusCode == HttpStatus.ok,
+        errorMessage: message);
+    return loginResponse;
   }
 }
