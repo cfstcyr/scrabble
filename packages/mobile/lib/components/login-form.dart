@@ -2,9 +2,11 @@
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../constants/create-account-constants.dart';
@@ -12,7 +14,6 @@ import '../constants/login-constants.dart';
 import '../controllers/account-authentification-controller.dart';
 import '../pages/create-account-page.dart';
 import '../services/socket.service.dart';
-import 'chatbox.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -115,22 +116,15 @@ class _LoginFormState extends State<LoginForm> {
                 SizedBox(width: 100),
                 ElevatedButton(
                   onPressed: () async => {
-                    //   Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //           builder: (context) => ChatPage(
-                    //               name: usernameHandler.controller.text)))
-                    // },
-                    await isLogged(UserLoginCredentials(
+                    await isLoggedIn(UserLoginCredentials(
                             email: emailHandler.controller.text,
                             password: passwordHandler.controller.text))
                         ? {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      ChatPage(name: userSession.user.username),
-                                ))
+                                    builder: (context) => HomePage(
+                                        name: userSession.user.username)))
                           }
                         : {}
                   },
@@ -183,16 +177,14 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
-  isLogged(UserLoginCredentials credentials) async {
-    try {
-      print(credentials.toJson());
-      userSession = await authController.login(credentials);
-      return true;
-    } catch (e) {
-      print("jnewjn");
-      // setState(() {
-      //   emailHandler.errorMessage = e.toString();
-      //};
+  isLoggedIn(UserLoginCredentials credentials) async {
+    LoginResponse res = await authController.login(credentials);
+    if (!res.authorized) {
+      setState(() {
+        emailHandler.errorMessage = res.errorMessage;
+      });
     }
+    userSession = res.userSession as UserSession;
+    return res.authorized;
   }
 }
