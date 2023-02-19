@@ -117,7 +117,7 @@ export class ChatService {
 
         socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
 
-        // TODO: Save message in DB with ChatHistoryService here
+        this.chatHistoryService.saveMessage(channelMessage);
     }
 
     private async handleCreateChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel> {

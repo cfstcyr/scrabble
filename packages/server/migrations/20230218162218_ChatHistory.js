@@ -9,8 +9,8 @@ exports.up = function(knex) {
         table.integer('idChannel').unsigned().notNullable();
         table.integer('idUser').unsigned().notNullable();
         table.timestamp('date').defaultTo(knex.fn.now());
-        table.foreign('idChannel').references('id').inTable('Channel');
-        table.foreign('idUser').references('id').inTable('User');
+        table.foreign('idChannel').references('idChannel').inTable('Channel');
+        table.foreign('idUser').references('idUser').inTable('User');
     });
 };
 
