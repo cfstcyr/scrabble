@@ -250,4 +250,20 @@ describe('ChatPersistenceService', () => {
             expect(channels.some((channel) => channel.idChannel === CHANNEL_1.idChannel && channel.default)).to.be.true;
         });
     });
+
+    describe('isChannelEmpty', () => {
+        it('should return true if no user in channel', async () => {
+            await channelTable().insert(CHANNEL_1);
+
+            expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.true;
+        });
+
+        it('should return false if user in channel', async () => {
+            await channelTable().insert(CHANNEL_1);
+            await userTable().insert(USER);
+            await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
+
+            expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.false;
+        });
+    });
 });
