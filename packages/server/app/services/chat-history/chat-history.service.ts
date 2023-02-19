@@ -5,13 +5,16 @@ import { ChannelMessage, ChatHistoryMessage } from '@common/models/chat/chat-mes
 import { TypeOfId } from '@common/types/id';
 import { Channel } from '@common/models/chat/channel';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { USER_NOT_FOUND } from '@app/constants/services-errors';
 
 @Service()
 export class ChatHistoryService {
-    constructor(private databaseService: DatabaseService, private authentificationService: AuthentificationService) {}
+    constructor(private databaseService: DatabaseService, private authentificationService: AuthentificationService) { }
 
     async saveMessage(message: ChannelMessage): Promise<void> {
         const user = await this.authentificationService.getUserByEmail(message.message.sender.email);
+
+        if (!user) throw new Error(USER_NOT_FOUND);
 
         await this.table.insert({
             idChannel: message.idChannel,
@@ -27,6 +30,8 @@ export class ChatHistoryService {
         return await Promise.all(
             channelHistory.map(async (message: ChatHistoryMessage) => {
                 const user = await this.authentificationService.getUserById(message.idUser);
+
+                if (!user) throw new Error(USER_NOT_FOUND);
 
                 return {
                     idChannel: message.idChannel,
