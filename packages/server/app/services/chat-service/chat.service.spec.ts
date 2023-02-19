@@ -32,6 +32,7 @@ import { ChatPersistenceService } from '@app/services/chat-persistence-service/c
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ConnectedUser } from '@app/classes/user/connected-user';
 import { EventEmitter } from 'stream';
+import { ChatHistoryService } from '../chat-history/chat-history.service';
 
 // const TIMEOUT_DELAY = 10000;
 const RESPONSE_DELAY = 400;
@@ -72,7 +73,7 @@ const channelCreation: ChannelCreation = {
 
 class TestClass {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    testFunc = () => {};
+    testFunc = () => { };
 }
 
 describe('ChatService', () => {
@@ -87,14 +88,17 @@ describe('ChatService', () => {
     let clientSocket: ClientSocket<ChatServerEvents, ChatClientEvents>;
     let testingUnit: ServicesTestingUnit;
     let chatPersistenceService: Sinon.SinonStubbedInstance<ChatPersistenceService>;
+    let chatHistoryService: Sinon.SinonStubbedInstance<ChatPersistenceService>;
 
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit()
             .withStubbed(ChatPersistenceService)
+            .withStubbed(ChatHistoryService)
             .withStubbed(AuthentificationService, undefined, { connectedUsers: new ConnectedUser() })
             .withStubbed(SocketService)
             .withStubbedPrototypes(Application, { bindRoutes: undefined });
-        chatPersistenceService = testingUnit.setStubbed(ChatPersistenceService);
+        chatHistoryService = testingUnit.setStubbed(ChatPersistenceService);
+        chatPersistenceService = testingUnit.setStubbed(ChatPersistenceService, chatHistoryService);
         await testingUnit.withMockDatabaseService();
     });
 
@@ -127,9 +131,10 @@ describe('ChatService', () => {
                 socketService as unknown as SocketService,
                 chatPersistenceService as unknown as ChatPersistenceService,
                 testingUnit.getStubbedInstance(AuthentificationService) as unknown as AuthentificationService,
+                chatHistoryService as unknown as ChatHistoryService,
             );
 
-            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => {});
+            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => { });
 
             socketService['configureSocketsEvent'].emit(SOCKET_CONFIGURE_EVENT_NAME, serverSocket);
 

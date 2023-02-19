@@ -11,11 +11,11 @@ export class ChatHistoryService {
     constructor(private databaseService: DatabaseService, private authentificationService: AuthentificationService) { }
 
     async saveMessage(message: ChannelMessage): Promise<void> {
-        const idUser = await this.authentificationService.getUserByEmail(message.message.sender.email);
+        const user = await this.authentificationService.getUserByEmail(message.message.sender.email);
 
         await this.table.insert({
             idChannel: message.idChannel,
-            idUser: idUser.idUser,
+            idUser: user.idUser,
             content: message.message.content,
             date: message.message.date,
         });
