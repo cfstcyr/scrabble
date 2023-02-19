@@ -2,7 +2,7 @@ import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { LobbyData } from '@app/classes/communication/lobby-data';
 import { PlayerData } from '@app/classes/communication/player-data';
 import { CreateGameRequest, GameRequest, LobbiesRequest } from '@app/classes/communication/request';
-import { GameConfigData } from '@app/classes/game/game-config';
+import { GameConfigData, ReadyGameConfigWithChannelId } from '@app/classes/game/game-config';
 import { GameMode } from '@app/classes/game/game-mode';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SECONDS_TO_MILLISECONDS, TIME_TO_RECONNECT } from '@app/constants/controllers-constants';
@@ -13,12 +13,11 @@ import {
     GAME_TYPE_REQUIRED,
     MAX_ROUND_TIME_REQUIRED,
     NAME_IS_INVALID,
-    PLAYER_LEFT_GAME,
     PLAYER_NAME_REQUIRED,
     VIRTUAL_PLAYER_LEVEL_REQUIRED,
     VIRTUAL_PLAYER_NAME_REQUIRED,
 } from '@app/constants/controllers-errors';
-import { IS_OPPONENT, IS_REQUESTING, SYSTEM_ID } from '@app/constants/game-constants';
+import { SYSTEM_ID } from '@app/constants/game-constants';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { GameDispatcherService } from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
@@ -27,6 +26,9 @@ import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
+import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
+import { UserId } from '@app/classes/user/connected-user-types';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -48,9 +50,10 @@ export class GameDispatcherController extends BaseController {
         router.post('/:playerId', async (req: CreateGameRequest, res: Response, next) => {
             const { playerId } = req.params;
             const body: Omit<GameConfigData, 'playerId'> = req.body;
+            const userId: UserId = req.body.idUser;
 
             try {
-                const lobbyData = await this.handleCreateGame({ playerId, ...body });
+                const lobbyData = await this.handleCreateGame({ playerId, ...body }, userId);
                 res.status(StatusCodes.CREATED).send({ lobbyData });
             } catch (exception) {
                 next(exception);
@@ -107,11 +110,11 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.delete('/:gameId/players/:playerId/cancel', (req: GameRequest, res: Response, next) => {
+        router.delete('/:gameId/players/:playerId/cancel', async (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
 
             try {
-                this.handleCancelGame(gameId, playerId);
+                await this.handleCancelGame(gameId, playerId);
 
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
@@ -157,46 +160,24 @@ export class GameDispatcherController extends BaseController {
         });
     }
 
-    private handleCancelGame(gameId: string, playerId: string): void {
+    private async handleCancelGame(gameId: string, playerId: string): Promise<void> {
         const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
-        if (waitingRoom.joinedPlayer) {
-            this.socketService.emitToSocket(waitingRoom.joinedPlayer.id, 'canceledGame', { name: waitingRoom.getConfig().player1.name });
-        }
-        this.gameDispatcherService.cancelGame(gameId, playerId);
+        this.socketService.emitToRoomNoSender(gameId, playerId, 'canceledGame', { name: waitingRoom.getConfig().player1.name });
+        await this.gameDispatcherService.cancelGame(gameId, playerId);
 
         this.handleLobbiesUpdate();
     }
 
-    private handleLeave(gameId: string, playerId: string): void {
+    private async handleLeave(gameId: string, playerId: string): Promise<void> {
+        // TODO: Not only 1 socket probably
         if (this.gameDispatcherService.isGameInWaitingRooms(gameId)) {
-            const result = this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
+            const result = await this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
             this.socketService.emitToSocket(result[0], 'joinerLeaveGame', { name: result[1] });
             this.handleLobbiesUpdate();
             return;
         }
-        // Check if there is no player left --> cleanup server and client
-        try {
-            if (!this.socketService.doesRoomExist(gameId)) {
-                this.activeGameService.removeGame(gameId, playerId);
-                return;
-            }
 
-            this.socketService.removeFromRoom(playerId, gameId);
-            this.socketService.emitToSocket(playerId, 'cleanup');
-        } catch (exception) {
-            // catch errors caused by inexistent socket after client closed application
-        }
-        const playerName = this.activeGameService.getGame(gameId, playerId).getPlayer(playerId, IS_REQUESTING).name;
-
-        this.socketService.emitToRoom(gameId, 'newMessage', {
-            content: `${playerName} ${PLAYER_LEFT_GAME(this.activeGameService.isGameOver(gameId, playerId))}`,
-            senderId: 'system',
-            gameId,
-        });
-
-        if (this.activeGameService.isGameOver(gameId, playerId)) return;
-
-        this.activeGameService.playerLeftEvent.emit('playerLeft', gameId, playerId);
+        await this.activeGameService.handlePlayerLeaves(gameId, playerId);
     }
 
     private handlePlayerLeftFeedback(gameId: string, endOfGameMessages: string[], updatedData: GameUpdateData): void {
@@ -208,7 +189,7 @@ export class GameDispatcherController extends BaseController {
         });
     }
 
-    private async handleCreateGame(config: GameConfigData): Promise<LobbyData | void> {
+    private async handleCreateGame(config: GameConfigData, userId: UserId): Promise<LobbyData | void> {
         if (config.playerName === undefined) throw new HttpException(PLAYER_NAME_REQUIRED, StatusCodes.BAD_REQUEST);
         if (config.gameType === undefined) throw new HttpException(GAME_TYPE_REQUIRED, StatusCodes.BAD_REQUEST);
         if (config.gameMode === undefined) throw new HttpException(GAME_MODE_REQUIRED, StatusCodes.BAD_REQUEST);
@@ -217,11 +198,13 @@ export class GameDispatcherController extends BaseController {
 
         if (!validateName(config.playerName)) throw new HttpException(NAME_IS_INVALID, StatusCodes.BAD_REQUEST);
 
-        return config.gameMode === GameMode.Multiplayer ? await this.handleCreateMultiplayerGame(config) : await this.handleCreateSoloGame(config);
+        return config.gameMode === GameMode.Multiplayer
+            ? await this.handleCreateMultiplayerGame(config, userId)
+            : await this.handleCreateSoloGame(config);
     }
 
-    private async handleCreateMultiplayerGame(config: GameConfigData): Promise<LobbyData> {
-        const lobbyData = await this.gameDispatcherService.createMultiplayerGame(config);
+    private async handleCreateMultiplayerGame(config: GameConfigData, userId: UserId): Promise<LobbyData> {
+        const lobbyData = await this.gameDispatcherService.createMultiplayerGame(config, userId);
         this.handleLobbiesUpdate();
         return lobbyData;
     }
@@ -245,11 +228,20 @@ export class GameDispatcherController extends BaseController {
 
     private async handleAcceptRequest(gameId: string, playerId: string, playerName: string): Promise<void> {
         if (playerName === undefined) throw new HttpException(PLAYER_NAME_REQUIRED, StatusCodes.BAD_REQUEST);
-        const gameConfig = this.gameDispatcherService.acceptJoinRequest(gameId, playerId, playerName);
-        const startGameData = await this.activeGameService.beginGame(gameId, gameConfig);
+        // TODO: Dont start immediately
+        const gameConfig: ReadyGameConfigWithChannelId = await this.gameDispatcherService.acceptJoinRequest(gameId, playerId, playerName);
+        const startGameData = await this.activeGameService.beginGame(gameId, gameConfig.idChannel, gameConfig);
 
+        // TODO: This is currently only working for 2 player
         this.socketService.addToRoom(startGameData.player2.id, gameId);
         this.socketService.emitToRoom(gameId, 'startGame', startGameData);
+
+        // TODO Probably not supposed to go there
+        if (isIdVirtualPlayer(startGameData.round.playerData.id)) {
+            this.gameDispatcherService
+                .getVirtualPlayerService()
+                .triggerVirtualPlayerTurn(startGameData, this.activeGameService.getGame(gameId, startGameData.round.playerData.id));
+        }
     }
 
     private handleRejectRequest(gameId: string, playerId: string, playerName: string): void {
@@ -274,7 +266,7 @@ export class GameDispatcherController extends BaseController {
         const game = this.activeGameService.getGame(gameId, playerId);
 
         if (game.areGameOverConditionsMet()) throw new HttpException(GAME_IS_OVER, StatusCodes.FORBIDDEN);
-        const player = game.getPlayer(playerId, IS_REQUESTING);
+        const player = game.getPlayer(playerId);
         player.id = newPlayerId;
         player.isConnected = true;
         this.socketService.addToRoom(newPlayerId, gameId);
@@ -283,15 +275,18 @@ export class GameDispatcherController extends BaseController {
         this.socketService.emitToSocket(newPlayerId, 'startGame', data);
 
         const newPlayerData: PlayerData = { id: playerId, newId: newPlayerId };
-        const gameUpdateData: GameUpdateData = game.isPlayer1(player.id) ? { player1: newPlayerData } : { player2: newPlayerData };
-        this.socketService.emitToSocket(game.getPlayer(newPlayerId, IS_OPPONENT).id, 'gameUpdate', gameUpdateData);
+
+        const gameUpdateData: GameUpdateData = {};
+        fillPlayerData(gameUpdateData, game.getPlayerNumber(player), newPlayerData);
+
+        this.socketService.emitToRoomNoSender(gameId, newPlayerId, 'gameUpdate', gameUpdateData);
     }
 
     private handleDisconnection(gameId: string, playerId: string): void {
         const game = this.activeGameService.getGame(gameId, playerId);
 
         if (!game.areGameOverConditionsMet()) {
-            const disconnectedPlayer = game.getPlayer(playerId, IS_REQUESTING);
+            const disconnectedPlayer = game.getPlayer(playerId);
             disconnectedPlayer.isConnected = false;
             setTimeout(() => {
                 if (!disconnectedPlayer.isConnected) {

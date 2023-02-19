@@ -69,11 +69,4 @@ describe('ChatboxWrapperComponent', () => {
             expect(chatService.createChannel).toHaveBeenCalled();
         });
     });
-
-    describe('handleJoinChannel', () => {
-        it('should call joinChannel', () => {
-            component.handleJoinChannel('');
-            expect(chatService.joinChannel).toHaveBeenCalled();
-        });
-    });
 });

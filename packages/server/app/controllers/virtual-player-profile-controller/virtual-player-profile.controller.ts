@@ -7,7 +7,7 @@ import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 import { VirtualPlayer } from '@common/models/virtual-player';
 
 @Service()

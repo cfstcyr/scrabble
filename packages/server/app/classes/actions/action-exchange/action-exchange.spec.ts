@@ -74,6 +74,7 @@ describe('ActionExchange', () => {
         it('should call getTilesFromPlayer', () => {
             getTilesFromPlayerStub.returns([game.player1.tiles, []]);
 
+            gameStub.getPlayerNumber.returns(1);
             const action = new ActionExchange(game.player1, game, []);
             action.execute();
 
@@ -82,6 +83,7 @@ describe('ActionExchange', () => {
 
         it('should call swapTiles', () => {
             getTilesFromPlayerStub.returns([game.player1.tiles, []]);
+            gameStub.getPlayerNumber.returns(1);
 
             const action = new ActionExchange(game.player1, game, []);
             action.execute();
@@ -95,7 +97,7 @@ describe('ActionExchange', () => {
             getTilesFromPlayerStub.returns([TILES_TO_EXCHANGE, TILES_NOT_TO_EXCHANGE]);
             gameStub.swapTilesFromReserve.returns(tilesToReceive);
 
-            gameStub.isPlayer1.returns(true);
+            gameStub.getPlayerNumber.returns(1);
 
             const action = new ActionExchange(game.player1, game, []);
             const result = action.execute();
@@ -110,13 +112,44 @@ describe('ActionExchange', () => {
             getTilesFromPlayerStub.returns([TILES_TO_EXCHANGE, TILES_NOT_TO_EXCHANGE]);
             gameStub.swapTilesFromReserve.returns(tilesToReceive);
 
-            gameStub.isPlayer1.returns(false);
+            gameStub.getPlayerNumber.returns(2);
 
             const action = new ActionExchange(game.player1, game, []);
             const result = action.execute();
 
             expect(result.player2).to.exist;
             expect(result.player2!.tiles).to.exist;
+        });
+
+        it('should return a player with tiles (player 3)', () => {
+            const tilesToReceive: Tile[] = [{ letter: 'Z', value: 0 }];
+
+            getTilesFromPlayerStub.returns([TILES_TO_EXCHANGE, TILES_NOT_TO_EXCHANGE]);
+            gameStub.swapTilesFromReserve.returns(tilesToReceive);
+
+            gameStub.getPlayerNumber.returns(3);
+
+            const action = new ActionExchange(game.player1, game, []);
+            const result = action.execute();
+
+            expect(result.player3).to.exist;
+            expect(result.player3!.tiles).to.exist;
+        });
+
+        it('should return a player with tiles (player 4)', () => {
+            const tilesToReceive: Tile[] = [{ letter: 'Z', value: 0 }];
+
+            getTilesFromPlayerStub.returns([TILES_TO_EXCHANGE, TILES_NOT_TO_EXCHANGE]);
+            gameStub.swapTilesFromReserve.returns(tilesToReceive);
+
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            gameStub.getPlayerNumber.returns(4);
+
+            const action = new ActionExchange(game.player1, game, []);
+            const result = action.execute();
+
+            expect(result.player4).to.exist;
+            expect(result.player4!.tiles).to.exist;
         });
 
         it('should return a player with same amount as before', () => {
@@ -126,7 +159,7 @@ describe('ActionExchange', () => {
             getTilesFromPlayerStub.returns([TILES_TO_EXCHANGE, TILES_NOT_TO_EXCHANGE]);
             gameStub.swapTilesFromReserve.returns(tilesToReceive);
 
-            gameStub.isPlayer1.returns(true);
+            gameStub.getPlayerNumber.returns(1);
 
             const action = new ActionExchange(game.player1, game, []);
             const result = action.execute();
@@ -140,7 +173,7 @@ describe('ActionExchange', () => {
             getTilesFromPlayerStub.returns([TILES_TO_EXCHANGE, TILES_NOT_TO_EXCHANGE]);
             gameStub.swapTilesFromReserve.returns(tilesToReceive);
 
-            gameStub.isPlayer1.returns(true);
+            gameStub.getPlayerNumber.returns(1);
 
             const action = new ActionExchange(game.player1, game, []);
             const result = action.execute();
@@ -160,7 +193,7 @@ describe('ActionExchange', () => {
             getTilesFromPlayerStub.returns([TILES_TO_EXCHANGE, TILES_NOT_TO_EXCHANGE]);
             gameStub.swapTilesFromReserve.returns(tilesToReceive);
 
-            gameStub.isPlayer1.returns(true);
+            gameStub.getPlayerNumber.returns(1);
 
             const action = new ActionExchange(game.player1, game, []);
             const result = action.execute();

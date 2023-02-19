@@ -4,7 +4,7 @@ import { HighScoresController } from '@app/controllers/high-score-controller/hig
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HighScoreWithPlayers, SingleHighScore } from '@common/models/high-score';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 @Injectable({
     providedIn: 'root',
 })

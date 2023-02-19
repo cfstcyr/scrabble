@@ -3,6 +3,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
+import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
@@ -77,31 +78,36 @@ describe('SocketService', () => {
             expect(service).to.exist;
         });
 
-        it('should add to the socket map on connect', async () => {
-            service.handleSockets();
-            clientSocket.connect();
-            await Delay.for(RESPONSE_DELAY); // Wait until the server socket received connection.
-            expect(service['sockets'].get(clientSocket.id)).to.exist;
-        });
-
-        it('should emit initializationn on connect', async () => {
-            return new Promise((resolve) => {
-                clientSocket.on('initialization', (res: { id: string }) => {
-                    expect(res).to.ownProperty('id');
-                    resolve();
-                });
+        describe('on connect', () => {
+            it('should add to the socket map', async () => {
+                service.handleSockets();
                 clientSocket.connect();
+                await Delay.for(RESPONSE_DELAY); // Wait until the server socket received connection.
+                expect(service['sockets'].get(clientSocket.id)).to.exist;
             });
-        });
 
-        it('should configure sockets of ChatService', async () => {
-            testingUnit.getStubbedInstance(ChatService).configureSocket.callsFake(() => {});
-            service.handleSockets();
-            clientSocket.connect();
+            it('should emit initialization', async () => {
+                return new Promise((resolve) => {
+                    clientSocket.on('initialization', (res: { id: string }) => {
+                        expect(res).to.ownProperty('id');
+                        resolve();
+                    });
+                    clientSocket.connect();
+                });
+            });
 
-            await Delay.for(RESPONSE_DELAY); // Wait until the server socket received connection.
+            it('should emit sockets:configure event', async () => {
+                const emitStub = sinon.stub(service['configureSocketsEvent'], 'emit');
+                emitStub.callsFake(() => {
+                    return true;
+                });
+                service.handleSockets();
+                clientSocket.connect();
 
-            sinon.assert.called(testingUnit.getStubbedInstance(ChatService).configureSocket);
+                await Delay.for(RESPONSE_DELAY); // Wait until the server socket received connection.
+
+                expect(emitStub.calledWith(SOCKET_CONFIGURE_EVENT_NAME)).to.be.true;
+            });
         });
 
         describe('getSocket', () => {
@@ -288,7 +294,7 @@ describe('SocketService', () => {
         let service: SocketService;
 
         beforeEach(async () => {
-            service = new SocketService(Container.get(ChatService), Container.get(AuthentificationService));
+            service = new SocketService(Container.get(AuthentificationService));
         });
 
         describe('handleSockets', () => {

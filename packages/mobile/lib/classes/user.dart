@@ -7,7 +7,8 @@ class PublicUser {
 
   factory PublicUser.fromJson(Map<String, dynamic> json) {
     return PublicUser(
-      username: json['username'] as String,
+      username: json['username'],
+      avatar: json["avatar"],
     );
   }
   Map<String, dynamic> toJson() => {
@@ -15,21 +16,3 @@ class PublicUser {
         "avatar": avatar,
       };
 }
-
-// TODO AUTHENTIFICATION
-// export interface PublicUser {
-//   username: string;
-//   avatar: string;
-// }
-
-// class User {
-//   final String idUser;
-//   final String email;
-//   final String password;
-//   final String username;
-// }
-
-// class Credentials {
-//   final String username,
-//   final String password,
-// }

@@ -13,3 +13,5 @@ export const EXTRACTION_TILES_INVALID = 'Les tuiles à extraires ne sont pas de 
 export const EXTRACTION_NO_WORDS_CREATED = "Aucun mot n'a été créé avec le placement de tuile";
 export const NEXT_NODE_DOES_NOT_EXISTS = "Le prochain noeud n'existe pas";
 export const INVALID_POINT_RANGE = 'La valeur minimale doit être inférieure ou égale à la valeur maximale.';
+export const GAME_ALREADY_FULL = 'La partie est déjà remplie.';
+export const INVALID_LIST_LENGTH = 'incoherence dans la taille des listes';

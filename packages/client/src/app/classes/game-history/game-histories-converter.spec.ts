@@ -4,7 +4,7 @@ import { GameHistoriesData, GameHistoryData } from '@app/classes/communication/g
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
 import { GameHistoryWithPlayers } from '@common/models/game-history';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 import { GameHistoriesConverter } from './game-histories-converter';
 
 const DEFAULT_GAME_HISTORY: NoId<GameHistoryWithPlayers> = {

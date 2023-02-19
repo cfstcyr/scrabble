@@ -7,6 +7,7 @@ import { Channel } from '@common/models/chat/channel';
 import { ChannelMessage } from '@common/models/chat/chat-message';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { TypeOfId } from '@common/types/id';
 
 @Injectable({
     providedIn: 'root',
@@ -14,7 +15,7 @@ import { map } from 'rxjs/operators';
 export class ChatService {
     ready: Subject<boolean> = new Subject();
     joinedChannel: Subject<ClientChannel>;
-    channels: BehaviorSubject<Map<string, ClientChannel>>;
+    channels: BehaviorSubject<Map<TypeOfId<Channel>, ClientChannel>>;
 
     constructor(private readonly socketService: SocketService, private readonly userService: UserService) {
         this.channels = new BehaviorSubject(new Map());
@@ -33,7 +34,7 @@ export class ChatService {
     }
 
     getChannels(): Observable<ClientChannel[]> {
-        return this.channels.pipe(map((channels) => [...channels.values()]));
+        return this.channels.pipe(map((channels) => [...channels.values()].sort((a, b) => (a.name > b.name ? 1 : -1))));
     }
 
     configureSocket(socket: ClientSocket): void {
@@ -45,7 +46,7 @@ export class ChatService {
 
     sendMessage(channel: Channel, content: string): void {
         this.socketService.socket.emit('channel:newMessage', {
-            channel,
+            idChannel: channel.idChannel,
             message: {
                 content,
                 sender: this.userService.getUser(),
@@ -55,32 +56,32 @@ export class ChatService {
     }
 
     createChannel(channelName: string): void {
-        this.socketService.socket.emit('channel:newChannel', channelName);
+        this.socketService.socket.emit('channel:newChannel', { name: channelName });
     }
 
-    joinChannel(channel: string): void {
-        this.socketService.socket.emit('channel:join', channel);
+    joinChannel(idChannel: TypeOfId<Channel>): void {
+        this.socketService.socket.emit('channel:join', idChannel);
     }
 
-    quitChannel(channel: string): void {
-        this.socketService.socket.emit('channel:quit', channel);
+    quitChannel(idChannel: TypeOfId<Channel>): void {
+        this.socketService.socket.emit('channel:quit', idChannel);
     }
 
     handleJoinChannel(channel: Channel): void {
         const newChannel = { ...channel, messages: [] };
-        this.channels.value.set(channel.name, newChannel);
+        this.channels.value.set(channel.idChannel, newChannel);
         this.channels.next(this.channels.value);
         this.joinedChannel.next(newChannel);
     }
 
     handleChannelQuit(channel: Channel): void {
-        this.channels.value.delete(channel.name);
+        this.channels.value.delete(channel.idChannel);
         this.channels.next(this.channels.value);
     }
 
     handleNewMessage(channelMessage: ChannelMessage): void {
         const message = channelMessage.message;
-        this.channels.value.get(channelMessage.channel.name)?.messages.push({ ...message, date: new Date(message.date) });
+        this.channels.value.get(channelMessage.idChannel)?.messages.push({ ...message, date: new Date(message.date) });
         this.channels.next(this.channels.value);
     }
 }

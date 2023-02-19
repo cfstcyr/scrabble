@@ -25,7 +25,7 @@ import { GameHistoryService } from '@app/services/game-history-service/game-hist
 import { isKey } from '@app/utils/isKey/is-key';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { GameHistoryWithPlayers } from '@common/models/game-history';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 
 @Component({
     selector: 'app-admin-game-history',

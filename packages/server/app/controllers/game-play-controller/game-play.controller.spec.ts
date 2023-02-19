@@ -91,7 +91,8 @@ describe('GamePlayController', () => {
             .withStubbedDictionaryService()
             .withStubbed(ActiveGameService)
             .withStubbed(VirtualPlayerService)
-            .withStubbedControllers(GamePlayController);
+            .withStubbedControllers(GamePlayController)
+            .withMockedAuthentification();
 
         gamePlayServiceStub = testingUnit.setStubbed(GamePlayService);
         socketServiceStub = testingUnit.setStubbed(SocketService);
@@ -403,7 +404,7 @@ describe('GamePlayController', () => {
                 opponentFeedback: { message: 'mess', isClickable: true },
                 endGameFeedback: [],
             } as FeedbackMessages);
-            expect(socketServiceStub.emitToSocket.calledOnce).to.be.true;
+            expect(socketServiceStub.emitToRoomNoSender.calledOnce).to.be.true;
         });
 
         it('should emit a new message if there is one for the room', () => {

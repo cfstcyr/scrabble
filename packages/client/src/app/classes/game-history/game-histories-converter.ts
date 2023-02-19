@@ -1,6 +1,6 @@
 import { GameHistoriesData, GameHistoryData } from '@app/classes/communication/game-histories';
 import { GameHistoryWithPlayers } from '@common/models/game-history';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 
 const INVERSE = -1;
 

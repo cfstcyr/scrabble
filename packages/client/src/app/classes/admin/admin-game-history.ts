@@ -1,5 +1,5 @@
 import { GameHistoryWithPlayers } from '@common/models/game-history';
-import { NoId } from '@common/types/no-id';
+import { NoId } from '@common/types/id';
 
 export type DisplayGameHistoryKeys =
     | keyof Omit<NoId<GameHistoryWithPlayers>, 'playersData'>

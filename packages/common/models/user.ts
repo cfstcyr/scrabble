@@ -15,6 +15,8 @@ export interface UserLoginCredentials extends Omit<UserSignupInformation, 'usern
 
 export type PublicUser = Omit<User, 'idUser' | 'hash' | 'salt'>;
 
+export type ServerUser = Omit<User, 'hash' | 'salt'>;
+
 export interface UserDatabase extends UserSignupInformation, Pick<User, 'idUser'> {
   avatar: string
 }

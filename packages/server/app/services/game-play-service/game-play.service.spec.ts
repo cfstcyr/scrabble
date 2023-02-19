@@ -87,6 +87,8 @@ describe('GamePlayService', () => {
 
         gameStub.player1 = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME);
         gameStub.player2 = new Player(INVALID_PLAYER_ID, 'JCol');
+        gameStub.player3 = new Player(INVALID_PLAYER_ID + '2', 'JCol2');
+        gameStub.player4 = new Player(INVALID_PLAYER_ID + '3', 'JCol3');
 
         gameStub.getPlayer.returns(gameStub.player1);
         gameStub.roundManager = roundManagerStub as unknown as RoundManager;
@@ -474,6 +476,9 @@ describe('GamePlayService', () => {
             );
             gameStub.player1 = new Player(DEFAULT_PLAYER_ID, 'Cool Guy Name');
             gameStub.player2 = new Player(playerWhoLeftId, 'LeaverName');
+            gameStub.player3 = new Player(playerWhoLeftId, 'LeaverName2');
+            gameStub.player4 = new Player(playerWhoLeftId, 'LeaverName3');
+            gameStub.getOpponentPlayers.returns([gameStub.player2, gameStub.player3, gameStub.player4]);
         });
 
         afterEach(() => {
@@ -489,7 +494,7 @@ describe('GamePlayService', () => {
             expect(handlePlayerLeftEventSpy).to.have.been.called.with(DEFAULT_GAME_ID, playerWhoLeftId);
         });
 
-        it('handlePlayerLeftEvent call handleGameOver and return ', async () => {
+        it('handlePlayerLeftEvent call handleGameOver and return', async () => {
             chai.spy.on(arrowFunction, 'isIdVirtualPlayer', () => {
                 return true;
             });
@@ -547,26 +552,26 @@ describe('GamePlayService', () => {
 
         it('should call end of game and endgame message', async () => {
             gameStub.isAddedToDatabase = true;
-            await gamePlayService['handleGameOver']('', gameStub as unknown as Game, {});
+            await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(gameStub.endOfGame.calledOnce).to.be.true;
             expect(gameStub.endGameMessage.calledOnce).to.be.true;
         });
 
         it('should add to game histories if not already added', async () => {
             gameStub.isAddedToDatabase = false;
-            await gamePlayService['handleGameOver']('', gameStub as unknown as Game, {});
+            await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(gameHistoriesServiceStub.addGameHistory.calledOnce).to.be.true;
         });
 
         it('should change isAddedtoDatabase', async () => {
             gameStub.isAddedToDatabase = false;
-            await gamePlayService['handleGameOver']('', gameStub as unknown as Game, {});
+            await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(gameStub.isAddedToDatabase).to.be.true;
         });
 
         it('should call getConnectedRealPlayers', async () => {
             gameStub.isAddedToDatabase = false;
-            await gamePlayService['handleGameOver']('', gameStub as unknown as Game, {});
+            await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(gameStub.getConnectedRealPlayers.calledOnce).to.be.true;
             expect(highScoresServiceStub.addHighScore.calledOnce).to.be.true;
         });
@@ -574,26 +579,21 @@ describe('GamePlayService', () => {
         it('should update set updatedData players score if they exist', async () => {
             const updatedScore1 = 100;
             const updatedScore2 = 200;
+            const updatedScore3 = 300;
+            const updatedScore4 = 400;
             const gameUpdateData = {
                 player1: { id: 'id1', score: 0 },
                 player2: { id: 'id2', score: 0 },
+                player3: { id: 'id3', score: 0 },
+                player4: { id: 'id4', score: 0 },
             };
-            gameStub.endOfGame.returns([updatedScore1, updatedScore2]);
+            gameStub.endOfGame.returns([updatedScore1, updatedScore2, updatedScore3, updatedScore4]);
 
-            await gamePlayService['handleGameOver']('', gameStub as unknown as Game, gameUpdateData);
+            await gamePlayService['handleGameOver'](gameStub as unknown as Game, gameUpdateData);
             expect(gameUpdateData.player1.score).to.equal(updatedScore1);
             expect(gameUpdateData.player2.score).to.equal(updatedScore2);
-        });
-
-        it('should set updatedData.isGameOver and updatedData.winners', async () => {
-            const winnerName = 'Mathilde';
-            const gameUpdateData = {
-                isGameOver: false,
-                winners: [],
-            };
-            await gamePlayService['handleGameOver'](winnerName, gameStub as unknown as Game, gameUpdateData);
-            expect(gameUpdateData.isGameOver).to.be.true;
-            expect(gameUpdateData.winners).to.deep.equal([winnerName]);
+            expect(gameUpdateData.player3.score).to.equal(updatedScore3);
+            expect(gameUpdateData.player4.score).to.equal(updatedScore4);
         });
     });
 
@@ -613,7 +613,7 @@ describe('GamePlayService', () => {
             const result = gamePlayService['addMissingPlayerId']('', '', { player1: { id: 'id1' }, player2: { id: 'id2' } });
             gameStub.isAddedToDatabase = true;
             gameStub.dictionarySummary = { id: 'id' } as unknown as DictionarySummary;
-            await gamePlayService['handleGameOver']('', gameStub as unknown as Game, {});
+            await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(result.player1!.id).to.equal(gameStub.player1.id);
             expect(result.player2!.id).to.equal(gameStub.player2.id);
         });
