@@ -8,12 +8,12 @@ import {
     HighScoresController,
     VirtualPlayerProfilesController,
 } from '@app/controllers';
+import { BaseController } from '@app/controllers/base-controller';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type ClassType<T> = Function & { prototype: T };
+export type ClassType<T> = new (...args: unknown[]) => T;
 
-export const PUBLIC_CONTROLLERS: ClassType<unknown>[] = [AuthentificationController, DatabaseController];
-export const PRIVATE_CONTROLLERS: ClassType<unknown>[] = [
+export const PUBLIC_CONTROLLERS: ClassType<BaseController>[] = [AuthentificationController, DatabaseController];
+export const PRIVATE_CONTROLLERS: ClassType<BaseController>[] = [
     DictionaryController,
     GameDispatcherController,
     GamePlayController,

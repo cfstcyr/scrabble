@@ -25,10 +25,9 @@ export class Application {
         this.setPublicDirectory();
     }
 
-    bindRoutes<T extends BaseController>(controllers: ClassType<unknown>[]): void {
+    bindRoutes(controllers: ClassType<BaseController>[]): void {
         for (const controller of controllers) {
-            const controllerInstance: T = Container.get(controller);
-            controllerInstance.route(this.app);
+            Container.get(controller).route(this.app);
         }
     }
 
