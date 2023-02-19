@@ -5,18 +5,11 @@ import * as express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import * as logger from 'morgan';
 import { join } from 'path';
-import { Service } from 'typedi';
-import {
-    DatabaseController,
-    DictionaryController,
-    GameDispatcherController,
-    GameHistoriesController,
-    GamePlayController,
-    HighScoresController,
-    VirtualPlayerProfilesController,
-    AuthentificationController,
-} from './controllers';
+import Container, { Service } from 'typedi';
+import { BaseController } from './controllers/base-controller';
+import { authenticateToken } from './middlewares/authentificate-token';
 import { errorHandler } from './middlewares/error-handler';
+import { ClassType, PRIVATE_CONTROLLERS, PUBLIC_CONTROLLERS } from './routes/routes.module';
 import { ChatService } from './services/chat-service/chat.service';
 import DatabaseService from './services/database-service/database.service';
 
@@ -24,38 +17,18 @@ import DatabaseService from './services/database-service/database.service';
 export class Application {
     app: express.Application;
 
-    constructor(
-        private readonly databaseController: DatabaseController,
-        private readonly dictionaryController: DictionaryController,
-        private readonly gameDispatcherController: GameDispatcherController,
-        private readonly gameHistoryController: GameHistoriesController,
-        private readonly gamePlayController: GamePlayController,
-        private readonly highScoreController: HighScoresController,
-        private readonly virtualPlayerProfileController: VirtualPlayerProfilesController,
-        private readonly databaseService: DatabaseService,
-        private readonly authetificationController: AuthentificationController,
-        private readonly chatService: ChatService,
-    ) {
+    constructor(private readonly databaseService: DatabaseService, private readonly chatService: ChatService) {
         this.app = express();
 
         this.config();
 
         this.setPublicDirectory();
-
-        this.bindRoutes();
     }
 
-    bindRoutes(): void {
-        this.databaseController.route(this.app);
-        this.dictionaryController.route(this.app);
-        this.gameDispatcherController.route(this.app);
-        this.gameHistoryController.route(this.app);
-        this.gamePlayController.route(this.app);
-        this.highScoreController.route(this.app);
-        this.authetificationController.route(this.app);
-        this.virtualPlayerProfileController.route(this.app);
-
-        this.errorHandling();
+    bindRoutes(controllers: ClassType<BaseController>[]): void {
+        for (const controller of controllers) {
+            Container.get(controller).route(this.app);
+        }
     }
 
     async setupServices(): Promise<void> {
@@ -70,6 +43,14 @@ export class Application {
         this.app.use(express.urlencoded({ limit: '10MB', parameterLimit: 100000, extended: true }));
         this.app.use(cookieParser());
         this.app.use(cors());
+
+        this.bindRoutes(PUBLIC_CONTROLLERS);
+
+        this.app.use(authenticateToken);
+
+        this.bindRoutes(PRIVATE_CONTROLLERS);
+
+        this.errorHandling();
     }
 
     private setPublicDirectory(): void {
