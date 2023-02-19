@@ -222,7 +222,9 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                           left: 5.0, right: 15.0, top: 0, bottom: 0),
                       child: IconButton(
                         onPressed: () {
-                          refusePlayer(playerWaitingList[index]);
+                          setState(() {
+                            refusePlayer(playerWaitingList[index]);
+                          });
                         },
                         icon: Icon(Icons.clear_outlined),
                         style: ElevatedButton.styleFrom(
