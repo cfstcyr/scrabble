@@ -9,17 +9,25 @@ class CreateLobbyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Salle d'attente"),
+        shadowColor: Colors.black,
+        backgroundColor: Colors.white,
+        elevation: 1,
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+      ),
       body: FractionallySizedBox(
         widthFactor: 1,
         heightFactor: 1,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          alignment: FractionalOffset.center,
           children: <Widget>[
             Flexible(
-              flex: 1,
+              flex: 0,
               child: FractionallySizedBox(
-                widthFactor: 0.6,
-                heightFactor: 0.55,
+                widthFactor: 0.35,
+                heightFactor: 0.6,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border.all(
@@ -45,10 +53,14 @@ class CreateLobbyPage extends StatelessWidget {
             ),
             Flexible(
               flex: 1,
-              child: FractionallySizedBox(
-                  widthFactor: 0.6,
-                  heightFactor: 0.6,
-                  child: PlayerWaitingList()),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: FractionallySizedBox(
+                    alignment: Alignment.centerRight,
+                    widthFactor: 0.35,
+                    heightFactor: 0.6,
+                    child: PlayerWaitingList()),
+              ),
             ),
           ],
         ),

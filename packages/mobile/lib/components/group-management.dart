@@ -36,7 +36,7 @@ StreamBuilder<List<PublicUser>> handleStartGameButton() {
     stream: playerList$,
     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
       return ElevatedButton.icon(
-          onPressed: playerList$.value.length < 2
+          onPressed: isMinimumPlayerCount()
               ? null
               : () {
                   startGame(context);

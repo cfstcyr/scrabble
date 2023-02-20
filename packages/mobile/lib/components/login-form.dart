@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../constants/create-account-constants.dart';
@@ -10,7 +11,6 @@ import '../constants/login-constants.dart';
 import '../controllers/account-authentification-controller.dart';
 import '../pages/create-account-page.dart';
 import '../services/socket.service.dart';
-import 'chatbox.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -112,11 +112,8 @@ class _LoginFormState extends State<LoginForm> {
                 SizedBox(width: 100),
                 ElevatedButton(
                   onPressed: () async => {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ChatPage(
-                                name: usernameHandler.controller.text)))
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomePage()))
                   },
                   //   await authController.login(LoginData(
                   //           username: usernameHandler.controller.text,

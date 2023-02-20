@@ -11,10 +11,14 @@ class ErrorPopup extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(ERROR_HEADER),
+      backgroundColor: Colors.red.shade200,
       content: Text(errorMessage),
       actions: [
         TextButton(
-          child: Text('OK'),
+          child: Text(
+            'OK',
+            style: TextStyle(color: Colors.black),
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ],

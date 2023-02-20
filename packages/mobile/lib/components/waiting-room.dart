@@ -34,67 +34,63 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
   return StreamBuilder<List<PublicUser>>(
     stream: playerList$,
     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
-      Widget widget;
       if (snapshot.hasError) {
-        widget = ErrorPopup(
+        return ErrorPopup(
             errorMessage: 'Error: ${snapshot.error}'
                 'Stack trace: ${snapshot.stackTrace}');
-      } else {
-        widget = Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SizedBox(
-                  height: 50,
-                  width: 125,
-                  child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(0),
-                      label: Text(setPlayerName(0))),
-                ),
-                SizedBox(
-                  height: 50,
-                  width: 125,
-                  child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(1),
-                      label: Text(setPlayerName(1))),
-                ),
-              ],
-            ),
-            Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SizedBox(
-                    height: 50,
-                    width: 125,
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(2),
-                      label: Text(setPlayerName(2)),
-                    )),
-                SizedBox(
-                  height: 50,
-                  width: 125,
-                  child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(3),
-                      label: Text(setPlayerName(3))),
-                ),
-              ],
-            ),
-          ],
-        );
-        return widget;
       }
-      return widget;
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                height: 50,
+                width: 125,
+                child: ElevatedButton.icon(
+                    onPressed: () {},
+                    style: setStyleRoomButtons(),
+                    icon: setPlayerIcon(0),
+                    label: Text(setPlayerName(0))),
+              ),
+              SizedBox(
+                height: 50,
+                width: 125,
+                child: ElevatedButton.icon(
+                    onPressed: () {},
+                    style: setStyleRoomButtons(),
+                    icon: setPlayerIcon(1),
+                    label: Text(setPlayerName(1))),
+              ),
+            ],
+          ),
+          Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                  height: 50,
+                  width: 125,
+                  child: ElevatedButton.icon(
+                    onPressed: () {},
+                    style: setStyleRoomButtons(),
+                    icon: setPlayerIcon(2),
+                    label: Text(setPlayerName(2)),
+                  )),
+              SizedBox(
+                height: 50,
+                width: 125,
+                child: ElevatedButton.icon(
+                    onPressed: () {},
+                    style: setStyleRoomButtons(),
+                    icon: setPlayerIcon(3),
+                    label: Text(setPlayerName(3))),
+              ),
+            ],
+          ),
+        ],
+      );
     },
   );
 }

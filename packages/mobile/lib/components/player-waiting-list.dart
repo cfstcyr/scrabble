@@ -21,7 +21,7 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
       color: theme.colorScheme.onPrimary,
     );
     return Padding(
-      padding: EdgeInsets.only(left: 30.0, right: 0, top: 0, bottom: 0),
+      padding: EdgeInsets.only(left: 30.0, right: 30.0, top: 0, bottom: 0),
       child: Container(
         decoration: BoxDecoration(
             border: Border.all(

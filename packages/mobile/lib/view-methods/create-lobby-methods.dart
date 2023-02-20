@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/home-page.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
-import '../pages/prototype-page.dart';
+import '../constants/create-lobby-constants.dart';
 
 BehaviorSubject<List<PublicUser>> playerList$ =
     BehaviorSubject<List<PublicUser>>.seeded(playerList);
@@ -60,7 +61,7 @@ Widget setWaitingPlayerIcon(int index) {
 
 bool addPlayerToLobby(PublicUser player) {
   // TODO COTE SERVEUR req
-  if (playerList.length > 3) return false;
+  if (playerList.length >= MAX_PLAYER_COUNT) return false;
   playerWaitingList.remove(player);
   playerList.add(player);
   playerList$.add(playerList);
@@ -82,6 +83,10 @@ void backOut(BuildContext context) {
   playerList$.close();
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => PrototypePage()),
+    MaterialPageRoute(builder: (context) => HomePage()),
   );
+}
+
+bool isMinimumPlayerCount() {
+  return playerList$.value.length < MINIMUM_PLAYER_COUNT;
 }
