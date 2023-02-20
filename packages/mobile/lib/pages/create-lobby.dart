@@ -27,9 +27,9 @@ class CreateLobbyPage extends StatelessWidget {
             Flexible(
               flex: 1,
               child: Align(
-                alignment: Alignment.center,
+                alignment: Alignment(2.3, 0.0),
                 child: FractionallySizedBox(
-                  widthFactor: 0.9,
+                  widthFactor: 0.6,
                   heightFactor: 0.6,
                   child: Container(
                     decoration: BoxDecoration(
@@ -62,9 +62,9 @@ class CreateLobbyPage extends StatelessWidget {
             Flexible(
               flex: 1,
               child: Align(
-                alignment: Alignment.centerRight,
+                alignment: Alignment(1, 0.0),
                 child: FractionallySizedBox(
-                    widthFactor: 1,
+                    widthFactor: 0.6,
                     heightFactor: 0.6,
                     child: PlayerWaitingList()),
               ),
