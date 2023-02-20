@@ -1,5 +1,3 @@
-import 'package:mobile/classes/user.dart';
-
 class LoginData {
   final String username;
   final String password;
@@ -15,13 +13,4 @@ class LoginData {
       password: json['password'] as String,
     );
   }
-}
-
-class LoginResponse {
-  UserSession? userSession;
-  bool authorized;
-  String errorMessage;
-
-  LoginResponse(
-      {this.userSession, required this.authorized, required this.errorMessage});
 }

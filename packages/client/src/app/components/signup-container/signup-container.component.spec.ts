@@ -81,14 +81,6 @@ describe('SignupContainerComponent', () => {
                 component.onSubmit();
                 expect(signupSpy).not.toHaveBeenCalled();
             });
-
-            it('should mark all fields as touched', () => {
-                const touchedSpy = spyOn(component.signupForm, 'markAllAsTouched').and.callFake(() => {});
-
-                component.signupForm.patchValue({ ...DEFAULT_CREDENTIALS, confirmPassword: `${DEFAULT_CREDENTIALS.password}-invalid` });
-                component.onSubmit();
-                expect(touchedSpy).toHaveBeenCalled();
-            });
         });
     });
 

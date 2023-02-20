@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:mobile/classes/account.dart';
-import 'package:mobile/classes/login.dart';
-import 'package:mobile/classes/user.dart';
-import 'package:mobile/constants/login-constants.dart';
 import 'package:mobile/environments/environment.dart';
+
+import '../classes/login.dart';
 
 class AccountAuthenticationController {
   AccountAuthenticationController._privateConstructor();
@@ -18,13 +16,11 @@ class AccountAuthenticationController {
     return _instance;
   }
 
-  final String endpoint = "${Environment().config.apiUrl}/authentification";
+  final String endpoint = "${Environment().config.apiUrl}/account";
   // final headers = {"Content-type": "application/json"};
 
   Future<bool> createAccount(Account account) async {
-    Response res =
-        await post(Uri.parse("${endpoint}/signUp"), body: jsonEncode(account));
-    print(jsonEncode(account));
+    Response res = await post(Uri.parse(endpoint), body: jsonEncode(account));
     // TODO: Remove hack
     return (res.statusCode == 200 || account.password == "qwe123Q!");
     // if (res.statusCode == 200) {
@@ -57,23 +53,14 @@ class AccountAuthenticationController {
     // }
   }
 
-  Future<LoginResponse> login(UserLoginCredentials credentials) async {
+  Future<bool> login(LoginData credentials) async {
     Response res =
-        await post(Uri.parse("${endpoint}/login"), body: credentials.toJson());
-    String message;
-    if (res.statusCode == HttpStatus.ok) {
-      message = AUTHORIZED;
-    } else if (res.statusCode == HttpStatus.notAcceptable) {
-      message = LOGIN_FAILED;
+        await post(Uri.parse("${endpoint}/login"), body: credentials);
+
+    if (res.statusCode == 202) {
+      return true;
     } else {
-      message = ALREADY_LOGGED_IN_FR;
+      return false;
     }
-    LoginResponse loginResponse = LoginResponse(
-        userSession: res.statusCode == HttpStatus.ok
-            ? UserSession.fromJson(jsonDecode(res.body))
-            : Null as UserSession,
-        authorized: res.statusCode == HttpStatus.ok,
-        errorMessage: message);
-    return loginResponse;
   }
 }

@@ -29,6 +29,7 @@ import { BaseController } from '@app/controllers/base-controller';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
 import { UserId } from '@app/classes/user/connected-user-types';
+import { authenticateToken } from '@app/middlewares/authentificate-token';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -47,7 +48,7 @@ export class GameDispatcherController extends BaseController {
     }
 
     protected configure(router: Router): void {
-        router.post('/:playerId', async (req: CreateGameRequest, res: Response, next) => {
+        router.post('/:playerId', authenticateToken, async (req: CreateGameRequest, res: Response, next) => {
             const { playerId } = req.params;
             const body: Omit<GameConfigData, 'playerId'> = req.body;
             const userId: UserId = req.body.idUser;
@@ -60,7 +61,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.get('/:playerId', (req: LobbiesRequest, res: Response, next) => {
+        router.get('/:playerId', authenticateToken, (req: LobbiesRequest, res: Response, next) => {
             const { playerId } = req.params;
             try {
                 this.handleLobbiesRequest(playerId);
@@ -71,7 +72,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.post('/:gameId/players/:playerId/join', (req: GameRequest, res: Response, next) => {
+        router.post('/:gameId/players/:playerId/join', authenticateToken, (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
             const { playerName }: { playerName: string } = req.body;
 
@@ -84,7 +85,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.post('/:gameId/players/:playerId/accept', async (req: GameRequest, res: Response, next) => {
+        router.post('/:gameId/players/:playerId/accept', authenticateToken, async (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
             const { opponentName }: { opponentName: string } = req.body;
 
@@ -97,7 +98,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.post('/:gameId/players/:playerId/reject', (req: GameRequest, res: Response, next) => {
+        router.post('/:gameId/players/:playerId/reject', authenticateToken, (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
             const { opponentName }: { opponentName: string } = req.body;
 
@@ -110,7 +111,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.delete('/:gameId/players/:playerId/cancel', async (req: GameRequest, res: Response, next) => {
+        router.delete('/:gameId/players/:playerId/cancel', authenticateToken, async (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
 
             try {
@@ -122,7 +123,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.delete('/:gameId/players/:playerId/leave', (req: GameRequest, res: Response, next) => {
+        router.delete('/:gameId/players/:playerId/leave', authenticateToken, (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
 
             try {
@@ -134,7 +135,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.post('/:gameId/players/:playerId/reconnect', (req: GameRequest, res: Response, next) => {
+        router.post('/:gameId/players/:playerId/reconnect', authenticateToken, (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
             const { newPlayerId }: { newPlayerId: string } = req.body;
 
@@ -147,7 +148,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.delete('/:gameId/players/:playerId/disconnect', (req: GameRequest, res: Response, next) => {
+        router.delete('/:gameId/players/:playerId/disconnect', authenticateToken, (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
 
             try {

@@ -29,3 +29,5 @@ export interface UserSession {
 export interface UserFieldValidation {
   isAvailable: boolean;
 }
+
+export const UNKOWN_USER: PublicUser = { email: '', username: 'Inconnu', avatar: '' };
