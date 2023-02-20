@@ -81,4 +81,19 @@ class AccountAuthenticationController {
         errorMessage: message);
     return loginResponse;
   }
+
+  Future<TokenValidation> validateToken() async {
+    String? token = await storageHandler.getToken();
+    Response res = await post(Uri.parse("${endpoint}/validate"), body: token);
+    if (res.statusCode == HttpStatus.created) {
+      // Redirect to Home page
+      return TokenValidation.Ok;
+    } else if (res.statusCode == HttpStatus.unauthorized) {
+      // Token expired -> Redirect to login page
+      this.storageHandler.clearStorage();
+      return TokenValidation.AlreadyConnected;
+    } else {
+      return TokenValidation.UnknownError;
+    }
+  }
 }
