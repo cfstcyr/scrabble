@@ -55,7 +55,10 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                       child: Padding(
                         padding: EdgeInsets.only(
                             left: 15.0, right: 5.0, top: 0, bottom: 0),
-                        child: Text(playerWaitingList[index].username),
+                        child: Text(
+                          playerWaitingList[index].username,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                     Padding(

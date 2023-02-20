@@ -52,7 +52,7 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
                     onPressed: () {},
                     style: setStyleRoomButtons(),
                     icon: setPlayerIcon(0),
-                    label: Text(setPlayerName(0))),
+                    label: setPlayerName(0)),
               ),
               SizedBox(
                 height: 50,
@@ -61,7 +61,7 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
                     onPressed: () {},
                     style: setStyleRoomButtons(),
                     icon: setPlayerIcon(1),
-                    label: Text(setPlayerName(1))),
+                    label: setPlayerName(1)),
               ),
             ],
           ),
@@ -76,7 +76,7 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
                     onPressed: () {},
                     style: setStyleRoomButtons(),
                     icon: setPlayerIcon(2),
-                    label: Text(setPlayerName(2)),
+                    label: setPlayerName(2),
                   )),
               SizedBox(
                 height: 50,
@@ -85,7 +85,7 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
                     onPressed: () {},
                     style: setStyleRoomButtons(),
                     icon: setPlayerIcon(3),
-                    label: Text(setPlayerName(3))),
+                    label: setPlayerName(3)),
               ),
             ],
           ),
@@ -101,8 +101,11 @@ Widget setPlayerIcon(int index) {
       : Icon(Icons.question_mark);
 }
 
-String setPlayerName(int index) {
-  return playerList$.value.length > index
-      ? playerList$.value[index].username
-      : "Player $index";
+Text setPlayerName(int index) {
+  return Text(
+    playerList$.value.length > index
+        ? playerList$.value[index].username
+        : "Player $index",
+    overflow: TextOverflow.ellipsis,
+  );
 }

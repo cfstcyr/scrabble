@@ -11,7 +11,9 @@ Stream<List<PublicUser>> get _stream => playerList$.stream;
 
 List<PublicUser> playerWaitingList = [
 // TODO : requete joueurs lobby
-  PublicUser(username: "michel"),
+  PublicUser(
+      username:
+          "michellllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll"),
   PublicUser(username: "ppman"),
   PublicUser(username: "ppman1"),
   PublicUser(username: "ppman2"),
@@ -21,7 +23,9 @@ List<PublicUser> playerWaitingList = [
 
 List<PublicUser> playerList = [
 // TODO : requete joueurs lobby -- GET PROPRE USERNAME AVEC PAGE D'AVANT
-  PublicUser(username: "michel"),
+  PublicUser(
+      username:
+          "michellllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll"),
 ];
 
 ButtonStyle setStyleRoomButtons() {
@@ -47,10 +51,18 @@ ButtonStyle setStyleWaitingListButtons() {
       foregroundColor: Colors.black, shape: CircleBorder());
 }
 
-ButtonStyle setStyleActionButtons() {
+ButtonStyle setStyleMainActionButtons() {
   return ElevatedButton.styleFrom(
       backgroundColor: Colors.green.shade900,
       foregroundColor: Colors.white,
+      shape: BeveledRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(2))));
+}
+
+ButtonStyle setStyleSecondaryActionButtons() {
+  return ElevatedButton.styleFrom(
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
       shape: BeveledRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(2))));
 }
