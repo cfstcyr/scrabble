@@ -41,7 +41,9 @@ class _ChatPageState extends State<ChatPage> {
     socketService.initSocket();
     channelController.init();
     _listenMessages();
-    userData = PublicUser(username: name, avatar: "https://placedog.net/100");
+    //TO DO: passer userData au component à partir de la login Page et enlever la ligne ici
+    userData = PublicUser(
+        email: "", username: name, avatar: "https://placedog.net/100");
     _user = types.User(
         id: "UserId", firstName: name, imageUrl: "https://placedog.net/100");
   }
