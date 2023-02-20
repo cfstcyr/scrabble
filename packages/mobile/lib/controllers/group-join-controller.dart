@@ -31,7 +31,15 @@ class GroupJoinController {
     await get(Uri.parse("$endpoint/${socketService.socket.id}"));
   }
 
+  Future<Response> handleJoinGroup(String groupId) async {
+    // TODO Use UserService to get user's username
+    String username = 'Player';
+    return await post(Uri.parse("$endpoint/games/$groupId/players/${socketService.socket.id}/join"), body: { 'playerName': username });
+  }
+
   void _configureSocket() {
     socketService.on(GROUP_UPDATE, (List<Group> groups) => groups$.add(groups));
+    socketService.on(REJECTED_FROM_GROUP, (String hostName) => rejectedJoinRequest$.add(hostName));
+    socketService.on(CANCELED_GROUP, (String hostName) => canceledGroup$.add(hostName));
   }
 }

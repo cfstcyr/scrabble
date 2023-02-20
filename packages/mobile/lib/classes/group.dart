@@ -6,12 +6,14 @@ class Group {
   final List<PublicUser> users;
   final int maxRoundTime;
   final VirtualPlayerLevel virtualPlayerLevel;
+  bool? canJoin;
 
   Group(
       {required this.groupId,
       required this.users,
       required this.maxRoundTime,
-      required this.virtualPlayerLevel});
+      required this.virtualPlayerLevel,
+      this.canJoin});
 
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
@@ -22,9 +24,9 @@ class Group {
   }
 
   Map<String, dynamic> toJson() => {
-        "groupId": groupId,
-        "users": users,
-        "maxRoundTime": maxRoundTime,
-        "virtualPLayerLevel": virtualPlayerLevel
+        'groupId': groupId,
+        'users': users,
+        'maxRoundTime': maxRoundTime,
+        'virtualPLayerLevel': virtualPlayerLevel,
       };
 }
