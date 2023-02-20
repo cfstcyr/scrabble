@@ -1,14 +1,14 @@
 <div class="signup-container">
     <mat-card>
         <div class="header">
-            <h2>Créer un compte</h2>
+            <h2> Créer un compte </h2>
         </div>
         <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="outline" [formGroup]="signupForm">
                 <mat-label><app-icon icon="envelope"></app-icon> Courriel</mat-label>
-                <input matInput id="email" type="email" formControlName="email" autocomplete="off" (blur)="handleEmailLoseFocus()" />
+                <input matInput id="email" type="email" formControlName="email" autocomplete="off" (blur)="handleEmailLoseFocus()"/>
             </mat-form-field>
-            <p class="field-error margin-top" *ngIf="isEmailTaken">Ce courriel est déjà utilisé</p>
+            <p class="field-error" *ngIf="isEmailTaken">Ce courriel est déjà utilisé</p>
 
             <mat-form-field
                 appearance="outline"
@@ -17,9 +17,9 @@
                 matTooltipPosition="above"
             >
                 <mat-label><app-icon icon="user"></app-icon> Pseudonyme</mat-label>
-                <input matInput id="username" type="text" formControlName="username" autocomplete="off" (blur)="handleUsernameLoseFocus()" />
+                <input matInput id="username" type="text" formControlName="username" autocomplete="off" (blur)="handleUsernameLoseFocus()"/>
             </mat-form-field>
-            <p class="field-error margin-top" *ngIf="isUsernameTaken">Ce pseudonyme est déjà utilisé</p>
+            <p class="field-error" *ngIf="isUsernameTaken">Ce pseudonyme est déjà utilisé</p>
 
             <mat-form-field
                 appearance="outline"
@@ -30,6 +30,7 @@
                 <mat-label><app-icon icon="lock"></app-icon> Mot de passe</mat-label>
                 <input matInput id="password" [type]="arePasswordsShown ? 'text' : 'password'" formControlName="password" autocomplete="off" />
             </mat-form-field>
+
 
             <mat-form-field
                 appearance="outline"
@@ -50,23 +51,15 @@
 
             <div class="avatar__container">
                 <label *ngFor="let avatar of avatars">
-                    <input type="radio" name="avatar" [value]="avatar" class="avatar__input" formControlName="avatar" />
+                    <input type="radio" name="avatar" [value]="avatar" class="avatar__input" formControlName="avatar">
                     <img [src]="avatar" class="avatar__img" />
                 </label>
             </div>
-            <p
-                class="field-error margin-bottom"
-                *ngIf="signupForm.controls.avatar?.invalid && (signupForm.controls.avatar?.dirty || signupForm.controls.avatar?.touched)"
-            >
-                Vous devez choisir un avatar!
-            </p>
-
-            <br />
+            
+            <br>
 
             <div class="buttons">
-                <mat-checkbox [(ngModel)]="arePasswordsShown" [ngModelOptions]="{ standalone: true }" color="primary">
-                    Afficher les mots de passe</mat-checkbox
-                >
+                <mat-checkbox [(ngModel)]="arePasswordsShown" [ngModelOptions]="{ standalone: true }" color="primary"> Afficher les mots de passe</mat-checkbox>
 
                 <div
                     class="button-container"

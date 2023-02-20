@@ -33,7 +33,7 @@ describe('HighScoresController', () => {
     let highScoreServicesStub: SinonStubbedInstance<HighScoresService>;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withMockedAuthentification();
+        testingUnit = new ServicesTestingUnit();
         await testingUnit.withMockDatabaseService();
         testingUnit.withStubbedDictionaryService().withStubbedControllers(HighScoresController);
         socketServiceStub = testingUnit.setStubbed(SocketService);

@@ -30,7 +30,7 @@ describe('DictionaryController', () => {
     let dictionaryServiceStub: SinonStubbedInstance<DictionaryService>;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withMockedAuthentification();
+        testingUnit = new ServicesTestingUnit();
         await testingUnit.withMockDatabaseService();
         testingUnit.withStubbedDictionaryService().withStubbedControllers(DictionaryController);
         dictionaryServiceStub = testingUnit.getStubbedInstance(DictionaryService);
