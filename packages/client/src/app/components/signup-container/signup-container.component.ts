@@ -52,7 +52,10 @@ export class SignupContainerComponent implements OnChanges {
     onSubmit(): void {
         this.hasBeenSubmitted = true;
 
-        if (this.signupForm.invalid) return;
+        if (this.signupForm.invalid) {
+            this.signupForm.markAllAsTouched();
+            return;
+        }
 
         const userSignupInformation: UserSignupInformation = {
             email: this.signupForm.get('email')?.value,

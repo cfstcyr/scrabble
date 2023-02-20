@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../constants/create-account-constants.dart';
-import '../pages/home-page.dart';
 import '../services/account-authentification-service.dart';
 
 class CreateAccountForm extends StatefulWidget {
@@ -289,7 +289,9 @@ class CreateAccountFormState extends State<CreateAccountForm> {
         email: emailHandler.controller.text);
     if (await accountService.createAccount(newAccount)) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomePage(name: newAccount.username)));
     } else {
       validateUsername();
       validateEmail();

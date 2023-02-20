@@ -1,8 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:mobile/classes/channel-message.dart';
 import 'package:mobile/classes/channel.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/constants/channels.constants.dart';
+import 'package:mobile/constants/socket-events.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:uuid/uuid.dart';
@@ -12,38 +17,42 @@ import '../controllers/channel.controller.dart';
 import '../locator.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final String name;
+  ChatPage({super.key, required this.name});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatPage> createState() => _ChatPageState(name: name);
 }
 
 class _ChatPageState extends State<ChatPage> {
+  late String name;
+  _ChatPageState({required this.name}) : assert(name != null);
   List<types.Message> _messages = [];
-
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
   //TODO: Enlever le chat controller,  Add un Channel Service a la place qui lui parle au controller
   ChannelController channelController = getIt.get<ChannelController>();
   SocketService socketService = getIt.get<SocketService>();
-  // TODO: Set les infos des users avec les vrais infos
-  final userData =
-      PublicUser(username: "hardcoded:username", avatar: "hardcoded:avatar");
-  final _user = types.User(id: "UserId", firstName: "hardcoded:username");
+  late PublicUser userData;
+  late types.User _user;
 
-// TODO: ENLEVER VALEURS HARD CODE
-  final channel = Channel(id: "id_channel", name: "principal", canQuit: false);
   @override
   void initState() {
     super.initState();
     socketService.initSocket();
+    channelController.init();
     _listenMessages();
+    //TO DO: passer userData au component à partir de la login Page et enlever la ligne ici
+    userData = PublicUser(
+        email: "", username: name, avatar: "https://placedog.net/100");
+    _user = types.User(
+        id: "UserId", firstName: name, imageUrl: "https://placedog.net/100");
   }
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Main Channel")),
+      appBar: AppBar(title: Text("General")),
       body: Chat(
         theme: DefaultChatTheme(
           inputBackgroundColor: theme.colorScheme.primary,
@@ -54,6 +63,7 @@ class _ChatPageState extends State<ChatPage> {
         showUserAvatars: true,
         showUserNames: true,
         user: _user,
+        onMessageLongPress: _onMessageTap,
       ),
     );
   }
@@ -64,10 +74,41 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  void _onMessageTap(BuildContext context, types.Message message) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text("Message envoyé à:${getDate(message.createdAt)}"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String getDate(int? timestamp) {
+    if (timestamp != null) {
+      var date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      var formattedDate = "${date.hour}:${date.minute}:${date.second}";
+      return formattedDate;
+    }
+    return "";
+  }
+
+  whiteSpace(types.PartialText message) {
+    var isWhitespace =
+        message.text.trim().replaceAll(WHITESPACE_REGEX, '').isEmpty;
+    var isValid = !isWhitespace;
+    return isValid;
+  }
+
   void _handleSendPressed(types.PartialText message) {
     // TODO: Refactor cette duplication de code, textMessage est utilisé
     // pour l'affichage de store des messages par le package  et messageData pour le event: channel:newMessage
-    if (message.text != "") {
+    if (message.text != "" && whiteSpace(message)) {
       final textMessage = types.TextMessage(
         author: _user,
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -81,26 +122,42 @@ class _ChatPageState extends State<ChatPage> {
         date: DateTime.now().toString(),
       );
 
-      _sendMessage(channel, messageData);
+      _sendMessage(GENERAL_CHANNEL, messageData);
       _addMessage(textMessage);
     }
   }
 
   void _sendMessage(Channel channel, ChatMessage message) {
-    print(message);
-    channelController.sendMessage(channel, message);
+    final channelMessage = ChannelMessage(message: message, channel: channel);
+    channelController.sendMessage(channelMessage);
   }
 
-  void _handleNewMessage(types.Message message) async {
-    _addMessage(message);
-    setState(() {});
+  void _handleNewMessage(Map<String, dynamic> message) async {
+    final channelmessage = ChannelMessage.fromJson(message);
+    var _sender = types.User(
+        id: "",
+        imageUrl: channelmessage.message.sender.avatar,
+        firstName: channelmessage.message.sender.username,
+        createdAt: DateTime.now().millisecondsSinceEpoch);
+
+    final textMessage = types.TextMessage(
+      author: _sender,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: const Uuid().v4(),
+      text: channelmessage.message.content,
+    );
+    _addMessage(textMessage);
   }
 
   //TODO:  Add ce listener dans le controller
   Future<void> _listenMessages() async {
-    socketService.socket.on('channel:newMessage', (channelMessage) {
+    socketService.socket.on(CHANNEL_NEW_MESSAGE, (channelMessage) {
       _handleNewMessage(channelMessage);
-      _addMessage(channelMessage);
     });
+  }
+
+  String generateAvatarUrl() {
+    final avatarUrl = "${AVATARS_URL}${Random().nextInt(1000)}";
+    return avatarUrl;
   }
 }

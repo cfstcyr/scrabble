@@ -10,7 +10,7 @@ class ChatMessage {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
-      sender: json['sender'] as PublicUser,
+      sender: PublicUser.fromJson(json['sender']),
       content: json['content'] as String,
       date: json['date'] as String,
     );
