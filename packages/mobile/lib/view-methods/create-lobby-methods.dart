@@ -26,7 +26,7 @@ List<PublicUser> playerList = [
 
 ButtonStyle setStyleRoomButtons() {
   return ElevatedButton.styleFrom(
-    backgroundColor: Colors.grey.shade200,
+    backgroundColor: Colors.white,
     foregroundColor: Colors.green.shade900,
   );
 }

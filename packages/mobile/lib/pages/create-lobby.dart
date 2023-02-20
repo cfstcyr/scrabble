@@ -20,32 +20,40 @@ class CreateLobbyPage extends StatelessWidget {
       body: FractionallySizedBox(
         widthFactor: 1,
         heightFactor: 1,
-        child: Stack(
-          alignment: FractionalOffset.center,
+        child: Flex(
+          direction: Axis.horizontal,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             Flexible(
-              flex: 0,
-              child: FractionallySizedBox(
-                widthFactor: 0.35,
-                heightFactor: 0.6,
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
+              flex: 1,
+              child: Align(
+                alignment: Alignment.center,
+                child: FractionallySizedBox(
+                  widthFactor: 0.9,
+                  heightFactor: 0.6,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 7,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: WaitingRoom(),
+                          ),
+                          Parameters(),
+                          GroupManagement(),
+                        ],
                       ),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(5.0))),
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: <Widget>[
-                        Expanded(
-                          child: SizedBox(height: 5.0, child: WaitingRoom()),
-                        ),
-                        Parameters(),
-                        GroupManagement(),
-                      ],
                     ),
                   ),
                 ),
@@ -56,8 +64,7 @@ class CreateLobbyPage extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: FractionallySizedBox(
-                    alignment: Alignment.centerRight,
-                    widthFactor: 0.35,
+                    widthFactor: 1,
                     heightFactor: 0.6,
                     child: PlayerWaitingList()),
               ),

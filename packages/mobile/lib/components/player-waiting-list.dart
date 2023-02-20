@@ -21,12 +21,17 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
       color: theme.colorScheme.onPrimary,
     );
     return Padding(
-      padding: EdgeInsets.only(left: 30.0, right: 30.0, top: 0, bottom: 0),
+      padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 0, bottom: 0),
       child: Container(
         decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.black,
-            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 7,
+                offset: Offset(0, 3),
+              ),
+            ],
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.all(Radius.circular(5.0))),
         child: ListView.builder(
