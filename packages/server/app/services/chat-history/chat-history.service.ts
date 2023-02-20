@@ -1,14 +1,15 @@
-import { Service } from 'typedi';
-import DatabaseService from '@app/services/database-service/database.service';
 import { CHAT_HISTORY_TABLE } from '@app/constants/services-constants/database-const';
-import { ChannelMessage, ChatHistoryMessage } from '@common/models/chat/chat-message';
-import { TypeOfId } from '@common/types/id';
-import { Channel } from '@common/models/chat/channel';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import DatabaseService from '@app/services/database-service/database.service';
+import { Channel } from '@common/models/chat/channel';
+import { ChannelMessage, ChatHistoryMessage } from '@common/models/chat/chat-message';
+import { UNKOWN_USER } from '@common/models/user';
+import { TypeOfId } from '@common/types/id';
+import { Service } from 'typedi';
 
 @Service()
 export class ChatHistoryService {
-    constructor(private databaseService: DatabaseService, private authentificationService: AuthentificationService) { }
+    constructor(private databaseService: DatabaseService, private authentificationService: AuthentificationService) {}
 
     async saveMessage(message: ChannelMessage): Promise<void> {
         try {
@@ -34,7 +35,7 @@ export class ChatHistoryService {
                 try {
                     user = await this.authentificationService.getUserById(message.idUser);
                 } catch {
-                    user = { username: '', email: '', avatar: '' };
+                    user = UNKOWN_USER;
                 }
 
                 return {
