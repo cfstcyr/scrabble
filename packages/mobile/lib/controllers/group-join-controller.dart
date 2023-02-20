@@ -38,8 +38,8 @@ class GroupJoinController {
   }
 
   void _configureSocket() {
-    socketService.on(GROUP_UPDATE, (List<Group> groups) => groups$.add(groups));
-    socketService.on(REJECTED_FROM_GROUP, (String hostName) => rejectedJoinRequest$.add(hostName));
-    socketService.on(CANCELED_GROUP, (String hostName) => canceledGroup$.add(hostName));
+    socketService.on(GROUP_UPDATE, (groups) => groups$.add(groups));
+    socketService.socket.on(REJECTED_FROM_GROUP, (hostName) => rejectedJoinRequest$.add(hostName));
+    socketService.on(CANCELED_GROUP, (hostName) => canceledGroup$.add(hostName));
   }
 }

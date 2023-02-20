@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../components/login-form.dart';
 import '../constants/login-constants.dart';
+import 'groups-page.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -39,6 +40,13 @@ class MainTitle extends StatelessWidget {
       SizedBox(height: 10),
       Card(
         child: LoginForm(),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => GroupPage()));
+        },
+        child: Text('Rejoindre une partie'),
       ),
     ]);
   }

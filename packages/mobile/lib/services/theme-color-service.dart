@@ -17,4 +17,5 @@ class ThemeColorService {
   }
 
   Color themeColor = Color.fromRGBO(27, 94, 32, 1);
+  Color backgroundColor = Color.fromRGBO(243, 243, 243, 1);
 }

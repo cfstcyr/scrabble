@@ -30,7 +30,7 @@ class SocketService {
     socket.emit(eventName, data);
   }
 
-  on<T>(String eventName, dynamic Function(T arg) handler) {
-    socket.on(eventName, handler as dynamic);
+  on<T>(String eventName, dynamic Function(dynamic) handler) {
+    socket.on(eventName, handler);
   }
 }
