@@ -25,3 +25,10 @@ class LoginResponse {
   LoginResponse(
       {this.userSession, required this.authorized, required this.errorMessage});
 }
+
+enum TokenValidation {
+  Ok,
+  NoToken,
+  AlreadyConnected,
+  UnknownError,
+}

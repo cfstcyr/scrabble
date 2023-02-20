@@ -7,6 +7,9 @@ import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/login-constants.dart';
 import 'package:mobile/environments/environment.dart';
+import 'package:mobile/services/storage.handler.dart';
+
+import '../locator.dart';
 
 class AccountAuthenticationController {
   AccountAuthenticationController._privateConstructor();
@@ -17,6 +20,7 @@ class AccountAuthenticationController {
   factory AccountAuthenticationController() {
     return _instance;
   }
+  final storageHandler = getIt.get<StorageHandlerService>();
 
   final String endpoint = "${Environment().config.apiUrl}/authentification";
   // final headers = {"Content-type": "application/json"};
@@ -63,6 +67,7 @@ class AccountAuthenticationController {
     String message;
     if (res.statusCode == HttpStatus.ok) {
       message = AUTHORIZED;
+      storageHandler.setToken(UserSession.fromJson(jsonDecode(res.body)).token);
     } else if (res.statusCode == HttpStatus.notAcceptable) {
       message = LOGIN_FAILED;
     } else {
