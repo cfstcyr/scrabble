@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/error-pop-up.dart';
 
 import '../constants/create-lobby-constants.dart';
 import '../view-methods/create-lobby-methods.dart';
-import 'error-pop-up.dart';
 
 class PlayerWaitingList extends StatefulWidget {
   const PlayerWaitingList({
@@ -58,12 +58,7 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                             bool isAccepted =
                                 addPlayerToLobby(playerWaitingList[index]);
                             if (!isAccepted) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ErrorPopup(
-                                        errorMessage: FULL_LOBBY_ERROR)),
-                              );
+                              errorSnackBar(context, FULL_LOBBY_ERROR);
                             }
                           });
                         },

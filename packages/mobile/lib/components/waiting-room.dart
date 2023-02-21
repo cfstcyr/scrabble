@@ -35,9 +35,11 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
     stream: playerList$,
     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
       if (snapshot.hasError) {
-        return ErrorPopup(
-            errorMessage: 'Error: ${snapshot.error}'
-                'Stack trace: ${snapshot.stackTrace}');
+        errorSnackBar(
+            context,
+            'Error: ${snapshot.error}'
+            'Stack trace: ${snapshot.stackTrace}');
+        return Text('');
       }
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
