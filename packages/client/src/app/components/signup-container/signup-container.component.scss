@@ -31,17 +31,10 @@ $border-radius: 6px;
         }
 
         .field-error {
+            margin-top: -1.5em;
             padding-left: 0.25em;
             color: tomato;
             font-size: small;
-
-            &.margin-top {
-                margin-top: -1.5em;
-            }
-
-            &.margin-bottom {
-                margin-bottom: -0.5em;
-            }
         }
     }
 

@@ -64,7 +64,7 @@ describe('VirtualPlayerProfilesController', () => {
     let virtualPlayerProfileServiceStub: SinonStubbedInstance<VirtualPlayerProfilesService>;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withMockedAuthentification();
+        testingUnit = new ServicesTestingUnit();
         await testingUnit.withMockDatabaseService();
         testingUnit.withStubbedDictionaryService().withStubbedControllers(VirtualPlayerProfilesController);
         virtualPlayerProfileServiceStub = testingUnit.setStubbed(VirtualPlayerProfilesService);
