@@ -91,7 +91,8 @@ describe('GamePlayController', () => {
             .withStubbedDictionaryService()
             .withStubbed(ActiveGameService)
             .withStubbed(VirtualPlayerService)
-            .withStubbedControllers(GamePlayController);
+            .withStubbedControllers(GamePlayController)
+            .withMockedAuthentification();
 
         gamePlayServiceStub = testingUnit.setStubbed(GamePlayService);
         socketServiceStub = testingUnit.setStubbed(SocketService);
