@@ -47,7 +47,7 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
             children: [
               SizedBox(
                 height: 50,
-                width: 125,
+                width: 140,
                 child: ElevatedButton.icon(
                     onPressed: () {},
                     style: setStyleRoomButtons(),
@@ -56,7 +56,7 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
               ),
               SizedBox(
                 height: 50,
-                width: 125,
+                width: 140,
                 child: ElevatedButton.icon(
                     onPressed: () {},
                     style: setStyleRoomButtons(),
@@ -71,7 +71,7 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
             children: [
               SizedBox(
                   height: 50,
-                  width: 125,
+                  width: 140,
                   child: ElevatedButton.icon(
                     onPressed: () {},
                     style: setStyleRoomButtons(),
@@ -80,7 +80,7 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
                   )),
               SizedBox(
                 height: 50,
-                width: 125,
+                width: 140,
                 child: ElevatedButton.icon(
                     onPressed: () {},
                     style: setStyleRoomButtons(),

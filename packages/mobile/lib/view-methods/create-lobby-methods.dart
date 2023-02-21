@@ -35,6 +35,13 @@ ButtonStyle setStyleRoomButtons() {
   );
 }
 
+ButtonStyle setStyleButtonToText() {
+  return ButtonStyle(
+    foregroundColor: MaterialStateProperty.all(Colors.black),
+    backgroundColor: MaterialStateProperty.all(Colors.white),
+  );
+}
+
 CircleAvatar setAvatar(String path) {
   return CircleAvatar(
       backgroundColor: Colors.transparent,
