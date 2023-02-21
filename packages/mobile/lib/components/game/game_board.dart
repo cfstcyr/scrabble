@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/classes/board/position.dart';
-import 'package:mobile/classes/tile/multiplier.dart';
 import 'package:mobile/classes/tile/square.dart';
-import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/vector.dart';
-import 'package:mobile/components/game/game-square.dart';
+import 'package:mobile/components/game/game_square.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';

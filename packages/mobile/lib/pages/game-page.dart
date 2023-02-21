@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/game/game-board.dart';
+import 'package:mobile/components/game/game_board.dart';
+import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/tile/tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
@@ -22,8 +23,11 @@ class GamePage extends StatelessWidget {
               ),
             ),
             Container(
-              child: Column(
-                children: [],
+              width: 425,
+              child: Container(
+                child: Column(
+                  children: [PlayersContainer()],
+                ),
               ),
             ),
           ],

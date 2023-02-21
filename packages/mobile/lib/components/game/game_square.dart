@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/classes/tile/multiplier.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/components/tile/tile.dart';
-import 'package:mobile/classes/tile/tile.dart' as c;
-import 'package:mobile/constants/layout.constants.dart';
 
 class GameSquare extends StatelessWidget {
   final Square square;
