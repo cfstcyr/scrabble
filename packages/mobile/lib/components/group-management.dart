@@ -22,8 +22,14 @@ class GroupManagement extends StatelessWidget {
                 backOut(context);
               },
               style: setStyleSecondaryActionButtons(),
-              icon: Icon(Icons.keyboard_arrow_left_sharp),
-              label: Text(STOP_GAME_SETUP)),
+              icon: Icon(
+                Icons.keyboard_arrow_left_sharp,
+                size: 20,
+              ),
+              label: Text(
+                STOP_GAME_SETUP,
+                style: TextStyle(fontSize: 15),
+              )),
           handleStartGameButton()
         ],
       )),
@@ -42,8 +48,11 @@ StreamBuilder<List<PublicUser>> handleStartGameButton() {
                   startGame(context);
                 },
           style: setStyleMainActionButtons(),
-          icon: Icon(Icons.start),
-          label: Text(START_GAME));
+          icon: Icon(Icons.start, size: 20),
+          label: Text(
+            START_GAME,
+            style: TextStyle(fontSize: 15),
+          ));
     },
   );
 }

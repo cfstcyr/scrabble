@@ -22,7 +22,7 @@ class _WaitingRoomState extends State<WaitingRoom> {
     );
 
     return Padding(
-        padding: EdgeInsets.only(left: 0, right: 0, top: 50.0, bottom: 50.0),
+        padding: EdgeInsets.only(left: 0, right: 0, top: 10.0, bottom: 50.0),
         child: Container(
           alignment: Alignment.center,
           child: handlePlayerListChange(),
@@ -49,8 +49,8 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               SizedBox(
-                height: 50,
-                width: 140,
+                height: 60,
+                width: 170,
                 child: ElevatedButton.icon(
                     onPressed: () {},
                     style: setStyleRoomButtons(),
@@ -58,8 +58,8 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
                     label: setPlayerName(0)),
               ),
               SizedBox(
-                height: 50,
-                width: 140,
+                height: 60,
+                width: 170,
                 child: ElevatedButton.icon(
                     onPressed: () {},
                     style: setStyleRoomButtons(),
@@ -73,8 +73,8 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               SizedBox(
-                  height: 50,
-                  width: 140,
+                  height: 60,
+                  width: 170,
                   child: ElevatedButton.icon(
                     onPressed: () {},
                     style: setStyleRoomButtons(),
@@ -82,8 +82,8 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange() {
                     label: setPlayerName(2),
                   )),
               SizedBox(
-                height: 50,
-                width: 140,
+                height: 60,
+                width: 170,
                 child: ElevatedButton.icon(
                     onPressed: () {},
                     style: setStyleRoomButtons(),
@@ -110,5 +110,6 @@ Text setPlayerName(int index) {
         ? playerList$.value[index].username
         : "Player $index",
     overflow: TextOverflow.ellipsis,
+    style: TextStyle(fontSize: 17),
   );
 }

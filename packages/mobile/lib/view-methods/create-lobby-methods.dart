@@ -45,6 +45,7 @@ ButtonStyle setStyleButtonToText() {
 CircleAvatar setAvatar(String path) {
   return CircleAvatar(
       backgroundColor: Colors.transparent,
+      radius: 23,
       child: SizedBox(
           child: ClipOval(
         child: Image.asset(
@@ -62,6 +63,7 @@ ButtonStyle setStyleMainActionButtons() {
   return ElevatedButton.styleFrom(
       backgroundColor: Colors.green.shade900,
       foregroundColor: Colors.white,
+      fixedSize: Size(200, 40),
       shape: BeveledRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(2))));
 }
@@ -69,7 +71,9 @@ ButtonStyle setStyleMainActionButtons() {
 ButtonStyle setStyleSecondaryActionButtons() {
   return ElevatedButton.styleFrom(
       backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
       foregroundColor: Colors.black,
+      fixedSize: Size(200, 40),
       shape: BeveledRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(2))));
 }

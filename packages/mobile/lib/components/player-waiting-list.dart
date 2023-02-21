@@ -45,6 +45,7 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                       child: Text(
                         playerWaitingList[index].username,
                         overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 16),
                       ),
                     ),
                   ),

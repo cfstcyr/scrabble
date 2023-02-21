@@ -20,15 +20,18 @@ class Parameters extends StatelessWidget {
             child: ElevatedButton.icon(
                 onPressed: null,
                 style: setStyleButtonToText(),
-                icon: Icon(Icons.timer),
+                icon: Icon(
+                  Icons.timer,
+                  size: 25,
+                ),
                 // TODO remove:: pas en cst car ne va plus exister quand on recoit info from backend
-                label: Text('1:00')),
+                label: Text('1:00', style: TextStyle(fontSize: 15))),
           ),
           ElevatedButton.icon(
               onPressed: null,
               style: setStyleButtonToText(),
-              icon: Icon(Icons.precision_manufacturing_outlined),
-              label: Text('Expert')),
+              icon: Icon(Icons.precision_manufacturing_outlined, size: 25),
+              label: Text('Expert', style: TextStyle(fontSize: 15))),
         ],
       )),
     );
