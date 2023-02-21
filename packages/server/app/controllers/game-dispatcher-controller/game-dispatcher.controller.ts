@@ -25,6 +25,7 @@ import { BaseController } from '@app/controllers/base-controller';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
 import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatcher-const';
+import Player from '@app/classes/player/player';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -177,8 +178,10 @@ export class GameDispatcherController extends BaseController {
 
     private handleLeave(gameId: string, playerId: string): void {
         if (this.gameDispatcherService.isGameInWaitingRooms(gameId)) {
-            const leaverName = this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
-            this.socketService.emitToRoom(gameId, 'player_left', { name: leaverName });
+            const players = this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
+            const playersData: PlayerData[] = players.map((player: Player) => player.convertToPlayerData());
+            console.log(playersData);
+            this.socketService.emitToRoom(gameId, 'joinerLeaveGame', playersData);
             this.handleLobbiesUpdate();
             return;
         }
@@ -248,16 +251,18 @@ export class GameDispatcherController extends BaseController {
     private async handleAcceptRequest(gameId: string, playerId: string, playerName: string): Promise<void> {
         if (playerName === undefined) throw new HttpException(PLAYER_NAME_REQUIRED, StatusCodes.BAD_REQUEST);
 
-        const [acceptedPlayer] = this.gameDispatcherService.handleJoinRequest(gameId, playerId, playerName, ACCEPT);
+        const [acceptedPlayer, players] = this.gameDispatcherService.handleJoinRequest(gameId, playerId, playerName, ACCEPT);
+        const playersData: PlayerData[] = players.map((player: Player) => player.convertToPlayerData());
+        console.log(playersData);
 
         this.socketService.addToRoom(acceptedPlayer.id, gameId);
-        this.socketService.emitToRoom(gameId, 'player_joined', acceptedPlayer.convertToPlayerData());
+        this.socketService.emitToRoom(gameId, 'player_joined', playersData);
     }
 
     private handleRejectRequest(gameId: string, playerId: string, playerName: string): void {
         if (playerName === undefined) throw new HttpException(PLAYER_NAME_REQUIRED, StatusCodes.BAD_REQUEST);
-        const [rejectedPlayer, hostName] = this.gameDispatcherService.handleJoinRequest(gameId, playerId, playerName, REJECT);
-        this.socketService.emitToSocket(rejectedPlayer.id, 'rejected', { name: hostName });
+        const [rejectedPlayer, players] = this.gameDispatcherService.handleJoinRequest(gameId, playerId, playerName, REJECT);
+        this.socketService.emitToSocket(rejectedPlayer.id, 'rejected', { name: players[0].name });
     }
 
     private async handleStartRequest(gameId: string, playerId: string): Promise<void> {

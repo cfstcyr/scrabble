@@ -27,9 +27,12 @@
 
     <mat-card class="fun-fact-box">
         <p id="intro">VOS ADVERSAIRES</p>
-        <p id="fact">{{ opponentName1 }}</p>
-        <p id="fact">{{ opponentName2 }}</p>
-        <p id="fact">{{ opponentName3 }}</p>
+        <div class="grid">
+            <ng-container *ngFor="let player of opponents">
+                {{ player }}
+            </ng-container>
+        </div>
+
     </mat-card>
 
     <mat-card class="fun-fact-box">

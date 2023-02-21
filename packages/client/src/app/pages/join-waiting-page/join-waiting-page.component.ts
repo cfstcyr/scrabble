@@ -29,9 +29,7 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
     currentName: string;
     funFact: string;
     roundTime: string;
-    opponentName1: string | undefined = undefined;
-    opponentName2: string | undefined = undefined;
-    opponentName3: string | undefined = undefined;
+    opponents: string[] = [];
 
     private componentDestroyed$: Subject<boolean>;
 
@@ -63,8 +61,8 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
             }
         });
 
-        this.gameDispatcherService.subscribeToPlayerJoinedGroupEvent(this.componentDestroyed$, (player: PlayerData) => this.setOpponent(player));
-        this.gameDispatcherService.subscribeToPlayerLeftGroupEvent(this.componentDestroyed$, (player: PlayerData) => this.removeOpponent(player));
+        this.gameDispatcherService.subscribeToPlayerJoinedGroupEvent(this.componentDestroyed$, (players: PlayerData[]) => this.setOpponents(players));
+        this.gameDispatcherService.subscribeToPlayerLeftGroupEvent(this.componentDestroyed$, (players: PlayerData[]) => this.setOpponents(players));
 
         this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, (hostName: string) => this.hostHasCanceled(hostName));
         this.gameDispatcherService.subscribeToJoinerRejectedEvent(this.componentDestroyed$, (hostName: string) => this.playerRejected(hostName));
@@ -75,17 +73,14 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.complete();
     }
 
-    private setOpponent(player: PlayerData) {
-        if (!this.opponentName1) this.opponentName1 = player.name ?? '';
-        else if (!this.opponentName2) this.opponentName2 = player.name ?? '';
-        else if (!this.opponentName3) this.opponentName3 = player.name ?? '';
-    }
-
-    private removeOpponent(player: PlayerData) {
-        // eslint-disable-next-line unicorn/prefer-switch
-        if (player.name === this.opponentName1) this.opponentName1 = undefined;
-        else if (player.name === this.opponentName2) this.opponentName2 = undefined;
-        else if (player.name === this.opponentName3) this.opponentName3 = undefined;
+    private setOpponents(players: PlayerData[]) {
+        console.log(players);
+        this.opponents = [];
+        for (const player of players) {
+            if (this.currentName !== player.name && player.name) {
+                this.opponents.push(player.name);
+            }
+        }
     }
 
     private routerChangeMethod(url: string): void {

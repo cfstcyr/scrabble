@@ -67,7 +67,7 @@ export class GameDispatcherService {
     }
 
     // TODO : Refactor to use player id instead of name
-    handleJoinRequest(waitingRoomId: string, playerId: string, requestingPlayerName: string, isAccepted: boolean): [Player, string] {
+    handleJoinRequest(waitingRoomId: string, playerId: string, requestingPlayerName: string, isAccepted: boolean): [Player, Player[]] {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
@@ -80,7 +80,8 @@ export class GameDispatcherService {
         if (isAccepted) waitingRoom.fillNextEmptySpot(requestingPlayer);
         const index = waitingRoom.requestingPlayers.indexOf(requestingPlayer);
         waitingRoom.requestingPlayers.splice(index, 1);
-        return [requestingPlayer, waitingRoom.getConfig().player1.name];
+        waitingRoom.getPlayers();
+        return [requestingPlayer, waitingRoom.getPlayers()];
     }
 
     startRequest(waitingRoomId: string, playerId: string): ReadyGameConfig {
@@ -106,22 +107,18 @@ export class GameDispatcherService {
         return config;
     }
 
-    leaveLobbyRequest(waitingRoomId: string, playerId: string): string {
+    leaveLobbyRequest(waitingRoomId: string, playerId: string): Player[] {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
-        let leaverName;
         switch (playerId) {
             case waitingRoom.joinedPlayer2?.id: {
-                leaverName = waitingRoom.joinedPlayer2?.name;
                 waitingRoom.joinedPlayer2 = undefined;
                 break;
             }
             case waitingRoom.joinedPlayer3?.id: {
-                leaverName = waitingRoom.joinedPlayer2?.name;
                 waitingRoom.joinedPlayer3 = undefined;
                 break;
             }
             case waitingRoom.joinedPlayer4?.id: {
-                leaverName = waitingRoom.joinedPlayer2?.name;
                 waitingRoom.joinedPlayer4 = undefined;
                 break;
             }
@@ -129,7 +126,7 @@ export class GameDispatcherService {
                 throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
 
-        return leaverName as string;
+        return waitingRoom.getPlayers();
     }
 
     cancelGame(waitingRoomId: string, playerId: string): void {

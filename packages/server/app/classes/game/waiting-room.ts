@@ -39,4 +39,18 @@ export default class WaitingRoom extends Room {
         }
         throw new HttpException(GAME_ALREADY_FULL, StatusCodes.FORBIDDEN);
     }
+
+    getPlayers(): Player[] {
+        const players = [this.config.player1];
+        if (this.joinedPlayer2) {
+            players.push(this.joinedPlayer2);
+        }
+        if (this.joinedPlayer3) {
+            players.push(this.joinedPlayer3);
+        }
+        if (this.joinedPlayer4) {
+            players.push(this.joinedPlayer4);
+        }
+        return players;
+    }
 }

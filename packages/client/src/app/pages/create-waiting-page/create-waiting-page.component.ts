@@ -3,23 +3,24 @@ import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { PlayerData } from '@app/classes/communication';
 import LobbyInfo from '@app/classes/communication/lobby-info';
 import { Timer } from '@app/classes/round/timer';
 import { ConvertDialogComponent, ConvertResult } from '@app/components/convert-dialog/convert-dialog.component';
-import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+// import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { ERROR_SNACK_BAR_CONFIG } from '@app/constants/components-constants';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
 import {
     DEFAULT_LOBBY,
-    DIALOG_BUTTON_CONTENT_REJECTED,
-    DIALOG_CONTENT,
-    DIALOG_TITLE,
+    // DIALOG_BUTTON_CONTENT_REJECTED,
+    // DIALOG_CONTENT,
+    // DIALOG_TITLE,
     HOST_WAITING_MESSAGE,
     KEEP_DATA,
     OPPONENT_FOUND_MESSAGE,
 } from '@app/constants/pages-constants';
 import { GameDispatcherService } from '@app/services/';
-import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
+// import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -33,7 +34,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     @Input() opponentName1: string | undefined = undefined;
     @Input() opponentName2: string | undefined = undefined;
     @Input() opponentName3: string | undefined = undefined;
-    @Input() requestingPlayers: string[] = [];
+    requestingPlayers: string[] = [];
 
     isOpponentFound: boolean = false;
     waitingRoomMessage: string = HOST_WAITING_MESSAGE;
@@ -47,7 +48,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     constructor(
         public dialog: MatDialog,
         public gameDispatcherService: GameDispatcherService,
-        private readonly playerLeavesService: PlayerLeavesService,
+        // private readonly playerLeavesService: PlayerLeavesService,
         public router: Router,
         private snackBar: MatSnackBar,
     ) {}
@@ -70,7 +71,11 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         //     this.setOpponent(player.name ?? ''),
         // );
 
-        this.playerLeavesService.subscribeToJoinerLeavesGameEvent(this.componentDestroyed$, (leaverName: string) => this.opponentLeft(leaverName));
+        this.gameDispatcherService.subscribeToPlayerLeftGroupEvent(this.componentDestroyed$, (players: PlayerData[]) =>
+            this.setAcceptedOpponents(players),
+        );
+
+        // this.playerLeavesService.subscribeToJoinerLeavesGameEvent(this.componentDestroyed$, (leaverName: string) => this.opponentLeft(leaverName));
         this.gameDispatcherService
             .observeGameCreationFailed()
             .pipe(takeUntil(this.componentDestroyed$))
@@ -100,8 +105,8 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         else if (!this.opponentName3) this.opponentName3 = name;
         const requestingPlayers = this.requestingPlayers.filter((playerName) => name === playerName);
         const requestingPlayer = requestingPlayers[0];
-        const index = requestingPlayers.indexOf(requestingPlayer);
-        requestingPlayers.splice(index, 1);
+        const index = this.requestingPlayers.indexOf(requestingPlayer);
+        this.requestingPlayers.splice(index, 1);
         this.gameDispatcherService.handleConfirmation(name);
     }
 
@@ -109,7 +114,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         const requestingPlayers = this.requestingPlayers.filter((playerName) => name === playerName);
         const requestingPlayer = requestingPlayers[0];
         const index = requestingPlayers.indexOf(requestingPlayer);
-        requestingPlayers.splice(index, 1);
+        this.requestingPlayers.splice(index, 1);
         this.disconnectOpponent();
         this.gameDispatcherService.handleRejection(name);
     }
@@ -128,6 +133,23 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         this.isOpponentFound = true;
     }
 
+    private setAcceptedOpponents(players: PlayerData[]) {
+        this.opponentName1 = undefined;
+        this.opponentName2 = undefined;
+        this.opponentName3 = undefined;
+        for (const player of players) {
+            if (this.currentLobby.hostName !== player.name) {
+                if (!this.opponentName1) {
+                    this.opponentName1 = player.name;
+                } else if (!this.opponentName2) {
+                    this.opponentName2 = player.name;
+                } else if (!this.opponentName3) {
+                    this.opponentName3 = player.name;
+                }
+            }
+        }
+    }
+
     private disconnectOpponent(): void {
         if (this.opponentName) {
             this.opponentName = undefined;
@@ -136,21 +158,21 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         }
     }
 
-    private opponentLeft(leaverName: string): void {
-        this.disconnectOpponent();
-        this.dialog.open(DefaultDialogComponent, {
-            data: {
-                title: DIALOG_TITLE,
-                content: leaverName + DIALOG_CONTENT,
-                buttons: [
-                    {
-                        content: DIALOG_BUTTON_CONTENT_REJECTED,
-                        closeDialog: true,
-                    },
-                ],
-            },
-        });
-    }
+    // private opponentLeft(leaverName: string): void {
+    //     this.disconnectOpponent();
+    //     this.dialog.open(DefaultDialogComponent, {
+    //         data: {
+    //             title: DIALOG_TITLE,
+    //             content: leaverName + DIALOG_CONTENT,
+    //             buttons: [
+    //                 {
+    //                     content: DIALOG_BUTTON_CONTENT_REJECTED,
+    //                     closeDialog: true,
+    //                 },
+    //             ],
+    //         },
+    //     });
+    // }
 
     private handleGameCreationFail(error: HttpErrorResponse): void {
         this.confirmRejectionToServer();

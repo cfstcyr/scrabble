@@ -25,11 +25,11 @@ export type SocketEmitEvents =
 
 export type GameUpdateEmitArgs = GameUpdateData;
 export type JoinRequestEmitArgs = PlayerName;
-export type PlayerJoinedEmitArgs = PlayerData;
+export type PlayerJoinedEmitArgs = PlayerData[];
 export type StartGameEmitArgs = StartGameData;
 export type RejectEmitArgs = PlayerName;
 export type CanceledGameEmitArgs = PlayerName;
-export type JoinerLeaveGameEmitArgs = PlayerName;
+export type JoinerLeaveGameEmitArgs = PlayerData[];
 export type PlayerLeftGameEmitArgs = PlayerName;
 export type LobbiesUpdateEmitArgs = LobbyData[];
 export type HighScoresEmitArgs = NoId<HighScoreWithPlayers>[];

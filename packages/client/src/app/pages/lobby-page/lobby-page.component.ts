@@ -7,8 +7,8 @@ import { DefaultDialogComponent } from '@app/components/default-dialog/default-d
 import { NO_LOBBY_CAN_BE_JOINED } from '@app/constants/component-errors';
 import {
     DIALOG_BUTTON_CONTENT_RETURN_LOBBY,
-    DIALOG_CANCELED_CONTENT,
-    DIALOG_CANCELED_TITLE,
+    // DIALOG_CANCELED_CONTENT,
+    // DIALOG_CANCELED_TITLE,
     DIALOG_FULL_CONTENT,
     DIALOG_FULL_TITLE,
 } from '@app/constants/pages-constants';
@@ -44,7 +44,7 @@ export class LobbyPageComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.gameDispatcherService.subscribeToLobbiesUpdateEvent(this.componentDestroyed$, (lobbies: LobbyInfo[]) => this.updateLobbies(lobbies));
         this.gameDispatcherService.subscribeToLobbyFullEvent(this.componentDestroyed$, () => this.lobbyFullDialog());
-        this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, () => this.lobbyCanceledDialog());
+        // this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, () => this.lobbyCanceledDialog());
         this.gameDispatcherService.handleLobbyListRequest();
 
         this.filterFormGroup.get('gameType')?.valueChanges.subscribe(() => this.updateAllLobbiesAttributes());
@@ -114,20 +114,20 @@ export class LobbyPageComponent implements OnInit, OnDestroy {
         });
     }
 
-    private lobbyCanceledDialog(): void {
-        this.dialog.open(DefaultDialogComponent, {
-            data: {
-                title: DIALOG_CANCELED_TITLE,
-                content: DIALOG_CANCELED_CONTENT,
-                buttons: [
-                    {
-                        content: DIALOG_BUTTON_CONTENT_RETURN_LOBBY,
-                        closeDialog: true,
-                    },
-                ],
-            },
-        });
-    }
+    // private lobbyCanceledDialog(): void {
+    //     this.dialog.open(DefaultDialogComponent, {
+    //         data: {
+    //             title: DIALOG_CANCELED_TITLE,
+    //             content: DIALOG_CANCELED_CONTENT,
+    //             buttons: [
+    //                 {
+    //                     content: DIALOG_BUTTON_CONTENT_RETURN_LOBBY,
+    //                     closeDialog: true,
+    //                 },
+    //             ],
+    //         },
+    //     });
+    // }
 
     private getRandomLobby(): LobbyInfo {
         const filteredLobbies = this.lobbies.filter((lobby) => lobby.canJoin && lobby.meetFilters);

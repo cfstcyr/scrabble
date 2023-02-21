@@ -13,8 +13,8 @@ import { environment } from 'src/environments/environment';
 export class GameDispatcherController implements OnDestroy {
     private joinRequestEvent: Subject<string> = new Subject();
     private canceledGameEvent: Subject<string> = new Subject();
-    private playerJoinedGroupEvent: Subject<PlayerData> = new Subject();
-    private playerLeftGroupEvent: Subject<PlayerData> = new Subject();
+    private playerJoinedGroupEvent: Subject<PlayerData[]> = new Subject();
+    private playerLeftGroupEvent: Subject<PlayerData[]> = new Subject();
     private lobbyFullEvent: Subject<void> = new Subject();
     private lobbyRequestValidEvent: Subject<void> = new Subject();
     private lobbiesUpdateEvent: Subject<LobbyInfo[]> = new Subject();
@@ -82,12 +82,12 @@ export class GameDispatcherController implements OnDestroy {
         this.canceledGameEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
-    subscribeToPlayerJoinedGroupEvent(serviceDestroyed$: Subject<boolean>, callback: (player: PlayerData) => void): void {
+    subscribeToPlayerJoinedGroupEvent(serviceDestroyed$: Subject<boolean>, callback: (players: PlayerData[]) => void): void {
         this.playerJoinedGroupEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
-    subscribeToPlayerLeftGroupEvent(serviceDestroyed$: Subject<boolean>, callback: (player: PlayerData) => void): void {
-        this.playerJoinedGroupEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
+    subscribeToPlayerLeftGroupEvent(serviceDestroyed$: Subject<boolean>, callback: (players: PlayerData[]) => void): void {
+        this.playerLeftGroupEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
     subscribeToLobbyFullEvent(serviceDestroyed$: Subject<boolean>, callback: () => void): void {
@@ -132,7 +132,7 @@ export class GameDispatcherController implements OnDestroy {
             this.joinerRejectedEvent.next(hostName.name);
         });
         this.socketService.on('canceledGame', (opponent: PlayerName) => this.canceledGameEvent.next(opponent.name));
-        this.socketService.on('player_joined', (player: PlayerData) => this.playerJoinedGroupEvent.next(player));
-        this.socketService.on('joinerLeaveGame', (player: PlayerData) => this.playerLeftGroupEvent.next(player));
+        this.socketService.on('player_joined', (players: PlayerData[]) => this.playerJoinedGroupEvent.next(players));
+        this.socketService.on('joinerLeaveGame', (players: PlayerData[]) => this.playerLeftGroupEvent.next(players));
     }
 }
