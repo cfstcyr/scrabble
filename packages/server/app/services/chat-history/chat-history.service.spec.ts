@@ -8,14 +8,14 @@ import DatabaseService from '@app/services/database-service/database.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { Channel } from '@common/models/chat/channel';
 import { ChatHistoryMessage, ChatMessage } from '@common/models/chat/chat-message';
-import { PublicUser, UserDatabase } from '@common/models/user';
+import { PublicUser, User } from '@common/models/user';
 import { expect } from 'chai';
 import { Knex } from 'knex';
 import * as Sinon from 'sinon';
 import { Container } from 'typedi';
 import { ChatHistoryService } from './chat-history.service';
 
-const USER: UserDatabase = {
+const USER: User = {
     idUser: 1,
     email: 'bob@example.com',
     username: 'Bob',
@@ -56,7 +56,7 @@ describe('ChatHistoryService', () => {
     let testingUnit: ServicesTestingUnit;
     let databaseService: DatabaseService;
     let chatHistoryTable: () => Knex.QueryBuilder<ChatHistoryMessage>;
-    let userTable: () => Knex.QueryBuilder<UserDatabase>;
+    let userTable: () => Knex.QueryBuilder<User>;
     let channelTable: () => Knex.QueryBuilder<Channel>;
 
     beforeEach(async () => {
@@ -65,7 +65,7 @@ describe('ChatHistoryService', () => {
             .withStubbed(AuthentificationService, undefined, { connectedUsers: new ConnectedUser() });
         await testingUnit.withMockDatabaseService();
         databaseService = Container.get(DatabaseService);
-        userTable = () => databaseService.knex<UserDatabase>(USER_TABLE);
+        userTable = () => databaseService.knex<User>(USER_TABLE);
         chatHistoryTable = () => databaseService.knex<ChatHistoryMessage>(CHAT_HISTORY_TABLE);
         channelTable = () => databaseService.knex<Channel>(CHANNEL_TABLE);
     });
