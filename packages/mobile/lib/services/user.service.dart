@@ -9,16 +9,7 @@ class UserService {
   factory UserService() {
     return _instance;
   }
-
-  Stream<bool> isConnected() {
-    return user.map((user) => user != null);
-  }
-
   PublicUser getUser() {
     return user.value!;
-  }
-
-  bool isUser(PublicUser? u) {
-    return u?.username == user.value?.username;
   }
 }
