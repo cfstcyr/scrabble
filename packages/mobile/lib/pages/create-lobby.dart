@@ -30,7 +30,7 @@ class CreateLobbyPage extends StatelessWidget {
                 alignment: Alignment(2.3, 0.0),
                 child: FractionallySizedBox(
                   widthFactor: 0.6,
-                  heightFactor: 0.65,
+                  heightFactor: 0.7,
                   child: Container(
                     decoration: BoxDecoration(
                         boxShadow: [
@@ -88,7 +88,7 @@ class CreateLobbyPage extends StatelessWidget {
                 alignment: Alignment(0.9, 0.0),
                 child: FractionallySizedBox(
                     widthFactor: 0.6,
-                    heightFactor: 0.65,
+                    heightFactor: 0.7,
                     child: Padding(
                       padding: EdgeInsets.only(
                           left: 0, right: 15.0, top: 0, bottom: 0),

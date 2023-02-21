@@ -106,6 +106,10 @@ void backOut(BuildContext context) {
   );
 }
 
+void reOpen() {
+  playerList$ = BehaviorSubject<List<PublicUser>>.seeded(playerList);
+}
+
 bool isMinimumPlayerCount() {
   return playerList$.value.length < MINIMUM_PLAYER_COUNT;
 }

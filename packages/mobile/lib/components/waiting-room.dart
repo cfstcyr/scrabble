@@ -31,6 +31,7 @@ class _WaitingRoomState extends State<WaitingRoom> {
 }
 
 StreamBuilder<List<PublicUser>> handlePlayerListChange() {
+  reOpen();
   return StreamBuilder<List<PublicUser>>(
     stream: playerList$,
     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
