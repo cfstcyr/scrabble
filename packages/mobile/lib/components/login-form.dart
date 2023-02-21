@@ -23,7 +23,6 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   bool isPasswordShown = false;
   bool isFirstSubmit = true;
-  late UserSession userSession;
   bool get isButtonEnabled => isFirstSubmit;
   SocketService socketService = getIt.get<SocketService>();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
@@ -123,8 +122,7 @@ class _LoginFormState extends State<LoginForm> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => HomePage(
-                                        name: userSession.user.username)))
+                                    builder: (context) => HomePage()))
                           }
                         : {}
                   },

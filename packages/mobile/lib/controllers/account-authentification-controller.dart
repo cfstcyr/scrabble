@@ -10,6 +10,7 @@ import 'package:mobile/environments/environment.dart';
 import 'package:mobile/services/storage.handler.dart';
 
 import '../locator.dart';
+import '../services/authentification-service.dart';
 
 class AccountAuthenticationController {
   AccountAuthenticationController._privateConstructor();
@@ -21,6 +22,7 @@ class AccountAuthenticationController {
     return _instance;
   }
   final storageHandler = getIt.get<StorageHandlerService>();
+  final authService = getIt.get<AuthentificationService>();
 
   final String endpoint = "${Environment().config.apiUrl}/authentification";
   // final headers = {"Content-type": "application/json"};
@@ -73,10 +75,9 @@ class AccountAuthenticationController {
     } else {
       message = ALREADY_LOGGED_IN_FR;
     }
+    authService.initializeSession(UserSession.fromJson(jsonDecode(res.body)));
     LoginResponse loginResponse = LoginResponse(
-        userSession: res.statusCode == HttpStatus.ok
-            ? UserSession.fromJson(jsonDecode(res.body))
-            : Null as UserSession,
+        userSession: authService.userSession.value,
         authorized: res.statusCode == HttpStatus.ok,
         errorMessage: message);
     return loginResponse;

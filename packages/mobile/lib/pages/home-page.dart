@@ -4,8 +4,6 @@ import 'package:mobile/components/chatbox.dart';
 import '../components/invalid-connection-popup.dart';
 
 class HomePage extends StatelessWidget {
-  final String name;
-  HomePage({super.key, required this.name});
   @override
   Widget build(BuildContext context) {
     return Center(

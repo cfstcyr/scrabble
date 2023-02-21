@@ -1,17 +1,19 @@
 import 'package:mobile/classes/account.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/controllers/account-authentification-controller.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../locator.dart';
 
-class AccountAuthenticationService {
-  AccountAuthenticationService._privateConstructor();
-
-  static final AccountAuthenticationService _instance =
-      AccountAuthenticationService._privateConstructor();
-
-  factory AccountAuthenticationService() {
+class AuthenticationService {
+  BehaviorSubject<UserSession?> userSession = BehaviorSubject<UserSession?>();
+  AuthenticationService._privateConstructor();
+  static final AuthenticationService _instance =
+      AuthenticationService._privateConstructor();
+  factory AuthenticationService() {
     return _instance;
   }
+
   // final headers = {"Content-type": "application/json"};
   final accountAuthenticationController =
       getIt.get<AccountAuthenticationController>();
@@ -41,4 +43,10 @@ class AccountAuthenticationService {
     //   return false;
     // }
   }
+
+  Future<void> initializeSession(UserSession session) async {
+    userSession.add(session);
+  }
+
+  Future<void> signout() async {}
 }
