@@ -21,7 +21,7 @@ import { ChatClientEvents, ChatServerEvents } from '@common/events/chat.event';
 import { Channel, ChannelCreation } from '@common/models/chat/channel';
 import { ChatMessage } from '@common/models/chat/chat-message';
 import { SocketErrorResponse } from '@common/models/error';
-import { PublicUser, UserDatabase } from '@common/models/user';
+import { PublicUser, User } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -38,7 +38,7 @@ import { ChatService } from './chat.service';
 const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
 
-const USER: UserDatabase = {
+const USER: User = {
     email: 'bob@example.com',
     idUser: 1,
     username: 'Bob',
@@ -73,7 +73,7 @@ const channelCreation: ChannelCreation = {
 
 class TestClass {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    testFunc = () => {};
+    testFunc = () => { };
 }
 
 describe('ChatService', () => {
@@ -137,7 +137,7 @@ describe('ChatService', () => {
                 chatHistoryService as unknown as ChatHistoryService,
             );
 
-            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => {});
+            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => { });
 
             socketService['configureSocketsEvent'].emit(SOCKET_CONFIGURE_EVENT_NAME, serverSocket);
 

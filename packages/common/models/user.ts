@@ -1,25 +1,16 @@
 export interface User {
   idUser: number;
-  hash: string;
-  salt: string;
   email: string;
   username: string;
+  password: string;
   avatar: string;
 }
 
-export interface UserSignupInformation extends Pick<User, 'email' | 'username' | 'avatar'> {
-  password: string;
-}
+export interface UserSignupInformation extends Omit<User, 'idUser'> { }
 
-export interface UserLoginCredentials extends Omit<UserSignupInformation, 'username' | 'avatar'> {}
+export interface UserLoginCredentials extends Omit<UserSignupInformation, 'username' | 'avatar'> { }
 
-export type PublicUser = Omit<User, 'idUser' | 'hash' | 'salt'>;
-
-export type ServerUser = Omit<User, 'hash' | 'salt'>;
-
-export interface UserDatabase extends UserSignupInformation, Pick<User, 'idUser'> {
-  avatar: string
-}
+export type PublicUser = Omit<User, 'idUser' | 'password'>;
 
 export interface UserSession {
   token: string;

@@ -10,7 +10,7 @@ import { ChatPersistenceService } from './chat-persistence.service';
 import { CHANNEL_TABLE, USER_CHANNEL_TABLE, USER_TABLE } from '@app/constants/services-constants/database-const';
 import { Channel, UserChannel } from '@common/models/chat/channel';
 import { Knex } from 'knex';
-import { UserDatabase } from '@common/models/user';
+import { User } from '@common/models/user';
 import { UserId } from '@app/classes/user/connected-user-types';
 import * as sinon from 'sinon';
 import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
@@ -29,7 +29,7 @@ const CHANNEL_2: Channel = {
     private: false,
     default: false,
 };
-const USER: UserDatabase = {
+const USER: User = {
     avatar: '',
     email: '',
     idUser: 1,
@@ -43,7 +43,7 @@ describe('ChatPersistenceService', () => {
     let databaseService: DatabaseService;
     let channelTable: () => Knex.QueryBuilder<Channel>;
     let userChannelTable: () => Knex.QueryBuilder<UserChannel>;
-    let userTable: () => Knex.QueryBuilder<UserDatabase>;
+    let userTable: () => Knex.QueryBuilder<User>;
     let chatHistoryService: sinon.SinonStubbedInstance<ChatHistoryService>;
 
     beforeEach(async () => {
@@ -52,7 +52,7 @@ describe('ChatPersistenceService', () => {
         databaseService = Container.get(DatabaseService);
         channelTable = () => databaseService.knex<Channel>(CHANNEL_TABLE);
         userChannelTable = () => databaseService.knex<UserChannel>(USER_CHANNEL_TABLE);
-        userTable = () => databaseService.knex<UserDatabase>(USER_TABLE);
+        userTable = () => databaseService.knex<User>(USER_TABLE);
         chatHistoryService = testingUnit.setStubbed(ChatHistoryService);
     });
 
