@@ -2,16 +2,15 @@ export interface User {
   idUser: number;
   email: string;
   username: string;
+  password: string;
   avatar: string;
 }
 
-export interface UserSignupInformation extends Pick<User, 'email' | 'username' | 'avatar'> {
-  password: string;
-}
+export interface UserSignupInformation extends Omit<User, 'idUser'> { }
 
 export interface UserLoginCredentials extends Omit<UserSignupInformation, 'username' | 'avatar'> { }
 
-export type PublicUser = Omit<User, 'idUser'>;
+export type PublicUser = Omit<User, 'idUser' | 'password'>;
 
 export interface UserSession {
   token: string;

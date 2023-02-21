@@ -6,7 +6,7 @@ import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds'
 import { USER_TABLE } from '@app/constants/services-constants/database-const';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
-import { User, User, UserLoginCredentials, UserSession } from '@common/models/user';
+import { User, UserLoginCredentials, UserSession } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
 import * as bcryptjs from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
@@ -90,7 +90,7 @@ export class AuthentificationService {
         return new Promise((resolve, reject) => {
             this.table
                 .where('idUser', idUser)
-                .select('username', 'email', 'avatar', 'idUser')
+                .select('*')
                 .then((data) => resolve(data[0]))
                 .catch((err) => reject(err));
         });

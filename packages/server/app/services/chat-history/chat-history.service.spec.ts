@@ -105,7 +105,7 @@ describe('ChatHistoryService', () => {
             await userTable().insert(USER);
             await channelTable().insert(testChannel);
 
-            testingUnit.getStubbedInstance(AuthentificationService).getUserById.resolves({ ...PUBLIC_USER, idUser: USER.idUser });
+            testingUnit.getStubbedInstance(AuthentificationService).getUserById.resolves(USER);
             testingUnit.getStubbedInstance(AuthentificationService).getUserByEmail.resolves(USER);
 
             await service.saveMessage(message);
