@@ -9,7 +9,7 @@ import { TypeOfId } from '@common/types/id';
 import { getSocketNameFromChannel } from '@app/utils/socket';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { ServerUser } from '@common/models/user';
+import { User } from '@common/models/user';
 import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { SocketId, UserId } from '@app/classes/user/connected-user-types';
@@ -135,7 +135,7 @@ export class ChatService {
     }
 
     private async handleJoinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
-        const user: ServerUser = socket.data.user;
+        const user: User = socket.data.user;
         const channel = await this.chatPersistenceService.getChannel(idChannel);
         const channelHistory = await this.chatHistoryService.getChannelHistory(idChannel);
 
@@ -157,7 +157,7 @@ export class ChatService {
     }
 
     private async handleQuitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
-        const user: ServerUser = socket.data.user;
+        const user: User = socket.data.user;
         const channel = await this.chatPersistenceService.getChannel(idChannel);
 
         if (!channel) {
@@ -174,7 +174,7 @@ export class ChatService {
     }
 
     private async initChannelsForSocket(socket: ServerSocket): Promise<void> {
-        const user: ServerUser = socket.data.user;
+        const user: User = socket.data.user;
 
         await Promise.all(
             (await this.chatPersistenceService.getUserChannelIds(user.idUser)).map(async (idChannel) => this.handleJoinChannel(idChannel, socket)),
