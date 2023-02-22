@@ -31,7 +31,11 @@ class MyApp extends StatelessWidget {
         title: 'Namer App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Color.fromRGBO(27, 94, 32, 1),
+              background: Color.fromRGBO(243, 243, 243, 1),
+              onBackground: Color.fromRGBO(232, 232, 232, 1),
+              tertiary: Color.fromRGBO(216, 216, 216, 1)),
         ),
         home: MainPage(),
       ),

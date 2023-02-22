@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.5.0"
+  animated_snack_bar:
+    dependency: "direct main"
+    description:
+      name: animated_snack_bar
+      sha256: "84e6d2ccc1945c7739f3d4b352cd30bfbec404f77ded4d2127a505e9e8570a25"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.2"
   args:
     dependency: transitive
     description:
