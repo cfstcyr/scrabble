@@ -8,6 +8,7 @@ import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/login-constants.dart';
 import 'package:mobile/environments/environment.dart';
 import 'package:mobile/services/storage.handler.dart';
+import 'package:mobile/services/user-session.service.dart';
 
 import '../locator.dart';
 import '../services/authentification-service.dart';
@@ -23,6 +24,7 @@ class AccountAuthenticationController {
   }
   final storageHandler = getIt.get<StorageHandlerService>();
   final authService = getIt.get<AuthentificationService>();
+  final userSessionHandler = getIt.get<UserSessionService>();
 
   final String endpoint = "${Environment().config.apiUrl}/authentification";
   // final headers = {"Content-type": "application/json"};
@@ -75,7 +77,8 @@ class AccountAuthenticationController {
     } else {
       message = ALREADY_LOGGED_IN_FR;
     }
-    authService.initializeSession(UserSession.fromJson(jsonDecode(res.body)));
+    userSessionHandler
+        .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
     LoginResponse loginResponse = LoginResponse(
         userSession: authService.userSession.value,
         authorized: res.statusCode == HttpStatus.ok,
@@ -84,17 +87,20 @@ class AccountAuthenticationController {
   }
 
   Future<TokenValidation> validateToken() async {
-    String? token = await storageHandler.getToken();
-    Response res = await post(Uri.parse("${endpoint}/validate"), body: token);
-    if (res.statusCode == HttpStatus.created) {
-      // Redirect to Home page
-      return TokenValidation.Ok;
-    } else if (res.statusCode == HttpStatus.unauthorized) {
-      // Token expired -> Redirect to login page
-      this.storageHandler.clearStorage();
-      return TokenValidation.AlreadyConnected;
-    } else {
-      return TokenValidation.UnknownError;
+    String? token = await userSessionHandler.getToken();
+    if (token != null) {
+      Response res = await post(Uri.parse("${endpoint}/validate"), body: token);
+      if (res.statusCode == HttpStatus.created) {
+        // Redirect to Home page
+        return TokenValidation.Ok;
+      } else if (res.statusCode == HttpStatus.unauthorized) {
+        // Token expired -> Redirect to login page
+        this.storageHandler.clearStorage();
+        return TokenValidation.AlreadyConnected;
+      } else {
+        return TokenValidation.UnknownError;
+      }
     }
+    return TokenValidation.NoToken;
   }
 }
