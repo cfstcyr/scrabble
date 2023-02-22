@@ -15,18 +15,22 @@ class GamePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
+                child: IntrinsicWidth(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(child: GameBoard()),
                   TileRack(),
                 ],
               ),
-            ),
+            )),
             Container(
               width: 425,
               child: Container(
                 child: Column(
-                  children: [PlayersContainer()],
+                  children: [
+                    PlayersContainer(),
+                  ],
                 ),
               ),
             ),

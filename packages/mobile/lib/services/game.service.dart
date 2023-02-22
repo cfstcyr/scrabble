@@ -40,6 +40,8 @@ class GameService {
       Tile.create("E", 1),
       Tile.create("I", 1),
       Tile.create("S", 1),
+      Tile.create("I", 1),
+      Tile.create("S", 1),
     ];
   }
 

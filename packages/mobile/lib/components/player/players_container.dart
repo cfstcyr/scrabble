@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/player/main_player.dart';
 import 'package:mobile/components/player/player.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
@@ -10,44 +11,22 @@ class PlayersContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Row(
+    return IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-                child: Column(children: [
-              Player(
-                  player: _gameService.game!.players.player1, isPlaying: true),
-              Player(player: _gameService.game!.players.player3)
-            ])),
+                child: MainPlayer(player: _gameService.game!.players.player1, isPlaying: true,)),
             Expanded(
-                child: Column(children: [
-              Player(
-                  player: _gameService.game!.players.player2,
-                  invertedLayout: true),
-              Player(
-                player: _gameService.game!.players.player4,
-                invertedLayout: true,
-              )
-            ])),
+              child: Column(
+                children: [
+                  Player(player: _gameService.game!.players.player2),
+                  Player(player: _gameService.game!.players.player3),
+                  Player(player: _gameService.game!.players.player4),
+                ],
+              ),
+            )
           ],
-        ),
-        Card(
-          color: _themeColorService.themeColor,
-          elevation: 3,
-          child: Container(
-            height: 28,
-            width: 28,
-            alignment: Alignment.center,
-            child: Text(
-              "vs",
-              style: TextStyle(
-                  color: Colors.white, height: 1, fontWeight: FontWeight.w700),
-            ),
-          ),
-        )
-      ],
-    );
+        ));
   }
 }
