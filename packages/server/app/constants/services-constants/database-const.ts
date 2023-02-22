@@ -7,6 +7,7 @@ export const VIRTUAL_PLAYER_TABLE = 'VirtualPlayer';
 export const USER_TABLE = 'User';
 export const CHANNEL_TABLE = 'Channel';
 export const USER_CHANNEL_TABLE = 'UserChannel';
+export const CHAT_HISTORY_TABLE = 'ChatHistory';
 
 // Data
 export const DEFAULT_HIGH_SCORES_RELATIVE_PATH = '../../../assets/default-high-scores.json';

@@ -1,23 +1,11 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 
-import '../constants/create-lobby-constants.dart';
-
-class ErrorPopup extends StatelessWidget {
-  final String errorMessage;
-
-  ErrorPopup({this.errorMessage = DEFAULT_ERROR});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(ERROR_HEADER),
-      content: Text(errorMessage),
-      actions: [
-        TextButton(
-          child: Text('OK'),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ],
-    );
-  }
+void errorSnackBar(BuildContext context, String errorMessage) {
+  AnimatedSnackBar.material(errorMessage,
+          type: AnimatedSnackBarType.error,
+          duration: Duration(seconds: 5),
+          mobileSnackBarPosition: MobileSnackBarPosition.top,
+          desktopSnackBarPosition: DesktopSnackBarPosition.topCenter)
+      .show(context);
 }

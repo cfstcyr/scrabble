@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/home-page.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
-import '../pages/home-page.dart';
+import '../constants/create-lobby-constants.dart';
 
 BehaviorSubject<List<PublicUser>> playerList$ =
     BehaviorSubject<List<PublicUser>>.seeded(playerList);
@@ -10,29 +11,30 @@ Stream<List<PublicUser>> get _stream => playerList$.stream;
 
 List<PublicUser> playerWaitingList = [
 // TODO : requete joueurs lobby
-  PublicUser(username: "michel"),
-  PublicUser(username: "ppman"),
-  PublicUser(username: "ppman1"),
-  PublicUser(username: "ppman2"),
-  PublicUser(username: "ppman3"),
-  PublicUser(username: "ppman4"),
 ];
 
 List<PublicUser> playerList = [
 // TODO : requete joueurs lobby -- GET PROPRE USERNAME AVEC PAGE D'AVANT
-  PublicUser(username: "michel"),
 ];
 
 ButtonStyle setStyleRoomButtons() {
   return ElevatedButton.styleFrom(
-    backgroundColor: Colors.grey.shade200,
+    backgroundColor: Colors.white,
     foregroundColor: Colors.green.shade900,
+  );
+}
+
+ButtonStyle setStyleButtonToText() {
+  return ButtonStyle(
+    foregroundColor: MaterialStateProperty.all(Colors.black),
+    backgroundColor: MaterialStateProperty.all(Colors.white),
   );
 }
 
 CircleAvatar setAvatar(String path) {
   return CircleAvatar(
       backgroundColor: Colors.transparent,
+      radius: 23,
       child: SizedBox(
           child: ClipOval(
         child: Image.asset(
@@ -46,10 +48,21 @@ ButtonStyle setStyleWaitingListButtons() {
       foregroundColor: Colors.black, shape: CircleBorder());
 }
 
-ButtonStyle setStyleActionButtons() {
+ButtonStyle setStyleMainActionButtons() {
   return ElevatedButton.styleFrom(
       backgroundColor: Colors.green.shade900,
       foregroundColor: Colors.white,
+      fixedSize: Size(200, 40),
+      shape: BeveledRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(2))));
+}
+
+ButtonStyle setStyleSecondaryActionButtons() {
+  return ElevatedButton.styleFrom(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
+      foregroundColor: Colors.black,
+      fixedSize: Size(200, 40),
       shape: BeveledRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(2))));
 }
@@ -60,7 +73,7 @@ Widget setWaitingPlayerIcon(int index) {
 
 bool addPlayerToLobby(PublicUser player) {
   // TODO COTE SERVEUR req
-  if (playerList.length > 3) return false;
+  if (playerList.length >= MAX_PLAYER_COUNT) return false;
   playerWaitingList.remove(player);
   playerList.add(player);
   playerList$.add(playerList);
@@ -84,4 +97,12 @@ void backOut(BuildContext context) {
     context,
     MaterialPageRoute(builder: (context) => HomePage()),
   );
+}
+
+void reOpen() {
+  playerList$ = BehaviorSubject<List<PublicUser>>.seeded(playerList);
+}
+
+bool isMinimumPlayerCount() {
+  return playerList$.value.length < MINIMUM_PLAYER_COUNT;
 }

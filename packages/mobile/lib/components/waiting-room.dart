@@ -22,7 +22,7 @@ class _WaitingRoomState extends State<WaitingRoom> {
     );
 
     return Padding(
-        padding: EdgeInsets.only(left: 0, right: 0, top: 50.0, bottom: 50.0),
+        padding: EdgeInsets.only(left: 0, right: 0, top: 10.0, bottom: 50.0),
         child: Container(
           alignment: Alignment.center,
           child: handlePlayerListChange(),
@@ -31,70 +31,69 @@ class _WaitingRoomState extends State<WaitingRoom> {
 }
 
 StreamBuilder<List<PublicUser>> handlePlayerListChange() {
+  reOpen();
   return StreamBuilder<List<PublicUser>>(
     stream: playerList$,
     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
-      Widget widget;
       if (snapshot.hasError) {
-        widget = ErrorPopup(
-            errorMessage: 'Error: ${snapshot.error}'
-                'Stack trace: ${snapshot.stackTrace}');
-      } else {
-        widget = Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SizedBox(
-                  height: 50,
-                  width: 125,
-                  child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(0),
-                      label: Text(setPlayerName(0))),
-                ),
-                SizedBox(
-                  height: 50,
-                  width: 125,
-                  child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(1),
-                      label: Text(setPlayerName(1))),
-                ),
-              ],
-            ),
-            Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SizedBox(
-                    height: 50,
-                    width: 125,
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(2),
-                      label: Text(setPlayerName(2)),
-                    )),
-                SizedBox(
-                  height: 50,
-                  width: 125,
-                  child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: setStyleRoomButtons(),
-                      icon: setPlayerIcon(3),
-                      label: Text(setPlayerName(3))),
-                ),
-              ],
-            ),
-          ],
-        );
-        return widget;
+        errorSnackBar(
+            context,
+            'Error: ${snapshot.error}'
+            'Stack trace: ${snapshot.stackTrace}');
+        return Text('');
       }
-      return widget;
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                height: 60,
+                width: 170,
+                child: ElevatedButton.icon(
+                    onPressed: () {},
+                    style: setStyleRoomButtons(),
+                    icon: setPlayerIcon(0),
+                    label: setPlayerName(0)),
+              ),
+              SizedBox(
+                height: 60,
+                width: 170,
+                child: ElevatedButton.icon(
+                    onPressed: () {},
+                    style: setStyleRoomButtons(),
+                    icon: setPlayerIcon(1),
+                    label: setPlayerName(1)),
+              ),
+            ],
+          ),
+          Text("vs", style: TextStyle(fontWeight: FontWeight.bold)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                  height: 60,
+                  width: 170,
+                  child: ElevatedButton.icon(
+                    onPressed: () {},
+                    style: setStyleRoomButtons(),
+                    icon: setPlayerIcon(2),
+                    label: setPlayerName(2),
+                  )),
+              SizedBox(
+                height: 60,
+                width: 170,
+                child: ElevatedButton.icon(
+                    onPressed: () {},
+                    style: setStyleRoomButtons(),
+                    icon: setPlayerIcon(3),
+                    label: setPlayerName(3)),
+              ),
+            ],
+          ),
+        ],
+      );
     },
   );
 }
@@ -105,8 +104,12 @@ Widget setPlayerIcon(int index) {
       : Icon(Icons.question_mark);
 }
 
-String setPlayerName(int index) {
-  return playerList$.value.length > index
-      ? playerList$.value[index].username
-      : "Player $index";
+Text setPlayerName(int index) {
+  return Text(
+    playerList$.value.length > index
+        ? playerList$.value[index].username
+        : "Player $index",
+    overflow: TextOverflow.ellipsis,
+    style: TextStyle(fontSize: 17),
+  );
 }

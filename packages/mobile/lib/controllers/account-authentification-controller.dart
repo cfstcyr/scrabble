@@ -53,7 +53,6 @@ class AccountAuthenticationController {
     // }
   }
 
-  //TODO: Á tester dans la tache 94-LE-Verification-Auth
   Future<bool> login(LoginData credentials) async {
     Response res =
         await post(Uri.parse("${endpoint}/login"), body: credentials);

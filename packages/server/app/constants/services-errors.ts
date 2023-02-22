@@ -47,3 +47,4 @@ export const UNKNOWN_ERROR_JOINING_CHANNEL = 'Il y a eu une erreur en rejoignant
 
 export const NO_TOKEN = 'Vous devez être connecté pour faire cette action';
 export const TOKEN_INVALID = 'Votre session est expirée. Veuillez vous reconnecter';
+export const USER_NOT_FOUND = 'Utilisateur non trouvé';
