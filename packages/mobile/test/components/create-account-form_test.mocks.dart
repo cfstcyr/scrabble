@@ -11,7 +11,7 @@ import 'package:mobile/classes/account.dart' as _i9;
 import 'package:mobile/classes/text-field-handler.dart' as _i5;
 import 'package:mobile/controllers/account-authentification-controller.dart'
     as _i4;
-import 'package:mobile/services/account-authentification-service.dart' as _i7;
+import 'package:mobile/services/authentification-service.dart' as _i7;
 import 'package:mobile/services/theme-color-service.dart' as _i6;
 import 'package:mockito/mockito.dart' as _i1;
 

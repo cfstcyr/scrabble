@@ -4,10 +4,10 @@ import 'package:get_it/get_it.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/components/create-account-form.dart';
 import 'package:mobile/constants/create-account-constants.dart';
-import 'package:mobile/services/account-authentification-service.dart';
+import 'package:mobile/services/authentification-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
-import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
 import 'create-account-form_test.mocks.dart';
@@ -16,7 +16,8 @@ void emptyFunction() {}
 
 final GetIt getIt = GetIt.instance;
 
-@GenerateMocks([TextFieldHandler, ThemeColorService, AccountAuthenticationService])
+@GenerateMocks(
+    [TextFieldHandler, ThemeColorService, AccountAuthenticationService])
 void main() {
   group('CreateAccountForm', () {
     late CreateAccountForm createAccountForm;
@@ -25,7 +26,8 @@ void main() {
     late MockAccountAuthenticationService mockAccountAuthenticationService;
     mockThemeColorService = MockThemeColorService();
     mockAccountAuthenticationService = MockAccountAuthenticationService();
-    getIt.registerLazySingleton<AccountAuthenticationService>(() => mockAccountAuthenticationService);
+    getIt.registerLazySingleton<AccountAuthenticationService>(
+        () => mockAccountAuthenticationService);
     getIt.registerLazySingleton<ThemeColorService>(() => mockThemeColorService);
     setUp(() async {
       createAccountForm = CreateAccountForm();
@@ -63,10 +65,14 @@ void main() {
 
     test('initState', () {
       createAccountFormState.initState();
-      expect(createAccountFormState.emailHandler.focusNode.hasListeners, isTrue);
-      expect(createAccountFormState.usernameHandler.focusNode.hasListeners, isTrue);
-      expect(createAccountFormState.passwordHandler.focusNode.hasListeners, isTrue);
-      expect(createAccountFormState.passwordMatchHandler.focusNode.hasListeners, isTrue);
+      expect(
+          createAccountFormState.emailHandler.focusNode.hasListeners, isTrue);
+      expect(createAccountFormState.usernameHandler.focusNode.hasListeners,
+          isTrue);
+      expect(createAccountFormState.passwordHandler.focusNode.hasListeners,
+          isTrue);
+      expect(createAccountFormState.passwordMatchHandler.focusNode.hasListeners,
+          isTrue);
     });
 
     test('isFormValid', () {
