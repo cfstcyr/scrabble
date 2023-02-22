@@ -11,21 +11,10 @@ Stream<List<PublicUser>> get _stream => playerList$.stream;
 
 List<PublicUser> playerWaitingList = [
 // TODO : requete joueurs lobby
-  PublicUser(
-      username:
-          "michellllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll"),
-  PublicUser(username: "ppman"),
-  PublicUser(username: "ppman1"),
-  PublicUser(username: "ppman2"),
-  PublicUser(username: "ppman3"),
-  PublicUser(username: "ppman4"),
 ];
 
 List<PublicUser> playerList = [
 // TODO : requete joueurs lobby -- GET PROPRE USERNAME AVEC PAGE D'AVANT
-  PublicUser(
-      username:
-          "michellllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll"),
 ];
 
 ButtonStyle setStyleRoomButtons() {
