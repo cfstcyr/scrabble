@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/chatbox.dart';
 
 import '../components/invalid-connection-popup.dart';
+import 'create-lobby.dart';
 
 class PrototypePage extends StatelessWidget {
   @override
@@ -29,6 +30,16 @@ class PrototypePage extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => ChatPage()));
                 },
                 child: Text('Amusez vous à clavarder'),
+              ),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CreateLobbyPage()));
+                },
+                child: Text('Créer une partie'),
               ),
             ],
           ),

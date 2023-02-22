@@ -3,13 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../classes/login.dart';
 import '../constants/create-account-constants.dart';
 import '../constants/login-constants.dart';
 import '../pages/create-account-page.dart';
-import '../pages/home-page.dart';
 import '../pages/prototype-page.dart';
 
 class LoginForm extends StatefulWidget {
