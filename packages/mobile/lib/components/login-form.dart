@@ -183,7 +183,7 @@ class _LoginFormState extends State<LoginForm> {
       });
       return res.authorized;
     }
-    userSession = res.userSession as UserSession;
+    UserSession userSession = res.userSession as UserSession;
     return res.authorized;
   }
 }
