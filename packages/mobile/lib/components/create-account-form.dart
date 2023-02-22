@@ -10,7 +10,7 @@ import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../constants/create-account-constants.dart';
-import '../services/account-authentification-service.dart';
+import '../services/authentification-service.dart';
 
 class CreateAccountForm extends StatefulWidget {
   @override
@@ -23,8 +23,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  AccountAuthenticationService accountService =
-      getIt.get<AccountAuthenticationService>();
+  AuthentificationService accountService = getIt.get<AuthentificationService>();
 
   final emailHandler = TextFieldHandler();
   final usernameHandler = TextFieldHandler();
@@ -289,9 +288,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
         email: emailHandler.controller.text);
     if (await accountService.createAccount(newAccount)) {
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HomePage(name: newAccount.username)));
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
       validateUsername();
       validateEmail();
