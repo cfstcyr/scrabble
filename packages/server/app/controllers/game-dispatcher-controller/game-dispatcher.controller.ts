@@ -180,7 +180,7 @@ export class GameDispatcherController extends BaseController {
         if (this.gameDispatcherService.isGameInWaitingRooms(gameId)) {
             const players = this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
             const playersData: PlayerData[] = players.map((player: Player) => player.convertToPlayerData());
-            console.log(playersData);
+            // TODO: Check what is returned
             this.socketService.emitToRoom(gameId, 'joinerLeaveGame', playersData);
             this.handleLobbiesUpdate();
             return;
@@ -253,15 +253,16 @@ export class GameDispatcherController extends BaseController {
 
         const [acceptedPlayer, players] = this.gameDispatcherService.handleJoinRequest(gameId, playerId, playerName, ACCEPT);
         const playersData: PlayerData[] = players.map((player: Player) => player.convertToPlayerData());
-        console.log(playersData);
 
         this.socketService.addToRoom(acceptedPlayer.id, gameId);
+        // TODO: Check what to return
         this.socketService.emitToRoom(gameId, 'player_joined', playersData);
     }
 
     private handleRejectRequest(gameId: string, playerId: string, playerName: string): void {
         if (playerName === undefined) throw new HttpException(PLAYER_NAME_REQUIRED, StatusCodes.BAD_REQUEST);
         const [rejectedPlayer, players] = this.gameDispatcherService.handleJoinRequest(gameId, playerId, playerName, REJECT);
+        // TODO: Check what to return
         this.socketService.emitToSocket(rejectedPlayer.id, 'rejected', { name: players[0].name });
     }
 

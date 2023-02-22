@@ -6,7 +6,7 @@ import { IconComponent } from '@app/components/icon/icon.component';
 import { JoinerListContainerComponent } from './joiner-list-container.component';
 
 export default {
-    title: 'Signup/Container',
+    title: 'JoinerList/Container',
     component: JoinerListContainerComponent,
     decorators: [
         moduleMetadata({

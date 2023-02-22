@@ -74,7 +74,6 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
     }
 
     private setOpponents(players: PlayerData[]) {
-        console.log(players);
         this.opponents = [];
         for (const player of players) {
             if (this.currentName !== player.name && player.name) {

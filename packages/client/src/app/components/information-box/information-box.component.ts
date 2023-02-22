@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Player } from '@app/classes/player';
 import { Timer } from '@app/classes/round/timer';
-import { IconName } from '@app/components/icon/icon.component.type';
-import { LOCAL_PLAYER_ICON } from '@app/constants/components-constants';
+import { TileReserveData } from '@app/classes/tile/tile.types';
+// import { IconName } from '@app/components/icon/icon.component.type';
+// import { LOCAL_PLAYER_ICON } from '@app/constants/components-constants';
 import {
     MAX_TILES_PER_PLAYER,
     PLAYER_1_INDEX,
@@ -28,8 +29,8 @@ export class InformationBoxComponent implements OnInit, OnDestroy {
     isPlayer2Active: boolean;
     isPlayer3Active: boolean;
     isPlayer4Active: boolean;
-    isPlayer1: boolean;
-    localPlayerIcon: IconName;
+    playerNumber: number;
+    // localPlayerIcon: IconName;
     timer: Timer;
 
     private timerSource: Observable<number>;
@@ -53,7 +54,7 @@ export class InformationBoxComponent implements OnInit, OnDestroy {
             this.updateActivePlayerBorder(this.roundManager.getActivePlayer());
         });
         this.gameViewEventManagerService.subscribeToGameViewEvent('gameInitialized', this.componentDestroyed$, () => {
-            this.localPlayerIcon = this.getLocalPlayerIcon();
+            // this.localPlayerIcon = this.getLocalPlayerIcon();
         });
 
         if (!this.gameService.isGameSetUp) return;
@@ -62,6 +63,10 @@ export class InformationBoxComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.onDestroy();
+    }
+
+    isActive(): boolean {
+        return this.gameService.isLocalPlayerPlaying();
     }
 
     getPlayer1(): Player {
@@ -88,6 +93,13 @@ export class InformationBoxComponent implements OnInit, OnDestroy {
         return this.timerSubscription !== undefined && !this.timerSubscription.closed;
     }
 
+    getLettersLeft(): TileReserveData[] {
+        return this.gameService.tileReserve;
+    }
+
+    getNumberOfTilesLeft(): number {
+        return this.gameService.getTotalNumberOfTilesLeft();
+    }
     private onDestroy(): void {
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
@@ -101,7 +113,7 @@ export class InformationBoxComponent implements OnInit, OnDestroy {
             });
         }
         this.roundManager.subscribeToEndRoundEvent(this.componentDestroyed$, () => this.endRound());
-        this.isPlayer1 = this.checkIfIsPlayer1();
+        // this.playerNumber = this.getPlayerNumber();
     }
 
     private startTimer(timer: Timer): void {
@@ -138,12 +150,14 @@ export class InformationBoxComponent implements OnInit, OnDestroy {
     private createTimer(length: number): Observable<number> {
         return timerCreationFunction(0, length);
     }
+    // private getPlayerNumber(): number {
+    //     if (this.gameService.getLocalPlayer() === this.gameService.getPlayerByNumber(PLAYER_1_INDEX)) return PLAYER_1_INDEX;
+    //     else if (this.gameService.getLocalPlayer() === this.gameService.getPlayerByNumber(PLAYER_2_INDEX)) return PLAYER_2_INDEX;
+    //     else if (this.gameService.getLocalPlayer() === this.gameService.getPlayerByNumber(PLAYER_3_INDEX)) return PLAYER_3_INDEX;
+    //     else return PLAYER_4_INDEX;
+    // }
 
-    private checkIfIsPlayer1(): boolean {
-        return this.gameService.getLocalPlayer() === this.gameService.getPlayerByNumber(PLAYER_1_INDEX);
-    }
-
-    private getLocalPlayerIcon(): IconName {
-        return LOCAL_PLAYER_ICON[Math.floor(Math.random() * LOCAL_PLAYER_ICON.length)];
-    }
+    // private getLocalPlayerIcon(): IconName {
+    //     return LOCAL_PLAYER_ICON[Math.floor(Math.random() * LOCAL_PLAYER_ICON.length)];
+    // }
 }

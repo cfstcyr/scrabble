@@ -1,21 +1,25 @@
 <div id="outer-container">
-    <div class="player-container" id="player-1" [ngClass]="{ active: isPlayer1Active, local: isPlayer1 }">
+    <section id="objectives-container">
+        <mat-accordion>
+            <p>Tuiles restantes : {{ getNumberOfTilesLeft() }}</p>
+            <div class="tile-map-content">
+                <p *ngFor="let letter of getLettersLeft()">
+                    <app-tile [tile]="{ letter: letter.letter, value: 0 }" [hideValue]="true"></app-tile>
+                    <span class="separator">:</span>
+                    <span class="amount">{{ letter.amount }}</span>
+                </p>
+            </div>
+        </mat-accordion>
+    </section>
+
+    <div class="player-container" id="player-1" [ngClass]="{ active: isPlayer1Active, local: playerNumber === 1 }">
         <mat-card>
             <p class="name-container">
-                <app-icon *ngIf="isPlayer1" [icon]="localPlayerIcon" styling="solid"></app-icon>
+                <app-icon *ngIf="playerNumber === 1" [icon]="localPlayerIcon" styling="solid"></app-icon>
                 <span class="name">{{ getPlayer1().name }}</span>
                 <span class="score">{{ getPlayer1().score }} points</span>
             </p>
-    
-            <p *ngIf="getPlayer1().getTiles().length < maxTilesPerPlayer" class="tiles-left">
-                Tuiles restantes : {{ getPlayer1().getTiles().length }}
-            </p>
         </mat-card>
-
-        <p class="local-player-active-indicator">
-            <span *ngIf="isPlayer1">C'est votre tour</span>
-            <span *ngIf="!isPlayer1">C'est au tour de {{ getPlayer1().name }}</span>
-        </p>
     </div>
 
     <mat-card id="time-container" [ngClass]="{ running: isTimerRunning() }">
@@ -27,60 +31,33 @@
         </p>
     </mat-card>
 
-    <div class="player-container" id="player-2"  [ngClass]="{ active: isPlayer2Active, local: !isPlayer1 }">
+    <div class="player-container" id="player-2"  [ngClass]="{ active: isPlayer2Active, local: playerNumber === 2 }">
         <mat-card>
             <p class="name-container">
                 <span class="score">{{ getPlayer2().score }} points</span>
                 <span class="name">{{ getPlayer2().name }}</span>
-                <app-icon *ngIf="!isPlayer1" [icon]="localPlayerIcon" styling="solid"></app-icon>
-            </p>
-    
-            <p *ngIf="getPlayer2().getTiles().length < maxTilesPerPlayer" class="tiles-left">
-                Tuiles restantes : {{ getPlayer2().getTiles().length }}
+                <app-icon *ngIf="playerNumber === 2" [icon]="localPlayerIcon" styling="solid"></app-icon>
             </p>
         </mat-card>
-
-        <p class="local-player-active-indicator">
-            <span *ngIf="!isPlayer1">C'est votre tour</span>
-            <span *ngIf="isPlayer1">C'est au tour de {{ getPlayer2().name }}</span>
-        </p>
     </div>
 
-    <div class="player-container" id="player-3"  [ngClass]="{ active: isPlayer2Active, local: !isPlayer1 }">
+    <div class="player-container" id="player-3"  [ngClass]="{ active: isPlayer3Active, local: playerNumber === 3 }">
         <mat-card>
             <p class="name-container">
                 <span class="score">{{ getPlayer3().score }} points</span>
                 <span class="name">{{ getPlayer3().name }}</span>
-                <app-icon *ngIf="!isPlayer1" [icon]="localPlayerIcon" styling="solid"></app-icon>
-            </p>
-    
-            <p *ngIf="getPlayer3().getTiles().length < maxTilesPerPlayer" class="tiles-left">
-                Tuiles restantes : {{ getPlayer3().getTiles().length }}
+                <app-icon *ngIf="playerNumber === 3" [icon]="localPlayerIcon" styling="solid"></app-icon>
             </p>
         </mat-card>
-
-        <p class="local-player-active-indicator">
-            <span *ngIf="!isPlayer1">C'est votre tour</span>
-            <span *ngIf="isPlayer1">C'est au tour de {{ getPlayer3().name }}</span>
-        </p>
     </div>
 
-    <div class="player-container" id="player-4"  [ngClass]="{ active: isPlayer2Active, local: !isPlayer1 }">
+    <div class="player-container" id="player-4"  [ngClass]="{ active: isPlayer4Active, local: playerNumber === 4 }">
         <mat-card>
             <p class="name-container">
                 <span class="score">{{ getPlayer4().score }} points</span>
                 <span class="name">{{ getPlayer4().name }}</span>
-                <app-icon *ngIf="!isPlayer1" [icon]="localPlayerIcon" styling="solid"></app-icon>
-            </p>
-    
-            <p *ngIf="getPlayer4().getTiles().length < maxTilesPerPlayer" class="tiles-left">
-                Tuiles restantes : {{ getPlayer4().getTiles().length }}
+                <app-icon *ngIf="playerNumber === 4" [icon]="localPlayerIcon" styling="solid"></app-icon>
             </p>
         </mat-card>
-
-        <p class="local-player-active-indicator">
-            <span *ngIf="!isPlayer1">C'est votre tour</span>
-            <span *ngIf="isPlayer1">C'est au tour de {{ getPlayer4().name }}</span>
-        </p>
     </div>
 </div>

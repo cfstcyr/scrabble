@@ -13,6 +13,7 @@ import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { Square } from '@app/classes/square';
 import { TileReserve } from '@app/classes/tile';
 import { TEST_DICTIONARY } from '@app/constants/dictionary-tests-const';
+import { ACCEPT } from '@app/constants/services-constants/game-dispatcher-const';
 import { CANNOT_HAVE_SAME_NAME, INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
 import { VIRTUAL_PLAYER_ID_PREFIX } from '@app/constants/virtual-player-constants';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
@@ -50,7 +51,6 @@ const DEFAULT_SOLO_GAME_CONFIG_DATA: GameConfigData = {
     gameType: GameType.Classic,
     gameMode: GameMode.Solo,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
-    virtualPlayerName: DEFAULT_PLAYER_NAME1,
     maxRoundTime: DEFAULT_ROUND_TIME,
     dictionary: TEST_DICTIONARY,
 };
@@ -92,6 +92,7 @@ const DEFAULT_MULTIPLAYER_CONFIG_DATA: GameConfigData = {
     gameMode: GameMode.Multiplayer,
     maxRoundTime: DEFAULT_ROUND_TIME,
     dictionary: TEST_DICTIONARY,
+    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
 };
 
 const DEFAULT_MULTIPLAYER_CONFIG: GameConfig = {
@@ -244,113 +245,12 @@ describe('GameDispatcherService', () => {
             expect(DEFAULT_WAITING_ROOM.joinedPlayer2?.name).to.equal(DEFAULT_OPPONENT_NAME);
         });
 
-        // it('should not join if a player is already waiting', () => {
-        //     gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_NAME);
-
-        //     expect(() => {
-        //         gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID_2, DEFAULT_OPPONENT_NAME_2);
-        //     }).to.throw(PLAYER_ALREADY_TRYING_TO_JOIN);
-        // });
-
         it('should not join if initiating players have the same name', () => {
             expect(() => {
                 gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerName);
             }).to.throw(CANNOT_HAVE_SAME_NAME);
         });
     });
-
-    describe('acceptJoinRequest', () => {
-        let id: string;
-        let gameStub: SinonStubbedInstance<Game>;
-        let tileReserveStub: SinonStubbedInstance<TileReserve>;
-
-        beforeEach(() => {
-            gameDispatcherService['waitingRooms'] = [DEFAULT_WAITING_ROOM];
-            id = DEFAULT_WAITING_ROOM.getId();
-            DEFAULT_WAITING_ROOM.joinedPlayer2 = undefined;
-            spy.on(gameDispatcherService, 'getMultiplayerGameFromId', () => {
-                return DEFAULT_WAITING_ROOM;
-            });
-            tileReserveStub = createStubInstance(TileReserve);
-            tileReserveStub.init.returns(Promise.resolve());
-            gameStub = createStubInstance(Game);
-            gameStub['tileReserve'] = tileReserveStub as unknown as TileReserve;
-            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_NAME);
-        });
-
-        afterEach(() => {
-            chai.spy.restore();
-        });
-
-        it('should remove waitingRoom', async () => {
-            expect(gameDispatcherService['waitingRooms'].filter((g) => g.getId() === id)).to.not.be.empty;
-
-            gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
-
-            expect(gameDispatcherService['waitingRooms'].filter((g) => g.getId() === id)).to.be.empty;
-        });
-
-        // it('should throw error when playerId is invalid', () => {
-        //     const invalidId = 'invalidId';
-
-        //     expect(() => gameDispatcherService.acceptJoinRequest(id, invalidId, DEFAULT_OPPONENT_NAME)).to.be.throw(INVALID_PLAYER_ID_FOR_GAME);
-        // });
-
-        // it(' should throw error when playerId is invalid', () => {
-        //     gameDispatcherService.rejectJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
-
-        //     expect(() => gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME)).to.be.throw(
-        //         NO_OPPONENT_IN_WAITING_GAME,
-        //     );
-        // });
-
-        // it(' should throw error when playerId is invalid', () => {
-        //     expect(() => gameDispatcherService.acceptJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME_2)).to.be.throw(
-        //         OPPONENT_NAME_DOES_NOT_MATCH,
-        //     );
-        // });
-    });
-
-    // TODO:Refactor for 4 player
-    // describe('rejectJoinRequest', () => {
-    //     let id: string;
-    //     let waitingRoom: WaitingRoom;
-
-    //     beforeEach(() => {
-    //         gameDispatcherService['waitingRooms'] = [DEFAULT_WAITING_ROOM];
-    //         id = DEFAULT_WAITING_ROOM.getId();
-    //         DEFAULT_WAITING_ROOM.joinedPlayer2 = undefined;
-    //         spy.on(gameDispatcherService, 'getMultiplayerGameFromId', () => {
-    //             return DEFAULT_WAITING_ROOM;
-    //         });
-    //         waitingRoom = gameDispatcherService['waitingRooms'].filter((g) => g.getId() === id)[0];
-    //     });
-
-    //     it('should remove joinedPlayer from waitingRoom', () => {
-    //         waitingRoom.joinedPlayer2 = DEFAULT_OPPONENT;
-    //         gameDispatcherService.rejectJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
-    //         expect(waitingRoom.joinedPlayer2).to.be.undefined;
-    //     });
-
-    //     it('should throw if playerId is invalid', () => {
-    //         const invalidId = 'invalidId';
-    //         expect(() => gameDispatcherService.rejectJoinRequest(id, invalidId, DEFAULT_OPPONENT_NAME)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
-    //     });
-
-    //     it('should throw if no player is waiting', () => {
-    //         waitingRoom.joinedPlayer2 = undefined;
-    //         expect(() => {
-    //             return gameDispatcherService.rejectJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
-    //         }).to.throw(NO_OPPONENT_IN_WAITING_GAME);
-    //     });
-
-    //     it('should throw error if opponent name is incorrect', () => {
-    //         waitingRoom.joinedPlayer2 = DEFAULT_OPPONENT;
-    //         expect(() => {
-    //             return gameDispatcherService.rejectJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME_2);
-    //         }).to.throw(OPPONENT_NAME_DOES_NOT_MATCH);
-    //     });
-    // });
 
     describe('leaveLobbyRequest', () => {
         let id: string;
@@ -371,17 +271,6 @@ describe('GameDispatcherService', () => {
             gameDispatcherService.leaveLobbyRequest(id, DEFAULT_OPPONENT_ID);
             expect(waitingRoom.joinedPlayer2).to.be.undefined;
         });
-
-        // it('should throw if playerId is invalid', () => {
-        //     const invalidId = 'invalidId';
-        //     expect(() => gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
-        // });
-
-        // it('should throw if player is undefined', () => {
-        //     waitingRoom.joinedPlayer2 = undefined;
-        //     const invalidId = 'invalidId';
-        //     expect(() => gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.throw(NO_OPPONENT_IN_WAITING_GAME);
-        // });
 
         it('should return the [hostPlayerId, leaverName]', () => {
             expect(gameDispatcherService.leaveLobbyRequest(id, DEFAULT_OPPONENT_ID)).to.deep.equal([
