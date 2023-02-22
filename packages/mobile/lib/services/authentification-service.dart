@@ -5,12 +5,12 @@ import 'package:rxdart/rxdart.dart';
 
 import '../locator.dart';
 
-class AuthenticationService {
+class AuthentificationService {
   BehaviorSubject<UserSession?> userSession = BehaviorSubject<UserSession?>();
-  AuthenticationService._privateConstructor();
-  static final AuthenticationService _instance =
-      AuthenticationService._privateConstructor();
-  factory AuthenticationService() {
+  AuthentificationService._privateConstructor();
+  static final AuthentificationService _instance =
+      AuthentificationService._privateConstructor();
+  factory AuthentificationService() {
     return _instance;
   }
 
@@ -42,10 +42,6 @@ class AuthenticationService {
     // } else {
     //   return false;
     // }
-  }
-
-  Future<void> initializeSession(UserSession session) async {
-    userSession.add(session);
   }
 
   Future<void> signout() async {}
