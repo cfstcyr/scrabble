@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
+import 'package:mobile/constants/assets.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
 class Tile extends StatelessWidget {
@@ -30,7 +31,7 @@ class Tile extends StatelessWidget {
           child: ColorFiltered(
             colorFilter: ColorFilter.mode(tint, BlendMode.color),
             child: Image.asset(
-              "images/tile.png",
+              ASSET_TILE,
               height: size,
               width: size,
             ),
