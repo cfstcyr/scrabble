@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/constants/game.constants.dart';
 
 enum MultiplierType {
   letter,
@@ -10,17 +11,17 @@ class Multiplier {
     required this.value,
     required this.type,
   });
-  
+
   final int value;
-  
+
   final MultiplierType type;
 
   String getType() {
     switch (type) {
       case MultiplierType.letter:
-        return 'Lettre';
+        return LETTER;
       case MultiplierType.word:
-        return 'Mot';
+        return WORD;
     }
   }
 

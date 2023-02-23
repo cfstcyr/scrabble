@@ -1,4 +1,5 @@
 import 'package:mobile/classes/game/player.dart';
+import 'package:mobile/constants/game.constants.dart';
 
 class PlayersContainer {
   Player player1;
@@ -31,7 +32,7 @@ class PlayersContainer {
         return player4;
     }
 
-    throw Exception("Invalid player index");
+    throw Exception(INVALID_PLAYER_INDEX);
   }
 
   List<Player> get players => [player1, player2, player3, player4];
