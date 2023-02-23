@@ -15,7 +15,6 @@
     <div class="player-container" id="player-1" [ngClass]="{ active: isPlayer1Active, local: playerNumber === 1 }">
         <mat-card>
             <p class="name-container">
-                <app-icon *ngIf="playerNumber === 1" [icon]="localPlayerIcon" styling="solid"></app-icon>
                 <span class="name">{{ getPlayer1().name }}</span>
                 <span class="score">{{ getPlayer1().score }} points</span>
             </p>
@@ -36,7 +35,6 @@
             <p class="name-container">
                 <span class="score">{{ getPlayer2().score }} points</span>
                 <span class="name">{{ getPlayer2().name }}</span>
-                <app-icon *ngIf="playerNumber === 2" [icon]="localPlayerIcon" styling="solid"></app-icon>
             </p>
         </mat-card>
     </div>
@@ -46,7 +44,6 @@
             <p class="name-container">
                 <span class="score">{{ getPlayer3().score }} points</span>
                 <span class="name">{{ getPlayer3().name }}</span>
-                <app-icon *ngIf="playerNumber === 3" [icon]="localPlayerIcon" styling="solid"></app-icon>
             </p>
         </mat-card>
     </div>
@@ -56,7 +53,6 @@
             <p class="name-container">
                 <span class="score">{{ getPlayer4().score }} points</span>
                 <span class="name">{{ getPlayer4().name }}</span>
-                <app-icon *ngIf="playerNumber === 4" [icon]="localPlayerIcon" styling="solid"></app-icon>
             </p>
         </mat-card>
     </div>
