@@ -5,7 +5,7 @@ import 'package:mobile/components/tile/tile.dart';
 class GameSquare extends StatelessWidget {
   final Square square;
   Color color = Color(0xFFEEEEEE);
-  
+
   GameSquare({
     required this.square,
   }) {
@@ -32,12 +32,10 @@ class GameSquare extends StatelessWidget {
     List<Widget> children = [];
 
     if (square.isCenter == true) {
-      children.add(
-        Container(
-          transform: Matrix4.translationValues(0, -2, 0),
-          child: Text('★', style: TextStyle(fontSize: 24)),
-        )
-      );
+      children.add(Container(
+        transform: Matrix4.translationValues(0, -2, 0),
+        child: Text('★', style: TextStyle(fontSize: 24)),
+      ));
     } else if (square.multiplier != null) {
       children.add(
         Column(
@@ -53,7 +51,6 @@ class GameSquare extends StatelessWidget {
               'x${square.multiplier?.value ?? ''}',
               style: TextStyle(
                 height: 1,
-                // backgroundColor: Colors.red
               ),
             )
           ],
