@@ -41,6 +41,7 @@ export class ChatService {
         socket.on('channel:join', this.handleJoinChannel.bind(this));
         socket.on('channel:quit', this.handleChannelQuit.bind(this));
         socket.on('channel:newMessage', this.handleNewMessage.bind(this));
+        socket.on('channel:history', this.handleChannelHistory.bind(this));
         socket.emit('channel:init');
     }
 
@@ -80,8 +81,15 @@ export class ChatService {
     }
 
     handleNewMessage(channelMessage: ChannelMessage): void {
-        const message = channelMessage.message;
-        this.channels.value.get(channelMessage.idChannel)?.messages.push({ ...message, date: new Date(message.date) });
+        this.addMessageToChannel(channelMessage);
         this.channels.next(this.channels.value);
+    }
+
+    handleChannelHistory(channelMessages: ChannelMessage[]): void {
+        channelMessages.forEach((channelMessage: ChannelMessage) => this.addMessageToChannel(channelMessage));
+    }
+
+    private addMessageToChannel(channelMessage: ChannelMessage): void {
+        this.channels.value.get(channelMessage.idChannel)?.messages.push({ ...channelMessage.message, date: new Date(channelMessage.message.date) });
     }
 }

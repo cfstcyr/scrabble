@@ -210,4 +210,13 @@ describe('ChatService', () => {
             expect(service.channels.value.get(channel.idChannel)?.messages.length).toEqual(1);
         });
     });
+
+    describe('handleChannelHistory', () => {
+        it('should add messages to channels', () => {
+            service.channels.next(new Map([[CHANNEL_1.idChannel, CHANNEL_1]]));
+            const channelMessages = [{ idChannel: CHANNEL_1.idChannel, message: {} as ChatMessage } as ChannelMessage, { idChannel: CHANNEL_1.idChannel, message: {} as ChatMessage } as ChannelMessage];
+            service.handleChannelHistory(channelMessages);
+            expect(service.channels.value.get(CHANNEL_1.idChannel)?.messages.length).toEqual(2);
+        })
+    })
 });

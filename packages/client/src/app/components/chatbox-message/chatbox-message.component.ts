@@ -7,6 +7,7 @@ import { PublicUser } from '@common/models/user';
 import { UserService } from '@app/services/user-service/user.service';
 import { ChatMessage } from '@common/models/chat/chat-message';
 import { MINUTE } from '@app/constants/time-constant';
+import { CHAT_TIME_FORMAT } from '@app/constants/chat-constants';
 
 export type DisplayMessage = ChatMessage & { onlyEmoji: boolean };
 
@@ -29,6 +30,7 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
     isInputEmpty: boolean = true;
     messageForm: FormGroup;
     onlyHasEmoji = onlyHasEmoji;
+    timeFomat: string = CHAT_TIME_FORMAT;
 
     constructor(private readonly formBuilder: FormBuilder, private readonly userService: UserService) {
         super();

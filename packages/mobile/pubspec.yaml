@@ -48,6 +48,8 @@ dependencies:
     uuid: ^3.0.7
     image_picker: ^0.8.6+1
     socket_io_client: ^2.0.1
+    animated_snack_bar: ^0.2.0
+    rxdart: ^0.27.2
 
 dev_dependencies:
     flutter_test:
@@ -76,7 +78,6 @@ flutter:
     assets:
         - .env
         - images/
-        # - images/a_dot_ham.jpeg
 
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/assets-and-images/#resolution-aware
