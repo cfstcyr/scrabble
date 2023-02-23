@@ -33,37 +33,37 @@ export class GameDispatcherController implements OnDestroy {
     }
 
     handleGameCreation(gameConfig: GameConfigData): Observable<{ lobbyData: LobbyData }> {
-        const endpoint = `${environment.serverUrl}/games/${this.socketService.getId()}`;
+        const endpoint = `${environment.serverUrl}/games`;
         return this.http.post<{ lobbyData: LobbyData }>(endpoint, gameConfig);
     }
 
     handleConfirmationGameCreation(opponentName: string, gameId: string): Observable<void> {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/players/${this.socketService.getId()}/accept`;
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/accept`;
         return this.http.post<void>(endpoint, { opponentName });
     }
 
     handleStartGame(gameId: string): Observable<void> {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/players/${this.socketService.getId()}/start`;
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/start`;
         return this.http.post<void>(endpoint, {});
     }
 
     handleRejectionGameCreation(opponentName: string, gameId: string): void {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/players/${this.socketService.getId()}/reject`;
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/reject`;
         this.http.post(endpoint, { opponentName }).subscribe();
     }
 
     handleCancelGame(gameId: string): void {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/players/${this.socketService.getId()}/cancel`;
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/cancel`;
         this.http.delete(endpoint).subscribe();
     }
 
     handleLobbiesListRequest(): void {
-        const endpoint = `${environment.serverUrl}/games/${this.socketService.getId()}`;
+        const endpoint = `${environment.serverUrl}/games`;
         this.http.get(endpoint).subscribe();
     }
 
     handleLobbyJoinRequest(gameId: string, playerName: string): void {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/players/${this.socketService.getId()}/join`;
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/join`;
         this.http.post<GameConfig>(endpoint, { playerName }, { observe: 'response' }).subscribe(
             () => {
                 this.lobbyRequestValidEvent.next();

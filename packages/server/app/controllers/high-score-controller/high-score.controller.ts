@@ -5,17 +5,23 @@ import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
+import { UserId } from '@app/classes/user/connected-user-types';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 
 @Service()
 export class HighScoresController extends BaseController {
-    constructor(private highScoresService: HighScoresService, private socketService: SocketService) {
+    constructor(
+        private highScoresService: HighScoresService,
+        private socketService: SocketService,
+        private authentificationService: AuthentificationService,
+    ) {
         super('/api/highScores');
     }
 
     protected configure(router: Router): void {
-        router.get('/:playerId', async (req: HighScoresRequest, res: Response, next) => {
-            const { playerId } = req.params;
-
+        router.get('/', async (req: HighScoresRequest, res: Response, next) => {
+            const userId: UserId = req.body.idUser;
+            const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
             try {
                 await this.handleHighScoresRequest(playerId);
                 res.status(StatusCodes.NO_CONTENT).send();

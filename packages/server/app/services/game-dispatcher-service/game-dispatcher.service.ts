@@ -70,7 +70,7 @@ export class GameDispatcherService {
     }
 
     // TODO : Refactor to use player id instead of name
-    handleJoinRequest(waitingRoomId: string, playerId: string, requestingPlayerName: string, isAccepted: boolean): [Player, Player[]] {
+    async handleJoinRequest(waitingRoomId: string, playerId: string, requestingPlayerName: string, isAccepted: boolean): Promise<[Player, Player[]]> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
@@ -80,14 +80,17 @@ export class GameDispatcherService {
         if (requestingPlayers.length === 0) throw new HttpException(NO_USER_FOUND_WITH_NAME, StatusCodes.NOT_FOUND);
 
         const requestingPlayer = requestingPlayers[0];
-        if (isAccepted) waitingRoom.fillNextEmptySpot(requestingPlayer);
+        if (isAccepted) {
+            await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), playerId);
+            waitingRoom.fillNextEmptySpot(requestingPlayer);
+        }
         const index = waitingRoom.requestingPlayers.indexOf(requestingPlayer);
         waitingRoom.requestingPlayers.splice(index, 1);
         waitingRoom.getPlayers();
         return [requestingPlayer, waitingRoom.getPlayers()];
     }
 
-    async acceptJoinRequest(waitingRoomId: string, playerId: string): Promise<ReadyGameConfigWithChannelId> {
+    startRequest(waitingRoomId: string, playerId: string): ReadyGameConfigWithChannelId {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
@@ -106,8 +109,6 @@ export class GameDispatcherService {
             player3: waitingRoom.joinedPlayer3 ? waitingRoom.joinedPlayer3 : new ExpertVirtualPlayer(waitingRoomId, 'VirtualPlayer3'),
             player4: waitingRoom.joinedPlayer4 ? waitingRoom.joinedPlayer4 : new ExpertVirtualPlayer(waitingRoomId, 'VirtualPlayer4'),
         };
-
-        await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), playerId);
 
         return { ...config, idChannel: waitingRoom.getGroupChannelId() };
     }

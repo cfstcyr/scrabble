@@ -211,7 +211,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
 
     private reconnectReinitialize(startGameData: StartGameData): void {
         if (this.playerContainer) {
-            this.playerContainer.updatePlayersData(startGameData.player1, startGameData.player2);
+            this.playerContainer.updatePlayersData(startGameData.player1, startGameData.player2, startGameData.player3, startGameData.player4);
         }
         this.gameViewEventManagerService.emitGameViewEvent('reRender');
         this.gameViewEventManagerService.emitGameViewEvent('tileRackUpdate', this.getLocalPlayerId());

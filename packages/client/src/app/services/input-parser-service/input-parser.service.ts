@@ -42,9 +42,9 @@ export default class InputParserService {
         const gameId = this.gameService.getGameId();
 
         if (this.isAction(input)) {
-            this.handleCommand(input, gameId, playerId);
+            this.handleCommand(input, gameId);
         } else {
-            this.controller.sendMessage(gameId, playerId, {
+            this.controller.sendMessage(gameId, {
                 content: input,
                 senderId: playerId,
                 gameId,
@@ -52,9 +52,9 @@ export default class InputParserService {
         }
     }
 
-    private handleCommand(input: string, gameId: string, playerId: string): void {
+    private handleCommand(input: string, gameId: string): void {
         try {
-            this.actionService.sendAction(gameId, playerId, this.createActionData(input));
+            this.actionService.sendAction(gameId, this.createActionData(input));
         } catch (exception) {
             if (!(exception instanceof CommandException)) return;
             const errorMessageContent =
@@ -62,7 +62,7 @@ export default class InputParserService {
                     ? exception.message
                     : `La commande **${input}** est invalide :<br />${exception.message}`;
 
-            this.controller.sendError(gameId, playerId, {
+            this.controller.sendError(gameId, {
                 content: errorMessageContent,
                 senderId: SYSTEM_ERROR_ID,
                 gameId,
