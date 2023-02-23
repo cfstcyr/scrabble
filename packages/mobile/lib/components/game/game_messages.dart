@@ -15,7 +15,6 @@ class GameMessages extends StatelessWidget {
     return Card(
       child: SingleChildScrollView(
         reverse: true,
-        // dragStartBehavior: DragStartBehavior.down,
         padding: EdgeInsets.symmetric(
           vertical: SPACE_2,
           horizontal: SPACE_3,
@@ -55,7 +54,6 @@ class GameMessages extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(bottom: SPACE_1),
       child: Table(
-        // border: TableBorder.all(color: Colors.black12),
         columnWidths: const <int, TableColumnWidth>{
           0: FlexColumnWidth(0.7),
           1: FlexColumnWidth(1.6),
