@@ -22,19 +22,8 @@ class GroupJoinService {
     return _instance;
   }
 
-  Stream<List<Group>> getGroups() {
-    print(groups$.last);
-    return groups$.map((List<Group> groups) {
-      for (Group group in groups) {
-        group.canJoin = group.users.length > MAX_GROUP_SIZE;
-      }
-
-      return groups;
-    });
-  }
-
-  void handleGetGroups() async {
-    await groupJoinController.handleGetGroups();
+  void getGroups() async {
+    await groupJoinController.handleGetGroups().catchError((_) => groups$.add([]));
   }
 
   Future<bool> handleJoinGroup(String groupId) async {

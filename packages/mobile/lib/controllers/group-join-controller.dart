@@ -14,6 +14,8 @@ import '../services/socket.service.dart';
 class GroupJoinController {
   final String endpoint = GAME_ENDPOINT;
 
+  String? joinedGroupedId;
+
   SocketService socketService = getIt.get<SocketService>();
 
   GroupJoinController._privateConstructor() {
@@ -28,18 +30,36 @@ class GroupJoinController {
   }
 
   Future<void> handleGetGroups() async {
-    await get(Uri.parse("$endpoint/${socketService.socket.id}"));
+    await get(Uri.parse("$endpoint/${SocketService.socket.id}"));
   }
 
   Future<Response> handleJoinGroup(String groupId) async {
     // TODO Use UserService to get user's username
     String username = 'Player';
-    return await post(Uri.parse("$endpoint/games/$groupId/players/${socketService.socket.id}/join"), body: { 'playerName': username });
+    joinedGroupedId = groupId;
+    return post(Uri.parse(
+        "$endpoint/games/$groupId/players/${SocketService.socket.id}/join"),
+        body: { 'playerName': username});
+  }
+
+  Future<Response> handleLeaveGroup() async {
+    Future<Response> response = delete(
+        Uri.parse("$endpoint/games/$joinedGroupedId/players/${SocketService
+            .socket.id}/leave"));
+    joinedGroupedId = null;
+    return response;
   }
 
   void _configureSocket() {
-    socketService.on(GROUP_UPDATE, (groups) => groups$.add(groups));
-    socketService.socket.on(REJECTED_FROM_GROUP, (hostName) => rejectedJoinRequest$.add(hostName));
-    socketService.on(CANCELED_GROUP, (hostName) => canceledGroup$.add(hostName));
+    SocketService.socket.on(GROUP_UPDATE, (groups) async {
+      print(groups);
+      List<Group> receivedGroups = List<Group>.from(groups.map((dynamic group) => Group.fromJson(group)).toList());
+      groups$.add([...groups$.value, ...receivedGroups]);
+      print(await groups$.length);
+    });
+    SocketService.socket.on(
+        REJECTED_FROM_GROUP, (hostName) => rejectedJoinRequest$.add(hostName));
+    socketService.on(
+        CANCELED_GROUP, (hostName) => canceledGroup$.add(hostName));
   }
 }

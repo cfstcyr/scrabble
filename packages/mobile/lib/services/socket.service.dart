@@ -1,28 +1,36 @@
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/environments/environment.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart';
 
 class SocketService {
   SocketService._privateConstructor();
-  static final String webSocketUrl = "${Environment().config.webSocketUrl}";
+
+  static final String webSocketUrl = Environment().config.webSocketUrl;
   static final SocketService _instance = SocketService._privateConstructor();
-  final IO.Socket socket = IO.io(webSocketUrl, <String, dynamic>{
-    'transports': ['websocket'],
-    'autoConnect': false,
-  });
+  static final IO.Socket socket = io(
+      webSocketUrl,
+      OptionBuilder()
+          .setTransports(['websocket']) // for Flutter or Dart VM
+          .disableAutoConnect() // disable auto-connection
+          .build());
+
   factory SocketService() {
     return _instance;
   }
 
   Future<void> initSocket() async {
-    print('Connecting to chat service');
-
     socket.connect();
+
     socket.onConnect((_) {
       print('connected to websocket');
     });
-    socket.emit("connection");
-    print(socket);
+    socket.onConnectError((data) {
+      print(data);
+    });
+    socket.onConnectTimeout((data) {
+      print(data);
+    });
   }
 
   Future<void> emitEvent(String eventName, dynamic data) async {

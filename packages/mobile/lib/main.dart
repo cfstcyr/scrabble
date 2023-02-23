@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/login-page.dart';
+import 'package:mobile/services/socket.service.dart';
 import 'package:provider/provider.dart';
 
 import 'environments/environment.dart';
@@ -25,6 +26,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    getIt.get<SocketService>().initSocket();
+
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(

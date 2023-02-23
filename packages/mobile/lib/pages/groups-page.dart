@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mobile/components/chatbox.dart';
+import 'package:mobile/services/group-join.service.dart';
 
 import '../components/group-selection.dart';
 import '../components/invalid-connection-popup.dart';
+import '../locator.dart';
 import 'create-lobby.dart';
-
-// NavBar
-// Back to home
-// Title
-// Créer une partie
-
-// Liste des parties
-// Partie
-// Nom joueurs + avatars
-// Durée round
-// Niveau JV
-// Bouton pour join
 
 class GroupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+    GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
+    groupJoinService.getGroups();
+
     return Scaffold(
         appBar: AppBar(
           title: Text("Rejoindre une partie"),

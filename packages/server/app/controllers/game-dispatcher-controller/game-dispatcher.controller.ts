@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { LobbyData } from '@app/classes/communication/lobby-data';
 import { PlayerData } from '@app/classes/communication/player-data';
@@ -30,6 +31,8 @@ import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual
 import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { authenticateToken } from '@app/middlewares/authentificate-token';
+import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
+import { PublicUser } from '@common/models/user';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -253,9 +256,40 @@ export class GameDispatcherController extends BaseController {
     }
 
     private handleLobbiesRequest(playerId: string): void {
-        const waitingRooms = this.gameDispatcherService.getAvailableWaitingRooms();
+        enum GameVisibility {
+            Public,
+            Private,
+        }
+
+        // const waitingRooms = this.gameDispatcherService.getAvailableWaitingRooms();
+        console.log('Lobbies request');
         this.socketService.addToRoom(playerId, this.gameDispatcherService.getLobbiesRoom().getId());
-        this.socketService.emitToSocket(playerId, 'lobbiesUpdate', waitingRooms);
+        // this.socketService.emitToSocket(playerId, 'lobbiesUpdate', waitingRooms);
+        this.socketService.getSocket(playerId).emit('lobbiesUpdate', [
+            {
+                groupId: '2',
+                users: [{ username: 'Kim', avatar: 'images/avatar-12.png' } as PublicUser],
+                maxRoundTime: 90,
+                virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+                gameVisibility: GameVisibility.Public,
+            },
+        ]);
+
+        setTimeout(() => {
+            try {
+                this.socketService.getSocket(playerId).emit('lobbiesUpdate', [
+                    {
+                        groupId: '3',
+                        users: [{ username: 'Kim', avatar: 'images/avatar-12.png' } as PublicUser],
+                        maxRoundTime: 120,
+                        virtualPlayerLevel: VirtualPlayerLevel.Expert,
+                        gameVisibility: GameVisibility.Private,
+                    },
+                ]);
+            } catch {
+                /** as */
+            }
+        }, 10000);
     }
 
     private handleLobbiesUpdate(): void {

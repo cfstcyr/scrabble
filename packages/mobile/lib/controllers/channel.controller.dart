@@ -18,7 +18,7 @@ class ChannelController {
     return _instance;
   }
   ChannelController._internal() {
-    socketService.initSocket();
+    // socketService.initSocket();
   }
 
   Future<void> sendMessage(Channel channel, ChatMessage message) async {
