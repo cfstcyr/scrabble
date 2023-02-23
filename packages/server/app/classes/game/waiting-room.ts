@@ -1,5 +1,7 @@
 import Player from '@app/classes/player/player';
 import { GAME_ALREADY_FULL } from '@app/constants/classes-errors';
+import { Channel } from '@common/models/chat/channel';
+import { TypeOfId } from '@common/types/id';
 import { StatusCodes } from 'http-status-codes';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { GameConfig } from './game-config';
@@ -12,18 +14,24 @@ export default class WaitingRoom extends Room {
     requestingPlayers: Player[];
 
     private config: GameConfig;
+    private readonly groupChannelId: TypeOfId<Channel>;
 
-    constructor(config: GameConfig) {
+    constructor(config: GameConfig, groupChannelId: TypeOfId<Channel>) {
         super();
         this.config = config;
         this.joinedPlayer2 = undefined;
         this.joinedPlayer3 = undefined;
         this.joinedPlayer4 = undefined;
         this.requestingPlayers = [];
+        this.groupChannelId = groupChannelId;
     }
 
     getConfig(): GameConfig {
         return this.config;
+    }
+
+    getGroupChannelId(): TypeOfId<Channel> {
+        return this.groupChannelId;
     }
 
     fillNextEmptySpot(player: Player): void {

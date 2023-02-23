@@ -14,6 +14,7 @@ import { createSandbox, SinonSandbox, SinonStub, SinonStubbedInstance } from 'si
 import { Container } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 import TestingDatabaseService from '@app/services/database-service/testing-database.service.spec';
+import * as authenticateToken from '@app/middlewares/authentificate-token';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type ClassType<T> = Function & { prototype: T };
@@ -102,6 +103,11 @@ export class ServicesTestingUnit {
     withMockedFileSystem(paths: DirectoryItems): ServicesTestingUnit {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mock(paths as any);
+        return this;
+    }
+
+    withMockedAuthentification(): ServicesTestingUnit {
+        this.sandbox.stub(authenticateToken, 'authenticateToken').callsFake((req, res, next) => next());
         return this;
     }
 

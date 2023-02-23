@@ -5,14 +5,7 @@ import { CreateGameRequest, GameRequest, LobbiesRequest } from '@app/classes/com
 import { GameConfigData } from '@app/classes/game/game-config';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SECONDS_TO_MILLISECONDS, TIME_TO_RECONNECT } from '@app/constants/controllers-constants';
-import {
-    DICTIONARY_REQUIRED,
-    GAME_IS_OVER,
-    MAX_ROUND_TIME_REQUIRED,
-    NAME_IS_INVALID,
-    PLAYER_LEFT_GAME,
-    PLAYER_NAME_REQUIRED,
-} from '@app/constants/controllers-errors';
+import { DICTIONARY_REQUIRED, GAME_IS_OVER, MAX_ROUND_TIME_REQUIRED, NAME_IS_INVALID, PLAYER_NAME_REQUIRED } from '@app/constants/controllers-errors';
 import { SYSTEM_ID } from '@app/constants/game-constants';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { GameDispatcherService } from '@app/services/game-dispatcher-service/game-dispatcher.service';
@@ -26,6 +19,8 @@ import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual
 import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
 import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatcher-const';
 import Player from '@app/classes/player/player';
+import { UserId } from '@app/classes/user/connected-user-types';
+import { authenticateToken } from '@app/middlewares/authentificate-token';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -44,19 +39,20 @@ export class GameDispatcherController extends BaseController {
     }
 
     protected configure(router: Router): void {
-        router.post('/:playerId', async (req: CreateGameRequest, res: Response, next) => {
+        router.post('/:playerId', authenticateToken, async (req: CreateGameRequest, res: Response, next) => {
             const { playerId } = req.params;
             const body: Omit<GameConfigData, 'playerId'> = req.body;
+            const userId: UserId = req.body.idUser;
 
             try {
-                const lobbyData = await this.handleCreateGame({ playerId, ...body });
+                const lobbyData = await this.handleCreateGame({ playerId, ...body }, userId);
                 res.status(StatusCodes.CREATED).send({ lobbyData });
             } catch (exception) {
                 next(exception);
             }
         });
 
-        router.get('/:playerId', (req: LobbiesRequest, res: Response, next) => {
+        router.get('/:playerId', authenticateToken, (req: LobbiesRequest, res: Response, next) => {
             const { playerId } = req.params;
             try {
                 this.handleLobbiesRequest(playerId);
@@ -67,7 +63,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.post('/:gameId/players/:playerId/join', (req: GameRequest, res: Response, next) => {
+        router.post('/:gameId/players/:playerId/join', authenticateToken, (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
             const { playerName }: { playerName: string } = req.body;
 
@@ -80,7 +76,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.post('/:gameId/players/:playerId/accept', async (req: GameRequest, res: Response, next) => {
+        router.post('/:gameId/players/:playerId/accept', authenticateToken, async (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
             const { opponentName }: { opponentName: string } = req.body;
 
@@ -93,7 +89,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.post('/:gameId/players/:playerId/reject', (req: GameRequest, res: Response, next) => {
+        router.post('/:gameId/players/:playerId/reject', authenticateToken, (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
             const { opponentName }: { opponentName: string } = req.body;
 
@@ -118,11 +114,11 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.delete('/:gameId/players/:playerId/cancel', (req: GameRequest, res: Response, next) => {
+        router.delete('/:gameId/players/:playerId/cancel', authenticateToken, async (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
 
             try {
-                this.handleCancelGame(gameId, playerId);
+                await this.handleCancelGame(gameId, playerId);
 
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
@@ -130,7 +126,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.delete('/:gameId/players/:playerId/leave', (req: GameRequest, res: Response, next) => {
+        router.delete('/:gameId/players/:playerId/leave', authenticateToken, (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
 
             try {
@@ -142,7 +138,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.post('/:gameId/players/:playerId/reconnect', (req: GameRequest, res: Response, next) => {
+        router.post('/:gameId/players/:playerId/reconnect', authenticateToken, (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
             const { newPlayerId }: { newPlayerId: string } = req.body;
 
@@ -155,7 +151,7 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.delete('/:gameId/players/:playerId/disconnect', (req: GameRequest, res: Response, next) => {
+        router.delete('/:gameId/players/:playerId/disconnect', authenticateToken, (req: GameRequest, res: Response, next) => {
             const { gameId, playerId } = req.params;
 
             try {
@@ -168,46 +164,25 @@ export class GameDispatcherController extends BaseController {
         });
     }
 
-    private handleCancelGame(gameId: string, playerId: string): void {
+    private async handleCancelGame(gameId: string, playerId: string): Promise<void> {
         const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
         this.socketService.emitToRoomNoSender(gameId, playerId, 'canceledGame', { name: waitingRoom.getConfig().player1.name });
-        this.gameDispatcherService.cancelGame(gameId, playerId);
+        await this.gameDispatcherService.cancelGame(gameId, playerId);
 
         this.handleLobbiesUpdate();
     }
 
-    private handleLeave(gameId: string, playerId: string): void {
+    private async handleLeave(gameId: string, playerId: string): Promise<void> {
         if (this.gameDispatcherService.isGameInWaitingRooms(gameId)) {
-            const players = this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
+            const players = await this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
             const playersData: PlayerData[] = players.map((player: Player) => player.convertToPlayerData());
             // TODO: Check what is returned
             this.socketService.emitToRoom(gameId, 'joinerLeaveGame', playersData);
             this.handleLobbiesUpdate();
             return;
         }
-        // Check if there is no player left --> cleanup server and client
-        try {
-            if (!this.socketService.doesRoomExist(gameId)) {
-                this.activeGameService.removeGame(gameId, playerId);
-                return;
-            }
 
-            this.socketService.removeFromRoom(playerId, gameId);
-            this.socketService.emitToSocket(playerId, 'cleanup');
-        } catch (exception) {
-            // catch errors caused by inexistent socket after client closed application
-        }
-        const playerName = this.activeGameService.getGame(gameId, playerId).getPlayer(playerId).name;
-
-        this.socketService.emitToRoom(gameId, 'newMessage', {
-            content: `${playerName} ${PLAYER_LEFT_GAME(this.activeGameService.isGameOver(gameId, playerId))}`,
-            senderId: 'system',
-            gameId,
-        });
-
-        if (this.activeGameService.isGameOver(gameId, playerId)) return;
-
-        this.activeGameService.playerLeftEvent.emit('playerLeft', gameId, playerId);
+        await this.activeGameService.handlePlayerLeaves(gameId, playerId);
     }
 
     private handlePlayerLeftFeedback(gameId: string, endOfGameMessages: string[], updatedData: GameUpdateData): void {
@@ -219,18 +194,18 @@ export class GameDispatcherController extends BaseController {
         });
     }
 
-    private async handleCreateGame(config: GameConfigData): Promise<LobbyData | void> {
+    private async handleCreateGame(config: GameConfigData, userId: UserId): Promise<LobbyData | void> {
         if (config.playerName === undefined) throw new HttpException(PLAYER_NAME_REQUIRED, StatusCodes.BAD_REQUEST);
         if (config.maxRoundTime === undefined) throw new HttpException(MAX_ROUND_TIME_REQUIRED, StatusCodes.BAD_REQUEST);
         if (config.dictionary === undefined) throw new HttpException(DICTIONARY_REQUIRED, StatusCodes.BAD_REQUEST);
 
         if (!validateName(config.playerName)) throw new HttpException(NAME_IS_INVALID, StatusCodes.BAD_REQUEST);
 
-        return await this.handleCreateMultiplayerGame(config);
+        return await this.handleCreateMultiplayerGame(config, userId);
     }
 
-    private async handleCreateMultiplayerGame(config: GameConfigData): Promise<LobbyData> {
-        const lobbyData = await this.gameDispatcherService.createMultiplayerGame(config);
+    private async handleCreateMultiplayerGame(config: GameConfigData, userId: UserId): Promise<LobbyData> {
+        const lobbyData = await this.gameDispatcherService.createMultiplayerGame(config, userId);
         this.handleLobbiesUpdate();
         return lobbyData;
     }
@@ -267,8 +242,8 @@ export class GameDispatcherController extends BaseController {
     }
 
     private async handleStartRequest(gameId: string, playerId: string): Promise<void> {
-        const gameConfig = this.gameDispatcherService.startRequest(gameId, playerId);
-        const startGameData = await this.activeGameService.beginGame(gameId, gameConfig);
+        const gameConfig = await this.gameDispatcherService.startRequest(gameId, playerId);
+        const startGameData = await this.activeGameService.beginGame(gameId, gameConfig.idChannel, gameConfig);
 
         this.socketService.emitToRoom(gameId, 'startGame', startGameData);
 

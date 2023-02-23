@@ -2,12 +2,21 @@ import { GameConfig, GameConfigData } from '@app/classes/game/game-config';
 import WaitingRoom from '@app/classes/game/waiting-room';
 import Player from '@app/classes/player/player';
 import { Service } from 'typedi';
+import { ChatService } from '@app/services/chat-service/chat.service';
+import { GROUP_CHANNEL } from '@app/constants/chat';
+import { Channel } from '@common/models/chat/channel';
+import { UserId } from '@app/classes/user/connected-user-types';
 
 @Service()
 export class CreateGameService {
-    createMultiplayerGame(configData: GameConfigData): WaitingRoom {
+    constructor(private readonly chatService: ChatService) {}
+
+    async createMultiplayerGame(configData: GameConfigData, userId: UserId): Promise<WaitingRoom> {
         const config = this.generateGameConfig(configData);
-        return new WaitingRoom(config);
+
+        const channel: Channel = await this.chatService.createChannel(GROUP_CHANNEL, userId);
+
+        return new WaitingRoom(config, channel.idChannel);
     }
 
     private generateGameConfig(configData: GameConfigData): GameConfig {
@@ -19,13 +28,4 @@ export class CreateGameService {
             dictionary: configData.dictionary,
         };
     }
-
-    // private generateReadyGameConfig(player2: Player, player3: Player, player4: Player, gameConfig: GameConfig): ReadyGameConfig {
-    //     return {
-    //         ...gameConfig,
-    //         player2,
-    //         player3,
-    //         player4,
-    //     };
-    // }
 }

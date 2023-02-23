@@ -7,6 +7,7 @@ export interface ChatServerEvents {
     'channel:newChannel': (response: Channel) => void;
     'channel:join': (channel: Channel) => void;
     'channel:quit': (channel: Channel) => void;
+    'channel:history': (history: ChannelMessage[]) => void;
 }
 
 export interface ChatClientEvents {

@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
@@ -9,7 +10,10 @@ import { ChatPersistenceService } from './chat-persistence.service';
 import { CHANNEL_TABLE, USER_CHANNEL_TABLE, USER_TABLE } from '@app/constants/services-constants/database-const';
 import { Channel, UserChannel } from '@common/models/chat/channel';
 import { Knex } from 'knex';
-import { UserDatabase } from '@common/models/user';
+import { User } from '@common/models/user';
+import { UserId } from '@app/classes/user/connected-user-types';
+import * as sinon from 'sinon';
+import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
 
 const CHANNEL_1: Channel = {
     idChannel: 1,
@@ -25,7 +29,7 @@ const CHANNEL_2: Channel = {
     private: false,
     default: false,
 };
-const USER: UserDatabase = {
+const USER: User = {
     avatar: '',
     email: '',
     idUser: 1,
@@ -39,7 +43,8 @@ describe('ChatPersistenceService', () => {
     let databaseService: DatabaseService;
     let channelTable: () => Knex.QueryBuilder<Channel>;
     let userChannelTable: () => Knex.QueryBuilder<UserChannel>;
-    let userTable: () => Knex.QueryBuilder<UserDatabase>;
+    let userTable: () => Knex.QueryBuilder<User>;
+    let chatHistoryService: sinon.SinonStubbedInstance<ChatHistoryService>;
 
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withStubbedPrototypes(Application, { bindRoutes: undefined });
@@ -47,7 +52,8 @@ describe('ChatPersistenceService', () => {
         databaseService = Container.get(DatabaseService);
         channelTable = () => databaseService.knex<Channel>(CHANNEL_TABLE);
         userChannelTable = () => databaseService.knex<UserChannel>(USER_CHANNEL_TABLE);
-        userTable = () => databaseService.knex<UserDatabase>(USER_TABLE);
+        userTable = () => databaseService.knex<User>(USER_TABLE);
+        chatHistoryService = testingUnit.setStubbed(ChatHistoryService);
     });
 
     beforeEach(() => {
@@ -111,6 +117,50 @@ describe('ChatPersistenceService', () => {
         });
     });
 
+    describe('getChannelUserIds', () => {
+        it('should make every userId in channel quit', async () => {
+            const expectedUser1 = { ...USER, idUser: 1, username: 'user1', email: 'email1' };
+            const expectedUser2 = { ...USER, idUser: 2, username: 'user2', email: 'email2' };
+            const expectedUser3 = { ...USER, idUser: 3, username: 'user3', email: 'email3' };
+            const expectedIds = [expectedUser1.idUser, expectedUser2.idUser, expectedUser3.idUser];
+
+            const userChannelTableExample = [
+                { idUser: expectedUser1.idUser, idChannel: CHANNEL_1.idChannel },
+                { idUser: expectedUser2.idUser, idChannel: CHANNEL_1.idChannel },
+                { idUser: expectedUser3.idUser, idChannel: CHANNEL_1.idChannel },
+            ];
+
+            await service['channelTable'].insert(CHANNEL_1);
+            await databaseService.knex.insert([expectedUser1, expectedUser2, expectedUser3]).into(USER_TABLE);
+            await service['userChatTable'].insert(userChannelTableExample);
+
+            const result: UserId[] = await service.getChannelUserIds(CHANNEL_1.idChannel);
+
+            expect(result).to.deep.equal(expectedIds);
+        });
+
+        it('should NOT make userId NOT in channel quit', async () => {
+            const userInChannel = { ...USER, idUser: 1, username: 'user1', email: 'email1' };
+            const userNotInChannel = { ...USER, idUser: 2, username: 'user2', email: 'email2' };
+
+            const differentChannel: Channel = { ...CHANNEL_1, name: 'different channel', idChannel: CHANNEL_1.idChannel + 1 };
+
+            const userChannelTableExample = [
+                { idUser: userInChannel.idUser, idChannel: CHANNEL_1.idChannel },
+                { idUser: userNotInChannel.idUser, idChannel: differentChannel.idChannel },
+            ];
+
+            await service['channelTable'].insert([CHANNEL_1, differentChannel]);
+            await databaseService.knex.insert([userInChannel, userNotInChannel]).into(USER_TABLE);
+            await service['userChatTable'].insert(userChannelTableExample);
+
+            const result = await service.getChannelUserIds(CHANNEL_1.idChannel);
+
+            expect(result).to.contain(userInChannel.idUser);
+            expect(result).not.to.contain(userNotInChannel.idUser);
+        });
+    });
+
     describe('saveChannel', () => {
         it('should add channel to table', async () => {
             await service.saveChannel(CHANNEL_1);
@@ -149,6 +199,20 @@ describe('ChatPersistenceService', () => {
             await service.leaveChannel(CHANNEL_1.idChannel, USER.idUser);
 
             expect(await userChannelTable().select().where({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser })).to.have.length(0);
+        });
+
+        it('should call deleteChannel history if channel is empty', async () => {
+            await userTable().insert(USER);
+            await channelTable().insert(CHANNEL_1);
+            await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
+
+            chatHistoryService.deleteChannelHistory.resolves();
+
+            service['isChannelEmpty'] = async () => Promise.resolve(true);
+
+            await service.leaveChannel(CHANNEL_1.idChannel, USER.idUser);
+
+            expect(chatHistoryService.deleteChannelHistory.calledOnce).to.be.true;
         });
     });
 
@@ -202,6 +266,22 @@ describe('ChatPersistenceService', () => {
             const channels = await service.getChannels();
 
             expect(channels.some((channel) => channel.idChannel === CHANNEL_1.idChannel && channel.default)).to.be.true;
+        });
+    });
+
+    describe('isChannelEmpty', () => {
+        it('should return true if no user in channel', async () => {
+            await channelTable().insert(CHANNEL_1);
+
+            expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.true;
+        });
+
+        it('should return false if user in channel', async () => {
+            await channelTable().insert(CHANNEL_1);
+            await userTable().insert(USER);
+            await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
+
+            expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.false;
         });
     });
 });

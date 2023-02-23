@@ -7,6 +7,8 @@ import Player from '@app/classes/player/player';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
+import { Channel } from '@common/models/chat/channel';
+import { WithIdOf } from '@common/types/id';
 
 export interface GameConfigData {
     playerName: string;
@@ -31,6 +33,8 @@ export interface ReadyGameConfig extends GameConfig {
     player3: Player;
     player4: Player;
 }
+
+export interface ReadyGameConfigWithChannelId extends ReadyGameConfig, WithIdOf<Channel> {}
 
 export interface StartGameData {
     player1: PlayerData;

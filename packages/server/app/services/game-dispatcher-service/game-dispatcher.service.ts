@@ -1,5 +1,5 @@
 import { LobbyData } from '@app/classes/communication/lobby-data';
-import { GameConfigData, ReadyGameConfig } from '@app/classes/game/game-config';
+import { GameConfigData, ReadyGameConfig, ReadyGameConfigWithChannelId } from '@app/classes/game/game-config';
 import Room from '@app/classes/game/room';
 import WaitingRoom from '@app/classes/game/waiting-room';
 import { HttpException } from '@app/classes/http-exception/http-exception';
@@ -20,6 +20,8 @@ import { VirtualPlayerService } from '@app/services/virtual-player-service/virtu
 import { convertToLobbyData } from '@app/utils/convert-to-lobby-data/convert-to-lobby-data';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
+import { ChatService } from '@app/services/chat-service/chat.service';
+import { UserId } from '@app/classes/user/connected-user-types';
 
 @Service()
 export class GameDispatcherService {
@@ -32,6 +34,7 @@ export class GameDispatcherService {
         // private activeGameService: ActiveGameService,
         private dictionaryService: DictionaryService,
         private virtualPlayerService: VirtualPlayerService,
+        private readonly chatService: ChatService,
     ) {
         this.waitingRooms = [];
         this.lobbiesRoom = new Room();
@@ -46,8 +49,8 @@ export class GameDispatcherService {
         return this.virtualPlayerService;
     }
 
-    async createMultiplayerGame(config: GameConfigData): Promise<LobbyData> {
-        const waitingRoom = this.createGameService.createMultiplayerGame(config);
+    async createMultiplayerGame(config: GameConfigData, userId: UserId): Promise<LobbyData> {
+        const waitingRoom = await this.createGameService.createMultiplayerGame(config, userId);
         this.dictionaryService.useDictionary(config.dictionary.id);
 
         this.addToWaitingRoom(waitingRoom);
@@ -84,7 +87,7 @@ export class GameDispatcherService {
         return [requestingPlayer, waitingRoom.getPlayers()];
     }
 
-    startRequest(waitingRoomId: string, playerId: string): ReadyGameConfig {
+    async acceptJoinRequest(waitingRoomId: string, playerId: string): Promise<ReadyGameConfigWithChannelId> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
@@ -104,10 +107,12 @@ export class GameDispatcherService {
             player4: waitingRoom.joinedPlayer4 ? waitingRoom.joinedPlayer4 : new ExpertVirtualPlayer(waitingRoomId, 'VirtualPlayer4'),
         };
 
-        return config;
+        await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), playerId);
+
+        return { ...config, idChannel: waitingRoom.getGroupChannelId() };
     }
 
-    leaveLobbyRequest(waitingRoomId: string, playerId: string): Player[] {
+    async leaveLobbyRequest(waitingRoomId: string, playerId: string): Promise<Player[]> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         switch (playerId) {
             case waitingRoom.joinedPlayer2?.id: {
@@ -125,17 +130,18 @@ export class GameDispatcherService {
             default:
                 throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
-
+        await this.chatService.quitChannel(waitingRoom.getGroupChannelId(), playerId);
         return waitingRoom.getPlayers();
     }
 
-    cancelGame(waitingRoomId: string, playerId: string): void {
+    async cancelGame(waitingRoomId: string, playerId: string): Promise<void> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
 
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
         this.dictionaryService.stopUsingDictionary(waitingRoom.getConfig().dictionary.id);
+        await this.chatService.emptyChannel(waitingRoom.getGroupChannelId());
 
         const index = this.waitingRooms.indexOf(waitingRoom);
         this.waitingRooms.splice(index, 1);
