@@ -1,22 +1,22 @@
-import * as express from 'express';
+import { Application, Router } from 'express';
 import { Token } from 'typedi';
 
 export const controllerToken = new Token<BaseController>('controllers');
 
 export abstract class BaseController {
-    private router: express.Router;
+    private router: Router;
     private path: string;
 
     constructor(path: string) {
-        this.router = express.Router();
+        this.router = Router();
         this.path = path;
 
         this.configure(this.router);
     }
 
-    route(app: express.Application): void {
+    route(app: Application): void {
         app.use(this.path, this.router);
     }
 
-    protected abstract configure(router: express.Router): void;
+    protected abstract configure(router: Router): void;
 }
