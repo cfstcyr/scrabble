@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/group.dart';
+import 'package:mobile/classes/user.dart';
 
 import '../utils/duration-format.dart';
 
@@ -25,8 +26,8 @@ class IndividualGroup extends StatelessWidget {
         child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Row(
               children: List.generate(
-            4,
-            (index) => PlayersInGroup(),
+            1,
+            (index) => PlayerInGroup(user: group.users[index]),
           )),
           VerticalDivider(
             width: 32,
@@ -220,10 +221,13 @@ class GroupParameters extends StatelessWidget {
   }
 }
 
-class PlayersInGroup extends StatelessWidget {
-  const PlayersInGroup({
+class PlayerInGroup extends StatelessWidget {
+  const PlayerInGroup({
     super.key,
+    required this.user,
   });
+
+  final PublicUser user;
 
   @override
   Widget build(BuildContext context) {
@@ -240,14 +244,14 @@ class PlayersInGroup extends StatelessWidget {
                 fit: BoxFit.cover,
                 child: CircleAvatar(
                     radius: 32,
-                    backgroundImage: AssetImage('images/avatar-12.png')),
+                    backgroundImage: AssetImage(user.avatar)),
               ),
               SizedBox(
                 height: 4,
               ),
               Center(
                   child: Text(
-                'Thomasssssssssss',
+                    user.username,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 softWrap: true,

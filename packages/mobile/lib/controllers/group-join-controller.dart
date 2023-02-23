@@ -52,10 +52,7 @@ class GroupJoinController {
 
   void _configureSocket() {
     SocketService.socket.on(GROUP_UPDATE, (groups) async {
-      print(groups);
-      List<Group> receivedGroups = List<Group>.from(groups.map((dynamic group) => Group.fromJson(group)).toList());
-      groups$.add([...groups$.value, ...receivedGroups]);
-      print(await groups$.length);
+      handleGroupsUpdate(groups);
     });
     SocketService.socket.on(
         REJECTED_FROM_GROUP, (hostName) => rejectedJoinRequest$.add(hostName));
