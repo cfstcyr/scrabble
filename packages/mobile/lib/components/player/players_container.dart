@@ -13,20 +13,22 @@ class PlayersContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return IntrinsicHeight(
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-                child: MainPlayer(player: _gameService.game!.players.player1, isPlaying: true,)),
-            Expanded(
-              child: Column(
-                children: [
-                  Player(player: _gameService.game!.players.player2),
-                  Player(player: _gameService.game!.players.player3),
-                  Player(player: _gameService.game!.players.player4),
-                ],
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(child: MainPlayer(player: _gameService.game!.players.player1)),
+        Expanded(
+          child: Column(
+            children: [
+              Player(player: _gameService.game!.players.player2),
+              Player(
+                player: _gameService.game!.players.player3,
+                isPlaying: true,
               ),
-            )
-          ],
-        ));
+              Player(player: _gameService.game!.players.player4),
+            ],
+          ),
+        )
+      ],
+    ));
   }
 }

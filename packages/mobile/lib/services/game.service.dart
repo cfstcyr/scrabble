@@ -16,11 +16,12 @@ class GameService {
         board: Board(),
         tileRack: TileRack(),
         players: PlayersContainer.fromPlayers(
-          player1: Player(name: "George", points: 420),
-          player2: Player(name: "Léonard", points: 69, isLocalPlayer: true),
+          player1: Player(name: "George", points: 420, isLocalPlayer: true),
+          player2: Player(name: "Léonard", points: 69),
           player3: Player(name: "Hernest", points: 666),
           player4: Player(name: "Bernard", points: 2),
-        ));
+        ),
+        timeLeft: Duration(minutes: 1, seconds: 42));
 
     game?.board.grid[7][7].tile = Tile.create("B", 1);
     game?.board.grid[7][8].tile = Tile.create("O", 1);

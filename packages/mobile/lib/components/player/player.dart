@@ -10,7 +10,7 @@ class Player extends AbstractPlayer {
   }) : super(player: player, isPlaying: isPlaying);
 
   @override
-  Widget build(BuildContext context) {
+  Widget getContent(BuildContext context) {
     return Card(
         color: getColor(),
         child: Container(

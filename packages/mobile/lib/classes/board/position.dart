@@ -17,13 +17,7 @@ class Position extends Vec2 {
   }
 
   Position move(Orientation orientation, Direction direction, {int distance = 1}) {
-    switch (orientation) {
-      case Orientation.horizontal:
-        column += direction.value * distance;
-        break;
-      case Orientation.vertical:
-        row += direction.value * distance;
-    }
+    add(orientation.vec2 * direction.scalar * distance);
 
     return this;
   }

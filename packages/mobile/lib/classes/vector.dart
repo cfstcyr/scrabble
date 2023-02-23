@@ -34,8 +34,21 @@ class Vec2 {
     return x + y * GRID_SIZE;
   }
 
-  translate(Vec2 v) {
+  add(Vec2 v) {
     x += v.x;
     y += v.y;
+  }
+
+  scalar(int i) {
+    x *= i;
+    y *= i;
+  }
+
+  operator +(Vec2 v) {
+    add(v);
+  }
+
+  operator *(int i) {
+    scalar(i);
   }
 }

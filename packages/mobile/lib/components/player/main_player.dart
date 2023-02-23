@@ -10,7 +10,7 @@ class MainPlayer extends AbstractPlayer {
   }) : super(player: player, isPlaying: isPlaying);
 
   @override
-  Widget build(BuildContext context) {
+  Widget getContent(BuildContext context) {
     return Card(
       color: getColor(),
       child: Container(
@@ -21,37 +21,36 @@ class MainPlayer extends AbstractPlayer {
               getPlayerInfo(large: true),
               Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: SPACE_1),
-                        child: Text(
-                          '${player.points}',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.w600,
-                            height: 1,
-                            color: getTextColor(),
-                          ),
-                        ),
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: SPACE_1),
+                    child: Text(
+                      '${player.points}',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w600,
+                        height: 1,
+                        color: getTextColor(),
                       ),
-                      Opacity(
-                        opacity: 0.54,
-                        child: Text(
-                          "Points",
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: getTextColor(),
-                            height: 1,
-                          ),
-                        ),
-                      )
-                    ],
-                  ))
+                    ),
+                  ),
+                  Opacity(
+                    opacity: 0.54,
+                    child: Text(
+                      "Points",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: getTextColor(),
+                        height: 1,
+                      ),
+                    ),
+                  )
+                ],
+              ))
             ]),
       ),
     );

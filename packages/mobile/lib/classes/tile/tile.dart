@@ -3,17 +3,13 @@ class Tile {
   final int? value;
   final bool isWildcard;
 
-  Tile._({
-    this.letter,
-    this.value,
-    this.isWildcard = false
-  });
+  Tile({this.letter, this.value, this.isWildcard = false});
 
   static Tile wildcard() {
-    return Tile._(isWildcard: true);
+    return Tile(isWildcard: true);
   }
 
   static Tile create(String letter, int value) {
-    return Tile._(letter: letter, value: value);
+    return Tile(letter: letter, value: value);
   }
 }

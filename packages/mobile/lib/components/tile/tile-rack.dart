@@ -13,11 +13,17 @@ class TileRack extends StatelessWidget {
     return Card(
       child: Container(
         padding: EdgeInsets.symmetric(vertical: SPACE_2, horizontal: SPACE_3),
+        height: 70,
         child: Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           alignment: WrapAlignment.spaceEvenly,
           spacing: SPACE_4,
           children: [
+            AppButton(
+              onPressed: () {},
+              icon: Icons.repeat,
+              iconOnly: true,
+            ),
             Wrap(
               spacing: SPACE_2,
               children: List.generate(
@@ -26,14 +32,11 @@ class TileRack extends StatelessWidget {
                       tile: _gameService.game!.tileRack.tiles[index],
                       size: 42)),
             ),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: SPACE_1,
-              children: [
-                AppButton(onPressed: () {}, text: "Échanger", icon: Icons.shuffle),
-                AppButton(onPressed: null, icon: Icons.close),
-              ],
-            )
+            AppButton(
+              onPressed: null,
+              icon: Icons.close,
+              size: AppButtonSize.large,
+            ),
           ],
         ),
       ),

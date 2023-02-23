@@ -15,7 +15,7 @@ enum AppButtonSize {
 }
 
 class AppButton extends StatelessWidget {
-  ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
+  final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
   final Function()? onPressed;
   final AppButtonTheme theme;
   final AppButtonSize size;
@@ -40,9 +40,11 @@ class AppButton extends StatelessWidget {
       onPressed: onPressed,
       color: _getColor(),
       disabledColor: Colors.grey.shade300,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(iconOnly ? 100 : 8)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(iconOnly ? 100 : 8)),
       height: _getSize(),
       minWidth: _getSize(),
+      padding: EdgeInsets.zero,
       child: _getChild(),
     );
   }
@@ -79,6 +81,15 @@ class AppButton extends StatelessWidget {
     }
   }
 
+  double _getIconSize() {
+    switch (size) {
+      case AppButtonSize.normal:
+        return iconOnly ? 18 : 20;
+      case AppButtonSize.large:
+        return iconOnly ? 22 : 24;
+    }
+  }
+
   double _getSize() {
     switch (size) {
       case AppButtonSize.normal:
@@ -93,20 +104,20 @@ class AppButton extends StatelessWidget {
       List<Widget> children = [];
 
       if (icon != null) {
-        children.add(
-          Icon(icon, color: _getAccentColor(),)
-        );
+        children.add(Icon(
+          icon,
+          color: _getAccentColor(),
+          size: _getIconSize(),
+        ));
       }
       if (text != null && !iconOnly) {
-        children.add(
-          Text(
-            text!,
-            style: TextStyle(
-              color: _getAccentColor(),
-              fontSize: _getFontSize(),
-            ),
-          )
-        );
+        children.add(Text(
+          text!,
+          style: TextStyle(
+            color: _getAccentColor(),
+            fontSize: _getFontSize(),
+          ),
+        ));
       }
 
       return Wrap(

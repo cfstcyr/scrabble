@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/animation/pulse.dart';
 import 'package:mobile/components/player/player.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
@@ -16,13 +17,25 @@ abstract class AbstractPlayer extends StatelessWidget {
     this.isPlaying = false,
   });
 
+  @override
+  Widget build(BuildContext context) {
+    return Pulse(
+      active: isPlaying && player.isLocalPlayer,
+      scale: 1.035,
+      duration: Duration(milliseconds: 750),
+      child: getContent(context),
+    );
+  }
+
+  Widget getContent(BuildContext context);
+
   Widget getPlayerInfo({bool large = false}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          height: large ? 28 : 22,
-          width: large ? 28 : 22,
+          height: large ? 32 : 22,
+          width: large ? 32 : 22,
           margin: EdgeInsets.only(right: SPACE_1),
           decoration: BoxDecoration(
             color: Colors.grey,
@@ -36,7 +49,7 @@ abstract class AbstractPlayer extends StatelessWidget {
             player.name,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-                fontSize: large ? 18 : 15,
+                fontSize: large ? 20 : 15,
                 height: 1,
                 color: getTextColor(),
                 fontWeight: FontWeight.w500),

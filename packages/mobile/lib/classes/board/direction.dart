@@ -4,7 +4,7 @@ enum Direction {
 }
 
 extension DirectionExtension on Direction {
-  int get value {
+  int get scalar {
     switch (this) {
       case Direction.forward:
         return 1;

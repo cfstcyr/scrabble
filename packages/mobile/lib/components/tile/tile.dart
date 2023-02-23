@@ -24,7 +24,7 @@ class Tile extends StatelessWidget {
           width: size,
           decoration: BoxDecoration(
             color: Colors.orange,
-            borderRadius: BorderRadius.all(Radius.circular(6)),
+            borderRadius: BorderRadius.all(Radius.circular(6 * size / 40)),
           ),
           clipBehavior: Clip.antiAlias,
           child: ColorFiltered(
@@ -42,7 +42,9 @@ class Tile extends StatelessWidget {
             child: Stack(
               children: [
                 Container(
-                  transform: Matrix4.translationValues(-1, -1, 0),
+                  transform: tile?.value != null
+                      ? Matrix4.translationValues(-1, -1, 0)
+                      : Matrix4.translationValues(0, 0, 0),
                   child: Center(
                     child: Text(
                       tile?.letter ?? '',
