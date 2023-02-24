@@ -16,6 +16,5 @@ export interface ChatClientEvents {
     'channel:newChannel': (channel: ChannelCreation) => void;
     'channel:join': (idChannel: TypeOfId<Channel>) => void;
     'channel:quit': (idChannel: TypeOfId<Channel>) => void;
-    'channel:delete': (idChannel: TypeOfId<Channel>) => void;
     'channel:init': () => void;
 }

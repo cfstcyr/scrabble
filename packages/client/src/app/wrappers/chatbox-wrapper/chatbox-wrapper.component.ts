@@ -37,8 +37,4 @@ export class ChatboxWrapperComponent {
     handleJoinChannel(channel: Channel): void {
         this.chatService.joinChannel(channel.idChannel);
     }
-
-    handleDeleteChannel(channel: Channel): void {
-        this.chatService.deleteChannel(channel.idChannel);
-    }
 }

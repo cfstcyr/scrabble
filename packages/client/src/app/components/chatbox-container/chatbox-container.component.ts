@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientChannel, ViewClientChannel } from '@app/classes/chat/channel';
-import { CONFIRM_DELETE_CHANNEL, CONFIRM_DELETE_DIALOG_TITLE, CONFIRM_QUIT_CHANNEL, CONFIRM_QUIT_DIALOG_TITLE, MAX_OPEN_CHAT } from '@app/constants/chat-constants';
+import { CONFIRM_QUIT_CHANNEL, CONFIRM_QUIT_DIALOG_TITLE, MAX_OPEN_CHAT } from '@app/constants/chat-constants';
 import { Channel } from '@common/models/chat/channel';
 import { Observable, Subject } from 'rxjs';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
@@ -21,7 +21,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
     @Output() joinChannel: EventEmitter<Channel> = new EventEmitter();
     @Output() quitChannel: EventEmitter<Channel> = new EventEmitter();
-    @Output() deleteChannel: EventEmitter<Channel> = new EventEmitter();
     @ViewChild('createChannelInput') createChannelInput: ElementRef<HTMLInputElement>;
     @ViewChild('joinChannelInput') joinChannelInput: ElementRef<HTMLInputElement>;
     createChannelForm: FormGroup;
@@ -138,29 +137,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                         action: () => {
                             this.minimizeChannel(channel);
                             this.quitChannel.emit(channel);
-                        },
-                    },
-                ],
-            },
-        });
-    }
-
-    handleDeleteChannel(channel: ClientChannel): void {
-        this.dialog.open(DefaultDialogComponent, {
-            data: {
-                title: CONFIRM_DELETE_DIALOG_TITLE,
-                content: CONFIRM_DELETE_CHANNEL(channel.name),
-                buttons: [
-                    {
-                        content: 'Annuler',
-                        closeDialog: true,
-                    },
-                    {
-                        content: 'Supprimer',
-                        closeDialog: true,
-                        action: () => {
-                            this.minimizeChannel(channel);
-                            this.deleteChannel.emit(channel);
                         },
                     },
                 ],

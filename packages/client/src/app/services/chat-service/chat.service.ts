@@ -77,10 +77,6 @@ export class ChatService {
         this.socketService.socket.emit('channel:quit', idChannel);
     }
 
-    deleteChannel(idChannel: TypeOfId<Channel>): void {
-        this.socketService.socket.emit('channel:delete', idChannel);
-    }
-
     handleJoinChannel(channel: Channel): void {
         const newChannel = { ...channel, messages: [] };
         this.channels.value.set(channel.idChannel, newChannel);
