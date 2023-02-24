@@ -45,6 +45,9 @@
                             >
                                 {{channel.name}}
                             </button>
+                            <app-icon-button (click)="handleDeleteChannel(channel)" *ngIf="channel.canQuit">
+                                <app-icon icon="trash"></app-icon>
+                            </app-icon-button>
                             <app-icon-button (click)="handleQuitChannel(channel)" *ngIf="channel.canQuit">
                                 <app-icon icon="sign-out"></app-icon>
                             </app-icon-button>

@@ -68,6 +68,13 @@ export class ChatService {
                 SocketService.handleError(error, socket);
             }
         });
+        socket.on('channel:delete', async (idChannel: TypeOfId<Channel>) => {
+            try {
+                await this.handleDeleteChannel(idChannel, socket);
+            } catch (error) {
+                SocketService.handleError(error, socket);
+            }
+        });
     }
 
     async createChannel(channel: ChannelCreation, userId: UserId): Promise<Channel> {
@@ -172,6 +179,13 @@ export class ChatService {
 
         socket.emit('channel:quit', channel);
     }
+
+    private async handleDeleteChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
+        const user: User = socket.data.user;
+        const channel = await this.chatPersistenceService.getChannel(idChannel);
+        console.log(channel, user);
+    }
+
 
     private async initChannelsForSocket(socket: ServerSocket): Promise<void> {
         const user: User = socket.data.user;
