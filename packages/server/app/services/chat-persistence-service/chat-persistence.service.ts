@@ -9,7 +9,7 @@ import { ChatHistoryService } from '@app/services/chat-history/chat-history.serv
 
 @Service()
 export class ChatPersistenceService {
-    constructor(private readonly databaseService: DatabaseService, private chatHistoryService: ChatHistoryService) {}
+    constructor(private readonly databaseService: DatabaseService, private chatHistoryService: ChatHistoryService) { }
 
     async getChannels(): Promise<Channel[]> {
         return this.channelTable.select();
@@ -17,6 +17,16 @@ export class ChatPersistenceService {
 
     async getChannel(idChannel: TypeOfId<Channel>): Promise<Channel | undefined> {
         return (await this.channelTable.select('*').where({ idChannel }))[0];
+    }
+
+    async getPublicChannels(idUser: TypeOfId<User>): Promise<Channel[]> {
+        // Get all public Channels that can be joined
+        return (
+            await this.channelTable
+                .select('*')
+                .where({ private: false })
+                .andWhere({ default: false })
+        )
     }
 
     async getUserChannelIds(idUser: TypeOfId<User>): Promise<TypeOfId<Channel>[]> {
