@@ -179,8 +179,5 @@ export class ChatService {
         await Promise.all(
             (await this.chatPersistenceService.getUserChannelIds(user.idUser)).map(async (idChannel) => this.handleJoinChannel(idChannel, socket)),
         );
-
-        const publicChannels = await this.chatPersistenceService.getPublicChannels(user.idUser);
-        socket.emit('channel:publicChannels', publicChannels);
     }
-};
+}

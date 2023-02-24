@@ -20,7 +20,6 @@
                 <app-icon icon="minus"></app-icon>
             </app-icon-button>
 
-            <!-- Create Channel DIv -->
             <div class="chatbox-container__channel-menu">
                 <div class="chatbox-container__section">
                     <form [formGroup]="createChannelForm" (ngSubmit)="handleCreateChannel()">
@@ -31,10 +30,7 @@
                         </mat-form-field>
                     </form>
                 </div>
-
                 <div class="chatbox-container__section">
-
-                    <!-- Mes Canaux de discussion Div -->
                     <p class="chatbox-container__section__title">Mes canaux</p>
                     <div class="chatbox-container__my-channels__content">
                         <div class="chatbox-container__my-channels__item" *ngFor="let channel of getChannelsForMenu() | async" >
@@ -52,27 +48,6 @@
                         
                     </div>
                 </div>
-
-                <!-- Canaux Publiques Div -->
-                <div class="chatbox-container__section">
-                    <p class="chatbox-container__section__title">Canaux Publiques</p>
-                    <div class="chatbox-container__my-channels__content">
-                        <div class="chatbox-container__my-channels__item" *ngFor="let channel of getPublicChannelsForMenu() | async" >
-                            <button
-                                [disabled]="!channel.canOpen"
-                                class="chatbox-container__my-channels__button"
-                            >
-                            <!-- (click)="showChannel(channel)" -->
-                                {{channel.name}}
-                            </button>
-                            <app-icon-button (click)="handleJoinChannel(channel)" *ngIf="channel.canQuit">
-                                <app-icon icon="user-plus"></app-icon>
-                            </app-icon-button>
-                        </div>
-                        
-                    </div>
-                </div>
-
             </div>
         </app-chatbox>
     </div>

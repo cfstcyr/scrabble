@@ -13,12 +13,10 @@ export class ChatboxWrapperComponent {
     ready: Observable<boolean>;
     channels: Observable<ClientChannel[]>;
     joinedChannel: Observable<ClientChannel>;
-    publicChannels: Observable<ClientChannel[]>;
 
     constructor(private readonly chatService: ChatService) {
         this.ready = this.chatService.ready;
         this.channels = this.chatService.getChannels();
-        this.publicChannels = this.chatService.getPublicChannels();
         this.joinedChannel = this.chatService.joinedChannel;
     }
 
@@ -32,9 +30,5 @@ export class ChatboxWrapperComponent {
 
     handleQuitChannel(channel: Channel): void {
         this.chatService.quitChannel(channel.idChannel);
-    }
-
-    handleJoinChannel(channel: Channel): void {
-        this.chatService.joinChannel(channel.idChannel);
     }
 }

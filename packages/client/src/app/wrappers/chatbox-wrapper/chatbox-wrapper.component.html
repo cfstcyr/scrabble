@@ -1,10 +1,8 @@
 <app-chatbox-container 
     [channels]="channels"
     [joinedChannel]="joinedChannel"
-    [publicChannels]="publicChannels"
     (sendMessage)="handleSendMessage($event)"
     (createChannel)="handleCreateChannel($event)"
     (quitChannel)="handleQuitChannel($event)"
-    (joinChannel)="handleJoinChannel($event)"
     *ngIf="ready | async"
 ></app-chatbox-container>

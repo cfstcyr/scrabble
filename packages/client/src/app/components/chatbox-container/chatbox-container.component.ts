@@ -15,7 +15,6 @@ import { map, takeUntil } from 'rxjs/operators';
 })
 export class ChatboxContainerComponent implements OnDestroy, OnInit {
     @Input() channels: Observable<ClientChannel[]> = new Observable();
-    @Input() publicChannels: Observable<ClientChannel[]> = new Observable();
     @Input() joinedChannel: Observable<ClientChannel> = new Observable();
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
@@ -60,19 +59,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
         );
     }
 
-    getPublicChannelsForMenu(): Observable<ViewClientChannel[]> {
-        return this.publicChannels.pipe(
-            map<ClientChannel[], ViewClientChannel[]>((channels) =>
-                channels.map((channel) => ({
-                    ...channel,
-
-                    //Fix this condition 
-                    canOpen: true,
-                })),
-            ),
-        );
-    }
-
     showChannel(channel: ClientChannel): void {
         this.openedChannels.push(channel);
         this.openedChannels = this.openedChannels.slice(-1 * MAX_OPEN_CHAT);
@@ -100,15 +86,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
         this.sendMessage.next([channel, content]);
     }
 
-    handleJoinChannel(channel: ClientChannel): void {
-        this.joinChannel.emit(channel);
-    };
-
     handleCreateChannel(): void {
-        // Find a way to filter the channel name
-        // if no channel name match the filter, ceate a new channel
-        // else, join the channel
-
         if (!this.createChannelForm.valid) return;
 
         const channelName = this.createChannelForm.value.createChannel.trim();

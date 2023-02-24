@@ -16,16 +16,13 @@ export class ChatService {
     ready: Subject<boolean> = new Subject();
     joinedChannel: Subject<ClientChannel>;
     channels: BehaviorSubject<Map<TypeOfId<Channel>, ClientChannel>>;
-    publicChannels: BehaviorSubject<Map<TypeOfId<Channel>, ClientChannel>>;
 
     constructor(private readonly socketService: SocketService, private readonly userService: UserService) {
         this.channels = new BehaviorSubject(new Map());
-        this.publicChannels = new BehaviorSubject(new Map());
         this.joinedChannel = new Subject();
 
         this.socketService.onConnect.subscribe((socket) => {
             this.channels.next(new Map());
-            this.publicChannels.next(new Map());
             this.configureSocket(socket);
             this.ready.next(true);
         });
@@ -33,7 +30,6 @@ export class ChatService {
         this.socketService.onDisconnect.subscribe(() => {
             this.ready.next(false);
             this.channels.next(new Map());
-            this.publicChannels.next(new Map());
         });
     }
 
@@ -41,16 +37,11 @@ export class ChatService {
         return this.channels.pipe(map((channels) => [...channels.values()].sort((a, b) => (a.name > b.name ? 1 : -1))));
     }
 
-    getPublicChannels(): Observable<ClientChannel[]> {
-        return this.publicChannels.pipe(map((channel) => [...channel.values()].sort((a, b) => (a.name > b.name ? 1 : -1))));
-    }
-
     configureSocket(socket: ClientSocket): void {
         socket.on('channel:join', this.handleJoinChannel.bind(this));
         socket.on('channel:quit', this.handleChannelQuit.bind(this));
         socket.on('channel:newMessage', this.handleNewMessage.bind(this));
         socket.on('channel:history', this.handleChannelHistory.bind(this));
-        socket.on('channel:publicChannels', this.handlePublicChannels.bind(this));
         socket.emit('channel:init');
     }
 
@@ -83,15 +74,6 @@ export class ChatService {
         this.channels.next(this.channels.value);
         this.joinedChannel.next(newChannel);
     }
-
-    handlePublicChannels(channels: Channel[]): void {
-        // add the channels to the publicChannels map
-        console.log(channels)
-        channels.forEach((channel: Channel) => {
-            this.publicChannels.value.set(channel.idChannel, { ...channel, messages: [] })
-            this.publicChannels.next(this.publicChannels.value)
-        });
-    };
 
     handleChannelQuit(channel: Channel): void {
         this.channels.value.delete(channel.idChannel);
