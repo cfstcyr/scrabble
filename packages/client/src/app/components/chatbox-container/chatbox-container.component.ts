@@ -123,4 +123,3 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
         });
     }
 }
-
