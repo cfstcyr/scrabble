@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientChannel, ViewClientChannel } from '@app/classes/chat/channel';
-import { CONFIRM_QUIT_CHANNEL, CONFIRM_QUIT_DIALOG_TITLE, MAX_OPEN_CHAT } from '@app/constants/chat-constants';
+import { CHANNEL_NAME_MAX_LENGTH, CONFIRM_QUIT_CHANNEL, CONFIRM_QUIT_DIALOG_TITLE, MAX_OPEN_CHAT } from '@app/constants/chat-constants';
 import { Channel } from '@common/models/chat/channel';
 import { Observable, Subject } from 'rxjs';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
@@ -26,6 +26,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     joinChannelForm: FormGroup;
     openedChannels: ClientChannel[] = [];
     channelMenuIsOpen: boolean = false;
+    channelNameMaxLength: number = CHANNEL_NAME_MAX_LENGTH;
     private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
 
     constructor(private readonly formBuilder: FormBuilder, private readonly dialog: MatDialog) {
@@ -122,3 +123,4 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
         });
     }
 }
+

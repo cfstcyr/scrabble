@@ -25,7 +25,7 @@
                     <form [formGroup]="createChannelForm" (ngSubmit)="handleCreateChannel()">
                         <mat-form-field appearance="outline" class="chatbox-container__create-channel">
                             <mat-label>Créer un canal</mat-label>
-                            <input matInput type="text" formControlName="createChannel" #createChannelInput maxlength="40" />
+                            <input matInput type="text" formControlName="createChannel" #createChannelInput [maxlength]="channelNameMaxLength" />
                             <button mat-icon-button matSuffix><mat-icon>add</mat-icon></button>
                         </mat-form-field>
                     </form>
