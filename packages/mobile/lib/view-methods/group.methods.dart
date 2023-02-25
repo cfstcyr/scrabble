@@ -7,8 +7,8 @@ import 'package:rxdart/rxdart.dart';
 import '../classes/virtual-player-level.dart';
 import '../constants/game.dart';
 
-Group testGroup = Group(groupId: '1', users: [], maxRoundTime: 50, virtualPlayerLevel: VirtualPlayerLevel.beginner, gameVisibility: GameVisibility.private);
-BehaviorSubject<List<Group>> groups$ = BehaviorSubject.seeded(List.of([]));
+Group testGroup = Group(groupId: '1', users: [], maxRoundTime: 60, virtualPlayerLevel: VirtualPlayerLevel.beginner, gameVisibility: GameVisibility.private);
+BehaviorSubject<List<Group>> groups$ = BehaviorSubject.seeded(List.of([testGroup, testGroup, testGroup, testGroup, testGroup, testGroup, testGroup, testGroup]));
 
 Stream<List<Group>> get groupStream {
   return groups$.map((List<Group> groups) {

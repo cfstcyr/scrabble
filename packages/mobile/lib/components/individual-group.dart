@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/constants/user.dart';
 
 import '../utils/duration-format.dart';
 
@@ -26,8 +27,13 @@ class IndividualGroup extends StatelessWidget {
         child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Row(
               children: List.generate(
-            1,
-            (index) => PlayerInGroup(user: group.users[index]),
+            4,
+            (index) {
+              PublicUser userToShow = group.users.length > index
+                  ? group.users[index]
+                  : generateVirtualPlayerUser(group.virtualPlayerLevel);
+              return PlayerInGroup(user: userToShow);
+            },
           )),
           VerticalDivider(
             width: 32,
@@ -68,8 +74,7 @@ class IndividualGroup extends StatelessWidget {
                               child: ElevatedButton(
                                   onPressed: () {},
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          theme.primaryColor,
+                                      backgroundColor: theme.primaryColor,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(
@@ -92,8 +97,7 @@ class IndividualGroup extends StatelessWidget {
                                     // testGroups();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          theme.primaryColor,
+                                      backgroundColor: theme.primaryColor,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(
@@ -143,7 +147,7 @@ class Observers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return numberOfObservers == 0
+    return numberOfObservers != 0
         ? Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -231,6 +235,11 @@ class PlayerInGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String username = user.username;
+    String? avatar = user.avatar.isNotEmpty ? user.avatar : null;
+
+    var theme = Theme.of(context);
+
     return Container(
       margin: EdgeInsets.fromLTRB(4, 8, 4, 4),
       padding: EdgeInsets.only(bottom: 4),
@@ -242,16 +251,14 @@ class PlayerInGroup extends StatelessWidget {
             children: [
               FittedBox(
                 fit: BoxFit.cover,
-                child: CircleAvatar(
-                    radius: 32,
-                    backgroundImage: AssetImage(user.avatar)),
+                child: getUserAvatar(avatar, getUsersInitials(username), theme.colorScheme.onBackground),
               ),
               SizedBox(
                 height: 4,
               ),
               Center(
                   child: Text(
-                    user.username,
+                    username,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 softWrap: true,

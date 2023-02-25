@@ -39,7 +39,7 @@ StreamBuilder<List<Group>> handleLobbyListChange(BuildContext context) {
       if (!snapshot.hasData) {
         return CircularProgressIndicator();
       }
-      if(snapshot.hasError) {
+      if (snapshot.hasError) {
         return SizedBox.shrink();
       }
 
@@ -50,12 +50,18 @@ StreamBuilder<List<Group>> handleLobbyListChange(BuildContext context) {
       return Padding(
           padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
           child: Center(
-              child: ListView(
-            children: groups.isEmpty
-                ? [NoGroupEntry(theme: theme)]
-                : groups
-                    .map((group) => IndividualGroup(theme: theme, group: group))
-                    .toList(),
+              child: Scrollbar(
+            radius: Radius.circular(4),
+            thickness: 8,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: ListView.builder(
+                itemCount: groups.isEmpty ? 1 : groups.length,
+                itemBuilder: (buildContext, i) => groups.isEmpty
+                    ? NoGroupEntry(theme: theme)
+                    : IndividualGroup(theme: theme, group: groups[i]),
+              ),
+            ),
           )));
     },
   );
