@@ -39,6 +39,8 @@ abstract class AbstractPlayer extends StatelessWidget {
           margin: EdgeInsets.only(right: SPACE_1),
           decoration: BoxDecoration(
             color: Colors.grey,
+            image: DecorationImage(
+                image: AssetImage(player.user.avatar), fit: BoxFit.cover),
             borderRadius: BorderRadius.all(Radius.circular(22)),
           ),
         ),
@@ -46,7 +48,7 @@ abstract class AbstractPlayer extends StatelessWidget {
             child: Container(
           margin: EdgeInsets.only(right: SPACE_2),
           child: Text(
-            player.name,
+            player.user.username,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
                 fontSize: large ? 20 : 15,

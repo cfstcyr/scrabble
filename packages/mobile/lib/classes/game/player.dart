@@ -1,10 +1,12 @@
+import 'package:mobile/classes/user.dart';
+
 class Player {
-  String name;
+  PublicUser user;
   int points;
   bool isLocalPlayer;
 
   Player({
-    required this.name,
+    required this.user,
     required this.points,
     this.isLocalPlayer = false,
   });

@@ -4,6 +4,7 @@ import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
+import 'package:mobile/classes/user.dart';
 
 class GameService {
   GameService._privateConstructor();
@@ -16,10 +17,13 @@ class GameService {
         board: Board(),
         tileRack: TileRack(),
         players: PlayersContainer.fromPlayers(
-          player1: Player(name: "George", points: 420, isLocalPlayer: true),
-          player2: Player(name: "Léonard", points: 69),
-          player3: Player(name: "Hernest", points: 666),
-          player4: Player(name: "Bernard", points: 2),
+          player1: Player(
+              user: PublicUser(username: "George"),
+              points: 420,
+              isLocalPlayer: true),
+          player2: Player(user: PublicUser(username: "Léonard"), points: 69),
+          player3: Player(user: PublicUser(username: "Hernest"), points: 666),
+          player4: Player(user: PublicUser(username: "Bernard"), points: 2),
         ),
         timeLeft: Duration(minutes: 1, seconds: 42));
 
