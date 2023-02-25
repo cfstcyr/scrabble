@@ -1,8 +1,9 @@
 import { HttpClient, HttpStatusCode } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
-import { LobbyData, LobbyInfo, PlayerData, PlayerName } from '@app/classes/communication/';
+import { PlayerData, PlayerName } from '@app/classes/communication/';
 import { GameConfig, GameConfigData, InitializeGameData, StartGameData } from '@app/classes/communication/game-config';
 import SocketService from '@app/services/socket-service/socket.service';
+import { Group } from '@common/models/group';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -15,9 +16,9 @@ export class GameDispatcherController implements OnDestroy {
     private canceledGameEvent: Subject<string> = new Subject();
     private playerJoinedGroupEvent: Subject<PlayerData[]> = new Subject();
     private playerLeftGroupEvent: Subject<PlayerData[]> = new Subject();
-    private lobbyFullEvent: Subject<void> = new Subject();
-    private lobbyRequestValidEvent: Subject<void> = new Subject();
-    private lobbiesUpdateEvent: Subject<LobbyInfo[]> = new Subject();
+    private groupFullEvent: Subject<void> = new Subject();
+    private groupRequestValidEvent: Subject<void> = new Subject();
+    private groupsUpdateEvent: Subject<Group[]> = new Subject();
     private joinerRejectedEvent: Subject<string> = new Subject();
     private initializeGame$: BehaviorSubject<InitializeGameData | undefined> = new BehaviorSubject<InitializeGameData | undefined>(undefined);
 
@@ -32,9 +33,9 @@ export class GameDispatcherController implements OnDestroy {
         this.serviceDestroyed$.complete();
     }
 
-    handleGameCreation(gameConfig: GameConfigData): Observable<{ lobbyData: LobbyData }> {
+    handleGameCreation(gameConfig: GameConfigData): Observable<{ group: Group }> {
         const endpoint = `${environment.serverUrl}/games`;
-        return this.http.post<{ lobbyData: LobbyData }>(endpoint, gameConfig);
+        return this.http.post<{ group: Group }>(endpoint, gameConfig);
     }
 
     handleConfirmationGameCreation(opponentName: string, gameId: string): Observable<void> {
@@ -57,16 +58,16 @@ export class GameDispatcherController implements OnDestroy {
         this.http.delete(endpoint).subscribe();
     }
 
-    handleLobbiesListRequest(): void {
+    handleGroupsListRequest(): void {
         const endpoint = `${environment.serverUrl}/games`;
         this.http.get(endpoint).subscribe();
     }
 
-    handleLobbyJoinRequest(gameId: string, playerName: string): void {
+    handleGroupJoinRequest(gameId: string, playerName: string): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/players/join`;
         this.http.post<GameConfig>(endpoint, { playerName }, { observe: 'response' }).subscribe(
             () => {
-                this.lobbyRequestValidEvent.next();
+                this.groupRequestValidEvent.next();
             },
             (error) => {
                 this.handleJoinError(error.status as HttpStatusCode);
@@ -90,16 +91,16 @@ export class GameDispatcherController implements OnDestroy {
         this.playerLeftGroupEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
-    subscribeToLobbyFullEvent(serviceDestroyed$: Subject<boolean>, callback: () => void): void {
-        this.lobbyFullEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
+    subscribeToGroupFullEvent(serviceDestroyed$: Subject<boolean>, callback: () => void): void {
+        this.groupFullEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
-    subscribeToLobbyRequestValidEvent(serviceDestroyed$: Subject<boolean>, callback: () => void): void {
-        this.lobbyRequestValidEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
+    subscribeToGroupRequestValidEvent(serviceDestroyed$: Subject<boolean>, callback: () => void): void {
+        this.groupRequestValidEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
-    subscribeToLobbiesUpdateEvent(serviceDestroyed$: Subject<boolean>, callback: (lobbies: LobbyInfo[]) => void): void {
-        this.lobbiesUpdateEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
+    subscribeToGroupsUpdateEvent(serviceDestroyed$: Subject<boolean>, callback: (lobbies: Group[]) => void): void {
+        this.groupsUpdateEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
     subscribeToJoinerRejectedEvent(serviceDestroyed$: Subject<boolean>, callback: (hostName: string) => void): void {
@@ -112,7 +113,7 @@ export class GameDispatcherController implements OnDestroy {
 
     private handleJoinError(errorStatus: HttpStatusCode): void {
         if (errorStatus === HttpStatusCode.Unauthorized) {
-            this.lobbyFullEvent.next();
+            this.groupFullEvent.next();
         } else if (errorStatus === HttpStatusCode.Gone) {
             this.canceledGameEvent.next('Le créateur');
         }
@@ -125,8 +126,8 @@ export class GameDispatcherController implements OnDestroy {
         this.socketService.on('startGame', (startGameData: StartGameData) => {
             this.initializeGame$.next({ localPlayerId: this.socketService.getId(), startGameData });
         });
-        this.socketService.on('lobbiesUpdate', (lobbies: LobbyInfo[]) => {
-            this.lobbiesUpdateEvent.next(lobbies);
+        this.socketService.on('groupsUpdate', (groups: Group[]) => {
+            this.groupsUpdateEvent.next(groups);
         });
         this.socketService.on('rejected', (hostName: PlayerName) => {
             this.joinerRejectedEvent.next(hostName.name);

@@ -1,4 +1,3 @@
-import { LobbyData } from '@app/classes/communication/lobby-data';
 import { GameConfigData, ReadyGameConfig, ReadyGameConfigWithChannelId } from '@app/classes/game/game-config';
 import Room from '@app/classes/game/room';
 import WaitingRoom from '@app/classes/game/waiting-room';
@@ -17,12 +16,12 @@ import { CreateGameService } from '@app/services/create-game-service/create-game
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
-import { convertToLobbyData } from '@app/utils/convert-to-lobby-data/convert-to-lobby-data';
+import { convertToGroup } from '@app/utils/convert-to-group-data/convert-to-group-data';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { UserId } from '@app/classes/user/connected-user-types';
-
+import { Group } from '@common/models/group';
 @Service()
 export class GameDispatcherService {
     private waitingRooms: WaitingRoom[];
@@ -49,13 +48,13 @@ export class GameDispatcherService {
         return this.virtualPlayerService;
     }
 
-    async createMultiplayerGame(config: GameConfigData, userId: UserId): Promise<LobbyData> {
+    async createMultiplayerGame(config: GameConfigData, userId: UserId): Promise<Group> {
         const waitingRoom = await this.createGameService.createMultiplayerGame(config, userId);
         this.dictionaryService.useDictionary(config.dictionary.id);
 
         this.addToWaitingRoom(waitingRoom);
         this.socketService.addToRoom(config.playerId, waitingRoom.getId());
-        return convertToLobbyData(waitingRoom.getConfig(), waitingRoom.getId());
+        return convertToGroup(waitingRoom.getConfig(), waitingRoom.getId());
     }
 
     requestJoinGame(waitingRoomId: string, playerId: string, playerName: string): WaitingRoom {
@@ -113,7 +112,7 @@ export class GameDispatcherService {
         return { ...config, idChannel: waitingRoom.getGroupChannelId() };
     }
 
-    async leaveLobbyRequest(waitingRoomId: string, playerId: string): Promise<Player[]> {
+    async leaveGroupRequest(waitingRoomId: string, playerId: string): Promise<Player[]> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         switch (playerId) {
             case waitingRoom.joinedPlayer2?.id: {
@@ -148,16 +147,16 @@ export class GameDispatcherService {
         this.waitingRooms.splice(index, 1);
     }
 
-    getAvailableWaitingRooms(): LobbyData[] {
+    getAvailableWaitingRooms(): Group[] {
         const waitingRooms = this.waitingRooms.filter(
-            (lobby) => lobby.joinedPlayer2 === undefined || lobby.joinedPlayer3 === undefined || lobby.joinedPlayer4 === undefined,
+            (group) => group.joinedPlayer2 === undefined || group.joinedPlayer3 === undefined || group.joinedPlayer4 === undefined,
         );
-        const lobbyData: LobbyData[] = [];
+        const groups: Group[] = [];
         for (const room of waitingRooms) {
-            lobbyData.push(convertToLobbyData(room.getConfig(), room.getId()));
+            groups.push(convertToGroup(room.getConfig(), room.getId()));
         }
 
-        return lobbyData;
+        return groups;
     }
 
     getMultiplayerGameFromId(waitingRoomId: string): WaitingRoom {

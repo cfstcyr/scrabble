@@ -7,15 +7,16 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
-import { LobbyData, LobbyInfo } from '@app/classes/communication';
 import { GameConfigData } from '@app/classes/communication/game-config';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
-import { TEST_DICTIONARY } from '@app/constants/controller-test-constants';
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
 import { GameDispatcherService, SocketService } from '@app/services/';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+import { GameVisibility } from '@common/models/game-visibility';
+import { Group } from '@common/models/group';
+import GroupInfo from '@common/models/group-info';
 import { Observable, Subject, Subscription } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
 
@@ -28,26 +29,21 @@ const BASE_GAME_ID = 'baseGameId';
 const TEST_PLAYER_ID = 'playerId';
 const TEST_PLAYER_NAME = 'playerName';
 
-const TEST_LOBBY_DATA: LobbyData = {
-    lobbyId: BASE_GAME_ID,
+const TEST_GROUP_DATA: Group = {
+    groupId: BASE_GAME_ID,
     hostName: '',
-    gameType: GameType.Classic,
-    gameMode: GameMode.Multiplayer,
     maxRoundTime: 0,
-    dictionary: TEST_DICTIONARY,
+    gameVisibility: GameVisibility.Public,
+    virtualPlayerLever: VirtualPlayerLevel.Beginner,
 };
-const TEST_LOBBY_INFO: LobbyInfo = {
-    ...TEST_LOBBY_DATA,
+const TEST_GROUP_INFO: GroupInfo = {
+    ...TEST_GROUP_DATA,
     canJoin: true,
 };
-const TEST_LOBBIES = [TEST_LOBBY_INFO];
+const TEST_LOBBIES = [TEST_GROUP_INFO];
 const TEST_GAME_PARAMETERS = {
-    gameType: GameType.LOG2990,
-    gameMode: GameMode.Solo,
-    virtualPlayerName: 'Victoria',
     level: VirtualPlayerLevel.Beginner,
     timer: '60',
-    dictionary: TEST_DICTIONARY,
 };
 const TEST_FORM_CONTENT = {
     gameType: new FormControl(GameType.Classic, Validators.required),
@@ -61,7 +57,7 @@ const TEST_FORM: FormGroup = new FormGroup(TEST_FORM_CONTENT);
 TEST_FORM.setValue(TEST_GAME_PARAMETERS);
 
 describe('GameDispatcherService', () => {
-    let getCurrentLobbyIdSpy: jasmine.Spy;
+    let getCurrentGroupIdSpy: jasmine.Spy;
     let service: GameDispatcherService;
     let gameDispatcherControllerMock: GameDispatcherController;
     let socketServiceMock: SocketService;
@@ -97,7 +93,7 @@ describe('GameDispatcherService', () => {
 
         service = TestBed.inject(GameDispatcherService);
 
-        getCurrentLobbyIdSpy = spyOn(service, 'getCurrentLobbyId').and.returnValue(BASE_GAME_ID);
+        getCurrentGroupIdSpy = spyOn(service, 'getCurrentGroupId').and.returnValue(BASE_GAME_ID);
         socketServiceMock = TestBed.inject(SocketService);
     });
 
@@ -112,15 +108,15 @@ describe('GameDispatcherService', () => {
             expect(spy).toHaveBeenCalledWith(TEST_PLAYER_NAME);
         });
 
-        it('should call handleLobbyFull on lobbyFullEvent', () => {
-            const spy = spyOn<any>(service, 'handleLobbyFull');
-            service['gameDispatcherController']['lobbyFullEvent'].next();
+        it('should call handleGroupFull on groupFullEvent', () => {
+            const spy = spyOn<any>(service, 'handleGroupFull');
+            service['gameDispatcherController']['groupFullEvent'].next();
             expect(spy).toHaveBeenCalled();
         });
 
-        it('should call navigateByUrl on lobbyRequestValidEvent', () => {
+        it('should call navigateByUrl on groupRequestValidEvent', () => {
             const spy = spyOn(service.router, 'navigateByUrl');
-            service['gameDispatcherController']['lobbyRequestValidEvent'].next();
+            service['gameDispatcherController']['groupRequestValidEvent'].next();
             expect(spy).toHaveBeenCalled();
         });
 
@@ -137,7 +133,7 @@ describe('GameDispatcherService', () => {
         });
 
         it('should call handleJoinerRejected on lobbiesUpdateEvent', () => {
-            const lobbies: LobbyInfo[] = [];
+            const lobbies: GroupInfo[] = [];
             const spy = spyOn<any>(service, 'handleLobbiesUpdate');
             service['gameDispatcherController']['lobbiesUpdateEvent'].next(lobbies);
             expect(spy).toHaveBeenCalledWith(lobbies);
@@ -160,19 +156,19 @@ describe('GameDispatcherService', () => {
         });
     });
 
-    describe('getCurrentLobbyId', () => {
+    describe('getCurrentGroupId', () => {
         beforeEach(() => {
-            getCurrentLobbyIdSpy.and.callThrough();
+            getCurrentGroupIdSpy.and.callThrough();
         });
 
-        it('should return current lobby id if current lobby is defined', () => {
-            service.currentLobby = TEST_LOBBY_INFO;
-            expect(service.getCurrentLobbyId()).toEqual(TEST_LOBBY_INFO.lobbyId);
+        it('should return current group id if current group is defined', () => {
+            service.currentGroup = TEST_GROUP_INFO;
+            expect(service.getCurrentGroupId()).toEqual(TEST_GROUP_INFO.groupId);
         });
 
-        it('should return empty string if current lobby is undefined', () => {
-            service.currentLobby = undefined;
-            expect(service.getCurrentLobbyId()).toEqual('');
+        it('should return empty string if current group is undefined', () => {
+            service.currentGroup = undefined;
+            expect(service.getCurrentGroupId()).toEqual('');
         });
     });
 
@@ -193,47 +189,47 @@ describe('GameDispatcherService', () => {
     });
 
     it('resetData should set right attributes', () => {
-        service.currentLobby = TEST_LOBBY_INFO;
+        service.currentGroup = TEST_GROUP_INFO;
         service.currentName = 'default name';
-        getCurrentLobbyIdSpy.and.callThrough();
+        getCurrentGroupIdSpy.and.callThrough();
 
         service.resetServiceData();
-        expect(service.currentLobby).toBeUndefined();
+        expect(service.currentGroup).toBeUndefined();
         expect(service.currentName).toEqual('');
-        expect(service.getCurrentLobbyId()).toEqual('');
+        expect(service.getCurrentGroupId()).toEqual('');
     });
 
-    describe('handleJoinLobby', () => {
-        let spyHandleLobbyJoinRequest: jasmine.Spy;
+    describe('handleJoinGroup', () => {
+        let spyHandleGroupJoinRequest: jasmine.Spy;
 
         beforeEach(() => {
-            spyHandleLobbyJoinRequest = spyOn(gameDispatcherControllerMock, 'handleLobbyJoinRequest').and.callFake(() => {
+            spyHandleGroupJoinRequest = spyOn(gameDispatcherControllerMock, 'handleGroupJoinRequest').and.callFake(() => {
                 return;
             });
         });
-        it('handleJoinLobby should call gameDispatcherController.handleLobbyJoinRequest with the correct parameters', () => {
-            service.handleJoinLobby(TEST_LOBBIES[0], TEST_PLAYER_NAME);
-            expect(spyHandleLobbyJoinRequest).toHaveBeenCalledWith(TEST_LOBBIES[0].lobbyId, TEST_PLAYER_NAME);
+        it('handleJoinGroup should call gameDispatcherController.handleGroupJoinRequest with the correct parameters', () => {
+            service.handleJoinGroup(TEST_LOBBIES[0], TEST_PLAYER_NAME);
+            expect(spyHandleGroupJoinRequest).toHaveBeenCalledWith(TEST_LOBBIES[0].groupId, TEST_PLAYER_NAME);
         });
 
-        it('handleJoinLobby should set right attributes', () => {
-            service.currentLobby = undefined;
+        it('handleJoinGroup should set right attributes', () => {
+            service.currentGroup = undefined;
             service.currentName = '';
-            getCurrentLobbyIdSpy.and.callThrough();
+            getCurrentGroupIdSpy.and.callThrough();
 
-            service.handleJoinLobby(TEST_LOBBY_INFO, TEST_PLAYER_NAME);
-            expect(service.currentLobby).toBeTruthy();
+            service.handleJoinGroup(TEST_GROUP_INFO, TEST_PLAYER_NAME);
+            expect(service.currentGroup).toBeTruthy();
             expect(service.currentName).toEqual(TEST_PLAYER_NAME);
-            expect(service.getCurrentLobbyId()).toEqual(TEST_LOBBY_INFO.lobbyId);
+            expect(service.getCurrentGroupId()).toEqual(TEST_GROUP_INFO.groupId);
         });
     });
 
-    it('handleLobbyListRequest should call gameDispatcherController.handleLobbiesListRequest', () => {
-        const spyHandleLobbyJoinRequest = spyOn(gameDispatcherControllerMock, 'handleLobbiesListRequest').and.callFake(() => {
+    it('handleGroupListRequest should call gameDispatcherController.handleGroupsListRequest', () => {
+        const spyHandleGroupJoinRequest = spyOn(gameDispatcherControllerMock, 'handleGroupsListRequest').and.callFake(() => {
             return;
         });
-        service.handleLobbyListRequest();
-        expect(spyHandleLobbyJoinRequest).toHaveBeenCalled();
+        service.handleGroupListRequest();
+        expect(spyHandleGroupJoinRequest).toHaveBeenCalled();
     });
 
     it('handleCreateGame should call handleGameCreation with the correct parameters for solo game', () => {
@@ -295,13 +291,13 @@ describe('GameDispatcherService', () => {
         });
 
         it('should call handleCancelGame if gameId is defined', () => {
-            getCurrentLobbyIdSpy.and.returnValue(BASE_GAME_ID);
+            getCurrentGroupIdSpy.and.returnValue(BASE_GAME_ID);
             service.handleCancelGame();
             expect(cancelGameSpy).toHaveBeenCalledWith(BASE_GAME_ID);
         });
 
         it('should not call handleCancelGame if gameId is undefined', () => {
-            getCurrentLobbyIdSpy.and.returnValue('');
+            getCurrentGroupIdSpy.and.returnValue('');
             service.handleCancelGame();
             expect(cancelGameSpy).not.toHaveBeenCalled();
         });
@@ -343,20 +339,20 @@ describe('GameDispatcherService', () => {
         };
         gameParametersForm.setValue(formValues);
 
-        it('should call handleGameCreation if the lobby is defined and create a SoloGame', () => {
-            service.currentLobby = TEST_LOBBY_INFO;
+        it('should call handleGameCreation if the group is defined and create a SoloGame', () => {
+            service.currentGroup = TEST_GROUP_INFO;
             service.handleRecreateGame(gameParametersForm);
             expect(createSpy).toHaveBeenCalled();
         });
 
-        it('should call handleGameCreation if the lobby is defined  and create a MultiplayerGame', () => {
-            service.currentLobby = TEST_LOBBY_INFO;
+        it('should call handleGameCreation if the group is defined  and create a MultiplayerGame', () => {
+            service.currentGroup = TEST_GROUP_INFO;
             service.handleRecreateGame();
             expect(createSpy).toHaveBeenCalled();
         });
 
         it('should not call handleCancelGame if gameId is undefined', () => {
-            service.currentLobby = undefined;
+            service.currentGroup = undefined;
             service.handleRecreateGame();
             expect(createSpy).not.toHaveBeenCalled();
         });
@@ -364,7 +360,7 @@ describe('GameDispatcherService', () => {
 
     describe('handleGameCreation', () => {
         let handleCreationSpy: jasmine.Spy;
-        let postObservable: Subject<{ lobbyData: LobbyData }>;
+        let postObservable: Subject<{ Group: Group }>;
         let routerSpy: jasmine.Spy;
         let gameConfigData: GameConfigData;
         let gameCreationFailedSpy: jasmine.Spy;
@@ -384,22 +380,22 @@ describe('GameDispatcherService', () => {
             expect(handleCreationSpy).toHaveBeenCalledWith(gameConfigData);
         });
 
-        it('should set currentLobby to response lobbyData', () => {
-            postObservable.next({ lobbyData: TEST_LOBBY_DATA });
-            expect(service.currentLobby).toEqual(TEST_LOBBY_DATA);
+        it('should set currentGroup to response Group', () => {
+            postObservable.next({ Group: TEST_GROUP_DATA });
+            expect(service.currentGroup).toEqual(TEST_GROUP_DATA);
         });
 
         it('if is Multiplayer, should route to waiting-room', () => {
-            TEST_LOBBY_DATA.gameMode = GameMode.Multiplayer;
-            postObservable.next({ lobbyData: TEST_LOBBY_DATA });
+            TEST_GROUP_DATA.gameMode = GameMode.Multiplayer;
+            postObservable.next({ Group: TEST_GROUP_DATA });
             expect(routerSpy).toHaveBeenCalledWith('waiting-room');
         });
 
         it('if is Solo, should NOT route to waiting-room', () => {
-            TEST_LOBBY_DATA.gameMode = GameMode.Solo;
-            postObservable.next({ lobbyData: TEST_LOBBY_DATA });
+            TEST_GROUP_DATA.gameMode = GameMode.Solo;
+            postObservable.next({ Group: TEST_GROUP_DATA });
             expect(routerSpy).not.toHaveBeenCalledWith('waiting-room');
-            TEST_LOBBY_DATA.gameMode = GameMode.Multiplayer;
+            TEST_GROUP_DATA.gameMode = GameMode.Multiplayer;
         });
 
         it('on error, should send gameCreationFailed$ event', () => {
@@ -428,19 +424,19 @@ describe('GameDispatcherService', () => {
         });
 
         it('should call handleConfirmation if gameId is defined', () => {
-            getCurrentLobbyIdSpy.and.returnValue(BASE_GAME_ID);
+            getCurrentGroupIdSpy.and.returnValue(BASE_GAME_ID);
             service.handleConfirmation(TEST_PLAYER_NAME);
             expect(confirmationSpy).toHaveBeenCalledWith(TEST_PLAYER_NAME, BASE_GAME_ID);
         });
 
         it('should not call handleCancelGame if gameId is undefined', () => {
-            getCurrentLobbyIdSpy.and.returnValue('');
+            getCurrentGroupIdSpy.and.returnValue('');
             service.handleConfirmation(TEST_PLAYER_NAME);
             expect(confirmationSpy).not.toHaveBeenCalled();
         });
 
         it('on error, should emit gameCreationFailed', () => {
-            getCurrentLobbyIdSpy.and.returnValue(BASE_GAME_ID);
+            getCurrentGroupIdSpy.and.returnValue(BASE_GAME_ID);
             service.handleConfirmation(TEST_PLAYER_NAME);
             confirmationObservable.error({});
             expect(gameCreationFailedSpy).toHaveBeenCalled();
@@ -459,13 +455,13 @@ describe('GameDispatcherService', () => {
         });
 
         it('should call handleCancelGame if gameId is defined', () => {
-            getCurrentLobbyIdSpy.and.returnValue(BASE_GAME_ID);
+            getCurrentGroupIdSpy.and.returnValue(BASE_GAME_ID);
             service.handleRejection(TEST_PLAYER_NAME);
             expect(rejectionSpy).toHaveBeenCalledWith(TEST_PLAYER_NAME, BASE_GAME_ID);
         });
 
-        it('should not call handleCancelGame if currentLobbyId is undefined', () => {
-            getCurrentLobbyIdSpy.and.returnValue('');
+        it('should not call handleCancelGame if currentGroupId is undefined', () => {
+            getCurrentGroupIdSpy.and.returnValue('');
             service.handleRejection(TEST_PLAYER_NAME);
             expect(rejectionSpy).not.toHaveBeenCalled();
         });
@@ -506,20 +502,20 @@ describe('GameDispatcherService', () => {
 
     describe('handleLobbiesUpdate', () => {
         it('should emit to joinRequestEvent', () => {
-            const args: LobbyInfo[] = [];
+            const args: GroupInfo[] = [];
             const spy = spyOn(service['lobbiesUpdateEvent'], 'next');
             service['handleLobbiesUpdate'](args);
             expect(spy).toHaveBeenCalledWith(args);
         });
     });
 
-    describe('handleLobbyFull', () => {
+    describe('handleGroupFull', () => {
         let emitSpy: jasmine.Spy;
         let resetSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetSpy = spyOn<any>(service, 'resetServiceData');
-            emitSpy = spyOn(service['lobbyFullEvent'], 'next');
+            emitSpy = spyOn(service['groupFullEvent'], 'next');
         });
 
         afterEach(() => {
@@ -527,13 +523,13 @@ describe('GameDispatcherService', () => {
             resetSpy.calls.reset();
         });
 
-        it('should emit to lobbyFullEvent', () => {
-            service['handleLobbyFull']();
+        it('should emit to groupFullEvent', () => {
+            service['handleGroupFull']();
             expect(emitSpy).toHaveBeenCalledWith();
         });
 
         it('should call resetData', () => {
-            service['handleLobbyFull']();
+            service['handleGroupFull']();
             expect(resetSpy).toHaveBeenCalledWith();
         });
     });
@@ -606,9 +602,9 @@ describe('GameDispatcherService', () => {
             expect(subscriptionSpy).toHaveBeenCalled();
         });
 
-        it('subscribeToLobbyFullEvent should call subscribe method on joinRequestEvent', () => {
-            const subscriptionSpy = spyOn(service['lobbyFullEvent'], 'subscribe');
-            service.subscribeToLobbyFullEvent(serviceDestroyed$, callback);
+        it('subscribeToGroupFullEvent should call subscribe method on joinRequestEvent', () => {
+            const subscriptionSpy = spyOn(service['groupFullEvent'], 'subscribe');
+            service.subscribeToGroupFullEvent(serviceDestroyed$, callback);
             expect(subscriptionSpy).toHaveBeenCalled();
         });
 

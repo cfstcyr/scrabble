@@ -58,18 +58,18 @@ describe('PlayerLeavesService', () => {
         expect(handleLeaveGameSpy).toHaveBeenCalled();
     });
 
-    it('handleLeaveLobby should call playerLeavesController.handleLeaveGame if this.currentLobbyId is defined', () => {
-        spyOn(service['gameDispatcherService'], 'getCurrentLobbyId').and.returnValue(DEFAULT_GAME_ID);
+    it('handleLeaveGroup should call playerLeavesController.handleLeaveGame if this.currentGroupId is defined', () => {
+        spyOn(service['gameDispatcherService'], 'getCurrentGroupId').and.returnValue(DEFAULT_GAME_ID);
         const handleLeaveGameSpy = spyOn(service['playerLeavesController'], 'handleLeaveGame').and.callFake(() => {
             return;
         });
-        service.handleLeaveLobby();
+        service.handleLeaveGroup();
         expect(handleLeaveGameSpy).toHaveBeenCalled();
     });
 
-    it('handleLeaveLobby should call gameDispatcherService.resetServiceData', () => {
+    it('handleLeaveGroup should call gameDispatcherService.resetServiceData', () => {
         const handleLeaveGameSpy = spyOn<any>(service['gameDispatcherService'], 'resetServiceData').and.callFake(() => {});
-        service.handleLeaveLobby();
+        service.handleLeaveGroup();
         expect(handleLeaveGameSpy).toHaveBeenCalled();
     });
 

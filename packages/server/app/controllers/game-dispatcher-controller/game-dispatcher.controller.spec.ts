@@ -649,12 +649,12 @@ describe('GameDispatcherController', () => {
         let getAvailableRoomsSpy: unknown;
         let addToRoomSpy: unknown;
         let emitToSocketSpy: unknown;
-        const lobbyStub = createStubInstance(Room);
-        lobbyStub.getId.returns('1');
+        const groupStub = createStubInstance(Room);
+        groupStub.getId.returns('1');
 
         beforeEach(() => {
-            chai.spy.on(controller['gameDispatcherService'], 'getLobbiesRoom', () => lobbyStub);
-            getAvailableRoomsSpy = chai.spy.on(controller['gameDispatcherService'], 'getAvailableWaitingRooms', () => lobbyStub);
+            chai.spy.on(controller['gameDispatcherService'], 'getLobbiesRoom', () => groupStub);
+            getAvailableRoomsSpy = chai.spy.on(controller['gameDispatcherService'], 'getAvailableWaitingRooms', () => groupStub);
             addToRoomSpy = chai.spy.on(controller['socketService'], 'addToRoom', () => {});
             emitToSocketSpy = chai.spy.on(controller['socketService'], 'emitToSocket', () => {});
             controller['handleLobbiesRequest'](DEFAULT_PLAYER_ID);
@@ -665,7 +665,7 @@ describe('GameDispatcherController', () => {
         });
 
         it('should call socketService.addToRoom', () => {
-            expect(addToRoomSpy).to.have.been.called.with(DEFAULT_PLAYER_ID, lobbyStub.getId());
+            expect(addToRoomSpy).to.have.been.called.with(DEFAULT_PLAYER_ID, groupStub.getId());
         });
 
         it('should call socketService.emitToSocket', () => {
@@ -742,14 +742,14 @@ describe('GameDispatcherController', () => {
         });
 
         describe('Player leave before game', () => {
-            let leaveLobbyRequestSpy: unknown;
+            let leaveGroupRequestSpy: unknown;
             let handleLobbiesUpdateSpy: unknown;
 
             beforeEach(async () => {
                 isGameInWaitingRoomsSpy = chai.spy.on(controller['gameDispatcherService'], 'isGameInWaitingRooms', () => {
                     return true;
                 });
-                leaveLobbyRequestSpy = chai.spy.on(controller['gameDispatcherService'], 'leaveLobbyRequest', async () => {
+                leaveGroupRequestSpy = chai.spy.on(controller['gameDispatcherService'], 'leaveGroupRequest', async () => {
                     return [DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME];
                 });
                 handleLobbiesUpdateSpy = chai.spy.on(controller, 'handleLobbiesUpdate', () => {});
@@ -760,8 +760,8 @@ describe('GameDispatcherController', () => {
                 expect(isGameInWaitingRoomsSpy).to.have.been.called();
             });
 
-            it('should call gameDispatcherService.leaveLobbyRequest', () => {
-                expect(leaveLobbyRequestSpy).to.have.been.called.with(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            it('should call gameDispatcherService.leaveGroupRequest', () => {
+                expect(leaveGroupRequestSpy).to.have.been.called.with(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
             });
 
             it('should call socketService.emitToSocket', () => {
@@ -788,13 +788,13 @@ describe('GameDispatcherController', () => {
         let getAvailableRoomsSpy: unknown;
         let emitToRoomSpy: unknown;
         let getLobbiesRoomSpy: unknown;
-        const lobbyRoomStub = createStubInstance(Room);
+        const groupRoomStub = createStubInstance(Room);
 
         beforeEach(() => {
             getAvailableRoomsSpy = chai.spy.on(controller['gameDispatcherService'], 'getAvailableWaitingRooms', () => {});
             emitToRoomSpy = chai.spy.on(controller['socketService'], 'emitToRoom', () => {});
             getLobbiesRoomSpy = chai.spy.on(controller['gameDispatcherService'], 'getLobbiesRoom', () => {
-                return lobbyRoomStub;
+                return groupRoomStub;
             });
             controller['handleLobbiesUpdate']();
         });
@@ -824,7 +824,7 @@ describe('GameDispatcherController', () => {
             getGameSpy = stub(controller['activeGameService'], 'getGame').returns(gameStub as unknown as Game);
             playerStub = createStubInstance(Player);
             gameStub.getPlayer.returns(playerStub as unknown as Player);
-            handleLeaveSpy = chai.spy.on(controller, 'handleLobbyLeave', () => {});
+            handleLeaveSpy = chai.spy.on(controller, 'handleGroupLeave', () => {});
         });
 
         it('Disconnection should verify if game is over', () => {

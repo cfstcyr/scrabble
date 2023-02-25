@@ -2,15 +2,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LobbyInfo, PlayerData } from '@app/classes/communication/';
-import { DictionarySummary } from '@app/classes/communication/dictionary-summary';
+import { PlayerData } from '@app/classes/communication/';
 import { GameConfigData, InitializeGameData } from '@app/classes/communication/game-config';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
-import { GameMode } from '@app/constants/game-mode';
-import { GameType } from '@app/constants/game-type';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
 import GameService from '@app/services/game-service/game.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+import GroupInfo from '@common/models/group-info';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -19,15 +17,15 @@ import { takeUntil } from 'rxjs/operators';
 })
 export default class GameDispatcherService implements OnDestroy {
     currentName: string = '';
-    currentLobby: LobbyInfo | undefined = undefined;
+    currentGroup: GroupInfo | undefined = undefined;
 
     private gameCreationFailed$: Subject<HttpErrorResponse> = new Subject();
     private joinRequestEvent: Subject<string> = new Subject();
     private playerJoinedGroupEvent: Subject<PlayerData[]> = new Subject();
     private playerLeftGroupEvent: Subject<PlayerData[]> = new Subject();
     private canceledGameEvent: Subject<string> = new Subject();
-    private lobbyFullEvent: Subject<void> = new Subject();
-    private lobbiesUpdateEvent: Subject<LobbyInfo[]> = new Subject();
+    private groupFullEvent: Subject<void> = new Subject();
+    private groupsUpdateEvent: Subject<GroupInfo[]> = new Subject();
     private joinerRejectedEvent: Subject<string> = new Subject();
     private serviceDestroyed$: Subject<boolean> = new Subject();
 
@@ -46,17 +44,15 @@ export default class GameDispatcherService implements OnDestroy {
         this.gameDispatcherController.subscribeToPlayerLeftGroupEvent(this.serviceDestroyed$, (players: PlayerData[]) =>
             this.handlePlayerLeftRequest(players),
         );
-        this.gameDispatcherController.subscribeToLobbyFullEvent(this.serviceDestroyed$, () => this.handleLobbyFull());
-        this.gameDispatcherController.subscribeToLobbyRequestValidEvent(this.serviceDestroyed$, async () =>
+        this.gameDispatcherController.subscribeToGroupFullEvent(this.serviceDestroyed$, () => this.handleGroupFull());
+        this.gameDispatcherController.subscribeToGroupRequestValidEvent(this.serviceDestroyed$, async () =>
             this.router.navigateByUrl('join-waiting-room'),
         );
         this.gameDispatcherController.subscribeToCanceledGameEvent(this.serviceDestroyed$, (hostName: string) => this.handleCanceledGame(hostName));
         this.gameDispatcherController.subscribeToJoinerRejectedEvent(this.serviceDestroyed$, (hostName: string) =>
             this.handleJoinerRejected(hostName),
         );
-        this.gameDispatcherController.subscribeToLobbiesUpdateEvent(this.serviceDestroyed$, (lobbies: LobbyInfo[]) =>
-            this.handleLobbiesUpdate(lobbies),
-        );
+        this.gameDispatcherController.subscribeToGroupsUpdateEvent(this.serviceDestroyed$, (groups: GroupInfo[]) => this.handleGroupsUpdate(groups));
         this.gameDispatcherController.subscribeToInitializeGame(this.serviceDestroyed$, async (initializeValue: InitializeGameData | undefined) =>
             this.gameService.handleInitializeGame(initializeValue),
         );
@@ -69,55 +65,45 @@ export default class GameDispatcherService implements OnDestroy {
         this.serviceDestroyed$.complete();
     }
 
-    getCurrentLobbyId(): string {
-        return !this.currentLobby ? '' : this.currentLobby.lobbyId;
+    getCurrentGroupId(): string {
+        return !this.currentGroup ? '' : this.currentGroup.groupId;
     }
 
     resetServiceData(): void {
-        this.currentLobby = undefined;
+        this.currentGroup = undefined;
         this.currentName = '';
     }
 
-    handleJoinLobby(lobby: LobbyInfo, playerName: string): void {
-        this.currentLobby = lobby;
+    handleJoinGroup(group: GroupInfo, playerName: string): void {
+        this.currentGroup = group;
         this.currentName = playerName;
-        this.gameDispatcherController.handleLobbyJoinRequest(this.getCurrentLobbyId(), playerName);
+        this.gameDispatcherController.handleGroupJoinRequest(this.getCurrentGroupId(), playerName);
     }
 
-    handleLobbyListRequest(): void {
-        this.gameDispatcherController.handleLobbiesListRequest();
+    handleGroupListRequest(): void {
+        this.gameDispatcherController.handleGroupsListRequest();
     }
 
     handleCreateGame(playerName: string, gameParameters: FormGroup): void {
-        const gameMode: GameMode = gameParameters.get('gameMode')?.value as GameMode;
         const gameConfig: GameConfigData = {
             playerName,
             playerId: this.gameDispatcherController.socketService.getId(),
-            gameType: gameParameters.get('gameType')?.value as GameType,
-            gameMode,
             maxRoundTime: gameParameters.get('timer')?.value as number,
-            dictionary: gameParameters.get('dictionary')?.value as DictionarySummary,
+            virtualPlayerLevel: gameParameters.get('level')?.value as VirtualPlayerLevel,
         };
-        if (gameMode === GameMode.Solo) {
-            gameConfig.virtualPlayerName = gameParameters.get('virtualPlayerName')?.value as string;
-            gameConfig.virtualPlayerLevel = gameParameters.get('level')?.value as VirtualPlayerLevel;
-        }
         this.handleGameCreation(gameConfig);
     }
 
     handleRecreateGame(gameParameters?: FormGroup): void {
-        if (!this.currentLobby) return;
+        if (!this.currentGroup) return;
 
         const gameConfig: GameConfigData = {
-            playerName: this.currentLobby?.hostName,
+            playerName: this.currentGroup?.hostName,
             playerId: this.gameDispatcherController.socketService.getId(),
-            gameType: this.currentLobby?.gameType,
-            gameMode: this.isGameModeSolo(gameParameters) ? GameMode.Solo : GameMode.Multiplayer,
-            maxRoundTime: this.currentLobby?.maxRoundTime,
-            dictionary: this.currentLobby?.dictionary,
+            maxRoundTime: this.currentGroup?.maxRoundTime,
         };
 
-        if (gameParameters && this.isGameModeSolo(gameParameters)) {
+        if (gameParameters) {
             gameConfig.virtualPlayerName = gameParameters.get('virtualPlayerName')?.value as string;
             gameConfig.virtualPlayerLevel = gameParameters.get('level')?.value as VirtualPlayerLevel;
         }
@@ -125,26 +111,26 @@ export default class GameDispatcherService implements OnDestroy {
     }
 
     handleCancelGame(mustResetData: boolean = true): void {
-        if (this.getCurrentLobbyId()) this.gameDispatcherController.handleCancelGame(this.getCurrentLobbyId());
+        if (this.getCurrentGroupId()) this.gameDispatcherController.handleCancelGame(this.getCurrentGroupId());
         if (mustResetData) this.resetServiceData();
     }
 
     handleConfirmation(opponentName: string): void {
-        if (this.getCurrentLobbyId())
+        if (this.getCurrentGroupId())
             this.gameDispatcherController
-                .handleConfirmationGameCreation(opponentName, this.getCurrentLobbyId())
+                .handleConfirmationGameCreation(opponentName, this.getCurrentGroupId())
                 .subscribe({ next: undefined, error: (error: HttpErrorResponse) => this.gameCreationFailed$.next(error) });
     }
 
     handleStart(): void {
-        if (this.getCurrentLobbyId())
+        if (this.getCurrentGroupId())
             this.gameDispatcherController
-                .handleStartGame(this.getCurrentLobbyId())
+                .handleStartGame(this.getCurrentGroupId())
                 .subscribe({ next: undefined, error: (error: HttpErrorResponse) => this.gameCreationFailed$.next(error) });
     }
 
     handleRejection(opponentName: string): void {
-        if (this.getCurrentLobbyId()) this.gameDispatcherController.handleRejectionGameCreation(opponentName, this.getCurrentLobbyId());
+        if (this.getCurrentGroupId()) this.gameDispatcherController.handleRejectionGameCreation(opponentName, this.getCurrentGroupId());
     }
 
     subscribeToJoinRequestEvent(componentDestroyed$: Subject<boolean>, callback: (opponentName: string) => void): void {
@@ -163,12 +149,12 @@ export default class GameDispatcherService implements OnDestroy {
         this.canceledGameEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
     }
 
-    subscribeToLobbyFullEvent(componentDestroyed$: Subject<boolean>, callback: () => void): void {
-        this.lobbyFullEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
+    subscribeToGroupFullEvent(componentDestroyed$: Subject<boolean>, callback: () => void): void {
+        this.groupFullEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
     }
 
-    subscribeToLobbiesUpdateEvent(componentDestroyed$: Subject<boolean>, callback: (lobbies: LobbyInfo[]) => void): void {
-        this.lobbiesUpdateEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
+    subscribeToGroupsUpdateEvent(componentDestroyed$: Subject<boolean>, callback: (groups: GroupInfo[]) => void): void {
+        this.groupsUpdateEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
     }
 
     subscribeToJoinerRejectedEvent(componentDestroyed$: Subject<boolean>, callback: (hostName: string) => void): void {
@@ -182,8 +168,8 @@ export default class GameDispatcherService implements OnDestroy {
     private handleGameCreation(gameConfig: GameConfigData): void {
         this.gameDispatcherController.handleGameCreation(gameConfig).subscribe(
             (response) => {
-                this.currentLobby = response.lobbyData;
-                if (this.currentLobby && this.currentLobby.gameMode === GameMode.Multiplayer) {
+                this.currentGroup = response.group;
+                if (this.currentGroup) {
                     this.router.navigateByUrl('waiting-room');
                 }
             },
@@ -191,10 +177,6 @@ export default class GameDispatcherService implements OnDestroy {
                 this.gameCreationFailed$.next(error);
             },
         );
-    }
-
-    private isGameModeSolo(gameParameters?: FormGroup): boolean {
-        return (gameParameters && gameParameters.get('gameMode')?.value === GameMode.Solo) ?? false;
     }
 
     private handleJoinRequest(opponentName: string): void {
@@ -214,12 +196,12 @@ export default class GameDispatcherService implements OnDestroy {
         this.resetServiceData();
     }
 
-    private handleLobbiesUpdate(lobbies: LobbyInfo[]): void {
-        this.lobbiesUpdateEvent.next(lobbies);
+    private handleGroupsUpdate(groups: GroupInfo[]): void {
+        this.groupsUpdateEvent.next(groups);
     }
 
-    private handleLobbyFull(): void {
-        this.lobbyFullEvent.next();
+    private handleGroupFull(): void {
+        this.groupFullEvent.next();
         this.resetServiceData();
     }
 

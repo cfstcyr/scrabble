@@ -1,12 +1,13 @@
-import { GameMode } from '@app/constants/game-mode';
-import { GameType } from '@app/constants/game-type';
+import { GameVisibility } from '@common/models/game-visibility';
+import GroupInfo from '@common/models/group-info';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 
 export const HOST_WAITING_MESSAGE = "En attente d'un adversaire";
 export const OPPONENT_FOUND_MESSAGE = ' a rejoint votre partie.';
 export const DIALOG_TITLE = 'Attention!';
 export const DIALOG_CONTENT = " a quitté le salon. Veuillez patientez le temps qu'un autre joueur veuille vous affronter.";
 export const DIALOG_BUTTON_CONTENT_REJECTED = 'Retourner en attente.';
-export const DIALOG_BUTTON_CONTENT_RETURN_LOBBY = 'Retourner à la sélection de parties.';
+export const DIALOG_BUTTON_CONTENT_RETURN_GROUP = 'Retourner à la sélection de parties.';
 export const DIALOG_REJECT_TITLE = 'Rejeté';
 export const DIALOG_REJECT_CONTENT = ' vous a rejeté de la partie.';
 export const DIALOG_CANCEL_TITLE = 'Partie annulée';
@@ -41,16 +42,10 @@ export const MAXIMUM_TIMER_VALUE = 300;
 export const TIMER_VALUE_INCREMENTS = 30;
 export const KEEP_DATA = false;
 
-export const DEFAULT_LOBBY = {
-    lobbyId: '',
+export const DEFAULT_GROUP: GroupInfo = {
+    groupId: '',
     hostName: 'host',
-    gameType: GameType.Classic,
-    gameMode: GameMode.Multiplayer,
     maxRoundTime: 60,
-    dictionary: {
-        title: 'Français',
-        description: '',
-        id: '',
-        isDefault: true,
-    },
+    gameVisibility: GameVisibility.Public,
+    virtualPlayerLever: VirtualPlayerLevel.Beginner,
 };

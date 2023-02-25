@@ -4,10 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import Game from '@app/classes/game/game';
 import { ReadyGameConfig } from '@app/classes/game/game-config';
-import { GameMode } from '@app/classes/game/game-mode';
-import { GameType } from '@app/classes/game/game-type';
 import Player from '@app/classes/player/player';
-import { TEST_DICTIONARY } from '@app/constants/dictionary-tests-const';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
@@ -36,10 +33,7 @@ const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     player2: DEFAULT_PLAYER_2,
     player3: DEFAULT_PLAYER_3,
     player4: DEFAULT_PLAYER_4,
-    gameType: GameType.Classic,
-    gameMode: GameMode.Multiplayer,
     maxRoundTime: 1,
-    dictionary: TEST_DICTIONARY,
 };
 const DEFAULT_GAME = {
     player1: DEFAULT_PLAYER_1,

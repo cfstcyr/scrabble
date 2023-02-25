@@ -1,11 +1,10 @@
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
-import { LobbyData } from '@app/classes/communication/lobby-data';
 import { PlayerData } from '@app/classes/communication/player-data';
 import { CreateGameRequest, GameRequest, LobbiesRequest } from '@app/classes/communication/request';
 import { GameConfigData } from '@app/classes/game/game-config';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SECONDS_TO_MILLISECONDS, TIME_TO_RECONNECT } from '@app/constants/controllers-constants';
-import { DICTIONARY_REQUIRED, GAME_IS_OVER, MAX_ROUND_TIME_REQUIRED, NAME_IS_INVALID, PLAYER_NAME_REQUIRED } from '@app/constants/controllers-errors';
+import { GAME_IS_OVER, MAX_ROUND_TIME_REQUIRED, NAME_IS_INVALID, PLAYER_NAME_REQUIRED } from '@app/constants/controllers-errors';
 import { SYSTEM_ID } from '@app/constants/game-constants';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { GameDispatcherService } from '@app/services/game-dispatcher-service/game-dispatcher.service';
@@ -21,6 +20,7 @@ import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatche
 import Player from '@app/classes/player/player';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { Group } from '@common/models/group';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -45,8 +45,8 @@ export class GameDispatcherController extends BaseController {
             const userId: UserId = req.body.idUser;
             const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
             try {
-                const lobbyData = await this.handleCreateGame({ playerId, ...body }, userId);
-                res.status(StatusCodes.CREATED).send({ lobbyData });
+                const group = await this.handleCreateGame({ playerId, ...body }, userId);
+                res.status(StatusCodes.CREATED).send({ group });
             } catch (exception) {
                 next(exception);
             }
@@ -184,7 +184,7 @@ export class GameDispatcherController extends BaseController {
 
     private async handleLeave(gameId: string, playerId: string): Promise<void> {
         if (this.gameDispatcherService.isGameInWaitingRooms(gameId)) {
-            const players = await this.gameDispatcherService.leaveLobbyRequest(gameId, playerId);
+            const players = await this.gameDispatcherService.leaveGroupRequest(gameId, playerId);
             const playersData: PlayerData[] = players.map((player: Player) => player.convertToPlayerData());
             // TODO: Check what is returned
             this.socketService.emitToRoom(gameId, 'joinerLeaveGame', playersData);
@@ -204,20 +204,19 @@ export class GameDispatcherController extends BaseController {
         });
     }
 
-    private async handleCreateGame(config: GameConfigData, userId: UserId): Promise<LobbyData | void> {
+    private async handleCreateGame(config: GameConfigData, userId: UserId): Promise<Group | void> {
         if (config.playerName === undefined) throw new HttpException(PLAYER_NAME_REQUIRED, StatusCodes.BAD_REQUEST);
         if (config.maxRoundTime === undefined) throw new HttpException(MAX_ROUND_TIME_REQUIRED, StatusCodes.BAD_REQUEST);
-        if (config.dictionary === undefined) throw new HttpException(DICTIONARY_REQUIRED, StatusCodes.BAD_REQUEST);
 
         if (!validateName(config.playerName)) throw new HttpException(NAME_IS_INVALID, StatusCodes.BAD_REQUEST);
 
         return await this.handleCreateMultiplayerGame(config, userId);
     }
 
-    private async handleCreateMultiplayerGame(config: GameConfigData, userId: UserId): Promise<LobbyData> {
-        const lobbyData = await this.gameDispatcherService.createMultiplayerGame(config, userId);
+    private async handleCreateMultiplayerGame(config: GameConfigData, userId: UserId): Promise<Group> {
+        const group = await this.gameDispatcherService.createMultiplayerGame(config, userId);
         this.handleLobbiesUpdate();
-        return lobbyData;
+        return group;
     }
 
     private handleJoinGame(gameId: string, playerId: string, playerName: string): void {

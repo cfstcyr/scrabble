@@ -1,5 +1,5 @@
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
-import { LobbyData } from '@app/classes/communication/lobby-data';
+import { Group } from '@app/classes/communication/group-data';
 import { Message } from '@app/classes/communication/message';
 import { PlayerData } from '@app/classes/communication/player-data';
 import { PlayerName } from '@app/classes/communication/player-name';
@@ -31,7 +31,7 @@ export type RejectEmitArgs = PlayerName;
 export type CanceledGameEmitArgs = PlayerName;
 export type JoinerLeaveGameEmitArgs = PlayerData[];
 export type PlayerLeftGameEmitArgs = PlayerName;
-export type LobbiesUpdateEmitArgs = LobbyData[];
+export type LobbiesUpdateEmitArgs = Group[];
 export type HighScoresEmitArgs = NoId<HighScoreWithPlayers>[];
 export type GameHistoriesEmitArgs = NoIdGameHistoryWithPlayers[];
 export type NewMessageEmitArgs = Message;
