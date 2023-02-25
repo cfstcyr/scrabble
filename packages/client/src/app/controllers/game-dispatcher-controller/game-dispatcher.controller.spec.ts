@@ -91,13 +91,13 @@ describe('GameDispatcherController', () => {
             });
         });
 
-        it('On lobbies update, configureSocket should emit hostName', () => {
-            const lobbiesUpdateSpy = spyOn(controller['lobbiesUpdateEvent'], 'next').and.callThrough();
-            socketHelper.peerSideEmit('lobbiesUpdate', DEFAULT_OPPONENT_NAME);
-            expect(lobbiesUpdateSpy).toHaveBeenCalled();
+        it('On groups update, configureSocket should emit hostName', () => {
+            const groupsUpdateSpy = spyOn(controller['groupsUpdateEvent'], 'next').and.callThrough();
+            socketHelper.peerSideEmit('groupsUpdate', DEFAULT_OPPONENT_NAME);
+            expect(groupsUpdateSpy).toHaveBeenCalled();
         });
 
-        it('On rejected, configureSocket should emit lobbies', () => {
+        it('On rejected, configureSocket should emit groups', () => {
             const rejectedSpy = spyOn(controller['joinerRejectedEvent'], 'next').and.callThrough();
             socketHelper.peerSideEmit('rejected', DEFAULT_OPPONENT_NAME);
             expect(rejectedSpy).toHaveBeenCalled();
@@ -166,21 +166,21 @@ describe('GameDispatcherController', () => {
         });
     });
 
-    describe('handleLobbiesListRequest', () => {
-        it('handleLobbiesListRequest should make an HTTP get request ', () => {
+    describe('handleGroupsListRequest', () => {
+        it('handleGroupsListRequest should make an HTTP get request ', () => {
             const httpPostSpy = spyOn(controller['http'], 'get').and.returnValue(of(true) as any);
-            controller.handleLobbiesListRequest();
+            controller.handleGroupsListRequest();
             expect(httpPostSpy).toHaveBeenCalled();
         });
 
-        it('handleLobbiesListRequest should subscribe after making an HTTP get request', () => {
+        it('handleGroupsListRequest should subscribe after making an HTTP get request', () => {
             spyOn(controller['socketService'], 'getId').and.returnValue(DEFAULT_SOCKET_ID);
 
             const observable = new Observable();
             spyOn(controller['http'], 'get').and.returnValue(observable);
             const spy = spyOn(observable, 'subscribe');
 
-            controller.handleLobbiesListRequest();
+            controller.handleGroupsListRequest();
 
             expect(spy).toHaveBeenCalled();
         });
@@ -299,7 +299,7 @@ describe('GameDispatcherController', () => {
 
         it('subscribeToGroupsUpdateEvent should call subscribe method on joinRequestEvent', () => {
             const subscriptionSpy = spyOn(controller['groupsUpdateEvent'], 'subscribe');
-            controller.subscribeToLobbiesUpdateEvent(serviceDestroyed$, callback);
+            controller.subscribeToGroupsUpdateEvent(serviceDestroyed$, callback);
             expect(subscriptionSpy).toHaveBeenCalled();
         });
 

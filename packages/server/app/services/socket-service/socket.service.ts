@@ -19,7 +19,7 @@ import {
     HighScoresEmitArgs,
     JoinerLeaveGameEmitArgs,
     JoinRequestEmitArgs,
-    LobbiesUpdateEmitArgs,
+    GroupsUpdateEmitArgs,
     NewMessageEmitArgs,
     PlayerJoinedEmitArgs,
     RejectEmitArgs,
@@ -132,7 +132,7 @@ export class SocketService {
     emitToRoom(id: string, ev: 'canceledGame', ...args: CanceledGameEmitArgs[]): void;
     emitToRoom(id: string, ev: 'joinerLeaveGame', ...args: JoinerLeaveGameEmitArgs[]): void;
     emitToRoom(id: string, ev: 'rejected', ...args: RejectEmitArgs[]): void;
-    emitToRoom(id: string, ev: 'lobbiesUpdate', ...args: LobbiesUpdateEmitArgs[]): void;
+    emitToRoom(id: string, ev: 'groupsUpdate', ...args: GroupsUpdateEmitArgs[]): void;
     emitToRoom(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
     emitToRoom(id: string, ev: '_test_event', ...args: unknown[]): void;
     emitToRoom<T>(room: string, ev: SocketEmitEvents, ...args: T[]): void {
@@ -148,7 +148,7 @@ export class SocketService {
     emitToSocket(id: string, ev: 'canceledGame', ...args: CanceledGameEmitArgs[]): void;
     emitToSocket(id: string, ev: 'joinerLeaveGame', ...args: JoinerLeaveGameEmitArgs[]): void;
     emitToSocket(id: string, ev: 'rejected', ...args: RejectEmitArgs[]): void;
-    emitToSocket(id: string, ev: 'lobbiesUpdate', ...args: LobbiesUpdateEmitArgs[]): void;
+    emitToSocket(id: string, ev: 'groupsUpdate', ...args: GroupsUpdateEmitArgs[]): void;
     emitToSocket(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
     emitToSocket(id: string, ev: 'highScoresList', ...args: HighScoresEmitArgs[]): void;
     emitToSocket(id: string, ev: 'cleanup', ...args: CleanupEmitArgs[]): void;
@@ -166,7 +166,7 @@ export class SocketService {
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'startGame', ...args: StartGameEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'canceledGame', ...args: CanceledGameEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'rejected', ...args: RejectEmitArgs[]): void;
-    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'lobbiesUpdate', ...args: LobbiesUpdateEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'groupsUpdate', ...args: GroupsUpdateEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: '_test_event', ...args: unknown[]): void;
     emitToRoomNoSender<T>(room: string, socketSenderId: string, ev: SocketEmitEvents, ...args: T[]): void {

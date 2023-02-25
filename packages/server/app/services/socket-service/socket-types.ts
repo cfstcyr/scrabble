@@ -1,10 +1,10 @@
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
-import { Group } from '@app/classes/communication/group-data';
 import { Message } from '@app/classes/communication/message';
 import { PlayerData } from '@app/classes/communication/player-data';
 import { PlayerName } from '@app/classes/communication/player-name';
 import { StartGameData } from '@app/classes/game/game-config';
 import { NoIdGameHistoryWithPlayers } from '@common/models/game-history';
+import { Group } from '@common/models/group';
 import { HighScoreWithPlayers } from '@common/models/high-score';
 import { NoId } from '@common/types/id';
 
@@ -14,7 +14,7 @@ export type SocketEmitEvents =
     | 'player_joined'
     | 'startGame'
     | 'rejected'
-    | 'lobbiesUpdate'
+    | 'groupsUpdate'
     | 'canceledGame'
     | 'joinerLeaveGame'
     | 'playerLeft'
@@ -31,7 +31,7 @@ export type RejectEmitArgs = PlayerName;
 export type CanceledGameEmitArgs = PlayerName;
 export type JoinerLeaveGameEmitArgs = PlayerData[];
 export type PlayerLeftGameEmitArgs = PlayerName;
-export type LobbiesUpdateEmitArgs = Group[];
+export type GroupsUpdateEmitArgs = Group[];
 export type HighScoresEmitArgs = NoId<HighScoreWithPlayers>[];
 export type GameHistoriesEmitArgs = NoIdGameHistoryWithPlayers[];
 export type NewMessageEmitArgs = Message;

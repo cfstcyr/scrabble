@@ -130,9 +130,9 @@ export class GroupPageComponent implements OnInit, OnDestroy {
     // }
 
     private getRandomGroup(): GroupInfo {
-        const filteredLobbies = this.groups.filter((group) => group.canJoin);
-        if (filteredLobbies.length === 0) throw new Error(NO_GROUP_CAN_BE_JOINED);
-        return filteredLobbies[Math.floor(Math.random() * filteredLobbies.length)];
+        const filteredGroups = this.groups.filter((group) => group.canJoin);
+        if (filteredGroups.length === 0) throw new Error(NO_GROUP_CAN_BE_JOINED);
+        return filteredGroups[Math.floor(Math.random() * filteredGroups.length)];
     }
 
     private updateAllGroupsAttributes(): void {

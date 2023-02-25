@@ -30,15 +30,15 @@
                 </div>
                 <div class="step-content" id="group-container">
                     <mat-card>
-                        <p *ngIf="numberOfLobbiesMeetingFilter > 0">
-                            Choisissez une partie<span *ngIf="numberOfLobbiesMeetingFilter > 1"> ou rejoignez une partie aléatoire</span>.
+                        <p *ngIf="numberOfGroupsMeetingFilter > 0">
+                            Choisissez une partie<span *ngIf="numberOfGroupsMeetingFilter > 1"> ou rejoignez une partie aléatoire</span>.
                         </p>
-                        <p *ngIf="numberOfLobbiesMeetingFilter === 0">Aucune partie disponible.</p>
+                        <p *ngIf="numberOfGroupsMeetingFilter === 0">Aucune partie disponible.</p>
                         <button
                             mat-flat-button
                             color="primary"
-                            *ngIf="numberOfLobbiesMeetingFilter > 0"
-                            [disabled]="numberOfLobbiesMeetingFilter <= 1 || !playerNameValid"
+                            *ngIf="numberOfGroupsMeetingFilter > 0"
+                            [disabled]="numberOfGroupsMeetingFilter <= 1 || !playerNameValid"
                             (click)="joinRandomGroup()"
                         >
                             <app-icon icon="random"></app-icon> Partie aléatoire
@@ -50,9 +50,9 @@
                     <mat-card class="form-container">
                         <div class="info">
                             <p class="title">Filtre</p>
-                            <p class="group-amount" *ngIf="numberOfLobbiesMeetingFilter > 1">{{ numberOfLobbiesMeetingFilter }} parties trouvées</p>
-                            <p class="group-amount" *ngIf="numberOfLobbiesMeetingFilter === 1">{{ numberOfLobbiesMeetingFilter }} partie trouvée</p>
-                            <p class="group-amount" *ngIf="numberOfLobbiesMeetingFilter === 0">Aucune partie trouvée</p>
+                            <p class="group-amount" *ngIf="numberOfGroupsMeetingFilter > 1">{{ numberOfGroupsMeetingFilter }} parties trouvées</p>
+                            <p class="group-amount" *ngIf="numberOfGroupsMeetingFilter === 1">{{ numberOfGroupsMeetingFilter }} partie trouvée</p>
+                            <p class="group-amount" *ngIf="numberOfGroupsMeetingFilter === 0">Aucune partie trouvée</p>
                         </div>
 
                         <div class="forms">

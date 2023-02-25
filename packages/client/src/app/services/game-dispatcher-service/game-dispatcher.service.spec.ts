@@ -40,7 +40,7 @@ const TEST_GROUP_INFO: GroupInfo = {
     ...TEST_GROUP_DATA,
     canJoin: true,
 };
-const TEST_LOBBIES = [TEST_GROUP_INFO];
+const TEST_GROUPS = [TEST_GROUP_INFO];
 const TEST_GAME_PARAMETERS = {
     level: VirtualPlayerLevel.Beginner,
     timer: '60',
@@ -132,11 +132,11 @@ describe('GameDispatcherService', () => {
             expect(spy).toHaveBeenCalledWith(TEST_PLAYER_NAME);
         });
 
-        it('should call handleJoinerRejected on lobbiesUpdateEvent', () => {
-            const lobbies: GroupInfo[] = [];
-            const spy = spyOn<any>(service, 'handleLobbiesUpdate');
-            service['gameDispatcherController']['lobbiesUpdateEvent'].next(lobbies);
-            expect(spy).toHaveBeenCalledWith(lobbies);
+        it('should call handleJoinerRejected on groupsUpdateEvent', () => {
+            const groups: GroupInfo[] = [];
+            const spy = spyOn<any>(service, 'handleGroupsUpdate');
+            service['gameDispatcherController']['groupsUpdateEvent'].next(groups);
+            expect(spy).toHaveBeenCalledWith(groups);
         });
 
         it('should initialize game on initializeGame event received', () => {
@@ -208,8 +208,8 @@ describe('GameDispatcherService', () => {
             });
         });
         it('handleJoinGroup should call gameDispatcherController.handleGroupJoinRequest with the correct parameters', () => {
-            service.handleJoinGroup(TEST_LOBBIES[0], TEST_PLAYER_NAME);
-            expect(spyHandleGroupJoinRequest).toHaveBeenCalledWith(TEST_LOBBIES[0].groupId, TEST_PLAYER_NAME);
+            service.handleJoinGroup(TEST_GROUPS[0], TEST_PLAYER_NAME);
+            expect(spyHandleGroupJoinRequest).toHaveBeenCalledWith(TEST_GROUPS[0].groupId, TEST_PLAYER_NAME);
         });
 
         it('handleJoinGroup should set right attributes', () => {
@@ -500,11 +500,11 @@ describe('GameDispatcherService', () => {
         });
     });
 
-    describe('handleLobbiesUpdate', () => {
+    describe('handleGroupsUpdate', () => {
         it('should emit to joinRequestEvent', () => {
             const args: GroupInfo[] = [];
-            const spy = spyOn(service['lobbiesUpdateEvent'], 'next');
-            service['handleLobbiesUpdate'](args);
+            const spy = spyOn(service['groupsUpdateEvent'], 'next');
+            service['handleGroupsUpdate'](args);
             expect(spy).toHaveBeenCalledWith(args);
         });
     });
@@ -608,9 +608,9 @@ describe('GameDispatcherService', () => {
             expect(subscriptionSpy).toHaveBeenCalled();
         });
 
-        it('subscribeToLobbiesUpdateEvent should call subscribe method on joinRequestEvent', () => {
-            const subscriptionSpy = spyOn(service['lobbiesUpdateEvent'], 'subscribe');
-            service.subscribeToLobbiesUpdateEvent(serviceDestroyed$, callback);
+        it('subscribeToGroupsUpdateEvent should call subscribe method on joinRequestEvent', () => {
+            const subscriptionSpy = spyOn(service['groupsUpdateEvent'], 'subscribe');
+            service.subscribeToGroupsUpdateEvent(serviceDestroyed$, callback);
             expect(subscriptionSpy).toHaveBeenCalled();
         });
 

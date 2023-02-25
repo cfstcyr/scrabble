@@ -155,15 +155,15 @@ describe('GroupPageComponent', () => {
     });
 
     describe('validateName', () => {
-        let updateAllLobbiesSpy: jasmine.Spy;
+        let updateAllGroupsSpy: jasmine.Spy;
 
         beforeEach(() => {
             validateNameSpy.and.callThrough();
-            updateAllLobbiesSpy = spyOn<any>(component, 'updateAllGroupsAttributes');
-            updateAllLobbiesSpy.and.callThrough();
+            updateAllGroupsSpy = spyOn<any>(component, 'updateAllGroupsAttributes');
+            updateAllGroupsSpy.and.callThrough();
         });
 
-        it('should update canJoin attribute of the lobbies (use #1)', () => {
+        it('should update canJoin attribute of the groups (use #1)', () => {
             component.playerName = 'differentName';
             component.playerNameValid = true;
             component['validateName']();
@@ -196,9 +196,9 @@ describe('GroupPageComponent', () => {
             expect(setFormAvailabilitySpy).toHaveBeenCalled();
         });
 
-        it('should call updateAllLobbiesAttributes', () => {
+        it('should call updateAllGroupsAttributes', () => {
             component['validateName']();
-            expect(updateAllLobbiesSpy).toHaveBeenCalled();
+            expect(updateAllGroupsSpy).toHaveBeenCalled();
         });
     });
 
@@ -231,7 +231,7 @@ describe('GroupPageComponent', () => {
             expect(spy).toHaveBeenCalled();
         });
 
-        it('updateGroups should set lobbies to right value', () => {
+        it('updateGroups should set groups to right value', () => {
             component.groups = [
                 {
                     groupId: '1',
@@ -425,7 +425,7 @@ describe('GroupPageComponent', () => {
         const spySetOpponent = spyOn<any>(component, 'updateGroups').and.callFake(() => {
             return;
         });
-        gameDispatcherServiceMock['lobbiesUpdateEvent'].next(emitGroups);
+        gameDispatcherServiceMock['groupsUpdateEvent'].next(emitGroups);
         expect(spySetOpponent).toHaveBeenCalledWith(emitGroups);
     });
 

@@ -18,4 +18,4 @@ export type VirtualPlayerProfilesRequest = Request & { params: { level?: Virtual
 
 export type GameHistoriesRequest = Request & { params: { playerId: string } };
 
-export type LobbiesRequest = Request & { params: { playerId: string } };
+export type GroupsRequest = Request & { params: { playerId: string } };

@@ -16,16 +16,16 @@ import { CreateGameService } from '@app/services/create-game-service/create-game
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
-import { convertToGroup } from '@app/utils/convert-to-group-data/convert-to-group-data';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { Group } from '@common/models/group';
+import { convertToGroup } from '@app/utils/convert-to-lobby-data/convert-to-lobby-data';
 @Service()
 export class GameDispatcherService {
     private waitingRooms: WaitingRoom[];
-    private lobbiesRoom: Room;
+    private groupsRoom: Room;
 
     constructor(
         private socketService: SocketService,
@@ -36,11 +36,11 @@ export class GameDispatcherService {
         private readonly chatService: ChatService,
     ) {
         this.waitingRooms = [];
-        this.lobbiesRoom = new Room();
+        this.groupsRoom = new Room();
     }
 
-    getLobbiesRoom(): Room {
-        return this.lobbiesRoom;
+    getGroupsRoom(): Room {
+        return this.groupsRoom;
     }
 
     // TODO: Remove this. Currently a hack to debug 4player

@@ -99,7 +99,7 @@ export class GameDispatcherController implements OnDestroy {
         this.groupRequestValidEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
-    subscribeToGroupsUpdateEvent(serviceDestroyed$: Subject<boolean>, callback: (lobbies: Group[]) => void): void {
+    subscribeToGroupsUpdateEvent(serviceDestroyed$: Subject<boolean>, callback: (groups: Group[]) => void): void {
         this.groupsUpdateEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 

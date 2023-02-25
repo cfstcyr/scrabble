@@ -1,6 +1,6 @@
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { PlayerData } from '@app/classes/communication/player-data';
-import { CreateGameRequest, GameRequest, LobbiesRequest } from '@app/classes/communication/request';
+import { CreateGameRequest, GameRequest, GroupsRequest } from '@app/classes/communication/request';
 import { GameConfigData } from '@app/classes/game/game-config';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SECONDS_TO_MILLISECONDS, TIME_TO_RECONNECT } from '@app/constants/controllers-constants';
@@ -52,11 +52,11 @@ export class GameDispatcherController extends BaseController {
             }
         });
 
-        router.get('/', (req: LobbiesRequest, res: Response, next) => {
+        router.get('/', (req: GroupsRequest, res: Response, next) => {
             const userId: UserId = req.body.idUser;
             const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
             try {
-                this.handleLobbiesRequest(playerId);
+                this.handleGroupsRequest(playerId);
 
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
@@ -179,7 +179,7 @@ export class GameDispatcherController extends BaseController {
         this.socketService.emitToRoomNoSender(gameId, playerId, 'canceledGame', { name: waitingRoom.getConfig().player1.name });
         await this.gameDispatcherService.cancelGame(gameId, playerId);
 
-        this.handleLobbiesUpdate();
+        this.handleGroupsUpdate();
     }
 
     private async handleLeave(gameId: string, playerId: string): Promise<void> {
@@ -188,7 +188,7 @@ export class GameDispatcherController extends BaseController {
             const playersData: PlayerData[] = players.map((player: Player) => player.convertToPlayerData());
             // TODO: Check what is returned
             this.socketService.emitToRoom(gameId, 'joinerLeaveGame', playersData);
-            this.handleLobbiesUpdate();
+            this.handleGroupsUpdate();
             return;
         }
 
@@ -215,7 +215,7 @@ export class GameDispatcherController extends BaseController {
 
     private async handleCreateMultiplayerGame(config: GameConfigData, userId: UserId): Promise<Group> {
         const group = await this.gameDispatcherService.createMultiplayerGame(config, userId);
-        this.handleLobbiesUpdate();
+        this.handleGroupsUpdate();
         return group;
     }
 
@@ -228,8 +228,8 @@ export class GameDispatcherController extends BaseController {
         // TODO: Potentially emit more info with user info such as avatar
         this.socketService.emitToSocket(waitingRoom.getConfig().player1.id, 'joinRequest', { name: playerName });
 
-        this.socketService.getSocket(playerId).leave(this.gameDispatcherService.getLobbiesRoom().getId());
-        this.handleLobbiesUpdate();
+        this.socketService.getSocket(playerId).leave(this.gameDispatcherService.getGroupsRoom().getId());
+        this.handleGroupsUpdate();
     }
 
     private async handleAcceptRequest(gameId: string, playerId: string, playerName: string): Promise<void> {
@@ -263,15 +263,15 @@ export class GameDispatcherController extends BaseController {
         }
     }
 
-    private handleLobbiesRequest(playerId: string): void {
+    private handleGroupsRequest(playerId: string): void {
         const waitingRooms = this.gameDispatcherService.getAvailableWaitingRooms();
-        this.socketService.addToRoom(playerId, this.gameDispatcherService.getLobbiesRoom().getId());
-        this.socketService.emitToSocket(playerId, 'lobbiesUpdate', waitingRooms);
+        this.socketService.addToRoom(playerId, this.gameDispatcherService.getGroupsRoom().getId());
+        this.socketService.emitToSocket(playerId, 'groupsUpdate', waitingRooms);
     }
 
-    private handleLobbiesUpdate(): void {
+    private handleGroupsUpdate(): void {
         const waitingRooms = this.gameDispatcherService.getAvailableWaitingRooms();
-        this.socketService.emitToRoom(this.gameDispatcherService.getLobbiesRoom().getId(), 'lobbiesUpdate', waitingRooms);
+        this.socketService.emitToRoom(this.gameDispatcherService.getGroupsRoom().getId(), 'groupsUpdate', waitingRooms);
     }
 
     private handleReconnection(gameId: string, playerId: string, newPlayerId: string): void {
