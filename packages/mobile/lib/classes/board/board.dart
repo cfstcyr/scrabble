@@ -11,7 +11,8 @@ class Board {
   late List<List<Square>> grid;
 
   Board() {
-    grid = List.generate(GRID_SIZE, (index) => List.generate(GRID_SIZE, (index) => Square()));
+    grid = List.generate(
+        GRID_SIZE, (index) => List.generate(GRID_SIZE, (index) => Square()));
     _applyMultipliers();
   }
 
@@ -19,7 +20,8 @@ class Board {
     return grid[v.row][v.column];
   }
 
-  Navigator navigate(Position position, {Orientation orientation = Orientation.horizontal}) {
+  Navigator navigate(Position position,
+      {Orientation orientation = Orientation.horizontal}) {
     return Navigator(board: this, orientation: orientation, position: position);
   }
 

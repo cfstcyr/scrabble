@@ -5,12 +5,12 @@ import 'package:mobile/classes/tile/tile.dart';
 class Square {
   Multiplier? multiplier;
   Tile? tile;
-  bool? isCenter;
+  bool isCenter;
 
   Square({
     this.multiplier,
     this.tile,
-    this.isCenter,
+    this.isCenter = false,
   });
 
   Color getColor() {
