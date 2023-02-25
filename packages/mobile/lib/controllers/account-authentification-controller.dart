@@ -12,6 +12,7 @@ import 'package:mobile/services/user-session.service.dart';
 
 import '../locator.dart';
 import '../services/authentification-service.dart';
+import '../services/socket.service.dart';
 
 class AccountAuthenticationController {
   AccountAuthenticationController._privateConstructor();
@@ -25,6 +26,7 @@ class AccountAuthenticationController {
   final storageHandler = getIt.get<StorageHandlerService>();
   final authService = getIt.get<AuthentificationService>();
   final userSessionHandler = getIt.get<UserSessionService>();
+  final socketService = getIt.get<SocketService>();
 
   final String endpoint = "${Environment().config.apiUrl}/authentification";
   // final headers = {"Content-type": "application/json"};
@@ -72,6 +74,7 @@ class AccountAuthenticationController {
     if (res.statusCode == HttpStatus.ok) {
       message = AUTHORIZED;
       storageHandler.setToken(UserSession.fromJson(jsonDecode(res.body)).token);
+      socketService.initSocket();
     } else if (res.statusCode == HttpStatus.notAcceptable) {
       message = LOGIN_FAILED;
     } else {
@@ -103,4 +106,23 @@ class AccountAuthenticationController {
     }
     return TokenValidation.NoToken;
   }
+
+  Future<void> signOut() async {
+    Response res = await get(Uri.parse("${endpoint}/signOut"));
+    userSessionHandler.clearUserSession();
+    socketService.disconnect();
+  }
 }
+
+
+// signOut(): void {
+//         authenticationSettings.remove('token');
+//         this.socketService.disconnect();
+//         this.userService.user.next(undefined);
+//     }
+
+//  private handleUserSessionInitialisation(session: UserSession): void {
+//         authenticationSettings.setToken(session.token);
+//         this.userService.user.next(session.user);
+//         this.socketService.connectSocket();
+//     }

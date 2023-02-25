@@ -17,12 +17,15 @@ class SocketService {
     initSocket();
   }
   Future<void> initSocket() async {
-    socket.connect();
     socket.onConnect((_) {
       print("${socket.id} + connected to websocket");
     });
     socket.emit("connection");
     socket.onDisconnect((_) => {print("${socket.id}  + disconnected")});
+  }
+
+  Future<void> disconnect() async {
+    socket.disconnect();
   }
 
   Future<void> emitEvent(String eventName, [dynamic data]) async {
