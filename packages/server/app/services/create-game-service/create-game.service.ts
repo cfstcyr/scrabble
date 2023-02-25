@@ -23,9 +23,6 @@ export class CreateGameService {
         return {
             player1: new Player(configData.playerId, configData.playerName),
             maxRoundTime: configData.maxRoundTime,
-            gameMode: configData.gameMode,
-            gameType: configData.gameType,
-            dictionary: configData.dictionary,
         };
     }
 }

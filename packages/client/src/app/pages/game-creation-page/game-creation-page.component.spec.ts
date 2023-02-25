@@ -21,7 +21,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DictionarySummary } from '@app/classes/communication/dictionary-summary';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { HeaderBtnComponent } from '@app/components/header-btn/header-btn.component';
 import { IconComponent } from '@app/components/icon/icon.component';
@@ -56,7 +55,6 @@ describe('GameCreationPageComponent', () => {
     let gameDispatcherServiceSpy: SpyObj<GameDispatcherService>;
     let dictionaryServiceSpy: SpyObj<DictionaryService>;
     let gameDispatcherCreationSubject: Subject<HttpErrorResponse>;
-    let dictionaryUpdateSubject: Subject<DictionarySummary[]>;
     let updateObs: Subject<VirtualPlayer[]>;
 
     const EMPTY_VALUE = '';

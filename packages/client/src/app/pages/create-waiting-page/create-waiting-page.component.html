@@ -12,20 +12,12 @@
 
         <div class="players">
             <span class="name"
-                ><b>{{ currentLobby.hostName }}</b></span
+                ><b>{{ currentGroup.hostName }}</b></span
             ><span id="vs"> vs </span><span class="name">{{ opponentName ?? '...' }}</span>
         </div>
 
         <div class="chip-list">
             <div class="chip"><app-icon icon="hourglass-half" size="sm"></app-icon> {{ roundTime }}</div>
-            <div class="chip">
-                <app-icon icon="gamepad"></app-icon>
-                {{ currentLobby.gameType }}
-            </div>
-            <div class="chip">
-                <app-icon icon="book"></app-icon>
-                {{ currentLobby.dictionary.title }}
-            </div>
         </div>
 
         <div class="button-box">
@@ -50,18 +42,6 @@
             >
                 Rejeter cet adversaire
             </button>
-
-            <button
-                id="convert-solo-button"
-                mat-flat-button
-                class="button"
-                color="primary"
-                [disabled]="isOpponentFound"
-                (click)="confirmConvertToSolo()"
-            >
-                Convertir en partie solo
-            </button>
-
             <button id="cancel-button" mat-flat-button class="button" color="primary" routerLink="/game-creation">Annuler la partie</button>
         </div>
     </mat-card>

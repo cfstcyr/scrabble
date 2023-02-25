@@ -10,7 +10,6 @@ import Game from '@app/classes/game/game';
 import { GameType } from '@app/classes/game/game-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
-import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import { MUST_HAVE_7_TILES_TO_SWAP } from '@app/constants/classes-errors';
@@ -25,7 +24,7 @@ import { VirtualPlayerService } from '@app/services/virtual-player-service/virtu
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 @Service()
 export class GamePlayService {
     constructor(

@@ -10,10 +10,10 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationEnd, NavigationStart, Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { LobbyInfo } from '@app/classes/communication';
 import { IconComponent } from '@app/components/icon/icon.component';
-import { DEFAULT_LOBBY } from '@app/constants/pages-constants';
+import { DEFAULT_GROUP } from '@app/constants/pages-constants';
 import { GameDispatcherService } from '@app/services/';
+import GroupInfo from '@common/models/group-info';
 import { of, Subject } from 'rxjs';
 import { JoinWaitingPageComponent } from './join-waiting-page.component';
 
@@ -22,7 +22,7 @@ import { JoinWaitingPageComponent } from './join-waiting-page.component';
 })
 class TestComponent {}
 
-const EMPTY_LOBBY = {} as unknown as LobbyInfo;
+const EMPTY_GROUP = {} as unknown as GroupInfo;
 
 const DEFAULT_NAME = 'playerName';
 
@@ -42,7 +42,7 @@ describe('JoinWaitingPageComponent', () => {
                 BrowserAnimationsModule,
                 HttpClientTestingModule,
                 RouterTestingModule.withRoutes([
-                    { path: 'lobby', component: TestComponent },
+                    { path: 'group', component: TestComponent },
                     { path: 'join-waiting-room', component: JoinWaitingPageComponent },
                 ]),
                 MatSnackBarModule,
@@ -53,11 +53,11 @@ describe('JoinWaitingPageComponent', () => {
 
     beforeEach(() => {
         gameDispatcherServiceMock = TestBed.inject(GameDispatcherService);
-        gameDispatcherServiceMock.currentLobby = DEFAULT_LOBBY;
+        gameDispatcherServiceMock.currentGroup = DEFAULT_GROUP;
         gameDispatcherServiceMock.currentName = DEFAULT_NAME;
         fixture = TestBed.createComponent(JoinWaitingPageComponent);
         component = fixture.componentInstance;
-        component.currentLobby = EMPTY_LOBBY;
+        component.currentGroup = EMPTY_GROUP;
         component.currentName = '';
         fixture.detectChanges();
     });
@@ -79,16 +79,16 @@ describe('JoinWaitingPageComponent', () => {
     });
 
     describe('ngOnInit', () => {
-        it('ngOnInit should set the values to the gameDispatcherService lobby and name (currentLobby defined)', () => {
-            component.currentLobby = EMPTY_LOBBY;
+        it('ngOnInit should set the values to the gameDispatcherService group and name (currentGroup defined)', () => {
+            component.currentGroup = EMPTY_GROUP;
             component.currentName = '';
             component.ngOnInit();
-            expect(component.currentLobby).toEqual(DEFAULT_LOBBY);
+            expect(component.currentGroup).toEqual(DEFAULT_GROUP);
             expect(component.currentName).toEqual(DEFAULT_NAME);
         });
 
         it('should set roundTime, currentName and fun fact', () => {
-            component['gameDispatcherService'].currentLobby = { ...DEFAULT_LOBBY, maxRoundTime: 210 };
+            component['gameDispatcherService'].currentGroup = { ...DEFAULT_GROUP, maxRoundTime: 210 };
             component['gameDispatcherService'].currentName = 'Mathilde';
             component.funFact = '';
             component.currentName = '';
@@ -98,27 +98,27 @@ describe('JoinWaitingPageComponent', () => {
             expect(component.currentName).toEqual('Mathilde');
         });
 
-        it('should set currentLobby to gameDispatcher currentLobby if it exists', () => {
-            component.currentLobby = DEFAULT_LOBBY;
-            const serviceLobby = { ...DEFAULT_LOBBY, maxRoundTime: 210 };
-            component['gameDispatcherService'].currentLobby = serviceLobby;
+        it('should set currentGroup to gameDispatcher currentGroup if it exists', () => {
+            component.currentGroup = DEFAULT_GROUP;
+            const serviceGroup = { ...DEFAULT_GROUP, maxRoundTime: 210 };
+            component['gameDispatcherService'].currentGroup = serviceGroup;
 
             component.ngOnInit();
 
-            expect(component.currentLobby).toEqual(serviceLobby);
-            expect(component.currentLobby).not.toEqual(DEFAULT_LOBBY);
+            expect(component.currentGroup).toEqual(serviceGroup);
+            expect(component.currentGroup).not.toEqual(DEFAULT_GROUP);
         });
 
-        it('should set currentLobby to DEFAULT_LOBBY currentLobby if gameDispatcher does not have a currentLobby', () => {
-            component.currentLobby = { ...DEFAULT_LOBBY, maxRoundTime: 210, hostName: 'Alexandre' };
-            component['gameDispatcherService'].currentLobby = undefined;
+        it('should set currentGroup to DEFAULT_GROUP currentGroup if gameDispatcher does not have a currentGroup', () => {
+            component.currentGroup = { ...DEFAULT_GROUP, maxRoundTime: 210, hostName: 'Alexandre' };
+            component['gameDispatcherService'].currentGroup = undefined;
 
             component.ngOnInit();
 
-            expect(component.currentLobby).toEqual(DEFAULT_LOBBY);
+            expect(component.currentGroup).toEqual(DEFAULT_GROUP);
         });
 
-        it('ngOnInit should call the get the gameDispatcherService lobby and playerName ', () => {
+        it('ngOnInit should call the get the gameDispatcherService group and playerName ', () => {
             const spySubscribeCanceledGameEvent = spyOn(gameDispatcherServiceMock['canceledGameEvent'], 'subscribe').and.returnValue(of(true) as any);
             const spySubscribeJoinerRejectedEvent = spyOn(gameDispatcherServiceMock['joinerRejectedEvent'], 'subscribe').and.returnValue(
                 of(true) as any,
@@ -140,17 +140,17 @@ describe('JoinWaitingPageComponent', () => {
     });
 
     describe('routerChangeMethod', () => {
-        it('routerChangeMethod should call handleLeaveLobby if the url is diffrent from /game ', () => {
-            const spyHandleLeaveLobby = spyOn(component['playerLeavesService'], 'handleLeaveLobby').and.returnValue(of(true) as any);
+        it('routerChangeMethod should call handleLeaveGroup if the url is different from /game ', () => {
+            const spyHandleLeaveGroup = spyOn(component['playerLeavesService'], 'handleLeaveGroup').and.returnValue(of(true) as any);
             // Create a new component once spies have been applied
             component['routerChangeMethod']('notgame');
-            expect(spyHandleLeaveLobby).toHaveBeenCalled();
+            expect(spyHandleLeaveGroup).toHaveBeenCalled();
         });
 
-        it('routerChangeMethod should not call handleLeaveLobby if the url is /game ', () => {
-            const spyHandleLeaveLobby = spyOn(component['playerLeavesService'], 'handleLeaveLobby').and.returnValue(of(true) as any);
+        it('routerChangeMethod should not call handleLeaveGroup if the url is /game ', () => {
+            const spyHandleLeaveGroup = spyOn(component['playerLeavesService'], 'handleLeaveGroup').and.returnValue(of(true) as any);
             component['routerChangeMethod']('/game');
-            expect(spyHandleLeaveLobby).not.toHaveBeenCalled();
+            expect(spyHandleLeaveGroup).not.toHaveBeenCalled();
         });
 
         it('routerChangeMethod should be called if router event NavigationStart occurs', () => {
@@ -166,7 +166,7 @@ describe('JoinWaitingPageComponent', () => {
             const routerChangeMethodSpy = spyOn<any>(component, 'routerChangeMethod').and.callFake(() => {
                 return;
             });
-            const event = new NavigationEnd(1, '/join-waiting-page', '/lobby');
+            const event = new NavigationEnd(1, '/join-waiting-page', '/group');
             (TestBed.inject(Router).events as Subject<RouterEvent>).next(event);
             expect(routerChangeMethodSpy).not.toHaveBeenCalled();
         });
@@ -190,20 +190,20 @@ describe('JoinWaitingPageComponent', () => {
         expect(spyHostHasCanceled).toHaveBeenCalledWith(emitName);
     });
 
-    it('onBeforeUnload should call handleLeaveLobby', () => {
-        const spyhandleLeaveLobby = spyOn(component['playerLeavesService'], 'handleLeaveLobby').and.callFake(() => {
+    it('onBeforeUnload should call handleLeaveGroup', () => {
+        const spyhandleLeaveGroup = spyOn(component['playerLeavesService'], 'handleLeaveGroup').and.callFake(() => {
             return;
         });
 
         component.onBeforeUnload();
-        expect(spyhandleLeaveLobby).toHaveBeenCalled();
+        expect(spyhandleLeaveGroup).toHaveBeenCalled();
     });
 
-    it('onBeforeUnload should call be handleLeaveLobby', () => {
-        const spyHandleLeaveLobby = spyOn(component['playerLeavesService'], 'handleLeaveLobby').and.callFake(() => {
+    it('onBeforeUnload should call be handleLeaveGroup', () => {
+        const spyhandleLeaveGroup = spyOn(component['playerLeavesService'], 'handleLeaveGroup').and.callFake(() => {
             return;
         });
         component.onBeforeUnload();
-        expect(spyHandleLeaveLobby).toHaveBeenCalled();
+        expect(spyhandleLeaveGroup).toHaveBeenCalled();
     });
 });

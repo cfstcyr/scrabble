@@ -72,8 +72,6 @@ export default class Game {
         game.player3 = config.player3;
         game.player4 = config.player4;
         game.roundManager = new RoundManager(config.maxRoundTime, config.player1, config.player2, config.player3, config.player4);
-        game.gameType = config.gameType;
-        game.gameMode = config.gameMode;
         game.dictionarySummary = config.dictionary;
         game.initializeObjectives();
         game.tileReserve = new TileReserve();
@@ -296,10 +294,7 @@ export default class Game {
             player2: this.player2.convertToPlayerData(),
             player3: this.player3.convertToPlayerData(),
             player4: this.player4.convertToPlayerData(),
-            gameType: this.gameType,
-            gameMode: this.gameMode,
             maxRoundTime: this.roundManager.getMaxRoundTime(),
-            dictionary: this.dictionarySummary,
             gameId: this.getId(),
             board: this.board.grid,
             tileReserve,

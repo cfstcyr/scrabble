@@ -7,22 +7,14 @@
         <div class="players">
             <span class="name"
                 ><b>{{ currentName }}</b></span
-            ><span id="vs"> vs </span><span class="name">{{ currentLobby.hostName }}</span>
+            ><span id="vs"> vs </span><span class="name">{{ currentGroup.hostName }}</span>
         </div>
 
         <div class="chip-list">
             <div class="chip"><app-icon icon="hourglass-half" size="sm"></app-icon> {{ roundTime }}</div>
-            <div class="chip">
-                <app-icon icon="gamepad"></app-icon>
-                {{ currentLobby.gameType }}
-            </div>
-            <div class="chip">
-                <app-icon icon="book"></app-icon>
-                {{ currentLobby.dictionary.title }}
-            </div>
         </div>
 
-        <button id="cancel-button" mat-flat-button color="primary" [routerLink]="'/lobby'">Annuler</button>
+        <button id="cancel-button" mat-flat-button color="primary" [routerLink]="'/group'">Annuler</button>
     </mat-card>
 
     <mat-card class="fun-fact-box">

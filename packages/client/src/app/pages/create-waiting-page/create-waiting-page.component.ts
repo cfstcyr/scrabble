@@ -4,13 +4,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { PlayerData } from '@app/classes/communication';
-import LobbyInfo from '@app/classes/communication/lobby-info';
 import { Timer } from '@app/classes/round/timer';
 import { ConvertDialogComponent, ConvertResult } from '@app/components/convert-dialog/convert-dialog.component';
 import { ERROR_SNACK_BAR_CONFIG } from '@app/constants/components-constants';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
-import { DEFAULT_LOBBY, HOST_WAITING_MESSAGE, KEEP_DATA, OPPONENT_FOUND_MESSAGE } from '@app/constants/pages-constants';
+import { DEFAULT_GROUP, HOST_WAITING_MESSAGE, KEEP_DATA, OPPONENT_FOUND_MESSAGE } from '@app/constants/pages-constants';
 import { GameDispatcherService } from '@app/services/';
+import GroupInfo from '@common/models/group-info';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -29,7 +29,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     isOpponentFound: boolean = false;
     waitingRoomMessage: string = HOST_WAITING_MESSAGE;
     roundTime: string = '1:00';
-    currentLobby: LobbyInfo = DEFAULT_LOBBY;
+    currentGroup: GroupInfo = DEFAULT_GROUP;
     funFact: string = '';
 
     private isStartingGame: boolean = false;
@@ -51,8 +51,8 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.currentLobby = this.gameDispatcherService.currentLobby ?? DEFAULT_LOBBY;
-        const roundTime: Timer = Timer.convertTime(this.currentLobby.maxRoundTime);
+        this.currentGroup = this.gameDispatcherService.currentGroup ?? DEFAULT_GROUP;
+        const roundTime: Timer = Timer.convertTime(this.currentGroup.maxRoundTime);
         this.roundTime = `${roundTime.minutes}:${roundTime.getTimerSecondsPadded()}`;
         this.funFact = getRandomFact();
 
@@ -76,7 +76,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         this.gameDispatcherService.handleCancelGame(KEEP_DATA);
         this.dialog
             .open(ConvertDialogComponent, {
-                data: this.gameDispatcherService.currentLobby?.hostName,
+                data: this.gameDispatcherService.currentGroup?.hostName,
             })
             .afterClosed()
             .subscribe((convertResult: ConvertResult) => (this.isStartingGame = convertResult.isConverting));
@@ -128,7 +128,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         this.opponentName2 = undefined;
         this.opponentName3 = undefined;
         for (const player of players) {
-            if (this.currentLobby.hostName !== player.name) {
+            if (this.currentGroup.hostName !== player.name) {
                 if (!this.opponentName1) {
                     this.opponentName1 = player.name;
                 } else if (!this.opponentName2) {

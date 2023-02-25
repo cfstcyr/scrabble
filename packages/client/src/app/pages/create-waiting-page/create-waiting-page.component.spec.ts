@@ -19,7 +19,7 @@ import { DefaultDialogComponent } from '@app/components/default-dialog/default-d
 import { IconComponent } from '@app/components/icon/icon.component';
 import { ERROR_SNACK_BAR_CONFIG } from '@app/constants/components-constants';
 import {
-    DEFAULT_LOBBY,
+    DEFAULT_GROUP,
     DIALOG_BUTTON_CONTENT_REJECTED,
     DIALOG_CONTENT,
     DIALOG_TITLE,
@@ -127,7 +127,7 @@ describe('CreateWaitingPageComponent', () => {
         expect(component.opponentName).toEqual(testOpponentName);
     });
 
-    it('waitingRoomMessage should change to HostWaitingMessage when an opponent leaves the lobby', async () => {
+    it('waitingRoomMessage should change to HostWaitingMessage when an opponent leaves the group', async () => {
         component.isOpponentFound = true;
         component['disconnectOpponent']();
         expect(component.waitingRoomMessage).toEqual(HOST_WAITING_MESSAGE);
@@ -159,31 +159,31 @@ describe('CreateWaitingPageComponent', () => {
         });
 
         it('should set roundTime and fun fact', () => {
-            component['gameDispatcherService'].currentLobby = { ...DEFAULT_LOBBY, maxRoundTime: 210 };
+            component['gameDispatcherService'].currentGroup = { ...DEFAULT_GROUP, maxRoundTime: 210 };
             component.funFact = '';
             component.ngOnInit();
             expect(component.roundTime).toEqual('3:30');
             expect(component.funFact).not.toEqual('');
         });
 
-        it('should set currentLobby to gameDispatcher currentLobby if it exists', () => {
-            component.currentLobby = DEFAULT_LOBBY;
-            const serviceLobby = { ...DEFAULT_LOBBY, maxRoundTime: 210 };
-            component['gameDispatcherService'].currentLobby = serviceLobby;
+        it('should set currentGroup to gameDispatcher currentGroup if it exists', () => {
+            component.currentGroup = DEFAULT_GROUP;
+            const serviceGroup = { ...DEFAULT_GROUP, maxRoundTime: 210 };
+            component['gameDispatcherService'].currentGroup = serviceGroup;
 
             component.ngOnInit();
 
-            expect(component.currentLobby).toEqual(serviceLobby);
-            expect(component.currentLobby).not.toEqual(DEFAULT_LOBBY);
+            expect(component.currentGroup).toEqual(serviceGroup);
+            expect(component.currentGroup).not.toEqual(DEFAULT_GROUP);
         });
 
-        it('should set currentLobby to DEFAULT_LOBBY currentLobby if gameDispatcher does not have a currentLobby', () => {
-            component.currentLobby = { ...DEFAULT_LOBBY, maxRoundTime: 210, hostName: 'Alexandre' };
-            component['gameDispatcherService'].currentLobby = undefined;
+        it('should set currentGroup to DEFAULT_GROUP currentGroup if gameDispatcher does not have a currentGroup', () => {
+            component.currentGroup = { ...DEFAULT_GROUP, maxRoundTime: 210, hostName: 'Alexandre' };
+            component['gameDispatcherService'].currentGroup = undefined;
 
             component.ngOnInit();
 
-            expect(component.currentLobby).toEqual(DEFAULT_LOBBY);
+            expect(component.currentGroup).toEqual(DEFAULT_GROUP);
         });
     });
 

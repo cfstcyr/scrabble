@@ -8,9 +8,9 @@ import { expect } from 'chai';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
-import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { NAME_ALREADY_USED, NO_PROFILE_OF_LEVEL } from '@app/constants/services-errors';
 import { VirtualPlayer } from '@common/models/virtual-player';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 
 chai.use(chaiAsPromised);
 

@@ -362,7 +362,7 @@ describe('GameDispatcherService', () => {
     //     });
     // });
 
-    describe('leaveLobbyRequest', () => {
+    describe('leaveGroupRequest', () => {
         let id: string;
         // let waitingRoom: WaitingRoom;
         let chatServiceStub: SinonStubbedInstance<ChatService>;
@@ -384,30 +384,30 @@ describe('GameDispatcherService', () => {
             sinon.stub(DEFAULT_WAITING_ROOM, 'getGroupChannelId').returns(DEFAULT_GAME_CHANNEL_ID);
             const expectedId = DEFAULT_WAITING_ROOM.joinedPlayer2?.id;
 
-            await gameDispatcherService.leaveLobbyRequest(id, DEFAULT_OPPONENT.id);
+            await gameDispatcherService.leaveGroupRequest(id, DEFAULT_OPPONENT.id);
 
             expect(chatServiceStub.quitChannel.calledWith(DEFAULT_WAITING_ROOM.getGroupChannelId(), expectedId)).to.be.true;
         });
 
         // it('should remove joinedPlayer from waitingRoom', () => {
         //     expect(waitingRoom.joinedPlayer2).to.not.be.undefined;
-        //     gameDispatcherService.leaveLobbyRequest(id, DEFAULT_OPPONENT_ID);
+        //     gameDispatcherService.leaveGroupRequest(id, DEFAULT_OPPONENT_ID);
         //     expect(waitingRoom.joinedPlayer2).to.be.undefined;
         // });
 
         // it('should throw if playerId is invalid', () => {
         //     const invalidId = 'invalidId';
-        //     expect(() => gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
+        //     expect(() => gameDispatcherService.leaveGroupRequest(id, invalidId)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
         // });
 
         // it('should throw if player is undefined', () => {
         //     waitingRoom.joinedPlayer2 = undefined;
         //     const invalidId = 'invalidId';
-        //     expect(() => gameDispatcherService.leaveLobbyRequest(id, invalidId)).to.throw(NO_OPPONENT_IN_WAITING_GAME);
+        //     expect(() => gameDispatcherService.leaveGroupRequest(id, invalidId)).to.throw(NO_OPPONENT_IN_WAITING_GAME);
         // });
 
         it('should return the [hostPlayerId, leaverName]', async () => {
-            expect(await gameDispatcherService.leaveLobbyRequest(id, DEFAULT_OPPONENT_ID)).to.deep.equal([
+            expect(await gameDispatcherService.leaveGroupRequest(id, DEFAULT_OPPONENT_ID)).to.deep.equal([
                 DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId,
                 DEFAULT_OPPONENT_NAME,
             ]);
