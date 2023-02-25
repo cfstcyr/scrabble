@@ -11,23 +11,22 @@ import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { LobbyInfo } from '@app/classes/communication';
 import { Timer } from '@app/classes/round/timer';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { TEST_DICTIONARY } from '@app/constants/controller-test-constants';
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { LobbyPageComponent } from '@app/pages/lobby-page/lobby-page.component';
-import { LobbyInfoComponent } from './lobby-info.component';
+import { GroupPageComponent } from '@app/pages/group-page/group-page.component';
+import { GroupInfoComponent } from './group-info.component';
 
 @Component({
     template: '',
 })
 export class TestComponent {}
 
-const TEST_LOBBY: LobbyInfo = {
-    lobbyId: 'lobbyId',
+const TEST_GROUP: GroupInfo = {
+    groupId: 'groupId',
     hostName: 'playerName',
     gameType: GameType.Classic,
     gameMode: GameMode.Multiplayer,
@@ -36,9 +35,9 @@ const TEST_LOBBY: LobbyInfo = {
     canJoin: false,
 };
 
-describe('LobbyInfoComponent', () => {
-    let component: LobbyInfoComponent;
-    let fixture: ComponentFixture<LobbyInfoComponent>;
+describe('GroupInfoComponent', () => {
+    let component: GroupInfoComponent;
+    let fixture: ComponentFixture<GroupInfoComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -55,17 +54,17 @@ describe('LobbyInfoComponent', () => {
                 FormsModule,
                 RouterTestingModule.withRoutes([
                     { path: 'waiting', component: TestComponent },
-                    { path: 'lobby', component: LobbyPageComponent },
+                    { path: 'group', component: GroupPageComponent },
                 ]),
             ],
-            declarations: [LobbyInfoComponent, IconComponent],
+            declarations: [GroupInfoComponent, IconComponent],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(LobbyInfoComponent);
+        fixture = TestBed.createComponent(GroupInfoComponent);
         component = fixture.componentInstance;
-        component.lobby = TEST_LOBBY;
+        component.group = TEST_GROUP;
         fixture.detectChanges();
     });
 
@@ -73,47 +72,47 @@ describe('LobbyInfoComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('clicking the join button should emit the lobbyId', async () => {
-        const spyEmit = spyOn(component.joinLobbyId, 'emit').and.callFake(() => {
+    it('clicking the join button should emit the groupId', async () => {
+        const spyEmit = spyOn(component.joinGroupId, 'emit').and.callFake(() => {
             return '';
         });
-        component.lobby.canJoin = true;
+        component.group.canJoin = true;
         fixture.detectChanges();
         const joinButton = fixture.debugElement.nativeElement.querySelector('#join-button');
         joinButton.click();
         expect(spyEmit).toHaveBeenCalled();
     });
 
-    it('convertTime should output the correct string using the timer in Lobby', () => {
+    it('convertTime should output the correct string using the timer in group', () => {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         const TIME = 90;
         const EXPECTED_TIME = new Timer(1, 30);
-        component.lobby.maxRoundTime = TIME;
+        component.group.maxRoundTime = TIME;
         component.ngOnInit();
         expect(component.roundTime).toEqual(EXPECTED_TIME);
     });
 
-    it('the tooltip should be disabled if you can join the lobby', async () => {
-        component.lobby.canJoin = true;
+    it('the tooltip should be disabled if you can join the group', async () => {
+        component.group.canJoin = true;
         fixture.detectChanges();
         const buttonContainer = fixture.debugElement.queryAll(By.css('.button-container'));
         const errorTooltip = buttonContainer[0].injector.get<MatTooltip>(MatTooltip);
         expect(errorTooltip.disabled).toBeTruthy();
     });
 
-    it('the tooltip should be enabled if you cannot join the lobby', async () => {
-        component.lobby.canJoin = false;
+    it('the tooltip should be enabled if you cannot join the group', async () => {
+        component.group.canJoin = false;
         fixture.detectChanges();
         const buttonContainer = fixture.debugElement.queryAll(By.css('.button-container'));
         const errorTooltip = buttonContainer[0].injector.get<MatTooltip>(MatTooltip);
         expect(errorTooltip.disabled).toBeFalse();
     });
 
-    it('the tooltip should show the correct message if you cannot join the lobby', async () => {
-        component.lobby.canJoin = false;
+    it('the tooltip should show the correct message if you cannot join the group', async () => {
+        component.group.canJoin = false;
         fixture.detectChanges();
         const buttonContainer = fixture.debugElement.queryAll(By.css('.button-container'));
         const errorTooltip = buttonContainer[0].injector.get<MatTooltip>(MatTooltip);
-        expect(errorTooltip.message).toEqual(`Veuillez entrer un nom valide différent de ${component.lobby.hostName}`);
+        expect(errorTooltip.message).toEqual(`Veuillez entrer un nom valide différent de ${component.group.hostName}`);
     });
 });

@@ -31,7 +31,7 @@ import { DeleteVirtualPlayerDialogComponent } from './components/delete-virtual-
 import { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';
 import { IconComponent } from './components/icon/icon.component';
 import { InformationBoxComponent } from './components/information-box/information-box.component';
-import { LobbyInfoComponent } from './components/lobby-info/lobby-info.component';
+import { GroupInfoComponent } from './components/group-info/group-info.component';
 import { ModifyDictionaryComponent } from './components/modify-dictionary-dialog/modify-dictionary-dialog.component';
 import { NameFieldComponent } from './components/name-field/name-field.component';
 import { ObjectiveBoxComponent } from './components/objective-box/objective-box.component';
@@ -44,7 +44,7 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';
 import { HighScoresPageComponent } from './pages/high-scores-page/high-scores-page.component';
 import { LoadingPageComponent } from './pages/loading-page/loading-page.component';
-import { LobbyPageComponent } from './pages/lobby-page/lobby-page.component';
+import { GroupPageComponent } from './pages/group-page/group-page.component';
 import { DurationPipe } from './pipes/duration/duration.pipe';
 import { InitializerService } from './services/initializer-service/initializer.service';
 import { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';
@@ -83,8 +83,8 @@ registerLocaleData(localeFr);
         CommunicationBoxComponent,
         BoardComponent,
         TileRackComponent,
-        LobbyPageComponent,
-        LobbyInfoComponent,
+        GroupPageComponent,
+        GroupInfoComponent,
         CreateWaitingPageComponent,
         JoinWaitingPageComponent,
         GameCreationPageComponent,

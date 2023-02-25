@@ -122,7 +122,7 @@ $max-width: 1200px;
     }
 }
 
-#lobby-container {
+#group-container {
     mat-card {
         display: flex;
         justify-content: space-between;
@@ -140,7 +140,7 @@ $max-width: 1200px;
             font-size: 1.3em;
         }
 
-        .lobby-amount {
+        .group-amount {
             opacity: 0.55;
         }
     }

@@ -28,7 +28,7 @@
                 <div class="step-indicator">
                     <p class="indicator"><span>2</span></p>
                 </div>
-                <div class="step-content" id="lobby-container">
+                <div class="step-content" id="group-container">
                     <mat-card>
                         <p *ngIf="numberOfLobbiesMeetingFilter > 0">
                             Choisissez une partie<span *ngIf="numberOfLobbiesMeetingFilter > 1"> ou rejoignez une partie aléatoire</span>.
@@ -39,7 +39,7 @@
                             color="primary"
                             *ngIf="numberOfLobbiesMeetingFilter > 0"
                             [disabled]="numberOfLobbiesMeetingFilter <= 1 || !playerNameValid"
-                            (click)="joinRandomLobby()"
+                            (click)="joinRandomGroup()"
                         >
                             <app-icon icon="random"></app-icon> Partie aléatoire
                         </button>
@@ -50,9 +50,9 @@
                     <mat-card class="form-container">
                         <div class="info">
                             <p class="title">Filtre</p>
-                            <p class="lobby-amount" *ngIf="numberOfLobbiesMeetingFilter > 1">{{ numberOfLobbiesMeetingFilter }} parties trouvées</p>
-                            <p class="lobby-amount" *ngIf="numberOfLobbiesMeetingFilter === 1">{{ numberOfLobbiesMeetingFilter }} partie trouvée</p>
-                            <p class="lobby-amount" *ngIf="numberOfLobbiesMeetingFilter === 0">Aucune partie trouvée</p>
+                            <p class="group-amount" *ngIf="numberOfLobbiesMeetingFilter > 1">{{ numberOfLobbiesMeetingFilter }} parties trouvées</p>
+                            <p class="group-amount" *ngIf="numberOfLobbiesMeetingFilter === 1">{{ numberOfLobbiesMeetingFilter }} partie trouvée</p>
+                            <p class="group-amount" *ngIf="numberOfLobbiesMeetingFilter === 0">Aucune partie trouvée</p>
                         </div>
 
                         <div class="forms">
@@ -70,8 +70,8 @@
                     </mat-card>
 
                     <div class="grid">
-                        <ng-container *ngFor="let lobby of lobbies">
-                            <app-lobby-info [lobby]="lobby" *ngIf="lobby.meetFilters" (joinLobbyId)="joinLobby($event)"></app-lobby-info>
+                        <ng-container *ngFor="let group of groups">
+                            <app-group-info [group]="group" *ngIf="group.meetFilters" (joinGroupId)="joinGroup($event)"></app-group-info>
                         </ng-container>
                     </div>
                 </div>
