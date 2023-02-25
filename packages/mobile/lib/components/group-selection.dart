@@ -13,9 +13,15 @@ import 'individual-group.dart';
 import 'no-group-entry.dart';
 
 class GroupSelection extends StatelessWidget {
-  const GroupSelection({
+  GroupSelection({
     super.key,
   });
+
+  final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
+
+  void joinGroup(String groupId) {
+    groupJoinService.handleJoinGroup(groupId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +32,12 @@ class GroupSelection extends StatelessWidget {
           color: Colors.white,
           border: Border.all(color: theme.colorScheme.onBackground, width: 2),
           borderRadius: BorderRadius.all(Radius.circular(20))),
-      child: handleLobbyListChange(context),
+      child: handleLobbyListChange(context, joinGroup),
     );
   }
 }
 
-StreamBuilder<List<Group>> handleLobbyListChange(BuildContext context) {
+StreamBuilder<List<Group>> handleLobbyListChange(BuildContext context, Function joinGroupFunction) {
   var theme = Theme.of(context);
   return StreamBuilder<List<Group>>(
     stream: groupStream,
@@ -59,7 +65,7 @@ StreamBuilder<List<Group>> handleLobbyListChange(BuildContext context) {
                 itemCount: groups.isEmpty ? 1 : groups.length,
                 itemBuilder: (buildContext, i) => groups.isEmpty
                     ? NoGroupEntry(theme: theme)
-                    : IndividualGroup(theme: theme, group: groups[i]),
+                    : IndividualGroup(theme: theme, group: groups[i], joinGroupFunction: joinGroupFunction),
               ),
             ),
           )));

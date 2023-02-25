@@ -8,15 +8,18 @@ PublicUser generateVirtualPlayerUser(VirtualPlayerLevel virtualPlayerLevel) =>
 CircleAvatar getUserAvatar(String? avatar, String initials, Color background) {
   return avatar != null
       ? CircleAvatar(radius: 32, backgroundImage: AssetImage(avatar))
-      : CircleAvatar(backgroundColor: background, child: Text(initials));
+      : CircleAvatar(
+      radius: 32, backgroundColor: background, child: Text(initials));
 }
 
 String getUsersInitials(String username) {
-  if (username.isEmpty || username.trim().isEmpty) return '?';
-  List<String> uppercaseLetters = username.replaceAll(' ', '').characters
-      .where((String letter) => letter.toUpperCase() == letter)
-      .toList();
-  return uppercaseLetters.isEmpty
-      ? username.trim()[0].toUpperCase()
-      : uppercaseLetters.take(2).join();
+  if (username.isEmpty || username
+      .trim()
+      .isEmpty) return '?';
+  List<String> uppercaseLetters = username.replaceAll(
+      RegExp(r'[^a-zA-Z\dŠšŽžÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìiíiîiïiñòóôõöùúûýÿ]'), '').characters
+          .where((String letter) => letter.toUpperCase() == letter)
+          .toList();
+      return uppercaseLetters.isEmpty
+      ? username.trim()[0].toUpperCase(): uppercaseLetters.take(2).join();
 }

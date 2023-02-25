@@ -7,14 +7,15 @@ import 'package:mobile/constants/user.dart';
 import '../utils/duration-format.dart';
 
 class IndividualGroup extends StatelessWidget {
-  const IndividualGroup({
-    super.key,
-    required this.theme,
-    required this.group,
-  });
+  const IndividualGroup(
+      {super.key,
+      required this.theme,
+      required this.group,
+      required this.joinGroupFunction});
 
   final ThemeData theme;
   final Group group;
+  final Function joinGroupFunction;
 
   @override
   Widget build(BuildContext context) {
@@ -93,9 +94,7 @@ class IndividualGroup extends StatelessWidget {
                               width: 90,
                               height: 60,
                               child: ElevatedButton(
-                                  onPressed: () {
-                                    // testGroups();
-                                  },
+                                  onPressed: () => joinGroupFunction(group.groupId),
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: theme.primaryColor,
                                       foregroundColor: Colors.white,
@@ -247,18 +246,18 @@ class PlayerInGroup extends StatelessWidget {
         child: SizedBox(
           width: 100,
           child: Column(
-            // crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               FittedBox(
                 fit: BoxFit.cover,
-                child: getUserAvatar(avatar, getUsersInitials(username), theme.colorScheme.onBackground),
+                child: getUserAvatar(avatar, getUsersInitials(username),
+                    theme.colorScheme.onBackground),
               ),
               SizedBox(
                 height: 4,
               ),
               Center(
                   child: Text(
-                    username,
+                username,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 softWrap: true,

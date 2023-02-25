@@ -34,6 +34,7 @@ class GroupJoinController {
   }
 
   Future<Response> handleJoinGroup(String groupId) async {
+    print(groupId);
     // TODO Use UserService to get user's username
     String username = 'Player';
     joinedGroupedId = groupId;

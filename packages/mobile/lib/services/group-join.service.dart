@@ -11,7 +11,7 @@ import '../locator.dart';
 import '../view-methods/group.methods.dart';
 
 class GroupJoinService {
-  final groupJoinController = getIt.get<GroupJoinController>();
+  final GroupJoinController groupJoinController = getIt.get<GroupJoinController>();
 
   GroupJoinService._privateConstructor();
 
@@ -24,6 +24,10 @@ class GroupJoinService {
 
   void getGroups() async {
     await groupJoinController.handleGetGroups().catchError((_) => groups$.add([]));
+  }
+
+  void joinGroup(String groupId) async {
+    await groupJoinController.handleJoinGroup(groupId);
   }
 
   Future<bool> handleJoinGroup(String groupId) async {
