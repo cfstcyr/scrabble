@@ -34,6 +34,7 @@ class GroupJoinController {
   }
 
   Future<Response> handleJoinGroup(String groupId) async {
+    acceptedJoinRequest$.add(testGroup);
     print(groupId);
     // TODO Use UserService to get user's username
     String username = 'Player';
@@ -52,12 +53,14 @@ class GroupJoinController {
   }
 
   void _configureSocket() {
-    SocketService.socket.on(GROUP_UPDATE, (groups) async {
+    socketService.on(GROUP_UPDATE, (groups) async {
       handleGroupsUpdate(groups);
     });
-    SocketService.socket.on(
+    socketService.on(ACCEPTED_IN_GROUP, (group) => acceptedJoinRequest$.add(group));
+    socketService.on(
         REJECTED_FROM_GROUP, (hostName) => rejectedJoinRequest$.add(hostName));
     socketService.on(
         CANCELED_GROUP, (hostName) => canceledGroup$.add(hostName));
+
   }
 }

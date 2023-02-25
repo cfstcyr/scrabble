@@ -1,19 +1,50 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobile/components/chatbox.dart';
+import 'package:mobile/pages/join-waiting-page.dart';
 import 'package:mobile/services/group-join.service.dart';
+import 'package:mobile/view-methods/group.methods.dart';
 
+import '../classes/group.dart';
 import '../components/group-selection.dart';
 import '../components/invalid-connection-popup.dart';
 import '../locator.dart';
 import 'create-lobby.dart';
 
-class GroupPage extends StatelessWidget {
+class GroupPage extends StatefulWidget {
+  @override
+  State<GroupPage> createState() => _GroupPageState();
+}
+
+class _GroupPageState extends State<GroupPage> {
+  GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
+  StreamSubscription? acceptedSubscription;
+
+  @override
+  void initState() {
+    print('init');
+    groupJoinService.getGroups();
+    acceptedSubscription = acceptedJoinRequest$.listen((Group group) async {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => JoinWaitingPage()));
+    });
+    super.initState();
+  }
+
+  @override
+  void deactivate() {
+    if (acceptedSubscription != null) {
+      print('deactivate');
+      acceptedSubscription!.cancel();
+    }
+    super.deactivate();
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
-    groupJoinService.getGroups();
 
     return Scaffold(
         appBar: AppBar(
@@ -23,6 +54,7 @@ class GroupPage extends StatelessWidget {
           surfaceTintColor: Colors.white,
           iconTheme: IconThemeData(color: theme.primaryColor),
         ),
-        body: Center(child: GroupSelection()), backgroundColor: theme.colorScheme.background);
+        body: Center(child: GroupSelection()),
+        backgroundColor: theme.colorScheme.background);
   }
 }
