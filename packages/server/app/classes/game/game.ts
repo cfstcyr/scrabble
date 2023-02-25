@@ -6,7 +6,6 @@ import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { GameObjectivesData } from '@app/classes/communication/objective-data';
 import { RoundData } from '@app/classes/communication/round-data';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { GameObjectives } from '@app/classes/objectives/objective-utils';
 import Player from '@app/classes/player/player';
 import { Round } from '@app/classes/round/round';
 import RoundManager from '@app/classes/round/round-manager';
@@ -27,16 +26,12 @@ import { StatusCodes } from 'http-status-codes';
 import { Container } from 'typedi';
 import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { ReadyGameConfig, StartGameData } from './game-config';
-import { GameMode } from './game-mode';
-import { GameType } from './game-type';
 import { INVALID_LIST_LENGTH } from '@app/constants/classes-errors';
 
 export default class Game {
     private static boardService: BoardService;
     private static objectivesService: ObjectivesService;
     roundManager: RoundManager;
-    gameType: GameType;
-    gameMode: GameMode;
     board: Board;
     dictionarySummary: DictionarySummary;
     player1: Player;
@@ -73,7 +68,6 @@ export default class Game {
         game.player4 = config.player4;
         game.roundManager = new RoundManager(config.maxRoundTime, config.player1, config.player2, config.player3, config.player4);
         game.dictionarySummary = config.dictionary;
-        game.initializeObjectives();
         game.tileReserve = new TileReserve();
         game.board = this.boardService.initializeBoard();
         game.isAddedToDatabase = false;
@@ -121,8 +115,6 @@ export default class Game {
                     isWinner: this.isPlayerWinner(this.player4),
                 },
             ],
-            gameType: this.gameType,
-            gameMode: this.gameMode,
             hasBeenAbandoned: !this.player1.isConnected || !this.player2.isConnected || !this.player3.isConnected || !this.player4.isConnected,
         };
     }
@@ -245,7 +237,6 @@ export default class Game {
         }
 
         this.roundManager.replacePlayer(playerId, newPlayer);
-        this.gameMode = GameMode.Solo;
 
         return updatedData;
     }
@@ -357,15 +348,15 @@ export default class Game {
         return this.player1.id === playerId || this.player2.id === playerId || this.player3.id === playerId || this.player4.id === playerId;
     }
 
-    private initializeObjectives(): void {
-        if (this.gameType === GameType.Classic) return;
+    // private initializeObjectives(): void {
+    //     if (this.gameType === GameType.Classic) return;
 
-        const gameObjectives: GameObjectives = Game.objectivesService.createObjectivesForGame();
-        this.player1.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player1Objective);
-        this.player2.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player2Objective);
-        this.player3.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player2Objective);
-        this.player4.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player2Objective);
-    }
+    //     const gameObjectives: GameObjectives = Game.objectivesService.createObjectivesForGame();
+    //     this.player1.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player1Objective);
+    //     this.player2.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player2Objective);
+    //     this.player3.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player2Objective);
+    //     this.player4.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player2Objective);
+    // }
 
     private getPlayerArray(): Player[] {
         return [this.player1, this.player2, this.player3, this.player4];

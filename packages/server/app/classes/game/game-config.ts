@@ -1,11 +1,11 @@
 import { PlayerData } from '@app/classes/communication/player-data';
 import { RoundData } from '@app/classes/communication/round-data';
 import Player from '@app/classes/player/player';
-import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { Channel } from '@common/models/chat/channel';
 import { WithIdOf } from '@common/types/id';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 
 export interface GameConfigData {
     playerName: string;

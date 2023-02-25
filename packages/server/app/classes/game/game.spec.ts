@@ -26,8 +26,6 @@ import { createStubInstance, SinonStub, SinonStubbedInstance, stub } from 'sinon
 import { Container } from 'typedi';
 import Game from './game';
 import { ReadyGameConfig, StartGameData } from './game-config';
-import { GameMode } from './game-mode';
-import { GameType } from './game-type';
 const expect = chai.expect;
 
 chai.use(spies);
@@ -53,10 +51,7 @@ const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     player2: DEFAULT_PLAYER_2,
     player3: DEFAULT_PLAYER_3,
     player4: DEFAULT_PLAYER_4,
-    gameType: GameType.Classic,
-    gameMode: GameMode.Multiplayer,
     maxRoundTime: 1,
-    dictionary: TEST_DICTIONARY,
 };
 const DEFAULT_TILE: Tile = { letter: 'A', value: 1 };
 const DEFAULT_TILE_2: Tile = { letter: 'B', value: 5 };
@@ -115,7 +110,6 @@ describe('Game', () => {
             expect(game.player3).to.exist;
             expect(game.player4).to.exist;
             expect(game.roundManager).to.exist;
-            expect(game.gameType).to.exist;
             expect(game['tileReserve']).to.exist;
             expect(game.board).to.exist;
         });
@@ -771,16 +765,6 @@ describe('Game', () => {
         });
     });
 
-    describe('Game Type', () => {
-        it('should contain Classic', () => {
-            expect(GameType.Classic).to.equal('Classique');
-        });
-
-        it('should contain LOG2990', () => {
-            expect(GameType.LOG2990).to.equal('LOG2990');
-        });
-    });
-
     describe('Game Service Injection', () => {
         afterEach(() => {
             chai.spy.restore();
@@ -852,7 +836,6 @@ describe('Game', () => {
             game.player3 = PLAYER_3;
             game.player4 = PLAYER_4;
             chai.spy.on(game, 'getTilesLeftPerLetter', () => DEFAULT_MAP);
-            game.gameType = GameType.Classic;
             game.dictionarySummary = TEST_DICTIONARY;
             chai.spy.on(game, 'getId', () => DEFAULT_GAME_ID);
             game.board = board;
@@ -870,8 +853,6 @@ describe('Game', () => {
                 player2: game.player2.convertToPlayerData(),
                 player3: game.player3.convertToPlayerData(),
                 player4: game.player4.convertToPlayerData(),
-                gameType: game.gameType,
-                gameMode: game.gameMode,
                 maxRoundTime: DEFAULT_TIME,
                 dictionary: TEST_DICTIONARY,
                 gameId: DEFAULT_GAME_ID,
