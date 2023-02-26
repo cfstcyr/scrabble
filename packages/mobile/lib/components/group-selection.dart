@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/classes/virtual-player-level.dart';
 import 'package:mobile/services/group-join.service.dart';
 
 import '../classes/group.dart';
-import '../classes/user.dart';
-import '../constants/create-lobby-constants.dart';
+import '../constants/locale/group-selection-constants.dart';
 import '../locator.dart';
-import '../services/theme-color-service.dart';
-import '../view-methods/create-lobby-methods.dart';
 import '../view-methods/group.methods.dart';
 import 'individual-group.dart';
-import 'no-group-entry.dart';
 
 class GroupSelection extends StatelessWidget {
   GroupSelection({
@@ -37,7 +32,8 @@ class GroupSelection extends StatelessWidget {
   }
 }
 
-StreamBuilder<List<Group>> handleLobbyListChange(BuildContext context, Function joinGroupFunction) {
+StreamBuilder<List<Group>> handleLobbyListChange(
+    BuildContext context, Function joinGroupFunction) {
   var theme = Theme.of(context);
   return StreamBuilder<List<Group>>(
     stream: groupStream,
@@ -51,24 +47,29 @@ StreamBuilder<List<Group>> handleLobbyListChange(BuildContext context, Function 
 
       List<Group> groups = snapshot.data != null && snapshot.data!.isNotEmpty
           ? snapshot.data!
-          : List<Group>.of([]);
+          : List<Group>.empty();
 
-      return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
-          child: Center(
-              child: Scrollbar(
-            radius: Radius.circular(4),
-            thickness: 8,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: ListView.builder(
-                itemCount: groups.isEmpty ? 1 : groups.length,
-                itemBuilder: (buildContext, i) => groups.isEmpty
-                    ? NoGroupEntry(theme: theme)
-                    : IndividualGroup(theme: theme, group: groups[i], joinGroupFunction: joinGroupFunction),
-              ),
-            ),
-          )));
+      return groups.isEmpty
+          ? Center(
+              child: Text(NO_GAME_AVAILABLE, style: theme.textTheme.displaySmall),
+            )
+          : Padding(
+              padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
+              child: Center(
+                  child: Scrollbar(
+                radius: Radius.circular(4),
+                thickness: 8,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: ListView.builder(
+                    itemCount: groups.length,
+                    itemBuilder: (buildContext, i) => IndividualGroup(
+                        theme: theme,
+                        group: groups[i],
+                        joinGroupFunction: joinGroupFunction),
+                  ),
+                ),
+              )));
     },
   );
 }

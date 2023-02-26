@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/constants/user-constants.dart';
 
 import '../utils/duration-format.dart';
@@ -28,7 +29,7 @@ class IndividualGroup extends StatelessWidget {
         child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Row(
               children: List.generate(
-            4,
+            MAX_PLAYER_COUNT,
             (index) {
               PublicUser userToShow = group.users.length > index
                   ? group.users[index]

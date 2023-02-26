@@ -7,6 +7,7 @@ import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/group.dart';
 import '../components/group-selection.dart';
+import '../constants/locale/group-selection-constants.dart';
 import '../locator.dart';
 
 class GroupPage extends StatefulWidget {
@@ -29,7 +30,7 @@ class _GroupPageState extends State<GroupPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text("Rejoindre une partie"),
+          title: Text(JOIN_GAME),
           backgroundColor: Colors.white,
           centerTitle: true,
           surfaceTintColor: Colors.white,

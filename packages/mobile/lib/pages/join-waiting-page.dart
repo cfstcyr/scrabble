@@ -6,6 +6,8 @@ import '../components/group-management.dart';
 import '../components/parameters.dart';
 import '../components/player-waiting-list.dart';
 import '../components/waiting-room.dart';
+import '../constants/locale/group-selection-constants.dart';
+import '../constants/locale/groups-constants.dart';
 import '../view-methods/create-lobby-methods.dart';
 
 class JoinWaitingPage extends StatefulWidget {
@@ -31,7 +33,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text("Salle d'attente"),
+          title: Text(WAITING_ROOM_TITLE),
           shadowColor: Colors.black,
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
@@ -67,7 +69,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
                         children: <Widget>[
-                          Text("Groupe de partie",
+                          Text(GAME_GROUP_TITLE,
                               style: TextStyle(fontSize: 18)),
                           Expanded(
                             child: WaitingRoom(
@@ -85,7 +87,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                                 color: Colors.grey.shade500,
                               ),
                             ),
-                            Text("Paramètres de partie"),
+                            Text(GAME_PARAMETERS_TITLE),
                             Expanded(
                               child: Divider(
                                 height: 10,
@@ -110,7 +112,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                                 size: 20,
                               ),
                               label: Text(
-                                'Quitter la partie',
+                                QUIT_GROUP,
                                 style: TextStyle(fontSize: 15),
                               )),
                         ],

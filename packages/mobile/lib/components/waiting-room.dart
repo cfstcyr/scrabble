@@ -23,9 +23,6 @@ class _WaitingRoomState extends State<WaitingRoom> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
 
     return Padding(
         padding: EdgeInsets.only(left: 0, right: 0, top: 10.0, bottom: 50.0),
@@ -119,7 +116,7 @@ class PlayerInRoom extends StatelessWidget {
                 SizedBox(
                   width: 8,
                 ),
-                setPlayerName(user.username)
+                setPlayerName(user.username, theme)
               ],
             ),
           )),
@@ -127,7 +124,7 @@ class PlayerInRoom extends StatelessWidget {
   }
 }
 
-SizedBox setPlayerName(String username) {
+SizedBox setPlayerName(String username, ThemeData theme) {
   return SizedBox(
     width: 120,
     child: Text(
@@ -135,7 +132,7 @@ SizedBox setPlayerName(String username) {
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
           fontSize: 17,
-          color: Colors.green.shade900,
+          color: theme.primaryColor,
           fontWeight: FontWeight.w500),
     ),
   );
