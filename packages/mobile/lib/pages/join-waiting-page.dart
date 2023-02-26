@@ -23,6 +23,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
 
     reOpen();
     playerList$.add(widget.currentGroup.users);
+    print(playerList$.value);
   }
 
   @override

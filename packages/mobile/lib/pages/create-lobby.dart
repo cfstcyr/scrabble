@@ -10,6 +10,7 @@ import '../components/waiting-room.dart';
 class CreateLobbyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    reOpen();
     return Scaffold(
       appBar: AppBar(
         title: Text("Salle d'attente"),

@@ -1,11 +1,3 @@
-import 'dart:io';
-
-import 'package:http/http.dart';
-import 'package:mobile/classes/user.dart';
-import 'package:mobile/controllers/game-creation-controller.dart';
-
-import '../classes/group.dart';
-import '../constants/game-constants.dart';
 import '../controllers/group-join-controller.dart';
 import '../locator.dart';
 import '../view-methods/group.methods.dart';

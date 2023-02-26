@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
-import 'package:mobile/constants/game-constants.dart';
 import 'package:mobile/constants/user-constants.dart';
 
 import '../classes/user.dart';
+import '../constants/create-lobby-constants.dart';
 import '../view-methods/create-lobby-methods.dart';
 import 'error-pop-up.dart';
 
@@ -40,7 +40,7 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange(
     ThemeData theme, VirtualPlayerLevel virtualPlayerLevel) {
   // reOpen();
   return StreamBuilder<List<PublicUser>>(
-    stream: playerList$,
+    stream: playerList$.stream,
     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
       if (snapshot.hasError) {
         errorSnackBar(
@@ -52,9 +52,9 @@ StreamBuilder<List<PublicUser>> handlePlayerListChange(
 
       List<PublicUser> users = snapshot.hasData
           ? snapshot.data!
-          : List.generate(MAX_GROUP_SIZE,
+          : List.generate(MAX_PLAYER_COUNT,
               (_) => generateVirtualPlayerUser(virtualPlayerLevel));
-      while (users.length < MAX_GROUP_SIZE) {
+      while (users.length < MAX_PLAYER_COUNT) {
         users.add(generateVirtualPlayerUser(virtualPlayerLevel));
       }
 

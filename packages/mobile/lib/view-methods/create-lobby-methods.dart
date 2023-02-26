@@ -106,5 +106,6 @@ void reOpen() {
 }
 
 bool isMinimumPlayerCount() {
+  print(playerList$.value);
   return playerList$.value.length < MINIMUM_PLAYER_COUNT;
 }
