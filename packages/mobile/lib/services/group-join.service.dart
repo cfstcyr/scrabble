@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/pages/groups-page.dart';
+import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/routes/navigator-key.dart';
 
 import '../classes/group.dart';
@@ -10,44 +12,32 @@ import '../pages/join-waiting-page.dart';
 import '../view-methods/group.methods.dart';
 
 class GroupJoinService {
-  final GroupJoinController groupJoinController = getIt.get<GroupJoinController>();
+  final GroupJoinController groupJoinController =
+      getIt.get<GroupJoinController>();
 
   GroupJoinService._privateConstructor() {
     acceptedStream.listen((Group group) {
-    Navigator.pushReplacement(
-          navigatorKey.currentContext!, MaterialPageRoute(builder: (context) => JoinWaitingPage(currentGroup: group)));
+      Navigator.pushReplacement(
+          navigatorKey.currentContext!,
+          MaterialPageRoute(
+              builder: (context) => JoinWaitingPage(currentGroup: group)));
       closeSubject(acceptedJoinRequest$);
     });
 
-    rejectedJoinRequest$.listen((String hostname) {
-      showDialog<void>(
-        context: navigatorKey.currentContext!,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Demande rejetée'),
-            surfaceTintColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text("$hostname a rejeté votre demande", style: TextStyle(fontSize: 16)),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Ok'),
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => GroupPage()));
-                },
-              ),
-            ],
-          );
-        },
-      );
+    rejectedStream.listen((String hostname) {
+      triggerDialogBox(
+          "Demande rejetée",
+          "$hostname a rejeté votre demande",
+          () => Navigator.of(navigatorKey.currentContext!).pushReplacement(
+              MaterialPageRoute(builder: (context) => GroupPage())));
+    });
+
+    canceledStream.listen((String hostname) {
+      triggerDialogBox(
+          "Partie annulée",
+          "$hostname a annulé la partie",
+          () => Navigator.of(navigatorKey.currentContext!).pushReplacement(
+              MaterialPageRoute(builder: (context) => HomePage())));
     });
   }
 
@@ -59,7 +49,9 @@ class GroupJoinService {
   }
 
   void getGroups() async {
-    await groupJoinController.handleGetGroups().catchError((_) => groups$.add([]));
+    await groupJoinController
+        .handleGetGroups()
+        .catchError((_) => groups$.add([]));
   }
 
   void joinGroup(String groupId) async {
