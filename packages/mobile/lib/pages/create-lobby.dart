@@ -16,6 +16,7 @@ class CreateLobbyPage extends StatelessWidget {
         title: Text("Salle d'attente"),
         shadowColor: Colors.black,
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         elevation: 1,
         automaticallyImplyLeading: false,
         centerTitle: true,

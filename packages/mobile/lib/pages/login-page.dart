@@ -41,13 +41,6 @@ class MainTitle extends StatelessWidget {
       Card(
         child: LoginForm(),
       ),
-      ElevatedButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => GroupPage()));
-        },
-        child: Text('Rejoindre une partie'),
-      ),
     ]);
   }
 }

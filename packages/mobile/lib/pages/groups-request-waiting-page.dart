@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mobile/components/individual-group.dart';
 import 'package:mobile/components/parameters.dart';
-import 'package:mobile/pages/join-waiting-page.dart';
+import 'package:mobile/pages/group-waiting-page.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
