@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/view-methods/create-lobby-methods.dart';
 
+import '../classes/virtual-player-level.dart';
 import '../components/group-management.dart';
 import '../components/parameters.dart';
 import '../components/player-waiting-list.dart';
@@ -48,7 +50,7 @@ class CreateLobbyPage extends StatelessWidget {
                         Text("Groupe de partie",
                             style: TextStyle(fontSize: 18)),
                         Expanded(
-                          child: WaitingRoom(),
+                          child: WaitingRoom(virtualPlayerLevel: VirtualPlayerLevel.beginner),
                         ),
                         Row(children: <Widget>[
                           Expanded(

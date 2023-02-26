@@ -6,9 +6,9 @@ import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
 import '../classes/virtual-player-level.dart';
-import '../constants/game.dart';
+import '../constants/game-constants.dart';
 
-Group testGroup = Group(groupId: '1', users: [PublicUser(username: 'Thomas'), PublicUser(username: 'Charles-François', avatar: '')], maxRoundTime: 60, virtualPlayerLevel: VirtualPlayerLevel.beginner, gameVisibility: GameVisibility.private);
+Group testGroup = Group(groupId: '1', users: [PublicUser(username: 'Thomas'), PublicUser(username: 'Charles-François')], maxRoundTime: 60, virtualPlayerLevel: VirtualPlayerLevel.beginner, gameVisibility: GameVisibility.private);
 BehaviorSubject<List<Group>> groups$ = BehaviorSubject.seeded(List.of([testGroup, testGroup, testGroup, testGroup, testGroup, testGroup, testGroup, testGroup]));
 
 Stream<List<Group>> get groupStream {

@@ -72,6 +72,8 @@ Widget setWaitingPlayerIcon(int index) {
 }
 
 bool addPlayerToLobby(PublicUser player) {
+  if (playerList$.isClosed) reOpen();
+
   // TODO COTE SERVEUR req
   if (playerList.length >= MAX_PLAYER_COUNT) return false;
   playerWaitingList.remove(player);

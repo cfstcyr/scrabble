@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/virtual-player-level.dart';
 
+import '../utils/duration-format.dart';
 import '../view-methods/create-lobby-methods.dart';
 
 class Parameters extends StatelessWidget {
-  const Parameters({
-    super.key,
-  });
+  const Parameters({super.key, this.maxRoundTime, this.virtualPlayerLevel});
+
+  final int? maxRoundTime;
+  final VirtualPlayerLevel? virtualPlayerLevel;
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +28,19 @@ class Parameters extends StatelessWidget {
                   size: 25,
                 ),
                 // TODO remove:: pas en cst car ne va plus exister quand on recoit info from backend
-                label: Text('1:00', style: TextStyle(fontSize: 15))),
+                label: Text(
+                    maxRoundTime == null ? '1:00' : formatTime(maxRoundTime!),
+                    style: TextStyle(fontSize: 15))),
           ),
           ElevatedButton.icon(
               onPressed: null,
               style: setStyleButtonToText(),
               icon: Icon(Icons.precision_manufacturing_outlined, size: 25),
-              label: Text('Expert', style: TextStyle(fontSize: 15))),
+              label: Text(
+                  virtualPlayerLevel == null
+                      ? 'Expert'
+                      : virtualPlayerLevel!.levelName,
+                  style: TextStyle(fontSize: 15))),
         ],
       )),
     );

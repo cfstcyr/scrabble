@@ -1,17 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:mobile/components/chatbox.dart';
 import 'package:mobile/pages/join-waiting-page.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/group.dart';
 import '../components/group-selection.dart';
-import '../components/invalid-connection-popup.dart';
 import '../locator.dart';
-import 'create-lobby.dart';
 
 class GroupPage extends StatefulWidget {
   @override
@@ -28,7 +24,7 @@ class _GroupPageState extends State<GroupPage> {
     groupJoinService.getGroups();
     acceptedSubscription = acceptedJoinRequest$.listen((Group group) async {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => JoinWaitingPage()));
+          context, MaterialPageRoute(builder: (context) => JoinWaitingPage(currentGroup: group)));
     });
     super.initState();
   }
