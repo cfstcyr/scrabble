@@ -34,14 +34,16 @@ class GroupJoinController {
   }
 
   Future<Response> handleJoinGroup(String groupId) async {
-    acceptedJoinRequest$.add(testGroup);
-    print(groupId);
     // TODO Use UserService to get user's username
     String username = 'Player';
     joinedGroupedId = groupId;
     return post(Uri.parse(
         "$endpoint/games/$groupId/players/${SocketService.socket.id}/join"),
         body: { 'playerName': username});
+  }
+
+  Future<Response> handleCancelJoinRequest() async {
+    return handleLeaveGroup();
   }
 
   Future<Response> handleLeaveGroup() async {

@@ -12,26 +12,22 @@ Group testGroup = Group(
     groupId: '1',
     users: [
       PublicUser(username: 'Thomas'),
-      PublicUser(username: 'Charles-François')
+      PublicUser(username: 'Charles-François'),
     ],
     maxRoundTime: 60,
     virtualPlayerLevel: VirtualPlayerLevel.beginner,
-    gameVisibility: GameVisibility.private);
+    gameVisibility: GameVisibility.public);
 BehaviorSubject<List<Group>> groups$ = BehaviorSubject.seeded(List.of([
   testGroup,
   testGroup,
   testGroup,
-  testGroup,
-  testGroup,
-  testGroup,
-  testGroup,
-  testGroup
+
 ]));
 
 Stream<List<Group>> get groupStream {
   return groups$.map((List<Group> groups) {
     for (Group group in groups) {
-      group.canJoin = group.users.length > MAX_PLAYER_COUNT;
+      group.canJoin = group.users.length < MAX_PLAYER_COUNT;
     }
     return groups;
   });

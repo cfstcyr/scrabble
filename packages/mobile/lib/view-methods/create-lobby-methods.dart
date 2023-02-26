@@ -24,10 +24,10 @@ ButtonStyle setStyleRoomButtons() {
   );
 }
 
-ButtonStyle setStyleButtonToText() {
+ButtonStyle setStyleButtonToText([Color? backGroundColor]) {
   return ButtonStyle(
     foregroundColor: MaterialStateProperty.all(Colors.black),
-    backgroundColor: MaterialStateProperty.all(Colors.white),
+    backgroundColor: MaterialStateProperty.all(backGroundColor ?? Colors.white),
   );
 }
 
