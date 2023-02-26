@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/group.dart';
 import '../components/group-management.dart';
@@ -20,10 +21,8 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
   @override
   void initState() {
     super.initState();
-
-    reOpen();
+    reOpenSubject(playerList$);
     playerList$.add(widget.currentGroup.users);
-    print(playerList$.value);
   }
 
   @override

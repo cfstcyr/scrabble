@@ -16,26 +16,11 @@ class GroupPage extends StatefulWidget {
 
 class _GroupPageState extends State<GroupPage> {
   GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
-  StreamSubscription? acceptedSubscription;
 
   @override
   void initState() {
-    print('init');
     groupJoinService.getGroups();
-    acceptedSubscription = acceptedJoinRequest$.listen((Group group) async {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => JoinWaitingPage(currentGroup: group)));
-    });
     super.initState();
-  }
-
-  @override
-  void deactivate() {
-    if (acceptedSubscription != null) {
-      print('deactivate');
-      acceptedSubscription!.cancel();
-    }
-    super.deactivate();
   }
 
   @override

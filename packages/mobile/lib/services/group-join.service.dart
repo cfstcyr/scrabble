@@ -1,11 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:mobile/routes/navigator-key.dart';
+
+import '../classes/group.dart';
 import '../controllers/group-join-controller.dart';
 import '../locator.dart';
+import '../pages/join-waiting-page.dart';
 import '../view-methods/group.methods.dart';
 
 class GroupJoinService {
   final GroupJoinController groupJoinController = getIt.get<GroupJoinController>();
 
-  GroupJoinService._privateConstructor();
+  GroupJoinService._privateConstructor() {
+    acceptedStream.listen((Group group) {
+    Navigator.push(
+          navigatorKey.currentContext!, MaterialPageRoute(builder: (context) => JoinWaitingPage(currentGroup: group)));
+      closeSubject(acceptedJoinRequest$);
+    });
+  }
 
   static final GroupJoinService _instance =
       GroupJoinService._privateConstructor();

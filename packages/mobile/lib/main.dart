@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/login-page.dart';
+import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:provider/provider.dart';
 
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
               onBackground: Color.fromRGBO(232, 232, 232, 1),
               tertiary: Color.fromRGBO(216, 216, 216, 1)),
         ),
+        navigatorKey: navigatorKey,
         home: MainPage(),
       ),
     );
