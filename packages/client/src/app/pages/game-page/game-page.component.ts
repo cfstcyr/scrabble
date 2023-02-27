@@ -253,6 +253,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     private isLocalPlayerWinner(winnerNames: string[]): boolean {
-        return winnerNames.includes(this.gameService.getLocalPlayer()?.name ?? '');
+        return winnerNames.includes(this.gameService.getLocalPlayer()?.publicUser.username ?? '');
     }
 }

@@ -64,9 +64,9 @@ export default class RoundManagerService implements IResetServiceData, OnDestroy
     }
 
     convertRoundDataToRound(roundData: RoundData): Round {
-        if (roundData.playerData.id && roundData.playerData.name && roundData.playerData.tiles) {
+        if (roundData.playerData.id && roundData.playerData.publicUser && roundData.playerData.tiles) {
             return {
-                player: new Player(roundData.playerData.id, roundData.playerData.name, roundData.playerData.tiles),
+                player: new Player(roundData.playerData.id, roundData.playerData.publicUser, roundData.playerData.tiles),
                 startTime: roundData.startTime,
                 limitTime: roundData.limitTime,
                 completedTime: roundData.completedTime,
