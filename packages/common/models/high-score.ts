@@ -2,7 +2,6 @@ import { NoId } from '../types/id';
 
 export interface HighScore {
     idHighScore: number;
-    gameType: string;
     score: number;
 }
 

@@ -48,8 +48,7 @@ export default class HighScoresService {
         const log2990HighScores: NoId<HighScoreWithPlayers>[] = [];
 
         highScores.forEach((highScore) => {
-            if (highScore.gameType === GameType.Classic) classicHighScores.push(highScore);
-            else log2990HighScores.push(highScore);
+            classicHighScores.push(highScore);
         });
 
         return [classicHighScores, log2990HighScores];
