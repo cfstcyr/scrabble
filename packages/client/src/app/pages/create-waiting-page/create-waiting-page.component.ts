@@ -87,14 +87,17 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
 
     acceptUser(acceptedUser: PublicUser): void {
         if (this.isGroupFull) return;
+
         const requestingUsers = this.requestingUsers.filter((user) => user === acceptedUser);
         if (requestingUsers.length === 0) return;
         const requestingUser = requestingUsers[0];
         const index = this.requestingUsers.indexOf(requestingUser);
         this.requestingUsers.splice(index, 1);
+
         if (!this.currentGroup.user2) this.currentGroup.user2 = acceptedUser;
         else if (!this.currentGroup.user3) this.currentGroup.user3 = acceptedUser;
         else if (!this.currentGroup.user4) this.currentGroup.user4 = acceptedUser;
+
         this.updateGroupStatus();
         this.gameDispatcherService.handleConfirmation(acceptedUser.username);
     }

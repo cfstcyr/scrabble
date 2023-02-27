@@ -1,5 +1,5 @@
 import { Component, HostListener, Inject, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router, NavigationStart } from '@angular/router';
 import { Timer } from '@app/classes/round/timer';
 import { GameDispatcherService } from '@app/services';
@@ -20,7 +20,6 @@ export class GroupRequestWaitingDialogComponent implements OnInit, OnDestroy {
     isRejected: boolean = false;
     private componentDestroyed$: Subject<boolean>;
     constructor(
-        public dialog: MatDialog,
         public gameDispatcherService: GameDispatcherService,
         public router: Router,
         private readonly playerLeavesService: PlayerLeavesService,
@@ -77,32 +76,6 @@ export class GroupRequestWaitingDialogComponent implements OnInit, OnDestroy {
 
     private playerRejected(): void {
         this.isRejected = true;
-        // this.dialog.open(DefaultDialogComponent, {
-        //     data: {
-        //         title: DIALOG_REJECT_TITLE,
-        //         content: hostName + DIALOG_REJECT_CONTENT,
-        //         buttons: [
-        //             {
-        //                 content: DIALOG_BUTTON_CONTENT_REJECTED,
-        //                 closeDialog: true,
-        //             },
-        //         ],
-        //     },
-        // });
-    }
 
-    // private hostHasCanceled(hostName: string): void {
-    //     this.dialog.open(DefaultDialogComponent, {
-    //         data: {
-    //             title: DIALOG_CANCEL_TITLE,
-    //             content: hostName + DIALOG_CANCEL_CONTENT,
-    //             buttons: [
-    //                 {
-    //                     content: DIALOG_BUTTON_CONTENT_RETURN_GROUP,
-    //                     closeDialog: true,
-    //                 },
-    //             ],
-    //         },
-    //     });
-    // }
+    }
 }

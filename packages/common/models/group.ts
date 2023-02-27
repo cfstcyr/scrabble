@@ -9,7 +9,6 @@ export interface Group {
     user2?: PublicUser;
     user3?: PublicUser;
     user4?: PublicUser;
-    // hostName: string;
     maxRoundTime: number;
     gameVisibility: GameVisibility;
     virtualPlayerLevel: VirtualPlayerLevel;

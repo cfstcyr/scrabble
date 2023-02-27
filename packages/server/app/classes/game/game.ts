@@ -351,16 +351,6 @@ export default class Game {
         return this.player1.id === playerId || this.player2.id === playerId || this.player3.id === playerId || this.player4.id === playerId;
     }
 
-    // private initializeObjectives(): void {
-    //     if (this.gameType === GameType.Classic) return;
-
-    //     const gameObjectives: GameObjectives = Game.objectivesService.createObjectivesForGame();
-    //     this.player1.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player1Objective);
-    //     this.player2.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player2Objective);
-    //     this.player3.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player2Objective);
-    //     this.player4.initializeObjectives(gameObjectives.publicObjectives, gameObjectives.player2Objective);
-    // }
-
     private getPlayerArray(): Player[] {
         return [this.player1, this.player2, this.player3, this.player4];
     }

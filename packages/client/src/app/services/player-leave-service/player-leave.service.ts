@@ -4,13 +4,11 @@ import { GameService } from '@app/services/';
 import GameDispatcherService from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { Subject } from 'rxjs';
-// import { takeUntil } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PlayerLeavesService implements OnDestroy {
-    // private joinerLeavesGameEvent: Subject<string> = new Subject();
     private serviceDestroyed$: Subject<boolean> = new Subject();
 
     constructor(
@@ -19,9 +17,6 @@ export class PlayerLeavesService implements OnDestroy {
         private readonly gameService: GameService,
         private readonly gameViewEventManager: GameViewEventManagerService,
     ) {
-        // this.playerLeavesController.subscribeToJoinerLeavesGameEvent(this.serviceDestroyed$, (leaverName: string) =>
-        //     this.handleJoinerLeaveGame(leaverName),
-        // );
         this.playerLeavesController.subscribeToResetGameEvent(this.serviceDestroyed$, () => {
             this.gameViewEventManager.emitGameViewEvent('resetServices');
         });
