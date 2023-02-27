@@ -1,7 +1,6 @@
 import { DisplayGameHistoryColumns, DisplayGameHistoryKeys } from '@app/classes/admin/admin-game-history';
 import { DisplayDictionaryKeys } from '@app/classes/admin/dictionaries';
 import { IconName } from '@app/components/icon/icon.component.type';
-import { GameType } from '@app/constants/game-type';
 import { SingleHighScore } from '@common/models/high-score';
 import { SNACK_BAR_ERROR_DURATION, SNACK_BAR_SUCCESS_DURATION } from './dictionaries-components';
 
@@ -13,7 +12,7 @@ export const ARROW_LEFT = 'ArrowLeft';
 export const ARROW_RIGHT = 'ArrowRight';
 export const ENTER = 'Enter';
 export const KEYDOWN = 'keydown';
-export const DEFAULT_HIGH_SCORE: SingleHighScore = { name: 'player1', gameType: GameType.Classic, score: 0 };
+export const DEFAULT_HIGH_SCORE: SingleHighScore = { name: 'player1', score: 0 };
 
 export const NOT_FOUND = -1;
 export const DICTIONARIES_COLUMNS = {
@@ -36,8 +35,6 @@ export const GAME_HISTORY_COLUMNS: DisplayGameHistoryColumns = {
     endTime: 'Heure de fin',
     duration: 'Durée',
     hasBeenAbandoned: 'Partie abandonnée',
-    gameType: 'Type de partie',
-    gameMode: 'Mode de jeu',
     player1Data: 'Joueur 1',
     player1Name: 'Nom joueur 1',
     player1Score: 'Pointage joueur 1',
@@ -51,8 +48,6 @@ export const DEFAULT_GAME_HISTORY_COLUMNS: DisplayGameHistoryKeys[] = [
     'startTime',
     'duration',
     'hasBeenAbandoned',
-    'gameType',
-    'gameMode',
     'player1Name',
     'player1Score',
     'player2Name',

@@ -1,16 +1,7 @@
-import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
-import PlayerData from './player-data';
+import { PlayerData } from '.';
 import { RoundData } from './round-data';
-
-export interface GameConfigData {
-    playerName: string;
-    playerId: string;
-    maxRoundTime: number;
-    virtualPlayerName?: string;
-    virtualPlayerLevel?: VirtualPlayerLevel;
-}
 
 export interface GameConfig {
     player1: PlayerData;

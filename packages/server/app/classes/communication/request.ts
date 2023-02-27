@@ -1,4 +1,4 @@
-import { VirtualPlayerLevel } from 'app/classes/player/virtual-player-level';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { Request } from 'express';
 
 export interface GameRequestParams {

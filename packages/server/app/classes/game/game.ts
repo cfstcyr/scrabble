@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
 import Board from '@app/classes/board/board';
-import { DictionarySummary } from '@app/classes/communication/dictionary-data';
+// import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { GameObjectivesData } from '@app/classes/communication/objective-data';
 import { RoundData } from '@app/classes/communication/round-data';
@@ -27,6 +27,8 @@ import { Container } from 'typedi';
 import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { ReadyGameConfig, StartGameData } from './game-config';
 import { INVALID_LIST_LENGTH } from '@app/constants/classes-errors';
+import { DictionarySummary } from '@app/classes/communication/dictionary-data';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 
 export default class Game {
     private static boardService: BoardService;
@@ -41,6 +43,7 @@ export default class Game {
     isAddedToDatabase: boolean;
     gameIsOver: boolean;
     gameHistory: NoIdGameHistoryWithPlayers;
+    virtualPlayerLevel: VirtualPlayerLevel;
     private tileReserve: TileReserve;
     private id: string;
     private readonly groupChannelId: TypeOfId<Channel>;
@@ -67,12 +70,12 @@ export default class Game {
         game.player3 = config.player3;
         game.player4 = config.player4;
         game.roundManager = new RoundManager(config.maxRoundTime, config.player1, config.player2, config.player3, config.player4);
-        game.dictionarySummary = config.dictionary;
+        game.dictionarySummary = config.dictionarySummary;
         game.tileReserve = new TileReserve();
         game.board = this.boardService.initializeBoard();
         game.isAddedToDatabase = false;
         game.gameIsOver = false;
-
+        game.virtualPlayerLevel = config.virtualPlayerLevel;
         await game.tileReserve.init();
 
         game.player1.tiles = game.tileReserve.getTiles(START_TILES_AMOUNT);
@@ -91,25 +94,25 @@ export default class Game {
             endTime: new Date(),
             playersData: [
                 {
-                    name: this.player1.name,
+                    name: this.player1.publicUser.username,
                     score: this.player1.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player1.id),
                     isWinner: this.isPlayerWinner(this.player1),
                 },
                 {
-                    name: this.player2.name,
+                    name: this.player2.publicUser.username,
                     score: this.player2.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player2.id),
                     isWinner: this.isPlayerWinner(this.player2),
                 },
                 {
-                    name: this.player3.name,
+                    name: this.player3.publicUser.username,
                     score: this.player3.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player3.id),
                     isWinner: this.isPlayerWinner(this.player3),
                 },
                 {
-                    name: this.player4.name,
+                    name: this.player4.publicUser.username,
                     score: this.player4.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player4.id),
                     isWinner: this.isPlayerWinner(this.player4),
@@ -300,10 +303,10 @@ export default class Game {
 
     computeWinners(): string[] {
         const winners: string[] = [];
-        if (this.isPlayerWinner(this.player1)) winners.push(this.player1.name);
-        if (this.isPlayerWinner(this.player2)) winners.push(this.player2.name);
-        if (this.isPlayerWinner(this.player3)) winners.push(this.player3.name);
-        if (this.isPlayerWinner(this.player4)) winners.push(this.player4.name);
+        if (this.isPlayerWinner(this.player1)) winners.push(this.player1.publicUser.username);
+        if (this.isPlayerWinner(this.player2)) winners.push(this.player2.publicUser.username);
+        if (this.isPlayerWinner(this.player3)) winners.push(this.player3.publicUser.username);
+        if (this.isPlayerWinner(this.player4)) winners.push(this.player4.publicUser.username);
 
         return winners;
     }

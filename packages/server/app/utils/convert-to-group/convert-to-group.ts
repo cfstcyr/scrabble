@@ -5,6 +5,8 @@ export const convertToGroup = (config: GameConfig, id: string): Group => {
     return {
         maxRoundTime: config.maxRoundTime,
         groupId: id,
-        gameVisibility
+        virtualPlayerLevel: config.virtualPlayerLevel,
+        gameVisibility: config.gameVisibility,
+        user1: config.player1.publicUser,
     };
 };

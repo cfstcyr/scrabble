@@ -1,5 +1,6 @@
 import { GameVisibility } from '@common/models/game-visibility';
-import GroupInfo from '@common/models/group-info';
+import { Group } from '@common/models/group';
+import { UNKOWN_USER } from '@common/models/user';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 
 export const HOST_WAITING_MESSAGE = "En attente d'un adversaire";
@@ -42,10 +43,10 @@ export const MAXIMUM_TIMER_VALUE = 300;
 export const TIMER_VALUE_INCREMENTS = 30;
 export const KEEP_DATA = false;
 
-export const DEFAULT_GROUP: GroupInfo = {
+export const DEFAULT_GROUP: Group = {
     groupId: '',
-    hostName: 'host',
+    user1: UNKOWN_USER,
     maxRoundTime: 60,
     gameVisibility: GameVisibility.Public,
-    virtualPlayerLever: VirtualPlayerLevel.Beginner,
+    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
 };
