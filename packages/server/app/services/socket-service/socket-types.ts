@@ -1,38 +1,35 @@
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
-import { PlayerData } from '@app/classes/communication/player-data';
-import { PlayerName } from '@app/classes/communication/player-name';
 import { StartGameData } from '@app/classes/game/game-config';
-import { NoIdGameHistoryWithPlayers } from '@common/models/game-history';
 import { Group } from '@common/models/group';
 import { HighScoreWithPlayers } from '@common/models/high-score';
+import { PublicUser } from '@common/models/user';
 import { NoId } from '@common/types/id';
 
 export type SocketEmitEvents =
-    | 'gameUpdate'
     | 'joinRequest'
-    | 'player_joined'
+    | 'joinRequestCancelled'
+    | 'acceptJoinRequest'
+    | 'rejectJoinRequest'
+    | 'cancelledGroup'
+    | 'userLeftGroup'
+    | 'gameUpdate'
     | 'startGame'
-    | 'rejected'
     | 'groupsUpdate'
-    | 'canceledGame'
-    | 'joinerLeaveGame'
-    | 'playerLeft'
     | 'highScoresList'
     | 'newMessage'
     | 'cleanup'
     | '_test_event';
 
+export type JoinRequestEmitArgs = PublicUser[];
+export type JoinRequestCancelledEmitArgs = PublicUser[];
+export type AcceptJoinRequestEmitArgs = Group;
+export type RejectJoinRequestEmitArgs = PublicUser;
+export type CancelledGroupEmitArgs = PublicUser;
+export type UserLeftGroupEmitArgs = Group;
 export type GameUpdateEmitArgs = GameUpdateData;
-export type JoinRequestEmitArgs = PlayerName;
-export type PlayerJoinedEmitArgs = PlayerData[];
 export type StartGameEmitArgs = StartGameData;
-export type RejectEmitArgs = PlayerName;
-export type CanceledGameEmitArgs = PlayerName;
-export type JoinerLeaveGameEmitArgs = PlayerData[];
-export type PlayerLeftGameEmitArgs = PlayerName;
 export type GroupsUpdateEmitArgs = Group[];
 export type HighScoresEmitArgs = NoId<HighScoreWithPlayers>[];
-export type GameHistoriesEmitArgs = NoIdGameHistoryWithPlayers[];
 export type NewMessageEmitArgs = Message;
 export type CleanupEmitArgs = never;

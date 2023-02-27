@@ -5,15 +5,15 @@ import { HttpStatusCode } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { GameConfigData, StartGameData } from '@app/classes/communication/game-config';
+import { StartGameData } from '@app/classes/communication/game-config';
 import PlayerName from '@app/classes/communication/player-name';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
-import { TEST_DICTIONARY } from '@app/constants/controller-test-constants';
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
 import { GameService } from '@app/services';
 import SocketService from '@app/services/socket-service/socket.service';
+import { GroupData } from '@common/models/group';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
@@ -21,7 +21,7 @@ const DEFAULT_SOCKET_ID = 'testSocketID';
 const DEFAULT_PLAYER_NAME = 'grogars';
 const DEFAULT_GAME_ID = 'grogarsID';
 const DEFAULT_OPPONENT_NAME: PlayerName[] = [{ name: DEFAULT_PLAYER_NAME }];
-const DEFAULT_GAME_DATA: GameConfigData = {
+const DEFAULT_GAME_DATA: GroupData = {
     playerName: DEFAULT_PLAYER_NAME,
     playerId: 'tessId',
     gameType: GameType.Classic,

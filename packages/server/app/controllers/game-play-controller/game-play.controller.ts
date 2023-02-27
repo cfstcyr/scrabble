@@ -46,6 +46,18 @@ export class GamePlayController extends BaseController {
             }
         });
 
+        router.post('/:gameId/players/virtual-player-action', async (req: GameRequest, res: Response, next) => {
+            const { gameId } = req.params;
+            const data: ActionData = req.body;
+            const playerId = req.body.virtualPlayerId;
+            try {
+                await this.handlePlayAction(gameId, playerId, data);
+                res.status(StatusCodes.NO_CONTENT).send();
+            } catch (exception) {
+                next(exception);
+            }
+        });
+
         router.post('/:gameId/players/message', (req: GameRequest, res: Response, next) => {
             const gameId = req.params.gameId;
             const message: Message = req.body;
@@ -166,7 +178,7 @@ export class GamePlayController extends BaseController {
 
             if (this.gamePlayService.isGameOver(gameId, playerId)) return;
 
-            this.gameUpdate(gameId, this.gamePlayService.handleResetObjectives(gameId, playerId));
+            this.gameUpdate(gameId, {});
 
             this.socketService.emitToRoomNoSender(gameId, playerId, 'newMessage', {
                 content: OPPONENT_PLAYED_INVALID_WORD,
