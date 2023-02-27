@@ -72,13 +72,13 @@ class MyApp extends StatelessWidget {
     switch (tokenValidation) {
       case TokenValidation.Ok:
         {
-          return MainPage();
+          return HomePage();
         }
         break;
 
       case TokenValidation.NoToken:
         {
-          return HomePage();
+          return MainPage();
         }
       default:
         {

@@ -1,3 +1,5 @@
+import 'package:mobile/classes/user.dart';
+
 class LoginData {
   final String username;
   final String password;
