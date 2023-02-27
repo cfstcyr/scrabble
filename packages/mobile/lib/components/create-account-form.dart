@@ -9,6 +9,7 @@ import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../constants/create-account-constants.dart';
+import '../pages/home-page.dart';
 import '../services/authentification-service.dart';
 
 class CreateAccountForm extends StatefulWidget {

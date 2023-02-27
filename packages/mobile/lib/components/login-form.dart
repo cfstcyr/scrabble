@@ -8,6 +8,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
+import '../classes/user.dart';
 import '../constants/create-account-constants.dart';
 import '../constants/login-constants.dart';
 import '../controllers/account-authentification-controller.dart';
@@ -34,7 +35,6 @@ class _LoginFormState extends State<LoginForm> {
   @override
   void initState() {
     super.initState();
-    socketService.initSocket();
     emailHandler.addListener(validateEmail);
   }
 
@@ -182,7 +182,8 @@ class _LoginFormState extends State<LoginForm> {
       });
       return res.authorized;
     }
-    userSession = res.userSession as UserSession;
+    // userSession = res.userSession as UserSession;
+    print(res.authorized);
     return res.authorized;
   }
 }
