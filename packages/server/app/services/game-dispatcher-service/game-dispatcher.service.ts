@@ -101,18 +101,23 @@ export class GameDispatcherService {
         const index = this.waitingRooms.indexOf(waitingRoom);
         this.waitingRooms.splice(index, 1);
 
-        // TODO: See how we want to handle the names
+        const player2 = waitingRoom.joinedPlayer2
+            ? waitingRoom.joinedPlayer2
+            : new ExpertVirtualPlayer(waitingRoomId, this.virtualPlayerService.getRandomVirtualPlayerName(waitingRoom.getPlayers()));
+        const player3 = waitingRoom.joinedPlayer3
+            ? waitingRoom.joinedPlayer3
+            : new ExpertVirtualPlayer(waitingRoomId, this.virtualPlayerService.getRandomVirtualPlayerName([...waitingRoom.getPlayers(), player2]));
+        const player4 = waitingRoom.joinedPlayer4
+            ? waitingRoom.joinedPlayer4
+            : new ExpertVirtualPlayer(
+                  waitingRoomId,
+                  this.virtualPlayerService.getRandomVirtualPlayerName([...waitingRoom.getPlayers(), player2, player3]),
+              );
         const config: ReadyGameConfig = {
             ...waitingRoom.getConfig(),
-            player2: waitingRoom.joinedPlayer2
-                ? waitingRoom.joinedPlayer2
-                : new ExpertVirtualPlayer(waitingRoomId, this.virtualPlayerService.getRandomVirtualPlayerName(waitingRoom.getPlayers())),
-            player3: waitingRoom.joinedPlayer3
-                ? waitingRoom.joinedPlayer3
-                : new ExpertVirtualPlayer(waitingRoomId, this.virtualPlayerService.getRandomVirtualPlayerName(waitingRoom.getPlayers())),
-            player4: waitingRoom.joinedPlayer4
-                ? waitingRoom.joinedPlayer4
-                : new ExpertVirtualPlayer(waitingRoomId, this.virtualPlayerService.getRandomVirtualPlayerName(waitingRoom.getPlayers())),
+            player2,
+            player3,
+            player4,
             dictionarySummary: waitingRoom.dictionarySummary,
         };
 

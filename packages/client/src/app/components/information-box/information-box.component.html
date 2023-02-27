@@ -1,16 +1,5 @@
 <div id="outer-container">
-    <section id="objectives-container">
-        <mat-accordion>
-            <p>Tuiles restantes : {{ getNumberOfTilesLeft() }}</p>
-            <div class="tile-map-content">
-                <p *ngFor="let letter of getLettersLeft()">
-                    <app-tile [tile]="{ letter: letter.letter, value: 0 }" [hideValue]="true"></app-tile>
-                    <span class="separator">:</span>
-                    <span class="amount">{{ letter.amount }}</span>
-                </p>
-            </div>
-        </mat-accordion>
-    </section>
+
 
     <div class="player-container" id="player-1" [ngClass]="{ active: isPlayer1Active, local: playerNumber === 1 }">
         <mat-card>
