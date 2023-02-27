@@ -1,0 +1,25 @@
+<h2 mat-dialog-title *ngIf="!isRejected">En attente de se faire accepter ou refuser par le créateur</h2>
+<h2 mat-dialog-title *ngIf="isRejected">Vous avez été rejeté par le créateur</h2>
+<div class="players">
+    <div class="players">
+        <span id="vs"> vs </span><span class="name">{{ requestedGroup.user1.username }}</span>
+    </div>
+</div>
+
+<div class="chip-list">
+    <div class="chip"><app-icon icon="hourglass-half" size="sm"></app-icon> {{ roundTime }}</div>
+</div>
+<div class="chip-list">
+    <div class="chip"><app-icon icon="robot" size="sm"></app-icon> {{ requestedGroup.virtualPlayerLevel }}</div>
+</div>
+
+<div id="buttons-container">
+    <button mat-flat-button  (click)="closeDialog()" *ngIf="!isRejected">
+        <app-icon icon="ban"></app-icon>
+        Annuler la requête
+    </button> 
+    <button mat-flat-button  (click)="closeDialog()" *ngIf="isRejected">
+        <app-icon icon="ban"></app-icon>
+        Retourner aux parties
+    </button> 
+</div>

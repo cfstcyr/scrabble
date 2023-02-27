@@ -1,0 +1,108 @@
+import { Component, HostListener, Inject, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Router, NavigationStart } from '@angular/router';
+import { Timer } from '@app/classes/round/timer';
+import { GameDispatcherService } from '@app/services';
+import { Group } from '@common/models/group';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { GroupRequestWaitingDialogParameters } from './group-request-waiting-dialog.types';
+import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
+
+@Component({
+    selector: 'app-group-request-waiting-dialog',
+    templateUrl: 'group-request-waiting-dialog.html',
+    styleUrls: ['group-request-waiting-dialog.scss'],
+})
+export class GroupRequestWaitingDialogComponent implements OnInit, OnDestroy {
+    requestedGroup: Group;
+    roundTime: string;
+    isRejected: boolean = false;
+    private componentDestroyed$: Subject<boolean>;
+    constructor(
+        public dialog: MatDialog,
+        public gameDispatcherService: GameDispatcherService,
+        public router: Router,
+        private readonly playerLeavesService: PlayerLeavesService,
+        private dialogRef: MatDialogRef<GroupRequestWaitingDialogComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: GroupRequestWaitingDialogParameters,
+    ) {
+        this.requestedGroup = data.group;
+        dialogRef.backdropClick().subscribe(() => {
+            this.closeDialog();
+        });
+    }
+
+    @HostListener('window:beforeunload')
+    onBeforeUnload(): void {
+        this.playerLeavesService.handleLeaveGroup();
+    }
+
+    ngOnInit(): void {
+        this.componentDestroyed$ = new Subject();
+        const roundTime: Timer = Timer.convertTime(this.requestedGroup.maxRoundTime);
+        this.roundTime = `${roundTime.minutes}:${roundTime.getTimerSecondsPadded()}`;
+        this.router.events.pipe(takeUntil(this.componentDestroyed$)).subscribe((event) => {
+            if (event instanceof NavigationStart) {
+                this.routerChangeMethod(event.url);
+            }
+        });
+
+        this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, (/* hostUser: PublicUser*/) => this.playerRejected());
+        this.gameDispatcherService.subscribeToJoinerRejectedEvent(this.componentDestroyed$, (/* hostUser: PublicUser*/) => this.playerRejected());
+        this.gameDispatcherService.subscribeToPlayerJoinedGroupEvent(this.componentDestroyed$, (group: Group) => this.playerAccepted(group));
+    }
+
+    ngOnDestroy(): void {
+        this.componentDestroyed$.next(true);
+        this.componentDestroyed$.complete();
+    }
+
+    closeDialog(): void {
+        this.playerLeavesService.handleLeaveGroup();
+        this.dialogRef.close();
+    }
+
+    private routerChangeMethod(url: string): void {
+        if (url !== '/join-waiting-room') {
+            this.playerLeavesService.handleLeaveGroup();
+        }
+    }
+
+    private playerAccepted(group: Group): void {
+        this.gameDispatcherService.currentGroup = group;
+        this.dialogRef.close();
+        this.router.navigateByUrl('join-waiting-room');
+    }
+
+    private playerRejected(): void {
+        this.isRejected = true;
+        // this.dialog.open(DefaultDialogComponent, {
+        //     data: {
+        //         title: DIALOG_REJECT_TITLE,
+        //         content: hostName + DIALOG_REJECT_CONTENT,
+        //         buttons: [
+        //             {
+        //                 content: DIALOG_BUTTON_CONTENT_REJECTED,
+        //                 closeDialog: true,
+        //             },
+        //         ],
+        //     },
+        // });
+    }
+
+    // private hostHasCanceled(hostName: string): void {
+    //     this.dialog.open(DefaultDialogComponent, {
+    //         data: {
+    //             title: DIALOG_CANCEL_TITLE,
+    //             content: hostName + DIALOG_CANCEL_CONTENT,
+    //             buttons: [
+    //                 {
+    //                     content: DIALOG_BUTTON_CONTENT_RETURN_GROUP,
+    //                     closeDialog: true,
+    //                 },
+    //             ],
+    //         },
+    //     });
+    // }
+}
