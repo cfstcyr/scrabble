@@ -10,18 +10,23 @@ class SocketService {
   final String endpoint = "${Environment().config.apiUrl}/authentification";
   final userSessionHandler = getIt.get<UserSessionService>();
   static final SocketService _instance = SocketService._privateConstructor();
-  late final IO.Socket socket;
+  final IO.Socket socket = IO.io(
+      webSocketUrl,
+      IO.OptionBuilder()
+          .setTransports(['websocket']) // for Flutter or Dart VM
+          .disableAutoConnect() // disable auto-connection
+          .build());
   factory SocketService() {
     return _instance;
   }
 
-  Future<void> initSocket() async {
-    socket = await getSocket();
+  Future<void> initSocket(String? token) async {
+    socket.auth = {"token": token};
+    socket.connect();
     socket.onConnect((_) {
       print("${socket.id} + connected to websocket");
     });
     socket.emit("connection");
-    socket.onDisconnect((_) => {print("${socket.id}  + disconnected")});
   }
 
   Future<void> disconnect() async {
@@ -33,23 +38,6 @@ class SocketService {
   }
 
   Future<IO.Socket> getSocket() async {
-    return IO.io(webSocketUrl, <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false,
-      'auth': {
-        'token': userSessionHandler.getToken(),
-      }
-    });
+    return socket;
   }
 }
-
-//  private getSocket(): ClientSocket {
-//         // This line cannot be tested since it would connect to the real socket in the tests since it is impossible to mock io()
-//         return io(environment.serverUrlWebsocket, {
-//             transports: ['websocket'],
-//             upgrade: false,
-//             auth: {
-//                 token: authenticationSettings.getToken(),
-//             },
-//         });
-//     }
