@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Timer } from '@app/classes/round/timer';
 import { GameVisibility } from '@common/models/game-visibility';
-import GroupInfo from '@common/models/group-info';
+import { Group } from '@common/models/group';
+import { UNKOWN_USER } from '@common/models/user';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 @Component({
     selector: 'app-group-info',
@@ -9,7 +10,7 @@ import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
     styleUrls: ['./group-info.component.scss'],
 })
 export class GroupInfoComponent implements OnInit {
-    @Input() group: GroupInfo;
+    @Input() group: Group;
     @Output() joinGroupId: EventEmitter<string>;
     roundTime: Timer;
 
@@ -17,11 +18,10 @@ export class GroupInfoComponent implements OnInit {
         this.joinGroupId = new EventEmitter<string>();
         this.group = {
             groupId: '0',
-            hostName: '',
+            user1: UNKOWN_USER,
             maxRoundTime: 0,
             gameVisibility: GameVisibility.Public,
-            virtualPlayerLever: VirtualPlayerLevel.Beginner,
-            canJoin: false,
+            virtualPlayerLevel: VirtualPlayerLevel.Beginner,
         };
         this.roundTime = Timer.convertTime(this.group.maxRoundTime);
     }

@@ -13,11 +13,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Timer } from '@app/classes/round/timer';
 import { IconComponent } from '@app/components/icon/icon.component';
-import { TEST_DICTIONARY } from '@app/constants/controller-test-constants';
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GroupPageComponent } from '@app/pages/group-page/group-page.component';
+import { GroupData } from '@common/models/group';
 import { GroupInfoComponent } from './group-info.component';
 
 @Component({
@@ -25,14 +25,9 @@ import { GroupInfoComponent } from './group-info.component';
 })
 export class TestComponent {}
 
-const TEST_GROUP: GroupInfo = {
-    groupId: 'groupId',
-    hostName: 'playerName',
-    gameType: GameType.Classic,
+const TEST_GROUP: GroupData = {
     gameMode: GameMode.Multiplayer,
     maxRoundTime: 1,
-    dictionary: TEST_DICTIONARY,
-    canJoin: false,
 };
 
 describe('GroupInfoComponent', () => {

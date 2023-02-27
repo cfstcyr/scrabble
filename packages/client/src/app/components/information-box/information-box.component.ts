@@ -71,22 +71,22 @@ export class InformationBoxComponent implements OnInit, OnDestroy {
 
     getPlayer1(): Player {
         const player1 = this.gameService.getPlayerByNumber(PLAYER_1_INDEX);
-        return player1 ? player1 : new Player('', 'Player1', []);
+        return player1 ? player1 : new Player('', { username: 'Player1', email: '', avatar: '' }, []);
     }
 
     getPlayer2(): Player {
         const player2 = this.gameService.getPlayerByNumber(PLAYER_2_INDEX);
-        return player2 ? player2 : new Player('', 'Player2', []);
+        return player2 ? player2 : new Player('', { username: 'Player2', email: '', avatar: '' }, []);
     }
 
     getPlayer3(): Player {
         const player3 = this.gameService.getPlayerByNumber(PLAYER_3_INDEX);
-        return player3 ? player3 : new Player('', 'Player3', []);
+        return player3 ? player3 : new Player('', { username: 'Player3', email: '', avatar: '' }, []);
     }
 
     getPlayer4(): Player {
         const player4 = this.gameService.getPlayerByNumber(PLAYER_4_INDEX);
-        return player4 ? player4 : new Player('', 'Player4', []);
+        return player4 ? player4 : new Player('', { username: 'Player4', email: '', avatar: '' }, []);
     }
 
     isTimerRunning(): boolean {

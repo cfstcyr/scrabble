@@ -15,7 +15,7 @@
     <div class="player-container" id="player-1" [ngClass]="{ active: isPlayer1Active, local: playerNumber === 1 }">
         <mat-card>
             <p class="name-container">
-                <span class="name">{{ getPlayer1().name }}</span>
+                <span class="name">{{ getPlayer1().publicUser.username }}</span>
                 <span class="score">{{ getPlayer1().score }} points</span>
             </p>
         </mat-card>
@@ -34,7 +34,7 @@
         <mat-card>
             <p class="name-container">
                 <span class="score">{{ getPlayer2().score }} points</span>
-                <span class="name">{{ getPlayer2().name }}</span>
+                <span class="name">{{ getPlayer2().publicUser.username }}</span>
             </p>
         </mat-card>
     </div>
@@ -43,7 +43,7 @@
         <mat-card>
             <p class="name-container">
                 <span class="score">{{ getPlayer3().score }} points</span>
-                <span class="name">{{ getPlayer3().name }}</span>
+                <span class="name">{{ getPlayer3().publicUser.username }}</span>
             </p>
         </mat-card>
     </div>
@@ -52,7 +52,7 @@
         <mat-card>
             <p class="name-container">
                 <span class="score">{{ getPlayer4().score }} points</span>
-                <span class="name">{{ getPlayer4().name }}</span>
+                <span class="name">{{ getPlayer4().publicUser.username }}</span>
             </p>
         </mat-card>
     </div>
