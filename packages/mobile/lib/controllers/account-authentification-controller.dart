@@ -73,13 +73,14 @@ class AccountAuthenticationController {
     String message;
     if (res.statusCode == HttpStatus.ok) {
       message = AUTHORIZED;
-      userSessionHandler
+      await userSessionHandler
           .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
-      socketService.initSocket();
-    } else if (res.statusCode == HttpStatus.notAcceptable) {
-      message = LOGIN_FAILED;
-    } else {
+      await socketService.initSocket(await storageHandler.getToken());
+      print(" init token: ${await storageHandler.getToken()}");
+    } else if (res.statusCode == HttpStatus.unauthorized) {
       message = ALREADY_LOGGED_IN_FR;
+    } else {
+      message = LOGIN_FAILED;
     }
     print("bodyres  : ${res.body}");
 
@@ -92,15 +93,16 @@ class AccountAuthenticationController {
   }
 
   Future<TokenValidation> validateToken() async {
-    String? token = await userSessionHandler.getToken();
+    String token = await storageHandler.getToken() ?? "";
     Map<String, String> requestHeaders = {
-      'authorization': token!,
+      'authorization': token,
     };
-    print("token   ${token}");
-    if (token != null) {
+    print(token);
+    print(await storageHandler.getToken());
+    if (!token.isEmpty) {
       Response res = await post(Uri.parse("${endpoint}/validate"),
           body: token, headers: requestHeaders);
-      if (res.statusCode == HttpStatus.ok) {
+      if (res.statusCode == HttpStatus.created) {
         userSessionHandler
             .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
         return TokenValidation.Ok;
@@ -111,9 +113,10 @@ class AccountAuthenticationController {
       } else {
         return TokenValidation.UnknownError;
       }
+    } else {
+      userSessionHandler.clearUserSession();
+      return TokenValidation.NoToken;
     }
-    userSessionHandler.clearUserSession();
-    return TokenValidation.NoToken;
   }
 
   Future<void> signOut() async {
@@ -127,16 +130,3 @@ class AccountAuthenticationController {
     socketService.disconnect();
   }
 }
- 
-
-// signOut(): void {
-//         authenticationSettings.remove('token');
-//         this.socketService.disconnect();
-//         this.userService.user.next(undefined);
-//     }
-
-//  private handleUserSessionInitialisation(session: UserSession): void {
-//         authenticationSettings.setToken(session.token);
-//         this.userService.user.next(session.user);
-//         this.socketService.connectSocket();
-//     }
