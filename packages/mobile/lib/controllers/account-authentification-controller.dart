@@ -76,13 +76,11 @@ class AccountAuthenticationController {
       await userSessionHandler
           .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
       await socketService.initSocket(await storageHandler.getToken());
-      print(" init token: ${await storageHandler.getToken()}");
     } else if (res.statusCode == HttpStatus.unauthorized) {
       message = ALREADY_LOGGED_IN_FR;
     } else {
       message = LOGIN_FAILED;
     }
-    print("bodyres  : ${res.body}");
 
     LoginResponse loginResponse = LoginResponse(
         userSession: authService.userSession.valueOrNull,
@@ -97,8 +95,6 @@ class AccountAuthenticationController {
     Map<String, String> requestHeaders = {
       'authorization': token,
     };
-    print(token);
-    print(await storageHandler.getToken());
     if (!token.isEmpty) {
       Response res = await post(Uri.parse("${endpoint}/validate"),
           body: token, headers: requestHeaders);
@@ -121,11 +117,6 @@ class AccountAuthenticationController {
 
   Future<void> signOut() async {
     Response res = await get(Uri.parse("${endpoint}/signOut"));
-    userSessionHandler.clearUserSession();
-    socketService.disconnect();
-  }
-
-  Future<void> onRefresh() async {
     userSessionHandler.clearUserSession();
     socketService.disconnect();
   }
