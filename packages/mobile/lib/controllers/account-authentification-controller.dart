@@ -68,33 +68,39 @@ class AccountAuthenticationController {
   }
 
   Future<LoginResponse> login(UserLoginCredentials credentials) async {
-    this.socketService.initSocket();
     Response res =
         await post(Uri.parse("${endpoint}/login"), body: credentials.toJson());
     String message;
     if (res.statusCode == HttpStatus.ok) {
       message = AUTHORIZED;
-      storageHandler.setToken(UserSession.fromJson(jsonDecode(res.body)).token);
+      userSessionHandler
+          .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
       socketService.initSocket();
     } else if (res.statusCode == HttpStatus.notAcceptable) {
       message = LOGIN_FAILED;
     } else {
       message = ALREADY_LOGGED_IN_FR;
     }
-    userSessionHandler
-        .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
+    print("bodyres  : ${res.body}");
+
     LoginResponse loginResponse = LoginResponse(
-        userSession: authService.userSession.value,
+        userSession: authService.userSession.valueOrNull,
         authorized: res.statusCode == HttpStatus.ok,
         errorMessage: message);
+    print(res.statusCode == HttpStatus.ok);
     return loginResponse;
   }
 
   Future<TokenValidation> validateToken() async {
     String? token = await userSessionHandler.getToken();
+    Map<String, String> requestHeaders = {
+      'authorization': token!,
+    };
+    print("token   ${token}");
     if (token != null) {
-      Response res = await post(Uri.parse("${endpoint}/validate"), body: token);
-      if (res.statusCode == HttpStatus.created) {
+      Response res = await post(Uri.parse("${endpoint}/validate"),
+          body: token, headers: requestHeaders);
+      if (res.statusCode == HttpStatus.ok) {
         // Redirect to Home page
         userSessionHandler
             .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
