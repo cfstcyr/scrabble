@@ -17,9 +17,6 @@ class ChannelController {
   factory ChannelController() {
     return _instance;
   }
-  ChannelController._internal() {
-    socketService.initSocket();
-  }
 
   Future<void> sendMessage(Channel channel, ChatMessage message) async {
     var json = jsonEncode(message.toJson());
