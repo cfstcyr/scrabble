@@ -1,23 +1,19 @@
 <div class="container">
     <mat-card class="top-box">
-        <div class="center">
-            <p>{{ waitingRoomMessage }}</p>
-            <ng-container *ngIf="!isOpponentFound">
-                <mat-progress-bar class="progress" mode="indeterminate"></mat-progress-bar>
-            </ng-container>
-            <ng-container *ngIf="isOpponentFound">
-                <mat-progress-bar class="progress" mode="determinate" value="100"></mat-progress-bar>
-            </ng-container>
-        </div>
-
         <div class="players">
-            <span class="name"
-                ><b>{{ currentGroup.hostName }}</b></span
-            ><span id="vs"> vs </span><span class="name">{{ opponentName ?? '...' }}</span>
+            <div class="players">
+                <span class="name">{{ currentGroup.user1.username }}</span>
+                <span id="vs"> vs </span><span class="name">{{ currentGroup.user2?.username ?? '?' }}</span>
+                <span id="vs"> vs </span><span class="name">{{ currentGroup.user3?.username ?? '?' }}</span>
+                <span id="vs"> vs </span><span class="name">{{ currentGroup.user4?.username ?? '?' }}</span>
+            </div>
         </div>
 
         <div class="chip-list">
             <div class="chip"><app-icon icon="hourglass-half" size="sm"></app-icon> {{ roundTime }}</div>
+        </div>
+        <div class="chip-list">
+            <div class="chip"><app-icon icon="robot" size="sm"></app-icon> {{ currentGroup.virtualPlayerLevel }}</div>
         </div>
 
         <div class="button-box">
@@ -26,21 +22,10 @@
                 class="button"
                 mat-flat-button
                 color="primary"
-                [disabled]="!isOpponentFound"
+                [disabled]="isGroupEmpty"
                 (click)="startGame()"
             >
                 Démarrer la partie
-            </button>
-
-            <button
-                id="reject-button"
-                class="button"
-                mat-flat-button
-                color="primary"
-                [disabled]="!isOpponentFound"
-                (click)="confirmRejectionToServer()"
-            >
-                Rejeter cet adversaire
             </button>
             <button id="cancel-button" mat-flat-button class="button" color="primary" routerLink="/game-creation">Annuler la partie</button>
         </div>
@@ -52,17 +37,9 @@
     </mat-card>
 
     <div class="grid">
-        ACCEPTED PLAYERS
-        <p id="fact">{{ opponentName1 }}</p>
-        <p id="fact">{{ opponentName2 }}</p>
-        <p id="fact">{{ opponentName3 }}</p>
-    </div>
-
-
-    <div class="grid">
-        REQUESTING PLAYERS
-        <ng-container *ngFor="let requestingPlayer of requestingPlayers">
-            <app-joiner-list-container [playerName]="requestingPlayer" (acceptPlayerId)="confirmOpponentToServer2($event)" (refusePlayerId)="confirmRejectionToServer2($event)"></app-joiner-list-container>
+        REQUESTING USERS
+        <ng-container *ngFor="let requestingUser of requestingUsers">
+            <app-requesting-user-container [requestingUser]="requestingUser" [isGroupFull]="isGroupFull" (acceptedUser)="acceptUser($event)" (rejectedUser)="rejectUser($event)"></app-requesting-user-container>
         </ng-container>
     </div>
 

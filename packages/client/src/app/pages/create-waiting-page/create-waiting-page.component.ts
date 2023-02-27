@@ -1,16 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { PlayerData } from '@app/classes/communication';
 import { Timer } from '@app/classes/round/timer';
-import { ConvertDialogComponent, ConvertResult } from '@app/components/convert-dialog/convert-dialog.component';
 import { ERROR_SNACK_BAR_CONFIG } from '@app/constants/components-constants';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
-import { DEFAULT_GROUP, HOST_WAITING_MESSAGE, KEEP_DATA, OPPONENT_FOUND_MESSAGE } from '@app/constants/pages-constants';
+import { DEFAULT_GROUP } from '@app/constants/pages-constants';
 import { GameDispatcherService } from '@app/services/';
-import GroupInfo from '@common/models/group-info';
+import { Group } from '@common/models/group';
+import { PublicUser } from '@common/models/user';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -20,16 +19,12 @@ import { takeUntil } from 'rxjs/operators';
     styleUrls: ['./create-waiting-page.component.scss'],
 })
 export class CreateWaitingPageComponent implements OnInit, OnDestroy {
-    @Input() opponentName: string | undefined = undefined;
-    @Input() opponentName1: string | undefined = undefined;
-    @Input() opponentName2: string | undefined = undefined;
-    @Input() opponentName3: string | undefined = undefined;
-    requestingPlayers: string[] = [];
+    requestingUsers: PublicUser[] = [];
 
-    isOpponentFound: boolean = false;
-    waitingRoomMessage: string = HOST_WAITING_MESSAGE;
+    isGroupEmpty: boolean = true;
+    isGroupFull: boolean = false;
     roundTime: string = '1:00';
-    currentGroup: GroupInfo = DEFAULT_GROUP;
+    currentGroup: Group = DEFAULT_GROUP;
     funFact: string = '';
 
     private isStartingGame: boolean = false;
@@ -38,7 +33,6 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     constructor(
         public dialog: MatDialog,
         public gameDispatcherService: GameDispatcherService,
-        // private readonly playerLeavesService: PlayerLeavesService,
         public router: Router,
         private snackBar: MatSnackBar,
     ) {}
@@ -56,116 +50,65 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         this.roundTime = `${roundTime.minutes}:${roundTime.getTimerSecondsPadded()}`;
         this.funFact = getRandomFact();
 
-        this.gameDispatcherService.subscribeToJoinRequestEvent(this.componentDestroyed$, (opponentName: string) => this.setOpponent(opponentName));
-        // this.gameDispatcherService.subscribeToPlayerJoinedGroupEvent(this.componentDestroyed$, (player: PlayerData) =>
-        //     this.setOpponent(player.name ?? ''),
-        // );
-
-        this.gameDispatcherService.subscribeToPlayerLeftGroupEvent(this.componentDestroyed$, (players: PlayerData[]) =>
-            this.setAcceptedOpponents(players),
+        this.gameDispatcherService.subscribeToJoinRequestEvent(this.componentDestroyed$, (requestingUsers: PublicUser[]) =>
+            this.updateRequestingUsers(requestingUsers),
         );
+        this.gameDispatcherService.subscribeToPlayerCancelledRequestEvent(this.componentDestroyed$, (requestingUsers: PublicUser[]) =>
+            this.updateRequestingUsers(requestingUsers),
+        );
+        this.gameDispatcherService.subscribeToPlayerLeftGroupEvent(this.componentDestroyed$, (group: Group) => this.updateGroup(group));
+        this.gameDispatcherService.subscribeToPlayerJoinedGroupEvent(this.componentDestroyed$, (group: Group) => this.updateGroup(group));
 
-        // this.playerLeavesService.subscribeToJoinerLeavesGameEvent(this.componentDestroyed$, (leaverName: string) => this.opponentLeft(leaverName));
         this.gameDispatcherService
             .observeGameCreationFailed()
             .pipe(takeUntil(this.componentDestroyed$))
             .subscribe((error: HttpErrorResponse) => this.handleGameCreationFail(error));
     }
 
-    confirmConvertToSolo(): void {
-        this.gameDispatcherService.handleCancelGame(KEEP_DATA);
-        this.dialog
-            .open(ConvertDialogComponent, {
-                data: this.gameDispatcherService.currentGroup?.hostName,
-            })
-            .afterClosed()
-            .subscribe((convertResult: ConvertResult) => (this.isStartingGame = convertResult.isConverting));
-    }
-
     startGame(): void {
         this.isStartingGame = true;
-        if (this.opponentName) {
+        if (!this.isGroupEmpty) {
             this.gameDispatcherService.handleStart();
         }
     }
-
-    confirmOpponentToServer2(name: string): void {
-        if (!this.opponentName1) this.opponentName1 = name;
-        else if (!this.opponentName2) this.opponentName2 = name;
-        else if (!this.opponentName3) this.opponentName3 = name;
-        const requestingPlayers = this.requestingPlayers.filter((playerName) => name === playerName);
-        const requestingPlayer = requestingPlayers[0];
-        const index = this.requestingPlayers.indexOf(requestingPlayer);
-        this.requestingPlayers.splice(index, 1);
-        this.gameDispatcherService.handleConfirmation(name);
+    updateGroup(group: Group) {
+        this.currentGroup = group;
+        this.updateGroupStatus();
     }
 
-    confirmRejectionToServer2(name: string): void {
-        const requestingPlayers = this.requestingPlayers.filter((playerName) => name === playerName);
-        const requestingPlayer = requestingPlayers[0];
-        const index = requestingPlayers.indexOf(requestingPlayer);
-        this.requestingPlayers.splice(index, 1);
-        this.disconnectOpponent();
-        this.gameDispatcherService.handleRejection(name);
+    updateRequestingUsers(requestingUsers: PublicUser[]) {
+        this.requestingUsers = requestingUsers;
     }
 
-    confirmRejectionToServer(): void {
-        if (this.opponentName) {
-            this.gameDispatcherService.handleRejection(this.opponentName);
-            this.disconnectOpponent();
-        }
+    updateGroupStatus() {
+        this.isGroupEmpty = this.currentGroup.user2 === undefined && this.currentGroup.user3 === undefined && this.currentGroup.user4 === undefined;
+        this.isGroupFull = this.currentGroup.user2 !== undefined && this.currentGroup.user3 !== undefined && this.currentGroup.user4 !== undefined;
     }
 
-    private setOpponent(opponentName: string): void {
-        this.requestingPlayers.push(opponentName);
-        this.opponentName = opponentName;
-        this.waitingRoomMessage = this.opponentName + OPPONENT_FOUND_MESSAGE;
-        this.isOpponentFound = true;
+    acceptUser(acceptedUser: PublicUser): void {
+        if (this.isGroupFull) return;
+        const requestingUsers = this.requestingUsers.filter((user) => user === acceptedUser);
+        if (requestingUsers.length === 0) return;
+        const requestingUser = requestingUsers[0];
+        const index = this.requestingUsers.indexOf(requestingUser);
+        this.requestingUsers.splice(index, 1);
+        if (!this.currentGroup.user2) this.currentGroup.user2 = acceptedUser;
+        else if (!this.currentGroup.user3) this.currentGroup.user3 = acceptedUser;
+        else if (!this.currentGroup.user4) this.currentGroup.user4 = acceptedUser;
+        this.updateGroupStatus();
+        this.gameDispatcherService.handleConfirmation(acceptedUser.username);
     }
 
-    private setAcceptedOpponents(players: PlayerData[]) {
-        this.opponentName1 = undefined;
-        this.opponentName2 = undefined;
-        this.opponentName3 = undefined;
-        for (const player of players) {
-            if (this.currentGroup.hostName !== player.name) {
-                if (!this.opponentName1) {
-                    this.opponentName1 = player.name;
-                } else if (!this.opponentName2) {
-                    this.opponentName2 = player.name;
-                } else if (!this.opponentName3) {
-                    this.opponentName3 = player.name;
-                }
-            }
-        }
+    rejectUser(rejectedUser: PublicUser): void {
+        const requestingUsers = this.requestingUsers.filter((user) => user === rejectedUser);
+        if (requestingUsers.length === 0) return;
+        const requestingUser = requestingUsers[0];
+        const index = requestingUsers.indexOf(requestingUser);
+        this.requestingUsers.splice(index, 1);
+        this.gameDispatcherService.handleRejection(rejectedUser.username);
     }
-
-    private disconnectOpponent(): void {
-        if (this.opponentName) {
-            this.opponentName = undefined;
-            this.waitingRoomMessage = HOST_WAITING_MESSAGE;
-            this.isOpponentFound = false;
-        }
-    }
-
-    // private opponentLeft(leaverName: string): void {
-    //     this.disconnectOpponent();
-    //     this.dialog.open(DefaultDialogComponent, {
-    //         data: {
-    //             title: DIALOG_TITLE,
-    //             content: leaverName + DIALOG_CONTENT,
-    //             buttons: [
-    //                 {
-    //                     content: DIALOG_BUTTON_CONTENT_REJECTED,
-    //                     closeDialog: true,
-    //                 },
-    //             ],
-    //         },
-    //     });
-    // }
 
     private handleGameCreationFail(error: HttpErrorResponse): void {
-        this.confirmRejectionToServer();
         this.snackBar.open(error.error.message, 'Fermer', ERROR_SNACK_BAR_CONFIG);
         this.router.navigateByUrl('game-creation');
     }
