@@ -101,12 +101,10 @@ class AccountAuthenticationController {
       Response res = await post(Uri.parse("${endpoint}/validate"),
           body: token, headers: requestHeaders);
       if (res.statusCode == HttpStatus.ok) {
-        // Redirect to Home page
         userSessionHandler
             .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
         return TokenValidation.Ok;
       } else if (res.statusCode == HttpStatus.unauthorized) {
-        // Token expired -> Redirect to login page
         this.storageHandler.clearStorage();
         this.socketService.disconnect();
         return TokenValidation.AlreadyConnected;
