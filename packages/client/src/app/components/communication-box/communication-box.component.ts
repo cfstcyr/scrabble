@@ -60,7 +60,6 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
             (gameData: InitializeGameData | undefined) => {
                 if (gameData) {
                     this.initializeMessages(gameData);
-                    this.gameType = gameData.startGameData.gameType;
                 }
             },
         );
