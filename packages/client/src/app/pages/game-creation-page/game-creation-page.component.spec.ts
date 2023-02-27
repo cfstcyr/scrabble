@@ -35,8 +35,6 @@ import { MOCK_PLAYER_PROFILES, MOCK_PLAYER_PROFILE_MAP } from '@app/constants/se
 import { AppMaterialModule } from '@app/modules/material.module';
 import { LoadingPageComponent } from '@app/pages/loading-page/loading-page.component';
 import { GameDispatcherService } from '@app/services/';
-import { DictionaryService } from '@app/services/dictionary-service/dictionary.service';
-import { VirtualPlayerProfilesService } from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
 import { VirtualPlayer, VirtualPlayerData } from '@common/models/virtual-player';
 import { Subject } from 'rxjs';
 import { GameCreationPageComponent } from './game-creation-page.component';
@@ -53,44 +51,12 @@ describe('GameCreationPageComponent', () => {
     let loader: HarnessLoader;
     let gameParameters: FormGroup;
     let gameDispatcherServiceSpy: SpyObj<GameDispatcherService>;
-    let dictionaryServiceSpy: SpyObj<DictionaryService>;
     let gameDispatcherCreationSubject: Subject<HttpErrorResponse>;
     let updateObs: Subject<VirtualPlayer[]>;
 
     const EMPTY_VALUE = '';
 
-    let virtualPlayerProfileSpy: SpyObj<VirtualPlayerProfilesService>;
-
     beforeEach(() => {
-        virtualPlayerProfileSpy = jasmine.createSpyObj('VirtualPlayerProfilesService', [
-            'getAllVirtualPlayersProfile',
-            'subscribeToVirtualPlayerProfilesUpdateEvent',
-            'subscribeToComponentUpdateEvent',
-            'subscribeToRequestSentEvent',
-            'virtualPlayersUpdateEvent',
-        ]);
-        virtualPlayerProfileSpy.getAllVirtualPlayersProfile.and.resolveTo();
-        updateObs = new Subject();
-
-        virtualPlayerProfileSpy.subscribeToVirtualPlayerProfilesUpdateEvent.and.callFake(
-            (serviceDestroyed$: Subject<boolean>, callback: (dictionaries: VirtualPlayer[]) => void) => updateObs.subscribe(callback),
-        );
-    });
-
-    beforeEach(() => {
-        dictionaryServiceSpy = jasmine.createSpyObj('DictionaryService', [
-            'getDictionaries',
-            'updateAllDictionaries',
-            'subscribeToDictionariesUpdateDataEvent',
-        ]);
-        dictionaryServiceSpy.getDictionaries.and.callFake(() => [{ title: 'Test' } as DictionarySummary]);
-        dictionaryServiceSpy.updateAllDictionaries.and.callFake(async () => {});
-        dictionaryUpdateSubject = new Subject();
-        dictionaryServiceSpy.subscribeToDictionariesUpdateDataEvent.and.callFake(
-            (serviceDestroyed$: Subject<boolean>, callback: (dictionaries: DictionarySummary[]) => void) =>
-                dictionaryUpdateSubject.subscribe(callback),
-        );
-
         gameDispatcherServiceSpy = jasmine.createSpyObj('GameDispatcherService', ['observeGameCreationFailed', 'handleCreateGame']);
         gameDispatcherCreationSubject = new Subject();
         gameDispatcherServiceSpy.observeGameCreationFailed.and.returnValue(gameDispatcherCreationSubject.asObservable());

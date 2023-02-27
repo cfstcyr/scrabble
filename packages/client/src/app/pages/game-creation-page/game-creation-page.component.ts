@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
-import { NameFieldComponent } from '@app/components/name-field/name-field.component';
 import { GameDispatcherService } from '@app/services';
 import { gameSettings } from '@app/utils/settings';
 import { Subject } from 'rxjs';
@@ -13,8 +12,6 @@ import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
     styleUrls: ['./game-creation-page.component.scss'],
 })
 export class GameCreationPageComponent implements OnInit, OnDestroy {
-    @ViewChild(NameFieldComponent) nameField: NameFieldComponent;
-
     virtualPlayerLevels: typeof VirtualPlayerLevel;
     playerName: string;
     gameParameters: FormGroup;
@@ -40,7 +37,7 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
         this.gameParameters
             .get('gameMode')
             ?.valueChanges.pipe(takeUntil(this.pageDestroyed$), distinctUntilChanged())
-            .subscribe((value) => {
+            .subscribe(() => {
                 this.gameParameters?.get('level')?.setValidators([Validators.required]);
                 this.gameParameters?.get('virtualPlayerName')?.setValidators([Validators.required]);
                 this.gameParameters?.get('level')?.updateValueAndValidity();
@@ -67,11 +64,10 @@ export class GameCreationPageComponent implements OnInit, OnDestroy {
 
     onFormInvalidClick(): void {
         this.gameParameters.controls.dictionary?.markAsTouched();
-        this.nameField.onFormInvalidClick();
     }
 
     private createGame(): void {
         this.isCreatingGame = true;
-        this.gameDispatcherService.handleCreateGame(this.playerName, this.gameParameters);
+        this.gameDispatcherService.handleCreateGame(this.gameParameters);
     }
 }
