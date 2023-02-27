@@ -32,6 +32,7 @@ import { of } from 'rxjs';
 import { GroupPageComponent } from './group-page.component';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { GameVisibility } from '@common/models/game-visibility';
+import { Group } from '@common/models/group';
 
 const DEFAULT_FILTER_VALUES = {
     gameType: 'all',
@@ -127,7 +128,7 @@ describe('GroupPageComponent', () => {
                 groupId: '1',
                 hostName: 'Name1',
                 maxRoundTime: 60,
-                virtualPlayerLever: VirtualPlayerLevel.Beginner,
+                virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                 gameVisibility: GameVisibility.Public,
                 canJoin: false,
             },
@@ -135,7 +136,7 @@ describe('GroupPageComponent', () => {
                 groupId: '2',
                 hostName: 'Name2',
                 maxRoundTime: 60,
-                virtualPlayerLever: VirtualPlayerLevel.Beginner,
+                virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                 gameVisibility: GameVisibility.Public,
                 canJoin: true,
             },
@@ -143,7 +144,7 @@ describe('GroupPageComponent', () => {
                 groupId: '3',
                 hostName: 'Name3',
                 maxRoundTime: 90,
-                virtualPlayerLever: VirtualPlayerLevel.Beginner,
+                virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                 gameVisibility: GameVisibility.Public,
                 canJoin: false,
             },
@@ -237,7 +238,7 @@ describe('GroupPageComponent', () => {
                     groupId: '1',
                     hostName: 'Name1',
                     maxRoundTime: 60,
-                    virtualPlayerLever: VirtualPlayerLevel.Beginner,
+                    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                     gameVisibility: GameVisibility.Public,
                     canJoin: false,
                 },
@@ -344,7 +345,7 @@ describe('GroupPageComponent', () => {
     });
 
     describe('updateGroupAttributes', () => {
-        let group: GroupInfo;
+        let group: Group;
         let getGameTypeSpy: jasmine.Spy;
 
         beforeEach(() => {

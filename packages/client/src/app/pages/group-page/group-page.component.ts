@@ -1,19 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { GroupRequestWaitingDialogComponent } from '@app/components/group-request-waiting-dialog/group-request-waiting-dialog';
 import { NO_GROUP_CAN_BE_JOINED } from '@app/constants/component-errors';
-import {
-    DIALOG_BUTTON_CONTENT_RETURN_GROUP,
-    // DIALOG_CANCELED_CONTENT,
-    // DIALOG_CANCELED_TITLE,
-    DIALOG_FULL_CONTENT,
-    DIALOG_FULL_TITLE,
-} from '@app/constants/pages-constants';
+import { DIALOG_BUTTON_CONTENT_RETURN_GROUP, DIALOG_FULL_CONTENT, DIALOG_FULL_TITLE } from '@app/constants/pages-constants';
 import { GameDispatcherService } from '@app/services/';
-import { gameSettings } from '@app/utils/settings';
-import GroupInfo from '@common/models/group-info';
+import { Group } from '@common/models/group';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -22,32 +15,20 @@ import { Subject } from 'rxjs';
     styleUrls: ['./group-page.component.scss'],
 })
 export class GroupPageComponent implements OnInit, OnDestroy {
-    filterFormGroup: FormGroup;
-    numberOfGroupsMeetingFilter: number;
-    playerName: string;
-    playerNameValid: boolean;
-    groups: GroupInfo[];
-
+    numberOfGroups: number;
+    groups: Group[];
     private componentDestroyed$: Subject<boolean>;
 
     constructor(public gameDispatcherService: GameDispatcherService, public dialog: MatDialog, private snackBar: MatSnackBar) {
-        this.playerName = gameSettings.getPlayerName();
-        this.playerNameValid = false;
         this.groups = [];
         this.componentDestroyed$ = new Subject();
-        this.filterFormGroup = new FormGroup({
-            gameType: new FormControl('all'),
-        });
-        this.numberOfGroupsMeetingFilter = 0;
+        this.numberOfGroups = 0;
     }
 
     ngOnInit(): void {
-        this.gameDispatcherService.subscribeToGroupsUpdateEvent(this.componentDestroyed$, (groups: GroupInfo[]) => this.updateGroups(groups));
+        this.gameDispatcherService.subscribeToGroupsUpdateEvent(this.componentDestroyed$, (groups: Group[]) => this.updateGroups(groups));
         this.gameDispatcherService.subscribeToGroupFullEvent(this.componentDestroyed$, () => this.groupFullDialog());
-        // this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, () => this.groupCanceledDialog());
         this.gameDispatcherService.handleGroupListRequest();
-
-        this.filterFormGroup.get('gameType')?.valueChanges.subscribe(() => this.updateAllGroupsAttributes());
     }
 
     ngOnDestroy(): void {
@@ -56,8 +37,12 @@ export class GroupPageComponent implements OnInit, OnDestroy {
     }
 
     joinGroup(groupId: string): void {
-        gameSettings.set('playerName', this.playerName);
-        this.gameDispatcherService.handleJoinGroup(this.groups.filter((group) => group.groupId === groupId)[0], this.playerName);
+        const wantedGroup = this.groups.filter((group) => group.groupId === groupId)[0];
+        // TODO: Change this whne we have multiple gamevisibilities
+        // if (wantedGroup.gameVisibility === GameVisibility.Private) {
+        this.groupRequestWaitingDialog(wantedGroup);
+        // }
+        this.gameDispatcherService.handleJoinGroup(wantedGroup);
     }
 
     joinRandomGroup(): void {
@@ -71,32 +56,9 @@ export class GroupPageComponent implements OnInit, OnDestroy {
         }
     }
 
-    onPlayerNameChanges([playerName, valid]: [string, boolean]): void {
-        setTimeout(() => {
-            this.playerName = playerName;
-            this.playerNameValid = valid;
-            this.validateName();
-        });
-    }
-
-    private validateName(): void {
-        this.numberOfGroupsMeetingFilter = 0;
-        this.setFormAvailability(this.playerNameValid);
-
-        this.updateAllGroupsAttributes();
-    }
-
-    private setFormAvailability(isNameValid: boolean): void {
-        if (isNameValid) {
-            this.filterFormGroup.get('gameType')?.enable();
-        } else {
-            this.filterFormGroup.get('gameType')?.disable();
-        }
-    }
-
-    private updateGroups(groups: GroupInfo[]): void {
+    private updateGroups(groups: Group[]): void {
         this.groups = groups;
-        this.validateName();
+        this.numberOfGroups = this.groups.length;
     }
 
     private groupFullDialog(): void {
@@ -114,36 +76,21 @@ export class GroupPageComponent implements OnInit, OnDestroy {
         });
     }
 
-    // private groupCanceledDialog(): void {
-    //     this.dialog.open(DefaultDialogComponent, {
-    //         data: {
-    //             title: DIALOG_CANCELED_TITLE,
-    //             content: DIALOG_CANCELED_CONTENT,
-    //             buttons: [
-    //                 {
-    //                     content: DIALOG_BUTTON_CONTENT_RETURN_GROUP,
-    //                     closeDialog: true,
-    //                 },
-    //             ],
-    //         },
-    //     });
-    // }
+    private groupRequestWaitingDialog(group: Group): void {
+        const dialogRef = this.dialog.open(GroupRequestWaitingDialogComponent, {
+            data: {
+                group,
+            },
+        });
 
-    private getRandomGroup(): GroupInfo {
-        const filteredGroups = this.groups.filter((group) => group.canJoin);
+        dialogRef.afterClosed().subscribe(() => {
+            this.gameDispatcherService.handleGroupListRequest();
+        });
+    }
+
+    private getRandomGroup(): Group {
+        const filteredGroups = this.groups.filter((group) => group);
         if (filteredGroups.length === 0) throw new Error(NO_GROUP_CAN_BE_JOINED);
         return filteredGroups[Math.floor(Math.random() * filteredGroups.length)];
-    }
-
-    private updateAllGroupsAttributes(): void {
-        this.numberOfGroupsMeetingFilter = 0;
-        for (const group of this.groups) {
-            this.updateGroupAttributes(group);
-            this.numberOfGroupsMeetingFilter++;
-        }
-    }
-
-    private updateGroupAttributes(group: GroupInfo): void {
-        group.canJoin = this.playerNameValid && this.playerName !== group.hostName;
     }
 }
