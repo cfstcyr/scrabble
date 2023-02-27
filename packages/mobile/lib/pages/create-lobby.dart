@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/chat-management.dart';
 
 import '../components/group-management.dart';
 import '../components/parameters.dart';
@@ -9,6 +10,7 @@ class CreateLobbyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      endDrawer: Drawer(child: ChatManagement()),
       appBar: AppBar(
         title: Text("Salle d'attente"),
         shadowColor: Colors.black,

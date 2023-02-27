@@ -1,10 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:provider/provider.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart';
 
 import 'environments/environment.dart';
 
@@ -16,8 +20,30 @@ Future<void> main() async {
   );
   Environment().initConfig(environment);
   setUpLocator();
-
+  connectAndListen();
   runApp(MyApp());
+}
+
+void connectAndListen() {
+  final String webSocketUrl = Environment().config.webSocketUrl;
+
+  IO.Socket socket = IO.io(
+      webSocketUrl,
+      OptionBuilder()
+          .disableAutoConnect()
+          .setTransports(['websocket']).build());
+  socket.connect();
+
+  socket.onConnect((_) {
+    print('connected to websocket');
+  });
+  socket.onConnectError((data) {
+    print(data);
+  });
+  socket.onConnectTimeout((data) {
+    print(data);
+  });
+  socket.onDisconnect((_) => {print("disconnected")});
 }
 
 class MyApp extends StatelessWidget {
@@ -32,7 +58,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-          cardTheme: CardTheme(color: Colors.white, surfaceTintColor: Colors.white)
         ),
         home: MainPage(),
       ),

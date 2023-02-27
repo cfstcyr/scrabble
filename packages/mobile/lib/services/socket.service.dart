@@ -1,14 +1,13 @@
 import 'package:mobile/environments/environment.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart';
 
 class SocketService {
   SocketService._privateConstructor();
   static final String webSocketUrl = "${Environment().config.webSocketUrl}";
   static final SocketService _instance = SocketService._privateConstructor();
-  final IO.Socket socket = IO.io(webSocketUrl, <String, dynamic>{
-    'transports': ['websocket'],
-    'autoConnect': false,
-  });
+  final Socket socket =
+      io(webSocketUrl, OptionBuilder().setTransports(['websocket']).build());
   factory SocketService() {
     return _instance;
   }
@@ -20,8 +19,14 @@ class SocketService {
     socket.onConnect((_) {
       print('connected to websocket');
     });
-    socket.emit("connection");
-    print(socket);
+
+    socket.onConnectError((err) {
+      print(err);
+    });
+    socket.onConnectTimeout((err) {
+      print(err);
+    });
+    socket.onDisconnect((_) => {print("disconnected")});
   }
 
   Future<void> emitEvent(String eventName, dynamic data) async {
