@@ -1,13 +1,11 @@
 <div class="container centered">
     <mat-card class="top-box">
-        <p class="waiting-message">En attente que l'hôte vous accepte.</p>
-
-        <mat-progress-bar class="progress" mode="indeterminate"></mat-progress-bar>
 
         <div class="players">
-            <span class="name"
-                ><b>{{ currentName }}</b></span
-            ><span id="vs"> vs </span><span class="name">{{ currentGroup.hostName }}</span>
+            <span class="name">{{ currentGroup.user1.username }}</span>
+            <span id="vs"> vs </span><span class="name">{{ currentGroup.user2?.username ?? '?' }}</span>
+            <span id="vs"> vs </span><span class="name">{{ currentGroup.user3?.username ?? '?' }}</span>
+            <span id="vs"> vs </span><span class="name">{{ currentGroup.user4?.username ?? '?' }}</span>
         </div>
 
         <div class="chip-list">
@@ -15,16 +13,6 @@
         </div>
 
         <button id="cancel-button" mat-flat-button color="primary" [routerLink]="'/group'">Annuler</button>
-    </mat-card>
-
-    <mat-card class="fun-fact-box">
-        <p id="intro">VOS ADVERSAIRES</p>
-        <div class="grid">
-            <ng-container *ngFor="let player of opponents">
-                {{ player }}
-            </ng-container>
-        </div>
-
     </mat-card>
 
     <mat-card class="fun-fact-box">
