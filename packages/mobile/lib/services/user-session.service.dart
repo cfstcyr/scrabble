@@ -21,13 +21,13 @@ class UserSessionService {
   //   return _userSession.value!;
   // }
 
-  void initializeUserSession(UserSession session) {
-    storageService.setToken(session.token);
+  Future<void> initializeUserSession(UserSession session) async {
+    await storageService.setToken(session.token);
     _userSession.add(session);
   }
 
-  getSession() {
-    return _userSession;
+  UserSession getSession() {
+    return _userSession.value!;
   }
 
   void clearUserSession() {
@@ -35,7 +35,11 @@ class UserSessionService {
     storageService.clearStorage();
   }
 
-  Future<String?> getToken() async {
-    return await storageService.getToken();
+  String getSessionToken() {
+    return _userSession.value!.token;
+  }
+
+  Future<String?> getStorageToken() async {
+    await storageService.getToken();
   }
 }
