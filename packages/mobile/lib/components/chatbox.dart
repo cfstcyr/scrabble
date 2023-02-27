@@ -26,8 +26,10 @@ class _ChatPageState extends State<ChatPage> {
   ChannelController channelController = getIt.get<ChannelController>();
   SocketService socketService = getIt.get<SocketService>();
   // TODO: Set les infos des users avec les vrais infos
-  final userData =
-      PublicUser(username: "hardcoded:username", avatar: "hardcoded:avatar");
+  final userData = PublicUser(
+      username: "hardcoded:username",
+      avatar: "hardcoded:avatar",
+      email: 'test@gmail.com');
   final _user = types.User(id: "UserId", firstName: "hardcoded:username");
 
 // TODO: ENLEVER VALEURS HARD CODE
@@ -35,7 +37,6 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    socketService.initSocket();
     _listenMessages();
   }
 
