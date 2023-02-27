@@ -1,8 +1,16 @@
 import 'package:mobile/classes/account.dart';
-import 'package:mobile/classes/user.dart';
+import 'package:mobile/services/socket.service.dart';
+import 'package:mobile/services/storage.handler.dart';
+import 'package:mobile/services/user-session.service.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../classes/user.dart';
+import '../locator.dart';
+
 class AuthentificationService {
+  final storageHandler = getIt.get<StorageHandlerService>();
+  final userSessionHandler = getIt.get<UserSessionService>();
+  final socketService = getIt.get<SocketService>();
   BehaviorSubject<UserSession?> userSession = BehaviorSubject<UserSession?>();
   AuthentificationService._privateConstructor();
   static final AuthentificationService _instance =
@@ -44,5 +52,14 @@ class AuthentificationService {
     // }
   }
 
-  Future<void> signout() async {}
+  Future<void> signout() async {
+    this.socketService.disconnect();
+    this.userSessionHandler.clearUserSession();
+  }
 }
+
+//  signOut(): void {
+//         authenticationSettings.remove('token');
+//         this.socketService.disconnect();
+//         this.userService.user.next(undefined);
+//     }
