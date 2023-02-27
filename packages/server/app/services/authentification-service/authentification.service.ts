@@ -6,7 +6,7 @@ import { SALTROUNDS } from '@app/constants/services-constants/bcrypt-saltrounds'
 import { USER_TABLE } from '@app/constants/services-constants/database-const';
 import DatabaseService from '@app/services/database-service/database.service';
 import { env } from '@app/utils/environment/environment';
-import { ServerUser, User, UserDatabase, UserLoginCredentials, UserSession } from '@common/models/user';
+import { User, UserLoginCredentials, UserSession } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
 import * as bcryptjs from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
@@ -53,7 +53,7 @@ export class AuthentificationService {
         throw new HttpException(NO_LOGIN, StatusCodes.NOT_ACCEPTABLE);
     }
 
-    async signUp(user: UserDatabase): Promise<UserSession> {
+    async signUp(user: User): Promise<UserSession> {
         const hash = await bcryptjs.hash(user.password, SALTROUNDS);
         const data = await this.insertUser({ ...user, password: hash });
         const token = this.generateAccessToken(data.idUser);
@@ -76,7 +76,7 @@ export class AuthentificationService {
         return { token, user };
     }
 
-    async getUserByEmail(email: string): Promise<UserDatabase> {
+    async getUserByEmail(email: string): Promise<User> {
         return new Promise((resolve, reject) => {
             this.table
                 .where('email', email)
@@ -86,11 +86,11 @@ export class AuthentificationService {
         });
     }
 
-    async getUserById(idUser: TypeOfId<User>): Promise<ServerUser> {
+    async getUserById(idUser: TypeOfId<User>): Promise<User> {
         return new Promise((resolve, reject) => {
             this.table
                 .where('idUser', idUser)
-                .select('username', 'email', 'avatar', 'idUser')
+                .select('*')
                 .then((data) => resolve(data[0]))
                 .catch((err) => reject(err));
         });
@@ -116,7 +116,7 @@ export class AuthentificationService {
         });
     }
 
-    private async insertUser(user: UserDatabase): Promise<TokenData> {
+    private async insertUser(user: User): Promise<TokenData> {
         return new Promise((resolve, reject) => {
             this.table
                 .returning('idUser')
@@ -127,6 +127,6 @@ export class AuthentificationService {
     }
 
     private get table() {
-        return this.databaseService.knex<UserDatabase>(USER_TABLE);
+        return this.databaseService.knex<User>(USER_TABLE);
     }
 }

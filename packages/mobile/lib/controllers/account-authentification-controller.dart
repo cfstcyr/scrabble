@@ -117,8 +117,13 @@ class AccountAuthenticationController {
     userSessionHandler.clearUserSession();
     socketService.disconnect();
   }
-}
 
+  Future<void> onRefresh() async {
+    userSessionHandler.clearUserSession();
+    socketService.disconnect();
+  }
+}
+ 
 
 // signOut(): void {
 //         authenticationSettings.remove('token');

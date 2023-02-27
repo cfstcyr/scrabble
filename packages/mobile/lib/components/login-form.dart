@@ -4,7 +4,6 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/text-field-handler.dart';
-import 'package:mobile/classes/user.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -183,7 +182,7 @@ class _LoginFormState extends State<LoginForm> {
       });
       return res.authorized;
     }
-    UserSession userSession = res.userSession as UserSession;
+    userSession = res.userSession as UserSession;
     return res.authorized;
   }
 }

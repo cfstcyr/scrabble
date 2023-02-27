@@ -8,7 +8,7 @@
 import { ALREADY_LOGGED, NO_LOGIN, NO_VALIDATE } from '@app/constants/controllers-errors';
 import DatabaseService from '@app/services/database-service/database.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
-import { UserDatabase } from '@common/models/user';
+import { User } from '@common/models/user';
 import * as bcryptjs from 'bcryptjs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -26,7 +26,7 @@ chai.use(chaiAsPromised);
 const SOCKET_ID = '1';
 const USER_ID = 1;
 const TOKEN = 'token';
-const ADMIN_USER: UserDatabase = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: USER_ID, avatar: '' };
+const ADMIN_USER: User = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: USER_ID, avatar: '' };
 
 describe('AuthentificationService', () => {
     let testingUnit: ServicesTestingUnit;
@@ -111,7 +111,7 @@ describe('AuthentificationService', () => {
 
     describe('signUp', () => {
         it('should call createUser method from databaseService', () => {
-            const spy = chai.spy.on(databaseServiceStub, 'createUser', () => {});
+            const spy = chai.spy.on(databaseServiceStub, 'createUser', () => { });
             authentificationService.signUp(ADMIN_USER);
             expect(spy).to.have.been.called;
         });
@@ -122,23 +122,23 @@ describe('AuthentificationService', () => {
             chai.spy.on(authentificationService, 'getUserByEmail', async () => Promise.resolve(ADMIN_USER));
             chai.spy.on(authentificationService.generateAccessToken, TOKEN);
         });
-    
+
         it('should throw new Error(NO_LOGIN) when no match', () => {
             chai.spy.on(bcryptjs, 'compare', () => true);
             expect(authentificationService.login(ADMIN_USER)).to.eventually.throw(new Error(NO_LOGIN));
         });
-    
+
         it('should login the admin', async () => {
             chai.spy.on(bcryptjs, 'compare', () => true);
             const admin = { email: 'admin@admin.com', password: 'admin', username: 'admin' };
             expect(await authentificationService.login(admin)).to.exist;
         });
-    
+
         it('should return a token', () => {
             chai.spy.on(bcryptjs, 'compare', () => true);
             expect(authentificationService.login(ADMIN_USER)).to.eventually.have.property('token');
         });
-    
+
         it('should return a user', () => {
             chai.spy.on(bcryptjs, 'compare', () => true);
             expect(authentificationService.login(ADMIN_USER)).to.eventually.have.property('user');
@@ -156,7 +156,7 @@ describe('AuthentificationService', () => {
         });
 
         it('should thow if cannot generate token', () => {
-            chai.spy.on(authentificationService, 'generateAccessToken', () => {throw new Error();});
+            chai.spy.on(authentificationService, 'generateAccessToken', () => { throw new Error(); });
             expect(authentificationService.validate(USER_ID)).to.eventually.rejectedWith(NO_VALIDATE);
         });
 
@@ -177,7 +177,7 @@ describe('AuthentificationService', () => {
             expect(authentificationService.getUserById(1)).to.eventually.equal(ADMIN_USER);
         });
     });
-    
+
     describe('HAPPY PATH', () => {
         it('should return access token on password match', async () => {
             const expectedAccessToken = 'ACCESS';

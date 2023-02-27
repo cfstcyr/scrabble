@@ -5,10 +5,11 @@ import DatabaseService from '@app/services/database-service/database.service';
 import { TypeOfId } from '@common/types/id';
 import { User } from '@common/models/user';
 import { UserId } from '@app/classes/user/connected-user-types';
+import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
 
 @Service()
 export class ChatPersistenceService {
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(private readonly databaseService: DatabaseService, private chatHistoryService: ChatHistoryService) {}
 
     async getChannels(): Promise<Channel[]> {
         return this.channelTable.select();
@@ -44,6 +45,10 @@ export class ChatPersistenceService {
 
     async leaveChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<void> {
         await this.userChatTable.delete().where({ idChannel, idUser });
+
+        if (await this.isChannelEmpty(idChannel)) {
+            await this.chatHistoryService.deleteChannelHistory(idChannel);
+        }
     }
 
     async isChannelNameAvailable(channel: ChannelCreation): Promise<boolean> {
@@ -72,20 +77,8 @@ export class ChatPersistenceService {
         }
     }
 
-    async getChannelIdsWithPropertiesForUserId(channel: Partial<Channel>, idUser: UserId): Promise<TypeOfId<Channel>[]> {
-        const request = this.channelTable
-            .select(`${CHANNEL_TABLE}.idChannel`)
-            .leftJoin<UserChannel>(USER_CHANNEL_TABLE, `${CHANNEL_TABLE}.idChannel`, `${USER_CHANNEL_TABLE}.idChannel`)
-            .where(`${USER_CHANNEL_TABLE}.idUser`, idUser);
-
-        Object.keys(channel).forEach((key) => {
-            if (key === undefined) return;
-
-            const column = `${CHANNEL_TABLE}.${key}`;
-            request.andWhere({ [column]: channel[key] });
-        });
-
-        return (await request).map(({ idChannel }) => idChannel);
+    private async isChannelEmpty(idChannel: TypeOfId<Channel>): Promise<boolean> {
+        return (await this.userChatTable.select('*').where({ idChannel })).length === 0;
     }
 
     private async isUserInChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<boolean> {
