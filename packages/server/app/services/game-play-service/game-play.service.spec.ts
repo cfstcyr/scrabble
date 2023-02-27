@@ -14,7 +14,6 @@ import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { RoundData } from '@app/classes/communication/round-data';
 import Game from '@app/classes/game/game';
-import { GameType } from '@app/classes/game/game-type';
 import Player from '@app/classes/player/player';
 import { Round } from '@app/classes/round/round';
 import RoundManager from '@app/classes/round/round-manager';
@@ -490,7 +489,7 @@ describe('GamePlayService', () => {
             const handlePlayerLeftEventSpy = chai.spy.on(gamePlayService, 'handlePlayerLeftEvent', () => {
                 return;
             });
-            gamePlayService['activeGameService'].playerLeftEvent.emit('playerLeft', DEFAULT_GAME_ID, playerWhoLeftId);
+            gamePlayService['activeGameService'].playerLeftEvent.emit('playerLeftGame', DEFAULT_GAME_ID, playerWhoLeftId);
             expect(handlePlayerLeftEventSpy).to.have.been.called.with(DEFAULT_GAME_ID, playerWhoLeftId);
         });
 
@@ -617,20 +616,6 @@ describe('GamePlayService', () => {
             expect(result.player1!.id).to.equal(gameStub.player1.id);
             expect(result.player2!.id).to.equal(gameStub.player2.id);
         });
-    });
-
-    it('handleResetObjectives should reset if gameType is LOG2990', () => {
-        gameStub.gameType = GameType.LOG2990;
-        const resetSpy = chai.spy.on(gameStub, 'resetPlayerObjectiveProgression', () => {});
-        gamePlayService.handleResetObjectives(gameStub.getId(), player.id);
-        expect(resetSpy).to.have.been.called();
-    });
-
-    it('handleResetObjectives should NOT reset if gameType is Classic', () => {
-        gameStub.gameType = GameType.Classic;
-        const resetSpy = chai.spy.on(gameStub, 'resetPlayerObjectiveProgression', () => {});
-        gamePlayService.handleResetObjectives(gameStub.getId(), player.id);
-        expect(resetSpy).not.to.have.been.called();
     });
 
     it('isGameOver should call getGame', () => {

@@ -497,7 +497,6 @@ describe('GamePlayController', () => {
 
             delayStub = stub(Delay, 'for');
             gameUpdateSpy = chai.spy.on(gamePlayController, 'gameUpdate', () => ({}));
-            resetStub = gamePlayServiceStub.handleResetObjectives.returns(undefined as unknown as GameUpdateData);
         });
 
         afterEach(() => {

@@ -21,8 +21,6 @@ const DEFAULT_PLAYER_2: NoId<GameHistoryPlayer, 'playerIndex'> = {
 const DEFAULT_GAME_HISTORY: NoIdGameHistoryWithPlayers = {
     startTime: new Date(),
     endTime: new Date(),
-    gameType: 'default',
-    gameMode: 'solo',
     hasBeenAbandoned: false,
     playersData: [DEFAULT_PLAYER_1, DEFAULT_PLAYER_2],
 };
