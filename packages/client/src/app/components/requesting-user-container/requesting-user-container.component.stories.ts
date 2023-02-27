@@ -3,11 +3,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { IconComponent } from '@app/components/icon/icon.component';
-import { JoinerListContainerComponent } from './joiner-list-container.component';
+import { RequestingUserContainerComponent } from './requesting-user-container.component';
 
 export default {
-    title: 'JoinerList/Container',
-    component: JoinerListContainerComponent,
+    title: 'requestingUser/Container',
+    component: RequestingUserContainerComponent,
     decorators: [
         moduleMetadata({
             declarations: [IconComponent],
@@ -17,7 +17,7 @@ export default {
     ],
 } as Meta;
 
-const template: Story<JoinerListContainerComponent> = (args: JoinerListContainerComponent) => ({
+const template: Story<RequestingUserContainerComponent> = (args: RequestingUserContainerComponent) => ({
     props: args,
 });
 

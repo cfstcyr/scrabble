@@ -6,22 +6,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IconComponent } from '@app/components/icon/icon.component';
 
-import { JoinerListContainerComponent } from './joiner-list-container.component';
+import { RequestingUserContainerComponent } from './requesting-user-container.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-describe('JoinerListContainerComponent', () => {
-    let component: JoinerListContainerComponent;
-    let fixture: ComponentFixture<JoinerListContainerComponent>;
+describe('RequestingUserContainerComponent', () => {
+    let component: RequestingUserContainerComponent;
+    let fixture: ComponentFixture<RequestingUserContainerComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [JoinerListContainerComponent, IconComponent],
+            declarations: [RequestingUserContainerComponent, IconComponent],
             imports: [MatTooltipModule],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(JoinerListContainerComponent);
+        fixture = TestBed.createComponent(RequestingUserContainerComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
