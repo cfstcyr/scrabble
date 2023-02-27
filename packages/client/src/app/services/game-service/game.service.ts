@@ -13,7 +13,6 @@ import { GameType } from '@app/constants/game-type';
 import { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';
 import BoardService from '@app/services/board-service/board.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import { ObjectivesManagerService } from '@app/services/objectives-manager-service/objectives-manager.service';
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 import { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-service-data';
 import { Subject } from 'rxjs';
@@ -37,7 +36,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
         private router: Router,
         private boardService: BoardService,
         private roundManager: RoundManagerService,
-        private objectiveManager: ObjectivesManagerService,
         private gameController: GamePlayController,
         private gameViewEventManagerService: GameViewEventManagerService,
     ) {
@@ -117,26 +115,19 @@ export default class GameService implements OnDestroy, IResetServiceData {
         return this.roundManager.getActivePlayer().id;
     }
 
-    private isLocalPlayerPlayer1(): boolean {
-        if (!this.playerContainer) return false;
-        return this.playerContainer.getLocalPlayerId() === this.playerContainer.getPlayer(1).id;
-    }
-
     private async initializeGame(localPlayerId: string, startGameData: StartGameData): Promise<void> {
         this.gameId = startGameData.gameId;
-        this.gameType = startGameData.gameType;
-        this.playerContainer = new PlayerContainer(localPlayerId).initializePlayers(
+        this.playerContainer = new PlayerContainer(localPlayerId).initializePlayers([
             startGameData.player1,
             startGameData.player2,
             startGameData.player3,
             startGameData.player4,
-        );
+        ]);
         this.tileReserve = startGameData.tileReserve;
         this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
 
         this.roundManager.initialize(localPlayerId, startGameData);
         this.boardService.initializeBoard(startGameData.board);
-        this.objectiveManager.initialize(startGameData, this.isLocalPlayerPlayer1());
 
         this.isGameSetUp = true;
         this.isGameOver = false;
@@ -179,9 +170,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
         }
         if (gameUpdateData.tileReserve) {
             this.handleTileReserveUpdate(gameUpdateData.tileReserve);
-        }
-        if (gameUpdateData.gameObjective) {
-            this.objectiveManager.updateObjectives(gameUpdateData.gameObjective);
         }
     }
 

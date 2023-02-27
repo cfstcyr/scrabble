@@ -43,12 +43,4 @@ export class PlayerLeavesService implements OnDestroy {
         if (gameId) this.playerLeavesController.handleLeaveGame(gameId);
         this.gameDispatcherService.resetServiceData();
     }
-
-    // subscribeToJoinerLeavesGameEvent(componentDestroyed$: Subject<boolean>, callback: (leaverName: string) => void): void {
-    //     this.joinerLeavesGameEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
-    // }
-
-    // private handleJoinerLeaveGame(leaverName: string): void {
-    //     this.joinerLeavesGameEvent.next(leaverName);
-    // }
 }

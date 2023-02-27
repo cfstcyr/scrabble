@@ -7,7 +7,6 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
-import { GameConfigData } from '@app/classes/communication/game-config';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { GameMode } from '@app/constants/game-mode';
 import { GameType } from '@app/constants/game-type';
@@ -16,7 +15,6 @@ import { GameDispatcherService, SocketService } from '@app/services/';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
-import GroupInfo from '@common/models/group-info';
 import { Observable, Subject, Subscription } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
 
@@ -34,7 +32,7 @@ const TEST_GROUP_DATA: Group = {
     hostName: '',
     maxRoundTime: 0,
     gameVisibility: GameVisibility.Public,
-    virtualPlayerLever: VirtualPlayerLevel.Beginner,
+    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
 };
 const TEST_GROUP_INFO: GroupInfo = {
     ...TEST_GROUP_DATA,
