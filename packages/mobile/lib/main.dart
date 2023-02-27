@@ -2,10 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mobile/classes/login.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:provider/provider.dart';
 
+import 'controllers/account-authentification-controller.dart';
 import 'environments/environment.dart';
 
 Future<void> main() async {
@@ -21,21 +24,67 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  AccountAuthenticationController authController =
+      getIt.get<AccountAuthenticationController>();
+  MyApp({super.key});
 
+  // @override
+  // Future<Widget> build(BuildContext context) async {
+  //   return ChangeNotifierProvider(
+  //     create: (context) => MyAppState(),
+  //     child: MaterialApp(
+  //       title: 'Namer App',
+  //       theme: ThemeData(
+  //         useMaterial3: true,
+  //         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+  //       ),
+  //       home: await getEntryPage(),
+  //     ),
+  //   );
+  // }
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'Namer App',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        ),
-        home: MainPage(),
-      ),
+    return FutureBuilder<Widget>(
+      future: getEntryPage(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Return a loading indicator while the future is being fetched
+          return CircularProgressIndicator();
+        } else {
+          return ChangeNotifierProvider(
+            create: (context) => MyAppState(),
+            child: MaterialApp(
+              title: 'Namer App',
+              theme: ThemeData(
+                useMaterial3: true,
+                colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+              ),
+              home: snapshot.data,
+            ),
+          );
+        }
+      },
     );
+  }
+
+  Future<Widget>? getEntryPage() async {
+    TokenValidation tokenValidation = await authController.validateToken();
+    switch (tokenValidation) {
+      case TokenValidation.Ok:
+        {
+          return MainPage();
+        }
+        break;
+
+      case TokenValidation.NoToken:
+        {
+          return HomePage();
+        }
+      default:
+        {
+          return MainPage();
+        }
+    }
   }
 }
 

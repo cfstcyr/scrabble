@@ -68,6 +68,7 @@ class AccountAuthenticationController {
   }
 
   Future<LoginResponse> login(UserLoginCredentials credentials) async {
+    this.socketService.initSocket();
     Response res =
         await post(Uri.parse("${endpoint}/login"), body: credentials.toJson());
     String message;
@@ -95,15 +96,19 @@ class AccountAuthenticationController {
       Response res = await post(Uri.parse("${endpoint}/validate"), body: token);
       if (res.statusCode == HttpStatus.created) {
         // Redirect to Home page
+        userSessionHandler
+            .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
         return TokenValidation.Ok;
       } else if (res.statusCode == HttpStatus.unauthorized) {
         // Token expired -> Redirect to login page
         this.storageHandler.clearStorage();
+        this.socketService.disconnect();
         return TokenValidation.AlreadyConnected;
       } else {
         return TokenValidation.UnknownError;
       }
     }
+    userSessionHandler.clearUserSession();
     return TokenValidation.NoToken;
   }
 
