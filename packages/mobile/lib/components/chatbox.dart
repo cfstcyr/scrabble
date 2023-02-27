@@ -31,11 +31,12 @@ class _ChatPageState extends State<ChatPage> {
   final _user = types.User(id: "UserId", firstName: "hardcoded:username");
 
 // TODO: ENLEVER VALEURS HARD CODE
-  final channel = Channel(id: "id_channel", name: "principal", canQuit: false);
+  final channel =
+      Channel(idChannel: 1, name: "general", canQuit: false, private: false);
   @override
   void initState() {
     super.initState();
-    socketService.initSocket();
+    // socketService.initSocket();
     _listenMessages();
   }
 
