@@ -16,13 +16,18 @@ class UserSessionService {
     return _instance;
   }
 
-  UserSession get userSession {
-    assert(_userSession != null, SESSION_NOT_INITIALIZED_ASSERT);
-    return _userSession.value!;
-  }
+  // UserSession get userSession {
+  //   assert(_userSession != null, SESSION_NOT_INITIALIZED_ASSERT);
+  //   return _userSession.value!;
+  // }
 
   void initializeUserSession(UserSession session) {
     storageService.setToken(session.token);
+    _userSession.add(session);
+  }
+
+  getSession() {
+    return _userSession;
   }
 
   void clearUserSession() {
