@@ -26,8 +26,12 @@ class _GameTimerState extends State<GameTimer> {
   }
 
   void listenToRoundStartEvent() {
-    roundService.startRound$.listen((Duration roundDuration) {
+    roundService.startRoundEvent.listen((Duration roundDuration) {
       widget.timeLeft = roundDuration.inSeconds;
+    });
+
+    roundService.endRoundEvent.listen((_) {
+      timerExpired();
     });
   }
 
@@ -67,7 +71,7 @@ class _GameTimerState extends State<GameTimer> {
           TimerWidget(
             duration: timeLeftToDuration(),
             style:
-                TextStyle(fontSize: 32, fontWeight: FontWeight.w600, height: 1),
+            TextStyle(fontSize: 32, fontWeight: FontWeight.w600, height: 1),
             stopped: widget.isStopped,
           )
         ]),
