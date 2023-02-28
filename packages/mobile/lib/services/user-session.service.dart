@@ -15,13 +15,8 @@ class UserSessionService {
   factory UserSessionService() {
     return _instance;
   }
-
-  // UserSession get userSession {
-  //   assert(_userSession != null, SESSION_NOT_INITIALIZED_ASSERT);
-  //   return _userSession.value!;
-  // }
-
   Future<void> initializeUserSession(UserSession session) async {
+    assert(_userSession != null, SESSION_NOT_INITIALIZED_ASSERT);
     await storageService.setToken(session.token);
     _userSession.add(session);
   }
@@ -36,10 +31,7 @@ class UserSessionService {
   }
 
   String getSessionToken() {
+    assert(_userSession != null, SESSION_NOT_INITIALIZED_ASSERT);
     return _userSession.value!.token;
-  }
-
-  Future<String?> getStorageToken() async {
-    await storageService.getToken();
   }
 }
