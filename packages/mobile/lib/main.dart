@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
               background: Color.fromRGBO(243, 243, 243, 1),
               onBackground: Color.fromRGBO(232, 232, 232, 1),
               tertiary: Color.fromRGBO(216, 216, 216, 1)),
+          cardTheme: CardTheme(color: Colors.white, surfaceTintColor: Colors.white)
         ),
         navigatorKey: navigatorKey,
         home: MainPage(),

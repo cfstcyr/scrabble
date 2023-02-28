@@ -73,7 +73,7 @@ const channelCreation: ChannelCreation = {
 
 class TestClass {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    testFunc = () => { };
+    testFunc = () => {};
 }
 
 describe('ChatService', () => {
@@ -137,7 +137,7 @@ describe('ChatService', () => {
                 chatHistoryService as unknown as ChatHistoryService,
             );
 
-            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => { });
+            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => {});
 
             socketService['configureSocketsEvent'].emit(SOCKET_CONFIGURE_EVENT_NAME, serverSocket);
 
