@@ -29,10 +29,6 @@ import { validateName } from '@app/utils/validate-name/validate-name';
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '@app/controllers/base-controller';
-import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
-import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
-import { UserId } from '@app/classes/user/connected-user-types';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
