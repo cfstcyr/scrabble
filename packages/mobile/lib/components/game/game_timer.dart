@@ -25,9 +25,16 @@ class _GameTimerState extends State<GameTimer> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    if (widget.timer != null) timerExpired();
+    super.dispose();
+  }
+
   void listenToRoundStartEvent() {
     roundService.startRoundEvent.listen((Duration roundDuration) {
       widget.timeLeft = roundDuration.inSeconds;
+      startTimer();
     });
 
     roundService.endRoundEvent.listen((_) {
@@ -36,6 +43,8 @@ class _GameTimerState extends State<GameTimer> {
   }
 
   void startTimer() {
+    if (widget.timer != null && widget.timer!.isActive) widget.timer!.cancel();
+
     widget.isStopped = false;
     const oneSec = Duration(seconds: 1);
     widget.timer = Timer.periodic(

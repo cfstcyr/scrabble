@@ -21,6 +21,11 @@ class RoundService {
     return _instance;
   }
 
+  bool isLocalPlayerActivePlayer() {
+    // TODO: Implement when user is known and currentRound is known
+    return true;
+  }
+
   void startRound() {
     if (roundTimeout != null) roundTimeout!.cancel();
 
@@ -35,6 +40,9 @@ class RoundService {
   }
 
   void _onTimerExpires() {
-    // If local player is active player, send pass
+    if (isLocalPlayerActivePlayer()) {
+      // TODO: Send pass action when pass is implemented
+      startRound();
+    }
   }
 }
