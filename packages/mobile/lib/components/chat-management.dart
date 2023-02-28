@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/channel.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../locator.dart';
 import '../services/socket.service.dart';
@@ -10,20 +12,79 @@ class ChatManagement extends StatefulWidget {
   State<ChatManagement> createState() => _ChatManagementState();
 }
 
+List<Channel> channels = [
+  Channel(idChannel: 1, name: 'general', canQuit: false, private: false)
+];
+BehaviorSubject<List<Channel>> channels$ =
+    BehaviorSubject<List<Channel>>.seeded(channels);
+
 class _ChatManagementState extends State<ChatManagement> {
   SocketService socketService = getIt.get<SocketService>();
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   socketService.initSocket();
-  //   // _listenMessages();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    configureSockets();
+    // _listenMessages();
+  }
 
-  // Future<void> _listenMessages() async {
-  //   SocketService.socket.on('channel:newMessage', (channelMessage) {
-  //     log('data: $channelMessage');
-  //   });
-  // }
+  Future<void> configureSockets() async {
+    socketService.socket.on('channel:join', (channel) {
+      setState(() {
+        channels.add(Channel.fromJson(channel));
+        channels$.add(channels);
+      });
+      print('channel:join: $channel');
+    });
+    // TODO
+    /**
+        this.channels.next(this.channels.value);
+        this.joinedChannel.next(newChannel); -- auto join ?
+     */
+    socketService.socket.on('channel:quit', (channel) {
+      setState(() {
+        channels.removeWhere(
+            (x) => x.idChannel == Channel.fromJson(channel).idChannel);
+
+        channels$.add(channels);
+        print('channel:quit: $channel');
+      });
+    });
+
+    // TODO SEE WHAT TO DO WITH THIS OTHERWISE DUPLICATES
+    // socketService.socket.on('channel:newChannel', (channel) {
+    //   setState(() {
+    //     channels.add(Channel.fromJson(channel));
+    //     channels$.add(channels);
+    //   });
+
+    //   print('channel:newChannel: $channel');
+    // });
+
+    socketService.socket.on('channel:history', (channel) {
+      print('channel:history: $channel');
+    });
+    // TODO
+    /**
+        this.channels.value.delete(channel.idChannel);
+        this.channels.next(this.channels.value);
+     */
+    socketService.socket.emit('channel:init');
+  }
+
+  Future<void> createChannel(String channelName) async {
+    socketService.emitEvent(
+        'channel:newChannel', ChannelName(name: channelName));
+  }
+
+  Future<void> joinChannel(int idChannel) async {
+    socketService.emitEvent('channel:join', idChannel);
+  }
+
+  Future<void> quitChannel(int idChannel) async {
+    socketService.emitEvent('channel:quit', idChannel);
+  }
+
+  var inputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,23 +103,36 @@ class _ChatManagementState extends State<ChatManagement> {
         ),
         Padding(
           padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 0, bottom: 0),
-          child: ElevatedButton.icon(
-            onPressed: () {
-              print('data: gg');
-
-              this.socketService.emitEvent('channel:newChannel', "{name: 'g'}");
+          child: TextFormField(
+            controller: inputController,
+            onFieldSubmitted: (field) {
+              setState(() {
+                inputController.clear();
+                createChannel(field);
+              });
             },
-            icon: Icon(Icons.add),
-            label: Text('Créer un canal'),
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                fixedSize: Size(70, 70),
-                surfaceTintColor: Colors.white,
-                foregroundColor: Colors.black,
-                shape: BeveledRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(2)))),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Créer un canal',
+            ),
           ),
         ),
+        // TODO JOIN CHANNEL
+        // ElevatedButton.icon(
+        //   onPressed: () {
+        //       // TODO
+        //     openChannel(channel)
+        //   },
+        //   icon: Icon(Icons.add),
+        //   label: Text('Créer un canal'),
+        //   style: ElevatedButton.styleFrom(
+        //       backgroundColor: Colors.white,
+        //       fixedSize: Size(70, 70),
+        //       surfaceTintColor: Colors.white,
+        //       foregroundColor: Colors.black,
+        //       shape: BeveledRectangleBorder(
+        //           borderRadius: BorderRadius.all(Radius.circular(2)))),
+        // ),
         ListTile(
           title: const Text('Canaux privés'),
         ),
@@ -66,28 +140,34 @@ class _ChatManagementState extends State<ChatManagement> {
             child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                itemCount: 3,
+                itemCount:
+                    channels$.value.where((x) => x.private).toList().length,
                 itemBuilder: (_, int index) {
-                  return Row(
-                    children: [
-                      Text('Canaux privé '),
-                      IconButton(
-                        onPressed: () {
-                          // setState(() {
-                          //   bool isAccepted =
-                          //       addPlayerToLobby(playerWaitingList[index]);
-                          //   if (!isAccepted) {
-                          //     errorSnackBar(context, FULL_LOBBY_ERROR);
-                          //   }
-                          // });
-                        },
-                        icon: Icon(Icons.join_full),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey.shade200,
-                            foregroundColor: Colors.green.shade900,
-                            shape: CircleBorder()),
-                      ),
-                    ],
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Text(channels$.value
+                            .where((x) => x.private)
+                            .toList()[index]
+                            .name),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              quitChannel(channels$.value
+                                  .where((x) => x.private)
+                                  .toList()[index]
+                                  .idChannel);
+                            });
+                          },
+                          icon: Icon(Icons.highlight_remove_outlined),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey.shade200,
+                              foregroundColor: Colors.green.shade900,
+                              shape: CircleBorder()),
+                        ),
+                      ],
+                    ),
                   );
                 })),
         Divider(
@@ -100,6 +180,51 @@ class _ChatManagementState extends State<ChatManagement> {
         ListTile(
           title: const Text('Canaux publics'),
         ),
+        Container(
+            child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount:
+                    channels$.value.where((x) => !x.private).toList().length,
+                itemBuilder: (_, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(10.0))),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Text(channels$.value[index].name),
+                            IconButton(
+                              onPressed: channels$.value
+                                      .where((x) => !x.private)
+                                      .toList()[index]
+                                      .canQuit
+                                  ? () {
+                                      setState(() {
+                                        quitChannel(channels$.value
+                                            .where((x) => !x.private)
+                                            .toList()[index]
+                                            .idChannel);
+                                      });
+                                    }
+                                  : null,
+                              icon: Icon(Icons.highlight_remove_outlined),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey.shade200,
+                                  foregroundColor: Colors.green.shade900,
+                                  shape: CircleBorder()),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                })),
       ],
     );
   }

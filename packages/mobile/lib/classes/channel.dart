@@ -12,16 +12,31 @@ class Channel {
 
   factory Channel.fromJson(Map<String, dynamic> json) {
     return Channel(
-      idChannel: json['id'] as int,
+      idChannel: json['idChannel'] as int,
       name: json['name'] as String,
       canQuit: json['canQuit'] as bool,
       private: json['private'] as bool,
     );
   }
   Map<String, dynamic> toJson() => {
-        "id": idChannel,
+        "idChannel": idChannel,
         "name": name,
         "canQuit": canQuit,
         "private": private,
+      };
+}
+
+class ChannelName {
+  final String name;
+
+  ChannelName({required this.name});
+
+  factory ChannelName.fromJson(Map<String, dynamic> json) {
+    return ChannelName(
+      name: json['name'] as String,
+    );
+  }
+  Map<String, dynamic> toJson() => {
+        "name": name,
       };
 }
