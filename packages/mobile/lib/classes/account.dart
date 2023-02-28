@@ -1,8 +1,8 @@
-
 class Account {
   final String username;
   final String password;
   final String email;
+  final String avatar = "iio3orf";
 
   Account({
     required this.username,
@@ -22,5 +22,6 @@ class Account {
         'username': username,
         'password': password,
         'email': email,
+        'avatar': avatar
       };
 }

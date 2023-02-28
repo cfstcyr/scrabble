@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../constants/create-account-constants.dart';
+import '../controllers/account-authentification-controller.dart';
+import '../main.dart';
 import '../pages/home-page.dart';
 import '../services/authentification-service.dart';
 
@@ -24,6 +25,8 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
   AuthentificationService accountService = getIt.get<AuthentificationService>();
+  AccountAuthenticationController accountController =
+      getIt.get<AccountAuthenticationController>();
 
   final emailHandler = TextFieldHandler();
   final usernameHandler = TextFieldHandler();
@@ -164,7 +167,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginPage()));
+                                builder: (context) => MainPage()));
                       },
                       child: const Text(
                         REDIRECT_LOGIN_LABEL_FR,
@@ -286,7 +289,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
         username: usernameHandler.controller.text,
         password: passwordHandler.controller.text,
         email: emailHandler.controller.text);
-    if (await accountService.createAccount(newAccount)) {
+    if (await accountController.createAccount(newAccount)) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
