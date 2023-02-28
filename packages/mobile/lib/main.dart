@@ -27,21 +27,6 @@ class MyApp extends StatelessWidget {
   AccountAuthenticationController authController =
       getIt.get<AccountAuthenticationController>();
   MyApp({super.key});
-
-  // @override
-  // Future<Widget> build(BuildContext context) async {
-  //   return ChangeNotifierProvider(
-  //     create: (context) => MyAppState(),
-  //     child: MaterialApp(
-  //       title: 'Namer App',
-  //       theme: ThemeData(
-  //         useMaterial3: true,
-  //         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-  //       ),
-  //       home: await getEntryPage(),
-  //     ),
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Widget>(
@@ -96,6 +81,7 @@ class MainPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Super Scrabble"),
+          automaticallyImplyLeading: false,
         ),
         backgroundColor: Colors.white,
         body: LoginPage());
