@@ -1,9 +1,49 @@
 import 'package:mobile/classes/tile/tile.dart';
+import 'package:rxdart/rxdart.dart';
 
 class TileRack {
-  List<Tile> tiles;
+  final BehaviorSubject<List<Tile>> _tiles;
 
-  TileRack({
-    this.tiles = const []
-  });
+  TileRack({List<Tile> tiles = const []})
+      : _tiles = BehaviorSubject.seeded(tiles);
+
+  ValueStream<List<Tile>> get stream {
+    return _tiles.stream;
+  }
+
+  subscribe(
+    void Function(List<Tile>)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    _tiles.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
+
+  setTiles(List<Tile> tiles) {
+    _tiles.add(tiles);
+  }
+
+  addTiles(List<Tile> tiles) {
+    _tiles.add([..._tiles.value, ...tiles]);
+  }
+
+  moveTile(Tile tile, int to) {
+    List<Tile> tiles = _tiles.value;
+    int from = tiles.indexOf(tile);
+
+    if (from < 0) throw Exception("Cannot move tile: Tile is not in list");
+
+    if (from > to) to = to + 1;
+
+    if (from < to) {
+      tiles.setRange(from, to, tiles, from + 1);
+    } else {
+      tiles.setRange(to + 1, from + 1, tiles, to);
+    }
+    tiles[to] = tile;
+
+    setTiles(tiles);
+  }
 }
