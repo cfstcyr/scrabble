@@ -26,6 +26,21 @@ class Channel {
       };
 }
 
+class Channels {
+  final List<Channel> channels;
+
+  Channels({required this.channels});
+
+  factory Channels.fromJson(Map<String, dynamic> json) {
+    return Channels(
+      channels: json['channels'] as List<Channel>,
+    );
+  }
+  Map<String, dynamic> toJson() => {
+        "channels": channels,
+      };
+}
+
 class ChannelName {
   final String name;
 

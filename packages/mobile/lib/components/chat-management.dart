@@ -15,8 +15,13 @@ class ChatManagement extends StatefulWidget {
 List<Channel> channels = [
   Channel(idChannel: 1, name: 'general', canQuit: false, private: false)
 ];
+List<Channel> myChannels = [
+  Channel(idChannel: 1, name: 'general', canQuit: false, private: false)
+];
 BehaviorSubject<List<Channel>> channels$ =
     BehaviorSubject<List<Channel>>.seeded(channels);
+BehaviorSubject<List<Channel>> myChannels$ =
+    BehaviorSubject<List<Channel>>.seeded(myChannels);
 
 class _ChatManagementState extends State<ChatManagement> {
   SocketService socketService = getIt.get<SocketService>();
@@ -30,8 +35,8 @@ class _ChatManagementState extends State<ChatManagement> {
   Future<void> configureSockets() async {
     socketService.socket.on('channel:join', (channel) {
       setState(() {
-        channels.add(Channel.fromJson(channel));
-        channels$.add(channels);
+        myChannels.add(Channel.fromJson(channel));
+        myChannels$.add(myChannels);
       });
       print('channel:join: $channel');
     });
@@ -42,10 +47,10 @@ class _ChatManagementState extends State<ChatManagement> {
      */
     socketService.socket.on('channel:quit', (channel) {
       setState(() {
-        channels.removeWhere(
+        myChannels.removeWhere(
             (x) => x.idChannel == Channel.fromJson(channel).idChannel);
 
-        channels$.add(channels);
+        myChannels$.add(channels);
         print('channel:quit: $channel');
       });
     });
@@ -63,12 +68,26 @@ class _ChatManagementState extends State<ChatManagement> {
     socketService.socket.on('channel:history', (channel) {
       print('channel:history: $channel');
     });
+
+    socketService.socket.on('channel:allChannels', (channels) {
+      setState(() {
+        channels = List<Channel>.from(
+            channels.map((channel) => Channel.fromJson(channel)));
+        // var unjoinedChannels = Set<Channel>.from(channels)
+        //     .difference(Set<Channel>.from(myChannels))
+        //     .toList();
+        channels$.add(channels);
+      });
+
+      print('channel:history: $channels');
+    });
     // TODO
     /**
         this.channels.value.delete(channel.idChannel);
         this.channels.next(this.channels.value);
      */
     socketService.socket.emit('channel:init');
+    getAllChannels();
   }
 
   Future<void> createChannel(String channelName) async {
@@ -82,6 +101,10 @@ class _ChatManagementState extends State<ChatManagement> {
 
   Future<void> quitChannel(int idChannel) async {
     socketService.emitEvent('channel:quit', idChannel);
+  }
+
+  Future<void> getAllChannels() async {
+    socketService.socket.emit('channel:allChannels');
   }
 
   var inputController = TextEditingController();
@@ -134,30 +157,23 @@ class _ChatManagementState extends State<ChatManagement> {
         //           borderRadius: BorderRadius.all(Radius.circular(2)))),
         // ),
         ListTile(
-          title: const Text('Canaux privés'),
+          title: const Text('Mes canaux'),
         ),
         Container(
             child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                itemCount:
-                    channels$.value.where((x) => x.private).toList().length,
+                itemCount: myChannels$.value.length,
                 itemBuilder: (_, int index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        Text(channels$.value
-                            .where((x) => x.private)
-                            .toList()[index]
-                            .name),
+                        Text(myChannels$.value[index].name),
                         IconButton(
                           onPressed: () {
                             setState(() {
-                              quitChannel(channels$.value
-                                  .where((x) => x.private)
-                                  .toList()[index]
-                                  .idChannel);
+                              quitChannel(myChannels$.value[index].idChannel);
                             });
                           },
                           icon: Icon(Icons.highlight_remove_outlined),
@@ -178,14 +194,13 @@ class _ChatManagementState extends State<ChatManagement> {
           color: Colors.grey.shade500,
         ),
         ListTile(
-          title: const Text('Canaux publics'),
+          title: const Text('Tous les canaux'),
         ),
         Container(
             child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                itemCount:
-                    channels$.value.where((x) => !x.private).toList().length,
+                itemCount: channels$.value.length,
                 itemBuilder: (_, int index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -200,16 +215,11 @@ class _ChatManagementState extends State<ChatManagement> {
                           children: [
                             Text(channels$.value[index].name),
                             IconButton(
-                              onPressed: channels$.value
-                                      .where((x) => !x.private)
-                                      .toList()[index]
-                                      .canQuit
+                              onPressed: channels$.value[index].canQuit
                                   ? () {
                                       setState(() {
-                                        quitChannel(channels$.value
-                                            .where((x) => !x.private)
-                                            .toList()[index]
-                                            .idChannel);
+                                        quitChannel(
+                                            channels$.value[index].idChannel);
                                       });
                                     }
                                   : null,

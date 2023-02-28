@@ -8,6 +8,8 @@ export interface ChatServerEvents {
     'channel:join': (channel: Channel) => void;
     'channel:quit': (channel: Channel) => void;
     'channel:history': (history: ChannelMessage[]) => void;
+    'channel:allChannels': (channels: Channel[]) => void;
+
 }
 
 export interface ChatClientEvents {
@@ -16,4 +18,5 @@ export interface ChatClientEvents {
     'channel:join': (idChannel: TypeOfId<Channel>) => void;
     'channel:quit': (idChannel: TypeOfId<Channel>) => void;
     'channel:init': () => void;
+    'channel:allChannels': () => void;
 }
