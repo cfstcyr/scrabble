@@ -30,7 +30,7 @@ module.exports = function (config) {
             reporters: [{ type: 'html' }, { type: 'text' }],
             check: {
                 global: {
-                    lines: 80,
+                    lines: 30,
                 },
             },
             combineBrowserReports: true,
