@@ -1,13 +1,14 @@
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
+import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
+import { INVALID_ID_FOR_SOCKET, NO_TOKEN, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
-// import { NextFunction } from 'express';
 import { SocketErrorResponse } from '@common/models/error';
 import { EventEmitter } from 'events';
+import { NextFunction } from 'express';
 import * as http from 'http';
 import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
@@ -25,8 +26,6 @@ import {
     SocketEmitEvents,
     StartGameEmitArgs,
 } from './socket-types';
-import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
-// import { NextFunction } from 'express';
 
 @Service()
 export class SocketService {
@@ -67,24 +66,22 @@ export class SocketService {
     handleSockets(): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
-        // this.sio.use(async (socket: io.Socket, next: NextFunction) => {
-        //     const token = socket.handshake.auth.token;
+        this.sio.use(async (socket: io.Socket, next: NextFunction) => {
+            const token = socket.handshake.auth.token;
 
-        //     if (token) {
-        //         try {
-        //             await this.authentificationService.authentificateSocket(socket, token);
-        //             return next();
-        //         } catch (err) {
-        //             return next(new Error(err));
-        //         }
-        //     } else {
-        //         console.log('NO TOKEN');
-        //         next(new Error(NO_TOKEN));
-        //     }
-        // });
+            if (token) {
+                try {
+                    await this.authentificationService.authentificateSocket(socket, token);
+                    return next();
+                } catch (err) {
+                    return next(new Error(err));
+                }
+            } else {
+                next(new Error(NO_TOKEN));
+            }
+        });
 
         this.sio.on('connection', (socket) => {
-            console.log('connnection');
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
 
