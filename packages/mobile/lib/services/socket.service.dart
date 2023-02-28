@@ -1,4 +1,3 @@
-import 'package:mobile/classes/group.dart';
 import 'package:mobile/environments/environment.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';

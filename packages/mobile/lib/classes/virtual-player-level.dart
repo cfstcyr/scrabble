@@ -1,3 +1,5 @@
+import '../constants/erros/game-visibility-errors.dart';
+
 enum VirtualPlayerLevel {
   beginner,
   expert;
@@ -22,7 +24,7 @@ enum VirtualPlayerLevel {
     } else if (value is int) {
       return VirtualPlayerLevel.fromInteger(value);
     }
-    throw Exception('No VirtualPlayerLevel match given json value');
+    throw Exception(NO_JSON_VALUE_MATCH);
   }
 }
 

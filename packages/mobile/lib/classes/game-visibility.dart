@@ -1,4 +1,8 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
+
+import '../constants/erros/game-visibility-errors.dart';
 
 enum GameVisibility {
   public,
@@ -11,8 +15,8 @@ enum GameVisibility {
         : '';
   }
   IconData get icon {
-    return GAME_VISIBILITY_TO_ICONS[this] != null
-        ? GAME_VISIBILITY_TO_ICONS[this]!
+    return GAME_VISIBILITY_TO_ICON[this] != null
+        ? GAME_VISIBILITY_TO_ICON[this]!
         : Icons.question_mark;
   }
 
@@ -36,7 +40,7 @@ enum GameVisibility {
     } else if (value is int) {
       return GameVisibility.fromInteger(value);
     }
-    throw Exception('No GameVisibility match given json value');
+    throw Exception(NO_JSON_VALUE_MATCH);
   }
 }
 
@@ -46,7 +50,7 @@ final Map<GameVisibility, String> GAME_VISIBILITY_TO_NAME = {
   GameVisibility.protected: 'Protégé'
 };
 
-final Map<GameVisibility, IconData> GAME_VISIBILITY_TO_ICONS = {
+final Map<GameVisibility, IconData> GAME_VISIBILITY_TO_ICON = {
   GameVisibility.public: Icons.public,
   GameVisibility.private: Icons.shield,
   GameVisibility.protected: Icons.lock
