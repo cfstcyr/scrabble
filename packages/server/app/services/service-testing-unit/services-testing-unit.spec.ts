@@ -1,11 +1,8 @@
 import { Dictionary } from '@app/classes/dictionary';
 import { AbstractWordFinding } from '@app/classes/word-finding';
-import { DictionaryController } from '@app/controllers/dictionary-controller/dictionary.controller';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
 import { GameHistoriesController } from '@app/controllers/game-history-controller/game-history.controller';
 import { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';
-import { HighScoresController } from '@app/controllers/high-score-controller/high-score.controller';
-import { VirtualPlayerProfilesController } from '@app/controllers/virtual-player-profile-controller/virtual-player-profile.controller';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import WordFindingService from '@app/services/word-finding-service/word-finding.service';
 import { Router } from 'express';
@@ -36,14 +33,7 @@ interface DirectoryItems {
     [name: string]: DirectoryItem;
 }
 
-const CONTROLLERS: ClassType<unknown>[] = [
-    DictionaryController,
-    GameDispatcherController,
-    GameHistoriesController,
-    GamePlayController,
-    HighScoresController,
-    VirtualPlayerProfilesController,
-];
+const CONTROLLERS: ClassType<unknown>[] = [GameDispatcherController, GameHistoriesController, GamePlayController];
 
 export class ServicesTestingUnit {
     private sandbox: SinonSandbox;
