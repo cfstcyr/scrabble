@@ -21,15 +21,19 @@ class Group {
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
         groupId: json['groupId'] as String,
-        users: List<PublicUser>.from(json['users'].map((dynamic publicUser) => PublicUser.fromJson(publicUser)).toList()),
+        users: usersFromJson(json),
         maxRoundTime: json['maxRoundTime'] as int,
-        virtualPlayerLevel: VirtualPlayerLevel.fromJson(json['virtualPlayerLevel']),
+        virtualPlayerLevel:
+            VirtualPlayerLevel.fromJson(json['virtualPlayerLevel']),
         gameVisibility: GameVisibility.fromJson(json['gameVisibility']));
   }
 
   Map<String, dynamic> toJson() => {
         'groupId': groupId,
-        'users': users,
+        'user1': users[0],
+        'user2': users[1],
+        'user3': users[2],
+        'user4': users[3],
         'maxRoundTime': maxRoundTime,
         'virtualPLayerLevel': virtualPlayerLevel,
         'gameVisibility': gameVisibility,
