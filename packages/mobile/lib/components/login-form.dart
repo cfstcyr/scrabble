@@ -176,14 +176,12 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<bool> isLoggedIn(UserLoginCredentials credentials) async {
     LoginResponse res = await authController.login(credentials);
-    if (!res.authorized) {
+    if (!res.isAuthorized) {
       setState(() {
         emailHandler.errorMessage = res.errorMessage;
       });
-      return res.authorized;
+      return res.isAuthorized;
     }
-    // userSession = res.userSession as UserSession;
-    print(res.authorized);
-    return res.authorized;
+    return res.isAuthorized;
   }
 }
