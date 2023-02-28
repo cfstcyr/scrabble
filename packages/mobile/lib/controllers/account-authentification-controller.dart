@@ -71,7 +71,7 @@ class AccountAuthenticationController {
 
     LoginResponse loginResponse = LoginResponse(
         userSession: userSessionHandler.getSession(),
-        authorized: res.statusCode == HttpStatus.ok,
+        isAuthorized: res.statusCode == HttpStatus.ok,
         errorMessage: message);
     return loginResponse;
   }
@@ -81,7 +81,7 @@ class AccountAuthenticationController {
     Map<String, String> requestHeaders = {
       'authorization': token,
     };
-    if (!token.isEmpty) {
+    if (token.isNotEmpty) {
       Response res = await post(Uri.parse("${endpoint}/validate"),
           body: token, headers: requestHeaders);
       if (res.statusCode == HttpStatus.created) {
