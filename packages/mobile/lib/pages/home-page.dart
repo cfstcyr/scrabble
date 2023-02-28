@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/chatbox.dart';
+import 'package:mobile/constants/login-constants.dart';
 
-import '../components/invalid-connection-popup.dart';
 import '../controllers/account-authentification-controller.dart';
 import '../locator.dart';
 import '../main.dart';
@@ -20,13 +20,6 @@ class HomePage extends StatelessWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(width: 10), // c'est un spacing fancy
-              ElevatedButton(
-                onPressed: () {
-                  showInvalidConnectionPopup(context);
-                },
-                child: Text('NeFaitRien'),
-              ),
               SizedBox(width: 10), // c'est un spacing fancy
               ElevatedButton(
                 onPressed: () {
@@ -50,7 +43,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  "Se déconnecter",
+                  SIGNOUT_LABEL_FR,
                 ),
               ),
               SizedBox(width: 10),
