@@ -79,12 +79,12 @@ class AccountAuthenticationController {
   Future<TokenValidation> validateToken() async {
     String token = await storageHandler.getToken() ?? "";
     Map<String, String> requestHeaders = {
-      'authorization': token,
+      'authorization': "Bearer ${token}",
     };
     if (token.isNotEmpty) {
       Response res = await post(Uri.parse("${endpoint}/validate"),
           body: token, headers: requestHeaders);
-      if (res.statusCode == HttpStatus.created) {
+      if (res.statusCode == HttpStatus.ok) {
         userSessionHandler
             .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
         return TokenValidation.Ok;
