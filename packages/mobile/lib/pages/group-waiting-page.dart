@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/group.dart';
-import '../components/group-management.dart';
-import '../components/parameters.dart';
-import '../components/player-waiting-list.dart';
-import '../components/waiting-room.dart';
+import '../components/group/parameters.dart';
+import '../components/group/waiting-room.dart';
 import '../constants/locale/group-selection-constants.dart';
 import '../constants/locale/groups-constants.dart';
 import '../view-methods/create-lobby-methods.dart';

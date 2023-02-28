@@ -5,8 +5,9 @@ import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/constants/user-constants.dart';
 
-import '../pages/groups-request-waiting-page.dart';
-import '../utils/duration-format.dart';
+import '../../pages/groups-request-waiting-page.dart';
+import '../../utils/duration-format.dart';
+
 
 class IndividualGroup extends StatelessWidget {
   const IndividualGroup({super.key,
@@ -181,50 +182,53 @@ class GroupParameters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IntrinsicWidth(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(height: 8),
-          Expanded(
-            child: Container(
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: theme.colorScheme.tertiary,
-                  borderRadius: BorderRadius.all(Radius.circular(8))),
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.hourglass_bottom),
-                    SizedBox(width: 8),
-                    Text(formatTime(group.maxRoundTime)),
-                  ],
+      child: SizedBox(
+        width: 115,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 8),
+            Expanded(
+              child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: theme.colorScheme.tertiary,
+                    borderRadius: BorderRadius.all(Radius.circular(8))),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.hourglass_bottom),
+                      SizedBox(width: 8),
+                      Text(formatTime(group.maxRoundTime)),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 8),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                  color: theme.colorScheme.tertiary,
-                  borderRadius: BorderRadius.all(Radius.circular(8))),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 16, 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.precision_manufacturing),
-                    SizedBox(width: 8),
-                    Text(group.virtualPlayerLevel.levelName),
-                  ],
+            SizedBox(height: 8),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: theme.colorScheme.tertiary,
+                    borderRadius: BorderRadius.all(Radius.circular(8))),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 16, 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.precision_manufacturing),
+                      SizedBox(width: 8),
+                      Text(group.virtualPlayerLevel.levelName),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 8),
-        ],
+            SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }

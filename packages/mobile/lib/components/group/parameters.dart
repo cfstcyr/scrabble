@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
 
-import '../utils/duration-format.dart';
-import '../view-methods/create-lobby-methods.dart';
+import '../../utils/duration-format.dart';
 
 class Parameters extends StatelessWidget {
   const Parameters(

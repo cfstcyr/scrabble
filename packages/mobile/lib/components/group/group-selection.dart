@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/services/group-join.service.dart';
 
-import '../classes/group.dart';
-import '../constants/locale/group-selection-constants.dart';
-import '../locator.dart';
-import '../view-methods/group.methods.dart';
+import '../../classes/group.dart';
+import '../../constants/locale/group-selection-constants.dart';
+import '../../locator.dart';
+import '../../view-methods/group.methods.dart';
 import 'individual-group.dart';
 
 class GroupSelection extends StatelessWidget {

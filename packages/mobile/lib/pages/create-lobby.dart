@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mobile/view-methods/create-lobby-methods.dart';
 
 import '../classes/virtual-player-level.dart';
-import '../components/group-management.dart';
-import '../components/parameters.dart';
-import '../components/player-waiting-list.dart';
-import '../components/waiting-room.dart';
+import '../components/group/group-management.dart';
+import '../components/group/parameters.dart';
+import '../components/group/player-waiting-list.dart';
+import '../components/group/waiting-room.dart';
 
 class CreateLobbyPage extends StatelessWidget {
   @override

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
 import 'package:mobile/constants/user-constants.dart';
 
-import '../classes/user.dart';
-import '../constants/create-lobby-constants.dart';
-import '../view-methods/create-lobby-methods.dart';
-import 'error-pop-up.dart';
+import '../../classes/user.dart';
+import '../../constants/create-lobby-constants.dart';
+import '../../view-methods/create-lobby-methods.dart';
+import '../error-pop-up.dart';
 
 class WaitingRoom extends StatefulWidget {
   const WaitingRoom({

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../classes/user.dart';
-import '../constants/create-lobby-constants.dart';
-import '../view-methods/create-lobby-methods.dart';
+import '../../classes/user.dart';
+import '../../constants/create-lobby-constants.dart';
+import '../../view-methods/create-lobby-methods.dart';
 
 class GroupManagement extends StatelessWidget {
   const GroupManagement({
