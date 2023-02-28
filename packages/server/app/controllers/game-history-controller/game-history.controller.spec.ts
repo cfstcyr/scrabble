@@ -2,8 +2,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable dot-notation */
 import { Application } from '@app/app';
-import { GameMode } from '@app/classes/game/game-mode';
-import { GameType } from '@app/classes/game/game-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { GameHistoriesController } from '@app/controllers/game-history-controller/game-history.controller';
 import GameHistoriesService from '@app/services/game-history-service/game-history.service';
@@ -42,8 +40,6 @@ const DEFAULT_GAME_HISTORY: NoIdGameHistoryWithPlayers = {
     startTime: new Date(),
     endTime: new Date(),
     playersData: [DEFAULT_WINNER_DATA, DEFAULT_LOSER_DATA],
-    gameType: GameType.Classic,
-    gameMode: GameMode.Multiplayer,
     hasBeenAbandoned: false,
 };
 

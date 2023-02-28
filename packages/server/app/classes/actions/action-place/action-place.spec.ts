@@ -38,8 +38,10 @@ const expect = chai.expect;
 chai.use(spies);
 chai.use(chaiAsPromised);
 
-const DEFAULT_PLAYER_1 = new Player('player-1', 'Player 1');
-const DEFAULT_PLAYER_2 = new Player('player-2', 'Player 2');
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const DEFAULT_PLAYER_1 = new Player('player-1', USER1);
+const DEFAULT_PLAYER_2 = new Player('player-2', USER2);
 const INITIAL_SCORE = DEFAULT_PLAYER_1.score;
 const TILES_PLAYER_1: Tile[] = [
     { letter: 'A', value: 1 },
@@ -135,8 +137,8 @@ describe('ActionPlace', () => {
         tileReserveStub = createStubInstance(TileReserve);
         boardStub = createStubInstance(Board);
 
-        gameStub.player1 = new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.name);
-        gameStub.player2 = new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.name);
+        gameStub.player1 = new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.publicUser);
+        gameStub.player2 = new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.publicUser);
         gameStub.player1.tiles = TILES_PLAYER_1.map((t) => ({ ...t }));
         gameStub.player2.tiles = TILES_PLAYER_1.map((t) => ({ ...t }));
         gameStub.getPlayerNumber.returns(1);

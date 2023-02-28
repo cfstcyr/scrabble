@@ -17,6 +17,8 @@ import * as uuid from 'uuid';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { CreateGameService } from './create-game.service';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
+import { GameVisibility } from '@common/models/game-visibility';
+import { GroupData } from '@common/models/group';
 
 chai.use(spies);
 
@@ -24,18 +26,20 @@ const DEFAULT_PLAYER_ID = 'playerId';
 const DEFAULT_USER_ID = 1;
 
 const DEFAULT_MAX_ROUND_TIME = 1;
-
-const DEFAULT_PLAYER_NAME = 'player';
-const DEFAULT_GAME_CONFIG_DATA: GameConfigData = {
-    playerName: DEFAULT_PLAYER_NAME,
-    playerId: DEFAULT_PLAYER_ID,
-    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
-    maxRoundTime: DEFAULT_MAX_ROUND_TIME,
-};
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 
 const DEFAULT_GAME_CONFIG: GameConfig = {
-    player1: new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME),
+    player1: new Player(DEFAULT_PLAYER_ID, USER1),
     maxRoundTime: DEFAULT_MAX_ROUND_TIME,
+    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+    gameVisibility: GameVisibility.Private,
+};
+
+const DEFAULT_GROUP_DATA: GroupData = {
+    user1: USER1,
+    maxRoundTime: DEFAULT_MAX_ROUND_TIME,
+    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+    gameVisibility: GameVisibility.Private,
 };
 
 describe('CreateGameService', () => {
@@ -71,7 +75,7 @@ describe('CreateGameService', () => {
         });
 
         it('should return waiting room with config and channel id', async () => {
-            const newWaitingRoom = await createGameService.createMultiplayerGame(DEFAULT_GAME_CONFIG_DATA, DEFAULT_USER_ID);
+            const newWaitingRoom = await createGameService.createMultiplayerGame(DEFAULT_GROUP_DATA, DEFAULT_USER_ID, '');
             expect(newWaitingRoom).to.be.an.instanceof(WaitingRoom);
             expect(newWaitingRoom['config']).to.deep.equal(DEFAULT_GAME_CONFIG);
             expect(newWaitingRoom['groupChannelId']).to.equal(1);
@@ -81,29 +85,8 @@ describe('CreateGameService', () => {
     describe('generateGameConfig', () => {
         it('should call generateGameConfig', () => {
             const configSpy = spy.on(createGameService, 'generateGameConfig');
-            createGameService.createMultiplayerGame(DEFAULT_GAME_CONFIG_DATA, DEFAULT_USER_ID);
+            createGameService.createMultiplayerGame(DEFAULT_GROUP_DATA, DEFAULT_USER_ID, '');
             expect(configSpy).to.have.been.called();
-        });
-    });
-
-    describe('generateReadyGameConfig', () => {
-        it('should return a ReadyGameConfig', () => {
-            const DEFAULT_PLAYER_2 = new Player('testid2', 'DJ TESTO');
-            const DEFAULT_PLAYER_3 = new Player('testid3', 'DJ TESTO');
-            const DEFAULT_PLAYER_4 = new Player('testid4', 'DJ TESTO');
-            const newReadyGameConfig = createGameService['generateReadyGameConfig'](
-                DEFAULT_PLAYER_2,
-                DEFAULT_PLAYER_3,
-                DEFAULT_PLAYER_4,
-                DEFAULT_GAME_CONFIG,
-            );
-            const DEFAULT_READY_GAME_CONFIG = {
-                ...DEFAULT_GAME_CONFIG,
-                player2: DEFAULT_PLAYER_2,
-                player3: DEFAULT_PLAYER_3,
-                player4: DEFAULT_PLAYER_4,
-            };
-            expect(newReadyGameConfig).to.deep.equal(DEFAULT_READY_GAME_CONFIG);
         });
     });
 });

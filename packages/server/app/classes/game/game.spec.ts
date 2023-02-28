@@ -17,6 +17,8 @@ import { TEST_DICTIONARY } from '@app/constants/dictionary-tests-const';
 import { INVALID_PLAYER_ID_FOR_GAME } from '@app/constants/services-errors';
 import BoardService from '@app/services/board-service/board.service';
 import ObjectivesService from '@app/services/objective-service/objective.service';
+import { GameVisibility } from '@common/models/game-visibility';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import * as chai from 'chai';
 import { assert } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -24,6 +26,7 @@ import * as spies from 'chai-spies';
 import * as sinon from 'sinon';
 import { createStubInstance, SinonStub, SinonStubbedInstance, stub } from 'sinon';
 import { Container } from 'typedi';
+import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import Game from './game';
 import { ReadyGameConfig, StartGameData } from './game-config';
 const expect = chai.expect;
@@ -38,11 +41,16 @@ const DEFAULT_PLAYER_1_ID = '1';
 const DEFAULT_PLAYER_2_ID = '2';
 const DEFAULT_PLAYER_3_ID = '3';
 const DEFAULT_PLAYER_4_ID = '4';
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
+const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
+
 const NEW_PLAYER_ID = 'newid';
-const DEFAULT_PLAYER_1 = new Player(DEFAULT_PLAYER_1_ID, 'player1');
-const DEFAULT_PLAYER_2 = new Player(DEFAULT_PLAYER_2_ID, 'player2');
-const DEFAULT_PLAYER_3 = new Player(DEFAULT_PLAYER_3_ID, 'player3');
-const DEFAULT_PLAYER_4 = new Player(DEFAULT_PLAYER_4_ID, 'player4');
+const DEFAULT_PLAYER_1 = new Player(DEFAULT_PLAYER_1_ID, USER1);
+const DEFAULT_PLAYER_2 = new Player(DEFAULT_PLAYER_2_ID, USER2);
+const DEFAULT_PLAYER_3 = new Player(DEFAULT_PLAYER_3_ID, USER3);
+const DEFAULT_PLAYER_4 = new Player(DEFAULT_PLAYER_4_ID, USER4);
 const DEFAULT_VIRTUAL_PLAYER_ID = 'virtualplayerid';
 const DEFAULT_VIRTUAL_PLAYER = new BeginnerVirtualPlayer(DEFAULT_VIRTUAL_PLAYER_ID, 'virtualplayername');
 
@@ -52,6 +60,9 @@ const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     player3: DEFAULT_PLAYER_3,
     player4: DEFAULT_PLAYER_4,
     maxRoundTime: 1,
+    dictionarySummary: {} as unknown as DictionarySummary,
+    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+    gameVisibility: GameVisibility.Public,
 };
 const DEFAULT_TILE: Tile = { letter: 'A', value: 1 };
 const DEFAULT_TILE_2: Tile = { letter: 'B', value: 5 };
@@ -87,12 +98,8 @@ describe('Game', () => {
 
     describe('createGame', () => {
         let game: Game;
-        let objectiveInitspy: sinon.SinonSpy;
 
         beforeEach(async () => {
-            objectiveInitspy = sinon.stub(Game.prototype, <any>'initializeObjectives').callsFake(() => {
-                return;
-            });
             game = await Game.createGame(DEFAULT_GAME_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG);
         });
 
@@ -116,10 +123,6 @@ describe('Game', () => {
 
         it('should init TileReserve', () => {
             expect(game['tileReserve'].isInitialized()).to.be.true;
-        });
-
-        it('should call initializeObjectives', () => {
-            sinon.assert.called(objectiveInitspy);
         });
 
         it('should give players their tiles', () => {
@@ -444,10 +447,10 @@ describe('Game', () => {
             player3Stub = createStubInstance(Player);
             player4Stub = createStubInstance(Player);
             game.roundManager = roundManagerStub as unknown as RoundManager;
-            player1Stub.name = 'Lucky Luke';
-            player2Stub.name = 'Dalton';
-            player3Stub.name = 'Averell';
-            player4Stub.name = 'Rantanplan';
+            player1Stub.publicUser = USER1;
+            player2Stub.publicUser = USER2;
+            player3Stub.publicUser = USER3;
+            player4Stub.publicUser = USER4;
             player1Stub.id = DEFAULT_PLAYER_1_ID;
             player2Stub.id = DEFAULT_PLAYER_2_ID;
             player3Stub.id = DEFAULT_PLAYER_3_ID;
@@ -531,10 +534,6 @@ describe('Game', () => {
         const PLAYER_2_SCORE = 40;
         const PLAYER_3_SCORE = 60;
         const PLAYER_4_SCORE = 80;
-        const PLAYER_1_NAME = 'Lucky Luke';
-        const PLAYER_2_NAME = 'Joe Dalton';
-        const PLAYER_3_NAME = 'Jack Dalton';
-        const PLAYER_4_NAME = 'William Dalton';
         const PLAYER_1_TILE_SCORE = 6;
         const PLAYER_2_TILE_SCORE = 14;
         const PLAYER_3_TILE_SCORE = 24;
@@ -548,10 +547,10 @@ describe('Game', () => {
             player3Stub = createStubInstance(Player);
             player4Stub = createStubInstance(Player);
             game.roundManager = roundManagerStub as unknown as RoundManager;
-            player1Stub.name = PLAYER_1_NAME;
-            player2Stub.name = PLAYER_2_NAME;
-            player3Stub.name = PLAYER_3_NAME;
-            player4Stub.name = PLAYER_4_NAME;
+            player1Stub.publicUser = USER1;
+            player2Stub.publicUser = USER2;
+            player3Stub.publicUser = USER3;
+            player4Stub.publicUser = USER4;
             player1Stub.id = DEFAULT_PLAYER_1_ID;
             player2Stub.id = DEFAULT_PLAYER_2_ID;
             player3Stub.id = DEFAULT_PLAYER_3_ID;
@@ -677,10 +676,10 @@ describe('Game', () => {
             player2Stub = createStubInstance(Player);
             player3Stub = createStubInstance(Player);
             player4Stub = createStubInstance(Player);
-            player1Stub.name = 'Darth Vader';
-            player2Stub.name = 'Obi Wan Kenobi';
-            player3Stub.name = 'Princess Padme';
-            player4Stub.name = 'General Grievious';
+            player1Stub.publicUser = USER1;
+            player2Stub.publicUser = USER2;
+            player3Stub.publicUser = USER3;
+            player4Stub.publicUser = USER4;
             game.player1 = player1Stub as unknown as Player;
             game.player2 = player2Stub as unknown as Player;
             game.player3 = player3Stub as unknown as Player;
@@ -689,7 +688,7 @@ describe('Game', () => {
             player2Stub.endGameMessage.returns(PLAYER_2_END_GAME_MESSAGE);
             player3Stub.endGameMessage.returns(PLAYER_3_END_GAME_MESSAGE);
             player4Stub.endGameMessage.returns(PLAYER_4_END_GAME_MESSAGE);
-            computeWinnersSpy = stub(game, <any>'computeWinners').returns([player1Stub.name]);
+            computeWinnersSpy = stub(game, <any>'computeWinners').returns([player1Stub.publicUser.username]);
         });
 
         it('should call the messages', () => {
@@ -712,10 +711,7 @@ describe('Game', () => {
         let player2Stub: SinonStubbedInstance<Player>;
         let player3Stub: SinonStubbedInstance<Player>;
         let player4Stub: SinonStubbedInstance<Player>;
-        const PLAYER_1_NAME = 'VINCENT';
-        const PLAYER_2_NAME = 'MATHILDE';
-        const PLAYER_3_NAME = '20100';
-        const PLAYER_4_NAME = 'MATH~';
+
         const HIGHER_SCORE = 100;
         const LOWER_SCORE = 1;
 
@@ -725,10 +721,10 @@ describe('Game', () => {
             player2Stub = createStubInstance(Player);
             player3Stub = createStubInstance(Player);
             player4Stub = createStubInstance(Player);
-            player1Stub.name = PLAYER_1_NAME;
-            player2Stub.name = PLAYER_2_NAME;
-            player3Stub.name = PLAYER_3_NAME;
-            player4Stub.name = PLAYER_4_NAME;
+            player1Stub.publicUser = USER1;
+            player2Stub.publicUser = USER2;
+            player3Stub.publicUser = USER3;
+            player4Stub.publicUser = USER4;
             player1Stub.id = DEFAULT_PLAYER_1_ID;
             player2Stub.id = DEFAULT_PLAYER_2_ID;
             player3Stub.id = DEFAULT_PLAYER_3_ID;
@@ -744,7 +740,7 @@ describe('Game', () => {
             player2Stub.score = LOWER_SCORE;
             player3Stub.score = LOWER_SCORE;
             player4Stub.score = LOWER_SCORE;
-            const expected = [PLAYER_1_NAME];
+            const expected = [USER1.username];
             expect(game['computeWinners']()).to.deep.equal(expected);
         });
         it('should congratulate player 2 if he has a higher score ', () => {
@@ -752,7 +748,7 @@ describe('Game', () => {
             player2Stub.score = HIGHER_SCORE;
             player3Stub.score = LOWER_SCORE;
             player4Stub.score = LOWER_SCORE;
-            const expected = [PLAYER_2_NAME];
+            const expected = [USER2.username];
             expect(game['computeWinners']()).to.deep.equal(expected);
         });
         it('should congratulate player 1 and player 2 if they are tied ', () => {
@@ -760,7 +756,7 @@ describe('Game', () => {
             player2Stub.score = HIGHER_SCORE;
             player3Stub.score = LOWER_SCORE;
             player4Stub.score = LOWER_SCORE;
-            const expected = [PLAYER_1_NAME, PLAYER_2_NAME];
+            const expected = [USER1.username, USER2.username];
             expect(game['computeWinners']()).to.deep.equal(expected);
         });
     });
@@ -799,14 +795,10 @@ describe('Game', () => {
         const PLAYER_2_ID = 'player2Id';
         const PLAYER_3_ID = 'player3Id';
         const PLAYER_4_ID = 'player4Id';
-        const PLAYER_1_NAME = 'player1Name';
-        const PLAYER_2_NAME = 'player2Name';
-        const PLAYER_3_NAME = 'player3Name';
-        const PLAYER_4_NAME = 'player4Name';
-        const PLAYER_1 = new Player(PLAYER_1_ID, PLAYER_1_NAME);
-        const PLAYER_2 = new Player(PLAYER_2_ID, PLAYER_2_NAME);
-        const PLAYER_3 = new Player(PLAYER_3_ID, PLAYER_3_NAME);
-        const PLAYER_4 = new Player(PLAYER_4_ID, PLAYER_4_NAME);
+        const PLAYER_1 = new Player(PLAYER_1_ID, USER1);
+        const PLAYER_2 = new Player(PLAYER_2_ID, USER2);
+        const PLAYER_3 = new Player(PLAYER_3_ID, USER3);
+        const PLAYER_4 = new Player(PLAYER_4_ID, USER4);
         const DEFAULT_TIME = 60;
         DEFAULT_MAP = new Map<LetterValue, number>([
             ['A', 1],
@@ -854,7 +846,6 @@ describe('Game', () => {
                 player3: game.player3.convertToPlayerData(),
                 player4: game.player4.convertToPlayerData(),
                 maxRoundTime: DEFAULT_TIME,
-                dictionary: TEST_DICTIONARY,
                 gameId: DEFAULT_GAME_ID,
                 board: game.board.grid,
                 tileReserve: TILE_RESERVE_DATA,
@@ -866,7 +857,7 @@ describe('Game', () => {
 
     describe('getPlayerNumber', () => {
         let game: Game;
-        const invalidPlayer = new Player('invalid', 'invalid');
+        const invalidPlayer = new Player('invalid', { username: 'invalid', email: '', avatar: '' });
         beforeEach(() => {
             game = new Game(DEFAULT_GAME_CHANNEL_ID);
             game.player1 = DEFAULT_PLAYER_1;
@@ -885,6 +876,17 @@ describe('Game', () => {
 
         it('should throw if given an invalid player', () => {
             expect(() => game.getPlayerNumber(invalidPlayer)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
+        });
+    });
+
+    describe('getGroupChannelId', () => {
+        let game: Game;
+        beforeEach(() => {
+            game = new Game(DEFAULT_GAME_CHANNEL_ID);
+        });
+
+        it('should return the correct number', () => {
+            expect(game.getGroupChannelId()).to.equal(DEFAULT_GAME_CHANNEL_ID);
         });
     });
 });

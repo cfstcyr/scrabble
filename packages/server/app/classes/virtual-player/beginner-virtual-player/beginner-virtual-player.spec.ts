@@ -8,7 +8,6 @@ import { ActionData } from '@app/classes/communication/action-data';
 import Game from '@app/classes/game/game';
 import { AbstractWordFinding, ScoredWordPlacement, WordFindingUseCase } from '@app/classes/word-finding';
 import {
-    BEGINNER_NAME_SUFFIX,
     HIGH_SCORE_RANGE_MAX,
     HIGH_SCORE_RANGE_MIN,
     LOW_SCORE_RANGE_MAX,
@@ -61,11 +60,6 @@ describe('BeginnerVirtualPlayer', () => {
 
     it('should create', () => {
         expect(beginnerVirtualPlayer).to.exist;
-    });
-
-    it('should add suffix to beginner player name', () => {
-        const givenName = 'Cornichon';
-        expect(new BeginnerVirtualPlayer('game id', givenName).name).to.equal(givenName + BEGINNER_NAME_SUFFIX);
     });
 
     describe('isExchangePossible', () => {

@@ -42,7 +42,6 @@ export class GameDispatcherService {
         return this.groupsRoom;
     }
 
-    // TODO: Remove this. Currently a hack to debug 4player
     getVirtualPlayerService(): VirtualPlayerService {
         return this.virtualPlayerService;
     }

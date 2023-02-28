@@ -17,11 +17,13 @@ import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
 import { Square } from '@app/classes/square';
 import { TileReserve } from '@app/classes/tile';
+import { ConnectedUser } from '@app/classes/user/connected-user';
 import { CONTENT_REQUIRED, SENDER_REQUIRED } from '@app/constants/controllers-errors';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
 import { COMMAND_IS_INVALID, INVALID_COMMAND, INVALID_WORD } from '@app/constants/services-errors';
 import { VIRTUAL_PLAYER_ID_PREFIX } from '@app/constants/virtual-player-constants';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { GamePlayService } from '@app/services/game-play-service/game-play.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { SocketService } from '@app/services/socket-service/socket.service';
@@ -44,13 +46,15 @@ const expect = chai.expect;
 chai.use(spies);
 chai.use(chaiAsPromised);
 
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const DEFAULT_PLAYER_ID = 'id';
 const DEFAULT_GAME_ID = 'gameId';
-const DEFAULT_PLAYER_ID = 'playerId';
 const DEFAULT_DATA: ActionData = { type: ActionType.EXCHANGE, payload: { tiles: [] }, input: '' };
 const DEFAULT_EXCEPTION = 'exception';
 const DEFAULT_FEEDBACK: FeedbackMessage = { message: 'this is a feedback' };
-const DEFAULT_PLAYER_1 = new Player('player-1', 'Player 1');
-const DEFAULT_PLAYER_2 = new Player('player-2', 'Player 2');
+const DEFAULT_PLAYER_1 = new Player('player-1', USER1);
+const DEFAULT_PLAYER_2 = new Player('player-2', USER2);
 const DEFAULT_SQUARE_1: Square = { tile: null, position: new Position(0, 0), scoreMultiplier: null, wasMultiplierUsed: false, isCenter: false };
 const DEFAULT_BOARD: Square[][] = [
     [
@@ -76,11 +80,14 @@ const DEFAULT_ROUND_DATA: RoundData = {
 const DEFAULT_VIRTUAL_PLAYER_TURN_DATA: GameUpdateData = {
     round: DEFAULT_ROUND_DATA,
 };
+const DEFAULT_USER_ID = 1;
+const DEFAULT_SOCKETID_ID = 'SocketID';
 
 describe('GamePlayController', () => {
     let socketServiceStub: SinonStubbedInstance<SocketService>;
     let gamePlayServiceStub: SinonStubbedInstance<GamePlayService>;
     let activeGameServiceStub: SinonStubbedInstance<ActiveGameService>;
+    let authentificationServiceStub: SinonStubbedInstance<AuthentificationService>;
     let gamePlayController: GamePlayController;
     let testingUnit: ServicesTestingUnit;
 
@@ -96,11 +103,14 @@ describe('GamePlayController', () => {
 
         gamePlayServiceStub = testingUnit.setStubbed(GamePlayService);
         socketServiceStub = testingUnit.setStubbed(SocketService);
+        authentificationServiceStub = testingUnit.setStubbed(AuthentificationService);
         activeGameServiceStub = testingUnit.setStubbed(ActiveGameService);
     });
 
     beforeEach(() => {
         gamePlayController = Container.get(GamePlayController);
+        authentificationServiceStub.connectedUsers = new ConnectedUser();
+        authentificationServiceStub.connectedUsers.connect(DEFAULT_SOCKETID_ID, DEFAULT_USER_ID);
     });
 
     afterEach(() => {
@@ -126,7 +136,8 @@ describe('GamePlayController', () => {
                 chai.spy.on(gamePlayController, 'handlePlayAction', () => {});
 
                 return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/action`)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/action`)
+                    .send({ idUser: DEFAULT_USER_ID })
                     .expect(StatusCodes.NO_CONTENT);
             });
 
@@ -136,7 +147,8 @@ describe('GamePlayController', () => {
                 });
 
                 return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/action`)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/action`)
+                    .send({ idUser: DEFAULT_USER_ID })
                     .expect(StatusCodes.BAD_REQUEST);
             });
 
@@ -144,7 +156,41 @@ describe('GamePlayController', () => {
                 const handlePlayActionSpy = chai.spy.on(gamePlayController, 'handlePlayAction', () => {});
 
                 return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/action`)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/action`)
+                    .send({ idUser: DEFAULT_USER_ID })
+                    .then(() => {
+                        expect(handlePlayActionSpy).to.have.been.called();
+                    });
+            });
+        });
+
+        describe('POST /games/:gameId/players/virtual-player-action', () => {
+            it('should return NO_CONTENT', async () => {
+                chai.spy.on(gamePlayController, 'handlePlayAction', () => {});
+
+                return await supertest(expressApp)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/virtual-player-action`)
+                    .send({ virtualPlayerId: DEFAULT_USER_ID })
+                    .expect(StatusCodes.NO_CONTENT);
+            });
+
+            it('should return BAD_REQUEST on error', async () => {
+                chai.spy.on(gamePlayController, 'handlePlayAction', () => {
+                    throw new HttpException(DEFAULT_EXCEPTION, StatusCodes.BAD_REQUEST);
+                });
+
+                return await supertest(expressApp)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/virtual-player-action`)
+                    .send({ virtualPlayerId: DEFAULT_USER_ID })
+                    .expect(StatusCodes.BAD_REQUEST);
+            });
+
+            it('should call handlePlayAction', async () => {
+                const handlePlayActionSpy = chai.spy.on(gamePlayController, 'handlePlayAction', () => {});
+
+                return await supertest(expressApp)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/virtual-player-action`)
+                    .send({ virtualPlayerId: DEFAULT_USER_ID })
                     .then(() => {
                         expect(handlePlayActionSpy).to.have.been.called();
                     });
@@ -156,7 +202,8 @@ describe('GamePlayController', () => {
                 chai.spy.on(gamePlayController, 'handleNewMessage', () => {});
 
                 return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/message`)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/message`)
+                    .send({ idUser: DEFAULT_USER_ID })
                     .expect(StatusCodes.NO_CONTENT);
             });
 
@@ -166,7 +213,8 @@ describe('GamePlayController', () => {
                 });
 
                 return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/message`)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/message`)
+                    .send({ idUser: DEFAULT_USER_ID })
                     .expect(StatusCodes.BAD_REQUEST);
             });
 
@@ -174,7 +222,8 @@ describe('GamePlayController', () => {
                 const handleNewMessageSpy = chai.spy.on(gamePlayController, 'handleNewMessage', () => {});
 
                 return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/message`)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/message`)
+                    .send({ idUser: DEFAULT_USER_ID })
                     .then(() => {
                         expect(handleNewMessageSpy).to.have.been.called();
                     });
@@ -186,7 +235,8 @@ describe('GamePlayController', () => {
                 chai.spy.on(gamePlayController, 'handleNewError', () => {});
 
                 return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/error`)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/error`)
+                    .send({ idUser: DEFAULT_USER_ID })
                     .expect(StatusCodes.NO_CONTENT);
             });
 
@@ -196,7 +246,8 @@ describe('GamePlayController', () => {
                 });
 
                 return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/error`)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/error`)
+                    .send({ idUser: DEFAULT_USER_ID })
                     .expect(StatusCodes.BAD_REQUEST);
             });
 
@@ -204,7 +255,8 @@ describe('GamePlayController', () => {
                 const handleNewErrorSpy = chai.spy.on(gamePlayController, 'handleNewError', () => {});
 
                 return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/error`)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/players/error`)
+                    .send({ idUser: DEFAULT_USER_ID })
                     .then(() => {
                         expect(handleNewErrorSpy).to.have.been.called();
                     });
@@ -225,8 +277,8 @@ describe('GamePlayController', () => {
             tileReserveStub = createStubInstance(TileReserve);
             boardStub = createStubInstance(Board);
 
-            gameStub.player1 = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_1.name);
-            gameStub.player2 = new Player(DEFAULT_PLAYER_ID + '2', DEFAULT_PLAYER_2.name);
+            gameStub.player1 = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_1.publicUser);
+            gameStub.player2 = new Player(DEFAULT_PLAYER_ID + '2', DEFAULT_PLAYER_2.publicUser);
             boardStub.grid = DEFAULT_BOARD.map((row) => row.map((s) => ({ ...s })));
             gameStub['tileReserve'] = tileReserveStub as unknown as TileReserve;
             gameStub.board = boardStub as unknown as Board;
@@ -480,15 +532,13 @@ describe('GamePlayController', () => {
     describe('handleError', () => {
         let gameStub: SinonStubbedInstance<Game>;
         let delayStub: SinonStub;
-        let resetStub: SinonStub;
-        let gameUpdateSpy: unknown;
 
         beforeEach(() => {
             socketServiceStub = createStubInstance(SocketService);
             (gamePlayController['socketService'] as unknown) = socketServiceStub;
 
             gameStub = createStubInstance(Game);
-            gameStub.getPlayer.returns(new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.name));
+            gameStub.getPlayer.returns(new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.publicUser));
 
             activeGameServiceStub = createStubInstance(ActiveGameService);
             activeGameServiceStub.getGame.returns(gameStub as unknown as Game);
@@ -496,7 +546,6 @@ describe('GamePlayController', () => {
             (gamePlayController['activeGameService'] as unknown) = activeGameServiceStub;
 
             delayStub = stub(Delay, 'for');
-            gameUpdateSpy = chai.spy.on(gamePlayController, 'gameUpdate', () => ({}));
         });
 
         afterEach(() => {
@@ -514,13 +563,6 @@ describe('GamePlayController', () => {
             const getGameSpy = spy.on(gamePlayController['activeGameService'], 'getGame');
             await gamePlayController['handleError'](new Error(INVALID_WORD('word')), '', '', '');
             expect(getGameSpy.called).to.be.not.ok;
-        });
-
-        it('should call update game handleResetObjectives if game is not over', async () => {
-            spy.on(gamePlayController['gamePlayService'], 'isGameOver', () => false);
-            await gamePlayController['handleError'](new Error(INVALID_WORD('word')), '', '', '');
-            expect(resetStub.called).to.be.true;
-            expect(gameUpdateSpy).to.have.been.called();
         });
 
         it('should call emitToSocket if game is not over', async () => {

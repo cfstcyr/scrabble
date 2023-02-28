@@ -5,10 +5,18 @@ import Player from '@app/classes/player/player';
 import WaitingRoom from './waiting-room';
 import { GameConfig } from './game-config';
 import { GAME_ALREADY_FULL } from '@app/constants/classes-errors';
+import { GameVisibility } from '@common/models/game-visibility';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 
 const ID = 'id';
-const DEFAULT_NAME = 'player';
+const ID2 = 'id2';
+const ID3 = 'id3';
+const ID4 = 'id4';
 const DEFAULT_GAME_CHANNEL_ID = 1;
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
+const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
 
 describe('fillNextEmptySpot', () => {
     let room: WaitingRoom;
@@ -16,7 +24,7 @@ describe('fillNextEmptySpot', () => {
 
     beforeEach(() => {
         room = new WaitingRoom({} as unknown as GameConfig, DEFAULT_GAME_CHANNEL_ID);
-        player = new Player(ID, DEFAULT_NAME);
+        player = new Player(ID, USER1);
         player.tiles = [
             { value: 1, letter: 'A' },
             { value: 4, letter: 'B' },
@@ -56,5 +64,85 @@ describe('fillNextEmptySpot', () => {
             room.fillNextEmptySpot(player);
         };
         expect(result).to.throw(GAME_ALREADY_FULL);
+    });
+});
+
+describe('getPlayers', () => {
+    let room: WaitingRoom;
+    let player1: Player;
+    let player2: Player;
+    let player3: Player;
+    let player4: Player;
+
+    beforeEach(() => {
+        player1 = new Player(ID, USER1);
+        room = new WaitingRoom({ player1 } as unknown as GameConfig, DEFAULT_GAME_CHANNEL_ID);
+        player2 = new Player(ID2, USER2);
+        player3 = new Player(ID3, USER3);
+        player4 = new Player(ID4, USER4);
+        player1.tiles = [
+            { value: 1, letter: 'A' },
+            { value: 4, letter: 'B' },
+            { value: 2, letter: 'A' },
+            { value: 4, letter: 'D' },
+        ];
+    });
+
+    it('should get all players', () => {
+        room.joinedPlayer3 = player3;
+        expect(room.getPlayers()).to.deep.equal([player1, player3]);
+    });
+
+    it('should get all players', () => {
+        room.joinedPlayer2 = player2;
+        room.joinedPlayer4 = player4;
+        expect(room.getPlayers()).to.deep.equal([player1, player2, player4]);
+    });
+});
+
+describe('convertToGroup', () => {
+    let room: WaitingRoom;
+    let player1: Player;
+    let player2: Player;
+    let player3: Player;
+    let player4: Player;
+
+    beforeEach(() => {
+        player1 = new Player(ID, USER1);
+        room = new WaitingRoom(
+            {
+                player1,
+                maxRoundTime: 60,
+                gameVisibility: GameVisibility.Private,
+                virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+            } as unknown as GameConfig,
+            DEFAULT_GAME_CHANNEL_ID,
+        );
+        player2 = new Player(ID2, USER2);
+        player3 = new Player(ID3, USER3);
+        player4 = new Player(ID4, USER4);
+        room.joinedPlayer2 = player2;
+        room.joinedPlayer3 = player3;
+        room.joinedPlayer4 = player4;
+        player1.tiles = [
+            { value: 1, letter: 'A' },
+            { value: 4, letter: 'B' },
+            { value: 2, letter: 'A' },
+            { value: 4, letter: 'D' },
+        ];
+    });
+
+    it('should convertToGroup', () => {
+        room.joinedPlayer3 = player3;
+        expect(room.convertToGroup()).to.deep.equal({
+            user1: USER1,
+            user2: USER2,
+            user3: USER3,
+            user4: USER4,
+            maxRoundTime: 60,
+            gameVisibility: GameVisibility.Private,
+            virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+            groupId: room.getId(),
+        });
     });
 });
