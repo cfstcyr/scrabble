@@ -39,6 +39,7 @@ class _ChatManagementState extends State<ChatManagement> {
         myChannels$.add(myChannels);
       });
       print('channel:join: $channel');
+      socketService.socket.emit('channel:init');
     });
     // TODO
     /**
@@ -53,6 +54,7 @@ class _ChatManagementState extends State<ChatManagement> {
         myChannels$.add(channels);
         print('channel:quit: $channel');
       });
+      socketService.socket.emit('channel:init');
     });
 
     // TODO SEE WHAT TO DO WITH THIS OTHERWISE DUPLICATES
@@ -73,11 +75,14 @@ class _ChatManagementState extends State<ChatManagement> {
       setState(() {
         channels = List<Channel>.from(
             channels.map((channel) => Channel.fromJson(channel)));
-        // var unjoinedChannels = Set<Channel>.from(channels)
-        //     .difference(Set<Channel>.from(myChannels))
-        //     .toList();
-        channels$.add(channels);
+        var unjoinedChannels = Set<Channel>.from(channels)
+            .difference(Set<Channel>.from(myChannels))
+            .toList();
+        //TODO :HACK FOR NOW
+        unjoinedChannels.removeWhere((x) => x.name == 'general');
+        channels$.add(unjoinedChannels);
       });
+      socketService.socket.emit('channel:init');
 
       print('channel:history: $channels');
     });
@@ -171,11 +176,14 @@ class _ChatManagementState extends State<ChatManagement> {
                       children: [
                         Text(myChannels$.value[index].name),
                         IconButton(
-                          onPressed: () {
-                            setState(() {
-                              quitChannel(myChannels$.value[index].idChannel);
-                            });
-                          },
+                          onPressed: myChannels$.value[index].canQuit
+                              ? () {
+                                  setState(() {
+                                    quitChannel(
+                                        myChannels$.value[index].idChannel);
+                                  });
+                                }
+                              : null,
                           icon: Icon(Icons.highlight_remove_outlined),
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.grey.shade200,
@@ -215,15 +223,12 @@ class _ChatManagementState extends State<ChatManagement> {
                           children: [
                             Text(channels$.value[index].name),
                             IconButton(
-                              onPressed: channels$.value[index].canQuit
-                                  ? () {
-                                      setState(() {
-                                        quitChannel(
-                                            channels$.value[index].idChannel);
-                                      });
-                                    }
-                                  : null,
-                              icon: Icon(Icons.highlight_remove_outlined),
+                              onPressed: () {
+                                setState(() {
+                                  joinChannel(channels$.value[index].idChannel);
+                                });
+                              },
+                              icon: Icon(Icons.add),
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.grey.shade200,
                                   foregroundColor: Colors.green.shade900,
