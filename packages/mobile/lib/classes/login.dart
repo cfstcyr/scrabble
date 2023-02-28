@@ -19,11 +19,13 @@ class LoginData {
 
 class LoginResponse {
   UserSession? userSession;
-  bool authorized;
+  bool isAuthorized;
   String errorMessage;
 
   LoginResponse(
-      {this.userSession, required this.authorized, required this.errorMessage});
+      {this.userSession,
+      required this.isAuthorized,
+      required this.errorMessage});
 }
 
 enum TokenValidation {
