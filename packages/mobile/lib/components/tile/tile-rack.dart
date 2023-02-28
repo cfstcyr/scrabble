@@ -140,10 +140,6 @@ class TileRack extends StatelessWidget {
                           height: height,
                           width: width,
                         );
-                  // : SizedBox(
-                  //     height: height,
-                  //     width: width,
-                  //   );
                 },
               );
             });

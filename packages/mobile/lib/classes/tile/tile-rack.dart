@@ -11,16 +11,6 @@ class TileRack {
     return _tiles.stream;
   }
 
-  subscribe(
-    void Function(List<Tile>)? onData, {
-    Function? onError,
-    void Function()? onDone,
-    bool? cancelOnError,
-  }) {
-    _tiles.stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-  }
-
   setTiles(List<Tile> tiles) {
     _tiles.add(tiles);
   }
