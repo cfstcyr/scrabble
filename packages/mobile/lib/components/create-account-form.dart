@@ -11,7 +11,6 @@ import '../constants/create-account-constants.dart';
 import '../controllers/account-authentification-controller.dart';
 import '../main.dart';
 import '../pages/home-page.dart';
-import '../services/authentification-service.dart';
 
 class CreateAccountForm extends StatefulWidget {
   @override
@@ -24,7 +23,6 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  AuthentificationService accountService = getIt.get<AuthentificationService>();
   AccountAuthenticationController accountController =
       getIt.get<AccountAuthenticationController>();
 
@@ -245,7 +243,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
       setState(() {
         emailHandler.errorMessage = EMAIL_INVALID_FORMAT_FR;
       });
-    } else if (!await accountService
+    } else if (!await accountController
         .isEmailUnique(emailHandler.controller.text)) {
       setState(() {
         emailHandler.errorMessage = EMAIL_ALREADY_USED_FR;
@@ -266,7 +264,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
       setState(() {
         usernameHandler.errorMessage = USERNAME_INVALID_FORMAT_FR;
       });
-    } else if (!await accountService
+    } else if (!await accountController
         .isUsernameUnique(usernameHandler.controller.text)) {
       setState(() {
         usernameHandler.errorMessage = USERNAME_ALREADY_USED_FR;

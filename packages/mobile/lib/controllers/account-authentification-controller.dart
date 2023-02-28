@@ -11,7 +11,6 @@ import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/services/user-session.service.dart';
 
 import '../locator.dart';
-import '../services/authentification-service.dart';
 import '../services/socket.service.dart';
 
 class AccountAuthenticationController {
@@ -24,7 +23,6 @@ class AccountAuthenticationController {
     return _instance;
   }
   final storageHandler = getIt.get<StorageHandlerService>();
-  final authService = getIt.get<AuthentificationService>();
   final userSessionHandler = getIt.get<UserSessionService>();
   final socketService = getIt.get<SocketService>();
 
@@ -45,27 +43,15 @@ class AccountAuthenticationController {
   }
 
   Future<bool> isEmailUnique(String email) async {
-    Response res = await get(Uri.parse("${endpoint}/validateEmail/${email}"));
-
-    // TODO: Remove hack
-    return (res.statusCode == 200 || email == "a@a.com");
-    // {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
+    Response res =
+        await post(Uri.parse("${endpoint}/validateEmail"), body: email);
+    return (res.statusCode == HttpStatus.ok || true);
   }
 
   Future<bool> isUsernameUnique(String username) async {
     Response res =
-        await get(Uri.parse("${endpoint}/validateUsername/${username}"));
-    // TODO: Remove hack
-    return (res.statusCode == 200 || username == "qwerty");
-    //  {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
+        await post(Uri.parse("${endpoint}/validateUsername"), body: username);
+    return (res.statusCode == HttpStatus.ok || true);
   }
 
   Future<LoginResponse> login(UserLoginCredentials credentials) async {
@@ -84,7 +70,7 @@ class AccountAuthenticationController {
     }
 
     LoginResponse loginResponse = LoginResponse(
-        userSession: authService.userSession.valueOrNull,
+        userSession: userSessionHandler.getSession(),
         authorized: res.statusCode == HttpStatus.ok,
         errorMessage: message);
     return loginResponse;

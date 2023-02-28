@@ -1,6 +1,5 @@
 import 'package:get_it/get_it.dart';
 import 'package:mobile/controllers/channel.controller.dart';
-import 'package:mobile/services/authentification-service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/storage.handler.dart';
@@ -17,8 +16,6 @@ void setUpLocator() {
       () => StorageHandlerService());
   getIt.registerLazySingleton<UserService>(() => UserService());
   getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
-  getIt.registerLazySingleton<AuthentificationService>(
-      () => AuthentificationService());
   getIt.registerLazySingleton<AccountAuthenticationController>(
       () => AccountAuthenticationController());
   getIt.registerLazySingleton<ChannelController>(() => ChannelController());

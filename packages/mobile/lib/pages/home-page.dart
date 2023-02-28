@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/chatbox.dart';
 
 import '../components/invalid-connection-popup.dart';
+import '../controllers/account-authentification-controller.dart';
 import '../locator.dart';
 import '../main.dart';
-import '../services/authentification-service.dart';
 
 class HomePage extends StatelessWidget {
-  final authService = getIt.get<AuthentificationService>();
+  final AccountAuthenticationController authService =
+      getIt.get<AccountAuthenticationController>();
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -37,7 +38,7 @@ class HomePage extends StatelessWidget {
               SizedBox(width: 10),
               ElevatedButton(
                 onPressed: () {
-                  authService.signout();
+                  authService.signOut();
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => MainPage()));
                 },
