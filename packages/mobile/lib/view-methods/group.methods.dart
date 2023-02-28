@@ -25,7 +25,7 @@ Stream<List<Group>> get groupStream {
 void handleGroupsUpdate(dynamic newGroupsJson) {
   List<Group> receivedGroups = List<Group>.from(
       newGroupsJson.map((dynamic group) => Group.fromJson(group)).toList());
-  groups$.add([...groups$.value, ...receivedGroups]);
+  groups$.add(receivedGroups);
 }
 
 Subject<Group> acceptedJoinRequest$ = BehaviorSubject();
