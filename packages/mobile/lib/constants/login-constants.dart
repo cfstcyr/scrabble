@@ -4,3 +4,4 @@ const String ALREADY_LOGGED_IN_FR =
     "Utilisateur déjà connecté, veuillez réesayer plus tard";
 const String LOGIN_FAILED = "Identifiants invalides, veuillez réessayer";
 const String AUTHORIZED = "Connecté";
+const String SIGNOUT_LABEL_FR = "Se déconnecter";
