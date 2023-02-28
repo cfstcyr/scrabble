@@ -1,19 +1,19 @@
 import { ServerSocket } from '@app/classes/communication/socket-type';
+import { HttpException } from '@app/classes/http-exception/http-exception';
+import { SocketId, UserId } from '@app/classes/user/connected-user-types';
 import { DEFAULT_CHANNELS } from '@app/constants/chat';
 import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
+import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
+import { SocketService } from '@app/services/socket-service/socket.service';
+import { getSocketNameFromChannel } from '@app/utils/socket';
 import { Channel, ChannelCreation } from '@common/models/chat/channel';
 import { ChannelMessage } from '@common/models/chat/chat-message';
+import { User } from '@common/models/user';
+import { TypeOfId } from '@common/types/id';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { TypeOfId } from '@common/types/id';
-import { getSocketNameFromChannel } from '@app/utils/socket';
-import { SocketService } from '@app/services/socket-service/socket.service';
-import { HttpException } from '@app/classes/http-exception/http-exception';
-import { User } from '@common/models/user';
-import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { SocketId, UserId } from '@app/classes/user/connected-user-types';
-import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
 
 @Service()
 export class ChatService {
@@ -35,6 +35,7 @@ export class ChatService {
     configureSocket(socket: ServerSocket): void {
         socket.on('channel:newMessage', async (channelMessage: ChannelMessage) => {
             try {
+                // eslint-disable-next-line no-console
                 await this.handleSendMessage(channelMessage, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
@@ -42,6 +43,8 @@ export class ChatService {
         });
         socket.on('channel:newChannel', async (channel: ChannelCreation) => {
             try {
+                // eslint-disable-next-line no-console
+                console.log('ServER', channel);
                 await this.handleCreateChannel(channel, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
@@ -64,6 +67,15 @@ export class ChatService {
         socket.on('channel:init', async () => {
             try {
                 await this.initChannelsForSocket(socket);
+            } catch (error) {
+                SocketService.handleError(error, socket);
+            }
+        });
+
+        socket.on('channel:allChannels', async () => {
+            try {
+                const channels = await this.chatPersistenceService.getChannels();
+                socket.emit('channel:allChannels', channels);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
@@ -135,7 +147,7 @@ export class ChatService {
     }
 
     private async handleJoinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
-        const user: User = socket.data.user;
+        // const user: User = socket.data.user;
         const channel = await this.chatPersistenceService.getChannel(idChannel);
         const channelHistory = await this.chatHistoryService.getChannelHistory(idChannel);
 
@@ -149,7 +161,7 @@ export class ChatService {
 
         // This method is used to subscribe to a channel of join an already subscribed channel.
         // We only need to add to the table if not already there.
-        await this.chatPersistenceService.joinChannel(idChannel, user.idUser);
+        // await this.chatPersistenceService.joinChannel(idChannel, user.idUser);
 
         socket.join(getSocketNameFromChannel(channel));
         socket.emit('channel:join', channel);
@@ -157,7 +169,7 @@ export class ChatService {
     }
 
     private async handleQuitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
-        const user: User = socket.data.user;
+        // const user: User = socket.data.user;
         const channel = await this.chatPersistenceService.getChannel(idChannel);
 
         if (!channel) {
@@ -168,7 +180,7 @@ export class ChatService {
             socket.leave(getSocketNameFromChannel(channel));
         }
 
-        await this.chatPersistenceService.leaveChannel(idChannel, user.idUser);
+        // await this.chatPersistenceService.leaveChannel(idChannel, user.idUser);
 
         socket.emit('channel:quit', channel);
     }
@@ -179,5 +191,6 @@ export class ChatService {
         await Promise.all(
             (await this.chatPersistenceService.getUserChannelIds(user.idUser)).map(async (idChannel) => this.handleJoinChannel(idChannel, socket)),
         );
+        socket.emit('channel:init');
     }
 }

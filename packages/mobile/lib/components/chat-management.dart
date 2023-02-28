@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/channel.dart';
+import 'package:mobile/components/chatbox.dart';
+import 'package:mobile/constants/chat-management.constants.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../locator.dart';
@@ -12,16 +14,15 @@ class ChatManagement extends StatefulWidget {
   State<ChatManagement> createState() => _ChatManagementState();
 }
 
-List<Channel> channels = [
-  Channel(idChannel: 1, name: 'general', canQuit: false, private: false)
-];
-List<Channel> myChannels = [
-  Channel(idChannel: 1, name: 'general', canQuit: false, private: false)
-];
+List<Channel> channels = [DEFAULT_CHANNEL];
+List<Channel> myChannels = [DEFAULT_CHANNEL];
 BehaviorSubject<List<Channel>> channels$ =
     BehaviorSubject<List<Channel>>.seeded(channels);
 BehaviorSubject<List<Channel>> myChannels$ =
     BehaviorSubject<List<Channel>>.seeded(myChannels);
+BehaviorSubject<bool> shouldOpen$ = BehaviorSubject<bool>.seeded(false);
+BehaviorSubject<Channel> lastJoinedChannel$ =
+    BehaviorSubject<Channel>.seeded(channels[0]);
 
 class _ChatManagementState extends State<ChatManagement> {
   SocketService socketService = getIt.get<SocketService>();
@@ -32,14 +33,23 @@ class _ChatManagementState extends State<ChatManagement> {
     // _listenMessages();
   }
 
+  //hack allows for drawer open after closing
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Future<void> configureSockets() async {
     socketService.socket.on('channel:join', (channel) {
       setState(() {
         myChannels.add(Channel.fromJson(channel));
         myChannels$.add(myChannels);
+        // TODO APRES RACHAD if (shouldOpen$.value)
+        Scaffold.of(context).openDrawer();
       });
       print('channel:join: $channel');
-      socketService.socket.emit('channel:init');
     });
     // TODO
     /**
@@ -54,7 +64,6 @@ class _ChatManagementState extends State<ChatManagement> {
         myChannels$.add(channels);
         print('channel:quit: $channel');
       });
-      socketService.socket.emit('channel:init');
     });
 
     // TODO SEE WHAT TO DO WITH THIS OTHERWISE DUPLICATES
@@ -63,12 +72,16 @@ class _ChatManagementState extends State<ChatManagement> {
     //     channels.add(Channel.fromJson(channel));
     //     channels$.add(channels);
     //   });
-
     //   print('channel:newChannel: $channel');
     // });
 
     socketService.socket.on('channel:history', (channel) {
       print('channel:history: $channel');
+    });
+
+    socketService.socket.on('channel:init', (s) {
+      shouldOpen$.add(true);
+      print('channel:init is done $s');
     });
 
     socketService.socket.on('channel:allChannels', (channels) {
@@ -82,7 +95,8 @@ class _ChatManagementState extends State<ChatManagement> {
         unjoinedChannels.removeWhere((x) => x.name == 'general');
         channels$.add(unjoinedChannels);
       });
-      socketService.socket.emit('channel:init');
+
+      //TODO CHECK IF RETURN FROM INIT GIVES JOINED CHANNELS -- i would need a channel:init done from server
 
       print('channel:history: $channels');
     });
@@ -113,134 +127,147 @@ class _ChatManagementState extends State<ChatManagement> {
   }
 
   var inputController = TextEditingController();
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      // Important: Remove any padding from the ListView.
-      padding: EdgeInsets.zero,
-      children: [
-        SizedBox(
-          height: 90,
-          child: DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.grey.shade500,
-            ),
-            child: Text('Canaux de discussions'),
-          ),
+    return Scaffold(
+      key: _scaffoldKey,
+      endDrawerEnableOpenDragGesture: false,
+      endDrawer: Drawer(child: ChatPage(channel: DEFAULT_CHANNEL)),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.settings),
+          onPressed: () => _scaffoldKey.currentState!.openEndDrawer(),
         ),
-        Padding(
-          padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 0, bottom: 0),
-          child: TextFormField(
-            controller: inputController,
-            onFieldSubmitted: (field) {
-              setState(() {
-                inputController.clear();
-                createChannel(field);
-              });
-            },
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Créer un canal',
+      ),
+      body: ListView(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        children: [
+          SizedBox(
+            height: 90,
+            child: DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade500,
+              ),
+              child: Text('Canaux de discussions'),
             ),
           ),
-        ),
-        // TODO JOIN CHANNEL
-        // ElevatedButton.icon(
-        //   onPressed: () {
-        //       // TODO
-        //     openChannel(channel)
-        //   },
-        //   icon: Icon(Icons.add),
-        //   label: Text('Créer un canal'),
-        //   style: ElevatedButton.styleFrom(
-        //       backgroundColor: Colors.white,
-        //       fixedSize: Size(70, 70),
-        //       surfaceTintColor: Colors.white,
-        //       foregroundColor: Colors.black,
-        //       shape: BeveledRectangleBorder(
-        //           borderRadius: BorderRadius.all(Radius.circular(2)))),
-        // ),
-        ListTile(
-          title: const Text('Mes canaux'),
-        ),
-        Container(
-            child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: myChannels$.value.length,
-                itemBuilder: (_, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Text(myChannels$.value[index].name),
-                        IconButton(
-                          onPressed: myChannels$.value[index].canQuit
-                              ? () {
+          Padding(
+            padding:
+                EdgeInsets.only(left: 15.0, right: 15.0, top: 0, bottom: 0),
+            child: TextFormField(
+              controller: inputController,
+              onFieldSubmitted: (field) {
+                setState(() {
+                  inputController.clear();
+                  createChannel(field);
+                });
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Créer un canal',
+              ),
+            ),
+          ),
+          // TODO JOIN CHANNEL
+          // ElevatedButton.icon(
+          //   onPressed: () {
+          //       // TODO
+          //     openChannel(channel)
+          //   },
+          //   icon: Icon(Icons.add),
+          //   label: Text('Créer un canal'),
+          //   style: ElevatedButton.styleFrom(
+          //       backgroundColor: Colors.white,
+          //       fixedSize: Size(70, 70),
+          //       surfaceTintColor: Colors.white,
+          //       foregroundColor: Colors.black,
+          //       shape: BeveledRectangleBorder(
+          //           borderRadius: BorderRadius.all(Radius.circular(2)))),
+          // ),
+          ListTile(
+            title: const Text('Mes canaux'),
+          ),
+          Container(
+              child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: myChannels$.value.length,
+                  itemBuilder: (_, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Text(myChannels$.value[index].name),
+                          IconButton(
+                            onPressed: myChannels$.value[index].canQuit
+                                ? () {
+                                    setState(() {
+                                      quitChannel(
+                                          myChannels$.value[index].idChannel);
+                                    });
+                                  }
+                                : null,
+                            icon: Icon(Icons.highlight_remove_outlined),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey.shade200,
+                                foregroundColor: Colors.green.shade900,
+                                shape: CircleBorder()),
+                          ),
+                        ],
+                      ),
+                    );
+                  })),
+          Divider(
+            height: 10,
+            thickness: 2,
+            indent: 15,
+            endIndent: 15,
+            color: Colors.grey.shade500,
+          ),
+          ListTile(
+            title: const Text('Tous les canaux'),
+          ),
+          Container(
+              child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: channels$.value.length,
+                  itemBuilder: (_, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0))),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Text(channels$.value[index].name),
+                              IconButton(
+                                onPressed: () {
                                   setState(() {
-                                    quitChannel(
-                                        myChannels$.value[index].idChannel);
+                                    joinChannel(
+                                        channels$.value[index].idChannel);
                                   });
-                                }
-                              : null,
-                          icon: Icon(Icons.highlight_remove_outlined),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey.shade200,
-                              foregroundColor: Colors.green.shade900,
-                              shape: CircleBorder()),
-                        ),
-                      ],
-                    ),
-                  );
-                })),
-        Divider(
-          height: 10,
-          thickness: 2,
-          indent: 15,
-          endIndent: 15,
-          color: Colors.grey.shade500,
-        ),
-        ListTile(
-          title: const Text('Tous les canaux'),
-        ),
-        Container(
-            child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: channels$.value.length,
-                itemBuilder: (_, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(10.0))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Text(channels$.value[index].name),
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  joinChannel(channels$.value[index].idChannel);
-                                });
-                              },
-                              icon: Icon(Icons.add),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.grey.shade200,
-                                  foregroundColor: Colors.green.shade900,
-                                  shape: CircleBorder()),
-                            ),
-                          ],
+                                },
+                                icon: Icon(Icons.add),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.grey.shade200,
+                                    foregroundColor: Colors.green.shade900,
+                                    shape: CircleBorder()),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                })),
-      ],
+                    );
+                  })),
+        ],
+      ),
     );
   }
 }

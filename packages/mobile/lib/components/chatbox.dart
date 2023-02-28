@@ -12,7 +12,8 @@ import '../controllers/channel.controller.dart';
 import '../locator.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final Channel channel;
+  const ChatPage({super.key, required this.channel});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -30,9 +31,6 @@ class _ChatPageState extends State<ChatPage> {
       PublicUser(username: "hardcoded:username", avatar: "hardcoded:avatar");
   final _user = types.User(id: "UserId", firstName: "hardcoded:username");
 
-// TODO: ENLEVER VALEURS HARD CODE
-  final channel =
-      Channel(idChannel: 1, name: "general", canQuit: false, private: false);
   @override
   void initState() {
     super.initState();
@@ -44,7 +42,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Main Channel")),
+      appBar: AppBar(title: Text(widget.channel.name)),
       body: Chat(
         theme: DefaultChatTheme(
           inputBackgroundColor: theme.colorScheme.primary,
@@ -82,7 +80,7 @@ class _ChatPageState extends State<ChatPage> {
         date: DateTime.now().toString(),
       );
 
-      _sendMessage(channel, messageData);
+      _sendMessage(widget.channel, messageData);
       _addMessage(textMessage);
     }
   }
