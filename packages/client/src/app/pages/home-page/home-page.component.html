@@ -16,12 +16,11 @@
     <div class="content">
         <img src="https://bit.ly/3m206ss" alt="Logo Scrabble" />
         <section id="button-group" class="justified">
-            <button mat-flat-button color="primary" routerLink="/group">Rejoindre une partie</button>
-            <button mat-flat-button color="primary" routerLink="/game-creation">Créer une partie</button>
-            <button mat-flat-button color="primary" routerLink="/high-scores">Meilleurs scores</button>
+            <button mat-flat-button color="primary" [routerLink]="routeGroups">Rejoindre une partie</button>
+            <button mat-flat-button color="primary" [routerLink]="routeGameCreation">Créer une partie</button>
         </section>
         <div class="footer-item">
-            <h4 class="team-name">Équipe 212</h4>
+            <h4 class="team-name">Équipe 103</h4>
             <p>
                 <span
                     ><a class="home-tile-name" href="https://www.linkedin.com/in/thomas-tr%C3%A9panier/"

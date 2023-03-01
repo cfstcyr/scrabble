@@ -179,11 +179,8 @@ export class GameDispatcherService {
     }
 
     getAvailableWaitingRooms(): Group[] {
-        const waitingRooms = this.waitingRooms.filter(
-            (group) => group.joinedPlayer2 === undefined || group.joinedPlayer3 === undefined || group.joinedPlayer4 === undefined,
-        );
         const groups: Group[] = [];
-        for (const room of waitingRooms) {
+        for (const room of this.waitingRooms) {
             groups.push(room.convertToGroup());
         }
 

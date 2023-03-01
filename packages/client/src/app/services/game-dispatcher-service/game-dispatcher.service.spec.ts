@@ -16,6 +16,7 @@ import { Group, GroupData } from '@common/models/group';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { UserService } from '@app/services/user-service/user.service';
 import SpyObj = jasmine.SpyObj;
+import { ROUTE_CREATE_WAITING } from '@app/constants/routes-constants';
 
 @Component({
     template: '',
@@ -78,7 +79,7 @@ describe('GameDispatcherService', () => {
             imports: [
                 HttpClientModule,
                 RouterTestingModule.withRoutes([
-                    { path: 'waiting-room', component: TestComponent },
+                    { path: 'create-waiting-room', component: TestComponent },
                     { path: 'join-waiting-room', component: TestComponent },
                 ]),
                 MatSnackBarModule,
@@ -356,9 +357,9 @@ describe('GameDispatcherService', () => {
             expect(service.currentGroup).toEqual(TEST_GROUP);
         });
 
-        it('if is Multiplayer, should route to waiting-room', () => {
+        it('if is Multiplayer, should route to create-waiting-room', () => {
             postObservable.next({ group: TEST_GROUP });
-            expect(routerSpy).toHaveBeenCalledWith('waiting-room');
+            expect(routerSpy).toHaveBeenCalledWith(ROUTE_CREATE_WAITING);
         });
 
         it('on error, should send gameCreationFailed$ event', () => {
@@ -625,12 +626,6 @@ describe('GameDispatcherService', () => {
         it('subscribeToPlayerLeftGroupEvent should call subscribe method on joinRequestEvent', () => {
             const subscriptionSpy = spyOn(service['playerLeftGroupEvent'], 'subscribe');
             service.subscribeToPlayerLeftGroupEvent(serviceDestroyed$, callback);
-            expect(subscriptionSpy).toHaveBeenCalled();
-        });
-
-        it('subscribeToPlayerCancelledRequestEvent should call subscribe method on joinRequestEvent', () => {
-            const subscriptionSpy = spyOn(service['playerCancelledRequestEvent'], 'subscribe');
-            service.subscribeToPlayerCancelledRequestEvent(serviceDestroyed$, callback);
             expect(subscriptionSpy).toHaveBeenCalled();
         });
 

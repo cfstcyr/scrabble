@@ -17,7 +17,7 @@ import { Round } from '@app/classes/round/round';
 import { Timer } from '@app/classes/round/timer';
 import { Tile } from '@app/classes/tile';
 import { DEFAULT_PLAYER } from '@app/constants/game-constants';
-import { ROUTE_HOME } from '@app/constants/routes-constants';
+import { ROUTE_GAME, ROUTE_HOME } from '@app/constants/routes-constants';
 import { INVALID_ROUND_DATA_PLAYER, NO_CURRENT_ROUND } from '@app/constants/services-errors';
 import { ActionService } from '@app/services/action-service/action.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
@@ -555,7 +555,7 @@ describe('RoundManagerService', () => {
 
         it('RoundTimeout should emit endRoundEvent', fakeAsync(() => {
             const router: Router = TestBed.inject(Router);
-            router.navigateByUrl('/game');
+            router.navigateByUrl(ROUTE_GAME);
             tick();
             spyOn<any>(service, 'isActivePlayerLocalPlayer').and.returnValue(true);
 
@@ -565,7 +565,7 @@ describe('RoundManagerService', () => {
 
         it('RoundTimeout should send pass action when local player is active player', fakeAsync(() => {
             const router: Router = TestBed.inject(Router);
-            router.navigateByUrl('/game');
+            router.navigateByUrl(ROUTE_GAME);
             tick();
             spyOn<any>(service, 'isActivePlayerLocalPlayer').and.returnValue(true);
 

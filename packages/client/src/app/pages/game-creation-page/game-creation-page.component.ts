@@ -13,7 +13,6 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class GameCreationPageComponent implements OnDestroy {
     virtualPlayerLevels: typeof VirtualPlayerLevel;
-    playerName: string;
     gameParameters: FormGroup;
 
     isCreatingGame: boolean;
@@ -44,7 +43,6 @@ export class GameCreationPageComponent implements OnDestroy {
 
     onSubmit(): void {
         if (this.isFormValid()) {
-            gameSettings.set('playerName', this.playerName);
             gameSettings.set('timer', this.gameParameters.get('timer')?.value);
             this.createGame();
         }

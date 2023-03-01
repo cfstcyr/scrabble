@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ROUTE_GAME_CREATION, ROUTE_GROUPS } from '@app/constants/routes-constants';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
 import { UNKOWN_USER } from '@common/models/user';
@@ -15,6 +16,8 @@ export class GroupInfoDetailedComponent {
     @Input() roundTime: string;
     @Output() startGame: EventEmitter<void>;
     gameVisibilities = GameVisibility;
+    routeGameCreation = ROUTE_GAME_CREATION;
+    routeGroups = ROUTE_GROUPS;
 
     constructor() {
         this.startGame = new EventEmitter<void>();

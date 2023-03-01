@@ -54,7 +54,7 @@
     </div>
 
     <div *ngIf="isHost" class="button-box">
-        <button id="cancel-button" mat-flat-button class="button" color="primary" routerLink="/game-creation">
+        <button id="cancel-button" mat-flat-button class="button" color="primary" [routerLink]="routeGameCreation">
         <app-icon icon="chevron-left" size="lg"></app-icon>
         Annuler la partie
         
@@ -73,7 +73,7 @@
     </div>
 
     <div *ngIf="!isHost" class="button-box">
-        <button id="cancel-button" mat-flat-button class="button" color="primary" routerLink="/group">
+        <button id="cancel-button" mat-flat-button class="button" color="primary" [routerLink]="routeGroups">
         <app-icon icon="chevron-left" size="lg"></app-icon>
         Quitter la partie
         </button>

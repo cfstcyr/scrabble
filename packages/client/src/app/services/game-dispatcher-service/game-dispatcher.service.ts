@@ -13,6 +13,7 @@ import { takeUntil } from 'rxjs/operators';
 import { UserService } from '@app/services/user-service/user.service';
 import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
+import { ROUTE_CREATE_WAITING } from '@app/constants/routes-constants';
 
 @Injectable({
     providedIn: 'root',
@@ -51,7 +52,7 @@ export default class GameDispatcherService implements OnDestroy {
         this.gameDispatcherController.subscribeToGroupFullEvent(this.serviceDestroyed$, () => this.handleGroupFull());
         this.gameDispatcherController.subscribeToGroupRequestValidEvent(this.serviceDestroyed$, async () =>
             // TODO: Change this to navigate when it is a public game / protected wiht correct password entered
-            // this.router.navigateByUrl('join-waiting-room'),
+            // this.router.navigateByUrl(ROUTE_JOIN_WAITING),
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             {},
         );
@@ -183,7 +184,7 @@ export default class GameDispatcherService implements OnDestroy {
             (response) => {
                 this.currentGroup = response.group;
                 if (this.currentGroup) {
-                    this.router.navigateByUrl('waiting-room');
+                    this.router.navigateByUrl(ROUTE_CREATE_WAITING);
                 }
             },
             (error: HttpErrorResponse) => {

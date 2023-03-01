@@ -482,7 +482,7 @@ describe('GameDispatcherService', () => {
             expect(gameDispatcherService.getAvailableWaitingRooms()).to.have.lengthOf(NTH_GAMES);
         });
 
-        it('should not return games with joined player', () => {
+        it('should all games (even with joined player)', () => {
             const NTH_GAMES = 5;
             const NTH_JOINED = 2;
             gameDispatcherService['waitingRooms'] = [];
@@ -501,7 +501,7 @@ describe('GameDispatcherService', () => {
                 }
             }
 
-            expect(gameDispatcherService.getAvailableWaitingRooms()).to.have.lengthOf(NTH_GAMES - NTH_JOINED);
+            expect(gameDispatcherService.getAvailableWaitingRooms()).to.have.lengthOf(NTH_GAMES);
         });
     });
 

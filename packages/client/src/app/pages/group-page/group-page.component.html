@@ -11,15 +11,15 @@
                 </div>
                 <div class="step-content" id="group-container">
                     <mat-card>
-                        <p *ngIf="numberOfGroups > 0">
-                            Choisissez une partie<span *ngIf="numberOfGroups > 1"> ou rejoignez une partie aléatoire</span>.
+                        <p *ngIf="groups.length > 0">
+                            Choisissez une partie<span *ngIf="groups.length > 1"> ou rejoignez une partie aléatoire</span>.
                         </p>
-                        <p *ngIf="numberOfGroups === 0">Aucune partie disponible.</p>
+                        <p *ngIf="groups.length === 0">Aucune partie disponible.</p>
                         <button
                             mat-flat-button
                             color="primary"
-                            *ngIf="numberOfGroups > 0"
-                            [disabled]="numberOfGroups <= 1"
+                            *ngIf="groups.length > 0"
+                            [disabled]="groups.length <= 1"
                             (click)="joinRandomGroup()"
                         >
                             <app-icon icon="random"></app-icon> Partie aléatoire
@@ -31,9 +31,9 @@
                     <mat-card class="form-container">
                         <div class="info">
                             <p class="title">Filtre</p>
-                            <p class="group-amount" *ngIf="numberOfGroups > 1">{{ numberOfGroups }} parties trouvées</p>
-                            <p class="group-amount" *ngIf="numberOfGroups === 1">{{ numberOfGroups }} partie trouvée</p>
-                            <p class="group-amount" *ngIf="numberOfGroups === 0">Aucune partie trouvée</p>
+                            <p class="group-amount" *ngIf="groups.length > 1">{{ groups.length }} parties trouvées</p>
+                            <p class="group-amount" *ngIf="groups.length === 1">{{ groups.length }} partie trouvée</p>
+                            <p class="group-amount" *ngIf="groups.length === 0">Aucune partie trouvée</p>
                         </div>
                     </mat-card>
 

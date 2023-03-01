@@ -99,7 +99,7 @@
 //                 MatDialogModule,
 //                 NoopAnimationsModule,
 //                 RouterTestingModule.withRoutes([
-//                     { path: 'waiting-room', component: TestComponent },
+//                     { path: 'create-waiting-room', component: TestComponent },
 //                     { path: 'game', component: TestComponent },
 //                 ]),
 //             ],

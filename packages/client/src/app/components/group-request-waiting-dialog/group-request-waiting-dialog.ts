@@ -8,6 +8,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { GroupRequestWaitingDialogParameters } from './group-request-waiting-dialog.types';
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
+import { ROUTE_JOIN_WAITING } from '@app/constants/routes-constants';
 
 @Component({
     selector: 'app-group-request-waiting-dialog',
@@ -63,7 +64,7 @@ export class GroupRequestWaitingDialogComponent implements OnInit, OnDestroy {
     }
 
     private routerChangeMethod(url: string): void {
-        if (url !== '/join-waiting-room') {
+        if (url !== ROUTE_JOIN_WAITING) {
             this.playerLeavesService.handleLeaveGroup();
         }
     }
@@ -71,11 +72,10 @@ export class GroupRequestWaitingDialogComponent implements OnInit, OnDestroy {
     private playerAccepted(group: Group): void {
         this.gameDispatcherService.currentGroup = group;
         this.dialogRef.close();
-        this.router.navigateByUrl('join-waiting-room');
+        this.router.navigateByUrl(ROUTE_JOIN_WAITING);
     }
 
     private playerRejected(): void {
         this.isRejected = true;
-
     }
 }

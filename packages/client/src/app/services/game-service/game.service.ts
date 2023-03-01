@@ -9,6 +9,7 @@ import { Round } from '@app/classes/round/round';
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
+import { ROUTE_GAME } from '@app/constants/routes-constants';
 import { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';
 import BoardService from '@app/services/board-service/board.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
@@ -132,7 +133,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
         if (this.router.url !== '/game') {
             this.roundManager.initializeEvents();
             this.roundManager.startRound();
-            await this.router.navigateByUrl('game');
+            await this.router.navigateByUrl(ROUTE_GAME);
         } else {
             this.reconnectReinitialize(startGameData);
         }

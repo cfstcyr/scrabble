@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/ban-types */
@@ -7,19 +8,88 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IconComponent } from '@app/components/icon/icon.component';
 
 import { RequestingUserContainerComponent } from './requesting-user-container.component';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterTestingModule } from '@angular/router/testing';
+import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { GameDispatcherService } from '@app/services';
+import { PublicUser } from '@common/models/user';
+import { of, Subject } from 'rxjs';
+import SpyObj = jasmine.SpyObj;
+
+@Component({
+    template: '',
+})
+class TestComponent {}
+
+export class MatDialogMock {
+    open() {
+        return {
+            afterClosed: () => of({}),
+        };
+    }
+}
 
 describe('RequestingUserContainerComponent', () => {
     let component: RequestingUserContainerComponent;
     let fixture: ComponentFixture<RequestingUserContainerComponent>;
+    let gameDispatcherServiceSpy: SpyObj<GameDispatcherService>;
+    let gameDispatcherCreationSubject: Subject<HttpErrorResponse>;
+
+    beforeEach(() => {
+        gameDispatcherServiceSpy = jasmine.createSpyObj('GameDispatcherService', [
+            'observeGameCreationFailed',
+            'subscribeToJoinRequestEvent',
+            'subscribeToPlayerCancelledRequestEvent',
+            'subscribeToPlayerLeftGroupEvent',
+            'subscribeToPlayerJoinedGroupEvent',
+            'handleStart',
+            'handleCancelGame',
+            'handleConfirmation',
+            'handleRejection',
+        ]);
+        gameDispatcherCreationSubject = new Subject();
+        gameDispatcherServiceSpy.observeGameCreationFailed.and.returnValue(gameDispatcherCreationSubject.asObservable());
+        gameDispatcherServiceSpy['joinRequestEvent'] = new Subject();
+        gameDispatcherServiceSpy.subscribeToJoinRequestEvent.and.callFake(
+            (componentDestroyed$: Subject<boolean>, callBack: (users: PublicUser[]) => void) => {
+                gameDispatcherServiceSpy['joinRequestEvent'].subscribe(callBack);
+            },
+        );
+        gameDispatcherServiceSpy.handleConfirmation.and.callFake(() => {});
+    });
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [RequestingUserContainerComponent, IconComponent],
-            imports: [HttpClientModule, MatTooltipModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+            imports: [
+                HttpClientTestingModule,
+                MatProgressBarModule,
+                MatCardModule,
+                MatDialogModule,
+                CommonModule,
+                BrowserAnimationsModule,
+                MatSnackBarModule,
+                RouterTestingModule.withRoutes([
+                    { path: 'game-creation', component: TestComponent },
+                    { path: 'create-waiting-room', component: RequestingUserContainerComponent },
+                    { path: 'game', component: TestComponent },
+                ]),
+            ],
+            providers: [
+                { provide: GameDispatcherService, useValue: gameDispatcherServiceSpy },
+                {
+                    provide: MatDialog,
+                    useClass: MatDialogMock,
+                },
+                MatSnackBar,
+            ],
         }).compileComponents();
     });
 

@@ -15,14 +15,12 @@ import { Subject } from 'rxjs';
     styleUrls: ['./group-page.component.scss'],
 })
 export class GroupPageComponent implements OnInit, OnDestroy {
-    numberOfGroups: number;
     groups: Group[];
     private componentDestroyed$: Subject<boolean>;
 
     constructor(public gameDispatcherService: GameDispatcherService, public dialog: MatDialog, private snackBar: MatSnackBar) {
         this.groups = [];
         this.componentDestroyed$ = new Subject();
-        this.numberOfGroups = 0;
     }
 
     ngOnInit(): void {
@@ -58,7 +56,6 @@ export class GroupPageComponent implements OnInit, OnDestroy {
 
     private updateGroups(groups: Group[]): void {
         this.groups = groups;
-        this.numberOfGroups = this.groups.length;
     }
 
     private groupFullDialog(): void {
@@ -89,7 +86,7 @@ export class GroupPageComponent implements OnInit, OnDestroy {
     }
 
     private getRandomGroup(): Group {
-        const filteredGroups = this.groups.filter((group) => group);
+        const filteredGroups = this.groups.filter((group) => group.user2 === undefined || group.user3 === undefined || group.user4 === undefined);
         if (filteredGroups.length === 0) throw new Error(NO_GROUP_CAN_BE_JOINED);
         return filteredGroups[Math.floor(Math.random() * filteredGroups.length)];
     }

@@ -28,8 +28,8 @@ const routes: Routes = [
     { path: 'home', component: HomePageComponent, ...privateRoute },
     { path: 'game', component: GamePageComponent, ...privateRoute },
     { path: 'game-creation', component: GameCreationPageComponent, ...privateRoute },
-    { path: 'group', component: GroupPageComponent, ...privateRoute },
-    { path: 'waiting-room', component: CreateWaitingPageComponent, ...privateRoute },
+    { path: 'groups', component: GroupPageComponent, ...privateRoute },
+    { path: 'create-waiting-room', component: CreateWaitingPageComponent, ...privateRoute },
     { path: 'join-waiting-room', component: JoinWaitingPageComponent, ...privateRoute },
     { path: '**', redirectTo: '/home' },
 ];

@@ -7,6 +7,7 @@ import { Timer } from '@app/classes/round/timer';
 import { ERROR_SNACK_BAR_CONFIG } from '@app/constants/components-constants';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
 import { DEFAULT_GROUP } from '@app/constants/pages-constants';
+import { ROUTE_GAME_CREATION } from '@app/constants/routes-constants';
 import { GameDispatcherService } from '@app/services/';
 import { Group } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
@@ -88,11 +89,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     acceptUser(acceptedUser: PublicUser): void {
         if (this.isGroupFull) return;
 
-        const requestingUsers = this.requestingUsers.filter((user) => user === acceptedUser);
-        if (requestingUsers.length === 0) return;
-        const requestingUser = requestingUsers[0];
-        const index = this.requestingUsers.indexOf(requestingUser);
-        this.requestingUsers.splice(index, 1);
+        if (!this.removeRequestingUser(acceptedUser)) return;
 
         if (!this.currentGroup.user2) this.currentGroup.user2 = acceptedUser;
         else if (!this.currentGroup.user3) this.currentGroup.user3 = acceptedUser;
@@ -103,16 +100,22 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     }
 
     rejectUser(rejectedUser: PublicUser): void {
-        const requestingUsers = this.requestingUsers.filter((user) => user === rejectedUser);
-        if (requestingUsers.length === 0) return;
-        const requestingUser = requestingUsers[0];
-        const index = requestingUsers.indexOf(requestingUser);
-        this.requestingUsers.splice(index, 1);
+        if (!this.removeRequestingUser(rejectedUser)) return;
+
         this.gameDispatcherService.handleRejection(rejectedUser.username);
+    }
+
+    private removeRequestingUser(user: PublicUser): boolean {
+        const requestingUsers = this.requestingUsers.filter((user_) => user === user_);
+        if (requestingUsers.length === 0) return false;
+        const requestingUser = requestingUsers[0];
+        const index = this.requestingUsers.indexOf(requestingUser);
+        this.requestingUsers.splice(index, 1);
+        return true;
     }
 
     private handleGameCreationFail(error: HttpErrorResponse): void {
         this.snackBar.open(error.error.message, 'Fermer', ERROR_SNACK_BAR_CONFIG);
-        this.router.navigateByUrl('game-creation');
+        this.router.navigateByUrl(ROUTE_GAME_CREATION);
     }
 }

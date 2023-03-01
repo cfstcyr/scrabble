@@ -18,6 +18,7 @@ import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { INITIAL_MESSAGE } from '@app/constants/controller-constants';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
+import { ROUTE_GAME } from '@app/constants/routes-constants';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
 import { BoardService, GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
@@ -317,12 +318,12 @@ describe('GameService', () => {
             tick();
             const spy = spyOn(service['router'], 'navigateByUrl');
             service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
-            expect(spy).toHaveBeenCalledWith('game');
+            expect(spy).toHaveBeenCalledWith(ROUTE_GAME);
         }));
 
         it('should call reconnectReinitialize', fakeAsync(() => {
             const router: Router = TestBed.inject(Router);
-            router.navigateByUrl('game');
+            router.navigateByUrl(ROUTE_GAME);
             tick();
             const spy = spyOn<any>(service, 'reconnectReinitialize').and.callFake(() => {
                 return;
@@ -339,7 +340,7 @@ describe('GameService', () => {
         it('should call navigateByUrl', async () => {
             const spy = spyOn(service['router'], 'navigateByUrl');
             await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
-            expect(spy).toHaveBeenCalledWith('game');
+            expect(spy).toHaveBeenCalledWith(ROUTE_GAME);
         });
     });
 

@@ -41,7 +41,7 @@ describe('JoinWaitingPageComponent', () => {
                 BrowserAnimationsModule,
                 HttpClientTestingModule,
                 RouterTestingModule.withRoutes([
-                    { path: 'group', component: TestComponent },
+                    { path: 'groups', component: TestComponent },
                     { path: 'join-waiting-room', component: JoinWaitingPageComponent },
                 ]),
                 MatSnackBarModule,
