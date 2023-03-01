@@ -47,6 +47,7 @@ import { HeaderBtnComponent } from './components/header-btn/header-btn.component
 import { AuthenticationInterceptor } from './middlewares/authentication';
 import { RequestingUserContainerComponent } from './components/requesting-user-container/requesting-user-container.component';
 import { GroupRequestWaitingDialogComponent } from './components/group-request-waiting-dialog/group-request-waiting-dialog';
+import { GroupInfoDetailedComponent } from './components/group-info-detailed/group-info-detailed.component';
 
 registerLocaleData(localeFr);
 
@@ -95,6 +96,7 @@ registerLocaleData(localeFr);
         HeaderBtnComponent,
         RequestingUserContainerComponent,
         GroupRequestWaitingDialogComponent,
+        GroupInfoDetailedComponent,
     ],
     imports: [
         AppMaterialModule,

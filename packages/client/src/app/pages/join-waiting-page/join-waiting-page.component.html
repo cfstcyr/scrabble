@@ -1,19 +1,6 @@
 <div class="container centered">
-    <mat-card class="top-box">
+    <app-group-info-detailed [group]="currentGroup" [isHost]="false" [roundTime]="roundTime"></app-group-info-detailed>
 
-        <div class="players">
-            <span class="name">{{ currentGroup.user1.username }}</span>
-            <span id="vs"> vs </span><span class="name">{{ currentGroup.user2?.username ?? '?' }}</span>
-            <span id="vs"> vs </span><span class="name">{{ currentGroup.user3?.username ?? '?' }}</span>
-            <span id="vs"> vs </span><span class="name">{{ currentGroup.user4?.username ?? '?' }}</span>
-        </div>
-
-        <div class="chip-list">
-            <div class="chip"><app-icon icon="hourglass-half" size="sm"></app-icon> {{ roundTime }}</div>
-        </div>
-
-        <button id="cancel-button" mat-flat-button color="primary" [routerLink]="'/group'">Annuler</button>
-    </mat-card>
 
     <mat-card class="fun-fact-box">
         <p id="intro">Le saviez-vous ?</p>
