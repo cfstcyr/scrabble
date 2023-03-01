@@ -15,7 +15,7 @@ import {
     DIALOG_CHECKBOX,
     JOIN,
     MAX_OPEN_CHAT,
-    QUIT
+    QUIT,
 } from '@app/constants/chat-constants';
 import { CANCEL } from '@app/constants/components-constants';
 import { Channel } from '@common/models/chat/channel';
@@ -143,7 +143,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                     checkbox: {
                         content: DIALOG_CHECKBOX,
                         checked: false,
-                        action: (checked: boolean) => this.notShowCheckbox = checked,
+                        action: (checked: boolean) => (this.notShowCheckbox = checked),
                     },
                 },
             });
@@ -171,7 +171,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
 
     handleQuitChannel(channel: ClientChannel): void {
         if (!this.notShowCheckbox) {
-
             this.dialog.open(DefaultDialogComponent, {
                 data: {
                     title: CONFIRM_QUIT_DIALOG_TITLE,
@@ -194,7 +193,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
 
     handleDeleteChannel(channel: ClientChannel): void {
         if (!this.notShowCheckbox) {
-
             this.dialog.open(DefaultDialogComponent, {
                 data: {
                     title: CONFIRM_DELETE_DIALOG_TITLE,
@@ -213,7 +211,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                 },
             });
         } else this.deleteChannelFromMenu(channel);
-
     }
 
     private quitChannelFromMenu(channel: ClientChannel): void {

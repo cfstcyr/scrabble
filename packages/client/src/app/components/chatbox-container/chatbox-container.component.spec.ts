@@ -141,7 +141,6 @@ describe('ChatboxContainerComponent', () => {
             component.handleJoinChannel(CHANNEL_1);
 
             expect(spy).toHaveBeenCalled();
-
         });
     });
 
@@ -153,6 +152,6 @@ describe('ChatboxContainerComponent', () => {
             component.handleDeleteChannel(CHANNEL_1);
 
             expect(spy).toHaveBeenCalled();
-        })
+        });
     });
 });

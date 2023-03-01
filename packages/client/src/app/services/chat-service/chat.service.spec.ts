@@ -147,14 +147,14 @@ describe('ChatService', () => {
             service.deleteChannel(1);
             expect(socket.emit).toHaveBeenCalled();
         });
-    })
+    });
 
     describe('handlePublicChannels', () => {
         it('should add channels', () => {
             service.handlePublicChannels([CHANNEL_1, CHANNEL_2]);
             expect(service.publicChannels.value.size).toEqual(2);
         });
-    })
+    });
 
     describe('sendMessage', () => {
         it('should emit to channel:newMessage', () => {

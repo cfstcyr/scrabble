@@ -8,7 +8,7 @@ export const CHAT_TIME_FORMAT = 'MMM d, h:mm a';
 export const CONFIRM_JOIN_DIALOG_TITLE = 'Rejoindre le canal?';
 export const CONFIRM_JOIN_DIALOG = (channelName: string) => `Voulez-vous rejoindre le canal "${channelName}"?`;
 export const CHANNEL_NAME_MAX_LENGTH = 40;
-export const DIALOG_CHECKBOX = 'Ne plus afficher'
-export const JOIN = 'Joindre'
-export const QUIT = 'Quitter'
-export const DELETE = 'Supprimer'
+export const DIALOG_CHECKBOX = 'Ne plus afficher';
+export const JOIN = 'Joindre';
+export const QUIT = 'Quitter';
+export const DELETE = 'Supprimer';
