@@ -33,16 +33,6 @@ const CHANNEL_2: ClientChannel = {
     private: false,
     default: false,
 };
-const ChatMessage1: ChatMessage = {
-    sender: USER,
-    content: 'content',
-    date: new Date(),
-};
-const ChannelMessage1: ChannelMessage = {
-    idChannel: 1,
-    message: ChatMessage1,
-};
-
 
 describe('ChatService', () => {
     let service: ChatService;
