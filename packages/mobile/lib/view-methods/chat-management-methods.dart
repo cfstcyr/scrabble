@@ -24,6 +24,7 @@ var searchController = TextEditingController();
 List<Channel> channelSearchResult = [];
 
 Future<void> createChannel(String channelName) async {
+  if (channelName.isEmpty) return;
   socketService.emitEvent('channel:newChannel', ChannelName(name: channelName));
 }
 
@@ -43,7 +44,7 @@ List<Channel> handleUnjoinedChannels() {
   List<Channel> unjoinedChannels = [...channels];
   myChannels.forEach((myChannel) {
     unjoinedChannels.removeWhere((channel) {
-      return channel.name == myChannel.name;
+      return channel.name == myChannel.name && !channel.private;
     });
   });
   channelSearchResult = [...unjoinedChannels];

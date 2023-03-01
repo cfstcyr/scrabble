@@ -94,17 +94,19 @@ class _ChatManagementState extends State<ChatManagement> {
   }
 
   onSearchTextChanged(String text) async {
+    var unjoinedChannels = [...handleUnjoinedChannels()];
     if (text.isEmpty) {
       setState(() {
-        channelSearchResult = [...channels$.value];
+        channelSearchResult = [...unjoinedChannels];
       });
+      channelSearchResult.forEach((channel) {});
       return;
     }
     channelSearchResult.clear();
-
-    channels$.value.forEach((channel) {
+    unjoinedChannels.forEach((channel) {
       if (channel.name.contains(text)) channelSearchResult.add(channel);
     });
+
     setState(() {});
   }
 
