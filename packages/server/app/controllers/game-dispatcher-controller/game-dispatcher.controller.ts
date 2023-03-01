@@ -240,6 +240,7 @@ export class GameDispatcherController extends BaseController {
 
         this.socketService.addToRoom(acceptedPlayer.id, gameId);
         this.socketService.emitToRoom(gameId, 'acceptJoinRequest', group);
+        this.handleGroupsUpdate();
     }
 
     private async handleRejectRequest(gameId: string, playerId: string, playerName: string): Promise<void> {
@@ -259,6 +260,7 @@ export class GameDispatcherController extends BaseController {
         const startGameData = await this.activeGameService.beginGame(gameId, gameConfig.idChannel, gameConfig);
 
         this.socketService.emitToRoom(gameId, 'startGame', startGameData);
+        this.handleGroupsUpdate();
 
         if (isIdVirtualPlayer(startGameData.round.playerData.id)) {
             this.gameDispatcherService

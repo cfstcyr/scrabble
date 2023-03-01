@@ -20,7 +20,6 @@ import { Service } from 'typedi';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { Group, GroupData } from '@common/models/group';
-import { convertToGroup } from '@app/utils/convert-to-group/convert-to-group';
 import { PublicUser } from '@common/models/user';
 @Service()
 export class GameDispatcherService {
@@ -57,7 +56,7 @@ export class GameDispatcherService {
 
         this.addToWaitingRoom(waitingRoom);
         this.socketService.addToRoom(playerId, waitingRoom.getId());
-        return convertToGroup(waitingRoom.getConfig(), waitingRoom.getId());
+        return waitingRoom.convertToGroup();
     }
 
     requestJoinGame(waitingRoomId: string, playerId: string, publicUser: PublicUser): WaitingRoom {
@@ -185,7 +184,7 @@ export class GameDispatcherService {
         );
         const groups: Group[] = [];
         for (const room of waitingRooms) {
-            groups.push(convertToGroup(room.getConfig(), room.getId()));
+            groups.push(room.convertToGroup());
         }
 
         return groups;
