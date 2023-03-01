@@ -16,10 +16,7 @@ import { Player } from '@app/classes/player';
 import { Round } from '@app/classes/round/round';
 import { Timer } from '@app/classes/round/timer';
 import { Tile } from '@app/classes/tile';
-import { TEST_DICTIONARY } from '@app/constants/controller-test-constants';
 import { DEFAULT_PLAYER } from '@app/constants/game-constants';
-import { GameMode } from '@app/constants/game-mode';
-import { GameType } from '@app/constants/game-type';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { INVALID_ROUND_DATA_PLAYER, NO_CURRENT_ROUND } from '@app/constants/services-errors';
 import { ActionService } from '@app/services/action-service/action.service';
@@ -62,8 +59,8 @@ const TIME_INTERVAL = 1000;
 const PAST_DATE = new Date(Date.now() - TIME_INTERVAL);
 const CURRENT_DATE = new Date(Date.now());
 const FUTURE_DATE = new Date(Date.now() + TIME_INTERVAL);
-
-const DEFAULT_PLAYER_DATA: PlayerData = { name: 'name', id: 'id', score: 1, tiles: [{ letter: 'A', value: 1 }] };
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const DEFAULT_PLAYER_DATA: PlayerData = { publicUser: USER1, id: 'id', score: 1, tiles: [{ letter: 'A', value: 1 }] };
 
 describe('RoundManagerService', () => {
     let service: RoundManagerService;
@@ -137,7 +134,7 @@ describe('RoundManagerService', () => {
             completedTime: null,
         };
         const round: Round = {
-            player: new Player(DEFAULT_PLAYER_DATA.id, DEFAULT_PLAYER_DATA.name!, DEFAULT_PLAYER_DATA.tiles!),
+            player: new Player(DEFAULT_PLAYER_DATA.id, USER1, DEFAULT_PLAYER_DATA.tiles!),
             startTime: roundData.startTime,
             limitTime: roundData.limitTime,
             completedTime: roundData.completedTime,
@@ -147,13 +144,16 @@ describe('RoundManagerService', () => {
         const gameId = 'gameId';
         const player2Data = DEFAULT_PLAYER_DATA;
         player2Data.id = 'notLocal';
+        const player3Data = DEFAULT_PLAYER_DATA;
+        player3Data.id = 'notLocal2';
+        const player4Data = DEFAULT_PLAYER_DATA;
+        player4Data.id = 'notLocal3';
         const startGameData: StartGameData = {
             player1: DEFAULT_PLAYER_DATA,
             player2: player2Data,
-            gameType: GameType.Classic,
-            gameMode: GameMode.Multiplayer,
+            player3: player3Data,
+            player4: player4Data,
             maxRoundTime: DEFAULT_MAX_ROUND_TIME,
-            dictionary: TEST_DICTIONARY,
             gameId,
             board: [],
             tileReserve: [],
@@ -208,6 +208,21 @@ describe('RoundManagerService', () => {
             const roundData = {
                 playerData: {
                     name: DEFAULT_PLAYER_NAME,
+                    id: DEFAULT_PLAYER_ID,
+                    score: DEFAULT_PLAYER_SCORE,
+                    tiles: DEFAULT_PLAYER_TILES,
+                },
+                startTime: CURRENT_DATE,
+                limitTime: CURRENT_DATE,
+                completedTime: null,
+            };
+            expect(() => service.convertRoundDataToRound(roundData)).toThrow();
+        });
+
+        it('should not throw error if roundData correct', () => {
+            const roundData = {
+                playerData: {
+                    publicUser: USER1,
                     id: DEFAULT_PLAYER_ID,
                     score: DEFAULT_PLAYER_SCORE,
                     tiles: DEFAULT_PLAYER_TILES,
@@ -398,10 +413,10 @@ describe('RoundManagerService', () => {
             let result = () => service.convertRoundDataToRound(roundData);
             roundData.playerData.id = DEFAULT_PLAYER_DATA.id;
 
-            roundData.playerData.name = undefined;
+            roundData.playerData.publicUser = undefined;
             result = () => service.convertRoundDataToRound(roundData);
             expect(result).toThrowError(INVALID_ROUND_DATA_PLAYER);
-            roundData.playerData.name = DEFAULT_PLAYER_DATA.name;
+            roundData.playerData.publicUser = DEFAULT_PLAYER_DATA.publicUser;
 
             roundData.playerData.tiles = undefined;
             result = () => service.convertRoundDataToRound(roundData);
@@ -556,11 +571,7 @@ describe('RoundManagerService', () => {
 
             service['roundTimeout']();
             expect(actionServiceSpy.createActionData).toHaveBeenCalledWith(ActionType.PASS, {});
-            expect(actionServiceSpy.sendAction).toHaveBeenCalledOnceWith(
-                service['gameId'],
-                service['localPlayerId'],
-                fakeData as unknown as ActionData,
-            );
+            expect(actionServiceSpy.sendAction).toHaveBeenCalledOnceWith(service['gameId'], fakeData as unknown as ActionData);
         }));
     });
 });

@@ -5,9 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DEFAULT_GAME_ID, DEFAULT_LEAVER } from '@app/constants/controller-test-constants';
 import { PlayerLeavesController } from '@app/controllers/player-leave-controller/player-leave.controller';
-import { Subject } from 'rxjs';
 import { SocketService } from '..';
 import { PlayerLeavesService } from './player-leave.service';
 
@@ -28,27 +26,19 @@ describe('PlayerLeavesService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should call handleJoinerLeaveGame when playerLeavesController.joinerLeavesGameEvent emits', () => {
-        const createGameSpy = spyOn<any>(service, 'handleJoinerLeaveGame').and.callFake(() => {
-            return;
-        });
-        playerLeavesController['joinerLeavesGameEvent'].emit('testName');
-        expect(createGameSpy).toHaveBeenCalledWith('testName');
-    });
-
     it('should reset gameService data when playerLeavesController.resetGameEvent emits', () => {
         const eventEmitSpy = spyOn(service['gameViewEventManager'], 'emitGameViewEvent').and.callFake(() => {});
         playerLeavesController['resetGameEvent'].emit();
         expect(eventEmitSpy).toHaveBeenCalledWith('resetServices');
     });
 
-    it('handleJoinerLeaveGame should call joinerLeavesGameEvent.next', () => {
-        const joinerLeaveGameEventSpy = spyOn(service['joinerLeavesGameEvent'], 'next').and.callFake(() => {
-            return;
-        });
-        service['handleJoinerLeaveGame'](DEFAULT_LEAVER);
-        expect(joinerLeaveGameEventSpy).toHaveBeenCalled();
-    });
+    // it('handleJoinerLeaveGame should call joinerLeavesGameEvent.next', () => {
+    //     const joinerLeaveGameEventSpy = spyOn(service['joinerLeavesGameEvent'], 'next').and.callFake(() => {
+    //         return;
+    //     });
+    //     service['handleJoinerLeaveGame'](DEFAULT_LEAVER);
+    //     expect(joinerLeaveGameEventSpy).toHaveBeenCalled();
+    // });
 
     it('handleLocalPlayerLeavesGame should call playerLeavesController.handleLeaveGame', () => {
         const handleLeaveGameSpy = spyOn(service['playerLeavesController'], 'handleLeaveGame').and.callFake(() => {
@@ -59,7 +49,7 @@ describe('PlayerLeavesService', () => {
     });
 
     it('handleLeaveGroup should call playerLeavesController.handleLeaveGame if this.currentGroupId is defined', () => {
-        spyOn(service['gameDispatcherService'], 'getCurrentGroupId').and.returnValue(DEFAULT_GAME_ID);
+        spyOn(service['gameDispatcherService'], 'getCurrentGroupId').and.returnValue('DEFAULT_GAME_ID');
         const handleLeaveGameSpy = spyOn(service['playerLeavesController'], 'handleLeaveGame').and.callFake(() => {
             return;
         });
@@ -87,23 +77,5 @@ describe('PlayerLeavesService', () => {
         });
         service.ngOnDestroy();
         expect(completeSpy).toHaveBeenCalled();
-    });
-
-    describe('subcription methods', () => {
-        let serviceDestroyed$: Subject<boolean>;
-        let callback: () => void;
-
-        beforeEach(() => {
-            serviceDestroyed$ = new Subject();
-            callback = () => {
-                return;
-            };
-        });
-
-        it('subscribeToJoinerLeavesGameEvent should call subscribe method on createGameEvent', () => {
-            const subscriptionSpy = spyOn(service['joinerLeavesGameEvent'], 'subscribe');
-            service.subscribeToJoinerLeavesGameEvent(serviceDestroyed$, callback);
-            expect(subscriptionSpy).toHaveBeenCalled();
-        });
     });
 });

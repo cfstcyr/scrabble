@@ -13,7 +13,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { DEFAULT_GROUP } from '@app/constants/pages-constants';
 import { GameDispatcherService } from '@app/services/';
-import GroupInfo from '@common/models/group-info';
+import { Group } from '@common/models/group';
+import { UNKOWN_USER } from '@common/models/user';
 import { of, Subject } from 'rxjs';
 import { JoinWaitingPageComponent } from './join-waiting-page.component';
 
@@ -22,9 +23,7 @@ import { JoinWaitingPageComponent } from './join-waiting-page.component';
 })
 class TestComponent {}
 
-const EMPTY_GROUP = {} as unknown as GroupInfo;
-
-const DEFAULT_NAME = 'playerName';
+const EMPTY_GROUP = {} as unknown as Group;
 
 describe('JoinWaitingPageComponent', () => {
     let component: JoinWaitingPageComponent;
@@ -54,22 +53,14 @@ describe('JoinWaitingPageComponent', () => {
     beforeEach(() => {
         gameDispatcherServiceMock = TestBed.inject(GameDispatcherService);
         gameDispatcherServiceMock.currentGroup = DEFAULT_GROUP;
-        gameDispatcherServiceMock.currentName = DEFAULT_NAME;
         fixture = TestBed.createComponent(JoinWaitingPageComponent);
         component = fixture.componentInstance;
         component.currentGroup = EMPTY_GROUP;
-        component.currentName = '';
         fixture.detectChanges();
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    it('playerRejected should open the rejected dialog when player is rejected', () => {
-        const spy = spyOn(component.dialog, 'open');
-        component['playerRejected'](opponentName);
-        expect(spy).toHaveBeenCalled();
     });
 
     it('hostHasCanceled should open the cancel dialog when host cancels the game', () => {
@@ -81,21 +72,16 @@ describe('JoinWaitingPageComponent', () => {
     describe('ngOnInit', () => {
         it('ngOnInit should set the values to the gameDispatcherService group and name (currentGroup defined)', () => {
             component.currentGroup = EMPTY_GROUP;
-            component.currentName = '';
             component.ngOnInit();
             expect(component.currentGroup).toEqual(DEFAULT_GROUP);
-            expect(component.currentName).toEqual(DEFAULT_NAME);
         });
 
         it('should set roundTime, currentName and fun fact', () => {
             component['gameDispatcherService'].currentGroup = { ...DEFAULT_GROUP, maxRoundTime: 210 };
-            component['gameDispatcherService'].currentName = 'Mathilde';
             component.funFact = '';
-            component.currentName = '';
             component.ngOnInit();
             expect(component.roundTime).toEqual('3:30');
             expect(component.funFact).not.toEqual('');
-            expect(component.currentName).toEqual('Mathilde');
         });
 
         it('should set currentGroup to gameDispatcher currentGroup if it exists', () => {
@@ -110,7 +96,7 @@ describe('JoinWaitingPageComponent', () => {
         });
 
         it('should set currentGroup to DEFAULT_GROUP currentGroup if gameDispatcher does not have a currentGroup', () => {
-            component.currentGroup = { ...DEFAULT_GROUP, maxRoundTime: 210, hostName: 'Alexandre' };
+            component.currentGroup = { ...DEFAULT_GROUP, maxRoundTime: 210 };
             component['gameDispatcherService'].currentGroup = undefined;
 
             component.ngOnInit();
@@ -120,16 +106,12 @@ describe('JoinWaitingPageComponent', () => {
 
         it('ngOnInit should call the get the gameDispatcherService group and playerName ', () => {
             const spySubscribeCanceledGameEvent = spyOn(gameDispatcherServiceMock['canceledGameEvent'], 'subscribe').and.returnValue(of(true) as any);
-            const spySubscribeJoinerRejectedEvent = spyOn(gameDispatcherServiceMock['joinerRejectedEvent'], 'subscribe').and.returnValue(
-                of(true) as any,
-            );
             // Create a new component once spies have been applied
             fixture = TestBed.createComponent(JoinWaitingPageComponent);
             component = fixture.componentInstance;
             fixture.detectChanges();
 
             expect(spySubscribeCanceledGameEvent).toHaveBeenCalled();
-            expect(spySubscribeJoinerRejectedEvent).toHaveBeenCalled();
         });
 
         it('ngOnInit should subscribe to router events', () => {
@@ -172,22 +154,12 @@ describe('JoinWaitingPageComponent', () => {
         });
     });
 
-    it('playerRejected should be called when joinerRejectedEvent is emittted', () => {
-        const emitName = 'weirdName';
-        const spyPlayerRejected = spyOn<any>(component, 'playerRejected').and.callFake(() => {
-            return;
-        });
-        gameDispatcherServiceMock['joinerRejectedEvent'].next(emitName);
-        expect(spyPlayerRejected).toHaveBeenCalledWith(emitName);
-    });
-
     it('hostHasCanceled should be called when canceledGameEvent is emittted', () => {
-        const emitName = 'weirdName';
         const spyHostHasCanceled = spyOn<any>(component, 'hostHasCanceled').and.callFake(() => {
             return;
         });
-        gameDispatcherServiceMock['canceledGameEvent'].next(emitName);
-        expect(spyHostHasCanceled).toHaveBeenCalledWith(emitName);
+        gameDispatcherServiceMock['canceledGameEvent'].next(UNKOWN_USER);
+        expect(spyHostHasCanceled).toHaveBeenCalledWith(UNKOWN_USER.username);
     });
 
     it('onBeforeUnload should call handleLeaveGroup', () => {

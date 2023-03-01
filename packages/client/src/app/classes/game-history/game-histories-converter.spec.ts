@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
 import { GameHistoriesData, GameHistoryData } from '@app/classes/communication/game-histories';
-import { GameMode } from '@app/constants/game-mode';
-import { GameType } from '@app/constants/game-type';
 import { GameHistoryWithPlayers } from '@common/models/game-history';
 import { NoId } from '@common/types/id';
 import { GameHistoriesConverter } from './game-histories-converter';
@@ -14,8 +12,6 @@ const DEFAULT_GAME_HISTORY: NoId<GameHistoryWithPlayers> = {
         { name: '1', score: 0, isVirtualPlayer: false, isWinner: false, playerIndex: 1 },
         { name: '2', score: 0, isVirtualPlayer: false, isWinner: false, playerIndex: 2 },
     ],
-    gameType: GameType.Classic,
-    gameMode: GameMode.Solo,
     hasBeenAbandoned: false,
 };
 const DEFAULT_GAME_HISTORY_DATA: NoId<GameHistoryData> = {

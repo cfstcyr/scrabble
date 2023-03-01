@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameUpdateData, PlayerData } from '@app/classes/communication';
 import { InitializeGameData, StartGameData } from '@app/classes/communication/game-config';
-import { GameObjectivesData } from '@app/classes/communication/game-objectives-data';
 import { Message } from '@app/classes/communication/message';
 import { Player } from '@app/classes/player';
 import { PlayerContainer } from '@app/classes/player/player-container';
@@ -18,15 +17,12 @@ import { Round } from '@app/classes/round/round';
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { INITIAL_MESSAGE } from '@app/constants/controller-constants';
-import { TEST_DICTIONARY } from '@app/constants/controller-test-constants';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
-import { GameMode } from '@app/constants/game-mode';
-import { GameType } from '@app/constants/game-type';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
 import { BoardService, GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import { ObjectivesManagerService } from '@app/services/objectives-manager-service/objectives-manager.service';
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
+import { UNKOWN_USER } from '@common/models/user';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import SpyObj = jasmine.SpyObj;
@@ -34,11 +30,14 @@ import SpyObj = jasmine.SpyObj;
 const DEFAULT_PLAYER_ID = 'cov-id';
 const DEFAULT_GAME_ID = 'game id';
 const DEFAULT_MESSAGE = { ...INITIAL_MESSAGE, gameId: DEFAULT_GAME_ID };
-
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
+const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
 const DEFAULT_SQUARE: Omit<Square, 'position'> = { tile: null, scoreMultiplier: null, wasMultiplierUsed: false, isCenter: false };
 const DEFAULT_GRID_SIZE = 8;
 const DEFAULT_PLAYER_1 = {
-    name: 'phineas',
+    publicUser: USER1,
     id: 'id-1',
     score: 0,
     tiles: [],
@@ -49,7 +48,26 @@ const DEFAULT_PLAYER_1 = {
         return;
     },
 };
-const DEFAULT_PLAYER_2 = { name: 'ferb', id: 'id-2', score: 0, tiles: [] };
+const DEFAULT_PLAYER_2 = {
+    publicUser: USER2,
+    id: 'id-2',
+    score: 0,
+    tiles: [],
+};
+
+const DEFAULT_PLAYER_3 = {
+    publicUser: USER3,
+    id: 'id-3',
+    score: 0,
+    tiles: [],
+};
+
+const DEFAULT_PLAYER_4 = {
+    publicUser: USER4,
+    id: 'id-4',
+    score: 0,
+    tiles: [],
+};
 
 @Component({
     template: '',
@@ -62,11 +80,9 @@ describe('GameService', () => {
     let roundManagerSpy: SpyObj<RoundManagerService>;
     let gameDispatcherControllerSpy: SpyObj<GameDispatcherController>;
     let gameViewEventManagerSpy: SpyObj<GameViewEventManagerService>;
-    let objectiveManagerSpy: SpyObj<ObjectivesManagerService>;
 
     beforeEach(() => {
         boardServiceSpy = jasmine.createSpyObj('BoardService', ['initializeBoard', 'updateBoard']);
-        objectiveManagerSpy = jasmine.createSpyObj('ObjectivesManagerService', ['updateObjectives', 'initialize']);
         roundManagerSpy = jasmine.createSpyObj('RoundManagerService', [
             'convertRoundDataToRound',
             'startRound',
@@ -149,7 +165,6 @@ describe('GameService', () => {
                 { provide: RoundManagerService, useValue: roundManagerSpy },
                 { provide: GameDispatcherController, useValue: gameDispatcherControllerSpy },
                 { provide: GameViewEventManagerService, useValue: gameViewEventManagerSpy },
-                { provide: ObjectivesManagerService, useValue: objectiveManagerSpy },
             ],
         });
         service = TestBed.inject(GameService);
@@ -229,10 +244,9 @@ describe('GameService', () => {
             defaultGameData = {
                 player1: DEFAULT_PLAYER_1,
                 player2: DEFAULT_PLAYER_2,
-                gameType: GameType.Classic,
-                gameMode: GameMode.Multiplayer,
+                player3: DEFAULT_PLAYER_3,
+                player4: DEFAULT_PLAYER_4,
                 maxRoundTime: 1,
-                dictionary: TEST_DICTIONARY,
                 gameId: 'game-id',
                 board: new Array(DEFAULT_GRID_SIZE).map((_, y) => {
                     return new Array(DEFAULT_GRID_SIZE).map((__, x) => ({ ...DEFAULT_SQUARE, position: { row: y, column: x } }));
@@ -338,7 +352,7 @@ describe('GameService', () => {
 
         it('should call playerContainer.updatePlayersData if it is defined', () => {
             service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id);
-            const updatedData: PlayerData = { id: 'id', name: 'new-name' };
+            const updatedData: PlayerData = { id: 'id', publicUser: UNKOWN_USER };
             // eslint-disable-next-line no-unused-vars
             const spy = spyOn(service['playerContainer'], 'updatePlayersData').and.callFake((...playerDatas: PlayerData[]) => {
                 return service['playerContainer']!;
@@ -356,7 +370,7 @@ describe('GameService', () => {
             });
 
             service['playerContainer'] = undefined as unknown as PlayerContainer;
-            const updatedData: PlayerData = { id: 'id', name: 'new-name' };
+            const updatedData: PlayerData = { id: 'id', publicUser: UNKOWN_USER };
 
             service['handleUpdatePlayerData'](updatedData);
             expect(spy).not.toHaveBeenCalled();
@@ -364,7 +378,7 @@ describe('GameService', () => {
 
         it('should call emitGameViewEvent with tileRackUpdate', () => {
             service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id);
-            const updatedData: PlayerData = { id: 'id', name: 'new-name' };
+            const updatedData: PlayerData = { id: 'id', publicUser: UNKOWN_USER };
 
             service['handleUpdatePlayerData'](updatedData);
             expect(emitSpy).toHaveBeenCalledWith('tileRackUpdate', updatedData.id);
@@ -387,15 +401,14 @@ describe('GameService', () => {
 
         beforeEach(() => {
             service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id);
-            service['playerContainer']['players'].set(1, new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.name, DEFAULT_PLAYER_1.tiles));
-            service['playerContainer']['players'].set(2, new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.name, DEFAULT_PLAYER_2.tiles));
+            service['playerContainer']['players'].set(1, new Player(DEFAULT_PLAYER_1.id, USER1, DEFAULT_PLAYER_1.tiles));
+            service['playerContainer']['players'].set(2, new Player(DEFAULT_PLAYER_2.id, USER2, DEFAULT_PLAYER_2.tiles));
             defaultGameData = {
                 player1: DEFAULT_PLAYER_1,
                 player2: DEFAULT_PLAYER_2,
-                gameType: GameType.Classic,
-                gameMode: GameMode.Multiplayer,
+                player3: DEFAULT_PLAYER_3,
+                player4: DEFAULT_PLAYER_4,
                 maxRoundTime: 1,
-                dictionary: TEST_DICTIONARY,
                 gameId: 'game-id',
                 board: new Array(DEFAULT_GRID_SIZE).map((_, y) => {
                     return new Array(DEFAULT_GRID_SIZE).map((__, x) => ({ ...DEFAULT_SQUARE, position: { row: y, column: x } }));
@@ -446,6 +459,8 @@ describe('GameService', () => {
     describe('handleGameUpdate', () => {
         let player1: Player;
         let player2: Player;
+        let player3: Player;
+        let player4: Player;
 
         let gameUpdateData: GameUpdateData;
         let updateTileRackEventEmitSpy: jasmine.Spy;
@@ -453,10 +468,14 @@ describe('GameService', () => {
         beforeEach(() => {
             gameUpdateData = {};
             service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id);
-            player1 = new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.name, DEFAULT_PLAYER_1.tiles);
-            player2 = new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.name, DEFAULT_PLAYER_2.tiles);
+            player1 = new Player(DEFAULT_PLAYER_1.id, USER1, DEFAULT_PLAYER_1.tiles);
+            player2 = new Player(DEFAULT_PLAYER_2.id, USER2, DEFAULT_PLAYER_2.tiles);
+            player3 = new Player(DEFAULT_PLAYER_3.id, USER3, DEFAULT_PLAYER_3.tiles);
+            player4 = new Player(DEFAULT_PLAYER_4.id, USER4, DEFAULT_PLAYER_4.tiles);
             service['playerContainer']['players'].set(1, player1);
             service['playerContainer']['players'].set(2, player2);
+            service['playerContainer']['players'].set(3, player3);
+            service['playerContainer']['players'].set(4, player4);
 
             updateTileRackEventEmitSpy = gameViewEventManagerSpy.emitGameViewEvent;
         });
@@ -490,6 +509,22 @@ describe('GameService', () => {
             service['handleGameUpdate'](gameUpdateData);
             expect(spy).not.toHaveBeenCalledWith(DEFAULT_PLAYER_2);
             expect(updateTileRackEventEmitSpy).not.toHaveBeenCalledWith('tileRackUpdate');
+        });
+
+        it('should call updatePlayerDate and emit with player3 if defined', () => {
+            const spy = spyOn(player3, 'updatePlayerData');
+            gameUpdateData.player3 = DEFAULT_PLAYER_3;
+            service['handleGameUpdate'](gameUpdateData);
+            expect(spy).toHaveBeenCalledWith(DEFAULT_PLAYER_3);
+            expect(updateTileRackEventEmitSpy).toHaveBeenCalled();
+        });
+
+        it('should call updatePlayerDate and emit with player4 if defined', () => {
+            const spy = spyOn(player4, 'updatePlayerData');
+            gameUpdateData.player4 = DEFAULT_PLAYER_4;
+            service['handleGameUpdate'](gameUpdateData);
+            expect(spy).toHaveBeenCalledWith(DEFAULT_PLAYER_4);
+            expect(updateTileRackEventEmitSpy).toHaveBeenCalled();
         });
 
         it('should call updateBoard if board is defined', () => {
@@ -539,21 +574,6 @@ describe('GameService', () => {
             service['handleGameUpdate'](gameUpdateData);
 
             expect(service.tileReserve).toEqual(originalTileReserve);
-        });
-
-        it('should update gameObjective, if gameObjective are defined', () => {
-            gameUpdateData.gameObjective = {} as GameObjectivesData;
-            objectiveManagerSpy.updateObjectives.and.returnValue();
-
-            service['handleGameUpdate'](gameUpdateData);
-
-            expect(objectiveManagerSpy.updateObjectives).toHaveBeenCalled();
-        });
-
-        it('should not update gameObjective, if gameObjective are undefined', () => {
-            gameUpdateData.gameObjective = undefined;
-            service['handleGameUpdate'](gameUpdateData);
-            expect(objectiveManagerSpy.updateObjectives).not.toHaveBeenCalled();
         });
 
         it('should call handleGameOver with winnerNames if game is over and they are defined', () => {
@@ -640,33 +660,6 @@ describe('GameService', () => {
         });
     });
 
-    describe('isLocalPlayerPlayer1', () => {
-        it('should return true if is local player', () => {
-            const expected = 'expected-id';
-            roundManagerSpy.getActivePlayer.and.returnValue({ id: expected } as Player);
-            service['playerContainer'] = new PlayerContainer(expected);
-            service['playerContainer']['players'].set(1, { id: expected } as Player);
-
-            const result = service['isLocalPlayerPlayer1']();
-            expect(result).toBeTrue();
-        });
-
-        it('should return false if is not local player', () => {
-            const expected = 'expected-id';
-            roundManagerSpy.getActivePlayer.and.returnValue({ id: expected } as Player);
-            service['playerContainer'] = new PlayerContainer('NOT-expected-id');
-            service['playerContainer']['players'].set(1, { id: expected } as Player);
-            const result = service['isLocalPlayerPlayer1']();
-            expect(result).toBeFalse();
-        });
-
-        it('should return false there is no player container', () => {
-            service['playerContainer'] = undefined;
-            const result = service['isLocalPlayerPlayer1']();
-            expect(result).toBeFalse();
-        });
-    });
-
     describe('getGameId', () => {
         it('should return gameId', () => {
             const expected = 'expected-id';
@@ -725,8 +718,8 @@ describe('GameService', () => {
         let player2: Player;
 
         beforeEach(() => {
-            player1 = new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.name, DEFAULT_PLAYER_1.tiles);
-            player2 = new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.name, DEFAULT_PLAYER_2.tiles);
+            player1 = new Player(DEFAULT_PLAYER_1.id, USER1, DEFAULT_PLAYER_1.tiles);
+            player2 = new Player(DEFAULT_PLAYER_2.id, USER2, DEFAULT_PLAYER_2['tiles']);
         });
 
         it('should return player 1 if is local', () => {

@@ -6,28 +6,32 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { StartGameData } from '@app/classes/communication/game-config';
-import PlayerName from '@app/classes/communication/player-name';
+import PlayerData from '@app/classes/communication/player-data';
+import { RoundData } from '@app/classes/communication/round-data';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
-import { GameMode } from '@app/constants/game-mode';
-import { GameType } from '@app/constants/game-type';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
 import { GameService } from '@app/services';
 import SocketService from '@app/services/socket-service/socket.service';
 import { GroupData } from '@common/models/group';
+import { PublicUser, UNKOWN_USER } from '@common/models/user';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { Socket } from 'socket.io-client';
 
 const DEFAULT_SOCKET_ID = 'testSocketID';
 const DEFAULT_PLAYER_NAME = 'grogars';
 const DEFAULT_GAME_ID = 'grogarsID';
-const DEFAULT_OPPONENT_NAME: PlayerName[] = [{ name: DEFAULT_PLAYER_NAME }];
-const DEFAULT_GAME_DATA: GroupData = {
-    playerName: DEFAULT_PLAYER_NAME,
-    playerId: 'tessId',
-    gameType: GameType.Classic,
-    gameMode: GameMode.Multiplayer,
+const DEFAULT_OPPONENT_USER: PublicUser = UNKOWN_USER;
+
+const START_GAME_DATA: StartGameData = {
+    gameId: '',
+    board: [],
+    tileReserve: [],
+    round: {} as unknown as RoundData,
+    player2: {} as unknown as PlayerData,
+    player3: {} as unknown as PlayerData,
+    player4: {} as unknown as PlayerData,
+    player1: {} as unknown as PlayerData,
     maxRoundTime: 0,
-    dictionary: TEST_DICTIONARY,
 };
 
 describe('GameDispatcherController', () => {
@@ -75,7 +79,7 @@ describe('GameDispatcherController', () => {
     describe('configureSocket', () => {
         it('On join request, configureSocket should emit opponent name', () => {
             const joinRequestSpy = spyOn(controller['joinRequestEvent'], 'next').and.callThrough();
-            socketHelper.peerSideEmit('joinRequest', DEFAULT_OPPONENT_NAME);
+            socketHelper.peerSideEmit('joinRequest', DEFAULT_OPPONENT_USER);
             expect(joinRequestSpy).toHaveBeenCalled();
         });
 
@@ -84,28 +88,28 @@ describe('GameDispatcherController', () => {
             const initializeEventSpy = spyOn(controller['initializeGame$'], 'next').and.callFake(() => {
                 return;
             });
-            socketHelper.peerSideEmit('startGame', DEFAULT_GAME_DATA);
+            socketHelper.peerSideEmit('startGame', START_GAME_DATA);
             expect(initializeEventSpy).toHaveBeenCalledWith({
                 localPlayerId: 'id',
-                startGameData: DEFAULT_GAME_DATA as unknown as StartGameData,
+                startGameData: START_GAME_DATA as unknown as StartGameData,
             });
         });
 
         it('On groups update, configureSocket should emit hostName', () => {
             const groupsUpdateSpy = spyOn(controller['groupsUpdateEvent'], 'next').and.callThrough();
-            socketHelper.peerSideEmit('groupsUpdate', DEFAULT_OPPONENT_NAME);
+            socketHelper.peerSideEmit('groupsUpdate', DEFAULT_OPPONENT_USER);
             expect(groupsUpdateSpy).toHaveBeenCalled();
         });
 
         it('On rejected, configureSocket should emit groups', () => {
             const rejectedSpy = spyOn(controller['joinerRejectedEvent'], 'next').and.callThrough();
-            socketHelper.peerSideEmit('rejected', DEFAULT_OPPONENT_NAME);
+            socketHelper.peerSideEmit('rejectJoinRequest', DEFAULT_OPPONENT_USER);
             expect(rejectedSpy).toHaveBeenCalled();
         });
 
         it('On cancel game, configureSocket should emit opponent name', () => {
             const cancelGameSpy = spyOn(controller['canceledGameEvent'], 'next').and.callThrough();
-            socketHelper.peerSideEmit('canceledGame', DEFAULT_OPPONENT_NAME);
+            socketHelper.peerSideEmit('cancelledGroup', DEFAULT_OPPONENT_USER);
             expect(cancelGameSpy).toHaveBeenCalled();
         });
     });
@@ -113,7 +117,7 @@ describe('GameDispatcherController', () => {
     describe('handleGameCreation', () => {
         it('should  make an HTTP post request', () => {
             const httpPostSpy = spyOn(controller['http'], 'post').and.returnValue(of(true) as any);
-            controller.handleGameCreation(DEFAULT_GAME_DATA);
+            controller.handleGameCreation({} as unknown as GroupData);
             expect(httpPostSpy).toHaveBeenCalled();
         });
     });
@@ -189,7 +193,7 @@ describe('GameDispatcherController', () => {
     describe('handleGroupJoinRequest', () => {
         it('should make an HTTP post request', () => {
             const httpPostSpy = spyOn(controller['http'], 'post').and.returnValue(of(true) as any);
-            controller.handleGroupJoinRequest(DEFAULT_GAME_ID, DEFAULT_PLAYER_NAME);
+            controller.handleGroupJoinRequest(DEFAULT_GAME_ID);
             expect(httpPostSpy).toHaveBeenCalled();
         });
 
@@ -200,7 +204,7 @@ describe('GameDispatcherController', () => {
             spyOn(controller['http'], 'post').and.returnValue(observable);
             const spy = spyOn(observable, 'subscribe');
 
-            controller.handleGroupJoinRequest({} as unknown as string, {} as unknown as string);
+            controller.handleGroupJoinRequest({} as unknown as string);
             expect(spy).toHaveBeenCalled();
         });
 
@@ -208,7 +212,7 @@ describe('GameDispatcherController', () => {
             const fakeObservable = of<string>('fakeResponse');
             spyOn(controller['http'], 'post').and.returnValue(fakeObservable);
             const successSpy = spyOn(controller['groupRequestValidEvent'], 'next');
-            controller.handleGroupJoinRequest(DEFAULT_GAME_ID, DEFAULT_PLAYER_NAME);
+            controller.handleGroupJoinRequest(DEFAULT_GAME_ID);
             expect(successSpy).toHaveBeenCalled();
         });
 
@@ -219,7 +223,7 @@ describe('GameDispatcherController', () => {
             const errorSpy = spyOn<any>(controller, 'handleJoinError').and.callFake(() => {
                 return;
             });
-            controller.handleGroupJoinRequest(DEFAULT_GAME_ID, DEFAULT_PLAYER_NAME);
+            controller.handleGroupJoinRequest(DEFAULT_GAME_ID);
             expect(errorSpy).toHaveBeenCalled();
         });
     });

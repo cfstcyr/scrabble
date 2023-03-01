@@ -9,16 +9,18 @@ import { Player } from '@app/classes/player';
 import { PlayerContainer } from '@app/classes/player/player-container';
 import { Timer } from '@app/classes/round/timer';
 import { IconComponent } from '@app/components/icon/icon.component';
-import { LOCAL_PLAYER_ICON } from '@app/constants/components-constants';
 import { DEFAULT_PLAYER, SECONDS_TO_MILLISECONDS } from '@app/constants/game-constants';
 import { GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
+import { UNKOWN_USER } from '@common/models/user';
 import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InformationBoxComponent } from './information-box.component';
 import SpyObj = jasmine.SpyObj;
 
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
 class MockRoundManager {
     pTimerSource: BehaviorSubject<[timer: Timer, activePlayer: Player]> = new BehaviorSubject<[timer: Timer, activePlayer: Player]>([
         new Timer(0, 0),
@@ -26,7 +28,7 @@ class MockRoundManager {
     ]);
     pTimer: Observable<[timer: Timer, activePlayer: Player]>;
     pEndRoundEvent: Subject<void> = new Subject();
-    pActivePlayer: Player = new Player('mockId', 'mockName', []);
+    pActivePlayer: Player = new Player('mockId', UNKOWN_USER, []);
 
     get timerSource(): BehaviorSubject<[timer: Timer, activePlayer: Player]> {
         return this.pTimerSource;
@@ -219,14 +221,6 @@ describe('InformationBoxComponent', () => {
             expect(ngOnInitSpy).toHaveBeenCalled();
             expect(updateBorderSpy).toHaveBeenCalled();
         });
-
-        it('ngOnInit gameInitialized subscription should call the right functions', async () => {
-            const getIconSpy = spyOn<any>(component, 'getLocalPlayerIcon');
-
-            gameViewEventManagerSpy.emitGameViewEvent('gameInitialized');
-
-            expect(getIconSpy).toHaveBeenCalled();
-        });
     });
 
     describe('onDestroy', () => {
@@ -318,8 +312,8 @@ describe('InformationBoxComponent', () => {
         let player1: Player;
         let player2: Player;
         beforeEach(() => {
-            player1 = new Player('1', 'Player1', []);
-            player2 = new Player('2', 'Player2', []);
+            player1 = new Player('1', USER1, []);
+            player2 = new Player('2', USER2, []);
             gameServiceSpy.getPlayerByNumber.and.callFake((id: number) => {
                 return id === 1 ? player1 : player2;
             });
@@ -359,7 +353,7 @@ describe('InformationBoxComponent', () => {
 
         it('getPlayer1 should return a new player if gameservice player1 does not exist', () => {
             gameServiceSpy.getPlayerByNumber.and.returnValue(undefined as unknown as Player);
-            expect(component.getPlayer1()).toEqual(new Player('', 'Player1', []));
+            expect(component.getPlayer1()).toEqual(new Player('', { username: 'Player1', email: '', avatar: '' }, []));
         });
 
         it('getPlayer2 should return current gameservice player2 if it exists', () => {
@@ -369,7 +363,7 @@ describe('InformationBoxComponent', () => {
 
         it('getPlayer2 should return a new player if gameservice player2 does not exist', () => {
             gameServiceSpy.getPlayerByNumber.and.returnValue(undefined as unknown as Player);
-            expect(component.getPlayer2()).toEqual(new Player('', 'Player2', []));
+            expect(component.getPlayer2()).toEqual(new Player('', { username: 'Player2', email: '', avatar: '' }, []));
         });
     });
 
@@ -386,22 +380,5 @@ describe('InformationBoxComponent', () => {
     it('isTimerRunning should return false if it is not running', () => {
         component['timerSubscription'] = { closed: true } as unknown as Subscription;
         expect(component.isTimerRunning()).toBeFalse();
-    });
-
-    it('checkIfIsPlayer1 should return true if player1 is localPlayer', () => {
-        gameServiceSpy.getPlayerByNumber.and.returnValue(DEFAULT_PLAYER);
-        gameServiceSpy.getLocalPlayer.and.returnValue(DEFAULT_PLAYER);
-        expect(component['checkIfIsPlayer1']()).toEqual(true);
-    });
-
-    it('checkIfIsPlayer1 should return false if player1 is not localPlayer', () => {
-        gameServiceSpy.getPlayerByNumber.and.returnValue(DEFAULT_PLAYER);
-        gameServiceSpy.getLocalPlayer.and.returnValue(new Player('id2', 'name of player2', []));
-        expect(component['checkIfIsPlayer1']()).toEqual(false);
-    });
-
-    it('getLocalPlayericon should return an icon from the list LOCAL_PLAYER_ICON', () => {
-        const chosenIcon = component['getLocalPlayerIcon']();
-        expect(LOCAL_PLAYER_ICON.includes(chosenIcon)).toBeTrue();
     });
 });

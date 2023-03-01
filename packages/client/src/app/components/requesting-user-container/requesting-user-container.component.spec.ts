@@ -8,6 +8,9 @@ import { IconComponent } from '@app/components/icon/icon.component';
 
 import { RequestingUserContainerComponent } from './requesting-user-container.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('RequestingUserContainerComponent', () => {
     let component: RequestingUserContainerComponent;
@@ -16,7 +19,7 @@ describe('RequestingUserContainerComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [RequestingUserContainerComponent, IconComponent],
-            imports: [MatTooltipModule],
+            imports: [HttpClientModule, MatTooltipModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
         }).compileComponents();
     });
 
