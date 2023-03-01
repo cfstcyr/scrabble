@@ -24,10 +24,10 @@ class ActionService {
     return ActionData(type: actionType, payload: payload);
   }
 
-  void sendAction(String gameId, ActionData actionData) {
+  void sendAction(ActionData actionData) {
     if (_hasActionBeenPlayed) return;
 
-    gameplayController.sendAction(gameId, actionData);
+    gameplayController.sendAction(actionData);
     _hasActionBeenPlayed = true;
   }
 

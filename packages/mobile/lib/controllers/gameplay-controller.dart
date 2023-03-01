@@ -9,6 +9,7 @@ import '../services/socket.service.dart';
 
 class GameplayController {
   final String baseEndpoint = GAME_ENDPOINT;
+  String? currentGameId;
   final Subject<void> _actionDone$ = PublishSubject();
 
   Stream<void> get actionDoneEvent => _actionDone$.stream;
@@ -24,8 +25,13 @@ class GameplayController {
     return _instance;
   }
 
-  Future<void> sendAction(String gameId, ActionData actionData) async {
-    Uri endpoint = Uri.parse("$baseEndpoint/$gameId/action");
+  Future<void> sendAction(ActionData actionData) async {
+    Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/action");
     post(endpoint, body: actionData).then((_) => _actionDone$.add(null));
+  }
+
+  Future<void> leaveGame() async {
+    Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/leave");
+    await delete(endpoint);
   }
 }
