@@ -7,13 +7,14 @@ import '../components/player-waiting-list.dart';
 import '../components/waiting-room.dart';
 
 class CreateLobbyPage extends StatelessWidget {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey1 = GlobalKey<ScaffoldState>();
+  final PageStorageBucket _bucket = PageStorageBucket();
+  final Widget b =
+      const ChatManagement(key: PageStorageKey<String>('chatManager'));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      endDrawer: Container(width: 200, child: ChatManagement()),
+      endDrawer:
+          Container(width: 250, child: PageStorage(bucket: _bucket, child: b)),
       appBar: AppBar(
         title: Text("Salle d'attente"),
         shadowColor: Colors.black,
@@ -21,10 +22,6 @@ class CreateLobbyPage extends StatelessWidget {
         elevation: 1,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.chat),
-          onPressed: () => _scaffoldKey.currentState!.openEndDrawer(),
-        ),
       ),
       body: FractionallySizedBox(
         widthFactor: 1,
