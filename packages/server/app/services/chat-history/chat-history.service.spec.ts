@@ -8,7 +8,7 @@ import DatabaseService from '@app/services/database-service/database.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { Channel } from '@common/models/chat/channel';
 import { ChatHistoryMessage, ChatMessage } from '@common/models/chat/chat-message';
-import { PublicUser, User } from '@common/models/user';
+import { PublicUser, UNKOWN_USER, User } from '@common/models/user';
 import { expect } from 'chai';
 import { Knex } from 'knex';
 import * as Sinon from 'sinon';
@@ -117,21 +117,29 @@ describe('ChatHistoryService', () => {
                 message: expectedMessage,
             });
         });
-    });
 
-    describe('deleteChannelHistory', () => {
-        it('should delete the history of a channel', async () => {
-            await userTable().insert(USER);
+        it('should return the history of a channel with UNKOWN_USER', async () => {
             await channelTable().insert(testChannel);
-
-            testingUnit.getStubbedInstance(AuthentificationService).getUserByEmail.resolves(USER);
-
             await service.saveMessage(message);
-
-            await service.deleteChannelHistory(testChannel.idChannel);
-
             const channelHistory = await service.getChannelHistory(testChannel.idChannel);
-            expect(channelHistory).to.have.lengthOf(0);
+
+            expect(channelHistory[0].message.sender).to.deep.equal(UNKOWN_USER);
+        });
+
+        describe('deleteChannelHistory', () => {
+            it('should delete the history of a channel', async () => {
+                await userTable().insert(USER);
+                await channelTable().insert(testChannel);
+
+                testingUnit.getStubbedInstance(AuthentificationService).getUserByEmail.resolves(USER);
+
+                await service.saveMessage(message);
+
+                await service.deleteChannelHistory(testChannel.idChannel);
+
+                const channelHistory = await service.getChannelHistory(testChannel.idChannel);
+                expect(channelHistory).to.have.lengthOf(0);
+            });
         });
     });
 });

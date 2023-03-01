@@ -73,7 +73,7 @@ const channelCreation: ChannelCreation = {
 
 class TestClass {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    testFunc = () => {};
+    testFunc = () => { };
 }
 
 describe('ChatService', () => {
@@ -137,7 +137,7 @@ describe('ChatService', () => {
                 chatHistoryService as unknown as ChatHistoryService,
             );
 
-            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => {});
+            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => { });
 
             socketService['configureSocketsEvent'].emit(SOCKET_CONFIGURE_EVENT_NAME, serverSocket);
 
@@ -291,6 +291,17 @@ describe('ChatService', () => {
 
                     expect(serverSocket.rooms.has(getSocketNameFromChannel(testChannel))).to.be.false;
                 });
+                it('should emit channel:quit to all users in channel', async () => {
+                    chatPersistenceService.getChannel.resolves(testChannel);
+
+                    serverSocket.join(getSocketNameFromChannel(testChannel));
+
+                    clientSocket.emit('channel:quit', testChannel.idChannel);
+
+                    await Delay.for(RESPONSE_DELAY);
+
+                    expect(serverSocket.rooms.has(getSocketNameFromChannel(testChannel))).to.be.false;
+                });
             });
             describe('SAD PATH', () => {
                 it('should throw error if channel does NOT exist', async () => {
@@ -305,6 +316,31 @@ describe('ChatService', () => {
                         clientSocket.emit('channel:quit', testChannel.idChannel);
                     });
                 });
+            });
+        });
+
+        describe('channel:delete', () => {
+            describe('HAPPY PATH', () => {
+                it('should delete channel', async () => {
+                    const stub = Sinon.stub(service, 'emptyChannel' as any).callsFake(async () => Promise.resolve());
+
+                    clientSocket.emit('channel:delete', testChannel.idChannel);
+
+                    await Delay.for(RESPONSE_DELAY);
+
+                    expect(stub.called).to.be.true;
+                });
+            });
+        });
+
+        describe('updatePublicChannels', () => {
+            it('should call updatePublicChannels', async () => {
+                serverSocket.join(getSocketNameFromChannel(testChannel));
+                const stub = Sinon.stub(service, 'updatePublicChannels' as any).callsFake(async () => Promise.resolve());
+
+                await service['updatePublicChannels']();
+
+                expect(stub.called).to.be.true;
             });
         });
     });
