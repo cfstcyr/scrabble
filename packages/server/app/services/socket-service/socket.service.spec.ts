@@ -326,5 +326,11 @@ describe('SocketService', () => {
                 expect(() => service.doesRoomExist(INVALID_ROOM_NAME)).to.throw(SOCKET_SERVICE_NOT_INITIALIZED);
             });
         });
+
+        describe('getAllSockets', () => {
+            it('should return an empty array', () => {
+                expect(service.getAllSockets()).to.be.empty;
+            });
+        });
     });
 });

@@ -120,6 +120,10 @@ export class SocketService {
         return socket;
     }
 
+    getAllSockets(): io.Socket[] {
+        return Array.from(this.sockets.values());
+    }
+
     // Required for signature overload. This forces us to use only the correct payload
     // for the current emit and prevents us from emitting incorrect arguments which
     // would cause errors on the client side
