@@ -7,17 +7,15 @@ class DialogBoxButtonParameters {
   final String content;
   final AppButtonTheme theme;
   final Function()? onPressed;
-  final bool closesDialog;
+  final bool? closesDialog;
   final IconData? icon;
 
   DialogBoxButtonParameters(
       {required this.content,
       required this.theme,
       this.onPressed,
-      this.closesDialog = true,
-      this.icon})
-      : assert(onPressed != null ? !closesDialog : closesDialog),
-        assert(closesDialog ? onPressed == null : onPressed != null);
+      this.closesDialog,
+      this.icon});
 }
 
 void triggerDialogBox(
@@ -26,27 +24,35 @@ void triggerDialogBox(
     context: navigatorKey.currentContext!,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(title),
-        surfaceTintColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text(message, style: TextStyle(fontSize: 16)),
-            ],
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: AlertDialog(
+          title: Text(title),
+          surfaceTintColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message, style: TextStyle(fontSize: 16)),
+              ],
+            ),
+          ),
+          actions: buttons
+              .map((DialogBoxButtonParameters button) => AppButton(
+                    onPressed: button.onPressed ??
+                        (button.closesDialog != null && button.closesDialog!
+                            ? () => Navigator.pop(context)
+                            : null),
+                    theme: button.theme,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(button.content, style: TextStyle(fontSize: 16)),
+                    ),
+                  ))
+              .toList(),
         ),
-        actions: buttons
-            .map((DialogBoxButtonParameters button) => AppButton(
-                  onPressed: button.onPressed ?? () => Navigator.pop(context),
-                  theme: button.theme,
-                  text: button.content,
-                  icon: button.icon,
-                ))
-            .toList(),
       );
     },
   );
