@@ -2,10 +2,24 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientChannel, ViewClientChannel } from '@app/classes/chat/channel';
-import { CHANNEL_NAME_MAX_LENGTH, CONFIRM_QUIT_CHANNEL, CONFIRM_QUIT_DIALOG_TITLE, MAX_OPEN_CHAT } from '@app/constants/chat-constants';
+import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import {
+    CHANNEL_NAME_MAX_LENGTH,
+    CONFIRM_DELETE_CHANNEL,
+    CONFIRM_DELETE_DIALOG_TITLE,
+    CONFIRM_JOIN_DIALOG,
+    CONFIRM_JOIN_DIALOG_TITLE,
+    CONFIRM_QUIT_CHANNEL,
+    CONFIRM_QUIT_DIALOG_TITLE,
+    DELETE,
+    DIALOG_CHECKBOX,
+    JOIN,
+    MAX_OPEN_CHAT,
+    QUIT
+} from '@app/constants/chat-constants';
+import { CANCEL } from '@app/constants/components-constants';
 import { Channel } from '@common/models/chat/channel';
 import { Observable, Subject } from 'rxjs';
-import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { map, takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -15,11 +29,13 @@ import { map, takeUntil } from 'rxjs/operators';
 })
 export class ChatboxContainerComponent implements OnDestroy, OnInit {
     @Input() channels: Observable<ClientChannel[]> = new Observable();
+    @Input() publicChannels: Observable<ClientChannel[]> = new Observable();
     @Input() joinedChannel: Observable<ClientChannel> = new Observable();
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
     @Output() joinChannel: EventEmitter<Channel> = new EventEmitter();
     @Output() quitChannel: EventEmitter<Channel> = new EventEmitter();
+    @Output() deleteChannel: EventEmitter<Channel> = new EventEmitter();
     @ViewChild('createChannelInput') createChannelInput: ElementRef<HTMLInputElement>;
     @ViewChild('joinChannelInput') joinChannelInput: ElementRef<HTMLInputElement>;
     createChannelForm: FormGroup;
@@ -27,6 +43,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     openedChannels: ClientChannel[] = [];
     channelMenuIsOpen: boolean = false;
     channelNameMaxLength: number = CHANNEL_NAME_MAX_LENGTH;
+    notShowCheckbox: boolean = false;
     private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
 
     constructor(private readonly formBuilder: FormBuilder, private readonly dialog: MatDialog) {
@@ -50,12 +67,31 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     }
 
     getChannelsForMenu(): Observable<ViewClientChannel[]> {
+        const channelName = this.createChannelForm.value.createChannel.trim();
+
         return this.channels.pipe(
             map<ClientChannel[], ViewClientChannel[]>((channels) =>
-                channels.map((channel) => ({
-                    ...channel,
-                    canOpen: !this.openedChannels.find((c) => channel.idChannel === c.idChannel),
-                })),
+                channels
+                    .filter((channel) => channel.name.startsWith(channelName))
+                    .map((channel) => ({
+                        ...channel,
+                        canOpen: !this.openedChannels.find((c) => channel.idChannel === c.idChannel),
+                    })),
+            ),
+        );
+    }
+
+    getPublicChannelsForMenu(): Observable<ViewClientChannel[]> {
+        const channelName = this.createChannelForm.value.createChannel.trim();
+
+        return this.publicChannels.pipe(
+            map<ClientChannel[], ViewClientChannel[]>((channels) =>
+                channels
+                    .filter((channel) => channel.name.startsWith(channelName))
+                    .map((channel) => ({
+                        ...channel,
+                        canOpen: !this.openedChannels.find((c) => channel.idChannel === c.idChannel),
+                    })),
             ),
         );
     }
@@ -87,6 +123,38 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
         this.sendMessage.next([channel, content]);
     }
 
+    handleJoinChannel(channel: ClientChannel): void {
+        if (!this.notShowCheckbox) {
+            this.dialog.open(DefaultDialogComponent, {
+                data: {
+                    title: CONFIRM_JOIN_DIALOG_TITLE,
+                    content: CONFIRM_JOIN_DIALOG(channel.name),
+                    buttons: [
+                        {
+                            content: CANCEL,
+                            closeDialog: true,
+                        },
+                        {
+                            content: JOIN,
+                            closeDialog: true,
+                            action: () => this.joinChannelFromMenu(channel),
+                        },
+                    ],
+                    checkbox: {
+                        content: DIALOG_CHECKBOX,
+                        checked: false,
+                        action: (checked: boolean) => this.notShowCheckbox = checked,
+                    },
+                },
+            });
+        } else this.joinChannelFromMenu(channel);
+    }
+
+    joinChannelFromMenu(channel: ClientChannel): void {
+        this.joinChannel.emit(channel);
+        this.showChannel(channel);
+    }
+
     handleCreateChannel(): void {
         if (!this.createChannelForm.valid) return;
 
@@ -96,30 +164,65 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
 
         this.createChannel.next(channelName);
         this.createChannelForm.reset();
+        this.createChannelForm.setValue({ createChannel: '' });
         this.createChannelForm.setErrors({ createChannel: false });
         this.createChannelInput?.nativeElement?.blur();
     }
 
     handleQuitChannel(channel: ClientChannel): void {
-        this.dialog.open(DefaultDialogComponent, {
-            data: {
-                title: CONFIRM_QUIT_DIALOG_TITLE,
-                content: CONFIRM_QUIT_CHANNEL(channel.name),
-                buttons: [
-                    {
-                        content: 'Annuler',
-                        closeDialog: true,
-                    },
-                    {
-                        content: 'Quitter',
-                        closeDialog: true,
-                        action: () => {
-                            this.minimizeChannel(channel);
-                            this.quitChannel.emit(channel);
+        if (!this.notShowCheckbox) {
+
+            this.dialog.open(DefaultDialogComponent, {
+                data: {
+                    title: CONFIRM_QUIT_DIALOG_TITLE,
+                    content: CONFIRM_QUIT_CHANNEL(channel.name),
+                    buttons: [
+                        {
+                            content: CANCEL,
+                            closeDialog: true,
                         },
-                    },
-                ],
-            },
-        });
+                        {
+                            content: QUIT,
+                            closeDialog: true,
+                            action: () => this.quitChannelFromMenu(channel),
+                        },
+                    ],
+                },
+            });
+        } else this.quitChannelFromMenu(channel);
+    }
+
+    handleDeleteChannel(channel: ClientChannel): void {
+        if (!this.notShowCheckbox) {
+
+            this.dialog.open(DefaultDialogComponent, {
+                data: {
+                    title: CONFIRM_DELETE_DIALOG_TITLE,
+                    content: CONFIRM_DELETE_CHANNEL(channel.name),
+                    buttons: [
+                        {
+                            content: CANCEL,
+                            closeDialog: true,
+                        },
+                        {
+                            content: DELETE,
+                            closeDialog: true,
+                            action: () => this.deleteChannelFromMenu(channel),
+                        },
+                    ],
+                },
+            });
+        } else this.deleteChannelFromMenu(channel);
+
+    }
+
+    private quitChannelFromMenu(channel: ClientChannel): void {
+        this.minimizeChannel(channel);
+        this.quitChannel.emit(channel);
+    }
+
+    private deleteChannelFromMenu(channel: ClientChannel): void {
+        this.minimizeChannel(channel);
+        this.deleteChannel.emit(channel);
     }
 }

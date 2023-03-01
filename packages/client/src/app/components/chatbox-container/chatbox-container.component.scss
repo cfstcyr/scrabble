@@ -46,7 +46,7 @@
         }
 
         &__item {
-            display: grid;
+            display: flex;
             grid-template-columns: minmax(0, 1fr) auto;
             align-items: center;
             gap: 6px;
