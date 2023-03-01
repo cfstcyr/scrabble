@@ -38,7 +38,7 @@ class GroupJoinController {
     String username = 'Player';
     joinedGroupedId = groupId;
     return post(Uri.parse(
-        "$endpoint/games/$groupId/players/${SocketService.socket.id}/join"),
+        "$endpoint/$groupId/players/${SocketService.socket.id}/join"),
         body: { 'playerName': username});
   }
 
@@ -48,7 +48,7 @@ class GroupJoinController {
 
   Future<Response> handleLeaveGroup() async {
     Future<Response> response = delete(
-        Uri.parse("$endpoint/games/$joinedGroupedId/players/${SocketService
+        Uri.parse("$endpoint/$joinedGroupedId/players/${SocketService
             .socket.id}/leave"));
     joinedGroupedId = null;
     return response;
