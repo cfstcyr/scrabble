@@ -16,11 +16,21 @@ class PublicUser {
       avatar: json["avatar"],
     );
   }
+
   Map<String, dynamic> toJson() => {
         "username": username,
         "avatar": avatar,
         "email": email,
       };
+}
+
+List<PublicUser> usersFromJson(Map<String, dynamic> json) {
+  return List<PublicUser>.from([
+    json['user1'],
+    json['user2'],
+    json['user3'],
+    json['user4']
+  ].map((dynamic publicUser) => PublicUser.fromJson(publicUser)).toList());
 }
 // export interface PublicUser {
 //   username: string;
