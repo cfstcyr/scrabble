@@ -4,6 +4,7 @@ import 'package:mobile/components/chat-management.dart';
 import '../components/group-management.dart';
 import '../components/parameters.dart';
 import '../components/player-waiting-list.dart';
+import '../components/scaffold-persistance.dart';
 import '../components/waiting-room.dart';
 
 class CreateLobbyPage extends StatelessWidget {
@@ -12,17 +13,8 @@ class CreateLobbyPage extends StatelessWidget {
       const ChatManagement(key: PageStorageKey<String>('chatManager'));
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      endDrawer:
-          Container(width: 300, child: PageStorage(bucket: _bucket, child: b)),
-      appBar: AppBar(
-        title: Text("Salle d'attente"),
-        shadowColor: Colors.black,
-        backgroundColor: Colors.white,
-        elevation: 1,
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-      ),
+    return MyScaffold(
+      title: "Salle d'attente",
       body: FractionallySizedBox(
         widthFactor: 1,
         heightFactor: 1,

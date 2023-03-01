@@ -43,6 +43,18 @@ class _ChatManagementState extends State<ChatManagement> {
     }
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+
+    // code barbare pour ne pas dupliquer configureSockets()
+    socketService.socket.off('channel:join');
+    socketService.socket.off('channel:quit');
+    socketService.socket.off('channel:history');
+    socketService.socket.off('channel:init');
+    socketService.socket.off('channel:allChannels');
+  }
+
   Future<void> configureSockets() async {
     socketService.socket.on('channel:join', (channel) {
       setState(() {
