@@ -1,16 +1,56 @@
 <mat-card class="content">
-    <div class="info">
-        <p class="name">{{ group.user1.username }}</p>
-        <div class="chip-list">
-            <div class="chip">
-                <app-icon icon="hourglass-half" size="sm"></app-icon> {{ roundTime.minutes }}:{{ roundTime.getTimerSecondsPadded() }}
+    <div class="left-container">
+        <div class="player-container">
+            <div class="player">
+                <div class="avatar__container">
+                    <img [src]=" group.user1.avatar" class="avatar__img" />
+                </div>
+                <p class="name">{{ group.user1.username }}</p>
+            </div>
+            <div class="player">
+                <div class="avatar__container" [ngClass]="{ empty: group.user2 === undefined }">
+                    <img *ngIf="group.user2 !== undefined" [src]="group.user2.avatar"  class="avatar__img" />
+                </div>
+                <p class="name">{{ group.user2?.username ?? "JV " + group.virtualPlayerLevel }}</p>
+            </div>
+            <div class="player">
+                <div class="avatar__container" [ngClass]="{ empty: group.user3 === undefined }">
+                    <img *ngIf="group.user3 !== undefined" [src]=" group.user3.avatar"  class="avatar__img" />
+                </div>
+                <p class="name">{{ group.user3?.username ?? "JV " + group.virtualPlayerLevel}}</p>
+            </div>
+            <div class="player">
+                <div class="avatar__container" [ngClass]="{ empty: group.user4 === undefined }">
+                    <img *ngIf="group.user4 !== undefined" [src]=" group.user4.avatar"  class="avatar__img" />
+                </div>
+                <p class="name">{{ group.user4?.username ?? "JV " + group.virtualPlayerLevel}}</p>
+            </div>
+    
+        </div>
+        <mat-divider vertical></mat-divider>
+    
+        <div class="info-container">
+            <div class="chip-list">
+                <div class="chip">
+                    <app-icon icon="hourglass-half" size="lg"></app-icon> {{ roundTime.minutes }}:{{ roundTime.getTimerSecondsPadded() }}
+                </div>
+                <div class="chip">
+                    <app-icon icon="user-robot" styling="solid" size="lg"></app-icon> {{ group.virtualPlayerLevel }}
+                </div>
             </div>
         </div>
+
     </div>
     <div class="button-container">
-        <button mat-flat-button id="join-button" color="primary" (click)="joinGroup()">
-        <!-- <button mat-flat-button id="join-button" color="primary" [disabled]="!group.canJoin" (click)="joinGroup()"> -->
-            <app-icon icon="swords" size="lg"></app-icon> Joindre
+        <app-icon *ngIf="group.gameVisibility === gameVisibilities.Public" id="visibility" icon="globe" size="3x"></app-icon>
+        <app-icon *ngIf="group.gameVisibility === gameVisibilities.Private" id="visibility" styling="solid" icon="lock" size="3x"></app-icon>
+        <app-icon *ngIf="group.gameVisibility === gameVisibilities.Protected" id="visibility" icon="shield" size="3x"></app-icon>
+
+        <button mat-flat-button id="observe-button" color="primary">
+            <app-icon icon="eye" size="2x"></app-icon>
+        </button>
+        <button mat-flat-button id="join-button" color="primary" [disabled]="group.user2 !== undefined && group.user3 !== undefined && group.user4 !== undefined"  (click)="joinGroup()">
+            <app-icon icon="play" styling="solid" size="2x"></app-icon>
         </button>
     </div>
 </mat-card>

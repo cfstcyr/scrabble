@@ -13,6 +13,7 @@ export class GroupInfoComponent implements OnInit {
     @Input() group: Group;
     @Output() joinGroupId: EventEmitter<string>;
     roundTime: Timer;
+    gameVisibilities = GameVisibility;
 
     constructor() {
         this.joinGroupId = new EventEmitter<string>();
