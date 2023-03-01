@@ -96,6 +96,7 @@ class _ChatManagementState extends State<ChatManagement> {
         //TODO :HACK FOR NOW
         unjoinedChannels.removeWhere((x) => x.name == 'general');
         channels$.add(unjoinedChannels);
+        _channelSearchResult.addAll(channels$.value);
       });
 
       print('channel:allChannels');
@@ -124,9 +125,26 @@ class _ChatManagementState extends State<ChatManagement> {
   }
 
   var inputController = TextEditingController();
+  var searchController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final meykey = PageStorageKey<String>('chatManager');
   final PageStorageBucket _bucket = PageStorageBucket();
+  List<Channel> _channelSearchResult = [];
+
+  onSearchTextChanged(String text) async {
+    if (text.isEmpty) {
+      setState(() {
+        _channelSearchResult.addAll(channels$.value);
+      });
+      return;
+    }
+    _channelSearchResult.clear();
+
+    channels$.value.forEach((channel) {
+      if (channel.name.contains(text)) _channelSearchResult.add(channel);
+    });
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,12 +155,6 @@ class _ChatManagementState extends State<ChatManagement> {
         key: _scaffoldKey,
         endDrawerEnableOpenDragGesture: false,
         endDrawer: Drawer(child: ChatPage(channel: channelToOpen$.value)),
-        // appBar: AppBar(
-        //   leading: IconButton(
-        //     icon: Icon(Icons.settings),
-        //     onPressed: () => _scaffoldKey.currentState!.openEndDrawer(),
-        //   ),
-        // ),
         body: ListView(
           shrinkWrap: true,
           padding: EdgeInsets.zero,
@@ -200,7 +212,6 @@ class _ChatManagementState extends State<ChatManagement> {
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
                           borderRadius: BorderRadius.all(Radius.circular(4.0))),
                       child: InkWell(
                         onTap: () {
@@ -228,11 +239,7 @@ class _ChatManagementState extends State<ChatManagement> {
                                         });
                                       }
                                     : null,
-                                icon: Icon(Icons.remove),
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.grey.shade200,
-                                    foregroundColor: Colors.green.shade900,
-                                    shape: CircleBorder()),
+                                icon: Icon(Icons.output_rounded),
                               ),
                             ],
                           ),
@@ -249,19 +256,31 @@ class _ChatManagementState extends State<ChatManagement> {
               color: Colors.grey.shade500,
             ),
             ListTile(
-              title: const Text('Tous les canaux'),
+              leading: Icon(Icons.search),
+              title: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                    hintText: 'Tous les canaux', border: InputBorder.none),
+                onChanged: onSearchTextChanged,
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: () {
+                  searchController.clear();
+                  onSearchTextChanged('');
+                },
+              ),
             ),
             Container(
                 child: ListView.builder(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
-                    itemCount: channels$.value.length,
+                    itemCount: _channelSearchResult.length,
                     itemBuilder: (_, int index) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
                               borderRadius:
                                   BorderRadius.all(Radius.circular(4.0))),
                           child: Padding(
@@ -270,22 +289,18 @@ class _ChatManagementState extends State<ChatManagement> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  channels$.value[index].name,
+                                  _channelSearchResult[index].name,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 17),
                                 ),
                                 IconButton(
                                   onPressed: () {
                                     setState(() {
-                                      joinChannel(
-                                          channels$.value[index].idChannel);
+                                      joinChannel(_channelSearchResult[index]
+                                          .idChannel);
                                     });
                                   },
                                   icon: Icon(Icons.add),
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.grey.shade200,
-                                      foregroundColor: Colors.green.shade900,
-                                      shape: CircleBorder()),
                                 ),
                               ],
                             ),

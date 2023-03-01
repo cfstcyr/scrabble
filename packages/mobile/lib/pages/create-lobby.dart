@@ -14,7 +14,7 @@ class CreateLobbyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       endDrawer:
-          Container(width: 250, child: PageStorage(bucket: _bucket, child: b)),
+          Container(width: 300, child: PageStorage(bucket: _bucket, child: b)),
       appBar: AppBar(
         title: Text("Salle d'attente"),
         shadowColor: Colors.black,
