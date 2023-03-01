@@ -39,7 +39,6 @@
                         matTooltip="Veuillez remplir tous les champs avec des données valides"
                         [matTooltipDisabled]="isFormValid()"
                         matTooltipPosition="above"
-                        (click)="onFormInvalidClick()"
                     >
                         <button mat-flat-button color="primary" type="submit" id="create-game-button" [disabled]="!isFormValid()" cdkFocusInitial>
                             Créer la partie

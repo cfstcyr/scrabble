@@ -53,6 +53,10 @@ $border-radius: 6px;
                 margin-bottom: 1.34375em;
             }
 
+            mat-divider {
+                margin-bottom: 1.34375em;
+            }
+
             mat-button-toggle-group {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
@@ -123,6 +127,8 @@ $border-radius: 6px;
 
             app-timer-selection {
                 display: block;
+                margin-top: 2.6875em;
+
             }
 
             .alert {
