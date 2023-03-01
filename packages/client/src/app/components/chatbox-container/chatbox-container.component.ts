@@ -186,6 +186,11 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                             action: () => this.quitChannelFromMenu(channel),
                         },
                     ],
+                    checkbox: {
+                        content: DIALOG_CHECKBOX,
+                        checked: false,
+                        action: (checked: boolean) => (this.notShowCheckbox = checked),
+                    },
                 },
             });
         } else this.quitChannelFromMenu(channel);
@@ -208,6 +213,11 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                             action: () => this.deleteChannelFromMenu(channel),
                         },
                     ],
+                    checkbox: {
+                        content: DIALOG_CHECKBOX,
+                        checked: false,
+                        action: (checked: boolean) => (this.notShowCheckbox = checked),
+                    },
                 },
             });
         } else this.deleteChannelFromMenu(channel);
