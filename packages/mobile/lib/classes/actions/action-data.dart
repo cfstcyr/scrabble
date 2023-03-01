@@ -46,7 +46,7 @@ abstract class ActionPayload {
 
 class ActionData<T extends ActionPayload> {
   final ActionType type;
-  final T payload;
+  final T? payload;
 
   ActionData({
     required this.type,
@@ -54,11 +54,11 @@ class ActionData<T extends ActionPayload> {
   });
 
   factory ActionData.fromJson(Map<String, dynamic> json) {
-    return ActionData(type: ActionType.fromJson(json['type']), payload: json['payload'] as T);
+    return ActionData(type: ActionType.fromJson(json['type']), payload: json['payload'] ? json['payload'] as T : null);
   }
 
   Map<String, dynamic> toJson() => {
     'type': type,
-    'payload': payload.toJson(),
+    'payload': payload != null ? payload!.toJson() : null,
   };
 }
