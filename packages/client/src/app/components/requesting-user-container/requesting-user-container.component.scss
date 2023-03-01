@@ -1,68 +1,24 @@
 @import '../../style/variables.scss';
 
-$border-radius: 6px;
+$img-size: 50px;
 
-::ng-deep .mat-tooltip {
-    font-size: small;
-}
-
-.signup-container {
-    max-width: 625px;
-    width: 100%;
-    margin: 0 auto;
-
-    & > mat-card {
-        margin: 0 12px;
-    }
-
-    .header {
-        display: flex;
-        justify-content: center;
-
-        h2 {
-            color: rgba(0, 0, 0, 0.87);
-        }
-    }
-
-    form {
-        
-        mat-form-field {
-            width: 100%;
-        }
-
-        .field-error {
-            margin-top: -1.5em;
-            padding-left: 0.25em;
-            color: tomato;
-            font-size: small;
-        }
-    }
-
-    .buttons {
-        display: flex;
-        justify-content: space-between;
-
-        button {
-            font-size: 1.2em;
-            padding: 6px 16px;
-        }
-    }
+.content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 100px;
+    margin: 15px 0px;
+    padding: 12px;
 
     .avatar {
-        $img-size: 50px;
-
         &__container {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 8px;
             flex-wrap: wrap;
-        }
-
-        &__input {
-            position: absolute;
-            opacity: 0;
-            width: 0;
-            height: 0;
+            position: relative;
+            margin-right: 10px;
         }
 
         &__img {
@@ -71,13 +27,47 @@ $border-radius: 6px;
             border-radius: 100px;
             cursor: pointer;
             border: solid 2px transparent;
-            opacity: 0.75;
+            opacity: 1;
+        }
+    }
+    
+    .button-container {
+        margin-left: auto;
+        display: flex;
+
+    }
+    
+    .accept-button, .reject-button {
+        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+        margin-right: 10px;
+        border-radius: 50%;
+        background-color: #e6e6e6;
+
+        width: 40px;
+        height: 40px;
+        min-width: 0px;
+        app-icon {
+            height: $img-size;
+            width: $img-size;
+            border-radius: 100px;
+            cursor: pointer;
+            border: solid 2px transparent;
+            opacity: 1;
+            color: $primary;
         }
     }
 
-    .avatar__input:checked + .avatar__img {
-        scale: 1.1;
-        border-color: $primary;
-        opacity: 1;
+    .name {
+    font-size: 1.7em;
+    margin: 0 0 8px 0;
+    text-align: center;
+    white-space: nowrap; 
+    text-overflow: ellipsis; 
+    max-width: 200px; 
     }
 }
