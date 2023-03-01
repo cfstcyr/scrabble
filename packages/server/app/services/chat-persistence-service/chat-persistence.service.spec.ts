@@ -201,19 +201,6 @@ describe('ChatPersistenceService', () => {
             expect(await userChannelTable().select().where({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser })).to.have.length(0);
         });
 
-        it('should call deleteChannel history if channel is empty', async () => {
-            await userTable().insert(USER);
-            await channelTable().insert(CHANNEL_1);
-            await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
-
-            chatHistoryService.deleteChannelHistory.resolves();
-
-            service['isChannelEmpty'] = async () => Promise.resolve(true);
-
-            await service.leaveChannel(CHANNEL_1.idChannel, USER.idUser);
-
-            expect(chatHistoryService.deleteChannelHistory.calledOnce).to.be.true;
-        });
     });
 
     describe('isChannelNameAvailable', () => {
@@ -269,19 +256,73 @@ describe('ChatPersistenceService', () => {
         });
     });
 
-    describe('isChannelEmpty', () => {
-        it('should return true if no user in channel', async () => {
-            await channelTable().insert(CHANNEL_1);
+    // Decommnet tests when isChannelEmpty is used
+    // describe('isChannelEmpty', () => {
+    //     it('should return true if no user in channel', async () => {
+    //         await channelTable().insert(CHANNEL_1);
 
-            expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.true;
+    //         expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.true;
+    //     });
+
+    //     it('should return false if user in channel', async () => {
+    //         await channelTable().insert(CHANNEL_1);
+    //         await userTable().insert(USER);
+    //         await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
+
+    //         expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.false;
+    //     });
+    // });
+
+    describe('getPublicChannels', () => {
+        it('should return only public channels', async () => {
+            await channelTable().insert([CHANNEL_1, { ...CHANNEL_2, private: true }]);
+            await userTable().insert(USER);
+
+            const channels = await service.getPublicChannels(USER.idUser);
+
+            expect(channels).to.have.length(1);
+            expect(channels[0].idChannel).to.equal(CHANNEL_1.idChannel);
         });
 
-        it('should return false if user in channel', async () => {
+        it('should return only channels user is not in', async () => {
+            await channelTable().insert([CHANNEL_1, CHANNEL_2]);
+            await userTable().insert(USER);
+            await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
+
+            const channels = await service.getPublicChannels(USER.idUser);
+
+            expect(channels).to.have.length(1);
+            expect(channels[0].idChannel).to.equal(CHANNEL_2.idChannel);
+        });
+    })
+
+    describe('deleteChannel', () => {
+        it('should delete channel', async () => {
+            await channelTable().insert(CHANNEL_1);
+
+            await service.deleteChannel(CHANNEL_1.idChannel);
+
+            expect(await channelTable().select().where({ idChannel: CHANNEL_1.idChannel })).to.have.length(0);
+        });
+
+        it('should delete channel history', async () => {
+            await channelTable().insert(CHANNEL_1);
+
+            chatHistoryService.deleteChannelHistory.resolves();
+
+            await service.deleteChannel(CHANNEL_1.idChannel);
+
+            expect(chatHistoryService.deleteChannelHistory.calledOnce).to.be.true;
+        });
+
+        it('should delete channel from userChannel', async () => {
             await channelTable().insert(CHANNEL_1);
             await userTable().insert(USER);
             await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
 
-            expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.false;
+            await service.deleteChannel(CHANNEL_1.idChannel);
+
+            expect(await userChannelTable().select().where({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser })).to.have.length(0);
         });
-    });
+    })
 });

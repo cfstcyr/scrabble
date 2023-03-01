@@ -1,15 +1,15 @@
-import { CHANNEL_TABLE, USER_CHANNEL_TABLE } from '@app/constants/services-constants/database-const';
-import { Channel, ChannelCreation, UserChannel } from '@common/models/chat/channel';
-import { Service } from 'typedi';
-import DatabaseService from '@app/services/database-service/database.service';
-import { TypeOfId } from '@common/types/id';
-import { User } from '@common/models/user';
 import { UserId } from '@app/classes/user/connected-user-types';
+import { CHANNEL_TABLE, USER_CHANNEL_TABLE } from '@app/constants/services-constants/database-const';
 import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
+import DatabaseService from '@app/services/database-service/database.service';
+import { Channel, ChannelCreation, UserChannel } from '@common/models/chat/channel';
+import { User } from '@common/models/user';
+import { TypeOfId } from '@common/types/id';
+import { Service } from 'typedi';
 
 @Service()
 export class ChatPersistenceService {
-    constructor(private readonly databaseService: DatabaseService, private chatHistoryService: ChatHistoryService) {}
+    constructor(private readonly databaseService: DatabaseService, private chatHistoryService: ChatHistoryService) { }
 
     async getChannels(): Promise<Channel[]> {
         return this.channelTable.select();
@@ -17,6 +17,14 @@ export class ChatPersistenceService {
 
     async getChannel(idChannel: TypeOfId<Channel>): Promise<Channel | undefined> {
         return (await this.channelTable.select('*').where({ idChannel }))[0];
+    }
+
+    async getPublicChannels(idUser: TypeOfId<User>): Promise<Channel[]> {
+        const userChannels = await this.getUserChannelIds(idUser);
+        let publicChannels = await this.channelTable.select('*').where({ private: false }).andWhere({ default: false });
+        publicChannels = publicChannels.filter((channel) => !userChannels.includes(channel.idChannel));
+
+        return publicChannels;
     }
 
     async getUserChannelIds(idUser: TypeOfId<User>): Promise<TypeOfId<Channel>[]> {
@@ -45,10 +53,12 @@ export class ChatPersistenceService {
 
     async leaveChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<void> {
         await this.userChatTable.delete().where({ idChannel, idUser });
+    }
 
-        if (await this.isChannelEmpty(idChannel)) {
-            await this.chatHistoryService.deleteChannelHistory(idChannel);
-        }
+    async deleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
+        await this.userChatTable.delete().where({ idChannel });
+        await this.chatHistoryService.deleteChannelHistory(idChannel);
+        await this.channelTable.delete().where({ idChannel });
     }
 
     async isChannelNameAvailable(channel: ChannelCreation): Promise<boolean> {
@@ -77,9 +87,10 @@ export class ChatPersistenceService {
         }
     }
 
-    private async isChannelEmpty(idChannel: TypeOfId<Channel>): Promise<boolean> {
-        return (await this.userChatTable.select('*').where({ idChannel })).length === 0;
-    }
+    // Decommnet when function is to be used
+    // private async isChannelEmpty(idChannel: TypeOfId<Channel>): Promise<boolean> {
+    //     return (await this.userChatTable.select('*').where({ idChannel })).length === 0;
+    // }
 
     private async isUserInChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<boolean> {
         return (await this.userChatTable.select('*').where({ idChannel, idUser })).length > 0;
