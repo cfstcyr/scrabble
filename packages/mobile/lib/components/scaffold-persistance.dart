@@ -7,9 +7,6 @@ class MyScaffold extends StatelessWidget {
   final String title;
 
   MyScaffold({required this.body, required this.title});
-  final PageStorageBucket _bucket = PageStorageBucket();
-  final Widget b =
-      const ChatManagement(key: PageStorageKey<String>('chatManager'));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,8 +19,7 @@ class MyScaffold extends StatelessWidget {
         automaticallyImplyLeading: false,
         centerTitle: true,
       ),
-      endDrawer:
-          Container(width: 300, child: PageStorage(bucket: _bucket, child: b)),
+      endDrawer: Container(width: 300, child: const ChatManagement()),
     );
   }
 }

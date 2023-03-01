@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/chat-management.dart';
 
 import '../components/group-management.dart';
 import '../components/parameters.dart';
@@ -8,9 +7,6 @@ import '../components/scaffold-persistance.dart';
 import '../components/waiting-room.dart';
 
 class CreateLobbyPage extends StatelessWidget {
-  final PageStorageBucket _bucket = PageStorageBucket();
-  final Widget b =
-      const ChatManagement(key: PageStorageKey<String>('chatManager'));
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
