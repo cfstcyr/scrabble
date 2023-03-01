@@ -17,6 +17,7 @@ export class GroupInfoDetailedComponent {
     gameVisibilities = GameVisibility;
 
     constructor() {
+        this.startGame = new EventEmitter<void>();
         this.group = {
             groupId: '0',
             user1: UNKOWN_USER,

@@ -257,6 +257,7 @@ export class GameDispatcherController extends BaseController {
         }
 
         const gameConfig = this.gameDispatcherService.startRequest(gameId, playerId);
+
         const startGameData = await this.activeGameService.beginGame(gameId, gameConfig.idChannel, gameConfig);
 
         this.socketService.emitToRoom(gameId, 'startGame', startGameData);
