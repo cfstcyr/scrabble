@@ -71,7 +71,6 @@ export default class GameDispatcherService implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        ('gamedispatcher service destroyed');
         this.serviceDestroyed$.next(true);
         this.serviceDestroyed$.complete();
     }
@@ -104,20 +103,21 @@ export default class GameDispatcherService implements OnDestroy {
         this.handleGameCreation(gameConfig);
     }
 
-    handleRecreateGame(gameParameters?: FormGroup): void {
-        if (!this.currentGroup) return;
-        if (!gameParameters) return;
+    // TODO: See if this is still useful
+    // handleRecreateGame(gameParameters?: FormGroup): void {
+    //     if (!this.currentGroup) return;
+    //     if (!gameParameters) return;
 
-        const groupData: GroupData = {
-            user1: this.userService.getUser(),
-            maxRoundTime: this.currentGroup?.maxRoundTime,
-            // TODO: Change this when implementing different modes
-            gameVisibility: GameVisibility.Private,
-            virtualPlayerLevel: gameParameters.get('level')?.value as VirtualPlayerLevel,
-        };
+    //     const groupData: GroupData = {
+    //         user1: this.userService.getUser(),
+    //         maxRoundTime: this.currentGroup?.maxRoundTime,
+    //         // TODO: Change this when implementing different modes
+    //         gameVisibility: GameVisibility.Private,
+    //         virtualPlayerLevel: gameParameters.get('level')?.value as VirtualPlayerLevel,
+    //     };
 
-        this.handleGameCreation(groupData);
-    }
+    //     this.handleGameCreation(groupData);
+    // }
 
     handleCancelGame(mustResetData: boolean = true): void {
         if (this.getCurrentGroupId()) this.gameDispatcherController.handleCancelGame(this.getCurrentGroupId());
@@ -205,7 +205,6 @@ export default class GameDispatcherService implements OnDestroy {
     }
 
     private handlePlayerCancelledRequest(requestingUsers: PublicUser[]): void {
-        ('handlePlayerCancelledRequest');
         this.playerCancelledRequestEvent.next(requestingUsers);
     }
 
