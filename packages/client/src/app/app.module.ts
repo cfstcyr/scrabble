@@ -28,7 +28,6 @@ import { ObjectiveComponent } from './components/objective/objective.component';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';
 import { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';
-import { HighScoresPageComponent } from './pages/high-scores-page/high-scores-page.component';
 import { LoadingPageComponent } from './pages/loading-page/loading-page.component';
 import { GroupPageComponent } from './pages/group-page/group-page.component';
 import { DurationPipe } from './pipes/duration/duration.pipe';
@@ -79,7 +78,6 @@ registerLocaleData(localeFr);
         IconComponent,
         TimerSelectionComponent,
         PageHeaderComponent,
-        HighScoresPageComponent,
         HighScoreBoxComponent,
         DurationPipe,
         ObjectiveComponent,
