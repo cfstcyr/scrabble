@@ -33,6 +33,16 @@ const CHANNEL_2: ClientChannel = {
     private: false,
     default: false,
 };
+const ChatMessage1: ChatMessage = {
+    sender: USER,
+    content: 'content',
+    date: new Date(),
+};
+const ChannelMessage1: ChannelMessage = {
+    idChannel: 1,
+    message: ChatMessage1,
+};
+
 
 describe('ChatService', () => {
     let service: ChatService;
@@ -141,6 +151,21 @@ describe('ChatService', () => {
         });
     });
 
+    describe('deleteChannel', () => {
+        it('should emit to channel:delete', () => {
+            spyOn(socket, 'emit');
+            service.deleteChannel(1);
+            expect(socket.emit).toHaveBeenCalled();
+        });
+    })
+
+    describe('handlePublicChannels', () => {
+        it('should add channels', () => {
+            service.handlePublicChannels([CHANNEL_1, CHANNEL_2]);
+            expect(service.publicChannels.value.size).toEqual(2);
+        });
+    })
+
     describe('sendMessage', () => {
         it('should emit to channel:newMessage', () => {
             spyOn(socket, 'emit');
@@ -191,6 +216,20 @@ describe('ChatService', () => {
             service.channels.next(new Map([[channel.idChannel, channel]]));
             service.handleChannelQuit(channel);
             expect(service.channels.value.size).toEqual(0);
+        });
+
+        it('should remove channel from public channels', () => {
+            const channel: ClientChannel = {
+                idChannel: 1,
+                name: 'channel',
+                messages: [],
+                canQuit: true,
+                private: false,
+                default: false,
+            };
+            service.publicChannels.next(new Map([[channel.idChannel, channel]]));
+            service.handleChannelQuit(channel);
+            expect(service.publicChannels.value.size).toEqual(0);
         });
     });
 
