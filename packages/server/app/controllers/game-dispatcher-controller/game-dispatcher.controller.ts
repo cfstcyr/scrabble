@@ -5,6 +5,7 @@ import { CreateGameRequest, GameRequest, LobbiesRequest } from '@app/classes/com
 import { GameConfigData, ReadyGameConfigWithChannelId } from '@app/classes/game/game-config';
 import { GameMode } from '@app/classes/game/game-mode';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { UserId } from '@app/classes/user/connected-user-types';
 import { SECONDS_TO_MILLISECONDS, TIME_TO_RECONNECT } from '@app/constants/controllers-constants';
 import {
     DICTIONARY_REQUIRED,
@@ -18,17 +19,16 @@ import {
     VIRTUAL_PLAYER_NAME_REQUIRED,
 } from '@app/constants/controllers-errors';
 import { SYSTEM_ID } from '@app/constants/game-constants';
+import { BaseController } from '@app/controllers/base-controller';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { GameDispatcherService } from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
+import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
+import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { validateName } from '@app/utils/validate-name/validate-name';
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '@app/controllers/base-controller';
-import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
-import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
-import { UserId } from '@app/classes/user/connected-user-types';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(

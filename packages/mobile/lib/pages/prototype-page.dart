@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/chatbox.dart';
+import 'package:mobile/pages/groups-page.dart';
 
 import '../components/invalid-connection-popup.dart';
 import 'create-lobby.dart';
@@ -40,6 +41,15 @@ class PrototypePage extends StatelessWidget {
                           builder: (context) => CreateLobbyPage()));
                 },
                 child: Text('Créer une partie'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => GroupPage()));
+                },
+                child: Text('Rejoindre une partie'),
               ),
             ],
           ),
