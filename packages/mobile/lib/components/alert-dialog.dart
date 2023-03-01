@@ -24,35 +24,32 @@ void triggerDialogBox(
     context: navigatorKey.currentContext!,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: AlertDialog(
-          title: Text(title),
-          surfaceTintColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(message, style: TextStyle(fontSize: 16)),
-              ],
-            ),
-          ),
-          actions: buttons
-              .map((DialogBoxButtonParameters button) => AppButton(
-                    onPressed: button.onPressed ??
-                        (button.closesDialog != null && button.closesDialog!
-                            ? () => Navigator.pop(context)
-                            : null),
-                    theme: button.theme,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(button.content, style: TextStyle(fontSize: 16)),
-                    ),
-                  ))
-              .toList(),
+      return AlertDialog(
+        title: Text(title),
+        surfaceTintColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
         ),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text(message, style: TextStyle(fontSize: 16)),
+            ],
+          ),
+        ),
+        actions: buttons
+            .map((DialogBoxButtonParameters button) => AppButton(
+                  onPressed: button.onPressed ??
+                      (button.closesDialog != null && button.closesDialog!
+                          ? () => Navigator.pop(context)
+                          : null),
+                  theme: button.theme,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(button.content, style: TextStyle(fontSize: 16)),
+                  ),
+                ))
+            .toList(),
       );
     },
   );
