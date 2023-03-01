@@ -38,12 +38,10 @@ enum ActionType {
   }
 }
 
-class ActionPayload {
-  ActionPayload();
+abstract class ActionPayload {
+  ActionPayload fromJson(Map<String, dynamic> json);
 
-  factory ActionPayload.fromJson(Map<String, dynamic> json) => ActionPayload();
-
-  Map toJson() => {};
+  Map toJson();
 }
 
 class ActionData<T extends ActionPayload> {

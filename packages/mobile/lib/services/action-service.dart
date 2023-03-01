@@ -1,16 +1,31 @@
+import 'package:mobile/controllers/gameplay-controller.dart';
+
 import '../classes/actions/action-data.dart';
+import '../locator.dart';
 
 class ActionService {
-  ActionService._privateConstructor();
+  bool _hasActionBeenPlayed = false;
+  bool get hasActionBeenPlayed => _hasActionBeenPlayed;
 
-  static final ActionService _instance =
-  ActionService._privateConstructor();
+  GameplayController gameplayController = getIt.get<GameplayController>();
+  ActionService._privateConstructor() {
+    gameplayController.actionDoneEvent.listen((_) => _actionProcessed());
+  }
+
+  static final ActionService _instance = ActionService._privateConstructor();
 
   factory ActionService() {
     return _instance;
   }
 
   void sendAction(String gameId, ActionData actionData) {
+    if (_hasActionBeenPlayed) return;
 
+    gameplayController.sendAction(gameId, actionData);
+    _hasActionBeenPlayed = true;
+  }
+
+  void _actionProcessed() {
+    _hasActionBeenPlayed = false;
   }
 }
