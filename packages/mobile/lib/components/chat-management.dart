@@ -7,7 +7,6 @@ import 'package:mobile/classes/channel.dart';
 import 'package:mobile/components/chatbox.dart';
 
 import '../constants/chat-management.constants.dart';
-import '../locator.dart';
 import '../services/socket.service.dart';
 import '../view-methods/chat-management-methods.dart';
 
@@ -18,7 +17,6 @@ class ChatManagement extends StatefulWidget {
 }
 
 class _ChatManagementState extends State<ChatManagement> {
-  SocketService socketService = getIt.get<SocketService>();
   @override
   void initState() {
     super.initState();
@@ -38,17 +36,17 @@ class _ChatManagementState extends State<ChatManagement> {
     super.dispose();
 
     // code barbare pour ne pas dupliquer configureSockets()
-    socketService.socket.off(JOIN_EVENT);
-    socketService.socket.off(QUIT_EVENT);
-    socketService.socket.off(HISTORY_EVENT);
-    socketService.socket.off(INIT_EVENT);
-    socketService.socket.off(ALL_CHANNELS_EVENT);
+    SocketService.socket.off(JOIN_EVENT);
+    SocketService.socket.off(QUIT_EVENT);
+    SocketService.socket.off(HISTORY_EVENT);
+    SocketService.socket.off(INIT_EVENT);
+    SocketService.socket.off(ALL_CHANNELS_EVENT);
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<void> configureSockets() async {
-    socketService.socket.on(JOIN_EVENT, (channel) {
+    SocketService.socket.on(JOIN_EVENT, (channel) {
       setState(() {
         var typedChannel = Channel.fromJson(channel);
         myChannels.add(typedChannel);
@@ -60,7 +58,7 @@ class _ChatManagementState extends State<ChatManagement> {
       });
     });
 
-    socketService.socket.on(QUIT_EVENT, (channel) {
+    SocketService.socket.on(QUIT_EVENT, (channel) {
       setState(() {
         myChannels.removeWhere(
             (x) => x.idChannel == Channel.fromJson(channel).idChannel);
@@ -71,17 +69,17 @@ class _ChatManagementState extends State<ChatManagement> {
     });
 
     // TODO w/ rachad mr
-    // socketService.socket.on(HISTORY_EVENT, (channel) {
+    // SocketService.socket.on(HISTORY_EVENT, (channel) {
     //   print('channel:history: $channel');
     // });
 
-    socketService.socket.on(INIT_EVENT, (s) {
+    SocketService.socket.on(INIT_EVENT, (s) {
       setState(() {
         shouldOpen$.add(true);
       });
     });
 
-    socketService.socket.on(ALL_CHANNELS_EVENT, (receivedChannels) {
+    SocketService.socket.on(ALL_CHANNELS_EVENT, (receivedChannels) {
       setState(() {
         channels = List<Channel>.from(
             receivedChannels.map((channel) => Channel.fromJson(channel)));
@@ -89,7 +87,7 @@ class _ChatManagementState extends State<ChatManagement> {
         channels$.add(handleUnjoinedChannels());
       });
     });
-    socketService.socket.emit(INIT_EVENT);
+    SocketService.socket.emit(INIT_EVENT);
     getAllChannels();
   }
 

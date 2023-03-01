@@ -37,7 +37,7 @@ Future<void> quitChannel(int idChannel) async {
 }
 
 Future<void> getAllChannels() async {
-  socketService.socket.emit('channel:allChannels');
+  SocketService.socket.emit('channel:allChannels');
 }
 
 List<Channel> handleUnjoinedChannels() {
