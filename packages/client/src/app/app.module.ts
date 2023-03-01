@@ -24,7 +24,6 @@ import { HighScoreBoxComponent } from './components/high-score-box/high-score-bo
 import { IconComponent } from './components/icon/icon.component';
 import { InformationBoxComponent } from './components/information-box/information-box.component';
 import { GroupInfoComponent } from './components/group-info/group-info.component';
-import { ObjectiveComponent } from './components/objective/objective.component';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';
 import { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';
@@ -81,7 +80,6 @@ registerLocaleData(localeFr);
         PageHeaderComponent,
         HighScoreBoxComponent,
         DurationPipe,
-        ObjectiveComponent,
         LoadingPageComponent,
         ChatBoxComponent,
         ChatboxContainerComponent,
