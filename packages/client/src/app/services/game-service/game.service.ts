@@ -9,7 +9,6 @@ import { Round } from '@app/classes/round/round';
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
-import { GameType } from '@app/constants/game-type';
 import { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';
 import BoardService from '@app/services/board-service/board.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
@@ -28,7 +27,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
     isGameOver: boolean;
 
     private gameId: string;
-    private gameType: GameType;
     private playerContainer?: PlayerContainer;
     private serviceDestroyed$: Subject<boolean>;
 
@@ -98,15 +96,10 @@ export default class GameService implements OnDestroy, IResetServiceData {
         return this.tileReserve.reduce((prev, { amount }) => prev + amount, 0);
     }
 
-    getGameType(): GameType {
-        return this.gameType;
-    }
-
     resetServiceData(): void {
         this.tileReserve = [];
         this.isGameOver = false;
         this.gameId = '';
-        this.gameType = GameType.Classic;
         this.playerContainer = undefined;
         this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
     }
