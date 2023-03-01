@@ -1,13 +1,14 @@
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { INVALID_ID_FOR_SOCKET, NO_TOKEN, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
-import { NextFunction } from 'express';
 import { SocketErrorResponse } from '@common/models/error';
 import { EventEmitter } from 'events';
+import { NextFunction } from 'express';
 import * as http from 'http';
 import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
@@ -25,7 +26,6 @@ import {
     SocketEmitEvents,
     StartGameEmitArgs,
 } from './socket-types';
-import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 
 @Service()
 export class SocketService {

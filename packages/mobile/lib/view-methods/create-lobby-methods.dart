@@ -24,10 +24,10 @@ ButtonStyle setStyleRoomButtons() {
   );
 }
 
-ButtonStyle setStyleButtonToText() {
+ButtonStyle setStyleButtonToText([Color? backGroundColor]) {
   return ButtonStyle(
     foregroundColor: MaterialStateProperty.all(Colors.black),
-    backgroundColor: MaterialStateProperty.all(Colors.white),
+    backgroundColor: MaterialStateProperty.all(backGroundColor ?? Colors.white),
   );
 }
 
@@ -72,6 +72,8 @@ Widget setWaitingPlayerIcon(int index) {
 }
 
 bool addPlayerToLobby(PublicUser player) {
+  if (playerList$.isClosed) reOpen();
+
   // TODO COTE SERVEUR req
   if (playerList.length >= MAX_PLAYER_COUNT) return false;
   playerWaitingList.remove(player);
@@ -104,5 +106,6 @@ void reOpen() {
 }
 
 bool isMinimumPlayerCount() {
+  print(playerList$.value);
   return playerList$.value.length < MINIMUM_PLAYER_COUNT;
 }
