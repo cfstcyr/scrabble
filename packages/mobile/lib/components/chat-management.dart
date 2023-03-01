@@ -93,17 +93,6 @@ class _ChatManagementState extends State<ChatManagement> {
     getAllChannels();
   }
 
-  List<Channel> handleUnjoinedChannels() {
-    List<Channel> unjoinedChannels = [...channels];
-    myChannels.forEach((myChannel) {
-      unjoinedChannels.removeWhere((channel) {
-        return channel.name == myChannel.name;
-      });
-    });
-    channelSearchResult = [...unjoinedChannels];
-    return channelSearchResult;
-  }
-
   onSearchTextChanged(String text) async {
     if (text.isEmpty) {
       setState(() {
@@ -129,15 +118,7 @@ class _ChatManagementState extends State<ChatManagement> {
         shrinkWrap: true,
         padding: EdgeInsets.zero,
         children: [
-          SizedBox(
-            height: 90,
-            child: DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-              ),
-              child: Text(CHANNELS_TITLE),
-            ),
-          ),
+          setDrawerTitle(),
           Padding(
             padding:
                 EdgeInsets.only(left: 10.0, right: 10.0, top: 0, bottom: 0),
@@ -151,14 +132,7 @@ class _ChatManagementState extends State<ChatManagement> {
               controller: inputController,
               decoration: InputDecoration(
                 hintText: CREATE_CHANNEL,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    width: 1,
-                    style: BorderStyle.solid,
-                  ),
-                ),
+                border: setCreateChannelBorder(),
                 suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
@@ -195,11 +169,7 @@ class _ChatManagementState extends State<ChatManagement> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              myChannels$.value[index].name,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 17),
-                            ),
+                            setName(myChannels$.value[index].name),
                             IconButton(
                               onPressed: myChannels$.value[index].canQuit
                                   ? () {
@@ -218,13 +188,7 @@ class _ChatManagementState extends State<ChatManagement> {
                   ),
                 );
               }),
-          Divider(
-            height: 10,
-            thickness: 2,
-            indent: 15,
-            endIndent: 15,
-            color: Colors.grey.shade500,
-          ),
+          setDivider(),
           ListTile(
             leading: Icon(Icons.search),
             title: TextField(
@@ -241,43 +205,37 @@ class _ChatManagementState extends State<ChatManagement> {
               },
             ),
           ),
-          Container(
-              child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: channelSearchResult.length,
-                  itemBuilder: (_, int index) {
-                    return Padding(
+          ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: channelSearchResult.length,
+              itemBuilder: (_, int index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(4.0))),
+                    child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(4.0))),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                channelSearchResult[index].name,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 17),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    joinChannel(
-                                        channelSearchResult[index].idChannel);
-                                  });
-                                },
-                                icon: Icon(Icons.add),
-                              ),
-                            ],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          setName(channelSearchResult[index].name),
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                joinChannel(
+                                    channelSearchResult[index].idChannel);
+                              });
+                            },
+                            icon: Icon(Icons.add),
                           ),
-                        ),
+                        ],
                       ),
-                    );
-                  })),
+                    ),
+                  ),
+                );
+              }),
         ],
       ),
     );
