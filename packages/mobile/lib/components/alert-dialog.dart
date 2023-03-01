@@ -7,17 +7,17 @@ class DialogBoxButtonParameters {
   final String content;
   final AppButtonTheme theme;
   final Function()? onPressed;
-  final bool? closesDialog;
+  final bool closesDialog;
   final IconData? icon;
 
   DialogBoxButtonParameters(
       {required this.content,
       required this.theme,
       this.onPressed,
-      this.closesDialog,
+      this.closesDialog = true,
       this.icon})
-      : assert(onPressed != null ? closesDialog == null : closesDialog != null),
-        assert(closesDialog != null ? onPressed == null : onPressed != null);
+      : assert(onPressed != null ? !closesDialog : closesDialog),
+        assert(closesDialog ? onPressed == null : onPressed != null);
 }
 
 void triggerDialogBox(
