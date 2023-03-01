@@ -7,8 +7,8 @@ $img-size: 50px;
     flex-direction: row;
     align-items: center;
     border-radius: 100px;
-    margin: 15px 0px;
-    padding: 12px;
+    margin: 10px 0px;
+    padding: 8px;
 
     .avatar {
         &__container {
@@ -63,7 +63,7 @@ $img-size: 50px;
     }
 
     .name {
-    font-size: 1.7em;
+    font-size: 1.4em;
     margin: 0 0 8px 0;
     text-align: center;
     white-space: nowrap; 

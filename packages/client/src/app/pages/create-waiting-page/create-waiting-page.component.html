@@ -1,22 +1,64 @@
 <div class="container">
     <mat-card class="top-box">
-        <div class="players">
-            <div class="players">
-                <span class="name">{{ currentGroup.user1.username }}</span>
-                <span id="vs"> vs </span><span class="name">{{ currentGroup.user2?.username ?? '?' }}</span>
-                <span id="vs"> vs </span><span class="name">{{ currentGroup.user3?.username ?? '?' }}</span>
-                <span id="vs"> vs </span><span class="name">{{ currentGroup.user4?.username ?? '?' }}</span>
+        <div class="players-container">
+            <div class="player-row">
+                <div class="player">
+                    <img [src]="currentGroup.user1.avatar" class="avatar__img" />
+                  <div class="player-details">
+                    <span class="player-name">{{ currentGroup.user1.username }}</span>
+                  </div>
+                </div>
+                <div class="player">
+                    <img *ngIf="currentGroup.user2 !== undefined" [src]="currentGroup.user2.avatar" class="avatar__img" />
+                    <div class="app-icon-container" *ngIf="currentGroup.user2 === undefined">
+                        <app-icon  icon="question" size="2x"></app-icon>
+                    </div>
+                  <div class="player-details">
+                    <span class="player-name">{{ currentGroup.user2?.username ?? "Joueur 2"}}</span>
+                  </div>
+                </div>
+            </div>
+            <div class="vs-container">
+                <div class="vs">VS</div>
+              </div>
+            <div class="player-row">
+                <div class="player">
+                    <img *ngIf="currentGroup.user3 !== undefined" [src]="currentGroup.user3.avatar" class="avatar__img" />
+                    <div class="app-icon-container" *ngIf="currentGroup.user3 === undefined">
+                        <app-icon  icon="question" size="2x"></app-icon>
+                    </div>    
+                  <div class="player-details">
+                    <span class="player-name">{{ currentGroup.user3?.username ?? "Joueur 3"}}</span>
+                  </div>
+                </div>
+                <div class="player">
+                    <img *ngIf="currentGroup.user4 !== undefined" [src]="currentGroup.user4.avatar" class="avatar__img" />
+                    <div class="app-icon-container" *ngIf="currentGroup.user4 === undefined">
+                        <app-icon  icon="question" size="2x"></app-icon>
+                    </div>
+                    <div class="player-details">
+                    <span class="player-name">{{ currentGroup.user4?.username ?? "Joueur 4" }}</span>
+                  </div>
+                </div>
+            </div>
+          </div>
+          
+          <div class="info-container">
+            <div class="chip-list">
+                <div class="chip">
+                    <app-icon icon="hourglass-half" size="lg"></app-icon> {{ roundTime }}
+                </div>
+                <div class="chip">
+                    <app-icon icon="user-robot" styling="solid" size="lg"></app-icon> {{ currentGroup.virtualPlayerLevel }}
+                </div>
             </div>
         </div>
 
-        <div class="chip-list">
-            <div class="chip"><app-icon icon="hourglass-half" size="sm"></app-icon> {{ roundTime }}</div>
-        </div>
-        <div class="chip-list">
-            <div class="chip"><app-icon icon="robot" size="sm"></app-icon> {{ currentGroup.virtualPlayerLevel }}</div>
-        </div>
-
         <div class="button-box">
+            <button id="cancel-button" mat-flat-button class="button" color="primary" routerLink="/game-creation">
+            <app-icon icon="chevron-left" size="lg"></app-icon>
+            Annuler la partie
+            </button>
             <button
                 id="start-game-button"
                 class="button"
@@ -25,22 +67,19 @@
                 [disabled]="isGroupEmpty"
                 (click)="startGame()"
             >
+            <app-icon icon="arrow-from-left" size="lg"></app-icon>
                 Démarrer la partie
             </button>
-            <button id="cancel-button" mat-flat-button class="button" color="primary" routerLink="/game-creation">Annuler la partie</button>
         </div>
     </mat-card>
 
-    <mat-card class="fun-fact-box">
-        <p id="intro">Le saviez-vous ?</p>
-        <p id="fact">{{ funFact }}</p>
+    <mat-card class="grid">
+            Utilisateurs en attente
+            <div class="scrollable-container">
+                <ng-container *ngFor="let requestingUser of requestingUsers">
+                    <app-requesting-user-container [requestingUser]="requestingUser" [isGroupFull]="isGroupFull" (acceptedUser)="acceptUser($event)" (rejectedUser)="rejectUser($event)"></app-requesting-user-container>
+                </ng-container>
+            </div>
     </mat-card>
-
-    <div class="grid">
-        REQUESTING USERS
-        <ng-container *ngFor="let requestingUser of requestingUsers">
-            <app-requesting-user-container [requestingUser]="requestingUser" [isGroupFull]="isGroupFull" (acceptedUser)="acceptUser($event)" (rejectedUser)="rejectUser($event)"></app-requesting-user-container>
-        </ng-container>
-    </div>
-
+    
 </div>
