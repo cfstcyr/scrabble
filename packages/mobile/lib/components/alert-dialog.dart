@@ -25,32 +25,48 @@ void triggerDialogBox(
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(title),
-        surfaceTintColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text(message, style: TextStyle(fontSize: 16)),
-            ],
+          title: Text(title),
+          surfaceTintColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
-        ),
-        actions: buttons
-            .map((DialogBoxButtonParameters button) => AppButton(
-                  onPressed: button.onPressed ??
-                      (button.closesDialog != null && button.closesDialog!
-                          ? () => Navigator.pop(context)
-                          : null),
-                  theme: button.theme,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(button.content, style: TextStyle(fontSize: 16)),
-                  ),
-                ))
-            .toList(),
-      );
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message, style: TextStyle(fontSize: 16)),
+              ],
+            ),
+          ),
+          actions: [
+            Row(
+                children: buttons.asMap().entries.map(
+              (entry) {
+                int index = entry.key;
+                DialogBoxButtonParameters button = entry.value;
+                return Row(
+                  children: [
+                    AppButton(
+                      onPressed: button.onPressed ??
+                          (button.closesDialog != null && button.closesDialog!
+                              ? () => Navigator.pop(context)
+                              : null),
+                      theme: button.theme,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(button.content,
+                            style: TextStyle(fontSize: 16)),
+                      ),
+                    ),
+                    index < buttons.length - 1
+                        ? SizedBox(
+                            width: 16,
+                          )
+                        : SizedBox.shrink(),
+                  ],
+                );
+              },
+            ).toList())
+          ]);
     },
   );
 }
