@@ -70,7 +70,7 @@ export class ChatService {
         });
         socket.on('channel:delete', async (idChannel: TypeOfId<Channel>) => {
             try {
-                await this.emptyChannel(idChannel);
+                await this.deleteChannel(idChannel);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
@@ -107,10 +107,11 @@ export class ChatService {
             const socket: ServerSocket = this.socketService.getSocket(socketId);
             this.handleQuitChannel(idChannel, socket);
         });
+    }
 
-        await this.chatPersistenceService.deleteChannel(idChannel);
-
-        await this.updatePublicChannels();
+    async deleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
+        await this.handleDeleteChannel(idChannel);
+        await this.updateJoinableChannels();
     }
 
     private async handleSendMessage(channelMessage: ChannelMessage, socket: ServerSocket): Promise<void> {
@@ -129,6 +130,11 @@ export class ChatService {
         socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
     }
 
+    private async handleDeleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
+        await this.emptyChannel(idChannel);
+        await this.chatPersistenceService.deleteChannel(idChannel);
+    }
+
     private async handleCreateChannel(channel: ChannelCreation, socket: ServerSocket): Promise<Channel> {
         if (!(await this.chatPersistenceService.isChannelNameAvailable(channel))) {
             throw new HttpException(ALREADY_EXISTING_CHANNEL_NAME, StatusCodes.FORBIDDEN);
@@ -137,6 +143,7 @@ export class ChatService {
         const newChannel = await this.chatPersistenceService.saveChannel(channel);
 
         socket.emit('channel:newChannel', newChannel);
+        await this.updateJoinableChannels();
 
         this.handleJoinChannel(newChannel.idChannel, socket);
 
@@ -164,7 +171,7 @@ export class ChatService {
         socket.emit('channel:join', channel);
         socket.emit('channel:history', channelHistory);
 
-        await this.updatePublicChannels();
+        await this.updateJoinableChannelsForUser(user.idUser);
     }
 
     private async handleQuitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
@@ -182,8 +189,7 @@ export class ChatService {
         await this.chatPersistenceService.leaveChannel(idChannel, user.idUser);
 
         socket.emit('channel:quit', channel);
-
-        await this.updatePublicChannels();
+        await this.updateJoinableChannelsForUser(user.idUser);
     }
 
     private async initChannelsForSocket(socket: ServerSocket): Promise<void> {
@@ -196,13 +202,20 @@ export class ChatService {
         socket.emit('channel:initDone');
     }
 
-    private async updatePublicChannels(): Promise<void> {
+    private async updateJoinableChannelsForUser(idUser: TypeOfId<User>): Promise<void> {
+        const socketId: SocketId = this.authentificationService.connectedUsers.getSocketId(idUser);
+        const socket: ServerSocket = this.socketService.getSocket(socketId);
+        const joinableChannels = await this.chatPersistenceService.getJoinableChannels(idUser);
+        socket.emit('channel:joinableChannels', joinableChannels);
+    }
+
+    private async updateJoinableChannels(): Promise<void> {
         const sockets = this.socketService.getAllSockets();
 
         sockets.forEach(async (socket) => {
             const user: User = socket.data.user;
-            const publicChannels = await this.chatPersistenceService.getPublicChannels(user.idUser);
-            socket.emit('channel:publicChannels', publicChannels);
+            const joinableChannels = await this.chatPersistenceService.getJoinableChannels(user.idUser);
+            socket.emit('channel:joinableChannels', joinableChannels);
         });
     }
 }

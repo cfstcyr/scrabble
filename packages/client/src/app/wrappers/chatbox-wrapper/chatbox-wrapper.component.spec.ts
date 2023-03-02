@@ -29,7 +29,7 @@ describe('ChatboxWrapperComponent', () => {
     let ready: Subject<boolean>;
     let channels: Subject<ClientChannel[]>;
     let joinedChannel: Subject<ClientChannel>;
-    let publicChannels: Subject<ClientChannel[]>;
+    let joinableChannels: Subject<ClientChannel[]>;
 
     beforeEach(async () => {
         ready = new Subject();
@@ -38,12 +38,12 @@ describe('ChatboxWrapperComponent', () => {
 
         chatService = jasmine.createSpyObj(
             'ChatService',
-            ['configureSocket', 'sendMessage', 'createChannel', 'joinChannel', 'getChannels', 'deleteChannel', 'getPublicChannels'],
+            ['configureSocket', 'sendMessage', 'createChannel', 'joinChannel', 'getChannels', 'deleteChannel', 'getJoinableChannels'],
             {
                 ready,
                 channels,
                 joinedChannel,
-                publicChannels,
+                joinableChannels,
             },
         );
 

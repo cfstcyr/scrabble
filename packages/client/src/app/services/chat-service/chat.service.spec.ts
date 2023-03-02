@@ -6,9 +6,9 @@ import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-he
 import SocketService from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user.service';
 import { Channel } from '@common/models/chat/channel';
+import { ChannelMessage, ChatMessage } from '@common/models/chat/chat-message';
 import { PublicUser } from '@common/models/user';
 import { Subject } from 'rxjs';
-import { ChannelMessage, ChatMessage } from '@common/models/chat/chat-message';
 import { Socket } from 'socket.io-client';
 import { ChatService } from './chat.service';
 
@@ -149,10 +149,10 @@ describe('ChatService', () => {
         });
     });
 
-    describe('handlePublicChannels', () => {
+    describe('handleJoinableChannels', () => {
         it('should add channels', () => {
-            service.handlePublicChannels([CHANNEL_1, CHANNEL_2]);
-            expect(service.publicChannels.value.size).toEqual(2);
+            service.handleJoinableChannels([CHANNEL_1, CHANNEL_2]);
+            expect(service.joinableChannels.value.size).toEqual(2);
         });
     });
 
@@ -217,9 +217,9 @@ describe('ChatService', () => {
                 private: false,
                 default: false,
             };
-            service.publicChannels.next(new Map([[channel.idChannel, channel]]));
+            service.joinableChannels.next(new Map([[channel.idChannel, channel]]));
             service.handleChannelQuit(channel);
-            expect(service.publicChannels.value.size).toEqual(0);
+            expect(service.joinableChannels.value.size).toEqual(0);
         });
     });
 

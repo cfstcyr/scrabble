@@ -1,7 +1,7 @@
-<app-chatbox-container 
+<app-chatbox-container
     [channels]="channels"
     [joinedChannel]="joinedChannel"
-    [publicChannels]="publicChannels"
+    [joinableChannels]="joinableChannels"
     (sendMessage)="handleSendMessage($event)"
     (createChannel)="handleCreateChannel($event)"
     (quitChannel)="handleQuitChannel($event)"

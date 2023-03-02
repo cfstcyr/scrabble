@@ -73,7 +73,7 @@ const channelCreation: ChannelCreation = {
 
 class TestClass {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    testFunc = () => { };
+    testFunc = () => {};
 }
 
 describe('ChatService', () => {
@@ -137,7 +137,7 @@ describe('ChatService', () => {
                 chatHistoryService as unknown as ChatHistoryService,
             );
 
-            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => { });
+            const stub = Sinon.stub(service, 'initChannelsForSocket' as any).callsFake(() => {});
 
             socketService['configureSocketsEvent'].emit(SOCKET_CONFIGURE_EVENT_NAME, serverSocket);
 
@@ -333,12 +333,12 @@ describe('ChatService', () => {
             });
         });
 
-        describe('updatePublicChannels', () => {
-            it('should call updatePublicChannels', async () => {
+        describe('updateJoinableChannels', () => {
+            it('should call updateJoinableChannels', async () => {
                 serverSocket.join(getSocketNameFromChannel(testChannel));
-                const stub = Sinon.stub(service, 'updatePublicChannels' as any).callsFake(async () => Promise.resolve());
+                const stub = Sinon.stub(service, 'updateJoinableChannels' as any).callsFake(async () => Promise.resolve());
 
-                await service['updatePublicChannels']();
+                await service['updateJoinableChannels']();
 
                 expect(stub.called).to.be.true;
             });

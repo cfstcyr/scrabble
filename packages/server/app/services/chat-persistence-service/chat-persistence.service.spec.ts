@@ -2,18 +2,18 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
-import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
-import { expect } from 'chai';
-import { Container } from 'typedi';
-import DatabaseService from '@app/services/database-service/database.service';
-import { ChatPersistenceService } from './chat-persistence.service';
-import { CHANNEL_TABLE, USER_CHANNEL_TABLE, USER_TABLE } from '@app/constants/services-constants/database-const';
-import { Channel, UserChannel } from '@common/models/chat/channel';
-import { Knex } from 'knex';
-import { User } from '@common/models/user';
 import { UserId } from '@app/classes/user/connected-user-types';
-import * as sinon from 'sinon';
+import { CHANNEL_TABLE, USER_CHANNEL_TABLE, USER_TABLE } from '@app/constants/services-constants/database-const';
 import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
+import DatabaseService from '@app/services/database-service/database.service';
+import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import { Channel, UserChannel } from '@common/models/chat/channel';
+import { User } from '@common/models/user';
+import { expect } from 'chai';
+import { Knex } from 'knex';
+import * as sinon from 'sinon';
+import { Container } from 'typedi';
+import { ChatPersistenceService } from './chat-persistence.service';
 
 const CHANNEL_1: Channel = {
     idChannel: 1,
@@ -273,12 +273,12 @@ describe('ChatPersistenceService', () => {
     //     });
     // });
 
-    describe('getPublicChannels', () => {
+    describe('getJoinableChannels', () => {
         it('should return only public channels', async () => {
             await channelTable().insert([CHANNEL_1, { ...CHANNEL_2, private: true }]);
             await userTable().insert(USER);
 
-            const channels = await service.getPublicChannels(USER.idUser);
+            const channels = await service.getJoinableChannels(USER.idUser);
 
             expect(channels).to.have.length(1);
             expect(channels[0].idChannel).to.equal(CHANNEL_1.idChannel);
@@ -289,7 +289,7 @@ describe('ChatPersistenceService', () => {
             await userTable().insert(USER);
             await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
 
-            const channels = await service.getPublicChannels(USER.idUser);
+            const channels = await service.getJoinableChannels(USER.idUser);
 
             expect(channels).to.have.length(1);
             expect(channels[0].idChannel).to.equal(CHANNEL_2.idChannel);

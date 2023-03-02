@@ -15,7 +15,7 @@ import {
     DIALOG_CHECKBOX,
     JOIN,
     MAX_OPEN_CHAT,
-    QUIT,
+    QUIT
 } from '@app/constants/chat-constants';
 import { CANCEL } from '@app/constants/components-constants';
 import { Channel } from '@common/models/chat/channel';
@@ -29,7 +29,7 @@ import { map, takeUntil } from 'rxjs/operators';
 })
 export class ChatboxContainerComponent implements OnDestroy, OnInit {
     @Input() channels: Observable<ClientChannel[]> = new Observable();
-    @Input() publicChannels: Observable<ClientChannel[]> = new Observable();
+    @Input() joinableChannels: Observable<ClientChannel[]> = new Observable();
     @Input() joinedChannel: Observable<ClientChannel> = new Observable();
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
@@ -81,10 +81,10 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
         );
     }
 
-    getPublicChannelsForMenu(): Observable<ViewClientChannel[]> {
+    getJoinableChannelsForMenu(): Observable<ViewClientChannel[]> {
         const channelName = this.createChannelForm.value.createChannel.trim();
 
-        return this.publicChannels.pipe(
+        return this.joinableChannels.pipe(
             map<ClientChannel[], ViewClientChannel[]>((channels) =>
                 channels
                     .filter((channel) => channel.name.startsWith(channelName))
@@ -137,6 +137,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                         {
                             content: JOIN,
                             closeDialog: true,
+                            style: { color: 'primary' },
                             action: () => this.joinChannelFromMenu(channel),
                         },
                     ],

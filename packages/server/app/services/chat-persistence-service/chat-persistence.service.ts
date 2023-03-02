@@ -9,7 +9,7 @@ import { Service } from 'typedi';
 
 @Service()
 export class ChatPersistenceService {
-    constructor(private readonly databaseService: DatabaseService, private chatHistoryService: ChatHistoryService) { }
+    constructor(private readonly databaseService: DatabaseService, private chatHistoryService: ChatHistoryService) {}
 
     async getChannels(): Promise<Channel[]> {
         return this.channelTable.select();
@@ -19,12 +19,12 @@ export class ChatPersistenceService {
         return (await this.channelTable.select('*').where({ idChannel }))[0];
     }
 
-    async getPublicChannels(idUser: TypeOfId<User>): Promise<Channel[]> {
+    async getJoinableChannels(idUser: TypeOfId<User>): Promise<Channel[]> {
         const userChannels = await this.getUserChannelIds(idUser);
-        let publicChannels = await this.channelTable.select('*').where({ private: false }).andWhere({ default: false });
-        publicChannels = publicChannels.filter((channel) => !userChannels.includes(channel.idChannel));
+        let joinableChannels = await this.channelTable.select('*').where({ private: false }).andWhere({ default: false });
+        joinableChannels = joinableChannels.filter((channel) => !userChannels.includes(channel.idChannel));
 
-        return publicChannels;
+        return joinableChannels;
     }
 
     async getUserChannelIds(idUser: TypeOfId<User>): Promise<TypeOfId<Channel>[]> {
@@ -53,6 +53,10 @@ export class ChatPersistenceService {
 
     async leaveChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<void> {
         await this.userChatTable.delete().where({ idChannel, idUser });
+
+        if ((await this.isChannelEmpty(idChannel)) && (await this.isChannelPrivate(idChannel))) {
+            await this.deleteChannel(idChannel);
+        }
     }
 
     async deleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
@@ -88,9 +92,13 @@ export class ChatPersistenceService {
     }
 
     // Decommnet when function is to be used
-    // private async isChannelEmpty(idChannel: TypeOfId<Channel>): Promise<boolean> {
-    //     return (await this.userChatTable.select('*').where({ idChannel })).length === 0;
-    // }
+    private async isChannelEmpty(idChannel: TypeOfId<Channel>): Promise<boolean> {
+        return (await this.userChatTable.select('*').where({ idChannel })).length === 0;
+    }
+
+    private async isChannelPrivate(idChannel: TypeOfId<Channel>): Promise<boolean> {
+        return (await this.channelTable.select('private').where({ idChannel }))[0].private;
+    }
 
     private async isUserInChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<boolean> {
         return (await this.userChatTable.select('*').where({ idChannel, idUser })).length > 0;
