@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/home-page.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
@@ -95,10 +94,11 @@ void startGame(BuildContext context) {
 void backOut(BuildContext context) {
   // TODO socket close lobby
   playerList$.close();
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => HomePage()),
-  );
+  // Navigator.push(
+  //   context,
+  //   MaterialPageRoute(builder: (context) => HomePage()),
+  // );
+  Navigator.pop(context);
 }
 
 void reOpen() {
