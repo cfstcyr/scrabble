@@ -147,12 +147,12 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                     {
                         content: CANCEL,
                         closeDialog: true,
-                        style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
+                        style: 'background-color: rgb(231, 231, 231)',
                     },
                     {
                         content: QUIT,
                         closeDialog: true,
-                        style: 'background-color: rgb(231, 231, 231)',
+                        style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
                         action: () => this.quitChannelFromMenu(channel),
                     },
                 ],
@@ -169,12 +169,12 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                     {
                         content: CANCEL,
                         closeDialog: true,
-                        style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
+                        style: 'background-color: rgb(231, 231, 231)',
                     },
                     {
                         content: DELETE,
                         closeDialog: true,
-                        style: 'background-color: rgb(231, 231, 231)',
+                        style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
                         action: () => this.deleteChannelFromMenu(channel),
                     },
                 ],
