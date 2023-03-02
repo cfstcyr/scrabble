@@ -13,6 +13,15 @@ import { Subject } from 'rxjs';
 
 import { ChatboxWrapperComponent } from './chatbox-wrapper.component';
 
+const mockChannel: ClientChannel = {
+    idChannel: 1,
+    name: 'test',
+    canQuit: true,
+    private: false,
+    default: false,
+    messages: [],
+};
+
 describe('ChatboxWrapperComponent', () => {
     let component: ChatboxWrapperComponent;
     let fixture: ComponentFixture<ChatboxWrapperComponent>;
@@ -20,17 +29,23 @@ describe('ChatboxWrapperComponent', () => {
     let ready: Subject<boolean>;
     let channels: Subject<ClientChannel[]>;
     let joinedChannel: Subject<ClientChannel>;
+    let publicChannels: Subject<ClientChannel[]>;
 
     beforeEach(async () => {
         ready = new Subject();
         channels = new Subject();
         joinedChannel = new Subject();
 
-        chatService = jasmine.createSpyObj('ChatService', ['configureSocket', 'sendMessage', 'createChannel', 'joinChannel', 'getChannels'], {
-            ready,
-            channels,
-            joinedChannel,
-        });
+        chatService = jasmine.createSpyObj(
+            'ChatService',
+            ['configureSocket', 'sendMessage', 'createChannel', 'joinChannel', 'getChannels', 'deleteChannel', 'getPublicChannels'],
+            {
+                ready,
+                channels,
+                joinedChannel,
+                publicChannels,
+            },
+        );
 
         await TestBed.configureTestingModule({
             declarations: [
@@ -67,6 +82,20 @@ describe('ChatboxWrapperComponent', () => {
         it('should call createChannel', () => {
             component.handleCreateChannel('');
             expect(chatService.createChannel).toHaveBeenCalled();
+        });
+    });
+
+    describe('handleJoinChannel', () => {
+        it('should call joinChannel', () => {
+            component.handleJoinChannel(mockChannel);
+            expect(chatService.joinChannel).toHaveBeenCalled();
+        });
+    });
+
+    describe('handleDeleteChannel', () => {
+        it('should call deleteChannel', () => {
+            component.handleDeleteChannel(mockChannel);
+            expect(chatService.deleteChannel).toHaveBeenCalled();
         });
     });
 });
