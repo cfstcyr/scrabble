@@ -5,6 +5,7 @@ import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/routes/navigator-key.dart';
 
 import '../classes/group.dart';
+import '../components/app_button.dart';
 import '../controllers/group-join-controller.dart';
 import '../locator.dart';
 import '../pages/groups-request-waiting-page.dart';
@@ -25,19 +26,28 @@ class GroupJoinService {
     });
 
     rejectedStream.listen((String hostname) {
-      triggerDialogBox(
-          "Demande rejetée",
-          "$hostname a rejeté votre demande",
-          () => Navigator.of(navigatorKey.currentContext!).pushReplacement(
-              MaterialPageRoute(builder: (context) => GroupPage())));
+      triggerDialogBox("Demande rejetée", "$hostname a rejeté votre demande", [
+        DialogBoxButtonParameters(
+            content: 'OK',
+            theme: AppButtonTheme.primary,
+            onPressed: () => Navigator.of(navigatorKey.currentContext!)
+                .pushReplacement(
+                    MaterialPageRoute(builder: (context) => GroupPage())))
+      ]);
     });
 
     canceledStream.listen((String hostname) {
       triggerDialogBox(
           "Partie annulée",
           "$hostname a annulé la partie",
-          () => Navigator.of(navigatorKey.currentContext!).pushReplacement(
-              MaterialPageRoute(builder: (context) => HomePage())));
+          [
+            DialogBoxButtonParameters(
+                content: 'OK',
+                theme: AppButtonTheme.primary,
+                onPressed: () => Navigator.of(navigatorKey.currentContext!)
+                    .pushReplacement(
+                    MaterialPageRoute(builder: (context) => GroupPage())))
+          ]);
     });
   }
 

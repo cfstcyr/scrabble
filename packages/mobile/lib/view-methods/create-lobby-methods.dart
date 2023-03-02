@@ -3,6 +3,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
 import '../constants/create-lobby-constants.dart';
+import '../routes/routes.dart';
 
 BehaviorSubject<List<PublicUser>> playerList$ =
     BehaviorSubject<List<PublicUser>>.seeded(playerList);
@@ -94,11 +95,7 @@ void startGame(BuildContext context) {
 void backOut(BuildContext context) {
   // TODO socket close lobby
   playerList$.close();
-  // Navigator.push(
-  //   context,
-  //   MaterialPageRoute(builder: (context) => HomePage()),
-  // );
-  Navigator.pop(context);
+  Navigator.pushNamed(context, HOME_ROUTE);
 }
 
 void reOpen() {
