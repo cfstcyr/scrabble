@@ -48,6 +48,6 @@ class ChatManagementService {
   }
 
   List<Channel> handleUnjoinedChannels() {
-    return handleUnjoinedChannels();
+    return _chatManagementController.handleUnjoinedChannels();
   }
 }

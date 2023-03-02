@@ -58,7 +58,7 @@ class _ChatManagementState extends State<ChatManagement> {
 
   onSearchTextChanged(String text) async {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
+    _debounce = Timer(const Duration(milliseconds: 200), () {
       var unjoinedChannels = [..._chatManagerService.handleUnjoinedChannels()];
       if (text.isEmpty) {
         channelSearchResult$.add([...unjoinedChannels]);
