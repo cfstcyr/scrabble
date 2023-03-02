@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../classes/channel.dart';
 import '../constants/chat-management.constants.dart';
 import '../locator.dart';
 import '../services/socket.service.dart';
-import '../view-methods/chat-management-methods.dart';
 
 class ChatManagementController {
   final String endpoint = CHAT_ENDPOINT;
@@ -17,6 +18,19 @@ class ChatManagementController {
 
   static final ChatManagementController _instance =
       ChatManagementController._privateConstructor();
+  List<Channel> channels = [DEFAULT_CHANNEL];
+  List<Channel> myChannels = [DEFAULT_CHANNEL];
+  BehaviorSubject<List<Channel>> channels$ =
+      BehaviorSubject<List<Channel>>.seeded([DEFAULT_CHANNEL]);
+  BehaviorSubject<List<Channel>> myChannels$ =
+      BehaviorSubject<List<Channel>>.seeded([DEFAULT_CHANNEL]);
+  BehaviorSubject<bool> shouldOpen$ = BehaviorSubject<bool>.seeded(false);
+  BehaviorSubject<Channel> channelToOpen$ =
+      BehaviorSubject<Channel>.seeded(DEFAULT_CHANNEL);
+  BehaviorSubject<List<Channel>> channelSearchResult$ =
+      BehaviorSubject<List<Channel>>.seeded([]);
+
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   factory ChatManagementController() {
     return _instance;
@@ -41,7 +55,7 @@ class ChatManagementController {
 
   Future<void> _configureSocket() async {
     SocketService.socket.on(JOIN_EVENT, (channel) {
-      var typedChannel = Channel.fromJson(channel);
+      Channel typedChannel = Channel.fromJson(channel);
       myChannels.add(typedChannel);
       myChannels$.add(myChannels);
       // TODO APRES RACHAD if (shouldOpen$.value)
@@ -50,9 +64,9 @@ class ChatManagementController {
       handleUnjoinedChannels();
     });
 
-    SocketService.socket.on(QUIT_EVENT, (channel) {
-      myChannels.removeWhere(
-          (x) => x.idChannel == Channel.fromJson(channel).idChannel);
+    SocketService.socket.on(QUIT_EVENT, (receivedChannel) {
+      myChannels.removeWhere((channel) =>
+          channel.idChannel == Channel.fromJson(receivedChannel).idChannel);
 
       myChannels$.add(myChannels);
       handleUnjoinedChannels();
@@ -75,5 +89,16 @@ class ChatManagementController {
     });
     SocketService.socket.emit(INIT_EVENT);
     getAllChannels();
+  }
+
+  List<Channel> handleUnjoinedChannels() {
+    List<Channel> unjoinedChannels = [...channels];
+    myChannels$.value.forEach((myChannel) {
+      unjoinedChannels.removeWhere((channel) {
+        return channel.name == myChannel.name && !channel.isPrivate;
+      });
+    });
+    channelSearchResult$.add([...unjoinedChannels]);
+    return channelSearchResult$.value;
   }
 }

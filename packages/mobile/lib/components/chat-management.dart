@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/chatbox.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../classes/channel.dart';
 import '../constants/chat-management.constants.dart';
 import '../locator.dart';
 import '../services/chat-management.service.dart';
@@ -15,15 +16,11 @@ class ChatManagement extends StatefulWidget {
   State<ChatManagement> createState() => _ChatManagementState();
 }
 
-class _ChatManagementState extends State<ChatManagement>
-    with AutomaticKeepAliveClientMixin {
+class _ChatManagementState extends State<ChatManagement> {
   @override
   void initState() {
     super.initState();
   }
-
-  @override
-  bool get wantKeepAlive => true;
 
   //hack allows for drawer open after closing but it duplicates drawer
   @override
@@ -35,9 +32,23 @@ class _ChatManagementState extends State<ChatManagement>
 
   final ChatManagementService _chatManagerService =
       getIt.get<ChatManagementService>();
+  final inputController = TextEditingController();
+  final searchController = TextEditingController();
+
+  List<Channel> get channels => _chatManagerService.channels;
+  List<Channel> get myChannels => _chatManagerService.myChannels;
+  BehaviorSubject<List<Channel>> get channels$ => _chatManagerService.channels$;
+  BehaviorSubject<List<Channel>> get myChannels$ =>
+      _chatManagerService.myChannels$;
+  BehaviorSubject<bool> get shouldOpen$ => _chatManagerService.shouldOpen$;
+  BehaviorSubject<Channel> get channelToOpen$ =>
+      _chatManagerService.channelToOpen$;
+  BehaviorSubject<List<Channel>> get channelSearchResult$ =>
+      _chatManagerService.channelSearchResult$;
+  GlobalKey<ScaffoldState> get scaffoldKey => _chatManagerService.scaffoldKey;
 
   onSearchTextChanged(String text) async {
-    var unjoinedChannels = [...handleUnjoinedChannels()];
+    var unjoinedChannels = [..._chatManagerService.handleUnjoinedChannels()];
     if (text.isEmpty) {
       channelSearchResult$.add([...unjoinedChannels]);
       channelSearchResult$.value.forEach((channel) {});
