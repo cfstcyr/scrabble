@@ -44,7 +44,8 @@
 //     state: GameHistoryState;
 //     error: string | undefined;
 
-//     constructor(private readonly dialog: MatDialog, private readonly gameHistoryService: GameHistoryService, private readonly snackBar: MatSnackBar) {
+//     constructor(private readonly dialog: MatDialog, private readonly gameHistoryService: GameHistoryService,
+// private readonly snackBar: MatSnackBar) {
 //         this.columns = GAME_HISTORY_COLUMNS;
 //         this.columnsItems = this.getColumnIterator();
 //         this.selectedColumnsItems = this.getSelectedColumns();

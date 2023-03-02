@@ -210,7 +210,8 @@
 //             const subscribeToRequestSentEventSpy = spyOn(virtualPlayerProfilesServiceMock, 'subscribeToRequestSentEvent').and.callFake(() => {
 //                 return;
 //             });
-//             const subscribeToComponentUpdateEventSpy = spyOn(virtualPlayerProfilesServiceMock, 'subscribeToComponentUpdateEvent').and.callFake(() => {
+//             const subscribeToComponentUpdateEventSpy = spyOn(virtualPlayerProfilesServiceMock,
+//  'subscribeToComponentUpdateEvent').and.callFake(() => {
 //                 return;
 //             });
 //             component['initializeSubscriptions']();
