@@ -200,7 +200,6 @@ describe('ChatPersistenceService', () => {
 
             expect(await userChannelTable().select().where({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser })).to.have.length(0);
         });
-
     });
 
     describe('isChannelNameAvailable', () => {
@@ -294,7 +293,7 @@ describe('ChatPersistenceService', () => {
             expect(channels).to.have.length(1);
             expect(channels[0].idChannel).to.equal(CHANNEL_2.idChannel);
         });
-    })
+    });
 
     describe('deleteChannel', () => {
         it('should delete channel', async () => {
@@ -324,5 +323,5 @@ describe('ChatPersistenceService', () => {
 
             expect(await userChannelTable().select().where({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser })).to.have.length(0);
         });
-    })
+    });
 });
