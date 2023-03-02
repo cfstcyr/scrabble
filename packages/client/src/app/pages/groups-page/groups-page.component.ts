@@ -2,19 +2,21 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { GroupPasswordDialogComponent } from '@app/components/group-password-waiting-dialog/group-password-waiting-dialog';
 import { GroupRequestWaitingDialogComponent } from '@app/components/group-request-waiting-dialog/group-request-waiting-dialog';
 import { NO_GROUP_CAN_BE_JOINED } from '@app/constants/component-errors';
 import { DIALOG_BUTTON_CONTENT_RETURN_GROUP, DIALOG_FULL_CONTENT, DIALOG_FULL_TITLE } from '@app/constants/pages-constants';
 import { GameDispatcherService } from '@app/services/';
+import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
 import { Subject } from 'rxjs';
 
 @Component({
-    selector: 'app-group-page',
-    templateUrl: './group-page.component.html',
-    styleUrls: ['./group-page.component.scss'],
+    selector: 'app-groups-page',
+    templateUrl: './groups-page.component.html',
+    styleUrls: ['./groups-page.component.scss'],
 })
-export class GroupPageComponent implements OnInit, OnDestroy {
+export class GroupsPageComponent implements OnInit, OnDestroy {
     groups: Group[];
     private componentDestroyed$: Subject<boolean>;
 
@@ -36,11 +38,17 @@ export class GroupPageComponent implements OnInit, OnDestroy {
 
     joinGroup(groupId: string): void {
         const wantedGroup = this.groups.filter((group) => group.groupId === groupId)[0];
-        // TODO: Change this whne we have multiple gamevisibilities
-        // if (wantedGroup.gameVisibility === GameVisibility.Private) {
-        this.groupRequestWaitingDialog(wantedGroup);
-        // }
-        this.gameDispatcherService.handleJoinGroup(wantedGroup);
+
+        if (wantedGroup.gameVisibility === GameVisibility.Private) {
+            this.groupRequestWaitingDialog(wantedGroup);
+            this.gameDispatcherService.handleJoinGroup(wantedGroup);
+        } else if (wantedGroup.gameVisibility === GameVisibility.Protected) {
+            this.gameDispatcherService.handleGroupUpdates(wantedGroup);
+            this.groupPasswordDialog(wantedGroup);
+        } 
+        if (wantedGroup.gameVisibility === GameVisibility.Public) {
+            this.gameDispatcherService.handleJoinGroup(wantedGroup);
+        }
     }
 
     joinRandomGroup(): void {
@@ -70,6 +78,18 @@ export class GroupPageComponent implements OnInit, OnDestroy {
                     },
                 ],
             },
+        });
+    }
+
+    private groupPasswordDialog(group: Group): void {
+        const dialogRef = this.dialog.open(GroupPasswordDialogComponent, {
+            data: {
+                group,
+            },
+        });
+
+        dialogRef.afterClosed().subscribe(() => {
+            this.gameDispatcherService.handleGroupListRequest();
         });
     }
 

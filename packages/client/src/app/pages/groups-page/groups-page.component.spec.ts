@@ -25,7 +25,7 @@ import { PageHeaderComponent } from '@app/components/page-header/page-header.com
 import { NO_GROUP_CAN_BE_JOINED } from '@app/constants/component-errors';
 import { GameDispatcherService } from '@app/services/';
 import { of } from 'rxjs';
-import { GroupPageComponent } from './group-page.component';
+import { GroupPageComponent } from './groups-page.component';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
