@@ -18,6 +18,15 @@ class MyScaffold extends StatelessWidget {
         elevation: 1,
         automaticallyImplyLeading: false,
         centerTitle: true,
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.chat),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+            ),
+          ),
+        ],
       ),
       endDrawer: Container(width: 300, child: const ChatManagement()),
     );
