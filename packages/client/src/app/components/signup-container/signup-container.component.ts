@@ -69,12 +69,12 @@ export class SignupContainerComponent implements OnChanges {
     }
 
     handleEmailLoseFocus(): void {
-        if (this.signupForm.get('email')?.invalid) return;
+        if (this.signupForm.get('email')?.invalid && !this.signupForm.get('email')?.errors?.emailTaken) return;
         this.checkEmailUnicity.next(this.signupForm.get('email')?.value);
     }
 
     handleUsernameLoseFocus(): void {
-        if (this.signupForm.get('username')?.invalid) return;
+        if (this.signupForm.get('username')?.invalid && !this.signupForm.get('username')?.errors?.usernameTaken) return;
         this.checkUsernameUnicity.next(this.signupForm.get('username')?.value);
     }
 
