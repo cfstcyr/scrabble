@@ -1,19 +1,19 @@
 import { ServerSocket } from '@app/classes/communication/socket-type';
+import { HttpException } from '@app/classes/http-exception/http-exception';
+import { SocketId, UserId } from '@app/classes/user/connected-user-types';
 import { DEFAULT_CHANNELS } from '@app/constants/chat';
 import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
+import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
+import { SocketService } from '@app/services/socket-service/socket.service';
+import { getSocketNameFromChannel } from '@app/utils/socket';
 import { Channel, ChannelCreation } from '@common/models/chat/channel';
 import { ChannelMessage } from '@common/models/chat/chat-message';
+import { User } from '@common/models/user';
+import { TypeOfId } from '@common/types/id';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { TypeOfId } from '@common/types/id';
-import { getSocketNameFromChannel } from '@app/utils/socket';
-import { SocketService } from '@app/services/socket-service/socket.service';
-import { HttpException } from '@app/classes/http-exception/http-exception';
-import { User } from '@common/models/user';
-import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { SocketId, UserId } from '@app/classes/user/connected-user-types';
-import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
 
 @Service()
 export class ChatService {

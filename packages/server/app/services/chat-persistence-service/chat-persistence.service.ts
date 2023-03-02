@@ -1,11 +1,11 @@
-import { CHANNEL_TABLE, USER_CHANNEL_TABLE } from '@app/constants/services-constants/database-const';
-import { Channel, ChannelCreation, UserChannel } from '@common/models/chat/channel';
-import { Service } from 'typedi';
-import DatabaseService from '@app/services/database-service/database.service';
-import { TypeOfId } from '@common/types/id';
-import { User } from '@common/models/user';
 import { UserId } from '@app/classes/user/connected-user-types';
+import { CHANNEL_TABLE, USER_CHANNEL_TABLE } from '@app/constants/services-constants/database-const';
 import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
+import DatabaseService from '@app/services/database-service/database.service';
+import { Channel, ChannelCreation, UserChannel } from '@common/models/chat/channel';
+import { User } from '@common/models/user';
+import { TypeOfId } from '@common/types/id';
+import { Service } from 'typedi';
 
 @Service()
 export class ChatPersistenceService {

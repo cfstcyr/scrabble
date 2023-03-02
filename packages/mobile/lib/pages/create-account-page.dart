@@ -3,8 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/create-account-form.dart';
 
-
-class CreateAccountPage extends StatelessWidget{
+class CreateAccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,9 +17,7 @@ class CreateAccountPage extends StatelessWidget{
           children: <Widget>[
             Center(
               child: Column(
-                children: [
-                  CreateAccountForm()
-                  ],
+                children: [CreateAccountForm()],
               ),
             ),
           ],

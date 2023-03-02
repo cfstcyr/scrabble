@@ -1,5 +1,4 @@
-import 'dart:convert';
-
+import 'package:mobile/classes/channel-message.dart';
 import 'package:mobile/services/socket.service.dart';
 
 import '../classes/channel.dart';
@@ -22,9 +21,7 @@ class ChannelController {
   }
 
   Future<void> sendMessage(Channel channel, ChatMessage message) async {
-    var json = jsonEncode(message.toJson());
-
-    //TO DO : passe channel et message comme les params de l'event
-    socketService.emitEvent(CHANNEL_NEW_MESSAGE, message);
+    socketService.emitEvent(CHANNEL_NEW_MESSAGE,
+        ChannelMessage(message: message, idChannel: channel.idChannel));
   }
 }
