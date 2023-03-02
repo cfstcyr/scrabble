@@ -7,15 +7,23 @@ import 'package:mobile/classes/game/players_container.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:rxdart/rxdart.dart';
 
 class GameService {
-  GameService._privateConstructor();
+  final Subject<Tile> placeOnBoard$;
+  final BehaviorSubject<Game?> _game$;
 
-  Game? game;
+  static final GameService _instance = GameService._();
 
-  GameService() {
+  factory GameService() {
+    return _instance;
+  }
+
+  GameService._()
+      : placeOnBoard$ = PublishSubject(),
+        _game$ = BehaviorSubject() {
     // TODO: Change this to actual gameplay
-    game = Game(
+    _game$.add(Game(
         board: Board(),
         tileRack: TileRack(),
         players: PlayersContainer.fromPlayers(
@@ -27,40 +35,44 @@ class GameService {
           player3: Player(user: PublicUser(username: "Hernest"), points: 666),
           player4: Player(user: PublicUser(username: "Bernard"), points: 2),
         ),
-        timeLeft: Duration(minutes: 1, seconds: 42));
+        timeLeft: Duration(minutes: 1, seconds: 42)));
 
-    game?.board.grid[7][7].setTile(Tile.create("B", 1));
-    game?.board.grid[7][8].setTile(Tile.create("O", 1));
-    game?.board.grid[7][9].setTile(Tile.create("N", 1));
-    game?.board.grid[7][10].setTile(Tile.create("J", 1));
-    game?.board.grid[7][11].setTile(Tile.create("O", 1));
-    game?.board.grid[7][12].setTile(Tile.create("U", 1));
-    game?.board.grid[7][13].setTile(Tile.create("R", 1));
+    game.board.grid[7][7].setTile(Tile.create("B", 1));
+    game.board.grid[7][8].setTile(Tile.create("O", 1));
+    game.board.grid[7][9].setTile(Tile.create("N", 1));
+    game.board.grid[7][10].setTile(Tile.create("J", 1));
+    game.board.grid[7][11].setTile(Tile.create("O", 1));
+    game.board.grid[7][12].setTile(Tile.create("U", 1));
+    game.board.grid[7][13].setTile(Tile.create("R", 1));
 
-    game?.board.grid[8][9].setTile(Tile.create("O", 1));
-    game?.board.grid[9][9].setTile(Tile.create("E", 1));
-    game?.board.grid[10][9].setTile(Tile.create("L", 1));
+    game.board.grid[8][9].setTile(Tile.create("O", 1));
+    game.board.grid[9][9].setTile(Tile.create("E", 1));
+    game.board.grid[10][9].setTile(Tile.create("L", 1));
 
-    game?.tileRack.setTiles([
+    game.tileRack.setTiles([
       Tile.create("P", 1),
       Tile.create("N", 1),
       Tile.create("E", 1),
       Tile.create("I", 1),
       Tile.create("S", 1),
       Tile.create("I", 1),
-      Tile.create("S", 1),
+      Tile.wildcard(),
     ]);
   }
 
-  Game getGame() {
-    if (game == null) throw Exception("No game");
+  Game get game {
+    if (_game$.value == null) throw Exception("No game");
 
-    return game!;
+    return _game$.value!;
+  }
+
+  ValueStream<Game?> get gameStream {
+    return _game$.stream;
   }
 
   TileRack getTileRack() {
-    if (game == null) throw Exception("No game");
+    if (_game$.value == null) throw Exception("No game");
 
-    return game!.tileRack;
+    return _game$.value!.tileRack;
   }
 }
