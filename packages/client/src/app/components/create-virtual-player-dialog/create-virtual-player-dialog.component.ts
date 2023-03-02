@@ -20,7 +20,7 @@
 //     private virtualPlayerName: string;
 //     private componentDestroyed$: Subject<boolean>;
 
-//     constructor(private dialogRef: MatDialogRef<CreateVirtualPlayerComponent>, 
+//     constructor(private dialogRef: MatDialogRef<CreateVirtualPlayerComponent>,
 // private virtualPlayerProfilesService: VirtualPlayerProfilesService) {
 //         this.componentDestroyed$ = new Subject();
 //         this.virtualPlayerLevels = VirtualPlayerLevel;

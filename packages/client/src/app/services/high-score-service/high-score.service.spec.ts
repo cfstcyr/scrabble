@@ -37,7 +37,7 @@
 //     DEFAULT_LOG2990_HIGH_SCORE_3,
 // ];
 
-// const CLASSIC_HIGH_SCORES: NoId<HighScoreWithPlayers>[] = 
+// const CLASSIC_HIGH_SCORES: NoId<HighScoreWithPlayers>[] =
 // [DEFAULT_CLASSIC_HIGH_SCORE_3, DEFAULT_CLASSIC_HIGH_SCORE_1, DEFAULT_CLASSIC_HIGH_SCORE_2];
 
 // const DEFAULT_HIGH_SCORES_MAP: Map<GameType, SingleHighScore[]> = new Map([

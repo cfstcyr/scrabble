@@ -1,7 +1,7 @@
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SocketId, UserId } from '@app/classes/user/connected-user-types';
-import { DEFAULT_CHANNELS } from '@app/constants/chat';
+import { DEFAULT_CHANNELS, GROUP_CHANNEL } from '@app/constants/chat';
 import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
@@ -175,6 +175,12 @@ export class ChatService {
 
     private async initChannelsForSocket(socket: ServerSocket): Promise<void> {
         const user: User = socket.data.user;
+
+        await Promise.all(
+            (
+                await this.chatPersistenceService.getChannelIdsWithPropertiesForUserId(GROUP_CHANNEL, user.idUser)
+            ).map(async (idChannel) => this.handleQuitChannel(idChannel, socket)),
+        );
 
         await Promise.all(
             (await this.chatPersistenceService.getUserChannelIds(user.idUser)).map(async (idChannel) => this.handleJoinChannel(idChannel, socket)),
