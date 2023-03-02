@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/components/chatbox.dart';
 import 'package:rxdart/rxdart.dart';
@@ -30,10 +32,17 @@ class _ChatManagementState extends State<ChatManagement> {
     }
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _debounce?.cancel();
+  }
+
   final ChatManagementService _chatManagerService =
       getIt.get<ChatManagementService>();
   final inputController = TextEditingController();
   final searchController = TextEditingController();
+  Timer? _debounce;
 
   List<Channel> get channels => _chatManagerService.channels;
   List<Channel> get myChannels => _chatManagerService.myChannels;
@@ -48,17 +57,20 @@ class _ChatManagementState extends State<ChatManagement> {
   GlobalKey<ScaffoldState> get scaffoldKey => _chatManagerService.scaffoldKey;
 
   onSearchTextChanged(String text) async {
-    var unjoinedChannels = [..._chatManagerService.handleUnjoinedChannels()];
-    if (text.isEmpty) {
-      channelSearchResult$.add([...unjoinedChannels]);
-      channelSearchResult$.value.forEach((channel) {});
-      return;
-    }
-    var channelSearchResult = [];
-    unjoinedChannels.forEach((channel) {
-      if (channel.name.contains(text)) channelSearchResult.add(channel);
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      var unjoinedChannels = [..._chatManagerService.handleUnjoinedChannels()];
+      if (text.isEmpty) {
+        channelSearchResult$.add([...unjoinedChannels]);
+        channelSearchResult$.value.forEach((channel) {});
+        return;
+      }
+      var channelSearchResult = [];
+      unjoinedChannels.forEach((channel) {
+        if (channel.name.contains(text)) channelSearchResult.add(channel);
+      });
+      channelSearchResult$.add([...channelSearchResult]);
     });
-    channelSearchResult$.add([...channelSearchResult]);
   }
 
   StreamBuilder handleChannelsChange() {
