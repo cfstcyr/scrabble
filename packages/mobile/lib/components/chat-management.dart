@@ -1,13 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:mobile/classes/channel.dart';
 import 'package:mobile/components/chatbox.dart';
 
 import '../constants/chat-management.constants.dart';
-import '../services/socket.service.dart';
+import '../locator.dart';
+import '../services/chat-management.service.dart';
 import '../view-methods/chat-management-methods.dart';
 
 class ChatManagement extends StatefulWidget {
@@ -20,7 +18,6 @@ class _ChatManagementState extends State<ChatManagement> {
   @override
   void initState() {
     super.initState();
-    configureSockets();
   }
 
   //hack allows for drawer open after closing but it duplicates drawer
@@ -36,60 +33,15 @@ class _ChatManagementState extends State<ChatManagement> {
     super.dispose();
 
     // code barbare pour ne pas dupliquer configureSockets()
-    SocketService.socket.off(JOIN_EVENT);
-    SocketService.socket.off(QUIT_EVENT);
-    SocketService.socket.off(HISTORY_EVENT);
-    SocketService.socket.off(INIT_EVENT);
-    SocketService.socket.off(ALL_CHANNELS_EVENT);
+    // SocketService.socket.off(JOIN_EVENT);
+    // SocketService.socket.off(QUIT_EVENT);
+    // SocketService.socket.off(HISTORY_EVENT);
+    // SocketService.socket.off(INIT_EVENT);
+    // SocketService.socket.off(ALL_CHANNELS_EVENT);
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  Future<void> configureSockets() async {
-    SocketService.socket.on(JOIN_EVENT, (channel) {
-      setState(() {
-        var typedChannel = Channel.fromJson(channel);
-        myChannels.add(typedChannel);
-        myChannels$.add(myChannels);
-        // TODO APRES RACHAD if (shouldOpen$.value)
-        channelToOpen$.add(typedChannel);
-        _scaffoldKey.currentState!.openEndDrawer();
-        handleUnjoinedChannels();
-      });
-    });
-
-    SocketService.socket.on(QUIT_EVENT, (channel) {
-      setState(() {
-        myChannels.removeWhere(
-            (x) => x.idChannel == Channel.fromJson(channel).idChannel);
-
-        myChannels$.add(myChannels);
-        handleUnjoinedChannels();
-      });
-    });
-
-    // TODO w/ rachad mr
-    // SocketService.socket.on(HISTORY_EVENT, (channel) {
-    //   print('channel:history: $channel');
-    // });
-
-    SocketService.socket.on(INIT_EVENT, (s) {
-      setState(() {
-        shouldOpen$.add(true);
-      });
-    });
-
-    SocketService.socket.on(ALL_CHANNELS_EVENT, (receivedChannels) {
-      setState(() {
-        channels = List<Channel>.from(
-            receivedChannels.map((channel) => Channel.fromJson(channel)));
-
-        channels$.add(handleUnjoinedChannels());
-      });
-    });
-    SocketService.socket.emit(INIT_EVENT);
-    getAllChannels();
-  }
+  final ChatManagementService _chatManagerService =
+      getIt.get<ChatManagementService>();
 
   onSearchTextChanged(String text) async {
     var unjoinedChannels = [...handleUnjoinedChannels()];
@@ -111,7 +63,7 @@ class _ChatManagementState extends State<ChatManagement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldKey,
       endDrawerEnableOpenDragGesture: false,
       endDrawer: Drawer(child: ChatPage(channel: channelToOpen$.value)),
       body: ListView(
@@ -125,7 +77,7 @@ class _ChatManagementState extends State<ChatManagement> {
             child: TextField(
               onSubmitted: (field) {
                 setState(() {
-                  createChannel(field);
+                  _chatManagerService.createChannel(field);
                   inputController.clear();
                 });
               },
@@ -136,7 +88,7 @@ class _ChatManagementState extends State<ChatManagement> {
                 suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
-                        createChannel(inputController.text);
+                        _chatManagerService.createChannel(inputController.text);
                         inputController.clear();
                       });
                     },
@@ -161,7 +113,7 @@ class _ChatManagementState extends State<ChatManagement> {
                       onTap: () {
                         setState(() {
                           channelToOpen$.add(myChannels$.value[index]);
-                          _scaffoldKey.currentState!.openEndDrawer();
+                          scaffoldKey.currentState!.openEndDrawer();
                         });
                       },
                       child: Padding(
@@ -174,7 +126,7 @@ class _ChatManagementState extends State<ChatManagement> {
                               onPressed: myChannels$.value[index].canQuit
                                   ? () {
                                       setState(() {
-                                        quitChannel(
+                                        _chatManagerService.quitChannel(
                                             myChannels$.value[index].idChannel);
                                       });
                                     }
@@ -224,7 +176,7 @@ class _ChatManagementState extends State<ChatManagement> {
                           IconButton(
                             onPressed: () {
                               setState(() {
-                                joinChannel(
+                                _chatManagerService.joinChannel(
                                     channelSearchResult[index].idChannel);
                               });
                             },

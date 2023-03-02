@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/channel.dart';
 import 'package:rxdart/rxdart.dart';
@@ -22,29 +20,13 @@ SocketService socketService = getIt.get<SocketService>();
 var inputController = TextEditingController();
 var searchController = TextEditingController();
 List<Channel> channelSearchResult = [];
-
-Future<void> createChannel(String channelName) async {
-  if (channelName.isEmpty) return;
-  socketService.emitEvent('channel:newChannel', ChannelName(name: channelName));
-}
-
-Future<void> joinChannel(int idChannel) async {
-  socketService.emitEvent('channel:join', idChannel);
-}
-
-Future<void> quitChannel(int idChannel) async {
-  socketService.emitEvent('channel:quit', idChannel);
-}
-
-Future<void> getAllChannels() async {
-  SocketService.socket.emit('channel:allChannels');
-}
+final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 List<Channel> handleUnjoinedChannels() {
   List<Channel> unjoinedChannels = [...channels];
   myChannels.forEach((myChannel) {
     unjoinedChannels.removeWhere((channel) {
-      return channel.name == myChannel.name && !channel.private;
+      return channel.name == myChannel.name && !channel.isPrivate;
     });
   });
   channelSearchResult = [...unjoinedChannels];
