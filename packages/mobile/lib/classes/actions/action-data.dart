@@ -20,15 +20,15 @@ enum ActionType {
   }
 
   static ActionType fromString(String value) {
-    return ActionType.values.firstWhere((ActionType type) =>
-    type.name.toLowerCase() == value.toLowerCase());
+    return ActionType.values.firstWhere(
+        (ActionType type) => type.name.toLowerCase() == value.toLowerCase());
   }
 
   static ActionType fromInteger(int value) {
     return ActionType.values[value];
   }
 
-  static ActionType fromJson(dynamic value) {
+  static ActionType parse(dynamic value) {
     if (value is String) {
       return ActionType.fromString(value);
     } else if (value is int) {
@@ -54,11 +54,13 @@ class ActionData<T extends ActionPayload> {
   });
 
   factory ActionData.fromJson(Map<String, dynamic> json) {
-    return ActionData(type: ActionType.fromJson(json['type']), payload: json['payload'] ? json['payload'] as T : null);
+    return ActionData(
+        type: ActionType.parse(json['type']),
+        payload: json['payload'] ? json['payload'] as T : null);
   }
 
   Map<String, dynamic> toJson() => {
-    'type': type,
-    'payload': payload != null ? payload!.toJson() : null,
-  };
+        'type': type,
+        'payload': payload != null ? payload!.toJson() : null,
+      };
 }
