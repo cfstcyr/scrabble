@@ -70,7 +70,7 @@ describe('LoginWrapperComponent', () => {
             expect(location.path()).toEqual(ROUTE_HOME);
         }));
 
-        fdescribe('should call error on error', () => {
+        describe('should call error on error', () => {
             let loginSubject: Subject<UserSession>;
             let spy: unknown;
 
