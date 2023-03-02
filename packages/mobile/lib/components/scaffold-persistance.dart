@@ -27,7 +27,7 @@ class MyScaffold extends StatelessWidget {
           ),
         ],
       ),
-      endDrawer: Container(width: 350, child: const ChatManagement()),
+      endDrawer: Container(width: 325, child: const ChatManagement()),
     );
   }
 }

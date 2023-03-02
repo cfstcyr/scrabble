@@ -183,8 +183,7 @@ class _ChatManagementState extends State<ChatManagement> {
         children: [
           setDrawerTitle(),
           Padding(
-            padding:
-                EdgeInsets.only(left: 10.0, right: 10.0, top: 0, bottom: 0),
+            padding: EdgeInsets.only(left: 10.0, right: 10.0),
             child: TextField(
               onSubmitted: (field) {
                 _chatManagerService.createChannel(field);
