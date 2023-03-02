@@ -23,13 +23,13 @@ class PlayerLeaveService {
   Future<void> leaveGame(BuildContext context) async {
     triggerDialogBox(DIALOG_SURRENDER_TITLE, DIALOG_SURRENDER_CONTENT, [
       DialogBoxButtonParameters(
-          content: DIALOG_ABANDON_BUTTON_CONFIRM, theme: AppButtonTheme.danger, onPressed: () async {
+          content: DIALOG_ABANDON_BUTTON_CONFIRM, theme: AppButtonTheme.tomato, onPressed: () async {
         await getIt.get<GameplayController>().leaveGame();
 
         if (!context.mounted) return;
         Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
       }),
-      DialogBoxButtonParameters(content: DIALOG_ABANDON_BUTTON_CONTINUE, theme: AppButtonTheme.transparent, closesDialog: true)
+      DialogBoxButtonParameters(content: DIALOG_ABANDON_BUTTON_CONTINUE, theme: AppButtonTheme.secondary, closesDialog: true)
     ]);
   }
 }
