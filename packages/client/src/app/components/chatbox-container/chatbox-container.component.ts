@@ -57,7 +57,8 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     ngOnInit(): void {
         this.joinedChannel.pipe(takeUntil(this.componentDestroyed$)).subscribe((channel) => {
             if (!channel) return;
-            if (this.channelMenuIsOpen) this.showChannel(channel);
+            if (this.openedChannels.find((c) => channel.idChannel === c.idChannel)) this.minimizeChannel(channel);
+            else if (this.channelMenuIsOpen) this.showChannel(channel);
         });
     }
 

@@ -97,7 +97,9 @@ export class ChatService {
         this.channels.next(this.channels.value);
         this.joinableChannels.value.delete(channel.idChannel);
         this.joinableChannels.next(this.joinableChannels.value);
+        this.joinedChannel.next({ ...channel, messages: [] });
     }
+
     handleNewMessage(channelMessage: ChannelMessage): void {
         this.addMessageToChannel(channelMessage);
         this.channels.next(this.channels.value);
