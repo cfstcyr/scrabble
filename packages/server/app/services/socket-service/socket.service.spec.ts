@@ -330,12 +330,6 @@ describe('SocketService', () => {
             service = new SocketService(Container.get(AuthentificationService));
         });
 
-        describe('handleSockets', () => {
-            it('should throw', () => {
-                expect(() => service.handleSockets()).to.throw(SOCKET_SERVICE_NOT_INITIALIZED);
-            });
-        });
-
         describe('addToRoom', () => {
             it('should throw if ID is invalid', () => {
                 expect(() => service.addToRoom(INVALID_ID, DEFAULT_ROOM)).to.throw(SOCKET_SERVICE_NOT_INITIALIZED);
