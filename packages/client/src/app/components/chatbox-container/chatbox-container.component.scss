@@ -73,7 +73,7 @@
                 &:hover {
                     background-color: rgba(gray, 0.05);
                 }
-    
+
                 &:active {
                     scale: 0.97;
                     transition: ease-in scale 0.1s;
@@ -95,5 +95,9 @@
         & ::ng-deep .mat-button-focus-overlay {
             display: none;
         }
+    }
+
+    .buttons-container {
+        display: inline-flex;
     }
 }
