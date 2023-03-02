@@ -19,18 +19,19 @@ SocketService socketService = getIt.get<SocketService>();
 
 var inputController = TextEditingController();
 var searchController = TextEditingController();
-List<Channel> channelSearchResult = [];
+BehaviorSubject<List<Channel>> channelSearchResult$ =
+    BehaviorSubject<List<Channel>>.seeded([]);
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 List<Channel> handleUnjoinedChannels() {
   List<Channel> unjoinedChannels = [...channels];
-  myChannels.forEach((myChannel) {
+  myChannels$.value.forEach((myChannel) {
     unjoinedChannels.removeWhere((channel) {
       return channel.name == myChannel.name && !channel.isPrivate;
     });
   });
-  channelSearchResult = [...unjoinedChannels];
-  return channelSearchResult;
+  channelSearchResult$.add([...unjoinedChannels]);
+  return channelSearchResult$.value;
 }
 
 OutlineInputBorder setCreateChannelBorder() {

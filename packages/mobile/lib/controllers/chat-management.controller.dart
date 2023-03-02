@@ -72,7 +72,6 @@ class ChatManagementController {
           receivedChannels.map((channel) => Channel.fromJson(channel)));
 
       channels$.add(handleUnjoinedChannels());
-      print(channels$.value.length);
     });
     SocketService.socket.emit(INIT_EVENT);
     getAllChannels();
