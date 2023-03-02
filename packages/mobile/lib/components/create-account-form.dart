@@ -6,6 +6,7 @@ import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/login-page.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../constants/create-account-constants.dart';
@@ -288,8 +289,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
         password: passwordHandler.controller.text,
         email: emailHandler.controller.text);
     if (await accountService.createAccount(newAccount)) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.pushNamed(context, HOME_ROUTE);
     } else {
       validateUsername();
       validateEmail();
