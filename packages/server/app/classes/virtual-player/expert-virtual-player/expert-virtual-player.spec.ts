@@ -7,7 +7,6 @@
 import { ActionExchange, ActionPass, ActionPlace } from '@app/classes/actions';
 import Game from '@app/classes/game/game';
 import { AbstractWordFinding, ScoredWordPlacement, WordFindingUseCase } from '@app/classes/word-finding';
-import { EXPERT_NAME_SUFFIX } from '@app/constants/virtual-player-constants';
 import { PLAYER_ID, PLAYER_NAME, TEST_POINT_RANGE } from '@app/constants/virtual-player-tests-constants';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import * as chai from 'chai';
@@ -31,11 +30,6 @@ describe('ExpertVirtualPlayer', () => {
 
     it('should create', () => {
         expect(expertVirtualPlayer).to.exist;
-    });
-
-    it('should add suffix to beginner player name', () => {
-        const givenName = 'Cornichon';
-        expect(new ExpertVirtualPlayer('game id', givenName).name).to.equal(givenName + EXPERT_NAME_SUFFIX);
     });
 
     describe('isExchangePossible', () => {

@@ -5,9 +5,7 @@ import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { PlayerData } from '@app/classes/communication/player-data';
 import Game from '@app/classes/game/game';
-import { GameType } from '@app/classes/game/game-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { ObjectiveUpdate } from '@app/classes/objectives/objective-utils';
 import Player from '@app/classes/player/player';
 import { Square } from '@app/classes/square';
 import { Tile } from '@app/classes/tile';
@@ -65,18 +63,6 @@ export default class ActionPlace extends ActionPlay {
         this.wordValidator.verifyWords(StringConversion.wordsToString(createdWords), this.game.dictionarySummary.id);
 
         this.scoredPoints = this.scoreCalculator.calculatePoints(createdWords) + this.scoreCalculator.bonusPoints(tilesToPlace);
-
-        let objectiveUpdateResult: ObjectiveUpdate | undefined;
-        if (this.game.gameType === GameType.LOG2990) {
-            objectiveUpdateResult = this.player.validateObjectives({
-                wordPlacement: this.wordPlacement,
-                game: this.game,
-                scoredPoints: this.scoredPoints,
-                createdWords,
-            });
-            this.objectivesCompletedMessages = objectiveUpdateResult ? objectiveUpdateResult.completionMessages : [];
-        }
-
         const updatedSquares = this.updateBoard(createdWords);
 
         this.player.tiles = unplayedTiles.concat(this.game.getTilesFromReserve(tilesToPlace.length));
@@ -86,7 +72,6 @@ export default class ActionPlace extends ActionPlay {
 
         const response: GameUpdateData = {
             board: updatedSquares,
-            gameObjective: objectiveUpdateResult ? objectiveUpdateResult.updateData : undefined,
         };
 
         fillPlayerData(response, this.game.getPlayerNumber(this.player), playerData);
@@ -105,11 +90,12 @@ export default class ActionPlace extends ActionPlay {
     }
 
     getOpponentMessage(): FeedbackMessage {
-        let placeMessage = `${this.player.name} a placé ${PlacementToString.tilesToString(this.wordPlacement.tilesToPlace, IN_UPPER_CASE)} pour ${
-            this.scoredPoints
-        } points`;
+        let placeMessage = `${this.player.publicUser.username} a placé ${PlacementToString.tilesToString(
+            this.wordPlacement.tilesToPlace,
+            IN_UPPER_CASE,
+        )} pour ${this.scoredPoints} points`;
         this.objectivesCompletedMessages.forEach((message: string) => {
-            placeMessage += `<br><br>${this.player.name} a${message}`;
+            placeMessage += `<br><br>${this.player.publicUser.username} a${message}`;
         });
         return { message: placeMessage };
     }

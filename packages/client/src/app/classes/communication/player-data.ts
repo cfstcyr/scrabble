@@ -1,11 +1,10 @@
 import { Tile } from '@app/classes/tile';
-import { ObjectiveData } from './objective-data';
+import { PublicUser } from '@common/models/user';
 
 export default interface PlayerData {
     id: string;
     newId?: string;
-    name?: string;
+    publicUser?: PublicUser;
     score?: number;
     tiles?: Tile[];
-    objectives?: ObjectiveData[];
 }

@@ -1,9 +1,9 @@
-export enum UploadState {
-    Ready = 'ready',
-    Init = 'init',
-    Error = 'error',
-}
+// export enum UploadState {
+//     Ready = 'ready',
+//     Init = 'init',
+//     Error = 'error',
+// }
 
-export interface UploadEvent extends EventTarget {
-    files: File[];
-}
+// export interface UploadEvent extends EventTarget {
+//     files: File[];
+// }

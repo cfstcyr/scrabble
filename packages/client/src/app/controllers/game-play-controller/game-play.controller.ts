@@ -20,30 +20,30 @@ export class GamePlayController {
         this.configureSocket();
     }
 
-    sendAction(gameId: string, playerId: string, action: ActionData): void {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/players/${playerId}/action`;
+    sendAction(gameId: string, action: ActionData): void {
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/action`;
         this.http.post(endpoint, action).subscribe(() => {
             this.actionDone$.next();
         });
     }
 
-    sendMessage(gameId: string, playerId: string, message: Message): void {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/players/${playerId}/message`;
+    sendMessage(gameId: string, message: Message): void {
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/message`;
         this.http.post(endpoint, message).subscribe();
     }
 
-    sendError(gameId: string, playerId: string, message: Message): void {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/players/${playerId}/error`;
+    sendError(gameId: string, message: Message): void {
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/error`;
         this.http.post(endpoint, message).subscribe();
     }
 
-    handleReconnection(gameId: string, playerId: string, newPlayerId: string): void {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/players/${playerId}/reconnect`;
+    handleReconnection(gameId: string, newPlayerId: string): void {
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/reconnect`;
         this.http.post(endpoint, { newPlayerId }).subscribe();
     }
 
-    handleDisconnection(gameId: string, playerId: string): void {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/players/${playerId}/disconnect`;
+    handleDisconnection(gameId: string): void {
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/disconnect`;
         // When reloading the page, a disconnect http request is fired on destruction of the game-page component.
         // In the initialization of the game-page component, a reconnect request is made which does not allow the
         // server to send a response, triggering a Abort 0  error code which is why we catch it if it this this code

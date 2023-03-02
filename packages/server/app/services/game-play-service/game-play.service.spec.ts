@@ -14,7 +14,6 @@ import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { RoundData } from '@app/classes/communication/round-data';
 import Game from '@app/classes/game/game';
-import { GameType } from '@app/classes/game/game-type';
 import Player from '@app/classes/player/player';
 import { Round } from '@app/classes/round/round';
 import RoundManager from '@app/classes/round/round-manager';
@@ -30,7 +29,6 @@ import GameHistoriesService from '@app/services/game-history-service/game-histor
 import { GamePlayService } from '@app/services/game-play-service/game-play.service';
 import HighScoresService from '@app/services/high-score-service/high-score.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
-import VirtualPlayerProfilesService from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
 import * as arrowFunction from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import * as chai from 'chai';
@@ -40,10 +38,15 @@ import { createStubInstance, restore, SinonStub, SinonStubbedInstance, stub } fr
 import { Container } from 'typedi';
 
 const expect = chai.expect;
+
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
+const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
+
 const DEFAULT_GAME_ID = 'gameId';
 const DEFAULT_PLAYER_ID = '1';
 const INVALID_PLAYER_ID = 'invalid-id';
-const DEFAULT_PLAYER_NAME = 'player 1';
 const DEFAULT_PLAYER_SCORE = 5;
 const DEFAULT_INPUT = 'input';
 const DEFAULT_ACTION: ActionData = { type: ActionType.EXCHANGE, payload: { tiles: [] }, input: DEFAULT_INPUT };
@@ -85,10 +88,10 @@ describe('GamePlayService', () => {
         roundManagerStub = createStubInstance(RoundManager);
         tileReserveStub = createStubInstance(TileReserve);
 
-        gameStub.player1 = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME);
-        gameStub.player2 = new Player(INVALID_PLAYER_ID, 'JCol');
-        gameStub.player3 = new Player(INVALID_PLAYER_ID + '2', 'JCol2');
-        gameStub.player4 = new Player(INVALID_PLAYER_ID + '3', 'JCol3');
+        gameStub.player1 = new Player(DEFAULT_PLAYER_ID, USER1);
+        gameStub.player2 = new Player(INVALID_PLAYER_ID, USER2);
+        gameStub.player3 = new Player(INVALID_PLAYER_ID + '2', USER3);
+        gameStub.player4 = new Player(INVALID_PLAYER_ID + '3', USER4);
 
         gameStub.getPlayer.returns(gameStub.player1);
         gameStub.roundManager = roundManagerStub as unknown as RoundManager;
@@ -456,13 +459,10 @@ describe('GamePlayService', () => {
         let dictionaryServiceStub: SinonStubbedInstance<DictionaryService>;
         let gameHistoriesServiceStub: SinonStubbedInstance<GameHistoriesService>;
         let virtualPlayerServiceStub: SinonStubbedInstance<VirtualPlayerService>;
-        let virtualPlayerProfilesServiceStub: SinonStubbedInstance<VirtualPlayerProfilesService>;
 
         beforeEach(() => {
             activeGameServiceStub = createStubInstance(ActiveGameService);
             virtualPlayerServiceStub = createStubInstance(VirtualPlayerService);
-            virtualPlayerProfilesServiceStub = createStubInstance(VirtualPlayerProfilesService);
-            virtualPlayerProfilesServiceStub.getRandomVirtualPlayerName.resolves('testname');
             activeGameServiceStub.playerLeftEvent = new EventEmitter();
             activeGameServiceStub.getGame.returns(gameStub as unknown as Game);
             virtualPlayerServiceStub.triggerVirtualPlayerTurn.returns();
@@ -472,12 +472,11 @@ describe('GamePlayService', () => {
                 dictionaryServiceStub as unknown as DictionaryService,
                 gameHistoriesServiceStub as unknown as GameHistoriesService,
                 virtualPlayerServiceStub as unknown as VirtualPlayerService,
-                virtualPlayerProfilesServiceStub as unknown as VirtualPlayerProfilesService,
             );
-            gameStub.player1 = new Player(DEFAULT_PLAYER_ID, 'Cool Guy Name');
-            gameStub.player2 = new Player(playerWhoLeftId, 'LeaverName');
-            gameStub.player3 = new Player(playerWhoLeftId, 'LeaverName2');
-            gameStub.player4 = new Player(playerWhoLeftId, 'LeaverName3');
+            gameStub.player1 = new Player(DEFAULT_PLAYER_ID, USER1);
+            gameStub.player2 = new Player(playerWhoLeftId, USER2);
+            gameStub.player3 = new Player(playerWhoLeftId, USER3);
+            gameStub.player4 = new Player(playerWhoLeftId, USER4);
             gameStub.getOpponentPlayers.returns([gameStub.player2, gameStub.player3, gameStub.player4]);
         });
 
@@ -490,7 +489,7 @@ describe('GamePlayService', () => {
             const handlePlayerLeftEventSpy = chai.spy.on(gamePlayService, 'handlePlayerLeftEvent', () => {
                 return;
             });
-            gamePlayService['activeGameService'].playerLeftEvent.emit('playerLeft', DEFAULT_GAME_ID, playerWhoLeftId);
+            gamePlayService['activeGameService'].playerLeftEvent.emit('playerLeftGame', DEFAULT_GAME_ID, playerWhoLeftId);
             expect(handlePlayerLeftEventSpy).to.have.been.called.with(DEFAULT_GAME_ID, playerWhoLeftId);
         });
 
@@ -617,20 +616,6 @@ describe('GamePlayService', () => {
             expect(result.player1!.id).to.equal(gameStub.player1.id);
             expect(result.player2!.id).to.equal(gameStub.player2.id);
         });
-    });
-
-    it('handleResetObjectives should reset if gameType is LOG2990', () => {
-        gameStub.gameType = GameType.LOG2990;
-        const resetSpy = chai.spy.on(gameStub, 'resetPlayerObjectiveProgression', () => {});
-        gamePlayService.handleResetObjectives(gameStub.getId(), player.id);
-        expect(resetSpy).to.have.been.called();
-    });
-
-    it('handleResetObjectives should NOT reset if gameType is Classic', () => {
-        gameStub.gameType = GameType.Classic;
-        const resetSpy = chai.spy.on(gameStub, 'resetPlayerObjectiveProgression', () => {});
-        gamePlayService.handleResetObjectives(gameStub.getId(), player.id);
-        expect(resetSpy).not.to.have.been.called();
     });
 
     it('isGameOver should call getGame', () => {

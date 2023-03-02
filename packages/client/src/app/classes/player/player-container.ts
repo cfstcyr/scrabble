@@ -23,15 +23,15 @@ export class PlayerContainer {
         return filteredPlayers[0] ? filteredPlayers[0] : undefined;
     }
 
-    initializePlayers(...playersData: PlayerData[]): this {
+    initializePlayers(playersData: PlayerData[]): this {
         this.resetPlayers();
         playersData.forEach((playerData: PlayerData, index: number) => this.initializePlayer(PLAYER_1_INDEX + index, playerData));
         return this;
     }
 
     initializePlayer(playerNumber: number, playerData: PlayerData): this {
-        if (!playerData.name || !playerData.tiles) throw new Error(MISSING_PLAYER_DATA_TO_INITIALIZE);
-        this.setPlayer(playerNumber, new Player(playerData.id, playerData.name, playerData.tiles));
+        if (!playerData.publicUser || !playerData.tiles) throw new Error(MISSING_PLAYER_DATA_TO_INITIALIZE);
+        this.setPlayer(playerNumber, new Player(playerData.id, playerData.publicUser, playerData.tiles));
         return this;
     }
 

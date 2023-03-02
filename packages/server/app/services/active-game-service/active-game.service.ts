@@ -70,7 +70,7 @@ export class ActiveGameService {
         } catch (exception) {
             // catch errors caused by inexistent socket after client closed application
         }
-        const playerName = game.getPlayer(playerId).name;
+        const playerName = game.getPlayer(playerId).publicUser.username;
 
         this.socketService.emitToRoom(gameId, 'newMessage', {
             content: `${playerName} ${PLAYER_LEFT_GAME(this.isGameOver(gameId, playerId))}`,
@@ -80,6 +80,6 @@ export class ActiveGameService {
 
         if (this.isGameOver(gameId, playerId)) return;
 
-        this.playerLeftEvent.emit('playerLeft', gameId, playerId);
+        this.playerLeftEvent.emit('playerLeftGame', gameId, playerId);
     }
 }

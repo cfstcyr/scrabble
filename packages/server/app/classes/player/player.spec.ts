@@ -21,13 +21,13 @@ chai.use(spies);
 
 const ID = 'id';
 const DEFAULT_GAME_CHANNEL_ID = 1;
-const DEFAULT_NAME = 'player';
-
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
 describe('Player', () => {
     let player: Player;
 
     beforeEach(() => {
-        player = new Player(ID, DEFAULT_NAME);
+        player = new Player(ID, USER1);
         player.tiles = [
             { value: 1, letter: 'A' },
             { value: 4, letter: 'B' },
@@ -64,7 +64,7 @@ describe('Player', () => {
 
     it('endGameMessage should call tilesToString and return the correct message', () => {
         const tilesToStringStub = stub(player, 'tilesToString' as any).returns('aaaa');
-        expect(player.endGameMessage()).to.equal(`${player.name} : aaaa`);
+        expect(player.endGameMessage()).to.equal(`${player.publicUser.username} : aaaa`);
         assert(tilesToStringStub.calledOnce);
     });
 
@@ -137,13 +137,12 @@ describe('Player', () => {
     });
 
     it('copyPlayerInfo should update the player data', () => {
-        const name = 'nikolaj';
         const id = 'nikolajID';
-        const otherPlayer = new Player(id, name);
+        const otherPlayer = new Player(id, USER2);
         otherPlayer['objectives'] = [{} as unknown as AbstractObjective];
         otherPlayer.score = 3;
         otherPlayer.tiles = [{} as unknown as Tile];
-        expect(player.copyPlayerInfo(otherPlayer)).to.deep.equal({ id: otherPlayer.id, newId: player.id, name: player.name });
+        expect(player.copyPlayerInfo(otherPlayer)).to.deep.equal({ id: otherPlayer.id, newId: player.id, publicUser: player.publicUser });
         expect(player.score).to.equal(otherPlayer.score);
         expect(player.tiles).to.equal(otherPlayer.tiles);
         expect(player['objectives']).to.equal(otherPlayer['objectives']);
@@ -151,15 +150,13 @@ describe('Player', () => {
 
     it('convertToPlayerData should return PlayerData with exact info from instance', () => {
         player.score = 42069;
-        player['objectives'] = [{} as unknown as AbstractObjective];
         player.isConnected = true;
         const convertResult: PlayerData = player.convertToPlayerData();
 
         expect(convertResult.id).to.equal(player.id);
-        expect(convertResult.name).to.equal(player.name);
+        expect(convertResult.publicUser).to.equal(player.publicUser);
         expect(convertResult.score).to.equal(player.score);
         expect(convertResult.tiles).to.equal(player.tiles);
-        expect(convertResult.objectives).to.equal(player['objectives']);
         expect(convertResult.isConnected).to.equal(player.isConnected);
     });
 });

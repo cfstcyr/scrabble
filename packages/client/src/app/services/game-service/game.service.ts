@@ -9,11 +9,10 @@ import { Round } from '@app/classes/round/round';
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
-import { GameType } from '@app/constants/game-type';
+import { ROUTE_GAME } from '@app/constants/routes-constants';
 import { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';
 import BoardService from '@app/services/board-service/board.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import { ObjectivesManagerService } from '@app/services/objectives-manager-service/objectives-manager.service';
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 import { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-service-data';
 import { Subject } from 'rxjs';
@@ -29,7 +28,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
     isGameOver: boolean;
 
     private gameId: string;
-    private gameType: GameType;
     private playerContainer?: PlayerContainer;
     private serviceDestroyed$: Subject<boolean>;
 
@@ -37,7 +35,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
         private router: Router,
         private boardService: BoardService,
         private roundManager: RoundManagerService,
-        private objectiveManager: ObjectivesManagerService,
         private gameController: GamePlayController,
         private gameViewEventManagerService: GameViewEventManagerService,
     ) {
@@ -100,15 +97,10 @@ export default class GameService implements OnDestroy, IResetServiceData {
         return this.tileReserve.reduce((prev, { amount }) => prev + amount, 0);
     }
 
-    getGameType(): GameType {
-        return this.gameType;
-    }
-
     resetServiceData(): void {
         this.tileReserve = [];
         this.isGameOver = false;
         this.gameId = '';
-        this.gameType = GameType.Classic;
         this.playerContainer = undefined;
         this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
     }
@@ -117,21 +109,19 @@ export default class GameService implements OnDestroy, IResetServiceData {
         return this.roundManager.getActivePlayer().id;
     }
 
-    private isLocalPlayerPlayer1(): boolean {
-        if (!this.playerContainer) return false;
-        return this.playerContainer.getLocalPlayerId() === this.playerContainer.getPlayer(1).id;
-    }
-
     private async initializeGame(localPlayerId: string, startGameData: StartGameData): Promise<void> {
         this.gameId = startGameData.gameId;
-        this.gameType = startGameData.gameType;
-        this.playerContainer = new PlayerContainer(localPlayerId).initializePlayers(startGameData.player1, startGameData.player2);
+        this.playerContainer = new PlayerContainer(localPlayerId).initializePlayers([
+            startGameData.player1,
+            startGameData.player2,
+            startGameData.player3,
+            startGameData.player4,
+        ]);
         this.tileReserve = startGameData.tileReserve;
         this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
 
         this.roundManager.initialize(localPlayerId, startGameData);
         this.boardService.initializeBoard(startGameData.board);
-        this.objectiveManager.initialize(startGameData, this.isLocalPlayerPlayer1());
 
         this.isGameSetUp = true;
         this.isGameOver = false;
@@ -143,7 +133,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
         if (this.router.url !== '/game') {
             this.roundManager.initializeEvents();
             this.roundManager.startRound();
-            await this.router.navigateByUrl('game');
+            await this.router.navigateByUrl(ROUTE_GAME);
         } else {
             this.reconnectReinitialize(startGameData);
         }
@@ -159,6 +149,12 @@ export default class GameService implements OnDestroy, IResetServiceData {
         if (gameUpdateData.player2) {
             this.handleUpdatePlayerData(gameUpdateData.player2);
         }
+        if (gameUpdateData.player3) {
+            this.handleUpdatePlayerData(gameUpdateData.player3);
+        }
+        if (gameUpdateData.player4) {
+            this.handleUpdatePlayerData(gameUpdateData.player4);
+        }
         if (gameUpdateData.board) {
             this.boardService.updateBoard(gameUpdateData.board);
         }
@@ -168,9 +164,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
         }
         if (gameUpdateData.tileReserve) {
             this.handleTileReserveUpdate(gameUpdateData.tileReserve);
-        }
-        if (gameUpdateData.gameObjective) {
-            this.objectiveManager.updateObjectives(gameUpdateData.gameObjective);
         }
     }
 
@@ -200,7 +193,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
 
     private reconnectReinitialize(startGameData: StartGameData): void {
         if (this.playerContainer) {
-            this.playerContainer.updatePlayersData(startGameData.player1, startGameData.player2);
+            this.playerContainer.updatePlayersData(startGameData.player1, startGameData.player2, startGameData.player3, startGameData.player4);
         }
         this.gameViewEventManagerService.emitGameViewEvent('reRender');
         this.gameViewEventManagerService.emitGameViewEvent('tileRackUpdate', this.getLocalPlayerId());

@@ -1,14 +1,15 @@
 import { PlayerData } from '@app/classes/communication/';
 import { Tile } from '@app/classes/tile';
+import { PublicUser } from '@common/models/user';
 export default class Player {
     id: string;
-    name: string;
+    publicUser: PublicUser;
     score: number;
     private tiles: Tile[];
 
-    constructor(id: string, name: string, tiles: Tile[]) {
+    constructor(id: string, publicUser: PublicUser, tiles: Tile[]) {
         this.id = id;
-        this.name = name;
+        this.publicUser = publicUser;
         this.score = 0;
         this.tiles = [...tiles];
     }
@@ -19,7 +20,7 @@ export default class Player {
 
     updatePlayerData(playerData: PlayerData): void {
         this.id = playerData.newId ? playerData.newId : this.id;
-        this.name = playerData.name ? playerData.name : this.name;
+        this.publicUser = playerData.publicUser ? playerData.publicUser : this.publicUser;
         this.score = playerData.score ? playerData.score : this.score;
         this.tiles = playerData.tiles ? [...playerData.tiles] : this.tiles;
     }

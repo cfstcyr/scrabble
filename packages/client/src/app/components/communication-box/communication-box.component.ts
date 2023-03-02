@@ -8,7 +8,6 @@ import { TileReserveData } from '@app/classes/tile/tile.types';
 import { CODE_HTML_TAG, IS_CLICKABLE_CLASS } from '@app/constants/components-constants';
 import { INITIAL_MESSAGE } from '@app/constants/controller-constants';
 import { LOCAL_PLAYER_ID, MAX_INPUT_LENGTH, OPPONENT_ID, SYSTEM_ERROR_ID, SYSTEM_ID } from '@app/constants/game-constants';
-import { GameType } from '@app/constants/game-type';
 import { GameService, InputParserService } from '@app/services';
 import { FocusableComponentsService } from '@app/services/focusable-components-service/focusable-components.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
@@ -27,7 +26,6 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
     @ViewChild('textBoxContainer') textBoxContainer: ElementRef;
     @ViewChild('virtualScroll', { static: false }) scrollViewport: CdkVirtualScrollViewport;
 
-    gameType: GameType = GameType.Classic;
     messages: Message[] = [];
     messageForm = new FormGroup({
         content: new FormControl('', [Validators.maxLength(MAX_INPUT_LENGTH), Validators.minLength(1)]),
@@ -49,8 +47,6 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
     }
 
     ngOnInit(): void {
-        this.gameType = this.gameService.getGameType();
-
         this.gameViewEventManagerService.subscribeToGameViewEvent('newMessage', this.componentDestroyed$, (newMessage: Message | null) => {
             if (newMessage) this.onReceiveNewMessage(newMessage);
         });
@@ -60,7 +56,6 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
             (gameData: InitializeGameData | undefined) => {
                 if (gameData) {
                     this.initializeMessages(gameData);
-                    this.gameType = gameData.startGameData.gameType;
                 }
             },
         );
