@@ -1,11 +1,7 @@
 <div class="chatbox-container">
     <div class="chatbox-container__chatboxes">
         <ng-container *ngFor="let channel of openedChannels">
-            <app-chatbox-message 
-                [title]="channel.name"
-                [messages]="channel.messages"
-                (sendMessage)="handleSendMessage(channel, $event)"
-            >
+            <app-chatbox-message [title]="channel.name" [messages]="channel.messages" (sendMessage)="handleSendMessage(channel, $event)">
                 <app-icon-button action-button (click)="minimizeChannel(channel)">
                     <app-icon icon="minus"></app-icon>
                 </app-icon-button>
@@ -32,17 +28,12 @@
                     </form>
                 </div>
                 <div class="chatbox-container__section">
-
                     <!-- Mes Canaux de discussion Div -->
                     <p class="chatbox-container__section__title">Mes canaux</p>
                     <div class="chatbox-container__my-channels__content">
-                        <div class="chatbox-container__my-channels__item" *ngFor="let channel of getChannelsForMenu() | async" >
-                            <button
-                                [disabled]="!channel.canOpen"
-                                (click)="showChannel(channel)"
-                                class="chatbox-container__my-channels__button"
-                            >
-                                {{channel.name}}
+                        <div class="chatbox-container__my-channels__item" *ngFor="let channel of getChannelsForMenu() | async">
+                            <button [disabled]="!channel.canOpen" (click)="showChannel(channel)" class="chatbox-container__my-channels__button">
+                                {{ channel.name }}
                             </button>
                             <app-icon-button (click)="handleDeleteChannel(channel)" *ngIf="channel.canQuit">
                                 <app-icon icon="trash"></app-icon>
@@ -51,29 +42,23 @@
                                 <app-icon icon="sign-out"></app-icon>
                             </app-icon-button>
                         </div>
-                        
                     </div>
                 </div>
 
-                <!-- Canaux Publiques Div -->
+                <!-- Canaux Publics Div -->
                 <div class="chatbox-container__section">
-                    <p class="chatbox-container__section__title">Canaux Publiques</p>
+                    <p class="chatbox-container__section__title">Canaux Publics</p>
                     <div class="chatbox-container__my-channels__content">
-                        <div class="chatbox-container__my-channels__item" *ngFor="let channel of getPublicChannelsForMenu() | async" >
-                            <button
-                                [disabled]="!channel.canOpen"
-                                class="chatbox-container__my-channels__button"
-                            >
-                                {{channel.name}}
+                        <div class="chatbox-container__my-channels__item" *ngFor="let channel of getPublicChannelsForMenu() | async">
+                            <button [disabled]="!channel.canOpen" class="chatbox-container__my-channels__button">
+                                {{ channel.name }}
                             </button>
                             <app-icon-button (click)="handleJoinChannel(channel)" *ngIf="channel.canQuit">
                                 <app-icon icon="user-plus"></app-icon>
                             </app-icon-button>
                         </div>
-                        
                     </div>
                 </div>
-
             </div>
         </app-chatbox>
     </div>
