@@ -14,7 +14,7 @@ import {
     DELETE,
     JOIN,
     MAX_OPEN_CHAT,
-    QUIT,
+    QUIT
 } from '@app/constants/chat-constants';
 import { CANCEL } from '@app/constants/components-constants';
 import { Channel } from '@common/models/chat/channel';
@@ -131,11 +131,12 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                     {
                         content: CANCEL,
                         closeDialog: true,
+                        style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
                     },
                     {
                         content: JOIN,
                         closeDialog: true,
-                        style: { color: 'primary' },
+                        style: 'background-color: rgb(231, 231, 231)',
                         action: () => this.joinChannelFromMenu(channel),
                     },
                 ],
@@ -171,10 +172,12 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                     {
                         content: CANCEL,
                         closeDialog: true,
+                        style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
                     },
                     {
                         content: QUIT,
                         closeDialog: true,
+                        style: 'background-color: rgb(231, 231, 231)',
                         action: () => this.quitChannelFromMenu(channel),
                     },
                 ],
@@ -191,10 +194,12 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
                     {
                         content: CANCEL,
                         closeDialog: true,
+                        style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
                     },
                     {
                         content: DELETE,
                         closeDialog: true,
+                        style: 'background-color: rgb(231, 231, 231)',
                         action: () => this.deleteChannelFromMenu(channel),
                     },
                 ],
