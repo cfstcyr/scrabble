@@ -30,7 +30,7 @@ export class SignupContainerComponent implements OnChanges {
             {
                 username: new FormControl('', [
                     Validators.required,
-                    Validators.minLength(NAME_VALIDATION.minLength),
+                    Validators.minLength(1),
                     Validators.maxLength(NAME_VALIDATION.maxLength),
                     Validators.pattern(NAME_VALIDATION.rule),
                     this.usernameTakenValidator(),
@@ -52,7 +52,10 @@ export class SignupContainerComponent implements OnChanges {
     onSubmit(): void {
         this.hasBeenSubmitted = true;
 
-        if (this.signupForm.invalid) return;
+        if (this.signupForm.invalid) {
+            this.signupForm.markAllAsTouched();
+            return;
+        }
 
         const userSignupInformation: UserSignupInformation = {
             email: this.signupForm.get('email')?.value,

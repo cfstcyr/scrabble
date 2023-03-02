@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
@@ -14,19 +15,19 @@ import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
 import { Service } from 'typedi';
 import {
-    CleanupEmitArgs,
-    GameUpdateEmitArgs,
-    HighScoresEmitArgs,
-    JoinRequestEmitArgs,
-    GroupsUpdateEmitArgs,
-    NewMessageEmitArgs,
-    SocketEmitEvents,
-    StartGameEmitArgs,
     AcceptJoinRequestEmitArgs,
     CancelledGroupEmitArgs,
+    CleanupEmitArgs,
+    GameUpdateEmitArgs,
+    GroupsUpdateEmitArgs,
+    HighScoresEmitArgs,
     JoinRequestCancelledEmitArgs,
+    JoinRequestEmitArgs,
+    NewMessageEmitArgs,
     RejectJoinRequestEmitArgs,
-    UserLeftGroupEmitArgs,
+    SocketEmitEvents,
+    StartGameEmitArgs,
+    UserLeftGroupEmitArgs
 } from './socket-types';
 
 @Service()
@@ -79,7 +80,7 @@ export class SocketService {
                     return next(new Error(err));
                 }
             } else {
-                next(new Error(NO_TOKEN));
+                throw new HttpException(NO_TOKEN);
             }
         });
 

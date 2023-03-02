@@ -1,21 +1,20 @@
-import 'package:mobile/classes/channel.dart';
 import 'package:mobile/classes/chat-message.dart';
 
 class ChannelMessage {
   final ChatMessage message;
-  final Channel channel;
+  final int idChannel;
 
-  ChannelMessage({required this.message, required this.channel});
+  ChannelMessage({required this.message, required this.idChannel});
 
   factory ChannelMessage.fromJson(Map<String, dynamic> json) {
     return ChannelMessage(
       message: json['message'] as ChatMessage,
-      channel: json['channel'] as Channel,
+      idChannel: json['idChannel'] as int,
     );
   }
 
   Map<String, dynamic> toJson() => {
         "message": message,
-        "channel": channel,
+        "idChannel": idChannel,
       };
 }

@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/prototype-page.dart';
 
+import '../components/scaffold-persistance.dart';
+
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
@@ -17,7 +19,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return MyScaffold(
+      title: "Home",
       body: IndexedStack(
         index: selectedIndex,
         children: <Widget>[
@@ -41,26 +44,6 @@ class _HomePageState extends State<HomePage> {
               settings: route,
               builder: (context) => PrototypePage(),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: selectedIndex,
-        onTap: (val) => _onTap(val, context),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_books),
-            label: 'Page a implementer 1',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Page a implementer 2',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Page a implementer 3',
           ),
         ],
       ),
