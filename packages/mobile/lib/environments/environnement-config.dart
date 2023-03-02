@@ -10,9 +10,7 @@ abstract class BaseConfig {
 
 class DevConfig implements BaseConfig {
   String get apiUrl => 'http://10.0.2.2:${dotenv.env['SERVER_PORT']}/api';
-  String get webSocketUrl => 'http://localhost:${dotenv.env['SERVER_PORT']}/';
-  // if {msg: websocket error, desc: null, type: TransportError} in terminal, try below:
-  // String get webSocketUrl => 'http://10.0.2.2:${dotenv.env['SERVER_PORT']}/';
+  String get webSocketUrl => 'http://10.0.2.2:${dotenv.env['SERVER_PORT']}';
 
   bool get reportErrors => false;
 

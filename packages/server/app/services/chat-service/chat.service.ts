@@ -35,7 +35,6 @@ export class ChatService {
     configureSocket(socket: ServerSocket): void {
         socket.on('channel:newMessage', async (channelMessage: ChannelMessage) => {
             try {
-                // eslint-disable-next-line no-console
                 await this.handleSendMessage(channelMessage, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
@@ -43,8 +42,6 @@ export class ChatService {
         });
         socket.on('channel:newChannel', async (channel: ChannelCreation) => {
             try {
-                // eslint-disable-next-line no-console
-                console.log('ServER', channel);
                 await this.handleCreateChannel(channel, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
@@ -191,6 +188,6 @@ export class ChatService {
         await Promise.all(
             (await this.chatPersistenceService.getUserChannelIds(user.idUser)).map(async (idChannel) => this.handleJoinChannel(idChannel, socket)),
         );
-        socket.emit('channel:init');
+        socket.emit('channel:initDone');
     }
 }

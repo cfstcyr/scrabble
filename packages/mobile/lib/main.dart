@@ -9,8 +9,6 @@ import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:provider/provider.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:socket_io_client/socket_io_client.dart';
 
 import 'environments/environment.dart';
 
@@ -22,30 +20,7 @@ Future<void> main() async {
   );
   Environment().initConfig(environment);
   setUpLocator();
-  connectAndListen();
   runApp(MyApp());
-}
-
-void connectAndListen() {
-  final String webSocketUrl = Environment().config.webSocketUrl;
-
-  IO.Socket socket = IO.io(
-      webSocketUrl,
-      OptionBuilder()
-          .disableAutoConnect()
-          .setTransports(['websocket']).build());
-  socket.connect();
-
-  socket.onConnect((_) {
-    print('connected to websocket');
-  });
-  socket.onConnectError((data) {
-    print(data);
-  });
-  socket.onConnectTimeout((data) {
-    print(data);
-  });
-  socket.onDisconnect((_) => {print("disconnected")});
 }
 
 class MyApp extends StatelessWidget {
