@@ -68,15 +68,6 @@ export class ChatService {
                 SocketService.handleError(error, socket);
             }
         });
-
-        socket.on('channel:allChannels', async () => {
-            try {
-                const channels = await this.chatPersistenceService.getChannels();
-                socket.emit('channel:allChannels', channels);
-            } catch (error) {
-                SocketService.handleError(error, socket);
-            }
-        });
     }
 
     async createChannel(channel: ChannelCreation, userId: UserId): Promise<Channel> {
@@ -144,7 +135,7 @@ export class ChatService {
     }
 
     private async handleJoinChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
-        // const user: User = socket.data.user;
+        const user: User = socket.data.user;
         const channel = await this.chatPersistenceService.getChannel(idChannel);
         const channelHistory = await this.chatHistoryService.getChannelHistory(idChannel);
 
@@ -158,7 +149,7 @@ export class ChatService {
 
         // This method is used to subscribe to a channel of join an already subscribed channel.
         // We only need to add to the table if not already there.
-        // await this.chatPersistenceService.joinChannel(idChannel, user.idUser);
+        await this.chatPersistenceService.joinChannel(idChannel, user.idUser);
 
         socket.join(getSocketNameFromChannel(channel));
         socket.emit('channel:join', channel);
@@ -166,7 +157,7 @@ export class ChatService {
     }
 
     private async handleQuitChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
-        // const user: User = socket.data.user;
+        const user: User = socket.data.user;
         const channel = await this.chatPersistenceService.getChannel(idChannel);
 
         if (!channel) {
@@ -177,7 +168,7 @@ export class ChatService {
             socket.leave(getSocketNameFromChannel(channel));
         }
 
-        // await this.chatPersistenceService.leaveChannel(idChannel, user.idUser);
+        await this.chatPersistenceService.leaveChannel(idChannel, user.idUser);
 
         socket.emit('channel:quit', channel);
     }
