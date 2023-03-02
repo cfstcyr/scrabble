@@ -38,7 +38,7 @@ class ChatManagementController {
 
   Future<void> createChannel(String channelName) async {
     if (channelName.isEmpty) return;
-    socketService.emitEvent(CREATE_EVENT, ChannelName(name: channelName));
+    socketService.emitEvent(CREATE_EVENT, ChannelCreation(name: channelName));
   }
 
   Future<void> joinChannel(int idChannel) async {

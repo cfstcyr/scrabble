@@ -26,13 +26,13 @@ class Channel {
       };
 }
 
-class ChannelName {
+class ChannelCreation {
   final String name;
 
-  ChannelName({required this.name});
+  ChannelCreation({required this.name});
 
-  factory ChannelName.fromJson(Map<String, dynamic> json) {
-    return ChannelName(
+  factory ChannelCreation.fromJson(Map<String, dynamic> json) {
+    return ChannelCreation(
       name: json['name'] as String,
     );
   }
