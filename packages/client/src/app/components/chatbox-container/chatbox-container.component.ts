@@ -7,12 +7,9 @@ import {
     CHANNEL_NAME_MAX_LENGTH,
     CONFIRM_DELETE_CHANNEL,
     CONFIRM_DELETE_DIALOG_TITLE,
-    CONFIRM_JOIN_DIALOG,
-    CONFIRM_JOIN_DIALOG_TITLE,
     CONFIRM_QUIT_CHANNEL,
     CONFIRM_QUIT_DIALOG_TITLE,
     DELETE,
-    JOIN,
     MAX_OPEN_CHAT,
     QUIT
 } from '@app/constants/chat-constants';
@@ -120,28 +117,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
 
     handleSendMessage(channel: Channel, content: string): void {
         this.sendMessage.next([channel, content]);
-    }
-
-    handleJoinChannel(channel: ClientChannel): void {
-        this.dialog.open(DefaultDialogComponent, {
-            data: {
-                title: CONFIRM_JOIN_DIALOG_TITLE,
-                content: CONFIRM_JOIN_DIALOG(channel.name),
-                buttons: [
-                    {
-                        content: CANCEL,
-                        closeDialog: true,
-                        style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
-                    },
-                    {
-                        content: JOIN,
-                        closeDialog: true,
-                        style: 'background-color: rgb(231, 231, 231)',
-                        action: () => this.joinChannelFromMenu(channel),
-                    },
-                ],
-            },
-        });
     }
 
     joinChannelFromMenu(channel: ClientChannel): void {

@@ -55,7 +55,7 @@
                             <button class="chatbox-container__my-channels__button">
                                 {{ channel.name }}
                             </button>
-                            <app-icon-button (click)="handleJoinChannel(channel)" *ngIf="channel.canQuit">
+                            <app-icon-button (click)="joinChannelFromMenu(channel)" *ngIf="channel.canQuit">
                                 <app-icon icon="plus"></app-icon>
                             </app-icon-button>
                         </div>
