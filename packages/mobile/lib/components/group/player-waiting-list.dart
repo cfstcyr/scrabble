@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/error-pop-up.dart';
 
-import '../constants/create-lobby-constants.dart';
-import '../view-methods/create-lobby-methods.dart';
+import '../../constants/create-lobby-constants.dart';
+import '../../view-methods/create-lobby-methods.dart';
 
 class PlayerWaitingList extends StatefulWidget {
   const PlayerWaitingList({

@@ -16,3 +16,5 @@ server/assets/dictionaries/index.json
 
 build/
 packages/client/documentation.json
+
+packages/mobile/pubspec.lock
