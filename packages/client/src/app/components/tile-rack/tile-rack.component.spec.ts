@@ -36,6 +36,7 @@ import SpyObj = jasmine.SpyObj;
 
 const DEFAULT_GAME_ID = 'gameId';
 const DEFAULT_PLAYER_ID = 'playerId';
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 
 describe('TileRackComponent', () => {
     const EMPTY_TILE_RACK: RackTile[] = [];
@@ -60,7 +61,7 @@ describe('TileRackComponent', () => {
         );
         gameServiceSpy.getGameId.and.returnValue(DEFAULT_GAME_ID);
         gameServiceSpy.getLocalPlayerId.and.returnValue(DEFAULT_PLAYER_ID);
-        gameServiceSpy.getLocalPlayer.and.returnValue(new Player(DEFAULT_PLAYER_ID, 'name', []));
+        gameServiceSpy.getLocalPlayer.and.returnValue(new Player(DEFAULT_PLAYER_ID, USER1, []));
         gameServiceSpy.isLocalPlayerPlaying.and.returnValue(true);
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         gameServiceSpy.getTotalNumberOfTilesLeft.and.returnValue(100);
@@ -168,7 +169,7 @@ describe('TileRackComponent', () => {
     });
 
     it('Initializing TileRack with player with no tiles should return empty TileRack', () => {
-        const localPlayer: Player = new Player('', 'Test', []);
+        const localPlayer: Player = new Player('', USER1, []);
 
         gameServiceSpy.getLocalPlayer.and.returnValue(localPlayer);
         spyOn(localPlayer, 'getTiles').and.returnValue([]);
@@ -184,7 +185,7 @@ describe('TileRackComponent', () => {
             { letter: 'B', value: 1, isUsed: false, isSelected: false },
             { letter: 'D', value: 1, isUsed: true, isSelected: false },
         ];
-        const localPlayer: Player = new Player('', 'Test', [
+        const localPlayer: Player = new Player('', USER1, [
             { letter: 'B', value: 1 },
             { letter: 'D', value: 1 },
             { letter: 'A', value: 10 },
@@ -597,7 +598,7 @@ describe('TileRackComponent', () => {
             component.exchangeTiles();
             expect(createPayloadSpy).toHaveBeenCalledWith(component.selectedTiles);
             expect(createActionDataSpy).toHaveBeenCalledWith(ActionType.EXCHANGE, fakePayload);
-            expect(sendAction).toHaveBeenCalledOnceWith(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, fakeData);
+            expect(sendAction).toHaveBeenCalledOnceWith(DEFAULT_GAME_ID, fakeData);
         });
 
         it('should set all selectedTiles as played', () => {
@@ -713,7 +714,7 @@ describe('TileRackComponent', () => {
         ];
 
         it('should call right functions', () => {
-            gameServiceSpy.getLocalPlayer.and.returnValue(new Player(DEFAULT_PLAYER_ID, 'name', DEFAULT_TILES));
+            gameServiceSpy.getLocalPlayer.and.returnValue(new Player(DEFAULT_PLAYER_ID, USER1, DEFAULT_TILES));
             gameServiceSpy.getLocalPlayerId.and.returnValue(DEFAULT_PLAYER_ID);
             const createRackTileSpy = spyOn<any>(component, 'createRackTile');
 

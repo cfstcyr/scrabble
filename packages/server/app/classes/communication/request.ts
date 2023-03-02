@@ -1,4 +1,4 @@
-import { VirtualPlayerLevel } from 'app/classes/player/virtual-player-level';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { Request } from 'express';
 
 export interface GameRequestParams {
@@ -18,4 +18,4 @@ export type VirtualPlayerProfilesRequest = Request & { params: { level?: Virtual
 
 export type GameHistoriesRequest = Request & { params: { playerId: string } };
 
-export type LobbiesRequest = Request & { params: { playerId: string } };
+export type GroupsRequest = Request & { params: { playerId: string } };

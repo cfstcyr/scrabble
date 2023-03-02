@@ -4,10 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import Game from '@app/classes/game/game';
 import { ReadyGameConfig } from '@app/classes/game/game-config';
-import { GameMode } from '@app/classes/game/game-mode';
-import { GameType } from '@app/classes/game/game-type';
 import Player from '@app/classes/player/player';
-import { TEST_DICTIONARY } from '@app/constants/dictionary-tests-const';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
@@ -19,16 +16,24 @@ import { ChatService } from '@app/services/chat-service/chat.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as Sinon from 'sinon';
 import { Container } from 'typedi';
+import { GameVisibility } from '@common/models/game-visibility';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
+import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 
 const expect = chai.expect;
 
 chai.use(spies);
 chai.use(chaiAsPromised);
 
-const DEFAULT_PLAYER_1 = new Player('id1', 'player1');
-const DEFAULT_PLAYER_2 = new Player('id2', 'player2');
-const DEFAULT_PLAYER_3 = new Player('id3', 'player3');
-const DEFAULT_PLAYER_4 = new Player('id4', 'player4');
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
+const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
+
+const DEFAULT_PLAYER_1 = new Player('id1', USER1);
+const DEFAULT_PLAYER_2 = new Player('id2', USER2);
+const DEFAULT_PLAYER_3 = new Player('id3', USER3);
+const DEFAULT_PLAYER_4 = new Player('id4', USER4);
 const DEFAULT_ID = 'gameId';
 const DEFAULT_GAME_CHANNEL_ID = 1;
 const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
@@ -36,10 +41,10 @@ const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     player2: DEFAULT_PLAYER_2,
     player3: DEFAULT_PLAYER_3,
     player4: DEFAULT_PLAYER_4,
-    gameType: GameType.Classic,
-    gameMode: GameMode.Multiplayer,
     maxRoundTime: 1,
-    dictionary: TEST_DICTIONARY,
+    gameVisibility: GameVisibility.Private,
+    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+    dictionarySummary: {} as unknown as DictionarySummary,
 };
 const DEFAULT_GAME = {
     player1: DEFAULT_PLAYER_1,
@@ -242,7 +247,7 @@ describe('ActiveGameService', () => {
             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
 
             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-            expect(playerLeftEventSpy).to.have.been.called.with('playerLeft', DEFAULT_ID, DEFAULT_PLAYER_1.id);
+            expect(playerLeftEventSpy).to.have.been.called.with('playerLeftGame', DEFAULT_ID, DEFAULT_PLAYER_1.id);
         });
 
         it('should send message explaining the user left with new VP message if game is NOT over', async () => {
@@ -251,7 +256,11 @@ describe('ActiveGameService', () => {
             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
 
             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-            const expectedArg = { content: `${DEFAULT_PLAYER_1.name} ${PLAYER_LEFT_GAME(false)}`, senderId: 'system', gameId: DEFAULT_ID };
+            const expectedArg = {
+                content: `${DEFAULT_PLAYER_1.publicUser.username} ${PLAYER_LEFT_GAME(false)}`,
+                senderId: 'system',
+                gameId: DEFAULT_ID,
+            };
             expect(emitToRoomSpy).to.have.been.called.with(DEFAULT_ID, 'newMessage', expectedArg);
         });
 
@@ -261,7 +270,11 @@ describe('ActiveGameService', () => {
             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
 
             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-            const expectedArg = { content: `${DEFAULT_PLAYER_1.name} ${PLAYER_LEFT_GAME(true)}`, senderId: 'system', gameId: DEFAULT_ID };
+            const expectedArg = {
+                content: `${DEFAULT_PLAYER_1.publicUser.username} ${PLAYER_LEFT_GAME(true)}`,
+                senderId: 'system',
+                gameId: DEFAULT_ID,
+            };
             expect(emitToRoomSpy).to.have.been.called.with(DEFAULT_ID, 'newMessage', expectedArg);
         });
     });

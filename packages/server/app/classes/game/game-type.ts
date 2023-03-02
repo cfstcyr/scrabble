@@ -1,4 +1,4 @@
-export enum GameType {
-    Classic = 'Classique',
-    LOG2990 = 'LOG2990',
-}
+// export enum GameType {
+//     Classic = 'Classique',
+//     LOG2990 = 'LOG2990',
+// }

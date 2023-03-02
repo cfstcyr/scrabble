@@ -3,12 +3,12 @@
 import Game from '@app/classes/game/game';
 import Player from '@app/classes/player/player';
 import { LetterValue, TileReserve } from '@app/classes/tile';
+import { UNKOWN_USER } from '@common/models/user';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { ActionReserve } from '..';
 
-const DEFAULT_PLAYER_1_NAME = 'player1';
 const DEFAULT_PLAYER_1_ID = '1';
 const DEFAULT_MAP = new Map<LetterValue, number>([
     ['A', 0],
@@ -26,7 +26,7 @@ describe('ActionReserve', () => {
 
         gameStub.getTilesLeftPerLetter.returns(DEFAULT_MAP);
 
-        gameStub.player1 = new Player(DEFAULT_PLAYER_1_ID, DEFAULT_PLAYER_1_NAME);
+        gameStub.player1 = new Player(DEFAULT_PLAYER_1_ID, UNKOWN_USER);
 
         // eslint-disable-next-line dot-notation
         gameStub['tileReserve'] = tileReserveStub as unknown as TileReserve;

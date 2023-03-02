@@ -5,6 +5,7 @@ import 'package:mobile/services/account-authentification-service.dart';
 import 'package:mobile/services/chat-management.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/group-join.service.dart';
+import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
@@ -25,6 +26,8 @@ void setUpLocator() {
   getIt.registerLazySingleton<GameService>(() => GameService());
   getIt.registerLazySingleton<ChatManagementService>(
       () => ChatManagementService());
+  getIt.registerLazySingleton<RoundService>(() => RoundService());
+
   getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());
   getIt.registerLazySingleton<GroupJoinController>(() => GroupJoinController());
   getIt.registerLazySingleton<GroupJoinService>(() => GroupJoinService());

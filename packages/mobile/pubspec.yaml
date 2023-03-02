@@ -50,6 +50,7 @@ dependencies:
     socket_io_client: ^2.0.1
     animated_snack_bar: ^0.2.0
     rxdart: ^0.27.2
+    async: ^2.10.0
 
 dev_dependencies:
     flutter_test:

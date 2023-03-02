@@ -16,7 +16,6 @@ import { environment } from 'src/environments/environment';
 import { GamePlayController } from './game-play.controller';
 
 const DEFAULT_GAME_ID = 'grogarsID';
-const DEFAULT_PLAYER_ID = 'testPlayerID';
 
 describe('GamePlayController', () => {
     let controller: GamePlayController;
@@ -79,9 +78,9 @@ describe('GamePlayController', () => {
                 input: typedInput,
                 payload: {},
             };
-            const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/action`;
+            const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/players/action`;
 
-            controller.sendAction(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, actionData);
+            controller.sendAction(DEFAULT_GAME_ID, actionData);
             expect(httpPostSpy).toHaveBeenCalledWith(endpoint, { type: actionData.type, payload: actionData.payload, input: typedInput });
         });
 
@@ -92,9 +91,9 @@ describe('GamePlayController', () => {
                 senderId: SYSTEM_ID,
                 gameId: DEFAULT_GAME_ID,
             };
-            const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/message`;
+            const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/players/message`;
 
-            controller.sendMessage(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, newMessage);
+            controller.sendMessage(DEFAULT_GAME_ID, newMessage);
             expect(httpPostSpy).toHaveBeenCalledWith(endpoint, newMessage);
         });
 
@@ -105,9 +104,9 @@ describe('GamePlayController', () => {
                 senderId: SYSTEM_ID,
                 gameId: DEFAULT_GAME_ID,
             };
-            const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/error`;
+            const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/players/error`;
 
-            controller.sendError(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, newMessage);
+            controller.sendError(DEFAULT_GAME_ID, newMessage);
             expect(httpPostSpy).toHaveBeenCalledWith(endpoint, newMessage);
         });
     });
@@ -115,9 +114,9 @@ describe('GamePlayController', () => {
     it('HandleReconnection should post newPlayerId to reconnect endpoint', () => {
         const httpPostSpy = spyOn(controller['http'], 'post').and.returnValue(of(true) as any);
         const newPlayerId = 'NEW_ID';
-        const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/players/${DEFAULT_PLAYER_ID}/reconnect`;
+        const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/players/reconnect`;
 
-        controller.handleReconnection(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, newPlayerId);
+        controller.handleReconnection(DEFAULT_GAME_ID, newPlayerId);
         expect(httpPostSpy).toHaveBeenCalledWith(endpoint, { newPlayerId });
     });
 
@@ -128,7 +127,7 @@ describe('GamePlayController', () => {
             return new Subscription();
         });
 
-        controller.handleDisconnection(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+        controller.handleDisconnection(DEFAULT_GAME_ID);
         expect(httpDeleteSpy).toHaveBeenCalled();
     });
 
@@ -139,7 +138,7 @@ describe('GamePlayController', () => {
             return new Subscription();
         });
 
-        controller.handleDisconnection(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+        controller.handleDisconnection(DEFAULT_GAME_ID);
         expect(observableSpy).toHaveBeenCalledWith(controller['handleDisconnectResponse'], controller['handleDisconnectError']);
     });
 

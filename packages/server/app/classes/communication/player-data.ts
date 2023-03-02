@@ -1,12 +1,11 @@
-import { AbstractObjective } from '@app/classes/objectives/abstract-objective/abstract-objective';
 import { Tile } from '@app/classes/tile';
+import { PublicUser } from '@common/models/user';
 
 export interface PlayerData {
     id: string;
     newId?: string;
-    name?: string;
+    publicUser?: PublicUser;
     score?: number;
     tiles?: Tile[];
     isConnected?: boolean;
-    objectives?: AbstractObjective[];
 }

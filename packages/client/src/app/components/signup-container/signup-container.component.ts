@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { matchValidator, PASSWORD_REGEX, USERNAME_MAX_LENGTH } from '@app/constants/authentification-constants';
+import { matchValidator, PASSWORD_REGEX } from '@app/constants/authentification-constants';
 import { NAME_VALIDATION } from '@app/constants/name-validation';
 import { UserSignupInformation } from '@common/models/user';
 
@@ -30,8 +30,8 @@ export class SignupContainerComponent implements OnChanges {
             {
                 username: new FormControl('', [
                     Validators.required,
-                    Validators.minLength(1),
-                    Validators.maxLength(USERNAME_MAX_LENGTH),
+                    Validators.minLength(NAME_VALIDATION.minLength),
+                    Validators.maxLength(NAME_VALIDATION.maxLength),
                     Validators.pattern(NAME_VALIDATION.rule),
                     this.usernameTakenValidator(),
                 ]),

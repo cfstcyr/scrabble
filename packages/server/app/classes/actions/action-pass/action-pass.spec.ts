@@ -7,8 +7,8 @@ import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { ActionPass } from '..';
 import * as sinon from 'sinon';
+import { UNKOWN_USER } from '@common/models/user';
 
-const DEFAULT_PLAYER_1_NAME = 'player1';
 const DEFAULT_PLAYER_1_ID = '1';
 
 describe('ActionPass', () => {
@@ -18,7 +18,7 @@ describe('ActionPass', () => {
     beforeEach(() => {
         gameStub = createStubInstance(Game);
 
-        gameStub.player1 = new Player(DEFAULT_PLAYER_1_ID, DEFAULT_PLAYER_1_NAME);
+        gameStub.player1 = new Player(DEFAULT_PLAYER_1_ID, UNKOWN_USER);
 
         action = new ActionPass(gameStub.player1, gameStub as unknown as Game);
     });
