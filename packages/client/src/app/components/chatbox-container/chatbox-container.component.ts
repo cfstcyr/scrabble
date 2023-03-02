@@ -12,7 +12,6 @@ import {
     CONFIRM_QUIT_CHANNEL,
     CONFIRM_QUIT_DIALOG_TITLE,
     DELETE,
-    DIALOG_CHECKBOX,
     JOIN,
     MAX_OPEN_CHAT,
     QUIT
@@ -43,7 +42,6 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     openedChannels: ClientChannel[] = [];
     channelMenuIsOpen: boolean = false;
     channelNameMaxLength: number = CHANNEL_NAME_MAX_LENGTH;
-    notShowCheckbox: boolean = false;
     private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
 
     constructor(private readonly formBuilder: FormBuilder, private readonly dialog: MatDialog) {
@@ -125,31 +123,24 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     }
 
     handleJoinChannel(channel: ClientChannel): void {
-        if (!this.notShowCheckbox) {
-            this.dialog.open(DefaultDialogComponent, {
-                data: {
-                    title: CONFIRM_JOIN_DIALOG_TITLE,
-                    content: CONFIRM_JOIN_DIALOG(channel.name),
-                    buttons: [
-                        {
-                            content: CANCEL,
-                            closeDialog: true,
-                        },
-                        {
-                            content: JOIN,
-                            closeDialog: true,
-                            style: { color: 'primary' },
-                            action: () => this.joinChannelFromMenu(channel),
-                        },
-                    ],
-                    checkbox: {
-                        content: DIALOG_CHECKBOX,
-                        checked: false,
-                        action: (checked: boolean) => (this.notShowCheckbox = checked),
+        this.dialog.open(DefaultDialogComponent, {
+            data: {
+                title: CONFIRM_JOIN_DIALOG_TITLE,
+                content: CONFIRM_JOIN_DIALOG(channel.name),
+                buttons: [
+                    {
+                        content: CANCEL,
+                        closeDialog: true,
                     },
-                },
-            });
-        } else this.joinChannelFromMenu(channel);
+                    {
+                        content: JOIN,
+                        closeDialog: true,
+                        style: { color: 'primary' },
+                        action: () => this.joinChannelFromMenu(channel),
+                    },
+                ],
+            },
+        });
     }
 
     joinChannelFromMenu(channel: ClientChannel): void {
@@ -172,57 +163,43 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     }
 
     handleQuitChannel(channel: ClientChannel): void {
-        if (!this.notShowCheckbox) {
-            this.dialog.open(DefaultDialogComponent, {
-                data: {
-                    title: CONFIRM_QUIT_DIALOG_TITLE,
-                    content: CONFIRM_QUIT_CHANNEL(channel.name),
-                    buttons: [
-                        {
-                            content: CANCEL,
-                            closeDialog: true,
-                        },
-                        {
-                            content: QUIT,
-                            closeDialog: true,
-                            action: () => this.quitChannelFromMenu(channel),
-                        },
-                    ],
-                    checkbox: {
-                        content: DIALOG_CHECKBOX,
-                        checked: false,
-                        action: (checked: boolean) => (this.notShowCheckbox = checked),
+        this.dialog.open(DefaultDialogComponent, {
+            data: {
+                title: CONFIRM_QUIT_DIALOG_TITLE,
+                content: CONFIRM_QUIT_CHANNEL(channel.name),
+                buttons: [
+                    {
+                        content: CANCEL,
+                        closeDialog: true,
                     },
-                },
-            });
-        } else this.quitChannelFromMenu(channel);
+                    {
+                        content: QUIT,
+                        closeDialog: true,
+                        action: () => this.quitChannelFromMenu(channel),
+                    },
+                ],
+            },
+        });
     }
 
     handleDeleteChannel(channel: ClientChannel): void {
-        if (!this.notShowCheckbox) {
-            this.dialog.open(DefaultDialogComponent, {
-                data: {
-                    title: CONFIRM_DELETE_DIALOG_TITLE,
-                    content: CONFIRM_DELETE_CHANNEL(channel.name),
-                    buttons: [
-                        {
-                            content: CANCEL,
-                            closeDialog: true,
-                        },
-                        {
-                            content: DELETE,
-                            closeDialog: true,
-                            action: () => this.deleteChannelFromMenu(channel),
-                        },
-                    ],
-                    checkbox: {
-                        content: DIALOG_CHECKBOX,
-                        checked: false,
-                        action: (checked: boolean) => (this.notShowCheckbox = checked),
+        this.dialog.open(DefaultDialogComponent, {
+            data: {
+                title: CONFIRM_DELETE_DIALOG_TITLE,
+                content: CONFIRM_DELETE_CHANNEL(channel.name),
+                buttons: [
+                    {
+                        content: CANCEL,
+                        closeDialog: true,
                     },
-                },
-            });
-        } else this.deleteChannelFromMenu(channel);
+                    {
+                        content: DELETE,
+                        closeDialog: true,
+                        action: () => this.deleteChannelFromMenu(channel),
+                    },
+                ],
+            },
+        });
     }
 
     private quitChannelFromMenu(channel: ClientChannel): void {
