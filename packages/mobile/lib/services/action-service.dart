@@ -4,9 +4,9 @@ import '../classes/actions/action-data.dart';
 import '../locator.dart';
 
 class ActionService {
-  bool _hasActionBeenPlayed = false;
+  bool _isActionBeingProcessed = false;
 
-  bool get hasActionBeenPlayed => _hasActionBeenPlayed;
+  bool get isActionBeingProcessed => _isActionBeingProcessed;
 
   GameplayController gameplayController = getIt.get<GameplayController>();
 
@@ -20,18 +20,16 @@ class ActionService {
     return _instance;
   }
 
-  ActionData createActionData(ActionType actionType, [ActionPayload? payload]) {
-    return ActionData(type: actionType, payload: payload);
-  }
+  Future<void> sendAction(String gameId, ActionType actionType, [ActionPayload? payload]) async {
+    if (_isActionBeingProcessed) return;
 
-  void sendAction(ActionData actionData) {
-    if (_hasActionBeenPlayed) return;
+    ActionData actionData = ActionData(type: actionType, payload: payload);
 
-    gameplayController.sendAction(actionData);
-    _hasActionBeenPlayed = true;
+    gameplayController.sendAction(gameId, actionData);
+    _isActionBeingProcessed = true;
   }
 
   void _actionProcessed() {
-    _hasActionBeenPlayed = false;
+    _isActionBeingProcessed = false;
   }
 }
