@@ -192,6 +192,8 @@ export class ChatService {
         await Promise.all(
             (await this.chatPersistenceService.getUserChannelIds(user.idUser)).map(async (idChannel) => this.handleJoinChannel(idChannel, socket)),
         );
+
+        socket.emit('channel:initDone');
     }
 
     private async updatePublicChannels(): Promise<void> {
