@@ -10,7 +10,7 @@ import 'package:mobile/services/game.service.dart';
 import '../../constants/game.constants.dart';
 
 class GameBoard extends StatelessWidget {
-  GameService _gameService = getIt.get<GameService>();
+  final GameService _gameService = getIt.get<GameService>();
 
   GameBoard();
 

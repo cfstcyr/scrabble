@@ -8,6 +8,8 @@ import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/tile/tile-rack.dart';
 import 'package:mobile/components/timer.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/services/game.service.dart';
 
 import '../components/game/game_messages.dart';
 

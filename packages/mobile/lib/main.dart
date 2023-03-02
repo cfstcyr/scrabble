@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/pages/game-page.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:provider/provider.dart';
 
@@ -30,11 +31,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Namer App',
         theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-          cardTheme: CardTheme(color: Colors.white, surfaceTintColor: Colors.white)
-        ),
-        home: MainPage(),
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+            cardTheme:
+                CardTheme(color: Colors.white, surfaceTintColor: Colors.white)),
+        home: GamePage(),
       ),
     );
   }

@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
+import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/services/game-event.service.dart';
+import 'package:mobile/services/game-state.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -14,6 +17,8 @@ class TileRack extends StatelessWidget {
   final BehaviorSubject<int?> _currentTileIndex = BehaviorSubject();
   final BehaviorSubject<int?> _currentHoveredTileIndex = BehaviorSubject();
   final GameService _gameService = getIt.get<GameService>();
+  final GameStateService _gameStateService = getIt.get<GameStateService>();
+  final GameEventService _gameEventService = getIt.get<GameEventService>();
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +28,12 @@ class TileRack extends StatelessWidget {
         height: 70,
         child: Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
-          alignment: WrapAlignment.spaceEvenly,
+          alignment: WrapAlignment.spaceBetween,
           spacing: SPACE_4,
           children: [
             AppButton(
               onPressed: () {},
               icon: Icons.repeat,
-              iconOnly: true,
             ),
             StreamBuilder(
                 stream: _gameService.getTileRack().stream,
@@ -50,11 +54,22 @@ class TileRack extends StatelessWidget {
                         )
                       : Container();
                 })),
-            AppButton(
-              onPressed: null,
-              icon: Icons.close,
-              size: AppButtonSize.large,
-            ),
+            StreamBuilder<bool>(
+              stream: _gameStateService
+                  .getStream(NON_APPLIED_TILES_ON_BOARD_COUNT)
+                  .map((count) => count > 0),
+              builder: (context, snapshot) {
+                return AppButton(
+                  onPressed: snapshot.data ?? false
+                      ? () {
+                          _gameEventService.add<void>(
+                              PUT_BACK_TILES_ON_TILE_RACK, null);
+                        }
+                      : null,
+                  icon: Icons.close,
+                );
+              },
+            )
           ],
         ),
       ),
@@ -145,7 +160,7 @@ class TileRack extends StatelessWidget {
             });
       },
       onAccept: (data) {
-        _gameService.getTileRack().moveTile(data, index);
+        _gameService.getTileRack().placeTile(data, to: index);
         _currentHoveredTileIndex.add(null);
       },
       onMove: (details) {

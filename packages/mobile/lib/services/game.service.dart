@@ -10,7 +10,6 @@ import 'package:mobile/classes/user.dart';
 import 'package:rxdart/rxdart.dart';
 
 class GameService {
-  final Subject<Tile> placeOnBoard$;
   final BehaviorSubject<Game?> _game$;
 
   static final GameService _instance = GameService._();
@@ -19,10 +18,8 @@ class GameService {
     return _instance;
   }
 
-  GameService._()
-      : placeOnBoard$ = PublishSubject(),
-        _game$ = BehaviorSubject() {
-    // TODO: Change this to actual gameplay
+  GameService._() : _game$ = BehaviorSubject() {
+    // TODO: Not do this
     _game$.add(Game(
         board: Board(),
         tileRack: TileRack(),
@@ -37,17 +34,17 @@ class GameService {
         ),
         timeLeft: Duration(minutes: 1, seconds: 42)));
 
-    game.board.grid[7][7].setTile(Tile.create("B", 1));
-    game.board.grid[7][8].setTile(Tile.create("O", 1));
-    game.board.grid[7][9].setTile(Tile.create("N", 1));
-    game.board.grid[7][10].setTile(Tile.create("J", 1));
-    game.board.grid[7][11].setTile(Tile.create("O", 1));
-    game.board.grid[7][12].setTile(Tile.create("U", 1));
-    game.board.grid[7][13].setTile(Tile.create("R", 1));
+    game.board.grid[7][7].setTile(Tile.create("B", 1)).applyTile();
+    game.board.grid[7][8].setTile(Tile.create("O", 1)).applyTile();
+    game.board.grid[7][9].setTile(Tile.create("N", 1)).applyTile();
+    game.board.grid[7][10].setTile(Tile.create("J", 1)).applyTile();
+    game.board.grid[7][11].setTile(Tile.create("O", 1)).applyTile();
+    game.board.grid[7][12].setTile(Tile.create("U", 1)).applyTile();
+    game.board.grid[7][13].setTile(Tile.create("R", 1)).applyTile();
 
-    game.board.grid[8][9].setTile(Tile.create("O", 1));
-    game.board.grid[9][9].setTile(Tile.create("E", 1));
-    game.board.grid[10][9].setTile(Tile.create("L", 1));
+    game.board.grid[8][9].setTile(Tile.create("O", 1)).applyTile();
+    game.board.grid[9][9].setTile(Tile.create("E", 1)).applyTile();
+    game.board.grid[10][9].setTile(Tile.create("L", 1)).applyTile();
 
     game.tileRack.setTiles([
       Tile.create("P", 1),

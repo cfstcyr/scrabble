@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:mobile/controllers/channel.controller.dart';
 import 'package:mobile/services/account-authentification-service.dart';
+import 'package:mobile/services/game-event.service.dart';
+import 'package:mobile/services/game-state.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -17,6 +19,8 @@ void setUpLocator() {
   getIt.registerLazySingleton<ChannelController>(() => ChannelController());
   getIt.registerLazySingleton<SocketService>(() => SocketService());
   getIt.registerLazySingleton<GameService>(() => GameService());
+  getIt.registerLazySingleton<GameEventService>(() => GameEventService());
+  getIt.registerLazySingleton<GameStateService>(() => GameStateService());
 
   getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());
 }
