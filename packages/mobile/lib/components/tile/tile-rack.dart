@@ -32,7 +32,9 @@ class TileRack extends StatelessWidget {
           spacing: SPACE_4,
           children: [
             AppButton(
-              onPressed: () {},
+              onPressed: () {
+                _gameService.getTileRack().shuffle();
+              },
               icon: Icons.repeat,
             ),
             StreamBuilder(

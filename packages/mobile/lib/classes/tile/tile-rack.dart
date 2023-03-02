@@ -62,4 +62,10 @@ class TileRack {
 
     setTiles(tiles);
   }
+
+  shuffle() {
+    var tiles = _tiles.value;
+    tiles.shuffle();
+    _tiles.add(tiles);
+  }
 }
