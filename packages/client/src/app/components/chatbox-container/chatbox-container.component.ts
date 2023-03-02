@@ -27,6 +27,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     @Input() channels: Observable<ClientChannel[]> = new Observable();
     @Input() joinableChannels: Observable<ClientChannel[]> = new Observable();
     @Input() joinedChannel: Observable<ClientChannel> = new Observable();
+    @Input() quittedChannel: Observable<ClientChannel> = new Observable();
     @Output() sendMessage: EventEmitter<[Channel, string]> = new EventEmitter();
     @Output() createChannel: EventEmitter<string> = new EventEmitter();
     @Output() joinChannel: EventEmitter<Channel> = new EventEmitter();
@@ -52,8 +53,12 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     ngOnInit(): void {
         this.joinedChannel.pipe(takeUntil(this.componentDestroyed$)).subscribe((channel) => {
             if (!channel) return;
-            if (this.openedChannels.find((c) => channel.idChannel === c.idChannel)) this.minimizeChannel(channel);
             else if (this.channelMenuIsOpen) this.showChannel(channel);
+        });
+
+        this.quittedChannel.pipe(takeUntil(this.componentDestroyed$)).subscribe((channel) => {
+            if (!channel) return;
+            this.minimizeChannel(channel);
         });
     }
 

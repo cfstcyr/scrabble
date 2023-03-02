@@ -15,6 +15,7 @@ import { map } from 'rxjs/operators';
 export class ChatService {
     ready: Subject<boolean> = new Subject();
     joinedChannel: Subject<ClientChannel>;
+    quittedChannel: Subject<ClientChannel>;
     channels: BehaviorSubject<Map<TypeOfId<Channel>, ClientChannel>>;
     joinableChannels: BehaviorSubject<Map<TypeOfId<Channel>, ClientChannel>>;
 
@@ -22,6 +23,7 @@ export class ChatService {
         this.channels = new BehaviorSubject(new Map());
         this.joinableChannels = new BehaviorSubject(new Map());
         this.joinedChannel = new Subject();
+        this.quittedChannel = new Subject();
 
         this.socketService.onConnect.subscribe((socket) => {
             this.channels.next(new Map());
@@ -97,7 +99,7 @@ export class ChatService {
         this.channels.next(this.channels.value);
         this.joinableChannels.value.delete(channel.idChannel);
         this.joinableChannels.next(this.joinableChannels.value);
-        this.joinedChannel.next({ ...channel, messages: [] });
+        this.quittedChannel.next({ ...channel, messages: [] });
     }
 
     handleNewMessage(channelMessage: ChannelMessage): void {

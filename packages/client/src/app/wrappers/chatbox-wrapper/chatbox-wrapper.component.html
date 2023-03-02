@@ -1,6 +1,7 @@
 <app-chatbox-container
     [channels]="channels"
     [joinedChannel]="joinedChannel"
+    [quittedChannel]="quittedChannel"
     [joinableChannels]="joinableChannels"
     (sendMessage)="handleSendMessage($event)"
     (createChannel)="handleCreateChannel($event)"
