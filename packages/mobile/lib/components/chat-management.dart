@@ -126,7 +126,7 @@ class _ChatManagementState extends State<ChatManagement> {
             itemCount: myChannels$.value.length,
             itemBuilder: (_, int index) {
               return Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
                 child: Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(4.0))),
@@ -136,7 +136,8 @@ class _ChatManagementState extends State<ChatManagement> {
                       scaffoldKey.currentState!.openEndDrawer();
                     },
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(
+                          left: 8, right: 8, top: 4, bottom: 4),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

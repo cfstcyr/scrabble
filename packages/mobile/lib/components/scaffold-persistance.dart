@@ -23,12 +23,11 @@ class MyScaffold extends StatelessWidget {
             builder: (context) => IconButton(
               icon: Icon(Icons.chat),
               onPressed: () => Scaffold.of(context).openEndDrawer(),
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
             ),
           ),
         ],
       ),
-      endDrawer: Container(width: 300, child: const ChatManagement()),
+      endDrawer: Container(width: 350, child: const ChatManagement()),
     );
   }
 }
