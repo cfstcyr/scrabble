@@ -3,8 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/routes/navigator-key.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:provider/provider.dart';
 
@@ -44,6 +46,7 @@ class MyApp extends StatelessWidget {
         ),
         navigatorKey: navigatorKey,
         home: MainPage(),
+        routes: ROUTES,
       ),
     );
   }

@@ -20,12 +20,12 @@ class ActionService {
     return _instance;
   }
 
-  Future<void> sendAction(String gameId, ActionType actionType, [ActionPayload? payload]) async {
+  Future<void> sendAction(ActionType actionType, [ActionPayload? payload]) async {
     if (_isActionBeingProcessed) return;
 
     ActionData actionData = ActionData(type: actionType, payload: payload);
 
-    gameplayController.sendAction(gameId, actionData);
+    gameplayController.sendAction(actionData);
     _isActionBeingProcessed = true;
   }
 

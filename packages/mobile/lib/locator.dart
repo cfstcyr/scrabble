@@ -6,6 +6,7 @@ import 'package:mobile/services/account-authentification-service.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/group-join.service.dart';
+import 'package:mobile/services/player-leave-service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -30,4 +31,5 @@ void setUpLocator() {
 
   getIt.registerLazySingleton<GameplayController>(() => GameplayController());
   getIt.registerLazySingleton<ActionService>(() => ActionService());
+  getIt.registerLazySingleton<PlayerLeaveService>(() => PlayerLeaveService());
 }
