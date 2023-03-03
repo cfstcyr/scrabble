@@ -4,6 +4,7 @@ import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
+import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
@@ -126,10 +127,14 @@ class GameSquare extends StatelessWidget {
                             ? Tile(tile: snapshot.data)
                             : Draggable(
                                 data: snapshot.data,
-                                feedback: Tile(
-                                  tile: snapshot.data,
-                                  isSelected: true,
-                                  tint: NOT_APPLIED_COLOR,
+                                feedback: Card(
+                                  color: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  child: Tile(
+                                    tile: snapshot.data,
+                                    isSelected: true,
+                                    size: TILE_SIZE_DRAG,
+                                  ),
                                 ),
                                 childWhenDragging: Opacity(
                                   opacity: 0,

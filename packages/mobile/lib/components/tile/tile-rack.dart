@@ -4,6 +4,7 @@ import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/constants/game-events.dart';
+import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-event.service.dart';
@@ -11,7 +12,6 @@ import 'package:mobile/services/game.service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class TileRack extends StatelessWidget {
-  final double _tileSize = 42;
   final BehaviorSubject<int?> _currentTileIndex = BehaviorSubject();
   final BehaviorSubject<int?> _currentHoveredTileIndex = BehaviorSubject();
   final GameService _gameService = getIt.get<GameService>();
@@ -47,7 +47,7 @@ class TileRack extends StatelessWidget {
                                     children: [
                                       _buildTarget(-1,
                                           width: SPACE_2,
-                                          height: _tileSize,
+                                          height: TILE_SIZE,
                                           changeOnActive: true),
                                       ...List.generate(
                                         snapshot.data!.length,
@@ -94,10 +94,14 @@ class TileRack extends StatelessWidget {
               _currentTileIndex.add(null);
               _currentHoveredTileIndex.add(null);
             },
-            feedback: Tile(
-              tile: tile,
-              size: _tileSize * 1.1,
-              isSelected: true,
+            feedback: Card(
+              color: Colors.transparent,
+              shadowColor: Colors.transparent,
+              child: Tile(
+                tile: tile,
+                size: TILE_SIZE_DRAG,
+                isSelected: true,
+              ),
             ),
             childWhenDragging: StreamBuilder(
               stream: _currentHoveredTileIndex,
@@ -106,8 +110,8 @@ class TileRack extends StatelessWidget {
                         snapshot.data == index - 1 ||
                         snapshot.data == null
                     ? SizedBox(
-                        height: _tileSize,
-                        width: _tileSize + SPACE_2,
+                        height: TILE_SIZE,
+                        width: TILE_SIZE + SPACE_2,
                       )
                     : SizedBox();
               },
@@ -118,20 +122,20 @@ class TileRack extends StatelessWidget {
                   children: [
                     Tile(
                       tile: tile,
-                      size: _tileSize,
+                      size: TILE_SIZE,
                     ),
                     Wrap(
                       children: [
                         _buildTarget(index - 1,
-                            width: _tileSize / 2, height: _tileSize),
+                            width: TILE_SIZE / 2, height: TILE_SIZE),
                         _buildTarget(index,
-                            width: _tileSize / 2, height: _tileSize),
+                            width: TILE_SIZE / 2, height: TILE_SIZE),
                       ],
                     ),
                   ],
                 ),
                 _buildTarget(index,
-                    width: SPACE_2, height: _tileSize, changeOnActive: true)
+                    width: SPACE_2, height: TILE_SIZE, changeOnActive: true)
               ],
             )),
       ],
