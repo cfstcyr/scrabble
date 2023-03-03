@@ -50,6 +50,11 @@
             <div class="chip">
                 <app-icon icon="user-robot" styling="solid" size="lg"></app-icon> {{ group.virtualPlayerLevel }}
             </div>
+            <div class="chip">
+              <app-icon *ngIf="group.gameVisibility === gameVisibilities.Public" id="visibility" icon="globe" size="lg"></app-icon> 
+              <app-icon *ngIf="group.gameVisibility === gameVisibilities.Private" id="visibility" styling="solid" icon="lock" size="lg"></app-icon> 
+              <app-icon *ngIf="group.gameVisibility === gameVisibilities.Protected" id="visibility" styling="solid" icon="shield" size="lg"></app-icon> {{ group.gameVisibility }}
+          </div>
         </div>
     </div>
 

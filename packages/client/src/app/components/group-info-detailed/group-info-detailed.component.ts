@@ -23,6 +23,7 @@ export class GroupInfoDetailedComponent {
         this.startGame = new EventEmitter<void>();
         this.group = {
             groupId: '0',
+            password: '',
             user1: UNKOWN_USER,
             maxRoundTime: 0,
             gameVisibility: GameVisibility.Public,
