@@ -20,11 +20,12 @@ class GameEventService {
     _events[REMOVE_TILE_FROM_BOARD] = PublishSubject<TilePlacement>();
     _events[PUT_BACK_TILES_ON_TILE_RACK] = PublishSubject<void>();
 
-    for (var entry in _events.entries) {
-      entry.value.listen((value) {
-        log('\x1b[1m\x1b[3m<< Game event >>\x1b[0m ${entry.key}: $value');
-      });
-    }
+    /// Uncomment to log events
+    // for (var entry in _events.entries) {
+    //   entry.value.listen((value) {
+    //     log('\x1b[1m\x1b[3m<< Game event >>\x1b[0m ${entry.key}: $value');
+    //   });
+    // }
   }
 
   StreamSubscription<T> listen<T>(
