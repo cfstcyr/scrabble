@@ -49,4 +49,5 @@ export const DEFAULT_GROUP: Group = {
     maxRoundTime: 60,
     gameVisibility: GameVisibility.Public,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+    password: '',
 };

@@ -13,6 +13,7 @@ export const NO_OPPONENT_IN_WAITING_GAME = "Aucun aversaire n'est en attente de 
 export const OPPONENT_NAME_DOES_NOT_MATCH = "Le nom de l'adversaire ne correspond pas. Impossible d'accepter la partie";
 export const CANNOT_HAVE_SAME_NAME = "Impossible de rejoindre la partie d'un joueur portant le même nom";
 export const NO_DICTIONARY_INITIALIZED = 'Aucun dictionnaire à utiliser';
+export const INVALID_PASSWORD = 'Mot de passe invalide';
 export const INVALID_COMMAND = "Cette commande n'est pas reconnue. Entrez !aide pour connaitre les commandes valides";
 export const INVALID_PAYLOAD = 'Payload invalide pour ce type de commande';
 export const NOT_PLAYER_TURN = "Ce n'est pas le tour du joueur demandeur de jouer";

@@ -48,7 +48,7 @@ export default class WaitingRoom extends Room {
             this.joinedPlayer4 = player;
             return;
         }
-        throw new HttpException(GAME_ALREADY_FULL, StatusCodes.FORBIDDEN);
+        throw new HttpException(GAME_ALREADY_FULL, StatusCodes.UNAUTHORIZED);
     }
 
     getPlayers(): Player[] {
@@ -76,6 +76,7 @@ export default class WaitingRoom extends Room {
             virtualPlayerLevel: this.config.virtualPlayerLevel,
             // TODO: Check fi this what we want
             groupId: this.getId(),
+            password: this.getConfig().password,
         };
     }
 }

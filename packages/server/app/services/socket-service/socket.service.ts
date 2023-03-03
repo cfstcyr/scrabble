@@ -27,7 +27,7 @@ import {
     RejectJoinRequestEmitArgs,
     SocketEmitEvents,
     StartGameEmitArgs,
-    UserLeftGroupEmitArgs
+    UserLeftGroupEmitArgs,
 } from './socket-types';
 
 @Service()
