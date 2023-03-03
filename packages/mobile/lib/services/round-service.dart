@@ -29,8 +29,9 @@ class RoundService {
   void startRound() {
     if (roundTimeout != null) roundTimeout!.cancel();
 
-    Duration roundDuration = gameService.getGame().roundDuration;
-    roundTimeout = CancelableOperation.fromFuture(Future.delayed(roundDuration, () => _onTimerExpires()));
+    Duration roundDuration = gameService.game.roundDuration;
+    roundTimeout = CancelableOperation.fromFuture(
+        Future.delayed(roundDuration, () => _onTimerExpires()));
 
     _startRound$.add(roundDuration);
   }

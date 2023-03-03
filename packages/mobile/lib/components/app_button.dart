@@ -42,11 +42,10 @@ class AppButton extends StatelessWidget {
       onPressed: onPressed,
       color: _getColor(),
       disabledColor: Colors.grey.shade300,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(iconOnly ? 100 : 8)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       height: _getSize(),
       minWidth: _getSize(),
-      padding: EdgeInsets.zero,
+      padding: iconOnly ? EdgeInsets.zero : null,
       child: _getChild(),
     );
   }
@@ -92,9 +91,9 @@ class AppButton extends StatelessWidget {
   double _getIconSize() {
     switch (size) {
       case AppButtonSize.normal:
-        return iconOnly ? 18 : 20;
+        return 20;
       case AppButtonSize.large:
-        return iconOnly ? 22 : 24;
+        return 24;
     }
   }
 
