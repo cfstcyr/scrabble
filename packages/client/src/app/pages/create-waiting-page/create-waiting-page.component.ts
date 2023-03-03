@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { Timer } from '@app/classes/round/timer';
 import { ERROR_SNACK_BAR_CONFIG } from '@app/constants/components-constants';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
-import { DEFAULT_GROUP } from '@app/constants/pages-constants';
+import { DEFAULT_GROUP, DEFAULT_TIMER_STRING } from '@app/constants/pages-constants';
 import { ROUTE_GAME_CREATION } from '@app/constants/routes-constants';
 import { GameDispatcherService } from '@app/services/';
 import { GameVisibility } from '@common/models/game-visibility';
@@ -26,7 +26,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     isGroupEmpty: boolean = true;
     isGroupFull: boolean = false;
     isGamePrivate: boolean = false;
-    roundTime: string = '1:00';
+    roundTime: string = DEFAULT_TIMER_STRING;
     currentGroup: Group = DEFAULT_GROUP;
     funFact: string = '';
 

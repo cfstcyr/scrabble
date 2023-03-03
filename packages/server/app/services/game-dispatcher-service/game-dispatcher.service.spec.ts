@@ -39,16 +39,11 @@ const expect = chai.expect;
 
 const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
-// const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
-// const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
 const DEFAULT_OPPONENT_USER = { username: 'user5', email: 'email5', avatar: 'avatar5' };
 const DEFAULT_OPPONENT_USER2 = { username: 'user6', email: 'email5', avatar: 'avatar5' };
 const DEFAULT_OPPONENT_USER3 = { username: 'user7', email: 'email5', avatar: 'avatar5' };
 const DEFAULT_USER_ID = 1;
 const DEFAULT_PLAYER_ID1 = 'id1';
-// const DEFAULT_PLAYER_ID2 = 'id';
-// const DEFAULT_PLAYER_ID3 = 'id3';
-// const DEFAULT_GAME_ID = 'gameId';
 const DEFAULT_GAME_CHANNEL_ID = 1;
 const DEFAULT_OPPONENT_ID = 'opponent_id';
 const DEFAULT_OPPONENT_ID2 = 'opponent_id2';
@@ -135,7 +130,6 @@ describe('GameDispatcherService', () => {
 
     describe('startRequest', () => {
         let getMultiplayerGameFromIdSpy: unknown;
-        // let getRandomVirtualPlayerNameSpy: unknown;
         let newRoom: WaitingRoom;
         beforeEach(() => {
             newRoom = new WaitingRoom(DEFAULT_MULTIPLAYER_CONFIG, DEFAULT_GAME_CHANNEL_ID);
@@ -335,47 +329,6 @@ describe('GameDispatcherService', () => {
         });
     });
 
-    // TODO:Refactor for 4 player
-    // describe('rejectJoinRequest', () => {
-    //     let id: string;
-    //     let waitingRoom: WaitingRoom;
-
-    //     beforeEach(() => {
-    //         gameDispatcherService['waitingRooms'] = [DEFAULT_WAITING_ROOM];
-    //         id = DEFAULT_WAITING_ROOM.getId();
-    //         DEFAULT_WAITING_ROOM.joinedPlayer2 = undefined;
-    //         spy.on(gameDispatcherService, 'getMultiplayerGameFromId', () => {
-    //             return DEFAULT_WAITING_ROOM;
-    //         });
-    //         waitingRoom = gameDispatcherService['waitingRooms'].filter((g) => g.getId() === id)[0];
-    //     });
-
-    //     it('should remove joinedPlayer from waitingRoom', () => {
-    //         waitingRoom.joinedPlayer2 = DEFAULT_OPPONENT;
-    //         gameDispatcherService.rejectJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
-    //         expect(waitingRoom.joinedPlayer2).to.be.undefined;
-    //     });
-
-    //     it('should throw if playerId is invalid', () => {
-    //         const invalidId = 'invalidId';
-    //         expect(() => gameDispatcherService.rejectJoinRequest(id, invalidId, DEFAULT_OPPONENT_NAME)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
-    //     });
-
-    //     it('should throw if no player is waiting', () => {
-    //         waitingRoom.joinedPlayer2 = undefined;
-    //         expect(() => {
-    //             return gameDispatcherService.rejectJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME);
-    //         }).to.throw(NO_OPPONENT_IN_WAITING_GAME);
-    //     });
-
-    //     it('should throw error if opponent name is incorrect', () => {
-    //         waitingRoom.joinedPlayer2 = DEFAULT_OPPONENT;
-    //         expect(() => {
-    //             return gameDispatcherService.rejectJoinRequest(id, DEFAULT_MULTIPLAYER_CONFIG_DATA.playerId, DEFAULT_OPPONENT_NAME_2);
-    //         }).to.throw(OPPONENT_NAME_DOES_NOT_MATCH);
-    //     });
-    // });
-
     describe('leaveGroupRequest', () => {
         let id: string;
         // let waitingRoom: WaitingRoom;
@@ -387,7 +340,6 @@ describe('GameDispatcherService', () => {
             spy.on(gameDispatcherService, 'getMultiplayerGameFromId', () => {
                 return DEFAULT_WAITING_ROOM;
             });
-            // waitingRoom = gameDispatcherService['waitingRooms'].filter((g) => g.getId() === id)[0];
             DEFAULT_WAITING_ROOM.joinedPlayer2 = DEFAULT_OPPONENT;
             DEFAULT_WAITING_ROOM.joinedPlayer3 = DEFAULT_OPPONENT2;
             DEFAULT_WAITING_ROOM.joinedPlayer4 = DEFAULT_OPPONENT3;
