@@ -18,6 +18,7 @@ export class GameDispatcherController implements OnDestroy {
     private playerLeftGroupEvent: Subject<Group> = new Subject();
     private playerCancelledRequestingEvent: Subject<PublicUser[]> = new Subject();
     private groupFullEvent: Subject<void> = new Subject();
+    private invalidPasswordEvent: Subject<void> = new Subject();
     private groupRequestValidEvent: Subject<void> = new Subject();
     private groupsUpdateEvent: Subject<Group[]> = new Subject();
     private joinerRejectedEvent: Subject<PublicUser> = new Subject();
@@ -64,9 +65,15 @@ export class GameDispatcherController implements OnDestroy {
         this.http.get(endpoint).subscribe();
     }
 
-    handleGroupJoinRequest(gameId: string): void {
+    handleGroupUpdatesRequest(gameId: string): void {
+        const endpoint = `${environment.serverUrl}/games/${gameId}`;
+        this.http.patch(endpoint, {}).subscribe();
+    }
+
+    handleGroupJoinRequest(gameId: string, password: string): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/players/join`;
-        this.http.post<GameConfig>(endpoint, { observe: 'response' }).subscribe(
+
+        this.http.post<GameConfig>(endpoint, { password }, { observe: 'response' }).subscribe(
             () => {
                 this.groupRequestValidEvent.next();
             },
@@ -100,6 +107,10 @@ export class GameDispatcherController implements OnDestroy {
         this.groupFullEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
+    subscribeToInvalidPasswordEvent(serviceDestroyed$: Subject<boolean>, callback: () => void): void {
+        this.invalidPasswordEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
+    }
+
     subscribeToGroupRequestValidEvent(serviceDestroyed$: Subject<boolean>, callback: () => void): void {
         this.groupRequestValidEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
@@ -117,10 +128,20 @@ export class GameDispatcherController implements OnDestroy {
     }
 
     private handleJoinError(errorStatus: HttpStatusCode): void {
-        if (errorStatus === HttpStatusCode.Unauthorized) {
-            this.groupFullEvent.next();
-        } else if (errorStatus === HttpStatusCode.Gone) {
-            this.canceledGameEvent.next({ username: 'Le créateur', email: '', avatar: '' });
+        switch (errorStatus) {
+            case HttpStatusCode.Unauthorized: {
+                this.groupFullEvent.next();
+                break;
+            }
+            case HttpStatusCode.Gone: {
+                this.canceledGameEvent.next({ username: 'Le créateur', email: '', avatar: '' });
+                break;
+            }
+            case HttpStatusCode.Forbidden: {
+                this.invalidPasswordEvent.next();
+                break;
+            }
+            // No default
         }
     }
 
@@ -134,7 +155,9 @@ export class GameDispatcherController implements OnDestroy {
         this.socketService.on('rejectJoinRequest', (host: PublicUser) => {
             this.joinerRejectedEvent.next(host);
         });
-        this.socketService.on('cancelledGroup', (host: PublicUser) => this.canceledGameEvent.next(host));
+        this.socketService.on('cancelledGroup', (host: PublicUser) => {
+            this.canceledGameEvent.next(host);
+        });
         this.socketService.on('acceptJoinRequest', (group: Group) => this.playerJoinedGroupEvent.next(group));
         this.socketService.on('userLeftGroup', (group: Group) => this.playerLeftGroupEvent.next(group));
         this.socketService.on('joinRequestCancelled', (requestingPlayers: PublicUser[]) => {
