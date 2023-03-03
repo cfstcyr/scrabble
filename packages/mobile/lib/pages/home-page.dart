@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        handleBackButton();
+        handleBackButton(context);
         return true;
       },
       child: Center(
@@ -60,8 +60,55 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  handleBackButton() {
-    authService.signOut();
+  handleBackButton(BuildContext context) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(CONFIRMATION_BACK_BUTTON_DIALOG_TITLE),
+        content: const Text(BACK_BUTTON_SIGNOUT_CONFIRMATION_FR),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => {authService.signOut()},
+            child: Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomePage()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    shadowColor: Color.fromARGB(177, 0, 0, 0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3.0),
+                    ),
+                  ),
+                  child: Text(CANCEL_BACK_BUTTON_FR,
+                      style: TextStyle(color: Colors.white, fontSize: 15)),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    authService.signOut();
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MainPage()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    shadowColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3.0),
+                    ),
+                  ),
+                  child: Text(SIGNOUT_CONFIRMATION_LABEL_FR,
+                      style: TextStyle(color: Colors.white, fontSize: 15)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
