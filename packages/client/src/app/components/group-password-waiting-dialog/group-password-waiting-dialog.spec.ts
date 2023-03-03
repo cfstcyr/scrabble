@@ -4,7 +4,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +21,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IconComponent } from '@app/components/icon/icon.component';
-import { PageHeaderComponent } from '@app/components/page-header/page-header.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.component';
 import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';
@@ -58,7 +57,7 @@ describe('GroupRequestWaitingDialogComponent', () => {
     let fixture: ComponentFixture<GroupPasswordDialogComponent>;
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GroupPasswordDialogComponent, IconComponent, PageHeaderComponent],
+            declarations: [GroupPasswordDialogComponent, IconComponent],
             imports: [
                 AppMaterialModule,
                 HttpClientModule,
@@ -86,6 +85,7 @@ describe('GroupRequestWaitingDialogComponent', () => {
                 ]),
             ],
             providers: [MatDialog, MatDialogRef, { provide: MAT_DIALOG_DATA, useValue: { group: TEST_GROUP } }],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     });
 
