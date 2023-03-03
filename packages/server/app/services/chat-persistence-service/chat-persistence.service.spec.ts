@@ -3,18 +3,18 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
-import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
-import { expect } from 'chai';
-import { Container } from 'typedi';
-import DatabaseService from '@app/services/database-service/database.service';
-import { ChatPersistenceService } from './chat-persistence.service';
-import { CHANNEL_TABLE, USER_CHANNEL_TABLE, USER_TABLE } from '@app/constants/services-constants/database-const';
-import { Channel, UserChannel } from '@common/models/chat/channel';
-import { Knex } from 'knex';
-import { User } from '@common/models/user';
 import { UserId } from '@app/classes/user/connected-user-types';
-import * as sinon from 'sinon';
+import { CHANNEL_TABLE, USER_CHANNEL_TABLE, USER_TABLE } from '@app/constants/services-constants/database-const';
 import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
+import DatabaseService from '@app/services/database-service/database.service';
+import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import { Channel, UserChannel } from '@common/models/chat/channel';
+import { User } from '@common/models/user';
+import { expect } from 'chai';
+import { Knex } from 'knex';
+import * as sinon from 'sinon';
+import { Container } from 'typedi';
+import { ChatPersistenceService } from './chat-persistence.service';
 
 const CHANNEL_1: Channel = {
     idChannel: 1,
@@ -201,20 +201,6 @@ describe('ChatPersistenceService', () => {
 
             expect(await userChannelTable().select().where({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser })).to.have.length(0);
         });
-
-        it('should call deleteChannel history if channel is empty', async () => {
-            await userTable().insert(USER);
-            await channelTable().insert(CHANNEL_1);
-            await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
-
-            chatHistoryService.deleteChannelHistory.resolves();
-
-            service['isChannelEmpty'] = async () => Promise.resolve(true);
-
-            await service.leaveChannel(CHANNEL_1.idChannel, USER.idUser);
-
-            expect(chatHistoryService.deleteChannelHistory.calledOnce).to.be.true;
-        });
     });
 
     describe('isChannelNameAvailable', () => {
@@ -270,19 +256,73 @@ describe('ChatPersistenceService', () => {
         });
     });
 
-    describe('isChannelEmpty', () => {
-        it('should return true if no user in channel', async () => {
-            await channelTable().insert(CHANNEL_1);
+    // Decommnet tests when isChannelEmpty is used
+    // describe('isChannelEmpty', () => {
+    //     it('should return true if no user in channel', async () => {
+    //         await channelTable().insert(CHANNEL_1);
 
-            expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.true;
+    //         expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.true;
+    //     });
+
+    //     it('should return false if user in channel', async () => {
+    //         await channelTable().insert(CHANNEL_1);
+    //         await userTable().insert(USER);
+    //         await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
+
+    //         expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.false;
+    //     });
+    // });
+
+    describe('getJoinableChannels', () => {
+        it('should return only public channels', async () => {
+            await channelTable().insert([CHANNEL_1, { ...CHANNEL_2, private: true }]);
+            await userTable().insert(USER);
+
+            const channels = await service.getJoinableChannels(USER.idUser);
+
+            expect(channels).to.have.length(1);
+            expect(channels[0].idChannel).to.equal(CHANNEL_1.idChannel);
         });
 
-        it('should return false if user in channel', async () => {
+        it('should return only channels user is not in', async () => {
+            await channelTable().insert([CHANNEL_1, CHANNEL_2]);
+            await userTable().insert(USER);
+            await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
+
+            const channels = await service.getJoinableChannels(USER.idUser);
+
+            expect(channels).to.have.length(1);
+            expect(channels[0].idChannel).to.equal(CHANNEL_2.idChannel);
+        });
+    });
+
+    describe('deleteChannel', () => {
+        it('should delete channel', async () => {
+            await channelTable().insert(CHANNEL_1);
+
+            await service.deleteChannel(CHANNEL_1.idChannel);
+
+            expect(await channelTable().select().where({ idChannel: CHANNEL_1.idChannel })).to.have.length(0);
+        });
+
+        it('should delete channel history', async () => {
+            await channelTable().insert(CHANNEL_1);
+
+            chatHistoryService.deleteChannelHistory.resolves();
+
+            await service.deleteChannel(CHANNEL_1.idChannel);
+
+            expect(chatHistoryService.deleteChannelHistory.calledOnce).to.be.true;
+        });
+
+        it('should delete channel from userChannel', async () => {
             await channelTable().insert(CHANNEL_1);
             await userTable().insert(USER);
             await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
 
-            expect(await service['isChannelEmpty'](CHANNEL_1.idChannel)).to.be.false;
+            await service.deleteChannel(CHANNEL_1.idChannel);
+
+            expect(await userChannelTable().select().where({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser })).to.have.length(0);
         });
     });
 

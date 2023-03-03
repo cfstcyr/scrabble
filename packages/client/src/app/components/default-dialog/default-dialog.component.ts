@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { BUTTON_MUST_HAVE_CONTENT, DIALOG_BUTTONS_MUST_BE_AN_ARRAY, DIALOG_MUST_HAVE_TITLE } from '@app/constants/component-errors';
-import { DefaultDialogButtonParameters, DefaultDialogParameters } from './default-dialog.component.types';
+import { DefaultDialogButtonParameters, DefaultDialogCheckboxParameters, DefaultDialogParameters } from './default-dialog.component.types';
 
 @Component({
     selector: 'app-default-dialog',
@@ -13,6 +13,7 @@ export class DefaultDialogComponent {
     title: string;
     content: string | undefined;
     buttons: DefaultDialogButtonParameters[];
+    checkbox: DefaultDialogCheckboxParameters | undefined;
 
     constructor(@Inject(MAT_DIALOG_DATA) public data: DefaultDialogParameters, private router: Router) {
         // Data must be handled because it is not typed correctly when used in dialog.open(...)
@@ -21,6 +22,7 @@ export class DefaultDialogComponent {
         this.title = this.data.title;
         this.content = this.data.content;
         this.buttons = [];
+        this.checkbox = this.data.checkbox;
 
         if (!this.data.buttons) return;
         if (!Array.isArray(this.data.buttons)) throw new Error(DIALOG_BUTTONS_MUST_BE_AN_ARRAY);
@@ -36,10 +38,18 @@ export class DefaultDialogComponent {
                 icon: button.icon,
             });
         });
+
+        if (this.checkbox) {
+            this.checkbox.checked = this.checkbox.checked ?? false;
+        }
     }
 
     handleButtonClick(button: DefaultDialogButtonParameters): void {
         if (button.action) button.action();
         if (button.redirect) this.router.navigate([button.redirect]);
+    }
+
+    handleCheckboxChange(checked: boolean): void {
+        if (this.checkbox?.action) this.checkbox.action(checked);
     }
 }

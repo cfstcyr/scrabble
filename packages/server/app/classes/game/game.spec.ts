@@ -63,6 +63,7 @@ const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     dictionarySummary: {} as unknown as DictionarySummary,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     gameVisibility: GameVisibility.Public,
+    password: '',
 };
 const DEFAULT_TILE: Tile = { letter: 'A', value: 1 };
 const DEFAULT_TILE_2: Tile = { letter: 'B', value: 5 };

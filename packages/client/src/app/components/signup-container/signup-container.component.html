@@ -9,6 +9,12 @@
                 <input matInput id="email" type="email" formControlName="email" autocomplete="off" (blur)="handleEmailLoseFocus()" />
             </mat-form-field>
             <p class="field-error margin-top" *ngIf="isEmailTaken">Ce courriel est déjà utilisé</p>
+            <p
+                class="field-error margin-top"
+                *ngIf="!isEmailTaken && signupForm.get('email')?.invalid && (signupForm.get('email')?.dirty || signupForm.get('email')?.touched)"
+            >
+                Veuillez entrer un courriel valide
+            </p>
 
             <mat-form-field
                 appearance="outline"
@@ -20,6 +26,12 @@
                 <input matInput id="username" type="text" formControlName="username" autocomplete="off" (blur)="handleUsernameLoseFocus()" />
             </mat-form-field>
             <p class="field-error margin-top" *ngIf="isUsernameTaken">Ce pseudonyme est déjà utilisé</p>
+            <p
+            class="field-error margin-top"
+            *ngIf="!isUsernameTaken && signupForm.get('username')?.invalid && (signupForm.get('username')?.dirty || signupForm.get('username')?.touched)"
+        >
+            Veuillez entrer un pseudonyme valide
+        </p>
 
             <mat-form-field
                 appearance="outline"

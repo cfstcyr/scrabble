@@ -22,7 +22,8 @@ import { ERROR_SNACK_BAR_CONFIG } from '@app/constants/components-constants';
 import { DEFAULT_GROUP } from '@app/constants/pages-constants';
 import { ROUTE_GAME_CREATION } from '@app/constants/routes-constants';
 import GameDispatcherService from '@app/services/game-dispatcher-service/game-dispatcher.service';
-import { PublicUser } from '@common/models/user';
+import { Group } from '@common/models/group';
+import { PublicUser, UNKOWN_USER } from '@common/models/user';
 import { of, Subject } from 'rxjs';
 import { CreateWaitingPageComponent } from './create-waiting-page.component';
 import SpyObj = jasmine.SpyObj;
@@ -192,6 +193,113 @@ describe('CreateWaitingPageComponent', () => {
 
         it('should call confirmRejectionToServer', () => {
             expect(routerSpy).toHaveBeenCalledWith(ROUTE_GAME_CREATION);
+        });
+    });
+
+    describe('startGame', () => {
+        it('should change is game starting', () => {
+            component['isStartingGame'] = false;
+            component.startGame();
+            expect(component['isStartingGame']).toBeTrue();
+        });
+
+        it('should change is game starting', () => {
+            component['isStartingGame'] = false;
+            component.startGame();
+            expect(component['isStartingGame']).toBeTrue();
+        });
+
+        it('should call handleStart if not empty', () => {
+            component.isGroupEmpty = false;
+            component.startGame();
+            expect(gameDispatcherServiceSpy['handleStart']).toHaveBeenCalled();
+        });
+    });
+
+    describe('updateGroup', () => {
+        it('should change group', () => {
+            const spy = spyOn<any>(component, 'updateGroupStatus').and.callFake(() => {});
+            component['currentGroup'] = {} as unknown as Group;
+            const group = { groupId: 'aaaaa' } as unknown as Group;
+            component.updateGroup(group);
+            expect(component['currentGroup']).toEqual(group);
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('should change is game starting', () => {
+            component['isStartingGame'] = false;
+            component.startGame();
+            expect(component['isStartingGame']).toBeTrue();
+        });
+    });
+
+    describe('updateRequestingUsers', () => {
+        it('should change is game starting', () => {
+            component['requestingUsers'] = [];
+            component.updateRequestingUsers([UNKOWN_USER]);
+            expect(component['requestingUsers']).toEqual([UNKOWN_USER]);
+        });
+    });
+
+    describe('updateGroupStatus', () => {
+        it('should change is empty and full correctly #1', () => {
+            component.currentGroup = {
+                user2: undefined,
+                user3: undefined,
+                user4: undefined,
+            } as unknown as Group;
+            component.updateGroupStatus();
+            expect(component['isGroupEmpty']).toBeTrue();
+            expect(component['isGroupFull']).toBeFalse();
+        });
+
+        it('should change is empty and full correctly #2', () => {
+            component.currentGroup = {
+                user2: {} as unknown as PublicUser,
+                user3: {} as unknown as PublicUser,
+                user4: {} as unknown as PublicUser,
+            } as unknown as Group;
+            component.updateGroupStatus();
+            expect(component['isGroupEmpty']).toBeFalse();
+            expect(component['isGroupFull']).toBeTrue();
+        });
+
+        it('should change is empty and full correctly #3', () => {
+            component.currentGroup = {
+                user2: {} as unknown as PublicUser,
+                user3: undefined,
+                user4: {} as unknown as PublicUser,
+            } as unknown as Group;
+            component.updateGroupStatus();
+            expect(component['isGroupEmpty']).toBeFalse();
+            expect(component['isGroupFull']).toBeFalse();
+        });
+    });
+
+    describe('acceptUser', () => {
+        it('should work properly', () => {
+            component.currentGroup = {
+                user2: {} as unknown as PublicUser,
+                user3: {} as unknown as PublicUser,
+                user4: undefined,
+            } as unknown as Group;
+            component.requestingUsers = [UNKOWN_USER];
+            component.acceptUser(UNKOWN_USER);
+            expect(component.currentGroup.user4).toEqual(UNKOWN_USER);
+            expect(gameDispatcherServiceSpy['handleConfirmation']).toHaveBeenCalled();
+        });
+    });
+
+    describe('rejectUser', () => {
+        it('should work properly', () => {
+            component.currentGroup = {
+                user2: {} as unknown as PublicUser,
+                user3: {} as unknown as PublicUser,
+                user4: undefined,
+            } as unknown as Group;
+            component.requestingUsers = [UNKOWN_USER];
+            component.rejectUser(UNKOWN_USER);
+            expect(gameDispatcherServiceSpy['handleRejection']).toHaveBeenCalled();
         });
     });
 });

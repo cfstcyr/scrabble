@@ -19,6 +19,14 @@ export class ChatPersistenceService {
         return (await this.channelTable.select('*').where({ idChannel }))[0];
     }
 
+    async getJoinableChannels(idUser: TypeOfId<User>): Promise<Channel[]> {
+        const userChannels = await this.getUserChannelIds(idUser);
+        let joinableChannels = await this.channelTable.select('*').where({ private: false }).andWhere({ default: false });
+        joinableChannels = joinableChannels.filter((channel) => !userChannels.includes(channel.idChannel));
+
+        return joinableChannels;
+    }
+
     async getUserChannelIds(idUser: TypeOfId<User>): Promise<TypeOfId<Channel>[]> {
         return (
             await this.channelTable
@@ -46,9 +54,15 @@ export class ChatPersistenceService {
     async leaveChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<void> {
         await this.userChatTable.delete().where({ idChannel, idUser });
 
-        if (await this.isChannelEmpty(idChannel)) {
-            await this.chatHistoryService.deleteChannelHistory(idChannel);
+        if ((await this.isChannelEmpty(idChannel)) && (await this.isChannelPrivate(idChannel))) {
+            await this.deleteChannel(idChannel);
         }
+    }
+
+    async deleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
+        await this.userChatTable.delete().where({ idChannel });
+        await this.chatHistoryService.deleteChannelHistory(idChannel);
+        await this.channelTable.delete().where({ idChannel });
     }
 
     async isChannelNameAvailable(channel: ChannelCreation): Promise<boolean> {
@@ -95,6 +109,10 @@ export class ChatPersistenceService {
 
     private async isChannelEmpty(idChannel: TypeOfId<Channel>): Promise<boolean> {
         return (await this.userChatTable.select('*').where({ idChannel })).length === 0;
+    }
+
+    private async isChannelPrivate(idChannel: TypeOfId<Channel>): Promise<boolean> {
+        return (await this.channelTable.select('private').where({ idChannel }))[0].private;
     }
 
     private async isUserInChannel(idChannel: TypeOfId<Channel>, idUser: TypeOfId<User>): Promise<boolean> {

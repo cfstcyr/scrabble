@@ -1,7 +1,7 @@
 <div class="container">
     <app-group-info-detailed [group]="currentGroup" [isHost]="true" [isGroupEmpty]="isGroupEmpty" (startGame)="startGame()" [roundTime]="roundTime"></app-group-info-detailed>
 
-    <mat-card class="grid">
+    <mat-card class="grid" *ngIf="isGamePrivate">
             Utilisateurs en attente
             <div class="scrollable-container">
                 <ng-container *ngFor="let requestingUser of requestingUsers">

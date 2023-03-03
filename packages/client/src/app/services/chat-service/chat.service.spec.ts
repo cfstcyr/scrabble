@@ -6,9 +6,9 @@ import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-he
 import SocketService from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user.service';
 import { Channel } from '@common/models/chat/channel';
+import { ChannelMessage, ChatMessage } from '@common/models/chat/chat-message';
 import { PublicUser } from '@common/models/user';
 import { Subject } from 'rxjs';
-import { ChannelMessage, ChatMessage } from '@common/models/chat/chat-message';
 import { Socket } from 'socket.io-client';
 import { ChatService } from './chat.service';
 
@@ -141,6 +141,21 @@ describe('ChatService', () => {
         });
     });
 
+    describe('deleteChannel', () => {
+        it('should emit to channel:delete', () => {
+            spyOn(socket, 'emit');
+            service.deleteChannel(1);
+            expect(socket.emit).toHaveBeenCalled();
+        });
+    });
+
+    describe('handleJoinableChannels', () => {
+        it('should add channels', () => {
+            service.handleJoinableChannels([CHANNEL_1, CHANNEL_2]);
+            expect(service.joinableChannels.value.size).toEqual(2);
+        });
+    });
+
     describe('sendMessage', () => {
         it('should emit to channel:newMessage', () => {
             spyOn(socket, 'emit');
@@ -191,6 +206,20 @@ describe('ChatService', () => {
             service.channels.next(new Map([[channel.idChannel, channel]]));
             service.handleChannelQuit(channel);
             expect(service.channels.value.size).toEqual(0);
+        });
+
+        it('should remove channel from public channels', () => {
+            const channel: ClientChannel = {
+                idChannel: 1,
+                name: 'channel',
+                messages: [],
+                canQuit: true,
+                private: false,
+                default: false,
+            };
+            service.joinableChannels.next(new Map([[channel.idChannel, channel]]));
+            service.handleChannelQuit(channel);
+            expect(service.joinableChannels.value.size).toEqual(0);
         });
     });
 

@@ -27,7 +27,7 @@ import {
     RejectJoinRequestEmitArgs,
     SocketEmitEvents,
     StartGameEmitArgs,
-    UserLeftGroupEmitArgs
+    UserLeftGroupEmitArgs,
 } from './socket-types';
 
 @Service()
@@ -67,7 +67,10 @@ export class SocketService {
     }
 
     handleSockets(): void {
-        if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
+        if (this.sio === undefined) {
+            console.error(SOCKET_SERVICE_NOT_INITIALIZED);
+            return;
+        }
 
         this.sio.use(async (socket: io.Socket, next: NextFunction) => {
             const token = socket.handshake.auth.token;
@@ -80,7 +83,7 @@ export class SocketService {
                     return next(new Error(err));
                 }
             } else {
-                throw new HttpException(NO_TOKEN);
+                SocketService.handleError(new HttpException(NO_TOKEN), socket);
             }
         });
 
@@ -121,6 +124,10 @@ export class SocketService {
         const socket = this.sockets.get(id);
         if (!socket) throw new HttpException(INVALID_ID_FOR_SOCKET, StatusCodes.NOT_FOUND);
         return socket;
+    }
+
+    getAllSockets(): io.Socket[] {
+        return Array.from(this.sockets.values());
     }
 
     // Required for signature overload. This forces us to use only the correct payload

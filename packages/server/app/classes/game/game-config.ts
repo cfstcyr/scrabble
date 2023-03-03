@@ -14,6 +14,7 @@ export interface GameConfig {
     maxRoundTime: number;
     virtualPlayerLevel: VirtualPlayerLevel;
     gameVisibility: GameVisibility;
+    password: string;
 }
 
 export interface ReadyGameConfig extends GameConfig {

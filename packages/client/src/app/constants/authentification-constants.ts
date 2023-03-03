@@ -11,6 +11,7 @@ export const matchValidator = (source: string, target: string): ValidatorFn => {
     };
 };
 
+export const USER_ALREADY_LOGGED = 'Cet utilisateur est déjà connecté';
 export const INVALID_CREDENTIALS = 'Identifiants invalides';
 export const INVALID_SIGNUP_INFORMATION = 'Certains champs sont invalides';
 export const LOGIN_ERROR = 'Erreur lors de la connexion';

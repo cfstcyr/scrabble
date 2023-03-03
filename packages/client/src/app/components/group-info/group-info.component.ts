@@ -19,6 +19,7 @@ export class GroupInfoComponent implements OnInit {
         this.joinGroupId = new EventEmitter<string>();
         this.group = {
             groupId: '0',
+            password: '',
             user1: UNKOWN_USER,
             maxRoundTime: 0,
             gameVisibility: GameVisibility.Public,

@@ -6,9 +6,10 @@ import { Router } from '@angular/router';
 import { Timer } from '@app/classes/round/timer';
 import { ERROR_SNACK_BAR_CONFIG } from '@app/constants/components-constants';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
-import { DEFAULT_GROUP } from '@app/constants/pages-constants';
+import { DEFAULT_GROUP, DEFAULT_TIMER_STRING } from '@app/constants/pages-constants';
 import { ROUTE_GAME_CREATION } from '@app/constants/routes-constants';
 import { GameDispatcherService } from '@app/services/';
+import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
 import { Subject } from 'rxjs';
@@ -24,7 +25,8 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
 
     isGroupEmpty: boolean = true;
     isGroupFull: boolean = false;
-    roundTime: string = '1:00';
+    isGamePrivate: boolean = false;
+    roundTime: string = DEFAULT_TIMER_STRING;
     currentGroup: Group = DEFAULT_GROUP;
     funFact: string = '';
 
@@ -47,6 +49,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.currentGroup = this.gameDispatcherService.currentGroup ?? DEFAULT_GROUP;
+        this.isGamePrivate = this.currentGroup.gameVisibility === GameVisibility.Private;
         const roundTime: Timer = Timer.convertTime(this.currentGroup.maxRoundTime);
         this.roundTime = `${roundTime.minutes}:${roundTime.getTimerSecondsPadded()}`;
         this.funFact = getRandomFact();

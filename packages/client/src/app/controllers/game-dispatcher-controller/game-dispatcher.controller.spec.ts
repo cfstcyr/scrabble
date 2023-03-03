@@ -193,7 +193,7 @@ describe('GameDispatcherController', () => {
     describe('handleGroupJoinRequest', () => {
         it('should make an HTTP post request', () => {
             const httpPostSpy = spyOn(controller['http'], 'post').and.returnValue(of(true) as any);
-            controller.handleGroupJoinRequest(DEFAULT_GAME_ID);
+            controller.handleGroupJoinRequest(DEFAULT_GAME_ID, '');
             expect(httpPostSpy).toHaveBeenCalled();
         });
 
@@ -204,7 +204,7 @@ describe('GameDispatcherController', () => {
             spyOn(controller['http'], 'post').and.returnValue(observable);
             const spy = spyOn(observable, 'subscribe');
 
-            controller.handleGroupJoinRequest({} as unknown as string);
+            controller.handleGroupJoinRequest({} as unknown as string, '');
             expect(spy).toHaveBeenCalled();
         });
 
@@ -212,7 +212,7 @@ describe('GameDispatcherController', () => {
             const fakeObservable = of<string>('fakeResponse');
             spyOn(controller['http'], 'post').and.returnValue(fakeObservable);
             const successSpy = spyOn(controller['groupRequestValidEvent'], 'next');
-            controller.handleGroupJoinRequest(DEFAULT_GAME_ID);
+            controller.handleGroupJoinRequest(DEFAULT_GAME_ID, '');
             expect(successSpy).toHaveBeenCalled();
         });
 
@@ -223,7 +223,7 @@ describe('GameDispatcherController', () => {
             const errorSpy = spyOn<any>(controller, 'handleJoinError').and.callFake(() => {
                 return;
             });
-            controller.handleGroupJoinRequest(DEFAULT_GAME_ID);
+            controller.handleGroupJoinRequest(DEFAULT_GAME_ID, '');
             expect(errorSpy).toHaveBeenCalled();
         });
     });

@@ -117,21 +117,21 @@ describe('ChatHistoryService', () => {
                 message: expectedMessage,
             });
         });
-    });
 
-    describe('deleteChannelHistory', () => {
-        it('should delete the history of a channel', async () => {
-            await userTable().insert(USER);
-            await channelTable().insert(testChannel);
+        describe('deleteChannelHistory', () => {
+            it('should delete the history of a channel', async () => {
+                await userTable().insert(USER);
+                await channelTable().insert(testChannel);
 
-            testingUnit.getStubbedInstance(AuthentificationService).getUserByEmail.resolves(USER);
+                testingUnit.getStubbedInstance(AuthentificationService).getUserByEmail.resolves(USER);
 
-            await service.saveMessage(message);
+                await service.saveMessage(message);
 
-            await service.deleteChannelHistory(testChannel.idChannel);
+                await service.deleteChannelHistory(testChannel.idChannel);
 
-            const channelHistory = await service.getChannelHistory(testChannel.idChannel);
-            expect(channelHistory).to.have.lengthOf(0);
+                const channelHistory = await service.getChannelHistory(testChannel.idChannel);
+                expect(channelHistory).to.have.lengthOf(0);
+            });
         });
     });
 });

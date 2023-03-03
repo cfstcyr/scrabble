@@ -57,6 +57,10 @@ $border-radius: 6px;
                 margin-bottom: 1.34375em;
             }
 
+            #visibility-buttons {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
             mat-button-toggle-group {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);

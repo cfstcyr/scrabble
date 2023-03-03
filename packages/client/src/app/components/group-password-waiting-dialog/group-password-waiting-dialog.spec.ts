@@ -29,7 +29,7 @@ import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { Subject } from 'rxjs';
-import { GroupRequestWaitingDialogComponent } from './group-request-waiting-dialog';
+import { GroupPasswordDialogComponent } from './group-password-waiting-dialog';
 
 const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 const TEST_GROUP: Group = {
@@ -59,12 +59,12 @@ export class MatDialogMock {
     }
 }
 
-describe('GroupRequestWaitingDialogComponent', () => {
-    let component: GroupRequestWaitingDialogComponent;
-    let fixture: ComponentFixture<GroupRequestWaitingDialogComponent>;
+describe('GroupPasswordDialogComponent', () => {
+    let component: GroupPasswordDialogComponent;
+    let fixture: ComponentFixture<GroupPasswordDialogComponent>;
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GroupRequestWaitingDialogComponent, IconComponent, PageHeaderComponent],
+            declarations: [GroupPasswordDialogComponent, IconComponent, PageHeaderComponent],
             imports: [
                 AppMaterialModule,
                 HttpClientModule,
@@ -103,7 +103,7 @@ describe('GroupRequestWaitingDialogComponent', () => {
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(GroupRequestWaitingDialogComponent);
+        fixture = TestBed.createComponent(GroupPasswordDialogComponent);
 
         component = fixture.componentInstance;
         fixture.detectChanges();

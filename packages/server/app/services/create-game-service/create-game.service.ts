@@ -26,6 +26,7 @@ export class CreateGameService {
             maxRoundTime: groupData.maxRoundTime,
             virtualPlayerLevel: groupData.virtualPlayerLevel,
             gameVisibility: groupData.gameVisibility,
+            password: groupData.password,
         };
     }
 }

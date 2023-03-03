@@ -7,7 +7,7 @@ import { GameCreationPageComponent } from '@app/pages/game-creation-page/game-cr
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { HomePageComponent } from '@app/pages/home-page/home-page.component';
 import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';
-import { GroupPageComponent } from '@app/pages/group-page/group-page.component';
+import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.component';
 import { LoginPageComponent } from '@app/pages/login-page/login-page.component';
 import { SignUpPageComponent } from '@app/pages/signup-page/signup-page.component';
 
@@ -28,7 +28,7 @@ const routes: Routes = [
     { path: 'home', component: HomePageComponent, ...privateRoute },
     { path: 'game', component: GamePageComponent, ...privateRoute },
     { path: 'game-creation', component: GameCreationPageComponent, ...privateRoute },
-    { path: 'groups', component: GroupPageComponent, ...privateRoute },
+    { path: 'groups', component: GroupsPageComponent, ...privateRoute },
     { path: 'create-waiting-room', component: CreateWaitingPageComponent, ...privateRoute },
     { path: 'join-waiting-room', component: JoinWaitingPageComponent, ...privateRoute },
     { path: '**', redirectTo: '/home' },

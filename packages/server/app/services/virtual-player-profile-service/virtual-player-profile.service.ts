@@ -42,7 +42,7 @@
 //     }
 
 //     async addVirtualPlayerProfile(newProfileData: NoId<VirtualPlayer>): Promise<void> {
-//         if (await this.isNameAlreadyUsed(newProfileData.name)) 
+//         if (await this.isNameAlreadyUsed(newProfileData.name))
 // throw new HttpException(NAME_ALREADY_USED(newProfileData.name), StatusCodes.FORBIDDEN);
 
 //         return await this.table.insert(newProfileData);

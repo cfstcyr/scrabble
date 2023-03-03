@@ -1,5 +1,6 @@
-<h2 mat-dialog-title *ngIf="!isRejected">En attente de la réponse du créateur</h2>
-<h2 mat-dialog-title *ngIf="isRejected">Vous avez été rejeté par le créateur</h2>
+<h2 mat-dialog-title *ngIf="state === 'ready'">En attente de la réponse du créateur</h2>
+<h2 mat-dialog-title *ngIf="state === 'invalid'">Vous avez été rejeté par le créateur</h2>
+<h2 mat-dialog-title *ngIf="state === 'canceled'">La partie a été annulée</h2>
 <div class="players">
     <div class="players">
         <span id="vs"> vs </span><span class="name">{{ requestedGroup.user1.username }}</span>
@@ -14,12 +15,12 @@
 </div>
 
 <div id="buttons-container">
-    <button mat-flat-button  (click)="closeDialog()" *ngIf="!isRejected">
-        <app-icon icon="ban"></app-icon>
+    <button mat-flat-button  (click)="closeDialog()" *ngIf="state === 'ready'">
+        <app-icon icon="chevron-left"></app-icon>
         Annuler la requête
     </button> 
-    <button mat-flat-button  (click)="closeDialog()" *ngIf="isRejected">
-        <app-icon icon="ban"></app-icon>
-        Retourner aux parties
+    <button mat-flat-button  (click)="closeDialog()" *ngIf="state !== 'ready'">
+        <app-icon icon="chevron-left"></app-icon>
+        Retourner aux groupes
     </button> 
 </div>

@@ -24,6 +24,7 @@ import { ServicesTestingUnit } from '@app/services/service-testing-unit/services
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group, GroupData } from '@common/models/group';
+import { UNKOWN_USER } from '@common/models/user';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -58,6 +59,7 @@ const DEFAULT_GAME_CONFIG_DATA: GroupData = {
     gameVisibility: GameVisibility.Private,
     maxRoundTime: DEFAULT_MAX_ROUND_TIME,
     user1: USER1,
+    password: '',
 };
 
 const DEFAULT_GROUP: Group = {
@@ -65,6 +67,7 @@ const DEFAULT_GROUP: Group = {
     gameVisibility: GameVisibility.Private,
     maxRoundTime: DEFAULT_MAX_ROUND_TIME,
     groupId: '',
+    password: '',
     user1: USER1,
     user2: USER2,
 };
@@ -149,7 +152,7 @@ describe('GameDispatcherController', () => {
             });
         });
 
-        describe('/games/:gameId/players/:playerId/join', () => {
+        describe('/games/:gameId/players/join', () => {
             it('should return NO_CONTENT', async () => {
                 chai.spy.on(controller, 'handleJoinGame', () => {});
 
@@ -171,7 +174,7 @@ describe('GameDispatcherController', () => {
             });
         });
 
-        describe('/games/:gameId/players/:playerId/accept', () => {
+        describe('/games/:gameId/players/accept', () => {
             it('should return NO_CONTENT', async () => {
                 chai.spy.on(controller, 'handleAcceptRequest', () => {});
 
@@ -189,6 +192,28 @@ describe('GameDispatcherController', () => {
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/accept`)
                     .send({ idUser: DEFAULT_USER_ID })
+                    .expect(StatusCodes.BAD_REQUEST);
+            });
+        });
+
+        describe('PATCH /games/:gameId/', () => {
+            it('should return NO_CONTENT', async () => {
+                chai.spy.on(controller, 'handleGetGroupUpdates', () => {});
+
+                return await supertest(expressApp)
+                    .patch(`/api/games/${DEFAULT_GAME_ID}`)
+                    .send({ idUser: DEFAULT_USER_ID, password: '' })
+                    .expect(StatusCodes.NO_CONTENT);
+            });
+
+            it('should return BAD_REQUEST on throw', async () => {
+                chai.spy.on(controller, 'handleGetGroupUpdates', () => {
+                    throw new HttpException(DEFAULT_EXCEPTION, StatusCodes.BAD_REQUEST);
+                });
+
+                return await supertest(expressApp)
+                    .patch(`/api/games/${DEFAULT_GAME_ID}`)
+                    .send({ idUser: DEFAULT_USER_ID, password: '' })
                     .expect(StatusCodes.BAD_REQUEST);
             });
         });
@@ -430,12 +455,16 @@ describe('GameDispatcherController', () => {
     });
 
     describe('handleJoinGame', () => {
-        let emitSpy: unknown;
+        let emitSocketSpy: unknown;
+        let emitRoomSpy: unknown;
+        let addRoomSpy: unknown;
         let requestSpy: unknown;
 
         const waitingRoom = new WaitingRoom({ player1: DEFAULT_JOINED_PLAYER1 } as unknown as GameConfig, 1);
         beforeEach(() => {
-            emitSpy = chai.spy.on(controller['socketService'], 'emitToSocket', () => {});
+            emitSocketSpy = chai.spy.on(controller['socketService'], 'emitToSocket', () => {});
+            emitRoomSpy = chai.spy.on(controller['socketService'], 'emitToRoom', () => {});
+            addRoomSpy = chai.spy.on(controller['socketService'], 'addToRoom', () => {});
             requestSpy = chai.spy.on(controller['gameDispatcherService'], 'requestJoinGame', () => waitingRoom);
             chai.spy.on(controller, 'handleGroupsUpdate', () => {});
             const stubSocket = createStubInstance(Socket);
@@ -445,13 +474,28 @@ describe('GameDispatcherController', () => {
             });
         });
 
-        it('should call socketService.emitToSocket', () => {
-            controller['handleJoinGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, USER1);
-            expect(emitSpy).to.have.been.called();
+        it('should call socketService.emitToSocket if game is private', async () => {
+            waitingRoom.getConfig().gameVisibility = GameVisibility.Private;
+            await controller['handleJoinGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, USER1, '');
+            expect(emitSocketSpy).to.have.been.called();
         });
 
-        it('should call gameDispatcherService.requestJoinGame', () => {
-            controller['handleJoinGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, USER1);
+        it('should call socketService.addToRoom and emitToRoom if game is protected', async () => {
+            waitingRoom.getConfig().gameVisibility = GameVisibility.Protected;
+            await controller['handleJoinGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, USER1, '');
+            expect(emitRoomSpy).to.have.been.called();
+            expect(addRoomSpy).to.have.been.called();
+        });
+
+        it('should call socketService.addToRoom and emitToRoom if game is public', async () => {
+            waitingRoom.getConfig().gameVisibility = GameVisibility.Public;
+            await controller['handleJoinGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, USER1, '');
+            expect(emitRoomSpy).to.have.been.called();
+            expect(addRoomSpy).to.have.been.called();
+        });
+
+        it('should call gameDispatcherService.requestJoinGame', async () => {
+            await controller['handleJoinGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, USER1, '');
             expect(requestSpy).to.have.been.called();
         });
     });
@@ -526,7 +570,6 @@ describe('GameDispatcherController', () => {
 
             expect(getMultiplayerGameFromIdSpy).to.have.been.called();
             expect(emitToSocketSpy).to.have.been.called();
-            expect(removeFromRoomSpy).to.have.been.called();
         });
     });
 
@@ -598,6 +641,7 @@ describe('GameDispatcherController', () => {
             waitingRoomStub.joinedPlayer2 = DEFAULT_JOINED_PLAYER1;
             waitingRoomStub.joinedPlayer3 = DEFAULT_JOINED_PLAYER2;
             waitingRoomStub.joinedPlayer4 = DEFAULT_JOINED_PLAYER3;
+            waitingRoomStub.requestingPlayers = [new Player('unkownid', UNKOWN_USER)];
             chai.spy.on(waitingRoomStub, 'getConfig', () => {
                 return { player1: new Player(DEFAULT_PLAYER_ID, USER1) };
             });
@@ -618,8 +662,8 @@ describe('GameDispatcherController', () => {
             expect(emitToRoomNoSenderSpy).to.have.been.called();
         });
 
-        it('should call gameDispatcherService.cancelGame', () => {
-            controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+        it('should call gameDispatcherService.cancelGame', async () => {
+            await controller['handleCancelGame'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
             expect(cancelGameSpy).to.have.been.called.with(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
         });
 
@@ -631,13 +675,11 @@ describe('GameDispatcherController', () => {
 
     describe('handleLeave', () => {
         let isGameInWaitingRoomsSpy: unknown;
-        let emitToSocketSpy: unknown;
         let emitToRoomSpy: unknown;
         let removeFromRoomSpy: unknown;
         let activeGameServiceStub: SinonStubbedInstance<ActiveGameService>;
 
         beforeEach(() => {
-            emitToSocketSpy = chai.spy.on(controller['socketService'], 'emitToSocket', () => {});
             emitToRoomSpy = chai.spy.on(controller['socketService'], 'emitToRoom', () => {});
             removeFromRoomSpy = chai.spy.on(controller['socketService'], 'removeFromRoom', () => {});
             activeGameServiceStub = createStubInstance(ActiveGameService);
@@ -689,7 +731,6 @@ describe('GameDispatcherController', () => {
                 await controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
                 expect(isPlayerFromAcceptedPlayersSpy).to.have.been.called();
                 expect(removeRequestingPlayerSpy).to.have.been.called();
-                expect(emitToSocketSpy).to.have.been.called();
                 expect(getMultiplayerGameFromIdSpy).to.have.been.called();
             });
         });

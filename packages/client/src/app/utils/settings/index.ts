@@ -9,7 +9,5 @@ export const authenticationSettings = settings('authentication', {
 });
 
 export const gameSettings = settings('game', {
-    playerName: str({ default: '' }),
-    dictionaryName: str(),
     timer: num({ default: DEFAULT_TIMER_VALUE }),
 });
