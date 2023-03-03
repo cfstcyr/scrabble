@@ -10,6 +10,7 @@ import {
     CONFIRM_QUIT_CHANNEL,
     CONFIRM_QUIT_DIALOG_TITLE,
     DELETE,
+    GROUP_CHANNEL_NAME,
     MAX_OPEN_CHAT,
     QUIT,
 } from '@app/constants/chat-constants';
@@ -53,7 +54,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     ngOnInit(): void {
         this.joinedChannel.pipe(takeUntil(this.componentDestroyed$)).subscribe((channel) => {
             if (!channel) return;
-            else if (this.channelMenuIsOpen) this.showChannel(channel);
+            if (this.channelMenuIsOpen || channel.name === GROUP_CHANNEL_NAME) this.showChannel(channel);
         });
 
         this.quittedChannel.pipe(takeUntil(this.componentDestroyed$)).subscribe((channel) => {

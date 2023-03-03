@@ -11,3 +11,4 @@ export const CHANNEL_NAME_MAX_LENGTH = 40;
 export const DIALOG_CHECKBOX = 'Ne plus afficher';
 export const QUIT = 'Quitter';
 export const DELETE = 'Supprimer';
+export const GROUP_CHANNEL_NAME = 'Groupe de partie';

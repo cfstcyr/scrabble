@@ -52,7 +52,7 @@
                     <p class="chatbox-container__section__title">Canaux Publics</p>
                     <div class="chatbox-container__my-channels__content">
                         <div class="chatbox-container__my-channels__item" *ngFor="let channel of getJoinableChannelsForMenu() | async">
-                            <button class="chatbox-container__my-channels__button">
+                            <button disabled class="chatbox-container__my-channels__button" style="color: black;">
                                 {{ channel.name }}
                             </button>
                             <app-icon-button (click)="joinChannelFromMenu(channel)" *ngIf="channel.canQuit">
