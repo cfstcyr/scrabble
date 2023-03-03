@@ -27,6 +27,9 @@ class AccountAuthenticationController {
   final socketService = getIt.get<SocketService>();
 
   final String endpoint = "${Environment().config.apiUrl}/authentification";
+  final Map<String, String> headers = {
+    "content-type": "application/json",
+  };
 
   Future<bool> createAccount(Account account) async {
     Response res =
@@ -42,15 +45,17 @@ class AccountAuthenticationController {
   }
 
   Future<bool> isEmailUnique(String email) async {
-    Response res =
-        await post(Uri.parse("${endpoint}/validateEmail"), body: email);
-    return (res.statusCode == HttpStatus.ok || true);
+    Map<String, String> emailJson = {"email": email};
+    Response res = await post(Uri.parse("${endpoint}/validateEmail"),
+        headers: headers, body: json.encode(emailJson));
+    return (res.statusCode == HttpStatus.ok);
   }
 
   Future<bool> isUsernameUnique(String username) async {
-    Response res =
-        await post(Uri.parse("${endpoint}/validateUsername"), body: username);
-    return (res.statusCode == HttpStatus.ok || true);
+    Map<String, String> usernameMap = {"username": username};
+    Response res = await post(Uri.parse("${endpoint}/validateUsername"),
+        headers: headers, body: json.encode(usernameMap));
+    return (res.statusCode == HttpStatus.ok);
   }
 
   Future<LoginResponse> login(UserLoginCredentials credentials) async {
