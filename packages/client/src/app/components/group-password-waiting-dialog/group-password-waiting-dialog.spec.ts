@@ -4,7 +4,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,12 +21,14 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IconComponent } from '@app/components/icon/icon.component';
+import { PageHeaderComponent } from '@app/components/page-header/page-header.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.component';
 import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
+import { Subject } from 'rxjs';
 import { GroupPasswordDialogComponent } from './group-password-waiting-dialog';
 
 const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
@@ -45,19 +47,24 @@ const TEST_GROUP: Group = {
 export class TestComponent {}
 
 export class MatDialogMock {
+    confirmationObservable: Subject<void> = new Subject<void>();
     close() {
         return {
             close: () => ({}),
         };
     }
+    // confirmationSpy = spyOn(service['gameDispatcherController'], 'handleStartGame').and.returnValue(confirmationObservable);
+    backdropClick() {
+        return this.confirmationObservable.asObservable();
+    }
 }
 
-describe('GroupRequestWaitingDialogComponent', () => {
+describe('GroupPasswordDialogComponent', () => {
     let component: GroupPasswordDialogComponent;
     let fixture: ComponentFixture<GroupPasswordDialogComponent>;
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GroupPasswordDialogComponent, IconComponent],
+            declarations: [GroupPasswordDialogComponent, IconComponent, PageHeaderComponent],
             imports: [
                 AppMaterialModule,
                 HttpClientModule,
@@ -84,8 +91,14 @@ describe('GroupRequestWaitingDialogComponent', () => {
                     { path: 'join-waiting-room', component: JoinWaitingPageComponent },
                 ]),
             ],
-            providers: [MatDialog, MatDialogRef, { provide: MAT_DIALOG_DATA, useValue: { group: TEST_GROUP } }],
-            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
+            providers: [
+                MatDialog,
+                {
+                    provide: MatDialogRef,
+                    useClass: MatDialogMock,
+                },
+                { provide: MAT_DIALOG_DATA, useValue: { group: TEST_GROUP } },
+            ],
         }).compileComponents();
     });
 
