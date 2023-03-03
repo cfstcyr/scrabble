@@ -36,6 +36,7 @@ export class GroupPasswordDialogComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.componentDestroyed$ = new Subject();
         this.passwordForm = new FormGroup({
             password: new FormControl('', [
                 Validators.required,
@@ -51,8 +52,6 @@ export class GroupPasswordDialogComponent implements OnInit, OnDestroy {
             }
         });
 
-        this.componentDestroyed$ = new Subject();
-
         this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, (/* hostUser: PublicUser*/) => this.groupCanceled());
         this.gameDispatcherService.subscribeToPlayerJoinedGroupEvent(this.componentDestroyed$, (group: Group) => this.playerAccepted(group));
         this.gameDispatcherService.subscribeToGroupFullEvent(this.componentDestroyed$, () => this.groupFull());
@@ -66,6 +65,7 @@ export class GroupPasswordDialogComponent implements OnInit, OnDestroy {
     }
 
     closeDialog(): void {
+        this.playerLeavesService.handleLeaveGroup();
         this.dialogRef.close();
     }
 
