@@ -1,8 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
+import { NAME_VALIDATION } from '@app/constants/name-validation';
 import { GameDispatcherService } from '@app/services';
 import { gameSettings } from '@app/utils/settings';
+import { GameVisibility } from '@common/models/game-visibility';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -13,18 +15,29 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class GameCreationPageComponent implements OnDestroy {
     virtualPlayerLevels: typeof VirtualPlayerLevel;
+    gameVisibilities: typeof GameVisibility;
     gameParameters: FormGroup;
 
     isCreatingGame: boolean;
+    password: string = '';
+    isPasswordValid: boolean = false;
 
     private pageDestroyed$: Subject<boolean>;
 
     constructor(private gameDispatcherService: GameDispatcherService) {
         this.virtualPlayerLevels = VirtualPlayerLevel;
+        this.gameVisibilities = GameVisibility;
         this.pageDestroyed$ = new Subject();
         this.gameParameters = new FormGroup({
             level: new FormControl(VirtualPlayerLevel.Beginner),
+            visibility: new FormControl(GameVisibility.Public),
             timer: new FormControl(gameSettings.getTimer(), Validators.required),
+            password: new FormControl('', [
+                Validators.required,
+                Validators.minLength(NAME_VALIDATION.minLength),
+                Validators.maxLength(NAME_VALIDATION.maxLength),
+                Validators.pattern(NAME_VALIDATION.rule),
+            ]),
         });
 
         this.isCreatingGame = false;
@@ -38,7 +51,10 @@ export class GameCreationPageComponent implements OnDestroy {
     }
 
     isFormValid(): boolean {
-        return this.gameParameters?.valid;
+        return (
+            (this.gameParameters?.get('timer')?.valid ?? true) &&
+            (this.gameParameters?.get('visibility')?.value !== GameVisibility.Protected || (this.gameParameters?.get('password')?.valid ?? false))
+        );
     }
 
     onSubmit(): void {
