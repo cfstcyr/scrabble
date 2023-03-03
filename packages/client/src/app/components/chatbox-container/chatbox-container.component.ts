@@ -11,7 +11,7 @@ import {
     CONFIRM_QUIT_DIALOG_TITLE,
     DELETE,
     MAX_OPEN_CHAT,
-    QUIT
+    QUIT,
 } from '@app/constants/chat-constants';
 import { CANCEL } from '@app/constants/components-constants';
 import { Channel } from '@common/models/chat/channel';
