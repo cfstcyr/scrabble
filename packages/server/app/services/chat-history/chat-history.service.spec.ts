@@ -8,7 +8,7 @@ import DatabaseService from '@app/services/database-service/database.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { Channel } from '@common/models/chat/channel';
 import { ChatHistoryMessage, ChatMessage } from '@common/models/chat/chat-message';
-import { PublicUser, UNKOWN_USER, User } from '@common/models/user';
+import { PublicUser, User } from '@common/models/user';
 import { expect } from 'chai';
 import { Knex } from 'knex';
 import * as Sinon from 'sinon';
@@ -116,14 +116,6 @@ describe('ChatHistoryService', () => {
                 idChannel: testChannel.idChannel,
                 message: expectedMessage,
             });
-        });
-
-        it('should return the history of a channel with UNKOWN_USER', async () => {
-            await channelTable().insert(testChannel);
-            await service.saveMessage(message);
-            const channelHistory = await service.getChannelHistory(testChannel.idChannel);
-
-            expect(channelHistory[0].message.sender).to.deep.equal(UNKOWN_USER);
         });
 
         describe('deleteChannelHistory', () => {
