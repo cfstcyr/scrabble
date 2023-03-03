@@ -59,7 +59,6 @@ class MyApp extends StatelessWidget {
         {
           return HomePage();
         }
-        break;
 
       case TokenValidation.NoToken:
         {
