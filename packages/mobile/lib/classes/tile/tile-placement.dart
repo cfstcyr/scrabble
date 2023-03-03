@@ -4,6 +4,7 @@ import 'package:mobile/classes/board/navigator.dart';
 import 'package:mobile/classes/board/orientation.dart';
 import 'package:mobile/classes/board/position.dart';
 import 'package:mobile/classes/tile/tile.dart';
+import 'package:mobile/constants/game.constants.dart';
 
 class TilePlacement {
   final Tile tile;
@@ -29,8 +30,7 @@ class Placement {
     var index = tiles.indexWhere((tile) => tile.equals(tilePlacement));
 
     if (index < 0) {
-      throw Exception(
-          'Error removing tile from: cannot find placement in non applied tiles.');
+      throw Exception(CANNOT_REMOVE_TILE_NOT_FOUND);
     }
 
     tiles.removeAt(index);
@@ -40,8 +40,7 @@ class Placement {
     var orientation = _getPlacementOrientation(tiles);
 
     if (orientation == null) {
-      throw Exception(
-          'Cannot convert placement to action payload: placement is not valid.');
+      throw Exception(CANNOT_CONVERT_PLACEMENT_TO_PAYLOAD_IS_INVALID);
     }
 
     return ActionPlacePayload(
@@ -105,7 +104,7 @@ class Placement {
     }
 
     // I have no idea how it could reach this. But sometimes I do dumb shit. Better safe than sorry.
-    throw Exception('Cannot validate placement: placement is out of bounds');
+    throw Exception(CANNOT_VALIDATE_PLACEMENT_IS_OUT_OF_BOUNDS);
   }
 
   Orientation? _getPlacementOrientation(List<TilePlacement> tilePlacements) {
