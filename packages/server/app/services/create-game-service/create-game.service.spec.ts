@@ -33,6 +33,7 @@ const DEFAULT_GAME_CONFIG: GameConfig = {
     maxRoundTime: DEFAULT_MAX_ROUND_TIME,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     gameVisibility: GameVisibility.Private,
+    password: '',
 };
 
 const DEFAULT_GROUP_DATA: GroupData = {
@@ -40,6 +41,7 @@ const DEFAULT_GROUP_DATA: GroupData = {
     maxRoundTime: DEFAULT_MAX_ROUND_TIME,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     gameVisibility: GameVisibility.Private,
+    password: '',
 };
 
 describe('CreateGameService', () => {

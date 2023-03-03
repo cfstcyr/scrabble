@@ -45,6 +45,7 @@ const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     gameVisibility: GameVisibility.Private,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     dictionarySummary: {} as unknown as DictionarySummary,
+    password: '',
 };
 const DEFAULT_GAME = {
     player1: DEFAULT_PLAYER_1,

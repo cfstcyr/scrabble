@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -24,8 +24,8 @@ import { GroupInfoComponent } from '@app/components/group-info/group-info.compon
 import { PageHeaderComponent } from '@app/components/page-header/page-header.component';
 import { NO_GROUP_CAN_BE_JOINED } from '@app/constants/component-errors';
 import { GameDispatcherService } from '@app/services/';
-import { of } from 'rxjs';
-import { GroupPageComponent } from './group-page.component';
+import { Observable, of } from 'rxjs';
+import { GroupsPageComponent } from './groups-page.component';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
@@ -55,15 +55,20 @@ export class MatDialogMock {
         };
     }
 }
+class MatDialogRefMock {
+    afterClosed(): Observable<any> {
+        return new Observable();
+    }
+}
 
 describe('GroupPageComponent', () => {
-    let component: GroupPageComponent;
-    let fixture: ComponentFixture<GroupPageComponent>;
+    let component: GroupsPageComponent;
+    let fixture: ComponentFixture<GroupsPageComponent>;
     let gameDispatcherServiceMock: GameDispatcherService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GroupPageComponent, GroupInfoComponent, IconComponent, PageHeaderComponent, HeaderBtnComponent],
+            declarations: [GroupsPageComponent, GroupInfoComponent, IconComponent, PageHeaderComponent, HeaderBtnComponent],
             imports: [
                 MatInputModule,
                 MatFormFieldModule,
@@ -79,7 +84,7 @@ describe('GroupPageComponent', () => {
                 ReactiveFormsModule,
                 RouterTestingModule.withRoutes([
                     { path: 'join-waiting-room', component: TestComponent },
-                    { path: 'groups', component: GroupPageComponent },
+                    { path: 'groups', component: GroupsPageComponent },
                 ]),
                 MatMenuModule,
             ],
@@ -103,7 +108,7 @@ describe('GroupPageComponent', () => {
                 { groupId: '3', user1: USER1, virtualPlayerLevel: VirtualPlayerLevel.Beginner, maxRoundTime: 90 },
             ];
         });
-        fixture = TestBed.createComponent(GroupPageComponent);
+        fixture = TestBed.createComponent(GroupsPageComponent);
         component = fixture.componentInstance;
 
         fixture.detectChanges();
@@ -116,6 +121,7 @@ describe('GroupPageComponent', () => {
                 maxRoundTime: 60,
                 virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                 gameVisibility: GameVisibility.Public,
+                password: '',
                 user1: USER1,
             },
             {
@@ -123,6 +129,7 @@ describe('GroupPageComponent', () => {
                 maxRoundTime: 60,
                 virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                 gameVisibility: GameVisibility.Public,
+                password: '',
                 user1: USER2,
             },
             {
@@ -130,6 +137,7 @@ describe('GroupPageComponent', () => {
                 maxRoundTime: 90,
                 virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                 gameVisibility: GameVisibility.Public,
+                password: '',
                 user1: USER3,
             },
         ];
@@ -148,6 +156,7 @@ describe('GroupPageComponent', () => {
                     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                     gameVisibility: GameVisibility.Public,
                     user1: USER1,
+                    password: '',
                 },
             ];
             component['updateGroups']([]);
@@ -218,6 +227,7 @@ describe('GroupPageComponent', () => {
                     maxRoundTime: 60,
                     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                     gameVisibility: GameVisibility.Public,
+                    password: '',
                     user1: USER1,
                     user2: {} as unknown as PublicUser,
                     user3: {} as unknown as PublicUser,
@@ -229,17 +239,63 @@ describe('GroupPageComponent', () => {
         });
     });
 
-    it('joinGroup should send to GameDispatcher service to join a group', () => {
+    it('joinGroup should send to GameDispatcher service to join a group if public', () => {
         const gameDispatcherSpy = spyOn(gameDispatcherServiceMock, 'handleJoinGroup').and.callFake(() => {
             return;
         });
-        component.joinGroup(component.groups[0].groupId);
+        const groupWanted = component.groups[0];
+        groupWanted.gameVisibility = GameVisibility.Public;
+        component.joinGroup(groupWanted.groupId);
         expect(gameDispatcherSpy).toHaveBeenCalled();
+    });
+
+    it('joinGroup call handleGroupUpdates if game is protected and open groupPasswordDialog', () => {
+        const gameDispatcherSpy = spyOn(gameDispatcherServiceMock, 'handleGroupUpdates').and.callFake(() => {
+            return;
+        });
+        const spyGroupPasswordDialog = spyOn<any>(component, 'groupPasswordDialog').and.callFake(() => {
+            return;
+        });
+        const groupWanted = component.groups[0];
+        groupWanted.gameVisibility = GameVisibility.Protected;
+        component.joinGroup(groupWanted.groupId);
+        expect(gameDispatcherSpy).toHaveBeenCalled();
+        expect(spyGroupPasswordDialog).toHaveBeenCalled();
+    });
+
+    it('joinGroup call handleJoinGroup if game is private and open groupRequestWaitingDialog', () => {
+        const gameDispatcherSpy = spyOn(gameDispatcherServiceMock, 'handleJoinGroup').and.callFake(() => {
+            return;
+        });
+        const spyGroupRequestWaitingDialog = spyOn<any>(component, 'groupRequestWaitingDialog').and.callFake(() => {
+            return;
+        });
+        const groupWanted = component.groups[0];
+        groupWanted.gameVisibility = GameVisibility.Private;
+        component.joinGroup(groupWanted.groupId);
+        expect(gameDispatcherSpy).toHaveBeenCalled();
+        expect(spyGroupRequestWaitingDialog).toHaveBeenCalled();
     });
 
     it('groupFullDialog should open the dialog component', () => {
         const spy = spyOn(component.dialog, 'open');
         component['groupFullDialog']();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('groupPasswordDialog should open the dialog component', () => {
+        const spy = spyOn(component.dialog, 'open').and.callFake(() => {
+            return new MatDialogRefMock() as unknown as MatDialogRef<any, any>;
+        });
+        component['groupPasswordDialog'](component.groups[0]);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('groupRequestWaitingDialog should open the dialog component', () => {
+        const spy = spyOn(component.dialog, 'open').and.callFake(() => {
+            return new MatDialogRefMock() as unknown as MatDialogRef<any, any>;
+        });
+        component['groupRequestWaitingDialog'](component.groups[0]);
         expect(spy).toHaveBeenCalled();
     });
 
@@ -257,6 +313,7 @@ describe('GroupPageComponent', () => {
                 virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                 gameVisibility: GameVisibility.Public,
                 user1: USER1,
+                password: '',
             },
             {
                 groupId: '2',
@@ -264,6 +321,7 @@ describe('GroupPageComponent', () => {
                 virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                 gameVisibility: GameVisibility.Public,
                 user1: USER2,
+                password: '',
             },
             {
                 groupId: '3',
@@ -271,6 +329,7 @@ describe('GroupPageComponent', () => {
                 virtualPlayerLevel: VirtualPlayerLevel.Beginner,
                 gameVisibility: GameVisibility.Public,
                 user1: USER3,
+                password: '',
             },
         ];
         const spySetOpponent = spyOn<any>(component, 'updateGroups').and.callFake(() => {

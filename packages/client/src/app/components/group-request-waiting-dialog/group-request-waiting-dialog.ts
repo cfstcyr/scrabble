@@ -9,6 +9,7 @@ import { takeUntil } from 'rxjs/operators';
 import { GroupRequestWaitingDialogParameters } from './group-request-waiting-dialog.types';
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ROUTE_JOIN_WAITING } from '@app/constants/routes-constants';
+import { RequestState } from '@app/classes/states/request-state';
 
 @Component({
     selector: 'app-group-request-waiting-dialog',
@@ -18,7 +19,7 @@ import { ROUTE_JOIN_WAITING } from '@app/constants/routes-constants';
 export class GroupRequestWaitingDialogComponent implements OnInit, OnDestroy {
     requestedGroup: Group;
     roundTime: string;
-    isRejected: boolean = false;
+    state: RequestState = RequestState.Ready;
     private componentDestroyed$: Subject<boolean>;
     constructor(
         public gameDispatcherService: GameDispatcherService,
@@ -48,7 +49,7 @@ export class GroupRequestWaitingDialogComponent implements OnInit, OnDestroy {
             }
         });
 
-        this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, (/* hostUser: PublicUser*/) => this.playerRejected());
+        this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, (/* hostUser: PublicUser*/) => this.gameCanceled());
         this.gameDispatcherService.subscribeToJoinerRejectedEvent(this.componentDestroyed$, (/* hostUser: PublicUser*/) => this.playerRejected());
         this.gameDispatcherService.subscribeToPlayerJoinedGroupEvent(this.componentDestroyed$, (group: Group) => this.playerAccepted(group));
     }
@@ -76,6 +77,10 @@ export class GroupRequestWaitingDialogComponent implements OnInit, OnDestroy {
     }
 
     private playerRejected(): void {
-        this.isRejected = true;
+        this.state = RequestState.Invalid;
+    }
+
+    private gameCanceled(): void {
+        this.state = RequestState.Canceled;
     }
 }

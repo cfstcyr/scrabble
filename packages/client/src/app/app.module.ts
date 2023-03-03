@@ -28,7 +28,7 @@ import { PageHeaderComponent } from './components/page-header/page-header.compon
 import { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';
 import { GameCreationPageComponent } from './pages/game-creation-page/game-creation-page.component';
 import { LoadingPageComponent } from './pages/loading-page/loading-page.component';
-import { GroupPageComponent } from './pages/group-page/group-page.component';
+import { GroupsPageComponent } from './pages/groups-page/groups-page.component';
 import { DurationPipe } from './pipes/duration/duration.pipe';
 import { InitializerService } from './services/initializer-service/initializer.service';
 import { ChatboxContainerComponent } from './components/chatbox-container/chatbox-container.component';
@@ -47,6 +47,7 @@ import { AuthenticationInterceptor } from './middlewares/authentication';
 import { RequestingUserContainerComponent } from './components/requesting-user-container/requesting-user-container.component';
 import { GroupRequestWaitingDialogComponent } from './components/group-request-waiting-dialog/group-request-waiting-dialog';
 import { GroupInfoDetailedComponent } from './components/group-info-detailed/group-info-detailed.component';
+import { GroupPasswordDialogComponent } from './components/group-password-waiting-dialog/group-password-waiting-dialog';
 
 registerLocaleData(localeFr);
 
@@ -69,7 +70,7 @@ registerLocaleData(localeFr);
         CommunicationBoxComponent,
         BoardComponent,
         TileRackComponent,
-        GroupPageComponent,
+        GroupsPageComponent,
         GroupInfoComponent,
         CreateWaitingPageComponent,
         JoinWaitingPageComponent,
@@ -95,6 +96,7 @@ registerLocaleData(localeFr);
         RequestingUserContainerComponent,
         GroupRequestWaitingDialogComponent,
         GroupInfoDetailedComponent,
+        GroupPasswordDialogComponent,
     ],
     imports: [
         AppMaterialModule,
