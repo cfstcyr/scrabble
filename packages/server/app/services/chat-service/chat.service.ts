@@ -103,9 +103,13 @@ export class ChatService {
     async emptyChannel(idChannel: TypeOfId<Channel>): Promise<void> {
         const playerIdsInChannel: UserId[] = await this.chatPersistenceService.getChannelUserIds(idChannel);
         playerIdsInChannel.forEach((userId) => {
-            const socketId: SocketId = this.authentificationService.connectedUsers.getSocketId(userId);
-            const socket: ServerSocket = this.socketService.getSocket(socketId);
-            this.handleQuitChannel(idChannel, socket);
+            try {
+                const socketId: SocketId = this.authentificationService.connectedUsers.getSocketId(userId);
+                const socket: ServerSocket = this.socketService.getSocket(socketId);
+                this.handleQuitChannel(idChannel, socket);
+            } catch {
+                return;
+            }
         });
     }
 
