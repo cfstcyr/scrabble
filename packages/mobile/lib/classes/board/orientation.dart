@@ -23,4 +23,24 @@ extension OrientationExtension on Orientation {
         return Vec2.fromRowCol(column: 1, row: 0);
     }
   }
+
+  int toInt() {
+    switch (this) {
+      case Orientation.horizontal:
+        return 0;
+      case Orientation.vertical:
+        return 1;
+    }
+  }
+}
+
+Orientation orientationFromInt(int n) {
+  switch (n) {
+    case 0:
+      return Orientation.horizontal;
+    case 1:
+      return Orientation.vertical;
+  }
+
+  throw Exception('Cannot get orientation from int: invalid value "$n"');
 }

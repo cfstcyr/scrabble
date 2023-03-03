@@ -63,6 +63,14 @@ class Board {
     return _isValidPlacement$.stream;
   }
 
+  Placement get currentPlacement {
+    return _currentPlacement$.value;
+  }
+
+  bool get isValidPlacement {
+    return _isValidPlacement$.value;
+  }
+
   _applyMultipliers() {
     // Center
     grid[7][7].multiplier = Multiplier(value: 2, type: MultiplierType.word);

@@ -11,7 +11,6 @@ import '../../locator.dart';
 class GameActions extends StatelessWidget {
   GameService _gameService = getIt.get<GameService>();
 
-
   void surrender(BuildContext context) {
     getIt.get<PlayerLeaveService>().leaveGame(context);
   }
@@ -55,8 +54,9 @@ class GameActions extends StatelessWidget {
                         stream: game.data!.board.isValidPlacementStream,
                         builder: (context, isValidPlacement) {
                           return AppButton(
-                            onPressed:
-                                isValidPlacement.data ?? false ? () {} : null,
+                            onPressed: isValidPlacement.data ?? false
+                                ? () => _gameService.playPlacement()
+                                : null,
                             icon: Icons.play_arrow_rounded,
                             size: AppButtonSize.large,
                           );

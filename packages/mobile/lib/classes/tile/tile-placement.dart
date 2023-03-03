@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/board/navigator.dart';
 import 'package:mobile/classes/board/orientation.dart';
@@ -36,6 +37,20 @@ class Placement {
     }
 
     tiles.removeAt(index);
+  }
+
+  ActionPlacePayload toActionPayload() {
+    var orientation = _getPlacementOrientation(tiles);
+
+    if (orientation == null) {
+      throw Exception(
+          'Cannot convert placement to action payload: placement is not valid.');
+    }
+
+    return ActionPlacePayload(
+        tiles: tiles.map((tilePlacement) => tilePlacement.tile).toList(),
+        position: tiles.first.position,
+        orientation: orientation);
   }
 
   bool validatePlacement(Board board) {

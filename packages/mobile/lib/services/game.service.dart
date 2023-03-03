@@ -1,3 +1,4 @@
+import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
@@ -5,9 +6,12 @@ import 'package:mobile/classes/game/players_container.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/services/action-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class GameService {
+  final ActionService _actionService = getIt.get<ActionService>();
   final BehaviorSubject<Game?> _game$;
 
   static final GameService _instance = GameService._();
@@ -73,5 +77,17 @@ class GameService {
     if (_game$.value == null) throw Exception("No game");
 
     return _game$.value!.tileRack;
+  }
+
+  void playPlacement() {
+    if (!(_game$.value?.board.isValidPlacement ?? false)) return;
+
+    var placement = _game$.value?.board.currentPlacement;
+
+    if (placement == null) {
+      throw Exception('Cannot play placement: placement is null');
+    }
+
+    _actionService.sendAction(ActionType.place, placement.toActionPayload());
   }
 }
