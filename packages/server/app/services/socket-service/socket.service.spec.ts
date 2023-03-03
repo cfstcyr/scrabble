@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
@@ -27,7 +28,7 @@ const INVALID_ROOM_NAME = 'invalid_room';
 const INVALID_ID = 'invalid-id';
 const DEFAULT_ARGS = 'data';
 const DEFAULT_TOKEN = 'token';
-
+const SOCKET_ID = 'socketid';
 const getSocketId = async (socket: Socket) => {
     const DELAY = 5;
     const MAX_DELAY = 500;
@@ -243,6 +244,38 @@ describe('SocketService', () => {
                 const sio = service['sio'];
                 service['sio'] = undefined;
                 expect(() => service.emitToRoom(DEFAULT_ROOM, '_test_event', DEFAULT_ARGS)).to.throw(SOCKET_SERVICE_NOT_INITIALIZED);
+                service['sio'] = sio;
+            });
+        });
+
+        describe('emitToRoomNoSender', () => {
+            let id: string;
+
+            beforeEach(async () => {
+                clientSocket.connect();
+                id = await getSocketId(clientSocket);
+            });
+
+            afterEach(() => {
+                clientSocket.disconnect();
+            });
+
+            it('should not emit to socket if id is from virtual player', async () => {
+                const spyGetSocket = spy.on(service, 'getSocket', () => {
+                    return {};
+                });
+
+                spy.on(arrowFunction, 'isIdVirtualPlayer', () => {
+                    return true;
+                });
+                service.emitToRoomNoSender(id, SOCKET_ID, '_test_event', DEFAULT_ARGS);
+                expect(spyGetSocket).not.to.have.been.called();
+            });
+
+            it('should throw if sio is undefined', () => {
+                const sio = service['sio'];
+                service['sio'] = undefined;
+                expect(() => service.emitToRoomNoSender(id, SOCKET_ID, '_test_event', DEFAULT_ARGS)).to.throw(SOCKET_SERVICE_NOT_INITIALIZED);
                 service['sio'] = sio;
             });
         });

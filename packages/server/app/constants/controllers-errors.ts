@@ -8,7 +8,7 @@ export const VIRTUAL_PLAYER_LEVEL_REQUIRED = 'Le corps de la requête pour une p
 export const NAME_IS_INVALID = "L'identifiant du joueur est invalide";
 export const GAME_IS_OVER = 'La partie est maintenant terminée. Impossible de la joindre';
 export const PLAYER_LEFT_GAME = (isGameOver: boolean): string =>
-    isGameOver ? ' a quitté la partie.' : ' a quitté la partie.<br>Un joueur virtuel débutant a pris sa place.';
+    isGameOver ? ' a quitté la partie.' : ' a quitté la partie.<br>Un joueur virtuel a pris sa place.';
 
 export const CONTENT_REQUIRED = 'message content is required';
 export const SENDER_REQUIRED = 'message sender is required';

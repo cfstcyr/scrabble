@@ -91,7 +91,22 @@ export class ChatPersistenceService {
         }
     }
 
-    // Decommnet when function is to be used
+    async getChannelIdsWithPropertiesForUserId(channel: Partial<Channel>, idUser: UserId): Promise<TypeOfId<Channel>[]> {
+        const request = this.channelTable
+            .select(`${CHANNEL_TABLE}.idChannel`)
+            .leftJoin<UserChannel>(USER_CHANNEL_TABLE, `${CHANNEL_TABLE}.idChannel`, `${USER_CHANNEL_TABLE}.idChannel`)
+            .where(`${USER_CHANNEL_TABLE}.idUser`, idUser);
+
+        Object.keys(channel).forEach((key) => {
+            if (key === undefined) return;
+
+            const column = `${CHANNEL_TABLE}.${key}`;
+            request.andWhere({ [column]: channel[key] });
+        });
+
+        return (await request).map(({ idChannel }) => idChannel);
+    }
+
     private async isChannelEmpty(idChannel: TypeOfId<Channel>): Promise<boolean> {
         return (await this.userChatTable.select('*').where({ idChannel })).length === 0;
     }

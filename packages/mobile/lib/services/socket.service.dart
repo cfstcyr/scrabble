@@ -24,12 +24,14 @@ class SocketService {
     socket.onConnect((_) {
       print('connected to websocket');
     });
-    socket.onConnectError((data) {
-      print(data);
+
+    socket.onConnectError((err) {
+      print(err);
     });
-    socket.onConnectTimeout((data) {
-      print(data);
+    socket.onConnectTimeout((err) {
+      print(err);
     });
+    socket.onDisconnect((_) => {print("disconnected")});
   }
 
   Future<void> emitEvent(String eventName, dynamic data) async {

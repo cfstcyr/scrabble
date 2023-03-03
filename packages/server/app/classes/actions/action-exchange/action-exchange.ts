@@ -49,7 +49,9 @@ export default class ActionExchange extends ActionPlay {
     }
 
     getOpponentMessage(): FeedbackMessage {
-        return { message: `${this.player.name} a échangé ${this.tilesToExchange.length} tuile${this.tilesToExchange.length > 1 ? 's' : ''}` };
+        return {
+            message: `${this.player.publicUser.username} a échangé ${this.tilesToExchange.length} tuile${this.tilesToExchange.length > 1 ? 's' : ''}`,
+        };
     }
 
     private lettersToSwap(): string {

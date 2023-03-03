@@ -4,10 +4,11 @@ import { ObjectiveUpdate } from '@app/classes/objectives/objective-utils';
 import { ObjectiveValidationParameters } from '@app/classes/objectives/validation-parameters';
 import { Tile } from '@app/classes/tile';
 import ObjectivesService from '@app/services/objective-service/objective.service';
+import { PublicUser } from '@common/models/user';
 import { Container } from 'typedi';
 
 export default class Player {
-    name: string;
+    publicUser: PublicUser;
     score: number;
     tiles: Tile[];
     id: string;
@@ -15,9 +16,9 @@ export default class Player {
     private objectives: AbstractObjective[];
     private readonly objectiveService: ObjectivesService;
 
-    constructor(id: string, name: string) {
+    constructor(id: string, publicUser: PublicUser) {
         this.id = id;
-        this.name = name;
+        this.publicUser = publicUser;
         this.score = 0;
         this.tiles = [];
         this.isConnected = true;
@@ -33,7 +34,7 @@ export default class Player {
     }
 
     endGameMessage(): string {
-        return `${this.name} : ${this.tilesToString()}`;
+        return `${this.publicUser.username} : ${this.tilesToString()}`;
     }
 
     getObjectives(): AbstractObjective[] {
@@ -61,11 +62,17 @@ export default class Player {
         this.score = oldPlayer.score;
         this.tiles = oldPlayer.tiles;
         this.objectives = oldPlayer.objectives;
-        return { id: oldPlayer.id, newId: this.id, name: this.name };
+        return { id: oldPlayer.id, newId: this.id, publicUser: this.publicUser };
     }
 
     convertToPlayerData(): PlayerData {
-        return { id: this.id, name: this.name, score: this.score, tiles: this.tiles, isConnected: this.isConnected, objectives: this.objectives };
+        return {
+            id: this.id,
+            publicUser: this.publicUser,
+            score: this.score,
+            tiles: this.tiles,
+            isConnected: this.isConnected,
+        };
     }
 
     private tilesToString(): string {

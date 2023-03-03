@@ -11,6 +11,7 @@ import '../constants/create-account-constants.dart';
 import '../constants/login-constants.dart';
 import '../pages/create-account-page.dart';
 import '../pages/prototype-page.dart';
+import '../routes/routes.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -188,8 +189,7 @@ class _LoginFormState extends State<LoginForm> {
 
     if (true) {
       // TODO await accountService.login(credentials))
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.pushNamed(context, HOME_ROUTE);
     }
   }
 }

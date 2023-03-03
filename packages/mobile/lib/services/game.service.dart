@@ -27,7 +27,7 @@ class GameService {
           player3: Player(user: PublicUser(username: "Hernest"), points: 666),
           player4: Player(user: PublicUser(username: "Bernard"), points: 2),
         ),
-        timeLeft: Duration(minutes: 1, seconds: 42));
+        roundDuration: Duration(minutes: 1, seconds: 42));
 
     game?.board.grid[7][7].setTile(Tile.create("B", 1));
     game?.board.grid[7][8].setTile(Tile.create("O", 1));

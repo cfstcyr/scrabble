@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
@@ -14,17 +15,19 @@ import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
 import { Service } from 'typedi';
 import {
-    CanceledGameEmitArgs,
+    AcceptJoinRequestEmitArgs,
+    CancelledGroupEmitArgs,
     CleanupEmitArgs,
     GameUpdateEmitArgs,
+    GroupsUpdateEmitArgs,
     HighScoresEmitArgs,
-    JoinerLeaveGameEmitArgs,
+    JoinRequestCancelledEmitArgs,
     JoinRequestEmitArgs,
-    LobbiesUpdateEmitArgs,
     NewMessageEmitArgs,
-    RejectEmitArgs,
+    RejectJoinRequestEmitArgs,
     SocketEmitEvents,
     StartGameEmitArgs,
+    UserLeftGroupEmitArgs
 } from './socket-types';
 
 @Service()
@@ -77,7 +80,7 @@ export class SocketService {
                     return next(new Error(err));
                 }
             } else {
-                next(new Error(NO_TOKEN));
+                throw new HttpException(NO_TOKEN);
             }
         });
 
@@ -128,13 +131,15 @@ export class SocketService {
     // for the current emit and prevents us from emitting incorrect arguments which
     // would cause errors on the client side
     /* eslint-disable no-dupe-class-members */
+    emitToRoom(id: string, ev: 'acceptJoinRequest', ...args: AcceptJoinRequestEmitArgs[]): void;
+    emitToRoom(id: string, ev: 'cancelledGroup', ...args: CancelledGroupEmitArgs[]): void;
+    emitToRoom(id: string, ev: 'userLeftGroup', ...args: UserLeftGroupEmitArgs[]): void;
     emitToRoom(id: string, ev: 'gameUpdate', ...args: GameUpdateEmitArgs[]): void;
-    emitToRoom(id: string, ev: 'joinRequest', ...args: JoinRequestEmitArgs[]): void;
     emitToRoom(id: string, ev: 'startGame', ...args: StartGameEmitArgs[]): void;
-    emitToRoom(id: string, ev: 'canceledGame', ...args: CanceledGameEmitArgs[]): void;
-    emitToRoom(id: string, ev: 'rejected', ...args: RejectEmitArgs[]): void;
-    emitToRoom(id: string, ev: 'lobbiesUpdate', ...args: LobbiesUpdateEmitArgs[]): void;
+    emitToRoom(id: string, ev: 'groupsUpdate', ...args: GroupsUpdateEmitArgs[]): void;
     emitToRoom(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
+    emitToRoom(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
+    emitToRoom(id: string, ev: 'cleanup', ...args: CleanupEmitArgs[]): void;
     emitToRoom(id: string, ev: '_test_event', ...args: unknown[]): void;
     emitToRoom<T>(room: string, ev: SocketEmitEvents, ...args: T[]): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
@@ -142,15 +147,18 @@ export class SocketService {
         this.sio.to(room).emit(ev, ...args);
     }
 
-    emitToSocket(id: string, ev: 'gameUpdate', ...args: GameUpdateEmitArgs[]): void;
     emitToSocket(id: string, ev: 'joinRequest', ...args: JoinRequestEmitArgs[]): void;
+    emitToSocket(id: string, ev: 'joinRequestCancelled', ...args: JoinRequestCancelledEmitArgs[]): void;
+    emitToSocket(id: string, ev: 'acceptJoinRequest', ...args: AcceptJoinRequestEmitArgs[]): void;
+    emitToSocket(id: string, ev: 'rejectJoinRequest', ...args: RejectJoinRequestEmitArgs[]): void;
+    emitToSocket(id: string, ev: 'cancelledGroup', ...args: CancelledGroupEmitArgs[]): void;
+    emitToSocket(id: string, ev: 'userLeftGroup', ...args: UserLeftGroupEmitArgs[]): void;
+    emitToSocket(id: string, ev: 'gameUpdate', ...args: GameUpdateEmitArgs[]): void;
     emitToSocket(id: string, ev: 'startGame', ...args: StartGameEmitArgs[]): void;
-    emitToSocket(id: string, ev: 'canceledGame', ...args: CanceledGameEmitArgs[]): void;
-    emitToSocket(id: string, ev: 'joinerLeaveGame', ...args: JoinerLeaveGameEmitArgs[]): void;
-    emitToSocket(id: string, ev: 'rejected', ...args: RejectEmitArgs[]): void;
-    emitToSocket(id: string, ev: 'lobbiesUpdate', ...args: LobbiesUpdateEmitArgs[]): void;
+    emitToSocket(id: string, ev: 'groupsUpdate', ...args: GroupsUpdateEmitArgs[]): void;
     emitToSocket(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
     emitToSocket(id: string, ev: 'highScoresList', ...args: HighScoresEmitArgs[]): void;
+    emitToSocket(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
     emitToSocket(id: string, ev: 'cleanup', ...args: CleanupEmitArgs[]): void;
     emitToSocket(id: string, ev: '_test_event', ...args: unknown[]): void;
     emitToSocket<T>(id: string, ev: SocketEmitEvents, ...args: T[]): void {
@@ -160,13 +168,15 @@ export class SocketService {
         this.getSocket(id).emit(ev, ...args);
     }
 
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'acceptJoinRequest', ...args: AcceptJoinRequestEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'cancelledGroup', ...args: CancelledGroupEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'userLeftGroup', ...args: UserLeftGroupEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'gameUpdate', ...args: GameUpdateEmitArgs[]): void;
-    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'joinRequest', ...args: JoinRequestEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'startGame', ...args: StartGameEmitArgs[]): void;
-    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'canceledGame', ...args: CanceledGameEmitArgs[]): void;
-    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'rejected', ...args: RejectEmitArgs[]): void;
-    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'lobbiesUpdate', ...args: LobbiesUpdateEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'groupsUpdate', ...args: GroupsUpdateEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'cleanup', ...args: CleanupEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: '_test_event', ...args: unknown[]): void;
     emitToRoomNoSender<T>(room: string, socketSenderId: string, ev: SocketEmitEvents, ...args: T[]): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
