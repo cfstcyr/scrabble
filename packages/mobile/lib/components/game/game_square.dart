@@ -3,6 +3,7 @@ import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/tile/tile.dart';
+import 'package:mobile/components/tile/wildcard-dialog.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/locator.dart';
@@ -23,14 +24,8 @@ class GameSquare extends StatelessWidget {
     required this.square,
   }) : color =
             square.multiplier != null ? square.getColor() : Color(0xFFEEEEEE) {
-    _gameEventService.listen(PUT_BACK_TILES_ON_TILE_RACK, (_) {
-      var tile = square.getTile();
-
-      if (!square.getIsApplied() && tile != null) {
-        _gameService.getTileRack().placeTile(tile);
-        removeTile();
-      }
-    });
+    _gameEventService.listen<void>(
+        PUT_BACK_TILES_ON_TILE_RACK, _onPutBackTiles);
   }
 
   @override
@@ -74,11 +69,7 @@ class GameSquare extends StatelessWidget {
                     },
                     onAccept: (data) {
                       if (snapshot.data == null) {
-                        square.setTile(data);
-                        _gameEventService.add<TilePlacement>(
-                            PLACE_TILE_ON_BOARD,
-                            TilePlacement(
-                                tile: data, position: square.position));
+                        _onPlaceTile(context, data);
                       }
                     },
                   );
@@ -158,9 +149,32 @@ class GameSquare extends StatelessWidget {
         });
   }
 
+  _onPlaceTile(BuildContext context, c.Tile tile) async {
+    square.setTile(tile);
+
+    if (tile.isWildcard) {
+      await triggerWildcardDialog(context, square: square);
+    }
+
+    _gameEventService.add<TilePlacement>(PLACE_TILE_ON_BOARD,
+        TilePlacement(tile: tile, position: square.position));
+  }
+
+  _onPutBackTiles(void _) {
+    var tile = square.getTile();
+
+    if (!square.getIsApplied() && tile != null) {
+      _gameService.getTileRack().placeTile(tile);
+      removeTile();
+    }
+  }
+
   removeTile() {
     var tile = square.getTile();
+
     if (tile != null) {
+      if (tile.isWildcard) tile.playedLetter = null;
+
       square.removeTile();
       _gameEventService.add<TilePlacement>(REMOVE_TILE_FROM_BOARD,
           TilePlacement(tile: tile, position: square.position));

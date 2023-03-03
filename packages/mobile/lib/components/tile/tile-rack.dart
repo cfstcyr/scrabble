@@ -38,6 +38,7 @@ class TileRack extends StatelessWidget {
                           _gameService.getTileRack().shuffle();
                         },
                         icon: Icons.repeat,
+                        iconOnly: true,
                       ),
                       StreamBuilder(
                           stream: game.data!.tileRack.stream,
@@ -69,6 +70,7 @@ class TileRack extends StatelessWidget {
                                   }
                                 : null,
                             icon: Icons.close,
+                            iconOnly: true,
                           );
                         },
                       )

@@ -9,3 +9,9 @@ const String WORD = "Mot";
 
 const double TILE_SIZE = 42;
 const double TILE_SIZE_DRAG = TILE_SIZE;
+
+const String ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+const String CHOOSE_LETTER_FOR_WILDCARD = 'Choisissez la lettre à utiliser';
+const String CANNOT_SET_LETTER_FOR_WILDCARD_SQUARE_EMPTY =
+    'Cannot set wildcard letter: square is empty';

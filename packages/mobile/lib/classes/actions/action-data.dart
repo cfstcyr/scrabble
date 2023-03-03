@@ -64,7 +64,8 @@ class ActionPlacePayload extends ActionPayload {
         .map((tile) => Tile(
             letter: tile['letter'],
             value: tile['value'],
-            isWildcard: tile['isBlank']))
+            isWildcard: tile['isBlank'],
+            playedLetter: tile['playedLetter']))
         .toList();
     position =
         Position(json['startPosition']['column'], json['startPosition']['row']);
@@ -78,6 +79,7 @@ class ActionPlacePayload extends ActionPayload {
             'letter': tile.letter,
             'value': tile.value,
             'isBlank': tile.isWildcard,
+            'playedLetter': tile.playedLetter,
           }),
       'startPosition': {
         'column': position.column,

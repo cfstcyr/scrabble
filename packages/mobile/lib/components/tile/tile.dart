@@ -56,9 +56,15 @@ class Tile extends StatelessWidget {
                           : Matrix4.translationValues(0, 0, 0),
                       child: Center(
                         child: Text(
-                          tile?.letter ?? '',
+                          tile != null
+                              ? (tile!.isWildcard
+                                  ? (tile!.playedLetter ?? '')
+                                  : (tile!.letter ?? ''))
+                              : '',
                           style: TextStyle(
-                            color: Color.fromRGBO(80, 55, 10, 1),
+                            color: (tile?.isWildcard ?? false)
+                                ? Colors.red
+                                : Color.fromRGBO(80, 55, 10, 1),
                             fontWeight: FontWeight.w600,
                             fontSize: size / 1.7,
                           ),
