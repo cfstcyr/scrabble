@@ -12,6 +12,7 @@ export interface Group {
     maxRoundTime: number;
     gameVisibility: GameVisibility;
     virtualPlayerLevel: VirtualPlayerLevel;
+    password: string;
 }
 
 export type GroupData = Omit<Group, 'groupId'>;
