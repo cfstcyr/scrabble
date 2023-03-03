@@ -36,16 +36,21 @@ const TEST_GROUP: Group = {
     maxRoundTime: 0,
     gameVisibility: GameVisibility.Public,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+    password: '',
 };
 
 const TEST_GROUPS = [TEST_GROUP];
 const TEST_GAME_PARAMETERS = {
     level: VirtualPlayerLevel.Beginner,
+    visibility: GameVisibility.Public,
     timer: '60',
+    password: '1',
 };
 const TEST_FORM_CONTENT = {
     level: new FormControl(VirtualPlayerLevel.Beginner, Validators.required),
     timer: new FormControl(1, Validators.required),
+    password: new FormControl('1', Validators.required),
+    visibility: new FormControl(GameVisibility.Public, Validators.required),
 };
 const TEST_FORM: FormGroup = new FormGroup(TEST_FORM_CONTENT);
 TEST_FORM.setValue(TEST_GAME_PARAMETERS);
@@ -213,8 +218,8 @@ describe('GameDispatcherService', () => {
             });
         });
         it('handleJoinGroup should call gameDispatcherController.handleGroupJoinRequest with the correct parameters', () => {
-            service.handleJoinGroup(TEST_GROUPS[0]);
-            expect(spyHandleGroupJoinRequest).toHaveBeenCalledWith(TEST_GROUPS[0].groupId);
+            service.handleJoinGroup(TEST_GROUPS[0], 'aa');
+            expect(spyHandleGroupJoinRequest).toHaveBeenCalledWith(TEST_GROUPS[0].groupId, 'aa');
         });
 
         it('handleJoinGroup should set right attributes', () => {
@@ -244,8 +249,8 @@ describe('GameDispatcherService', () => {
             user1: USER1,
             maxRoundTime: '60' as unknown as number,
             virtualPlayerLevel: VirtualPlayerLevel.Beginner,
-            // TODO: Change this when implementing different modes
-            gameVisibility: GameVisibility.Private,
+            gameVisibility: GameVisibility.Public,
+            password: '',
         };
 
         service.handleCreateGame(TEST_FORM);

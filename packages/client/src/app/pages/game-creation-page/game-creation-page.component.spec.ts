@@ -104,7 +104,9 @@ describe('GameCreationPageComponent', () => {
         const gameParametersForm = component.gameParameters;
         const formValues = {
             level: component.virtualPlayerLevels.Beginner,
+            visibility: component.gameVisibilities.Public,
             timer: '60',
+            password: '0',
         };
         gameParametersForm.setValue(formValues);
     };

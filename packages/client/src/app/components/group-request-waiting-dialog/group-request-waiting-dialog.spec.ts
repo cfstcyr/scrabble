@@ -19,7 +19,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { PageHeaderComponent } from '@app/components/page-header/page-header.component';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { GroupPageComponent } from '@app/pages/group-page/group-page.component';
+import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.component';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
@@ -33,6 +33,7 @@ const TEST_GROUP: Group = {
     user1: USER1,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     gameVisibility: GameVisibility.Private,
+    password: '',
 };
 
 @Component({
@@ -76,7 +77,7 @@ describe('GroupRequestWaitingDialogComponent', () => {
                 HttpClientTestingModule,
                 RouterTestingModule.withRoutes([
                     { path: 'game-creation', component: TestComponent },
-                    { path: 'groups', component: GroupPageComponent },
+                    { path: 'groups', component: GroupsPageComponent },
                 ]),
             ],
             providers: [
