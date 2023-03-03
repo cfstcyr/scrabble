@@ -1,10 +1,9 @@
-import 'dart:convert';
-
+import 'package:mobile/classes/channel-message.dart';
 import 'package:mobile/services/socket.service.dart';
 
 import '../classes/channel.dart';
 import '../classes/chat-message.dart';
-import '../constants/socket-events.dart';
+import '../constants/socket-events/chat-events.dart';
 import '../environments/environment.dart';
 import '../locator.dart';
 
@@ -18,13 +17,11 @@ class ChannelController {
     return _instance;
   }
   ChannelController._internal() {
-    socketService.initSocket();
+    // socketService.initSocket();
   }
 
   Future<void> sendMessage(Channel channel, ChatMessage message) async {
-    var json = jsonEncode(message.toJson());
-
-    //TO DO : passe channel et message comme les params de l'event
-    socketService.emitEvent(CHANNEL_NEW_MESSAGE, message);
+    socketService.emitEvent(CHANNEL_NEW_MESSAGE,
+        ChannelMessage(message: message, idChannel: channel.idChannel));
   }
 }

@@ -5,14 +5,13 @@ import { ActionData, ActionType } from '@app/classes/communication/action-data';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import Game from '@app/classes/game/game';
 import { GameConfig, StartGameData } from '@app/classes/game/game-config';
-import { GameMode } from '@app/classes/game/game-mode';
-import { GameType } from '@app/classes/game/game-type';
 import Player from '@app/classes/player/player';
 import { Square } from '@app/classes/square';
 import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
-import { TEST_DICTIONARY } from '@app/constants/dictionary-tests-const';
 import { GAME_SHOULD_CONTAIN_ROUND } from '@app/constants/virtual-player-constants';
+import { GameVisibility } from '@common/models/game-visibility';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import * as chai from 'chai';
 import { expect } from 'chai';
 import * as spies from 'chai-spies';
@@ -24,19 +23,22 @@ import { VirtualPlayerService } from './virtual-player.service';
 chai.use(spies);
 const DEFAULT_PLAYER1_NAME = 'p1';
 const DEFAULT_PLAYER1_ID = 'id1';
-const DEFAULT_PLAYER_1 = new Player(DEFAULT_PLAYER1_NAME, DEFAULT_PLAYER1_ID);
-const DEFAULT_PLAYER_2 = new Player('2', 'p2');
-const DEFAULT_PLAYER_3 = new Player('3', 'p3');
-const DEFAULT_PLAYER_4 = new Player('4', 'p4');
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
+const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
+const DEFAULT_PLAYER_1 = new Player(DEFAULT_PLAYER1_NAME, USER1);
+const DEFAULT_PLAYER_2 = new Player('2', USER2);
+const DEFAULT_PLAYER_3 = new Player('3', USER3);
+const DEFAULT_PLAYER_4 = new Player('4', USER4);
 const DEFAULT_GAME_ID = 'grossePartie';
 const DEFAULT_MAX_ROUND_TIME = 1;
 
 const DEFAULT_GAME_CONFIG: GameConfig = {
-    player1: new Player(DEFAULT_PLAYER1_ID, DEFAULT_PLAYER1_NAME),
-    gameType: GameType.Classic,
-    gameMode: GameMode.Solo,
+    player1: new Player(DEFAULT_PLAYER1_ID, USER1),
     maxRoundTime: DEFAULT_MAX_ROUND_TIME,
-    dictionary: TEST_DICTIONARY,
+    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+    gameVisibility: GameVisibility.Private,
 };
 
 const DEFAULT_STARTING_GAME_DATA: StartGameData = {
@@ -92,7 +94,7 @@ describe('VirtualPlayerService', () => {
 
         it('should call fetch', async () => {
             TEST_ACTION = { type: ActionType.PLACE, input: '', payload: {} };
-            const endpoint = `/api/games/${TEST_GAME_ID}/players/${TEST_PLAYER_ID}/action`;
+            const endpoint = `/api/games/${TEST_GAME_ID}/players/virtual-player-action`;
             chai.spy.on(virtualPlayerService, 'getEndpoint', () => mockServer.url);
             await mockServer.forPost(endpoint).thenReply(StatusCodes.NO_CONTENT);
             const response = await virtualPlayerService.sendAction(TEST_GAME_ID, TEST_PLAYER_ID, TEST_ACTION);
@@ -101,7 +103,7 @@ describe('VirtualPlayerService', () => {
 
         it('should call fetch, get an error then fetch with an Action Pass', async () => {
             TEST_ACTION = { type: ActionType.PLACE, input: '', payload: {} };
-            const endpoint = `/api/games/${TEST_GAME_ID}/players/${TEST_PLAYER_ID}/action`;
+            const endpoint = `/api/games/${TEST_GAME_ID}/players/virtual-player-action`;
             chai.spy.on(virtualPlayerService, 'getEndpoint', () => mockServer.url);
             await mockServer.forPost(endpoint).once().thenReply(StatusCodes.BAD_REQUEST);
             const sendActionSpy = chai.spy.on(ActionPass, 'createActionData');

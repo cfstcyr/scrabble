@@ -97,7 +97,6 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
 
         this.actionService.sendAction(
             this.gameService.getGameId(),
-            this.gameService.getLocalPlayerId(),
             this.actionService.createActionData(ActionType.EXCHANGE, this.actionService.createExchangeActionPayload(this.selectedTiles)),
         );
         this.selectedTiles.forEach((tile) => (tile.isUsed = true));

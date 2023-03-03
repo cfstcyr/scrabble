@@ -30,21 +30,21 @@ class GameService {
           player3: Player(user: PublicUser(username: "Hernest"), points: 666),
           player4: Player(user: PublicUser(username: "Bernard"), points: 2),
         ),
-        timeLeft: Duration(minutes: 1, seconds: 42)));
+        roundDuration: Duration(minutes: 1, seconds: 42)));
 
-    _game.board.grid[7][7].setTile(Tile.create("B", 1)).applyTile();
-    _game.board.grid[7][8].setTile(Tile.create("O", 1)).applyTile();
-    _game.board.grid[7][9].setTile(Tile.create("N", 1)).applyTile();
-    _game.board.grid[7][10].setTile(Tile.create("J", 1)).applyTile();
-    _game.board.grid[7][11].setTile(Tile.create("O", 1)).applyTile();
-    _game.board.grid[7][12].setTile(Tile.create("U", 1)).applyTile();
-    _game.board.grid[7][13].setTile(Tile.create("R", 1)).applyTile();
+    game.board.grid[7][7].setTile(Tile.create("B", 1)).applyTile();
+    game.board.grid[7][8].setTile(Tile.create("O", 1)).applyTile();
+    game.board.grid[7][9].setTile(Tile.create("N", 1)).applyTile();
+    game.board.grid[7][10].setTile(Tile.create("J", 1)).applyTile();
+    game.board.grid[7][11].setTile(Tile.create("O", 1)).applyTile();
+    game.board.grid[7][12].setTile(Tile.create("U", 1)).applyTile();
+    game.board.grid[7][13].setTile(Tile.create("R", 1)).applyTile();
 
-    _game.board.grid[8][9].setTile(Tile.create("O", 1)).applyTile();
-    _game.board.grid[9][9].setTile(Tile.create("E", 1)).applyTile();
-    _game.board.grid[10][9].setTile(Tile.create("L", 1)).applyTile();
+    game.board.grid[8][9].setTile(Tile.create("O", 1)).applyTile();
+    game.board.grid[9][9].setTile(Tile.create("E", 1)).applyTile();
+    game.board.grid[10][9].setTile(Tile.create("L", 1)).applyTile();
 
-    _game.tileRack.setTiles([
+    game.tileRack.setTiles([
       Tile.create("P", 1),
       Tile.create("N", 1),
       Tile.create("E", 1),
@@ -55,7 +55,7 @@ class GameService {
     ]);
   }
 
-  Game get _game {
+  Game get game {
     if (_game$.value == null) throw Exception("No game");
 
     return _game$.value!;

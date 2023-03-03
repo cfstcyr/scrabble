@@ -10,8 +10,6 @@ import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { IconComponent } from '@app/components/icon/icon.component';
-import { GameMode } from '@app/constants/game-mode';
-import { GameType } from '@app/constants/game-type';
 import { DEFAULT_TIMER_VALUE, MAXIMUM_TIMER_VALUE, MINIMUM_TIMER_VALUE, TIMER_VALUE_INCREMENTS } from '@app/constants/pages-constants';
 import { TimerSelectionComponent } from './timer-selection.component';
 
@@ -21,11 +19,8 @@ import { TimerSelectionComponent } from './timer-selection.component';
 })
 class TimerSelectionWrapperComponent {
     parentForm: FormGroup = new FormGroup({
-        gameType: new FormControl(GameType.Classic, Validators.required),
-        gameMode: new FormControl(GameMode.Multiplayer, Validators.required),
         level: new FormControl(VirtualPlayerLevel.Beginner, Validators.required),
         timer: new FormControl(DEFAULT_TIMER_VALUE, Validators.required),
-        dictionary: new FormControl('', Validators.required),
     });
 }
 

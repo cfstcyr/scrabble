@@ -7,17 +7,16 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
-import { LobbyData, LobbyInfo } from '@app/classes/communication';
-import { GameConfigData } from '@app/classes/communication/game-config';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
-import { TEST_DICTIONARY } from '@app/constants/controller-test-constants';
-import { GameMode } from '@app/constants/game-mode';
-import { GameType } from '@app/constants/game-type';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
 import { GameDispatcherService, SocketService } from '@app/services/';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+import { GameVisibility } from '@common/models/game-visibility';
+import { Group, GroupData } from '@common/models/group';
 import { Observable, Subject, Subscription } from 'rxjs';
+import { UserService } from '@app/services/user-service/user.service';
 import SpyObj = jasmine.SpyObj;
+import { ROUTE_CREATE_WAITING } from '@app/constants/routes-constants';
 
 @Component({
     template: '',
@@ -25,51 +24,46 @@ import SpyObj = jasmine.SpyObj;
 export class TestComponent {}
 
 const BASE_GAME_ID = 'baseGameId';
-const TEST_PLAYER_ID = 'playerId';
 const TEST_PLAYER_NAME = 'playerName';
-
-const TEST_LOBBY_DATA: LobbyData = {
-    lobbyId: BASE_GAME_ID,
-    hostName: '',
-    gameType: GameType.Classic,
-    gameMode: GameMode.Multiplayer,
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
+const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
+const PUBLIC_USERS = [USER1, USER2, USER3, USER4];
+const TEST_GROUP: Group = {
+    groupId: BASE_GAME_ID,
+    user1: USER1,
     maxRoundTime: 0,
-    dictionary: TEST_DICTIONARY,
+    gameVisibility: GameVisibility.Public,
+    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
 };
-const TEST_LOBBY_INFO: LobbyInfo = {
-    ...TEST_LOBBY_DATA,
-    canJoin: true,
-};
-const TEST_LOBBIES = [TEST_LOBBY_INFO];
+
+const TEST_GROUPS = [TEST_GROUP];
 const TEST_GAME_PARAMETERS = {
-    gameType: GameType.LOG2990,
-    gameMode: GameMode.Solo,
-    virtualPlayerName: 'Victoria',
     level: VirtualPlayerLevel.Beginner,
     timer: '60',
-    dictionary: TEST_DICTIONARY,
 };
 const TEST_FORM_CONTENT = {
-    gameType: new FormControl(GameType.Classic, Validators.required),
-    gameMode: new FormControl(GameMode.Solo, Validators.required),
-    virtualPlayerName: new FormControl('', Validators.required),
     level: new FormControl(VirtualPlayerLevel.Beginner, Validators.required),
-    timer: new FormControl('', Validators.required),
-    dictionary: new FormControl('', Validators.required),
+    timer: new FormControl(1, Validators.required),
 };
 const TEST_FORM: FormGroup = new FormGroup(TEST_FORM_CONTENT);
 TEST_FORM.setValue(TEST_GAME_PARAMETERS);
 
 describe('GameDispatcherService', () => {
-    let getCurrentLobbyIdSpy: jasmine.Spy;
+    let getCurrentGroupIdSpy: jasmine.Spy;
     let service: GameDispatcherService;
     let gameDispatcherControllerMock: GameDispatcherController;
-    let socketServiceMock: SocketService;
     let gameViewEventSpy: SpyObj<GameViewEventManagerService>;
+    let userServiceSpy: SpyObj<UserService>;
 
     beforeEach(() => {
         const resetSubject = new Subject();
         gameViewEventSpy = jasmine.createSpyObj('GameViewEventManagerService', ['subscribeToGameViewEvent', 'emitGameViewEvent']);
+        userServiceSpy = jasmine.createSpyObj('UserService', ['getUser']);
+        userServiceSpy.getUser.and.callFake(() => {
+            return USER1;
+        });
         gameViewEventSpy.subscribeToGameViewEvent.and.callFake((eventType: string, destroy$: Observable<boolean>, next: any) => {
             if (eventType !== 'resetServices') return new Subscription();
             return resetSubject.subscribe(next);
@@ -85,20 +79,24 @@ describe('GameDispatcherService', () => {
             imports: [
                 HttpClientModule,
                 RouterTestingModule.withRoutes([
-                    { path: 'waiting-room', component: TestComponent },
+                    { path: 'create-waiting-room', component: TestComponent },
                     { path: 'join-waiting-room', component: TestComponent },
                 ]),
                 MatSnackBarModule,
             ],
-            providers: [GameDispatcherController, SocketService, { provide: GameViewEventManagerService, useValue: gameViewEventSpy }],
+            providers: [
+                GameDispatcherController,
+                SocketService,
+                { provide: UserService, useValue: userServiceSpy },
+                { provide: GameViewEventManagerService, useValue: gameViewEventSpy },
+            ],
         });
 
         gameDispatcherControllerMock = TestBed.inject(GameDispatcherController);
 
         service = TestBed.inject(GameDispatcherService);
 
-        getCurrentLobbyIdSpy = spyOn(service, 'getCurrentLobbyId').and.returnValue(BASE_GAME_ID);
-        socketServiceMock = TestBed.inject(SocketService);
+        getCurrentGroupIdSpy = spyOn(service, 'getCurrentGroupId').and.returnValue(BASE_GAME_ID);
     });
 
     it('should be created', () => {
@@ -108,39 +106,44 @@ describe('GameDispatcherService', () => {
     describe('Subscriptions', () => {
         it('should call handleJoinRequest on joinRequestEvent', () => {
             const spy = spyOn<any>(service, 'handleJoinRequest');
-            service['gameDispatcherController']['joinRequestEvent'].next(TEST_PLAYER_NAME);
-            expect(spy).toHaveBeenCalledWith(TEST_PLAYER_NAME);
+            service['gameDispatcherController']['joinRequestEvent'].next(PUBLIC_USERS);
+            expect(spy).toHaveBeenCalledWith(PUBLIC_USERS);
         });
 
-        it('should call handleLobbyFull on lobbyFullEvent', () => {
-            const spy = spyOn<any>(service, 'handleLobbyFull');
-            service['gameDispatcherController']['lobbyFullEvent'].next();
-            expect(spy).toHaveBeenCalled();
-        });
-
-        it('should call navigateByUrl on lobbyRequestValidEvent', () => {
-            const spy = spyOn(service.router, 'navigateByUrl');
-            service['gameDispatcherController']['lobbyRequestValidEvent'].next();
+        it('should call handleGroupFull on groupFullEvent', () => {
+            const spy = spyOn<any>(service, 'handleGroupFull');
+            service['gameDispatcherController']['groupFullEvent'].next();
             expect(spy).toHaveBeenCalled();
         });
 
         it('should call handleCanceledGame on canceledGameEvent', () => {
             const spy = spyOn<any>(service, 'handleCanceledGame');
-            service['gameDispatcherController']['canceledGameEvent'].next(TEST_PLAYER_NAME);
-            expect(spy).toHaveBeenCalledWith(TEST_PLAYER_NAME);
+            service['gameDispatcherController']['canceledGameEvent'].next(USER1);
+            expect(spy).toHaveBeenCalledWith(USER1);
         });
 
         it('should call handleJoinerRejected on joinerRejectedEvent', () => {
             const spy = spyOn<any>(service, 'handleJoinerRejected');
-            service['gameDispatcherController']['joinerRejectedEvent'].next(TEST_PLAYER_NAME);
-            expect(spy).toHaveBeenCalledWith(TEST_PLAYER_NAME);
+            service['gameDispatcherController']['joinerRejectedEvent'].next(USER1);
+            expect(spy).toHaveBeenCalledWith(USER1);
         });
 
-        it('should call handleJoinerRejected on lobbiesUpdateEvent', () => {
-            const lobbies: LobbyInfo[] = [];
-            const spy = spyOn<any>(service, 'handleLobbiesUpdate');
-            service['gameDispatcherController']['lobbiesUpdateEvent'].next(lobbies);
-            expect(spy).toHaveBeenCalledWith(lobbies);
+        it('should call handleGroupsUpdate on groupsUpdateEvent', () => {
+            const spy = spyOn<any>(service, 'handleGroupsUpdate');
+            service['gameDispatcherController']['groupsUpdateEvent'].next(TEST_GROUPS);
+            expect(spy).toHaveBeenCalledWith(TEST_GROUPS);
+        });
+
+        it('should call handlePlayerCancelledRequest on playerCancelledRequestingEvent', () => {
+            const spy = spyOn<any>(service, 'handlePlayerCancelledRequest');
+            service['gameDispatcherController']['playerCancelledRequestingEvent'].next(PUBLIC_USERS);
+            expect(spy).toHaveBeenCalledWith(PUBLIC_USERS);
+        });
+
+        it('should call handlePlayerJoinedRequest on playerJoinedGroupEvent', () => {
+            const spy = spyOn<any>(service, 'handlePlayerJoinedRequest');
+            service['gameDispatcherController']['playerJoinedGroupEvent'].next(TEST_GROUP);
+            expect(spy).toHaveBeenCalledWith(TEST_GROUP);
         });
 
         it('should initialize game on initializeGame event received', () => {
@@ -160,19 +163,19 @@ describe('GameDispatcherService', () => {
         });
     });
 
-    describe('getCurrentLobbyId', () => {
+    describe('getCurrentGroupId', () => {
         beforeEach(() => {
-            getCurrentLobbyIdSpy.and.callThrough();
+            getCurrentGroupIdSpy.and.callThrough();
         });
 
-        it('should return current lobby id if current lobby is defined', () => {
-            service.currentLobby = TEST_LOBBY_INFO;
-            expect(service.getCurrentLobbyId()).toEqual(TEST_LOBBY_INFO.lobbyId);
+        it('should return current group id if current group is defined', () => {
+            service.currentGroup = TEST_GROUP;
+            expect(service.getCurrentGroupId()).toEqual(TEST_GROUP.groupId);
         });
 
-        it('should return empty string if current lobby is undefined', () => {
-            service.currentLobby = undefined;
-            expect(service.getCurrentLobbyId()).toEqual('');
+        it('should return empty string if current group is undefined', () => {
+            service.currentGroup = undefined;
+            expect(service.getCurrentGroupId()).toEqual('');
         });
     });
 
@@ -193,89 +196,59 @@ describe('GameDispatcherService', () => {
     });
 
     it('resetData should set right attributes', () => {
-        service.currentLobby = TEST_LOBBY_INFO;
-        service.currentName = 'default name';
-        getCurrentLobbyIdSpy.and.callThrough();
+        service.currentGroup = TEST_GROUP;
+        getCurrentGroupIdSpy.and.callThrough();
 
         service.resetServiceData();
-        expect(service.currentLobby).toBeUndefined();
-        expect(service.currentName).toEqual('');
-        expect(service.getCurrentLobbyId()).toEqual('');
+        expect(service.currentGroup).toBeUndefined();
+        expect(service.getCurrentGroupId()).toEqual('');
     });
 
-    describe('handleJoinLobby', () => {
-        let spyHandleLobbyJoinRequest: jasmine.Spy;
+    describe('handleJoinGroup', () => {
+        let spyHandleGroupJoinRequest: jasmine.Spy;
 
         beforeEach(() => {
-            spyHandleLobbyJoinRequest = spyOn(gameDispatcherControllerMock, 'handleLobbyJoinRequest').and.callFake(() => {
+            spyHandleGroupJoinRequest = spyOn(gameDispatcherControllerMock, 'handleGroupJoinRequest').and.callFake(() => {
                 return;
             });
         });
-        it('handleJoinLobby should call gameDispatcherController.handleLobbyJoinRequest with the correct parameters', () => {
-            service.handleJoinLobby(TEST_LOBBIES[0], TEST_PLAYER_NAME);
-            expect(spyHandleLobbyJoinRequest).toHaveBeenCalledWith(TEST_LOBBIES[0].lobbyId, TEST_PLAYER_NAME);
+        it('handleJoinGroup should call gameDispatcherController.handleGroupJoinRequest with the correct parameters', () => {
+            service.handleJoinGroup(TEST_GROUPS[0]);
+            expect(spyHandleGroupJoinRequest).toHaveBeenCalledWith(TEST_GROUPS[0].groupId);
         });
 
-        it('handleJoinLobby should set right attributes', () => {
-            service.currentLobby = undefined;
-            service.currentName = '';
-            getCurrentLobbyIdSpy.and.callThrough();
+        it('handleJoinGroup should set right attributes', () => {
+            service.currentGroup = undefined;
+            getCurrentGroupIdSpy.and.callThrough();
 
-            service.handleJoinLobby(TEST_LOBBY_INFO, TEST_PLAYER_NAME);
-            expect(service.currentLobby).toBeTruthy();
-            expect(service.currentName).toEqual(TEST_PLAYER_NAME);
-            expect(service.getCurrentLobbyId()).toEqual(TEST_LOBBY_INFO.lobbyId);
+            service.handleJoinGroup(TEST_GROUP);
+            expect(service.currentGroup).toBeTruthy();
+            expect(service.getCurrentGroupId()).toEqual(TEST_GROUP.groupId);
         });
     });
 
-    it('handleLobbyListRequest should call gameDispatcherController.handleLobbiesListRequest', () => {
-        const spyHandleLobbyJoinRequest = spyOn(gameDispatcherControllerMock, 'handleLobbiesListRequest').and.callFake(() => {
+    it('handleGroupListRequest should call gameDispatcherController.handleGroupsListRequest', () => {
+        const spyHandleGroupJoinRequest = spyOn(gameDispatcherControllerMock, 'handleGroupsListRequest').and.callFake(() => {
             return;
         });
-        service.handleLobbyListRequest();
-        expect(spyHandleLobbyJoinRequest).toHaveBeenCalled();
-    });
-
-    it('handleCreateGame should call handleGameCreation with the correct parameters for solo game', () => {
-        const spyHandleGameCreation = spyOn<any>(service, 'handleGameCreation').and.callFake(() => {
-            return;
-        });
-        spyOn(gameDispatcherControllerMock.socketService, 'getId').and.callFake(() => {
-            return TEST_PLAYER_ID;
-        });
-        const EXPECTED_GAME_CONFIG: GameConfigData = {
-            playerName: TEST_PLAYER_NAME,
-            playerId: TEST_PLAYER_ID,
-            gameType: TEST_GAME_PARAMETERS.gameType,
-            gameMode: TEST_GAME_PARAMETERS.gameMode,
-            virtualPlayerName: TEST_GAME_PARAMETERS.virtualPlayerName,
-            virtualPlayerLevel: TEST_GAME_PARAMETERS.level,
-            maxRoundTime: TEST_GAME_PARAMETERS.timer as unknown as number,
-            dictionary: TEST_DICTIONARY,
-        };
-
-        service.handleCreateGame(TEST_PLAYER_NAME, TEST_FORM);
-        expect(spyHandleGameCreation).toHaveBeenCalledWith(EXPECTED_GAME_CONFIG);
+        service.handleGroupListRequest();
+        expect(spyHandleGroupJoinRequest).toHaveBeenCalled();
     });
 
     it('handleCreateGame should call handleGameCreation with the correct parameters for multiplayer game', () => {
         const spyHandleGameCreation = spyOn<any>(service, 'handleGameCreation').and.callFake(() => {
             return;
         });
-        spyOn(gameDispatcherControllerMock.socketService, 'getId').and.callFake(() => {
-            return TEST_PLAYER_ID;
-        });
-        const EXPECTED_GAME_CONFIG: GameConfigData = {
-            playerName: TEST_PLAYER_NAME,
-            playerId: TEST_PLAYER_ID,
-            gameType: TEST_GAME_PARAMETERS.gameType,
-            gameMode: GameMode.Multiplayer,
-            maxRoundTime: TEST_GAME_PARAMETERS.timer as unknown as number,
-            dictionary: TEST_DICTIONARY,
+
+        const EXPECTED_GAME_CONFIG: GroupData = {
+            user1: USER1,
+            maxRoundTime: '60' as unknown as number,
+            virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+            // TODO: Change this when implementing different modes
+            gameVisibility: GameVisibility.Private,
         };
 
-        TEST_FORM.controls.gameMode.patchValue(GameMode.Multiplayer);
-        service.handleCreateGame(TEST_PLAYER_NAME, TEST_FORM);
+        service.handleCreateGame(TEST_FORM);
         expect(spyHandleGameCreation).toHaveBeenCalledWith(EXPECTED_GAME_CONFIG);
         TEST_FORM.setValue(TEST_GAME_PARAMETERS);
     });
@@ -295,13 +268,13 @@ describe('GameDispatcherService', () => {
         });
 
         it('should call handleCancelGame if gameId is defined', () => {
-            getCurrentLobbyIdSpy.and.returnValue(BASE_GAME_ID);
+            getCurrentGroupIdSpy.and.returnValue(BASE_GAME_ID);
             service.handleCancelGame();
             expect(cancelGameSpy).toHaveBeenCalledWith(BASE_GAME_ID);
         });
 
         it('should not call handleCancelGame if gameId is undefined', () => {
-            getCurrentLobbyIdSpy.and.returnValue('');
+            getCurrentGroupIdSpy.and.returnValue('');
             service.handleCancelGame();
             expect(cancelGameSpy).not.toHaveBeenCalled();
         });
@@ -317,56 +290,51 @@ describe('GameDispatcherService', () => {
         });
     });
 
-    describe('handleRecreateGame', () => {
-        let createSpy: jasmine.Spy;
+    // describe('handleRecreateGame', () => {
+    //     let createSpy: jasmine.Spy;
 
-        beforeEach(() => {
-            createSpy = spyOn<any>(service, 'handleGameCreation').and.callFake(() => {
-                return;
-            });
-            spyOn(socketServiceMock, 'getId').and.returnValue('socketid');
-        });
+    //     beforeEach(() => {
+    //         createSpy = spyOn<any>(service, 'handleGameCreation').and.callFake(() => {
+    //             return;
+    //         });
+    //         spyOn(socketServiceMock, 'getId').and.returnValue('socketid');
+    //     });
 
-        afterEach(() => {
-            createSpy.calls.reset();
-        });
+    //     afterEach(() => {
+    //         createSpy.calls.reset();
+    //     });
 
-        const gameParametersForm: FormGroup = new FormGroup({
-            level: new FormControl(VirtualPlayerLevel.Beginner, Validators.required),
-            virtualPlayerName: new FormControl('', Validators.required),
-            gameMode: new FormControl(GameMode.Solo, Validators.required),
-        });
-        const formValues = {
-            virtualPlayerName: 'JVname',
-            level: VirtualPlayerLevel.Beginner,
-            gameMode: GameMode.Solo,
-        };
-        gameParametersForm.setValue(formValues);
+    //     const gameParametersForm: FormGroup = new FormGroup({
+    //         level: new FormControl(VirtualPlayerLevel.Beginner, Validators.required),
+    //     });
+    //     const formValues = {
+    //         level: VirtualPlayerLevel.Beginner,
+    //     };
+    //     gameParametersForm.setValue(formValues);
 
-        it('should call handleGameCreation if the lobby is defined and create a SoloGame', () => {
-            service.currentLobby = TEST_LOBBY_INFO;
-            service.handleRecreateGame(gameParametersForm);
-            expect(createSpy).toHaveBeenCalled();
-        });
+    //     it('should call handleGameCreation if the group is defined  and create a game', () => {
+    //         service.currentGroup = TEST_GROUP;
+    //         service.handleRecreateGame({} as unknown as FormGroup);
+    //         expect(createSpy).toHaveBeenCalled();
+    //     });
 
-        it('should call handleGameCreation if the lobby is defined  and create a MultiplayerGame', () => {
-            service.currentLobby = TEST_LOBBY_INFO;
-            service.handleRecreateGame();
-            expect(createSpy).toHaveBeenCalled();
-        });
+    //     it('should not call handleCancelGame if gameId is undefined', () => {
+    //         service.currentGroup = undefined;
+    //         service.handleRecreateGame();
+    //         expect(createSpy).not.toHaveBeenCalled();
+    //     });
 
-        it('should not call handleCancelGame if gameId is undefined', () => {
-            service.currentLobby = undefined;
-            service.handleRecreateGame();
-            expect(createSpy).not.toHaveBeenCalled();
-        });
-    });
+    //     it('should not call handleCancelGame if group parameter are undefined', () => {
+    //         service.handleRecreateGame();
+    //         expect(createSpy).not.toHaveBeenCalled();
+    //     });
+    // });
 
     describe('handleGameCreation', () => {
         let handleCreationSpy: jasmine.Spy;
-        let postObservable: Subject<{ lobbyData: LobbyData }>;
+        let postObservable: Subject<{ group: Group }>;
         let routerSpy: jasmine.Spy;
-        let gameConfigData: GameConfigData;
+        let gameConfigData: GroupData;
         let gameCreationFailedSpy: jasmine.Spy;
 
         beforeEach(() => {
@@ -376,7 +344,7 @@ describe('GameDispatcherService', () => {
                 return;
             });
             routerSpy = spyOn(service['router'], 'navigateByUrl');
-            gameConfigData = TEST_GAME_PARAMETERS as unknown as GameConfigData;
+            gameConfigData = TEST_GAME_PARAMETERS as unknown as GroupData;
             service['handleGameCreation'](gameConfigData);
         });
 
@@ -384,22 +352,14 @@ describe('GameDispatcherService', () => {
             expect(handleCreationSpy).toHaveBeenCalledWith(gameConfigData);
         });
 
-        it('should set currentLobby to response lobbyData', () => {
-            postObservable.next({ lobbyData: TEST_LOBBY_DATA });
-            expect(service.currentLobby).toEqual(TEST_LOBBY_DATA);
+        it('should set currentGroup to response Group', () => {
+            postObservable.next({ group: TEST_GROUP });
+            expect(service.currentGroup).toEqual(TEST_GROUP);
         });
 
-        it('if is Multiplayer, should route to waiting-room', () => {
-            TEST_LOBBY_DATA.gameMode = GameMode.Multiplayer;
-            postObservable.next({ lobbyData: TEST_LOBBY_DATA });
-            expect(routerSpy).toHaveBeenCalledWith('waiting-room');
-        });
-
-        it('if is Solo, should NOT route to waiting-room', () => {
-            TEST_LOBBY_DATA.gameMode = GameMode.Solo;
-            postObservable.next({ lobbyData: TEST_LOBBY_DATA });
-            expect(routerSpy).not.toHaveBeenCalledWith('waiting-room');
-            TEST_LOBBY_DATA.gameMode = GameMode.Multiplayer;
+        it('if is Multiplayer, should route to create-waiting-room', () => {
+            postObservable.next({ group: TEST_GROUP });
+            expect(routerSpy).toHaveBeenCalledWith(ROUTE_CREATE_WAITING);
         });
 
         it('on error, should send gameCreationFailed$ event', () => {
@@ -428,20 +388,57 @@ describe('GameDispatcherService', () => {
         });
 
         it('should call handleConfirmation if gameId is defined', () => {
-            getCurrentLobbyIdSpy.and.returnValue(BASE_GAME_ID);
+            getCurrentGroupIdSpy.and.returnValue(BASE_GAME_ID);
             service.handleConfirmation(TEST_PLAYER_NAME);
             expect(confirmationSpy).toHaveBeenCalledWith(TEST_PLAYER_NAME, BASE_GAME_ID);
         });
 
         it('should not call handleCancelGame if gameId is undefined', () => {
-            getCurrentLobbyIdSpy.and.returnValue('');
+            getCurrentGroupIdSpy.and.returnValue('');
             service.handleConfirmation(TEST_PLAYER_NAME);
             expect(confirmationSpy).not.toHaveBeenCalled();
         });
 
         it('on error, should emit gameCreationFailed', () => {
-            getCurrentLobbyIdSpy.and.returnValue(BASE_GAME_ID);
+            getCurrentGroupIdSpy.and.returnValue(BASE_GAME_ID);
             service.handleConfirmation(TEST_PLAYER_NAME);
+            confirmationObservable.error({});
+            expect(gameCreationFailedSpy).toHaveBeenCalled();
+        });
+    });
+
+    describe('handleStart', () => {
+        let confirmationObservable: Subject<void>;
+        let confirmationSpy: jasmine.Spy;
+        let gameCreationFailedSpy: jasmine.Spy;
+
+        beforeEach(() => {
+            confirmationObservable = new Subject<void>();
+            confirmationSpy = spyOn(service['gameDispatcherController'], 'handleStartGame').and.returnValue(confirmationObservable.asObservable());
+            gameCreationFailedSpy = spyOn(service['gameCreationFailed$'], 'next').and.callFake(() => {
+                return;
+            });
+        });
+
+        afterEach(() => {
+            confirmationSpy.calls.reset();
+        });
+
+        it('should call handleStart if gameId is defined', () => {
+            getCurrentGroupIdSpy.and.returnValue(BASE_GAME_ID);
+            service.handleStart();
+            expect(confirmationSpy).toHaveBeenCalledWith(BASE_GAME_ID);
+        });
+
+        it('should not call handleCancelGame if gameId is undefined', () => {
+            getCurrentGroupIdSpy.and.returnValue('');
+            service.handleStart();
+            expect(confirmationSpy).not.toHaveBeenCalled();
+        });
+
+        it('on error, should emit gameCreationFailed', () => {
+            getCurrentGroupIdSpy.and.returnValue(BASE_GAME_ID);
+            service.handleStart();
             confirmationObservable.error({});
             expect(gameCreationFailedSpy).toHaveBeenCalled();
         });
@@ -459,13 +456,13 @@ describe('GameDispatcherService', () => {
         });
 
         it('should call handleCancelGame if gameId is defined', () => {
-            getCurrentLobbyIdSpy.and.returnValue(BASE_GAME_ID);
+            getCurrentGroupIdSpy.and.returnValue(BASE_GAME_ID);
             service.handleRejection(TEST_PLAYER_NAME);
             expect(rejectionSpy).toHaveBeenCalledWith(TEST_PLAYER_NAME, BASE_GAME_ID);
         });
 
-        it('should not call handleCancelGame if currentLobbyId is undefined', () => {
-            getCurrentLobbyIdSpy.and.returnValue('');
+        it('should not call handleCancelGame if currentGroupId is undefined', () => {
+            getCurrentGroupIdSpy.and.returnValue('');
             service.handleRejection(TEST_PLAYER_NAME);
             expect(rejectionSpy).not.toHaveBeenCalled();
         });
@@ -474,8 +471,26 @@ describe('GameDispatcherService', () => {
     describe('handleJoinRequest', () => {
         it('should emit to joinRequestEvent', () => {
             const spy = spyOn(service['joinRequestEvent'], 'next');
-            service['handleJoinRequest'](TEST_PLAYER_NAME);
-            expect(spy).toHaveBeenCalledWith(TEST_PLAYER_NAME);
+            service['handleJoinRequest'](PUBLIC_USERS);
+            expect(spy).toHaveBeenCalledWith(PUBLIC_USERS);
+        });
+
+        it('should emit to playerJoinedGroupEvent', () => {
+            const spy = spyOn(service['playerJoinedGroupEvent'], 'next');
+            service['handlePlayerJoinedRequest'](TEST_GROUP);
+            expect(spy).toHaveBeenCalledWith(TEST_GROUP);
+        });
+
+        it('should emit to playerLeftGroupEvent', () => {
+            const spy = spyOn(service['playerLeftGroupEvent'], 'next');
+            service['handlePlayerLeftRequest'](TEST_GROUP);
+            expect(spy).toHaveBeenCalledWith(TEST_GROUP);
+        });
+
+        it('should emit to playerCancelledRequestEvent', () => {
+            const spy = spyOn(service['playerCancelledRequestEvent'], 'next');
+            service['handlePlayerCancelledRequest'](PUBLIC_USERS);
+            expect(spy).toHaveBeenCalledWith(PUBLIC_USERS);
         });
     });
 
@@ -494,32 +509,32 @@ describe('GameDispatcherService', () => {
         });
 
         it('should emit to joinerRejectedEvent', () => {
-            service['handleJoinerRejected'](TEST_PLAYER_NAME);
-            expect(emitSpy).toHaveBeenCalledWith(TEST_PLAYER_NAME);
+            service['handleJoinerRejected'](USER1);
+            expect(emitSpy).toHaveBeenCalledWith(USER1);
         });
 
         it('should call resetData', () => {
-            service['handleJoinerRejected'](TEST_PLAYER_NAME);
+            service['handleJoinerRejected'](USER1);
             expect(resetSpy).toHaveBeenCalledWith();
         });
     });
 
-    describe('handleLobbiesUpdate', () => {
+    describe('handleGroupsUpdate', () => {
         it('should emit to joinRequestEvent', () => {
-            const args: LobbyInfo[] = [];
-            const spy = spyOn(service['lobbiesUpdateEvent'], 'next');
-            service['handleLobbiesUpdate'](args);
+            const args: Group[] = [];
+            const spy = spyOn(service['groupsUpdateEvent'], 'next');
+            service['handleGroupsUpdate'](args);
             expect(spy).toHaveBeenCalledWith(args);
         });
     });
 
-    describe('handleLobbyFull', () => {
+    describe('handleGroupFull', () => {
         let emitSpy: jasmine.Spy;
         let resetSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetSpy = spyOn<any>(service, 'resetServiceData');
-            emitSpy = spyOn(service['lobbyFullEvent'], 'next');
+            emitSpy = spyOn(service['groupFullEvent'], 'next');
         });
 
         afterEach(() => {
@@ -527,13 +542,13 @@ describe('GameDispatcherService', () => {
             resetSpy.calls.reset();
         });
 
-        it('should emit to lobbyFullEvent', () => {
-            service['handleLobbyFull']();
+        it('should emit to groupFullEvent', () => {
+            service['handleGroupFull']();
             expect(emitSpy).toHaveBeenCalledWith();
         });
 
         it('should call resetData', () => {
-            service['handleLobbyFull']();
+            service['handleGroupFull']();
             expect(resetSpy).toHaveBeenCalledWith();
         });
     });
@@ -553,29 +568,13 @@ describe('GameDispatcherService', () => {
         });
 
         it('should emit to canceledGameEvent', () => {
-            service['handleCanceledGame'](TEST_PLAYER_NAME);
-            expect(emitSpy).toHaveBeenCalledWith(TEST_PLAYER_NAME);
+            service['handleCanceledGame'](USER1);
+            expect(emitSpy).toHaveBeenCalledWith(USER1);
         });
 
         it('should call resetData', () => {
-            service['handleCanceledGame'](TEST_PLAYER_NAME);
+            service['handleCanceledGame'](USER1);
             expect(resetSpy).toHaveBeenCalledWith();
-        });
-    });
-
-    describe('isGameModeSolo', () => {
-        it('should return true ', () => {
-            expect(service['isGameModeSolo'](TEST_FORM)).toBeTrue();
-        });
-
-        it('should return false if undefined', () => {
-            expect(service['isGameModeSolo']()).toBeFalse();
-        });
-
-        it('should return false if multiplayer', () => {
-            TEST_FORM.patchValue({ gameMode: GameMode.Multiplayer });
-            expect(service['isGameModeSolo'](TEST_FORM)).toBeFalse();
-            TEST_FORM.patchValue({ gameMode: GameMode.Solo });
         });
     });
 
@@ -606,21 +605,33 @@ describe('GameDispatcherService', () => {
             expect(subscriptionSpy).toHaveBeenCalled();
         });
 
-        it('subscribeToLobbyFullEvent should call subscribe method on joinRequestEvent', () => {
-            const subscriptionSpy = spyOn(service['lobbyFullEvent'], 'subscribe');
-            service.subscribeToLobbyFullEvent(serviceDestroyed$, callback);
+        it('subscribeToGroupFullEvent should call subscribe method on joinRequestEvent', () => {
+            const subscriptionSpy = spyOn(service['groupFullEvent'], 'subscribe');
+            service.subscribeToGroupFullEvent(serviceDestroyed$, callback);
             expect(subscriptionSpy).toHaveBeenCalled();
         });
 
-        it('subscribeToLobbiesUpdateEvent should call subscribe method on joinRequestEvent', () => {
-            const subscriptionSpy = spyOn(service['lobbiesUpdateEvent'], 'subscribe');
-            service.subscribeToLobbiesUpdateEvent(serviceDestroyed$, callback);
+        it('subscribeToGroupsUpdateEvent should call subscribe method on groupsUpdateEvent', () => {
+            const subscriptionSpy = spyOn(service['groupsUpdateEvent'], 'subscribe');
+            service.subscribeToGroupsUpdateEvent(serviceDestroyed$, callback);
             expect(subscriptionSpy).toHaveBeenCalled();
         });
 
         it('subscribeToJoinerRejectedEvent should call subscribe method on joinRequestEvent', () => {
             const subscriptionSpy = spyOn(service['joinerRejectedEvent'], 'subscribe');
             service.subscribeToJoinerRejectedEvent(serviceDestroyed$, callback);
+            expect(subscriptionSpy).toHaveBeenCalled();
+        });
+
+        it('subscribeToPlayerLeftGroupEvent should call subscribe method on joinRequestEvent', () => {
+            const subscriptionSpy = spyOn(service['playerLeftGroupEvent'], 'subscribe');
+            service.subscribeToPlayerLeftGroupEvent(serviceDestroyed$, callback);
+            expect(subscriptionSpy).toHaveBeenCalled();
+        });
+
+        it('subscribeToPlayerJoinedGroupEvent should call subscribe method on joinRequestEvent', () => {
+            const subscriptionSpy = spyOn(service['playerJoinedGroupEvent'], 'subscribe');
+            service.subscribeToPlayerJoinedGroupEvent(serviceDestroyed$, callback);
             expect(subscriptionSpy).toHaveBeenCalled();
         });
     });

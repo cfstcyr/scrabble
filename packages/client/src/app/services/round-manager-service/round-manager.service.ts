@@ -64,9 +64,9 @@ export default class RoundManagerService implements IResetServiceData, OnDestroy
     }
 
     convertRoundDataToRound(roundData: RoundData): Round {
-        if (roundData.playerData.id && roundData.playerData.name && roundData.playerData.tiles) {
+        if (roundData.playerData.id && roundData.playerData.publicUser && roundData.playerData.tiles) {
             return {
-                player: new Player(roundData.playerData.id, roundData.playerData.name, roundData.playerData.tiles),
+                player: new Player(roundData.playerData.id, roundData.playerData.publicUser, roundData.playerData.tiles),
                 startTime: roundData.startTime,
                 limitTime: roundData.limitTime,
                 completedTime: roundData.completedTime,
@@ -134,7 +134,7 @@ export default class RoundManagerService implements IResetServiceData, OnDestroy
     private roundTimeout(): void {
         if (this.router.url === '/game' && this.isActivePlayerLocalPlayer()) {
             this.endRoundEvent$.next();
-            this.actionService.sendAction(this.gameId, this.localPlayerId, this.actionService.createActionData(ActionType.PASS, {}));
+            this.actionService.sendAction(this.gameId, this.actionService.createActionData(ActionType.PASS, {}));
         }
     }
 

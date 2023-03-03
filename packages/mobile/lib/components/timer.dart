@@ -1,18 +1,18 @@
 import 'package:flutter/widgets.dart';
 import 'package:mobile/utils/duration.dart';
 
-class Timer extends StatefulWidget {
+class TimerWidget extends StatefulWidget {
   final Duration duration;
   final TextStyle? style;
   final bool stopped;
 
-  Timer({required this.duration, this.style, this.stopped = false});
+  TimerWidget({required this.duration, this.style, this.stopped = false});
 
   @override
-  TimerState createState() => TimerState();
+  TimerWidgetState createState() => TimerWidgetState();
 }
 
-class TimerState extends State<Timer> with SingleTickerProviderStateMixin {
+class TimerWidgetState extends State<TimerWidget> with SingleTickerProviderStateMixin {
   late final AnimationController _animationController;
 
   @override

@@ -22,12 +22,18 @@ chai.use(chaiAsPromised);
 
 const MAX_TRIES = 100;
 const DEFAULT_MAX_ROUND_TIME = 1;
-const DEFAULT_PLAYER_1 = new Player('player-1', 'Player 1');
-const DEFAULT_PLAYER_2 = new Player('player-2', 'Player 2');
-const DEFAULT_PLAYER_3 = new Player('player-3', 'Player 3');
-const DEFAULT_PLAYER_4 = new Player('player-4', 'Player 4');
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
+const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
+const USER5 = { username: 'user5', email: 'email5', avatar: 'avatar5' };
+
+const DEFAULT_PLAYER_1 = new Player('player-1', USER1);
+const DEFAULT_PLAYER_2 = new Player('player-2', USER2);
+const DEFAULT_PLAYER_3 = new Player('player-3', USER3);
+const DEFAULT_PLAYER_4 = new Player('player-4', USER4);
 const VIRTUAL_PLAYER_1 = new BeginnerVirtualPlayer('player-5', 'Player 5');
-const NEW_PLAYER = { id: 'newplayer-1', name: 'newplayer 1' };
+const NEW_PLAYER = { id: 'newplayer-1', publicUser: USER5 };
 
 describe('RoundManager', () => {
     let roundManager: RoundManager;
@@ -184,7 +190,7 @@ describe('RoundManager', () => {
 
     describe('convertRoundToRoundData', () => {
         it('should convert player to playerData', () => {
-            const player = new Player(DEFAULT_PLAYER_1.name, DEFAULT_PLAYER_1.id);
+            const player = new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.publicUser);
             player.score = 10;
             player.tiles = [];
             const round: Round = {
@@ -194,7 +200,7 @@ describe('RoundManager', () => {
             };
             const roundData = roundManager.convertRoundToRoundData(round);
 
-            expect(roundData.playerData.name).to.equal(player.name);
+            expect(roundData.playerData.publicUser).to.equal(player.publicUser);
             expect(roundData.playerData.id).to.equal(player.id);
             expect(roundData.playerData.score).to.equal(player.score);
             expect(roundData.playerData.tiles).to.equal(player.tiles);
@@ -222,11 +228,11 @@ describe('RoundManager', () => {
         let player4: Player;
         let newPlayer: Player;
         beforeEach(() => {
-            player1 = new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.name);
-            player2 = new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.name);
-            player3 = new Player(DEFAULT_PLAYER_3.id, DEFAULT_PLAYER_3.name);
-            player4 = new Player(DEFAULT_PLAYER_4.id, DEFAULT_PLAYER_4.name);
-            newPlayer = new Player(NEW_PLAYER.id, NEW_PLAYER.name);
+            player1 = new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.publicUser);
+            player2 = new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.publicUser);
+            player3 = new Player(DEFAULT_PLAYER_3.id, DEFAULT_PLAYER_3.publicUser);
+            player4 = new Player(DEFAULT_PLAYER_4.id, DEFAULT_PLAYER_4.publicUser);
+            newPlayer = new Player(NEW_PLAYER.id, NEW_PLAYER.publicUser);
 
             const round: Round = {
                 player: player1,

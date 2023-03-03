@@ -12,6 +12,7 @@ export const PLAYER_ALREADY_TRYING_TO_JOIN = 'Un joueur est déjà en train de r
 export const NO_OPPONENT_IN_WAITING_GAME = "Aucun aversaire n'est en attente de la partie";
 export const OPPONENT_NAME_DOES_NOT_MATCH = "Le nom de l'adversaire ne correspond pas. Impossible d'accepter la partie";
 export const CANNOT_HAVE_SAME_NAME = "Impossible de rejoindre la partie d'un joueur portant le même nom";
+export const NO_DICTIONARY_INITIALIZED = 'Aucun dictionnaire à utiliser';
 export const INVALID_COMMAND = "Cette commande n'est pas reconnue. Entrez !aide pour connaitre les commandes valides";
 export const INVALID_PAYLOAD = 'Payload invalide pour ce type de commande';
 export const NOT_PLAYER_TURN = "Ce n'est pas le tour du joueur demandeur de jouer";
@@ -25,7 +26,9 @@ export const WORD_CONTAINS_HYPHEN = ' Le mot ne peut pas contenir de tiret';
 export const WORD_CONTAINS_APOSTROPHE = " Le mot ne peut pas contenir d'apostrophe";
 export const WORD_CONTAINS_ASTERISK = " Le mot ne peut pas contenir d'astérisque";
 export const NO_GAME_FOUND_WITH_ID = 'Aucune partie trouvée avec cet identifiant';
+export const NO_USER_FOUND_WITH_NAME = 'Aucun utilisateur trouvé avec ce nom';
 export const INVALID_PLAYER_ID_FOR_GAME = 'Identifiant de joueur invalide pour cette partie';
+export const CANT_START_GAME_WITH_NO_REAL_OPPONENT = 'Interdit de commencer une partie sans avoir au moins 1 adversaire humain';
 export const COMMAND_IS_INVALID = (command: string) => `La commande **${command}** est invalide :<br>`;
 export const OPPONENT_PLAYED_INVALID_WORD = "Votre adversaire a joué un mot qui n'est pas dans le dictionnaire. Il perd son tour.";
 export const NO_REQUEST_POINT_RANGE = 'La requête doit avoir un pointRange';

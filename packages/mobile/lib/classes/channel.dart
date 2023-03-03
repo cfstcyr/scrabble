@@ -1,20 +1,42 @@
 class Channel {
-  final String id;
+  final int idChannel;
   final String name;
   final bool canQuit;
+  final bool isPrivate;
 
-  Channel({required this.id, required this.name, required this.canQuit});
+  Channel(
+      {required this.idChannel,
+      required this.name,
+      required this.canQuit,
+      required this.isPrivate});
 
   factory Channel.fromJson(Map<String, dynamic> json) {
     return Channel(
-      id: json['id'] as String,
+      idChannel: json['idChannel'] as int,
       name: json['name'] as String,
-      canQuit: json['canQuite'] as bool,
+      canQuit: json['canQuit'] as bool,
+      isPrivate: json['private'] as bool,
     );
   }
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "idChannel": idChannel,
         "name": name,
         "canQuit": canQuit,
+        "private": isPrivate,
+      };
+}
+
+class ChannelCreation {
+  final String name;
+
+  ChannelCreation({required this.name});
+
+  factory ChannelCreation.fromJson(Map<String, dynamic> json) {
+    return ChannelCreation(
+      name: json['name'] as String,
+    );
+  }
+  Map<String, dynamic> toJson() => {
+        "name": name,
       };
 }
