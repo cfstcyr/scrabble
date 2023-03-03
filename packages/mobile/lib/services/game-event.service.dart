@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:rxdart/rxdart.dart';
@@ -14,8 +16,15 @@ class GameEventService {
   }
 
   GameEventService._() : _events = {} {
-    _events[PLACE_TILE_ON_BOARD] = PublishSubject<Tile>();
+    _events[PLACE_TILE_ON_BOARD] = PublishSubject<TilePlacement>();
+    _events[REMOVE_TILE_FROM_BOARD] = PublishSubject<TilePlacement>();
     _events[PUT_BACK_TILES_ON_TILE_RACK] = PublishSubject<void>();
+
+    for (var entry in _events.entries) {
+      entry.value.listen((value) {
+        log('\x1b[1m\x1b[3m<< Game event >>\x1b[0m ${entry.key}: $value');
+      });
+    }
   }
 
   StreamSubscription<T> listen<T>(

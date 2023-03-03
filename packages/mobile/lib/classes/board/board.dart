@@ -3,17 +3,47 @@ import 'package:mobile/classes/board/orientation.dart';
 import 'package:mobile/classes/board/position.dart';
 import 'package:mobile/classes/tile/multiplier.dart';
 import 'package:mobile/classes/tile/square.dart';
-import 'package:mobile/classes/tile/tile.dart';
+import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/vector.dart';
+import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game.constants.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/services/game-event.service.dart';
+import 'package:rxdart/rxdart.dart';
 
 class Board {
+  final GameEventService _gameEventService = getIt.get<GameEventService>();
   late List<List<Square>> grid;
+  BehaviorSubject<Placement> _currentPlacement$;
+  BehaviorSubject<bool> _isValidPlacement$;
 
-  Board() {
+  Board()
+      : _currentPlacement$ = BehaviorSubject.seeded(Placement()),
+        _isValidPlacement$ = BehaviorSubject.seeded(false) {
     grid = List.generate(
-        GRID_SIZE, (index) => List.generate(GRID_SIZE, (index) => Square()));
+        GRID_SIZE,
+        (y) =>
+            List.generate(GRID_SIZE, (x) => Square(position: Position(x, y))));
     _applyMultipliers();
+
+    _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD,
+        (tilePlacement) {
+      var placement = _currentPlacement$.value;
+      placement.add(tilePlacement);
+
+      _currentPlacement$.add(placement.clone());
+      _isValidPlacement$.add(placement.validatePlacement(this));
+    });
+
+    _gameEventService.listen<TilePlacement>(REMOVE_TILE_FROM_BOARD,
+        (tilePlacement) {
+      var placement = _currentPlacement$.value;
+
+      placement.remove(tilePlacement);
+
+      _currentPlacement$.add(placement.clone());
+      _isValidPlacement$.add(placement.validatePlacement(this));
+    });
   }
 
   Square getSquare(Vec2 v) {
@@ -23,6 +53,14 @@ class Board {
   Navigator navigate(Position position,
       {Orientation orientation = Orientation.horizontal}) {
     return Navigator(board: this, orientation: orientation, position: position);
+  }
+
+  Stream<bool> get hasPlacementStream {
+    return _currentPlacement$.map((placement) => placement.tiles.isNotEmpty);
+  }
+
+  ValueStream<bool> get isValidPlacementStream {
+    return _isValidPlacement$.stream;
   }
 
   _applyMultipliers() {

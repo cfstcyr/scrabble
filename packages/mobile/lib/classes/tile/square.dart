@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/board/position.dart';
 import 'package:mobile/classes/tile/multiplier.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:rxdart/rxdart.dart';
 
 class Square {
+  Position position;
   Multiplier? multiplier;
   bool isCenter;
   BehaviorSubject<Tile?> _tile;
   BehaviorSubject<bool> _isApplied;
 
   Square({
+    required this.position,
     this.multiplier,
     this.isCenter = false,
     Tile? tile,

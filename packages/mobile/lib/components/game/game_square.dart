@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/square.dart';
+import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-event.service.dart';
-import 'package:mobile/services/game-state.service.dart';
 import 'package:mobile/services/game.service.dart';
 
+// ignore: constant_identifier_names
 const Color NOT_APPLIED_COLOR = Color.fromARGB(255, 66, 135, 69);
 
 class GameSquare extends StatelessWidget {
   final GameService _gameService = getIt.get<GameService>();
   final GameEventService _gameEventService = getIt.get<GameEventService>();
-  final GameStateService _gameStateService = getIt.get<GameStateService>();
 
   final Square square;
   final Color color;
@@ -74,16 +74,15 @@ class GameSquare extends StatelessWidget {
                     onAccept: (data) {
                       if (snapshot.data == null) {
                         square.setTile(data);
-                        _gameEventService.add<c.Tile>(
-                            PLACE_TILE_ON_BOARD, data);
-                        _gameStateService.update<int>(
-                            NON_APPLIED_TILES_ON_BOARD_COUNT,
-                            (oldValue) => oldValue + 1);
+                        _gameEventService.add<TilePlacement>(
+                            PLACE_TILE_ON_BOARD,
+                            TilePlacement(
+                                tile: data, position: square.position));
                       }
                     },
                   );
           },
-        )
+        ),
       ],
     );
   }
@@ -155,8 +154,11 @@ class GameSquare extends StatelessWidget {
   }
 
   removeTile() {
-    square.removeTile();
-    _gameStateService.update<int>(
-        NON_APPLIED_TILES_ON_BOARD_COUNT, (oldValue) => oldValue - 1);
+    var tile = square.getTile();
+    if (tile != null) {
+      square.removeTile();
+      _gameEventService.add<TilePlacement>(REMOVE_TILE_FROM_BOARD,
+          TilePlacement(tile: tile, position: square.position));
+    }
   }
 }

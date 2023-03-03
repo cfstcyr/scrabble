@@ -1,3 +1,4 @@
+import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/locator.dart';
@@ -11,8 +12,8 @@ class TileRack {
 
   TileRack({List<Tile> tiles = const []})
       : _tiles = BehaviorSubject.seeded(tiles) {
-    _gameEventService.listen<Tile>(PLACE_TILE_ON_BOARD, (tile) {
-      removeTile(tile);
+    _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD, (placement) {
+      removeTile(placement.tile);
     });
   }
 

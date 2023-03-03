@@ -2,7 +2,5 @@
 
 // Events
 const PLACE_TILE_ON_BOARD = 'placeTileOnBoard';
+const REMOVE_TILE_FROM_BOARD = 'removeTileFromBoard';
 const PUT_BACK_TILES_ON_TILE_RACK = 'putBackTilesOnTileRack';
-
-// States
-const NON_APPLIED_TILES_ON_BOARD_COUNT = 'nonAppliedTilesOnBoardCount';

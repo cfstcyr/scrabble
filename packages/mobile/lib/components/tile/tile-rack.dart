@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
@@ -22,59 +21,65 @@ class TileRack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: SPACE_2, horizontal: SPACE_3),
-        height: 70,
-        child: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          alignment: WrapAlignment.spaceBetween,
-          spacing: SPACE_4,
-          children: [
-            AppButton(
-              onPressed: () {
-                _gameService.getTileRack().shuffle();
-              },
-              icon: Icons.repeat,
-            ),
-            StreamBuilder(
-                stream: _gameService.getTileRack().stream,
-                builder: ((context, snapshot) {
-                  return snapshot.data != null
-                      ? Wrap(
-                          children: [
-                            _buildTarget(-1,
-                                width: SPACE_2,
-                                height: _tileSize,
-                                changeOnActive: true),
-                            ...List.generate(
-                              snapshot.data!.length,
-                              (index) =>
-                                  _buildTile(snapshot.data![index], index),
-                            )
-                          ],
-                        )
-                      : Container();
-                })),
-            StreamBuilder<bool>(
-              stream: _gameStateService
-                  .getStream(NON_APPLIED_TILES_ON_BOARD_COUNT)
-                  .map((count) => count > 0),
-              builder: (context, snapshot) {
-                return AppButton(
-                  onPressed: snapshot.data ?? false
-                      ? () {
-                          _gameEventService.add<void>(
-                              PUT_BACK_TILES_ON_TILE_RACK, null);
-                        }
-                      : null,
-                  icon: Icons.close,
-                );
-              },
-            )
-          ],
-        ),
-      ),
+    return StreamBuilder<Game?>(
+      stream: _gameService.gameStream,
+      builder: (context, game) {
+        return Card(
+          child: Container(
+            padding:
+                EdgeInsets.symmetric(vertical: SPACE_2, horizontal: SPACE_3),
+            height: 70,
+            child: game.data != null
+                ? Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    alignment: WrapAlignment.spaceBetween,
+                    spacing: SPACE_4,
+                    children: [
+                      AppButton(
+                        onPressed: () {
+                          _gameService.getTileRack().shuffle();
+                        },
+                        icon: Icons.repeat,
+                      ),
+                      StreamBuilder(
+                          stream: game.data!.tileRack.stream,
+                          builder: ((context, snapshot) {
+                            return snapshot.data != null
+                                ? Wrap(
+                                    children: [
+                                      _buildTarget(-1,
+                                          width: SPACE_2,
+                                          height: _tileSize,
+                                          changeOnActive: true),
+                                      ...List.generate(
+                                        snapshot.data!.length,
+                                        (index) => _buildTile(
+                                            snapshot.data![index], index),
+                                      )
+                                    ],
+                                  )
+                                : Container();
+                          })),
+                      StreamBuilder<bool>(
+                        stream: game.data!.board.hasPlacementStream,
+                        builder: (context, snapshot) {
+                          return AppButton(
+                            onPressed: snapshot.data ?? false
+                                ? () {
+                                    _gameEventService.add<void>(
+                                        PUT_BACK_TILES_ON_TILE_RACK, null);
+                                  }
+                                : null,
+                            icon: Icons.close,
+                          );
+                        },
+                      )
+                    ],
+                  )
+                : Container(),
+          ),
+        );
+      },
     );
   }
 

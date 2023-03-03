@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/board/position.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/vector.dart';
@@ -32,10 +33,10 @@ class GameBoard extends StatelessWidget {
                 shrinkWrap: true,
                 childAspectRatio: 1,
                 children: List.generate(GRID_SIZE * GRID_SIZE, (index) {
+                  var position = Position.fromVec2(Vec2.from1D(index));
                   return GameSquare(
-                    square:
-                        snapshot.data?.board.getSquare(Vec2.from1D(index)) ??
-                            Square(),
+                    square: snapshot.data?.board.getSquare(position) ??
+                        Square(position: Position(0, 0)),
                   );
                 }),
               );
