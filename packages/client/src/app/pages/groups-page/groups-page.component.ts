@@ -39,15 +39,22 @@ export class GroupsPageComponent implements OnInit, OnDestroy {
     joinGroup(groupId: string): void {
         const wantedGroup = this.groups.filter((group) => group.groupId === groupId)[0];
 
-        if (wantedGroup.gameVisibility === GameVisibility.Private) {
-            this.groupRequestWaitingDialog(wantedGroup);
-            this.gameDispatcherService.handleJoinGroup(wantedGroup);
-        } else if (wantedGroup.gameVisibility === GameVisibility.Protected) {
-            this.gameDispatcherService.handleGroupUpdates(wantedGroup);
-            this.groupPasswordDialog(wantedGroup);
-        } 
-        if (wantedGroup.gameVisibility === GameVisibility.Public) {
-            this.gameDispatcherService.handleJoinGroup(wantedGroup);
+        switch (wantedGroup.gameVisibility) {
+            case GameVisibility.Private: {
+                this.gameDispatcherService.handleJoinGroup(wantedGroup);
+                this.groupRequestWaitingDialog(wantedGroup);
+                break;
+            }
+            case GameVisibility.Protected: {
+                this.gameDispatcherService.handleGroupUpdates(wantedGroup);
+                this.groupPasswordDialog(wantedGroup);
+                break;
+            }
+            case GameVisibility.Public: {
+                this.gameDispatcherService.handleJoinGroup(wantedGroup);
+                break;
+            }
+            // No default
         }
     }
 
