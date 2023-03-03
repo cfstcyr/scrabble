@@ -3,7 +3,6 @@ import Room from '@app/classes/game/room';
 import WaitingRoom from '@app/classes/game/waiting-room';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
-import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import {
     CANT_START_GAME_WITH_NO_REAL_OPPONENT,
     INVALID_PASSWORD,
@@ -117,14 +116,23 @@ export class GameDispatcherService {
 
         const player2 = waitingRoom.joinedPlayer2
             ? waitingRoom.joinedPlayer2
-            : new ExpertVirtualPlayer(waitingRoomId, this.virtualPlayerService.getRandomVirtualPlayerName(waitingRoom.getPlayers()));
+            : this.virtualPlayerService.generateVirtualPlayer(
+                  waitingRoomId,
+                  waitingRoom.getConfig().virtualPlayerLevel,
+                  this.virtualPlayerService.getRandomVirtualPlayerName(waitingRoom.getPlayers()),
+              );
         const player3 = waitingRoom.joinedPlayer3
             ? waitingRoom.joinedPlayer3
-            : new ExpertVirtualPlayer(waitingRoomId, this.virtualPlayerService.getRandomVirtualPlayerName([...waitingRoom.getPlayers(), player2]));
+            : this.virtualPlayerService.generateVirtualPlayer(
+                  waitingRoomId,
+                  waitingRoom.getConfig().virtualPlayerLevel,
+                  this.virtualPlayerService.getRandomVirtualPlayerName([...waitingRoom.getPlayers(), player2]),
+              );
         const player4 = waitingRoom.joinedPlayer4
             ? waitingRoom.joinedPlayer4
-            : new ExpertVirtualPlayer(
+            : this.virtualPlayerService.generateVirtualPlayer(
                   waitingRoomId,
+                  waitingRoom.getConfig().virtualPlayerLevel,
                   this.virtualPlayerService.getRandomVirtualPlayerName([...waitingRoom.getPlayers(), player2, player3]),
               );
         const config: ReadyGameConfig = {
