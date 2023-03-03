@@ -48,14 +48,14 @@ class AccountAuthenticationController {
     Map<String, String> emailJson = {"email": email};
     Response res = await post(Uri.parse("${endpoint}/validateEmail"),
         headers: headers, body: json.encode(emailJson));
-    return (res.statusCode == HttpStatus.ok);
+    return (json.decode(res.body)['isAvailable']);
   }
 
   Future<bool> isUsernameUnique(String username) async {
     Map<String, String> usernameMap = {"username": username};
     Response res = await post(Uri.parse("${endpoint}/validateUsername"),
         headers: headers, body: json.encode(usernameMap));
-    return (res.statusCode == HttpStatus.ok);
+    return (json.decode(res.body)['isAvailable']);
   }
 
   Future<LoginResponse> login(UserLoginCredentials credentials) async {
