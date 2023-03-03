@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import Game from '@app/classes/game/game';
 import Player from '@app/classes/player/player';
+import { UNKOWN_USER } from '@common/models/user';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { ActionHelp } from '..';
 
-const DEFAULT_PLAYER_1_NAME = 'player1';
 const DEFAULT_PLAYER_1_ID = '1';
 
 describe('ActionHelp', () => {
@@ -16,7 +16,7 @@ describe('ActionHelp', () => {
 
     beforeEach(() => {
         gameStub = createStubInstance(Game);
-        gameStub.player1 = new Player(DEFAULT_PLAYER_1_ID, DEFAULT_PLAYER_1_NAME);
+        gameStub.player1 = new Player(DEFAULT_PLAYER_1_ID, UNKOWN_USER);
 
         action = new ActionHelp(gameStub.player1, gameStub as unknown as Game);
     });

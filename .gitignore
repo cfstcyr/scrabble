@@ -16,3 +16,11 @@ server/assets/dictionaries/index.json
 
 build/
 packages/client/documentation.json
+
+packages/mobile/linux/flutter/generated_plugin_registrant.cc
+
+packages/mobile/linux/flutter/generated_plugin_registrant.h
+
+packages/mobile/linux/flutter/generated_plugins.cmake
+
+packages/mobile/pubspec.lock

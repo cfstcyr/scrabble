@@ -14,8 +14,6 @@ export interface GameHistory {
     idGameHistory: number;
     startTime: Date;
     endTime: Date;
-    gameType: string;
-    gameMode: string;
     hasBeenAbandoned: boolean;
 }
 

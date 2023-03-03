@@ -30,6 +30,7 @@ import { BACKSPACE, ENTER, ESCAPE, KEYDOWN } from '@app/constants/components-con
 import { SQUARE_SIZE, UNDEFINED_SQUARE } from '@app/constants/game-constants';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { BoardService } from '@app/services';
+import { UNKOWN_USER } from '@common/models/user';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { BoardComponent } from './board.component';
@@ -457,7 +458,7 @@ describe('BoardComponent', () => {
             tiles = ['A', 'B', 'C', '*'];
             usedTiles = ['C', 'D'];
 
-            const player = new Player('http://endless.horse', 'HORSE', []);
+            const player = new Player('http://endless.horse', UNKOWN_USER, []);
             getTilesSpy = spyOn(player, 'getTiles').and.returnValue(
                 tiles.map<Tile>((letter) => (letter === '*' ? { letter, isBlank: true } : { letter }) as Tile),
             );
@@ -705,7 +706,7 @@ describe('BoardComponent', () => {
             component['handleEnter']();
 
             expect(createActionDataSpy).toHaveBeenCalledWith(ActionType.PLACE, payload);
-            expect(sendAction).toHaveBeenCalledOnceWith('gameId', 'playerId', fakeData);
+            expect(sendAction).toHaveBeenCalledOnceWith('gameId', fakeData);
         });
 
         it('should not call sendPlaceAction if no payload', () => {

@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/services/player-leave-service.dart';
+
+import '../../locator.dart';
 
 class GameActions extends StatelessWidget {
+
+  void surrender(BuildContext context) {
+    getIt.get<PlayerLeaveService>().leaveGame(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -13,7 +21,7 @@ class GameActions extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             AppButton(
-              onPressed: () {},
+              onPressed: () => surrender(context),
               icon: Icons.flag,
               size: AppButtonSize.large,
               theme: AppButtonTheme.danger,

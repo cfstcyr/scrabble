@@ -132,4 +132,15 @@ describe('ChatboxContainerComponent', () => {
             expect(spy).toHaveBeenCalled();
         });
     });
+
+    describe('handleDeleteChannel', () => {
+        it('should open dialog', () => {
+            const dialog = TestBed.inject(MatDialog);
+            const spy = spyOn(dialog, 'open');
+
+            component.handleDeleteChannel(CHANNEL_1);
+
+            expect(spy).toHaveBeenCalled();
+        });
+    });
 });

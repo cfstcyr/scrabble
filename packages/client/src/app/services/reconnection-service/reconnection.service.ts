@@ -5,7 +5,6 @@ import { GamePlayController } from '@app/controllers/game-play-controller/game-p
 import { CookieService } from '@app/services/cookie-service/cookie.service';
 import GameService from '@app/services/game-service/game.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import SocketService from '@app/services/socket-service/socket.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,7 +14,6 @@ export class ReconnectionService {
         private readonly gamePlayController: GamePlayController,
         private readonly gameService: GameService,
         private readonly cookieService: CookieService,
-        private readonly socketService: SocketService,
         private readonly gameViewEventManagerService: GameViewEventManagerService,
     ) {}
 
@@ -30,7 +28,7 @@ export class ReconnectionService {
         this.cookieService.eraseCookie(GAME_ID_COOKIE);
         this.cookieService.eraseCookie(SOCKET_ID_COOKIE);
 
-        this.gamePlayController.handleReconnection(gameIdCookie, socketIdCookie, this.socketService.getId());
+        this.gamePlayController.handleReconnection(gameIdCookie, socketIdCookie);
     }
 
     disconnectGame(): void {
@@ -41,7 +39,7 @@ export class ReconnectionService {
         if (!localPlayerId) throw new Error(NO_LOCAL_PLAYER);
         this.cookieService.setCookie(GAME_ID_COOKIE, gameId, TIME_TO_RECONNECT);
         this.cookieService.setCookie(SOCKET_ID_COOKIE, localPlayerId, TIME_TO_RECONNECT);
-        this.gamePlayController.handleDisconnection(gameId, localPlayerId);
+        this.gamePlayController.handleDisconnection(gameId);
     }
 
     private isGameIdCookieAbsent(gameIdCookie: string): boolean {

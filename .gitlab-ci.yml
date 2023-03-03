@@ -33,6 +33,14 @@ cache:
             - packages/server/node_modules/
         policy: pull
 
+.only-mobile: &only-mobile
+    only:
+        refs:
+            - master
+            - merge_requests
+        changes:
+            - packages/mobile/**/*
+
 stages:
     - install
     - lint
@@ -135,6 +143,14 @@ test:server:
     artifacts:
         paths:
             - packages/server/coverage/
+
+test:mobile:
+    stage: test
+    <<: *only-mobile
+    needs: []
+    script:
+        - cd packages/mobile
+        - echo "The job's stage is '$CI_JOB_STAGE'"
 
 pages:
     image: node:14.15.0

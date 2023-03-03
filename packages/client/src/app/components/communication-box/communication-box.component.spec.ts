@@ -22,15 +22,14 @@ import { IconComponent } from '@app/components/icon/icon.component';
 import { TileComponent } from '@app/components/tile/tile.component';
 import { CODE_HTML_TAG } from '@app/constants/components-constants';
 import { INITIAL_MESSAGE } from '@app/constants/controller-constants';
-import { TEST_DICTIONARY } from '@app/constants/controller-test-constants';
 import { SYSTEM_ERROR_ID, SYSTEM_ID } from '@app/constants/game-constants';
-import { GameMode } from '@app/constants/game-mode';
-import { GameType } from '@app/constants/game-type';
 import { GameService, InputParserService } from '@app/services';
 import { FocusableComponentsService } from '@app/services/focusable-components-service/focusable-components.service';
 import { marked } from 'marked';
 import { CommunicationBoxComponent } from './communication-box.component';
 
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
 const DEFAULT_GAME_ID = 'game id';
 const CURRENT_PLAYER_ID = 'idOfPlayer1';
 const OPPONENT_PLAYER_ID = 'idOfPlayer2';
@@ -65,10 +64,9 @@ const DEFAULT_START_GAME_DATA: InitializeGameData = {
     startGameData: {
         player1: undefined as unknown as PlayerData,
         player2: undefined as unknown as PlayerData,
-        gameType: GameType.Classic,
-        gameMode: GameMode.Multiplayer,
+        player3: undefined as unknown as PlayerData,
+        player4: undefined as unknown as PlayerData,
         maxRoundTime: 0,
-        dictionary: TEST_DICTIONARY,
         gameId: DEFAULT_GAME_ID,
         board: [[]],
         tileReserve: [],
@@ -128,8 +126,8 @@ describe('CommunicationBoxComponent', () => {
 
         gameServiceMock = TestBed.inject(GameService);
         gameServiceMock['playerContainer'] = new PlayerContainer(CURRENT_PLAYER_ID);
-        gameServiceMock['playerContainer']['players'].set(1, new Player(CURRENT_PLAYER_ID, 'player1', []));
-        gameServiceMock['playerContainer']['players'].set(2, new Player(OPPONENT_PLAYER_ID, 'player2', []));
+        gameServiceMock['playerContainer']['players'].set(1, new Player(CURRENT_PLAYER_ID, USER1, []));
+        gameServiceMock['playerContainer']['players'].set(2, new Player(OPPONENT_PLAYER_ID, USER2, []));
     });
 
     beforeEach(() => {

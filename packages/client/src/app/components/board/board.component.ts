@@ -201,11 +201,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
     private handleEnter(): void {
         const placePayload: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
         if (!placePayload) return;
-        this.actionService.sendAction(
-            this.gameService.getGameId(),
-            this.gameService.getLocalPlayerId(),
-            this.actionService.createActionData(ActionType.PLACE, placePayload),
-        );
+        this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PLACE, placePayload));
         this.clearCursor();
     }
 

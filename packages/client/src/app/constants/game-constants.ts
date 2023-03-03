@@ -5,6 +5,7 @@ import { Player } from '@app/classes/player';
 import { Square, SquareView } from '@app/classes/square';
 import { LetterValue } from '@app/classes/tile';
 import { COLORS } from '@app/constants/colors-constants';
+import { UNKOWN_USER } from '@common/models/user';
 
 export const LETTER_VALUES: LetterValue[] = [
     'A',
@@ -78,7 +79,7 @@ export const DEFAULT_ORIENTATION = Orientation.Horizontal;
 export const MAX_TILES_PER_PLAYER = 7;
 
 export const DEFAULT_PLAYER_ID = 'id';
-export const DEFAULT_PLAYER = new Player(DEFAULT_PLAYER_ID, 'name', []);
+export const DEFAULT_PLAYER = new Player(DEFAULT_PLAYER_ID, UNKOWN_USER, []);
 
 export const SYSTEM_ID = 'system';
 export const SYSTEM_ERROR_ID = 'system-error';
@@ -98,3 +99,5 @@ export const EXPECTED_COMMAND_WORD_COUNT = new Map<ActionType, number>([
 
 export const PLAYER_1_INDEX = 1;
 export const PLAYER_2_INDEX = 2;
+export const PLAYER_3_INDEX = 3;
+export const PLAYER_4_INDEX = 4;

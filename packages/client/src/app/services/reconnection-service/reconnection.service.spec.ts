@@ -7,9 +7,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Player } from '@app/classes/player';
 import { PlayerContainer } from '@app/classes/player/player-container';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
+import { UNKOWN_USER } from '@common/models/user';
 import { ReconnectionService } from './reconnection.service';
 import SpyObj = jasmine.SpyObj;
 
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 describe('ReconnectionService', () => {
     let service: ReconnectionService;
     let gameDispatcherSpy: SpyObj<GameDispatcherController>;
@@ -35,11 +37,9 @@ describe('ReconnectionService', () => {
             const getCookieSpy = spyOn(service['cookieService'], 'getCookie').and.returnValue('cookie');
             const eraseCookieSpy = spyOn(service['cookieService'], 'eraseCookie');
             const handleReconnectionSpy = spyOn(service['gamePlayController'], 'handleReconnection');
-            const socketIdSpy = spyOn(service['socketService'], 'getId');
 
             service.reconnectGame();
             expect(getCookieSpy).toHaveBeenCalled();
-            expect(socketIdSpy).toHaveBeenCalled();
             expect(eraseCookieSpy).toHaveBeenCalled();
             expect(handleReconnectionSpy).toHaveBeenCalled();
         });
@@ -63,8 +63,8 @@ describe('ReconnectionService', () => {
         let gameControllerSpy: jasmine.Spy;
         beforeEach(() => {
             service['gameService']['playerContainer'] = new PlayerContainer('p1');
-            service['gameService']['playerContainer']!['players'].set(1, new Player('p1', 'jean', []));
-            service['gameService']['playerContainer']!['players'].set(2, new Player('p2', 'paul', []));
+            service['gameService']['playerContainer']!['players'].set(1, new Player('p1', UNKOWN_USER, []));
+            service['gameService']['playerContainer']!['players'].set(2, new Player('p2', USER1, []));
             localPlayerSpy = spyOn(service['gameService'], 'getLocalPlayerId').and.callThrough();
 
             cookieGameSpy = spyOn(service['cookieService'], 'setCookie').and.callFake(() => {

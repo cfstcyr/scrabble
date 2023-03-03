@@ -1,21 +1,15 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationStart, Router } from '@angular/router';
-import { LobbyInfo } from '@app/classes/communication';
 import { Timer } from '@app/classes/round/timer';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
-import {
-    DEFAULT_LOBBY,
-    DIALOG_BUTTON_CONTENT_REJECTED,
-    DIALOG_BUTTON_CONTENT_RETURN_LOBBY,
-    DIALOG_CANCEL_CONTENT,
-    DIALOG_CANCEL_TITLE,
-    DIALOG_REJECT_CONTENT,
-    DIALOG_REJECT_TITLE,
-} from '@app/constants/pages-constants';
+import { DEFAULT_GROUP, DIALOG_BUTTON_CONTENT_RETURN_GROUP, DIALOG_CANCEL_CONTENT, DIALOG_CANCEL_TITLE } from '@app/constants/pages-constants';
+import { ROUTE_GROUPS } from '@app/constants/routes-constants';
 import GameDispatcherService from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
+import { Group } from '@common/models/group';
+import { PublicUser } from '@common/models/user';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -25,10 +19,10 @@ import { takeUntil } from 'rxjs/operators';
     styleUrls: ['./join-waiting-page.component.scss'],
 })
 export class JoinWaitingPageComponent implements OnInit, OnDestroy {
-    currentLobby: LobbyInfo;
-    currentName: string;
+    currentGroup: Group;
     funFact: string;
     roundTime: string;
+
     private componentDestroyed$: Subject<boolean>;
 
     constructor(
@@ -42,15 +36,14 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
 
     @HostListener('window:beforeunload')
     onBeforeUnload(): void {
-        this.playerLeavesService.handleLeaveLobby();
+        this.playerLeavesService.handleLeaveGroup();
     }
 
     ngOnInit(): void {
-        this.currentLobby = this.gameDispatcherService.currentLobby ?? DEFAULT_LOBBY;
-        const roundTime: Timer = Timer.convertTime(this.currentLobby.maxRoundTime);
+        this.currentGroup = this.gameDispatcherService.currentGroup ?? DEFAULT_GROUP;
+        const roundTime: Timer = Timer.convertTime(this.currentGroup.maxRoundTime);
         this.roundTime = `${roundTime.minutes}:${roundTime.getTimerSecondsPadded()}`;
 
-        this.currentName = this.gameDispatcherService.currentName;
         this.funFact = getRandomFact();
 
         this.router.events.pipe(takeUntil(this.componentDestroyed$)).subscribe((event) => {
@@ -59,8 +52,12 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
             }
         });
 
-        this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, (hostName: string) => this.hostHasCanceled(hostName));
-        this.gameDispatcherService.subscribeToJoinerRejectedEvent(this.componentDestroyed$, (hostName: string) => this.playerRejected(hostName));
+        this.gameDispatcherService.subscribeToPlayerJoinedGroupEvent(this.componentDestroyed$, (group: Group) => this.setGroup(group));
+        this.gameDispatcherService.subscribeToPlayerLeftGroupEvent(this.componentDestroyed$, (group: Group) => this.setGroup(group));
+
+        this.gameDispatcherService.subscribeToCanceledGameEvent(this.componentDestroyed$, (hostUser: PublicUser) =>
+            this.hostHasCanceled(hostUser.username),
+        );
     }
 
     ngOnDestroy(): void {
@@ -68,26 +65,14 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.complete();
     }
 
-    private routerChangeMethod(url: string): void {
-        if (url !== '/game') {
-            this.playerLeavesService.handleLeaveLobby();
-        }
+    private setGroup(group: Group) {
+        this.currentGroup = group;
     }
 
-    private playerRejected(hostName: string): void {
-        this.dialog.open(DefaultDialogComponent, {
-            data: {
-                title: DIALOG_REJECT_TITLE,
-                content: hostName + DIALOG_REJECT_CONTENT,
-                buttons: [
-                    {
-                        content: DIALOG_BUTTON_CONTENT_REJECTED,
-                        redirect: '/lobby',
-                        closeDialog: true,
-                    },
-                ],
-            },
-        });
+    private routerChangeMethod(url: string): void {
+        if (url !== '/game') {
+            this.playerLeavesService.handleLeaveGroup();
+        }
     }
 
     private hostHasCanceled(hostName: string): void {
@@ -97,8 +82,8 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
                 content: hostName + DIALOG_CANCEL_CONTENT,
                 buttons: [
                     {
-                        content: DIALOG_BUTTON_CONTENT_RETURN_LOBBY,
-                        redirect: '/lobby',
+                        content: DIALOG_BUTTON_CONTENT_RETURN_GROUP,
+                        redirect: ROUTE_GROUPS,
                         closeDialog: true,
                     },
                 ],

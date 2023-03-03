@@ -11,12 +11,12 @@ import { NO_WORDS_FOUND } from '@app/constants/classes-constants';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import WordFindingService from '@app/services/word-finding-service/word-finding.service';
 import { PlacementToString } from '@app/utils/placement-to-string/placement-to-string';
+import { UNKOWN_USER } from '@common/models/user';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import ActionHint from './action-hint';
 
-const DEFAULT_PLAYER_1_NAME = 'player1';
 const DEFAULT_PLAYER_1_ID = '1';
 
 describe('ActionHint', () => {
@@ -33,7 +33,7 @@ describe('ActionHint', () => {
 
     beforeEach(() => {
         gameStub = createStubInstance(Game);
-        gameStub.player1 = new Player(DEFAULT_PLAYER_1_ID, DEFAULT_PLAYER_1_NAME);
+        gameStub.player1 = new Player(DEFAULT_PLAYER_1_ID, UNKOWN_USER);
         gameStub.dictionarySummary = { id: 'id' } as unknown as DictionarySummary;
 
         action = new ActionHint(gameStub.player1, gameStub as unknown as Game);

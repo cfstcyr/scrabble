@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/chatbox.dart';
 import 'package:mobile/constants/login-constants.dart';
+import 'package:mobile/pages/prototype-page.dart';
 
+import '../components/scaffold-persistance.dart';
 import '../controllers/account-authentification-controller.dart';
 import '../locator.dart';
 import '../main.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  var selectedIndex = 0;
+
+  final _loginScreen = GlobalKey<NavigatorState>();
+  final _createAccountScreen = GlobalKey<NavigatorState>();
+  final _homePageScreen = GlobalKey<NavigatorState>();
   final AccountAuthenticationController authService =
       getIt.get<AccountAuthenticationController>();
   @override
@@ -16,44 +27,18 @@ class HomePage extends StatelessWidget {
         handleBackButton(context);
         return true;
       },
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            MainTitle(),
-            SizedBox(height: 10),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(width: 10), // c'est un spacing fancy
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ChatPage()));
-                  },
-                  child: Text('Amusez vous à clavarder'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    authService.signOut();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MainPage()));
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    shadowColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3.0),
-                    ),
-                  ),
-                  child: Text(
-                    SIGNOUT_LABEL_FR,
-                  ),
-                ),
-                SizedBox(width: 10),
-              ],
-            ),
+      child: MyScaffold(
+        title: "Home",
+        body: IndexedStack(
+          index: selectedIndex,
+          children: <Widget>[
+            Navigator(
+              key: _loginScreen,
+              onGenerateRoute: (route) => MaterialPageRoute(
+                settings: route,
+                builder: (context) => PrototypePage(),
+              ),
+            )
           ],
         ),
       ),

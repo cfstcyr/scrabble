@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../components/group-management.dart';
-import '../components/parameters.dart';
-import '../components/player-waiting-list.dart';
-import '../components/waiting-room.dart';
+import '../classes/virtual-player-level.dart';
+import '../components/group/group-management.dart';
+import '../components/group/parameters.dart';
+import '../components/group/player-waiting-list.dart';
+import '../components/group/waiting-room.dart';
+import '../components/scaffold-persistance.dart';
 
 class CreateLobbyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Salle d'attente"),
-        shadowColor: Colors.black,
-        backgroundColor: Colors.white,
-        elevation: 1,
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-      ),
+    return MyScaffold(
+      title: "Salle d'attente",
       body: FractionallySizedBox(
         widthFactor: 1,
         heightFactor: 1,
@@ -48,7 +43,8 @@ class CreateLobbyPage extends StatelessWidget {
                         Text("Groupe de partie",
                             style: TextStyle(fontSize: 18)),
                         Expanded(
-                          child: WaitingRoom(),
+                          child: WaitingRoom(
+                              virtualPlayerLevel: VirtualPlayerLevel.beginner),
                         ),
                         Row(children: <Widget>[
                           Expanded(

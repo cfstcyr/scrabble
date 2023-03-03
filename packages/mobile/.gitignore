@@ -10,7 +10,8 @@
 .svn/
 migrate_working_dir/
 *.env
-
+/linux
+pubspec.lock
 # IntelliJ related
 *.iml
 *.ipr
@@ -43,3 +44,4 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/linux/flutter/

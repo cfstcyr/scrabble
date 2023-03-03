@@ -1,4 +1,5 @@
 import { Location } from '@angular/common';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
@@ -6,6 +7,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LoginContainerComponent } from '@app/components/login-container/login-container.component';
+import { INVALID_CREDENTIALS, LOGIN_ERROR, USER_ALREADY_LOGGED } from '@app/constants/authentification-constants';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
@@ -68,18 +70,36 @@ describe('LoginWrapperComponent', () => {
             expect(location.path()).toEqual(ROUTE_HOME);
         }));
 
-        it('should call error on error', () => {
-            const loginSubject = new Subject<UserSession>();
-            authenticationService.login.and.returnValue(loginSubject);
+        describe('should call error on error', () => {
+            let loginSubject: Subject<UserSession>;
+            let spy: unknown;
 
-            const alertService = TestBed.inject(AlertService);
-            const spy = spyOn(alertService, 'error');
+            beforeEach(() => {
+                loginSubject = new Subject<UserSession>();
+                authenticationService.login.and.returnValue(loginSubject);
 
-            component.handleLogin(USER_CREDENTIALS);
+                const alertService = TestBed.inject(AlertService);
+                spy = spyOn(alertService, 'error');
+                component.handleLogin(USER_CREDENTIALS);
+            });
 
-            loginSubject.error(new Error());
+            it('with error INVALID_CREDENTIALS if status is NotAcceptable', () => {
+                const expectedErrorMessage = 'Error';
+                loginSubject.error(new HttpErrorResponse({ error: expectedErrorMessage, status: HttpStatusCode.NotAcceptable }));
+                expect(spy).toHaveBeenCalledWith(INVALID_CREDENTIALS, { log: expectedErrorMessage });
+            });
 
-            expect(spy).toHaveBeenCalled();
+            it('with error USER_ALREADY_LOGGED if status is Unauthorized', () => {
+                const expectedErrorMessage = 'Error';
+                loginSubject.error(new HttpErrorResponse({ error: expectedErrorMessage, status: HttpStatusCode.Unauthorized }));
+                expect(spy).toHaveBeenCalledWith(USER_ALREADY_LOGGED, { log: expectedErrorMessage });
+            });
+
+            it('with generic error if status is other', () => {
+                const expectedErrorMessage = 'Error';
+                loginSubject.error(new HttpErrorResponse({ error: expectedErrorMessage, status: HttpStatusCode.InternalServerError }));
+                expect(spy).toHaveBeenCalledWith(LOGIN_ERROR, { log: expectedErrorMessage });
+            });
         });
     });
 });

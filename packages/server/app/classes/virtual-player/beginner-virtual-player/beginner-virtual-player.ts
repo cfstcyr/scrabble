@@ -5,7 +5,6 @@ import { Tile } from '@app/classes/tile';
 import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { ScoredWordPlacement, WordFindingRequest, WordFindingUseCase } from '@app/classes/word-finding';
 import {
-    BEGINNER_NAME_SUFFIX,
     EXCHANGE_ACTION_THRESHOLD,
     HIGH_SCORE_RANGE_MAX,
     HIGH_SCORE_RANGE_MIN,
@@ -21,10 +20,6 @@ import {
 import { Random } from '@app/utils/random/random';
 
 export class BeginnerVirtualPlayer extends AbstractVirtualPlayer {
-    constructor(gameId: string, name: string) {
-        super(gameId, name + BEGINNER_NAME_SUFFIX);
-    }
-
     protected isExchangePossible(): boolean {
         const totalTilesLeft = this.getActiveGameService().getGame(this.gameId, this.id).getTotalTilesLeft();
         return totalTilesLeft >= MINIMUM_TILES_LEFT_FOR_EXCHANGE;

@@ -6,12 +6,12 @@ class Game {
   Board board;
   TileRack tileRack;
   PlayersContainer players;
-  Duration timeLeft;
+  Duration roundDuration;
 
   Game({
     required this.board,
     required this.tileRack,
     required this.players,
-    required this.timeLeft,
+    required this.roundDuration,
   });
 }

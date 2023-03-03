@@ -111,29 +111,17 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     hintButtonClicked(): void {
-        this.actionService.sendAction(
-            this.gameService.getGameId(),
-            this.gameService.getLocalPlayerId(),
-            this.actionService.createActionData(ActionType.HINT, {}, '', true),
-        );
+        this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.HINT, {}, '', true));
     }
 
     passButtonClicked(): void {
-        this.actionService.sendAction(
-            this.gameService.getGameId(),
-            this.gameService.getLocalPlayerId(),
-            this.actionService.createActionData(ActionType.PASS, {}, '', true),
-        );
+        this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PASS, {}, '', true));
     }
 
     placeButtonClicked(): void {
         const placePayload: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
         if (!placePayload) return;
-        this.actionService.sendAction(
-            this.gameService.getGameId(),
-            this.gameService.getLocalPlayerId(),
-            this.actionService.createActionData(ActionType.PLACE, placePayload),
-        );
+        this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PLACE, placePayload));
     }
 
     quitButtonClicked(): void {
@@ -265,6 +253,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     private isLocalPlayerWinner(winnerNames: string[]): boolean {
-        return winnerNames.includes(this.gameService.getLocalPlayer()?.name ?? '');
+        return winnerNames.includes(this.gameService.getLocalPlayer()?.publicUser.username ?? '');
     }
 }

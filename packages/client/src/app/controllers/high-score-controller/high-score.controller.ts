@@ -18,7 +18,7 @@ export class HighScoresController {
     }
 
     handleGetHighScores(): void {
-        this.http.get(`${this.endpoint}/${this.socketService.getId()}`).subscribe();
+        this.http.get(`${this.endpoint}`).subscribe();
     }
 
     resetHighScores(): void {

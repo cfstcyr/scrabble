@@ -21,6 +21,6 @@ export default class ActionPass extends ActionPlay {
     }
 
     getOpponentMessage(): FeedbackMessage {
-        return { message: `${this.player.name} a passé son tour` };
+        return { message: `${this.player.publicUser.username} a passé son tour` };
     }
 }

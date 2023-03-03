@@ -5,7 +5,9 @@ import 'package:mobile/services/theme-color-service.dart';
 
 enum AppButtonTheme {
   primary,
+  secondary,
   danger,
+  tomato,
   transparent,
 }
 
@@ -55,6 +57,10 @@ class AppButton extends StatelessWidget {
         return _themeColorService.themeColor;
       case AppButtonTheme.danger:
         return Colors.red;
+      case AppButtonTheme.tomato:
+        return Color.fromRGBO(248, 100, 95, 1);
+      case AppButtonTheme.secondary:
+        return _themeColorService.secondaryButton;
       case AppButtonTheme.transparent:
         return Colors.transparent;
     }
@@ -66,7 +72,9 @@ class AppButton extends StatelessWidget {
     switch (theme) {
       case AppButtonTheme.primary:
       case AppButtonTheme.danger:
+      case AppButtonTheme.tomato:
         return Colors.white;
+      case AppButtonTheme.secondary:
       case AppButtonTheme.transparent:
         return Colors.black;
     }

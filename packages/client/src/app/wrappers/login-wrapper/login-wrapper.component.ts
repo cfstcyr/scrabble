@@ -5,7 +5,7 @@ import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserLoginCredentials } from '@common/models/user';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
-import { INVALID_CREDENTIALS, LOGIN_ERROR } from '@app/constants/authentification-constants';
+import { INVALID_CREDENTIALS, LOGIN_ERROR, USER_ALREADY_LOGGED } from '@app/constants/authentification-constants';
 
 @Component({
     selector: 'app-login-wrapper',
@@ -25,8 +25,19 @@ export class LoginWrapperComponent {
                 this.router.navigate([ROUTE_HOME]);
             },
             (error: HttpErrorResponse) => {
-                this.alertService.error(error.status === HttpStatusCode.NotAcceptable ? INVALID_CREDENTIALS : LOGIN_ERROR, { log: error.error });
+                this.alertService.error(this.getErrorMessageOnFailedLogin(error.status), { log: error.error });
             },
         );
+    }
+
+    private getErrorMessageOnFailedLogin(errorStatus: number): string {
+        switch (errorStatus) {
+            case HttpStatusCode.NotAcceptable:
+                return INVALID_CREDENTIALS;
+            case HttpStatusCode.Unauthorized:
+                return USER_ALREADY_LOGGED;
+            default:
+                return LOGIN_ERROR;
+        }
     }
 }

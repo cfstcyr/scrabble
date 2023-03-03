@@ -7,12 +7,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ActionData, ActionType, ExchangeActionPayload, PlaceActionPayload } from '@app/classes/actions/action-data';
 import { Orientation } from '@app/classes/actions/orientation';
 import { Tile } from '@app/classes/tile';
-import { DEFAULT_PLAYER } from '@app/constants/game-constants';
 import { WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE } from '@app/constants/services-errors';
 import { ActionPayloadToString } from '@app/utils/action-payload-to-string/action-payload-to-string';
 import { ActionService } from './action.service';
 
-const DEFAULT_PLAYER_ID = DEFAULT_PLAYER.id;
 const DEFAULT_GAME_ID = 'some id';
 
 const DEFAULT_TILES: Tile[] = [new Tile('A', 1), new Tile('A', 2, true)];
@@ -170,25 +168,20 @@ describe('ActionService', () => {
             service.hasActionBeenPlayed = false;
         });
 
-        it('if playerId is undefined, should not sendAction', () => {
-            service.sendAction(DEFAULT_GAME_ID, undefined, actionData);
-            expect(sendActionSpy).not.toHaveBeenCalled();
-        });
-
         it('if action has been played, should not sendAction and send error', () => {
             service.hasActionBeenPlayed = true;
-            service.sendAction(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, actionData);
+            service.sendAction(DEFAULT_GAME_ID, actionData);
             expect(sendActionSpy).not.toHaveBeenCalled();
-            expect(errorMessageSpy).toHaveBeenCalledWith(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            expect(errorMessageSpy).toHaveBeenCalledWith(DEFAULT_GAME_ID);
         });
 
         it('should call gamePlayController.sendAction with provided data', () => {
-            service.sendAction(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, actionData);
-            expect(sendActionSpy).toHaveBeenCalledWith(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, actionData);
+            service.sendAction(DEFAULT_GAME_ID, actionData);
+            expect(sendActionSpy).toHaveBeenCalledWith(DEFAULT_GAME_ID, actionData);
         });
 
         it('should set hasActionBeenPlayed to true', () => {
-            service.sendAction(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, actionData);
+            service.sendAction(DEFAULT_GAME_ID, actionData);
             expect(service.hasActionBeenPlayed).toBeTrue();
         });
     });
@@ -223,8 +216,8 @@ describe('ActionService', () => {
         const sendSpy = spyOn(service['gamePlayController'], 'sendError').and.callFake(() => {
             return;
         });
-        service['sendWaitForConfirmationMessage'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-        expect(sendSpy).toHaveBeenCalledWith(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE(DEFAULT_GAME_ID));
+        service['sendWaitForConfirmationMessage'](DEFAULT_GAME_ID);
+        expect(sendSpy).toHaveBeenCalledWith(DEFAULT_GAME_ID, WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE(DEFAULT_GAME_ID));
     });
 
     it('resetHasActionBeenSent should set hasActionBeenPlayed to false', () => {

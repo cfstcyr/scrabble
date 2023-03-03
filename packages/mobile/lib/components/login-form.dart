@@ -180,7 +180,6 @@ class _LoginFormState extends State<LoginForm> {
       setState(() {
         emailHandler.errorMessage = res.errorMessage;
       });
-      return res.isAuthorized;
     }
     return res.isAuthorized;
   }

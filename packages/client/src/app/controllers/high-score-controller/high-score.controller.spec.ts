@@ -5,7 +5,6 @@ import { TestBed } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
-import { GameType } from '@app/constants/game-type';
 import SocketService from '@app/services/socket-service/socket.service';
 import { HighScoreWithPlayers } from '@common/models/high-score';
 import { NoId } from '@common/types/id';
@@ -15,9 +14,9 @@ import { environment } from 'src/environments/environment';
 import { HighScoresController } from './high-score.controller';
 
 const DEFAULT_HIGH_SCORES: NoId<HighScoreWithPlayers>[] = [
-    { names: ['name1'], score: 120, gameType: GameType.Classic },
-    { names: ['name2'], score: 220, gameType: GameType.Classic },
-    { names: ['name3'], score: 320, gameType: GameType.LOG2990 },
+    { names: ['name1'], score: 120 },
+    { names: ['name2'], score: 220 },
+    { names: ['name3'], score: 320 },
 ];
 const DEFAULT_PLAYER_ID = 'testPlayerID';
 
@@ -60,7 +59,7 @@ describe('HighScoresController', () => {
             spyOn(controller['socketService'], 'getId').and.returnValue(DEFAULT_PLAYER_ID);
 
             const httpGetSpy = spyOn(controller['http'], 'get').and.returnValue(of(true) as any);
-            const endpoint = `${environment.serverUrl}/highScores/${DEFAULT_PLAYER_ID}`;
+            const endpoint = `${environment.serverUrl}/highScores`;
 
             controller.handleGetHighScores();
             expect(httpGetSpy).toHaveBeenCalledWith(endpoint);

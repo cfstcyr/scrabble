@@ -21,7 +21,7 @@ export abstract class AbstractVirtualPlayer extends Player {
     private virtualPlayerService: VirtualPlayerService;
 
     constructor(gameId: string, name: string) {
-        super(VIRTUAL_PLAYER_ID_PREFIX + uuidv4(), name);
+        super(VIRTUAL_PLAYER_ID_PREFIX + uuidv4(), { username: name, avatar: '', email: '' });
         this.pointHistory = new Map<number, number>();
         this.gameId = gameId;
         this.wordFindingService = Container.get(WordFindingService);

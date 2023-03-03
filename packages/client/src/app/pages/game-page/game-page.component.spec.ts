@@ -187,23 +187,25 @@ describe('GamePageComponent', () => {
         });
 
         it('should call isLocalPlayerWinner 3 times', () => {
+            const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
             spyOn<any>(component, 'throwConfettis').and.callFake(() => {
                 return;
             });
-            const spy = spyOn(component['gameService'], 'getLocalPlayer').and.returnValue({ name: 'Mathilde' } as unknown as Player);
+            const spy = spyOn(component['gameService'], 'getLocalPlayer').and.returnValue({ publicUser: USER1 } as unknown as Player);
             component['endOfGameDialog'](['Mathilde']);
             expect(spy).toHaveBeenCalledTimes(3);
         });
     });
 
     describe('isLocalPlayerWinner', () => {
+        const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
         it('should return true if local player is winner', () => {
-            spyOn(component['gameService'], 'getLocalPlayer').and.returnValue({ name: 'Vincent' } as unknown as Player);
-            expect(component['isLocalPlayerWinner'](['Vincent'])).toBeTrue();
+            spyOn(component['gameService'], 'getLocalPlayer').and.returnValue({ publicUser: USER1 } as unknown as Player);
+            expect(component['isLocalPlayerWinner']([USER1.username])).toBeTrue();
         });
 
         it('should return false if local player is not winner', () => {
-            spyOn(component['gameService'], 'getLocalPlayer').and.returnValue({ name: 'Vincent' } as unknown as Player);
+            spyOn(component['gameService'], 'getLocalPlayer').and.returnValue({ publicUser: USER1 } as unknown as Player);
             expect(component['isLocalPlayerWinner'](['Jérôme'])).toBeFalse();
         });
     });
@@ -250,7 +252,7 @@ describe('GamePageComponent', () => {
             });
             component.hintButtonClicked();
             expect(createActionDataSpy).toHaveBeenCalledWith(ActionType.HINT, {}, '', true);
-            expect(sendAction).toHaveBeenCalledWith('gameId', 'playerId', fakeData);
+            expect(sendAction).toHaveBeenCalledWith('gameId', fakeData);
         });
     });
 
@@ -269,7 +271,7 @@ describe('GamePageComponent', () => {
             });
             component.passButtonClicked();
             expect(createActionDataSpy).toHaveBeenCalledWith(ActionType.PASS, {}, '', true);
-            expect(sendAction).toHaveBeenCalledWith('gameId', 'playerId', fakeData);
+            expect(sendAction).toHaveBeenCalledWith('gameId', fakeData);
         });
     });
 
@@ -297,7 +299,7 @@ describe('GamePageComponent', () => {
             component.placeButtonClicked();
 
             expect(createActionDataSpy).toHaveBeenCalledWith(ActionType.PLACE, payload);
-            expect(sendAction).toHaveBeenCalledOnceWith('gameId', 'playerId', fakeData);
+            expect(sendAction).toHaveBeenCalledOnceWith('gameId', fakeData);
         });
 
         it('should not call sendPlaceAction if no payload', () => {

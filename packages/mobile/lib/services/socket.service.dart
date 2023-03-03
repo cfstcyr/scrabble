@@ -1,6 +1,7 @@
 import 'package:mobile/environments/environment.dart';
 import 'package:mobile/services/user-session.service.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart';
 
 import '../locator.dart';
 
@@ -23,10 +24,19 @@ class SocketService {
   Future<void> initSocket(String? token) async {
     socket.auth = {"token": token};
     socket.connect();
+
     socket.onConnect((_) {
       print("${socket.id} + connected to websocket");
     });
     socket.emit("connection");
+
+    socket.onConnectError((err) {
+      print(err);
+    });
+    socket.onConnectTimeout((err) {
+      print(err);
+    });
+    socket.onDisconnect((_) => {print("disconnected")});
   }
 
   void disconnect() {
@@ -39,5 +49,9 @@ class SocketService {
 
   Future<IO.Socket> getSocket() async {
     return socket;
+  }
+
+  on<T>(String eventName, dynamic Function(dynamic) handler) {
+    socket.on(eventName, handler);
   }
 }

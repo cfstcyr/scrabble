@@ -38,7 +38,6 @@ describe('InputParserService', () => {
 
     const DEFAULT_GAME_ID = 'default game id';
     const DEFAULT_PLAYER_ID = 'default player id';
-    const DEFAULT_PLAYER_NAME = 'default player name';
     const DEFAULT_TILES: Tile[] = [
         new Tile('A' as LetterValue, 1),
         new Tile('B' as LetterValue, 1),
@@ -48,7 +47,8 @@ describe('InputParserService', () => {
         new Tile('E' as LetterValue, 1),
         new Tile('*' as LetterValue, 0, true),
     ];
-    const DEFAULT_PLAYER = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME, DEFAULT_TILES);
+    const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+    const DEFAULT_PLAYER = new Player(DEFAULT_PLAYER_ID, USER1, DEFAULT_TILES);
     const DEFAULT_COMMAND_ERROR_MESSAGE = CommandExceptionMessages.InvalidEntry;
 
     let service: InputParserService;
@@ -122,7 +122,7 @@ describe('InputParserService', () => {
     describe('handleCommand', () => {
         it('should call sendAction if actionData doesnt throw error', () => {
             spyOn<any>(service, 'createActionData').and.returnValue(VALID_PASS_ACTION_DATA);
-            service['handleCommand'](VALID_PASS_INPUT, DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
+            service['handleCommand'](VALID_PASS_INPUT, DEFAULT_GAME_ID);
             expect(actionServiceSpy.sendAction).toHaveBeenCalled();
         });
 
@@ -131,8 +131,8 @@ describe('InputParserService', () => {
             spyOn<any>(service, 'createActionData').and.callFake(() => {
                 throw new CommandException(DEFAULT_COMMAND_ERROR_MESSAGE);
             });
-            service['handleCommand'](VALID_PASS_INPUT, DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-            expect(gamePlayControllerSpy.sendError).toHaveBeenCalledWith(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
+            service['handleCommand'](VALID_PASS_INPUT, DEFAULT_GAME_ID);
+            expect(gamePlayControllerSpy.sendError).toHaveBeenCalledWith(DEFAULT_GAME_ID, {
                 content: `La commande **${VALID_PASS_INPUT}** est invalide :<br />${DEFAULT_COMMAND_ERROR_MESSAGE}`,
                 senderId: SYSTEM_ERROR_ID,
                 gameId: DEFAULT_GAME_ID,
@@ -144,8 +144,8 @@ describe('InputParserService', () => {
             spyOn<any>(service, 'createActionData').and.callFake(() => {
                 throw new CommandException(CommandExceptionMessages.NotYourTurn);
             });
-            service['handleCommand'](VALID_PASS_INPUT, DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-            expect(gamePlayControllerSpy.sendError).toHaveBeenCalledWith(DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
+            service['handleCommand'](VALID_PASS_INPUT, DEFAULT_GAME_ID);
+            expect(gamePlayControllerSpy.sendError).toHaveBeenCalledWith(DEFAULT_GAME_ID, {
                 content: CommandExceptionMessages.NotYourTurn,
                 senderId: SYSTEM_ERROR_ID,
                 gameId: DEFAULT_GAME_ID,
@@ -157,7 +157,7 @@ describe('InputParserService', () => {
             spyOn<any>(service, 'createActionData').and.callFake(() => {
                 throw new Error('other error message');
             });
-            expect(() => service['handleCommand'](VALID_PASS_INPUT, DEFAULT_GAME_ID, DEFAULT_PLAYER_ID)).not.toThrow();
+            expect(() => service['handleCommand'](VALID_PASS_INPUT, DEFAULT_GAME_ID)).not.toThrow();
             expect(gamePlayControllerSpy.sendError).not.toHaveBeenCalled();
         });
     });

@@ -33,7 +33,7 @@ export default class RoundManager {
 
     convertRoundToRoundData(round: Round): RoundData {
         const playerData: PlayerData = {
-            name: round.player.name,
+            publicUser: round.player.publicUser,
             id: round.player.id,
             score: round.player.score,
             tiles: round.player.tiles,

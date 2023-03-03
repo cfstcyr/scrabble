@@ -22,9 +22,11 @@ import { Container } from 'typedi';
 import ObjectivesService from './objective.service';
 chai.use(spies);
 
-const DEFAULT_PLAYER: Player = new Player('id', 'name');
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const DEFAULT_PLAYER: Player = new Player('id', USER1);
 const DEFAULT_GAME_CHANNEL_ID = 1;
-const OPPONENT: Player = new Player('op', 'opponent');
+const OPPONENT: Player = new Player('op', USER2);
 
 describe('ObjectiveService', () => {
     let service: ObjectivesService;

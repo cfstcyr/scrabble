@@ -1,0 +1,49 @@
+<div class="page">
+    <app-page-header title="Sélection de partie">
+        <app-header-btn link="/game-creation" header-button>Créer une partie</app-header-btn>
+    </app-page-header>
+
+    <div class="container">
+        <div class="steps">
+            <div class="step" [ngClass]="{ disabled: false }">
+                <div class="step-indicator">
+                    <p class="indicator"><span>2</span></p>
+                </div>
+                <div class="step-content" id="group-container">
+                    <mat-card>
+                        <p *ngIf="groups.length > 0">
+                            Choisissez une partie<span *ngIf="groups.length > 1"> ou rejoignez une partie aléatoire</span>.
+                        </p>
+                        <p *ngIf="groups.length === 0">Aucune partie disponible.</p>
+                        <button
+                            mat-flat-button
+                            color="primary"
+                            *ngIf="groups.length > 0"
+                            [disabled]="groups.length <= 1"
+                            (click)="joinRandomGroup()"
+                        >
+                            <app-icon icon="random"></app-icon> Partie aléatoire
+                        </button>
+                    </mat-card>
+
+                    <br />
+
+                    <mat-card class="form-container">
+                        <div class="info">
+                            <p class="title">Filtre</p>
+                            <p class="group-amount" *ngIf="groups.length > 1">{{ groups.length }} parties trouvées</p>
+                            <p class="group-amount" *ngIf="groups.length === 1">{{ groups.length }} partie trouvée</p>
+                            <p class="group-amount" *ngIf="groups.length === 0">Aucune partie trouvée</p>
+                        </div>
+                    </mat-card>
+
+                    <div class="grid">
+                        <ng-container *ngFor="let group of groups">
+                            <app-group-info [group]="group" (joinGroupId)="joinGroup($event)"></app-group-info>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

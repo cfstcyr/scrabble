@@ -10,8 +10,8 @@ import { expect } from 'chai';
 import { stub } from 'sinon';
 import { ERROR_PLAYER_DOESNT_HAVE_TILE } from '@app/constants/classes-errors';
 import * as sinon from 'sinon';
+import { UNKOWN_USER } from '@common/models/user';
 
-const DEFAULT_PLAYER_NAME = 'player1';
 const DEFAULT_PLAYER_ID = '1';
 
 describe('ActionUtils', () => {
@@ -19,7 +19,7 @@ describe('ActionUtils', () => {
         let player: Player;
 
         beforeEach(() => {
-            player = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME);
+            player = new Player(DEFAULT_PLAYER_ID, UNKOWN_USER);
         });
 
         afterEach(() => {

@@ -30,7 +30,7 @@ export default class GameHistoriesService {
         return aggregate(gameHistories, {
             idKey: 'idGameHistory',
             fieldKey: 'playersData',
-            mainItemKeys: ['startTime', 'endTime', 'gameMode', 'gameType', 'hasBeenAbandoned'],
+            mainItemKeys: ['startTime', 'endTime', 'hasBeenAbandoned'],
             aggregatedItemKeys: ['name', 'score', 'isVirtualPlayer', 'isWinner'],
         });
     }
@@ -40,8 +40,6 @@ export default class GameHistoriesService {
             {
                 startTime: newHistory.startTime,
                 endTime: newHistory.endTime,
-                gameType: newHistory.gameType,
-                gameMode: newHistory.gameMode,
                 hasBeenAbandoned: newHistory.hasBeenAbandoned,
             },
             ['idGameHistory'],

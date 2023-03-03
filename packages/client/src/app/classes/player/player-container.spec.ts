@@ -4,6 +4,7 @@
 import { PlayerData } from '@app/classes/communication/';
 import { DEFAULT_PLAYER } from '@app/constants/game-constants';
 import { MISSING_PLAYER_DATA_TO_INITIALIZE, PLAYER_NUMBER_INVALID } from '@app/constants/services-errors';
+import { UNKOWN_USER } from '@common/models/user';
 import { Player } from '.';
 import { PlayerContainer } from './player-container';
 
@@ -12,7 +13,9 @@ describe('PlayerContainer', () => {
 
     const DEFAULT_LOCAL_PLAYER_ID = '1';
     const DEFAULT_PLAYER_NUMBER = 1;
-    const testPlayers: Player[] = [new Player('1', 'player1', []), new Player('2', 'player2', [])];
+    const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+    const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+    const testPlayers: Player[] = [new Player('1', USER1, []), new Player('2', USER2, [])];
 
     const initializeMap = (players: Player[]): Map<number, Player> => {
         const map = new Map();
@@ -39,14 +42,14 @@ describe('PlayerContainer', () => {
     });
 
     it('getLocalPlayer should return player from container with same id as localPlayerId', () => {
-        const localPlayer = new Player(DEFAULT_LOCAL_PLAYER_ID, 'test', []);
+        const localPlayer = new Player(DEFAULT_LOCAL_PLAYER_ID, UNKOWN_USER, []);
         playerContainer['players'].set(DEFAULT_PLAYER_NUMBER, localPlayer);
 
         expect(playerContainer.getLocalPlayer()).toEqual(localPlayer);
     });
 
     it('getLocalPlayer should return undefined if no player id matches localPlayerId', () => {
-        const notLocalPlayer = new Player('not-local-player', 'test', []);
+        const notLocalPlayer = new Player('not-local-player', UNKOWN_USER, []);
         playerContainer['players'].set(DEFAULT_PLAYER_NUMBER, notLocalPlayer);
 
         expect(playerContainer.getLocalPlayer()).toBeUndefined();
@@ -55,7 +58,7 @@ describe('PlayerContainer', () => {
     it('initializePlayer should call addPlayer if playerData is valid (1 player)', () => {
         const playerData: PlayerData = {
             id: '1',
-            name: 'test',
+            publicUser: UNKOWN_USER,
             tiles: [],
         };
         const spy = spyOn<any>(playerContainer, 'setPlayer').and.callFake(() => {
@@ -78,7 +81,7 @@ describe('PlayerContainer', () => {
     it('initializePlayer should throw error if tiles are missing', () => {
         const playerData: PlayerData = {
             id: '1',
-            name: 'test',
+            publicUser: UNKOWN_USER,
         };
 
         expect(() => playerContainer.initializePlayer(DEFAULT_PLAYER_NUMBER, playerData)).toThrowError(MISSING_PLAYER_DATA_TO_INITIALIZE);
@@ -88,12 +91,12 @@ describe('PlayerContainer', () => {
         const playerDatas: PlayerData[] = [
             {
                 id: '1',
-                name: 'test',
+                publicUser: UNKOWN_USER,
                 tiles: [],
             },
             {
                 id: '2',
-                name: 'test2',
+                publicUser: USER2,
                 tiles: [],
             },
         ];
@@ -101,7 +104,7 @@ describe('PlayerContainer', () => {
             return playerContainer;
         });
 
-        playerContainer.initializePlayers(...playerDatas);
+        playerContainer.initializePlayers(playerDatas);
 
         const expectedData: [number, PlayerData][] = [
             [DEFAULT_PLAYER_NUMBER, playerDatas[0]],
@@ -149,11 +152,11 @@ describe('PlayerContainer', () => {
         const playerDatas: PlayerData[] = [
             {
                 id: '1',
-                name: 'test',
+                publicUser: UNKOWN_USER,
             },
             {
                 id: '2',
-                name: 'test2',
+                publicUser: USER2,
             },
         ];
 

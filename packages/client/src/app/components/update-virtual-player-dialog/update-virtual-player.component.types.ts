@@ -1,9 +1,9 @@
-import { VirtualPlayer } from '@common/models/virtual-player';
+// import { VirtualPlayer } from '@common/models/virtual-player';
 
-export type UpdateVirtualPlayerDialogParameters = Omit<VirtualPlayer, 'isDefault'>;
+// export type UpdateVirtualPlayerDialogParameters = Omit<VirtualPlayer, 'isDefault'>;
 
-export enum UpdateDictionaryComponentIcons {
-    SuccessIcon = 'check',
-    ErrorIcon = 'times',
-    NoIcon = '',
-}
+// export enum UpdateDictionaryComponentIcons {
+//     SuccessIcon = 'check',
+//     ErrorIcon = 'times',
+//     NoIcon = '',
+// }

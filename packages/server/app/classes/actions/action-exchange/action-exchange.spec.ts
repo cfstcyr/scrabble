@@ -8,6 +8,7 @@ import { ActionUtils } from '@app/classes/actions/action-utils/action-utils';
 import Game from '@app/classes/game/game';
 import Player from '@app/classes/player/player';
 import { Tile } from '@app/classes/tile';
+import { UNKOWN_USER } from '@common/models/user';
 import * as chai from 'chai';
 import { spy } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -22,7 +23,6 @@ const expect = chai.expect;
 chai.use(spies);
 chai.use(chaiAsPromised);
 
-const DEFAULT_PLAYER_1_NAME = 'player1';
 const DEFAULT_PLAYER_1_ID = '1';
 const PLAYER_TILES: Tile[] = [
     { letter: 'A', value: 0 },
@@ -43,7 +43,7 @@ describe('ActionExchange', () => {
         gameStub.swapTilesFromReserve.returns(PLAYER_TILES);
         getTilesFromPlayerStub = stub(ActionUtils, 'getTilesFromPlayer');
 
-        gameStub.player1 = new Player(DEFAULT_PLAYER_1_ID, DEFAULT_PLAYER_1_NAME);
+        gameStub.player1 = new Player(DEFAULT_PLAYER_1_ID, UNKOWN_USER);
         gameStub.player1.tiles = PLAYER_TILES.map((t) => ({ ...t }));
 
         game = gameStub as unknown as Game;

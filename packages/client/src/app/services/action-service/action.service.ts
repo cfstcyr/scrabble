@@ -56,13 +56,12 @@ export class ActionService implements IResetServiceData, OnDestroy {
         };
     }
 
-    sendAction(gameId: string, playerId: string | undefined, actionData: ActionData): void {
-        if (!playerId) return;
+    sendAction(gameId: string, actionData: ActionData): void {
         if (this.hasActionBeenPlayed) {
-            this.sendWaitForConfirmationMessage(gameId, playerId);
+            this.sendWaitForConfirmationMessage(gameId);
             return;
         }
-        this.gamePlayController.sendAction(gameId, playerId, actionData);
+        this.gamePlayController.sendAction(gameId, actionData);
         this.hasActionBeenPlayed = true;
     }
 
@@ -85,8 +84,8 @@ export class ActionService implements IResetServiceData, OnDestroy {
         }
     }
 
-    private sendWaitForConfirmationMessage(gameId: string, playerId: string): void {
-        this.gamePlayController.sendError(gameId, playerId, WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE(gameId));
+    private sendWaitForConfirmationMessage(gameId: string): void {
+        this.gamePlayController.sendError(gameId, WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE(gameId));
     }
 
     private resetHasActionBeenSent(): void {

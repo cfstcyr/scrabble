@@ -4,7 +4,6 @@ import { Container } from 'typedi';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import HighScoresService from './high-score.service';
 import { expect } from 'chai';
-import { GameType } from '@app/classes/game/game-type';
 import { HIGH_SCORE_COUNT } from '@app/constants/game-constants';
 import { DEFAULT_HIGH_SCORES_RELATIVE_PATH, HIGH_SCORE_PLAYER_TABLE, HIGH_SCORE_TABLE } from '@app/constants/services-constants/database-const';
 import { join } from 'path';
@@ -14,31 +13,26 @@ import { HighScore, HighScorePlayer, HighScoresData, HighScoreWithPlayers } from
 const HIGH_SCORE_CLASSIC_1: NoId<HighScoreWithPlayers> = {
     names: ['testname1', 'testname2'],
     score: 13,
-    gameType: GameType.Classic,
 };
 
 const HIGH_SCORE_CLASSIC_2: NoId<HighScoreWithPlayers> = {
     names: ['weed', 'legal'],
     score: 420,
-    gameType: GameType.Classic,
 };
 
 const HIGH_SCORE_CLASSIC_3: NoId<HighScoreWithPlayers> = {
     names: ['nice'],
     score: 69,
-    gameType: GameType.Classic,
 };
 
 const HIGH_SCORE_LOG2990_1: NoId<HighScoreWithPlayers> = {
     names: ['nikolay'],
     score: 666,
-    gameType: GameType.LOG2990,
 };
 
 const HIGH_SCORE_LOG2990_2: NoId<HighScoreWithPlayers> = {
     names: ['michel'],
     score: 60,
-    gameType: GameType.LOG2990,
 };
 
 const INITIAL_HIGH_SCORES_CLASSIC: NoId<HighScoreWithPlayers>[] = [HIGH_SCORE_CLASSIC_1, HIGH_SCORE_CLASSIC_2, HIGH_SCORE_CLASSIC_3];
@@ -57,7 +51,6 @@ mockPaths[join(__dirname, DEFAULT_HIGH_SCORES_RELATIVE_PATH)] = JSON.stringify(m
 
 const DEFAULT_HIGH_SCORE: HighScore = {
     idHighScore: 1,
-    gameType: 'default',
     score: 100,
 };
 const DEFAULT_HIGH_SCORE_PLAYER_1: HighScorePlayer = {
@@ -108,23 +101,23 @@ describe('HighScoresService', () => {
 
     describe('addHighScore', () => {
         it('should add a high score and a name if empty', async () => {
-            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_1.name, DEFAULT_HIGH_SCORE.score, DEFAULT_HIGH_SCORE.gameType as GameType);
+            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_1.name, DEFAULT_HIGH_SCORE.score);
 
             expect((await highScoresService['table'].select('*')).length).to.equal(1);
             expect((await highScoresService['tableNames'].select('*')).length).to.equal(1);
         });
 
         it('should add a name if high score already exists', async () => {
-            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_1.name, DEFAULT_HIGH_SCORE.score, DEFAULT_HIGH_SCORE.gameType as GameType);
-            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_2.name, DEFAULT_HIGH_SCORE.score, DEFAULT_HIGH_SCORE.gameType as GameType);
+            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_1.name, DEFAULT_HIGH_SCORE.score);
+            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_2.name, DEFAULT_HIGH_SCORE.score);
 
             expect((await highScoresService['table'].select('*')).length).to.equal(1);
             expect((await highScoresService['tableNames'].select('*')).length).to.equal(2);
         });
 
         it('should not add a name if high score and name already exists', async () => {
-            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_1.name, DEFAULT_HIGH_SCORE.score, DEFAULT_HIGH_SCORE.gameType as GameType);
-            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_1.name, DEFAULT_HIGH_SCORE.score, DEFAULT_HIGH_SCORE.gameType as GameType);
+            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_1.name, DEFAULT_HIGH_SCORE.score);
+            await highScoresService.addHighScore(DEFAULT_HIGH_SCORE_PLAYER_1.name, DEFAULT_HIGH_SCORE.score);
 
             expect((await highScoresService['table'].select('*')).length).to.equal(1);
             expect((await highScoresService['tableNames'].select('*')).length).to.equal(1);
@@ -132,33 +125,25 @@ describe('HighScoresService', () => {
 
         it('should not add a high score if is lower than existing ones', async () => {
             for (let i = 0; i < HIGH_SCORE_COUNT; ++i) {
-                await highScoresService.addHighScore(
-                    `${DEFAULT_HIGH_SCORE_PLAYER_1.name}-${i}`,
-                    DEFAULT_HIGH_SCORE.score - i,
-                    DEFAULT_HIGH_SCORE.gameType as GameType,
-                );
+                await highScoresService.addHighScore(`${DEFAULT_HIGH_SCORE_PLAYER_1.name}-${i}`, DEFAULT_HIGH_SCORE.score - i);
             }
 
             expect((await highScoresService['table'].select('*')).length).to.equal(HIGH_SCORE_COUNT);
 
-            await highScoresService.addHighScore(`${DEFAULT_HIGH_SCORE_PLAYER_1.name}-not-good`, 0, DEFAULT_HIGH_SCORE.gameType as GameType);
+            await highScoresService.addHighScore(`${DEFAULT_HIGH_SCORE_PLAYER_1.name}-not-good`, 0);
 
             expect((await highScoresService['table'].select('*')).length).to.equal(HIGH_SCORE_COUNT);
         });
 
         it('should replace a high score if is higher than existing ones', async () => {
             for (let i = 0; i < HIGH_SCORE_COUNT; ++i) {
-                await highScoresService.addHighScore(
-                    `${DEFAULT_HIGH_SCORE_PLAYER_1.name}-${i}`,
-                    DEFAULT_HIGH_SCORE.score + i,
-                    DEFAULT_HIGH_SCORE.gameType as GameType,
-                );
+                await highScoresService.addHighScore(`${DEFAULT_HIGH_SCORE_PLAYER_1.name}-${i}`, DEFAULT_HIGH_SCORE.score + i);
             }
 
             expect((await highScoresService['table'].select('*')).length).to.equal(HIGH_SCORE_COUNT);
 
             const veryGoodPlayerName = `${DEFAULT_HIGH_SCORE_PLAYER_1.name}-very-good`;
-            await highScoresService.addHighScore(veryGoodPlayerName, Number.MAX_SAFE_INTEGER, DEFAULT_HIGH_SCORE.gameType as GameType);
+            await highScoresService.addHighScore(veryGoodPlayerName, Number.MAX_SAFE_INTEGER);
 
             expect((await highScoresService['table'].select('*')).length).to.equal(HIGH_SCORE_COUNT);
             expect(

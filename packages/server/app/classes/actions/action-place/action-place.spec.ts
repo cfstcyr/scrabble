@@ -12,10 +12,8 @@ import { Board, Orientation, Position } from '@app/classes/board';
 import { ActionPlacePayload } from '@app/classes/communication/action-data';
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
-import { GameObjectivesData } from '@app/classes/communication/objective-data';
 import { PlayerData } from '@app/classes/communication/player-data';
 import Game from '@app/classes/game/game';
-import { GameType } from '@app/classes/game/game-type';
 import Player from '@app/classes/player/player';
 import { Square } from '@app/classes/square';
 import { Tile, TileReserve } from '@app/classes/tile';
@@ -40,8 +38,10 @@ const expect = chai.expect;
 chai.use(spies);
 chai.use(chaiAsPromised);
 
-const DEFAULT_PLAYER_1 = new Player('player-1', 'Player 1');
-const DEFAULT_PLAYER_2 = new Player('player-2', 'Player 2');
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const DEFAULT_PLAYER_1 = new Player('player-1', USER1);
+const DEFAULT_PLAYER_2 = new Player('player-2', USER2);
 const INITIAL_SCORE = DEFAULT_PLAYER_1.score;
 const TILES_PLAYER_1: Tile[] = [
     { letter: 'A', value: 1 },
@@ -137,8 +137,8 @@ describe('ActionPlace', () => {
         tileReserveStub = createStubInstance(TileReserve);
         boardStub = createStubInstance(Board);
 
-        gameStub.player1 = new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.name);
-        gameStub.player2 = new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.name);
+        gameStub.player1 = new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.publicUser);
+        gameStub.player2 = new Player(DEFAULT_PLAYER_2.id, DEFAULT_PLAYER_2.publicUser);
         gameStub.player1.tiles = TILES_PLAYER_1.map((t) => ({ ...t }));
         gameStub.player2.tiles = TILES_PLAYER_1.map((t) => ({ ...t }));
         gameStub.getPlayerNumber.returns(1);
@@ -235,36 +235,6 @@ describe('ActionPlace', () => {
                 action.execute();
                 assert(scoreCalculatorServiceStub.calculatePoints.calledOnce);
                 expect(action['scoredPoints']).to.equal(SCORE_RETURN);
-            });
-
-            it('should call objective validation if GameType is LOG2990', () => {
-                game.gameType = GameType.LOG2990;
-                const gameObjectives: GameObjectivesData = {
-                    player1Objectives: [],
-                    player2Objectives: [],
-                };
-                updateObjectiveStub.returns({ updateData: gameObjectives, completionMessages: [] });
-                const result: GameUpdateData = action.execute() as GameUpdateData;
-                expect(updateObjectiveStub.called).to.be.true;
-                expect(result.gameObjective).to.equal(gameObjectives);
-            });
-
-            it('should set to objectivesCompletedMessages if that is returned if GameType is LOG2990', () => {
-                updateObjectiveStub.returns(undefined);
-                game.gameType = GameType.LOG2990;
-                action.execute();
-                expect(action['objectivesCompletedMessages']).to.deep.equal([]);
-            });
-
-            it('should NOT call objective validation if GameType is Classic', () => {
-                game.gameType = GameType.Classic;
-                const gameObjectives: GameObjectivesData = {
-                    player1Objectives: [],
-                    player2Objectives: [],
-                };
-                updateObjectiveStub.returns({ updateData: gameObjectives, completionMessages: [] });
-                action.execute() as GameUpdateData;
-                expect(updateObjectiveStub.called).to.be.false;
             });
 
             it('should call board update', () => {

@@ -55,9 +55,11 @@ class PublicUser {
   String email;
   String username;
   String avatar;
-
-  PublicUser(
-      {required this.email, required this.username, required this.avatar});
+  PublicUser({
+    required this.username,
+    this.avatar = "images/avatar-12.png",
+    this.email = '',
+  });
 
   factory PublicUser.fromJson(Map<String, dynamic> json) {
     return PublicUser(
@@ -73,6 +75,15 @@ class PublicUser {
       'username': username,
       'avatar': avatar,
     };
+  }
+
+  List<PublicUser> usersFromJson(Map<String, dynamic> json) {
+    return List<PublicUser>.from([
+      json['user1'],
+      json['user2'],
+      json['user3'],
+      json['user4']
+    ].map((dynamic publicUser) => PublicUser.fromJson(publicUser)).toList());
   }
 }
 

@@ -4,7 +4,6 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
-import { DEFAULT_GAME_ID, DEFAULT_OPPONENT_NAME } from '@app/constants/controller-test-constants';
 import { GameService, SocketService } from '@app/services';
 import { of, Subject } from 'rxjs';
 import { Socket } from 'socket.io-client';
@@ -36,14 +35,6 @@ describe('PlayerLeavesController', () => {
         expect(controller).toBeTruthy();
     });
 
-    it('On joinerLeaveGame, configureSocket should emit opponent name', () => {
-        const joinerLeaveGameSpy = spyOn(controller['joinerLeavesGameEvent'], 'emit').and.callFake(async () => {
-            return;
-        });
-        socketHelper.peerSideEmit('joinerLeaveGame', DEFAULT_OPPONENT_NAME);
-        expect(joinerLeaveGameSpy).toHaveBeenCalled();
-    });
-
     it('On cleanup, configureSocket should emit resetGameEvent', async () => {
         const cleanupSpy = spyOn(controller['resetGameEvent'], 'emit').and.callFake(async () => {
             return;
@@ -55,7 +46,7 @@ describe('PlayerLeavesController', () => {
     it('handleLeaveGame should send delete request', () => {
         const fakeObservable = of<string>('fakeResponse');
         const deleteSpy = spyOn(controller['http'], 'delete').and.returnValue(fakeObservable);
-        controller.handleLeaveGame(DEFAULT_GAME_ID);
+        controller.handleLeaveGame('');
         expect(deleteSpy).toHaveBeenCalled();
     });
 
@@ -86,12 +77,6 @@ describe('PlayerLeavesController', () => {
             callback = () => {
                 return;
             };
-        });
-
-        it('subscribeToJoinerLeavesGameEvent should call subscribe method on createGameEvent', () => {
-            const subscriptionSpy = spyOn<any>(controller['joinerLeavesGameEvent'], 'subscribe');
-            controller.subscribeToJoinerLeavesGameEvent(serviceDestroyed$, callback);
-            expect(subscriptionSpy).toHaveBeenCalled();
         });
 
         it('subscribeToResetGameEvent should call subscribe method on createGameEvent', () => {

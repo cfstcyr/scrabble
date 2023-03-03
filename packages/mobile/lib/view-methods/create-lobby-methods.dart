@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/home-page.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
@@ -24,10 +23,10 @@ ButtonStyle setStyleRoomButtons() {
   );
 }
 
-ButtonStyle setStyleButtonToText() {
+ButtonStyle setStyleButtonToText([Color? backGroundColor]) {
   return ButtonStyle(
     foregroundColor: MaterialStateProperty.all(Colors.black),
-    backgroundColor: MaterialStateProperty.all(Colors.white),
+    backgroundColor: MaterialStateProperty.all(backGroundColor ?? Colors.white),
   );
 }
 
@@ -72,6 +71,8 @@ Widget setWaitingPlayerIcon(int index) {
 }
 
 bool addPlayerToLobby(PublicUser player) {
+  if (playerList$.isClosed) reOpen();
+
   // TODO COTE SERVEUR req
   if (playerList.length >= MAX_PLAYER_COUNT) return false;
   playerWaitingList.remove(player);
@@ -93,10 +94,7 @@ void startGame(BuildContext context) {
 void backOut(BuildContext context) {
   // TODO socket close lobby
   playerList$.close();
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => HomePage()),
-  );
+  Navigator.pop(context);
 }
 
 void reOpen() {
@@ -104,5 +102,6 @@ void reOpen() {
 }
 
 bool isMinimumPlayerCount() {
+  print(playerList$.value);
   return playerList$.value.length < MINIMUM_PLAYER_COUNT;
 }

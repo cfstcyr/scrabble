@@ -4,13 +4,10 @@ import { Position } from '@app/classes/board';
 import { ActionData, ActionExchangePayload, ActionPlacePayload, ActionType } from '@app/classes/communication/action-data';
 import { FeedbackMessage, FeedbackMessages } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
-import { GameObjectivesData } from '@app/classes/communication/objective-data';
 import { RoundData } from '@app/classes/communication/round-data';
 import Game from '@app/classes/game/game';
-import { GameType } from '@app/classes/game/game-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
-import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
 import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import { MUST_HAVE_7_TILES_TO_SWAP } from '@app/constants/classes-errors';
@@ -20,12 +17,11 @@ import { ActiveGameService } from '@app/services/active-game-service/active-game
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import GameHistoriesService from '@app/services/game-history-service/game-history.service';
 import HighScoresService from '@app/services/high-score-service/high-score.service';
-import VirtualPlayerProfilesService from '@app/services/virtual-player-profile-service/virtual-player-profile.service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 @Service()
 export class GamePlayService {
     constructor(
@@ -34,9 +30,8 @@ export class GamePlayService {
         private readonly dictionaryService: DictionaryService,
         private readonly gameHistoriesService: GameHistoriesService,
         private readonly virtualPlayerService: VirtualPlayerService,
-        private readonly virtualPlayerProfilesService: VirtualPlayerProfilesService,
     ) {
-        this.activeGameService.playerLeftEvent.on('playerLeft', async (gameId, playerWhoLeftId) => {
+        this.activeGameService.playerLeftEvent.on('playerLeftGame', async (gameId, playerWhoLeftId) => {
             await this.handlePlayerLeftEvent(gameId, playerWhoLeftId);
         });
     }
@@ -122,14 +117,6 @@ export class GamePlayService {
         return this.activeGameService.getGame(gameId, playerId).gameIsOver;
     }
 
-    handleResetObjectives(gameId: string, playerId: string): GameUpdateData {
-        const game: Game = this.activeGameService.getGame(gameId, playerId);
-        if (game.gameType === GameType.Classic) return {};
-
-        const objectiveData: GameObjectivesData = game.resetPlayerObjectiveProgression(playerId);
-        return { gameObjective: objectiveData };
-    }
-
     private isExchangeLegal(player: Player, totalTilesLeft: number): boolean {
         return player instanceof ExpertVirtualPlayer || totalTilesLeft >= MINIMUM_TILES_LEFT_FOR_EXCHANGE;
     }
@@ -139,7 +126,7 @@ export class GamePlayService {
         if (!game.isAddedToDatabase) {
             const connectedRealPlayers = game.getConnectedRealPlayers();
             for (const player of connectedRealPlayers) {
-                await this.highScoresService.addHighScore(player.name, player.score, game.gameType);
+                await this.highScoresService.addHighScore(player.publicUser.username, player.score);
             }
             await this.gameHistoriesService.addGameHistory(game.gameHistory);
             game.isAddedToDatabase = true;
@@ -174,7 +161,9 @@ export class GamePlayService {
 
         const updatedData: GameUpdateData = game.replacePlayer(
             playerWhoLeftId,
-            new BeginnerVirtualPlayer(gameId, await this.virtualPlayerProfilesService.getRandomVirtualPlayerName(VirtualPlayerLevel.Beginner)),
+            game.virtualPlayerLevel === VirtualPlayerLevel.Beginner
+                ? new BeginnerVirtualPlayer(gameId, this.virtualPlayerService.getRandomVirtualPlayerName(playersStillInGame))
+                : new ExpertVirtualPlayer(gameId, this.virtualPlayerService.getRandomVirtualPlayerName(playersStillInGame)),
         );
 
         if (this.isVirtualPlayerTurn(game)) {

@@ -149,6 +149,7 @@ describe('AuthentificationService', () => {
         });
     });
 
+
     describe('validate', () => {
         it('should throw if is connected', () => {
             authentificationService.connectedUsers.connect(SOCKET_ID, USER_ID);

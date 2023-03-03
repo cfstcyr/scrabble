@@ -31,6 +31,7 @@ const letterToSquare = (letter: LetterValue | ' '): Square =>
     ({
         tile: letter === ' ' ? null : ({ letter } as Tile),
     } as Square);
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 
 describe('WordFindingPositionExtractor', () => {
     let board: Board;
@@ -48,7 +49,7 @@ describe('WordFindingPositionExtractor', () => {
             ),
         );
 
-        player = new Player('', '');
+        player = new Player('', USER1);
         player.tiles = DEFAULT_TILES.map((letter) => ({ letter } as Tile));
 
         extractor = new BoardPlacementsExtractor(board);

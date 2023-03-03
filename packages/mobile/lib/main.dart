@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile/classes/login.dart';
@@ -19,7 +21,6 @@ Future<void> main() async {
   );
   Environment().initConfig(environment);
   setUpLocator();
-
   runApp(MyApp());
 }
 

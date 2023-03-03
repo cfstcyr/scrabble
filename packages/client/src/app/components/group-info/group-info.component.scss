@@ -1,0 +1,138 @@
+@import '../../style/utils.scss';
+@import '../../style/variables.scss';
+
+
+.content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .left-container {
+        display: flex;
+        flex-direction: row;
+        .player-container {
+            $img-size: 70px;
+            display: flex;
+    
+            .player {
+                width: 110px;
+                margin: 0 10px;
+    
+                .name {
+                    font-size: 1.3em;
+                    margin: 0 0 8px 0;
+                    text-align: center;
+                    margin-top: 10px;
+                    white-space: nowrap; 
+                    overflow: hidden; 
+                    text-overflow: ellipsis; 
+                    max-width: 100px; 
+                  }
+              }
+            
+            .empty::before {
+                content: 'JV';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: $img-size;
+                height: $img-size;
+                background-color: #e4e4e4;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                color: #000;
+                opacity: 1;
+            }
+            
+            .avatar {
+    
+                &__container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: $img-size;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    position: relative;
+                }
+    
+                &__img {
+                    height: $img-size;
+                    width: $img-size;
+                    border-radius: 100px;
+                    cursor: pointer;
+                    border: solid 2px transparent;
+                    opacity: 1;
+                }
+            }
+        }
+    
+        mat-divider {
+            border-right: 1px solid rgb(151, 151, 151);
+            height: 110px;
+            margin: 0 8px;
+            padding: 0;
+          }
+    
+       
+        .info-container {
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            
+            .chip-list {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 10px;
+              width: 100%;
+            }
+            
+            .chip {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-color: #d9d9d9;
+              border-radius: 10px;
+              padding: 10px 10px;
+              font-size: 14px;
+              color: #333;
+              width: 100px;
+      
+              app-icon {
+                  margin-right: 8px;
+                }
+            }
+          }
+    }
+
+    .button-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        height: 100%;
+        
+        button {
+            height: 60px;
+            line-height: 0px;
+            margin: 0 10px;
+        }
+
+        #observe-button {
+            width: 60px;
+        }
+
+        #join-button {
+            width: 100px;
+        }
+        #visibility {
+            margin-right: 15px;
+        }
+    }
+}
