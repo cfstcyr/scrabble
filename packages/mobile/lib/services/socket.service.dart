@@ -29,7 +29,7 @@ class SocketService {
     socket.emit("connection");
   }
 
-  Future<void> disconnect() async {
+  void disconnect() {
     socket.disconnect();
   }
 
