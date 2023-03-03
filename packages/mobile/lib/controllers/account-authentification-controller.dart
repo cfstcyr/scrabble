@@ -32,7 +32,6 @@ class AccountAuthenticationController {
     Response res =
         await post(Uri.parse("${endpoint}/signUp"), body: account.toJson());
     bool isCreated = res.statusCode == HttpStatus.ok;
-    print(res.statusCode);
     if (isCreated) {
       await userSessionHandler
           .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
@@ -102,7 +101,6 @@ class AccountAuthenticationController {
   }
 
   Future<void> signOut() async {
-    Response res = await get(Uri.parse("${endpoint}/signOut"));
     userSessionHandler.clearUserSession();
     socketService.disconnect();
   }
