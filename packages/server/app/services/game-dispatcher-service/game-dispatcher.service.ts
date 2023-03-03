@@ -6,6 +6,7 @@ import Player from '@app/classes/player/player';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import {
     CANT_START_GAME_WITH_NO_REAL_OPPONENT,
+    INVALID_PASSWORD,
     INVALID_PLAYER_ID_FOR_GAME,
     NO_DICTIONARY_INITIALIZED,
     NO_GAME_FOUND_WITH_ID,
@@ -21,6 +22,7 @@ import { ChatService } from '@app/services/chat-service/chat.service';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
+import { GameVisibility } from '@common/models/game-visibility';
 @Service()
 export class GameDispatcherService {
     private waitingRooms: WaitingRoom[];
@@ -59,11 +61,25 @@ export class GameDispatcherService {
         return waitingRoom.convertToGroup();
     }
 
-    requestJoinGame(waitingRoomId: string, playerId: string, publicUser: PublicUser): WaitingRoom {
+    async requestJoinGame(waitingRoomId: string, playerId: string, publicUser: PublicUser, password: string): Promise<WaitingRoom> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
+        const gameVisibility = waitingRoom.getConfig().gameVisibility;
+        if (gameVisibility === GameVisibility.Private) {
+            waitingRoom.requestingPlayers.push(new Player(playerId, publicUser));
+        } else if (gameVisibility === GameVisibility.Protected && password === waitingRoom.getConfig().password) {
+            this.removeRequestingPlayer(waitingRoomId, playerId);
 
-        // TODO: Currently games are acting as private where players need to be accepted
-        waitingRoom.requestingPlayers.push(new Player(playerId, publicUser));
+            const newPlayer = new Player(playerId, publicUser);
+            await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), newPlayer.id);
+            waitingRoom.fillNextEmptySpot(newPlayer);
+        } else if (gameVisibility === GameVisibility.Public) {
+            const newPlayer = new Player(playerId, publicUser);
+            await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), newPlayer.id);
+            waitingRoom.fillNextEmptySpot(newPlayer);
+        } else {
+            throw new HttpException(INVALID_PASSWORD, StatusCodes.FORBIDDEN);
+        }
+
         return waitingRoom;
     }
 

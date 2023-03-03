@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { PlayerData } from '@app/classes/communication/player-data';
 import { CreateGameRequest, GameRequest, GroupsRequest } from '@app/classes/communication/request';
@@ -19,6 +20,8 @@ import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatche
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
+import { GameVisibility } from '@common/models/game-visibility';
+import Player from '@app/classes/player/player';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -65,10 +68,27 @@ export class GameDispatcherController extends BaseController {
         router.post('/:gameId/players/join', async (req: GameRequest, res: Response, next) => {
             const { gameId } = req.params;
             const userId: UserId = req.body.idUser;
+            const { password }: { password: string } = req.body;
+
             const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
             const publicUser = await this.authentificationService.getUserById(userId);
             try {
-                this.handleJoinGame(gameId, playerId, publicUser);
+                await this.handleJoinGame(gameId, playerId, publicUser, password);
+
+                res.status(StatusCodes.NO_CONTENT).send();
+            } catch (exception) {
+                next(exception);
+            }
+        });
+
+        router.patch('/:gameId', async (req: GameRequest, res: Response, next) => {
+            const { gameId } = req.params;
+            const userId: UserId = req.body.idUser;
+
+            const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
+            const publicUser = await this.authentificationService.getUserById(userId);
+            try {
+                await this.handleGetGroupUpdates(gameId, playerId, publicUser);
 
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
@@ -176,9 +196,18 @@ export class GameDispatcherController extends BaseController {
     private async handleCancelGame(gameId: string, playerId: string): Promise<void> {
         const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
         this.socketService.emitToRoomNoSender(gameId, playerId, 'cancelledGroup', waitingRoom.getConfig().player1.publicUser);
+        for (const requestingPlayer of waitingRoom.requestingPlayers) {
+            this.socketService.emitToSocket(requestingPlayer.id, 'cancelledGroup', waitingRoom.getConfig().player1.publicUser);
+        }
         await this.gameDispatcherService.cancelGame(gameId, playerId);
 
         this.handleGroupsUpdate();
+    }
+
+    private async handleGetGroupUpdates(gameId: string, playerId: string, publicUser: PublicUser): Promise<void> {
+        const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
+        waitingRoom.requestingPlayers.push(new Player(playerId, publicUser));
+        this.socketService.getSocket(playerId).leave(this.gameDispatcherService.getGroupsRoom().getId());
     }
 
     private async handleLeave(gameId: string, playerId: string): Promise<void> {
@@ -191,11 +220,10 @@ export class GameDispatcherController extends BaseController {
                 this.handleGroupsUpdate();
             } else {
                 const requestingPlayers = this.gameDispatcherService.removeRequestingPlayer(gameId, playerId);
-                this.socketService.emitToSocket(
-                    this.gameDispatcherService.getMultiplayerGameFromId(gameId).getConfig().player1.id,
-                    'joinRequestCancelled',
-                    requestingPlayers,
-                );
+                const config = this.gameDispatcherService.getMultiplayerGameFromId(gameId).getConfig();
+                if (config.gameVisibility === GameVisibility.Private) {
+                    this.socketService.emitToSocket(config.player1.id, 'joinRequestCancelled', requestingPlayers);
+                }
             }
             return;
         }
@@ -220,14 +248,18 @@ export class GameDispatcherController extends BaseController {
         return group;
     }
 
-    private handleJoinGame(gameId: string, playerId: string, publicUser: PublicUser): void {
-        const waitingRoom = this.gameDispatcherService.requestJoinGame(gameId, playerId, publicUser);
-
-        this.socketService.emitToSocket(
-            waitingRoom.getConfig().player1.id,
-            'joinRequest',
-            waitingRoom.requestingPlayers.map((player) => player.publicUser),
-        );
+    private async handleJoinGame(gameId: string, playerId: string, publicUser: PublicUser, password: string): Promise<void> {
+        const waitingRoom = await this.gameDispatcherService.requestJoinGame(gameId, playerId, publicUser, password);
+        if (waitingRoom.getConfig().gameVisibility === GameVisibility.Private) {
+            this.socketService.emitToSocket(
+                waitingRoom.getConfig().player1.id,
+                'joinRequest',
+                waitingRoom.requestingPlayers.map((player) => player.publicUser),
+            );
+        } else {
+            this.socketService.addToRoom(playerId, gameId);
+            this.socketService.emitToRoom(gameId, 'acceptJoinRequest', waitingRoom.convertToGroup());
+        }
 
         this.socketService.getSocket(playerId).leave(this.gameDispatcherService.getGroupsRoom().getId());
         this.handleGroupsUpdate();
@@ -253,7 +285,6 @@ export class GameDispatcherController extends BaseController {
         const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
         for (const requestingPlayer of waitingRoom.requestingPlayers) {
             this.socketService.emitToSocket(requestingPlayer.id, 'rejectJoinRequest', waitingRoom.getConfig().player1.publicUser);
-            this.socketService.removeFromRoom(requestingPlayer.id, gameId);
         }
 
         const gameConfig = this.gameDispatcherService.startRequest(gameId, playerId);

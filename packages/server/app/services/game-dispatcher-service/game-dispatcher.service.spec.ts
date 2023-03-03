@@ -64,50 +64,17 @@ const DEFAULT_GROUP_DATA: GroupData = {
     maxRoundTime: DEFAULT_ROUND_TIME,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     gameVisibility: GameVisibility.Private,
+    password: '',
 };
 
-// const DEFAULT_GROUP: Group = {
-//     user1: USER1,
-//     maxRoundTime: DEFAULT_ROUND_TIME,
-//     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
-//     gameVisibility: GameVisibility.Private,
-//     groupId: 'groupId',
-// };
-
-// const DEFAULT_GAME_CONFIG: GameConfig = {
-//     player1: new Player(DEFAULT_PLAYER_ID1, USER1),
-//     maxRoundTime: DEFAULT_ROUND_TIME,
-//     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
-//     gameVisibility: GameVisibility.Private,
-// };
-
 const DEFAULT_JOINED_PLAYER1 = new Player(DEFAULT_PLAYER_ID1, USER2);
-// const DEFAULT_JOINED_PLAYER2 = new Player(DEFAULT_PLAYER_ID2, USER3);
-// const DEFAULT_JOINED_PLAYER3 = new Player(DEFAULT_PLAYER_ID3, USER4);
-
-// const DEFAULT_START_GAME_DATA: StartGameData = {
-//     ...DEFAULT_GAME_CONFIG,
-//     gameId: DEFAULT_GAME_ID,
-//     board: undefined as unknown as Square[][],
-//     tileReserve: [],
-//     round: {
-//         playerData: {
-//             id: VIRTUAL_PLAYER_ID_PREFIX + DEFAULT_PLAYER_ID1,
-//         },
-//         startTime: new Date(),
-//         limitTime: new Date(),
-//     },
-//     player1: DEFAULT_GAME_CONFIG.player1.convertToPlayerData(),
-//     player2: DEFAULT_JOINED_PLAYER1.convertToPlayerData(),
-//     player3: DEFAULT_JOINED_PLAYER2.convertToPlayerData(),
-//     player4: DEFAULT_JOINED_PLAYER3.convertToPlayerData(),
-// };
 
 const DEFAULT_MULTIPLAYER_CONFIG: GameConfig = {
     player1: new Player(DEFAULT_PLAYER_ID1, USER1),
     maxRoundTime: DEFAULT_ROUND_TIME,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     gameVisibility: GameVisibility.Private,
+    password: '',
 };
 
 const DEFAULT_WAITING_ROOM = new WaitingRoom(DEFAULT_MULTIPLAYER_CONFIG, DEFAULT_GAME_CHANNEL_ID);
@@ -247,6 +214,7 @@ describe('GameDispatcherService', () => {
 
     describe('requestJoinGame', () => {
         let id: string;
+        let chatServiceStub: SinonStubbedInstance<ChatService>;
 
         beforeEach(() => {
             gameDispatcherService['waitingRooms'] = [DEFAULT_WAITING_ROOM];
@@ -257,16 +225,34 @@ describe('GameDispatcherService', () => {
             spy.on(gameDispatcherService, 'getMultiplayerGameFromId', () => {
                 return DEFAULT_WAITING_ROOM;
             });
+            chatServiceStub = testingUnit.getStubbedInstance(ChatService);
+            chatServiceStub.joinChannel.callsFake(async () => {});
         });
 
         afterEach(() => {
             chai.spy.restore();
         });
 
-        it('should add the player to the requestingPlayers', () => {
+        it('should add the player to the requestingPlayers if group is private', () => {
+            DEFAULT_WAITING_ROOM.getConfig().gameVisibility = GameVisibility.Private;
             expect(DEFAULT_WAITING_ROOM.requestingPlayers.length).to.equal(0);
-            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER);
+            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER, '');
             expect(DEFAULT_WAITING_ROOM.requestingPlayers.length).to.equal(1);
+        });
+
+        it('should add the to the channel and room if protected and password matched', () => {
+            DEFAULT_WAITING_ROOM.getConfig().gameVisibility = GameVisibility.Protected;
+            DEFAULT_WAITING_ROOM.getConfig().password = 'Protected';
+            DEFAULT_WAITING_ROOM.requestingPlayers = [new Player(DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER)];
+            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER, 'Protected');
+            expect(chatServiceStub.joinChannel.calledWith(DEFAULT_GAME_CHANNEL_ID, DEFAULT_OPPONENT_ID)).to.be.true;
+        });
+
+        it('should add the to the channel and room if public', () => {
+            DEFAULT_WAITING_ROOM.getConfig().gameVisibility = GameVisibility.Public;
+            DEFAULT_WAITING_ROOM.requestingPlayers = [new Player(DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER)];
+            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER, '');
+            expect(chatServiceStub.joinChannel.calledWith(DEFAULT_GAME_CHANNEL_ID, DEFAULT_OPPONENT_ID)).to.be.true;
         });
     });
 

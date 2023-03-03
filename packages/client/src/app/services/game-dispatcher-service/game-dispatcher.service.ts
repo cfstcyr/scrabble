@@ -13,7 +13,7 @@ import { takeUntil } from 'rxjs/operators';
 import { UserService } from '@app/services/user-service/user.service';
 import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
-import { ROUTE_CREATE_WAITING } from '@app/constants/routes-constants';
+import { ROUTE_CREATE_WAITING, ROUTE_JOIN_WAITING } from '@app/constants/routes-constants';
 
 @Injectable({
     providedIn: 'root',
@@ -27,6 +27,7 @@ export default class GameDispatcherService implements OnDestroy {
     private playerLeftGroupEvent: Subject<Group> = new Subject();
     private canceledGameEvent: Subject<PublicUser> = new Subject();
     private groupFullEvent: Subject<void> = new Subject();
+    private invalidPasswordEvent: Subject<void> = new Subject();
     private groupsUpdateEvent: Subject<Group[]> = new Subject();
     private joinerRejectedEvent: Subject<PublicUser> = new Subject();
     private playerCancelledRequestEvent: Subject<PublicUser[]> = new Subject();
@@ -50,12 +51,12 @@ export default class GameDispatcherService implements OnDestroy {
             this.handlePlayerCancelledRequest(requestingPlayers),
         );
         this.gameDispatcherController.subscribeToGroupFullEvent(this.serviceDestroyed$, () => this.handleGroupFull());
-        this.gameDispatcherController.subscribeToGroupRequestValidEvent(this.serviceDestroyed$, async () =>
-            // TODO: Change this to navigate when it is a public game / protected wiht correct password entered
-            // this.router.navigateByUrl(ROUTE_JOIN_WAITING),
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            {},
-        );
+        this.gameDispatcherController.subscribeToInvalidPasswordEvent(this.serviceDestroyed$, () => this.handleInvalidPassword());
+        this.gameDispatcherController.subscribeToGroupRequestValidEvent(this.serviceDestroyed$, async () => {
+            if (this.currentGroup?.gameVisibility === GameVisibility.Public || this.currentGroup?.gameVisibility === GameVisibility.Protected) {
+                this.router.navigateByUrl(ROUTE_JOIN_WAITING);
+            }
+        });
         this.gameDispatcherController.subscribeToCanceledGameEvent(this.serviceDestroyed$, (hostUser: PublicUser) =>
             this.handleCanceledGame(hostUser),
         );
@@ -84,9 +85,14 @@ export default class GameDispatcherService implements OnDestroy {
         this.currentGroup = undefined;
     }
 
-    handleJoinGroup(group: Group): void {
+    handleJoinGroup(group: Group, password: string = ''): void {
         this.currentGroup = group;
-        this.gameDispatcherController.handleGroupJoinRequest(this.getCurrentGroupId());
+        this.gameDispatcherController.handleGroupJoinRequest(this.getCurrentGroupId(), password);
+    }
+
+    handleGroupUpdates(group: Group): void {
+        this.currentGroup = group;
+        this.gameDispatcherController.handleGroupUpdatesRequest(this.getCurrentGroupId());
     }
 
     handleGroupListRequest(): void {
@@ -98,8 +104,11 @@ export default class GameDispatcherService implements OnDestroy {
             user1: this.userService.getUser(),
             maxRoundTime: gameParameters.get('timer')?.value as number,
             virtualPlayerLevel: gameParameters.get('level')?.value as VirtualPlayerLevel,
-            // TODO: Change this when implementing different modes
-            gameVisibility: GameVisibility.Private,
+            gameVisibility: gameParameters.get('visibility')?.value as GameVisibility,
+            password:
+                (gameParameters.get('visibility')?.value as GameVisibility) === GameVisibility.Protected
+                    ? (gameParameters.get('password')?.value as string)
+                    : '',
         };
         this.handleGameCreation(gameConfig);
     }
@@ -167,6 +176,10 @@ export default class GameDispatcherService implements OnDestroy {
         this.groupFullEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
     }
 
+    subscribeToInvalidPasswordEvent(componentDestroyed$: Subject<boolean>, callback: () => void): void {
+        this.invalidPasswordEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
+    }
+
     subscribeToGroupsUpdateEvent(componentDestroyed$: Subject<boolean>, callback: (groups: Group[]) => void): void {
         this.groupsUpdateEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
     }
@@ -221,6 +234,10 @@ export default class GameDispatcherService implements OnDestroy {
     private handleGroupFull(): void {
         this.groupFullEvent.next();
         this.resetServiceData();
+    }
+
+    private handleInvalidPassword(): void {
+        this.invalidPasswordEvent.next();
     }
 
     private handleCanceledGame(hostUser: PublicUser): void {
