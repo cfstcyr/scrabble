@@ -28,7 +28,6 @@ import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-wait
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
-import { Subject } from 'rxjs';
 import { GroupPasswordDialogComponent } from './group-password-waiting-dialog';
 
 const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
@@ -47,14 +46,10 @@ const TEST_GROUP: Group = {
 export class TestComponent {}
 
 export class MatDialogMock {
-    confirmationObservable: Subject<void> = new Subject<void>();
     close() {
         return {
             close: () => ({}),
         };
-    }
-    backdropClick() {
-        return this.confirmationObservable.asObservable();
     }
 }
 
