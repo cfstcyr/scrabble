@@ -7,7 +7,6 @@ import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-event.service.dart';
-import 'package:mobile/services/game-state.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -16,7 +15,6 @@ class TileRack extends StatelessWidget {
   final BehaviorSubject<int?> _currentTileIndex = BehaviorSubject();
   final BehaviorSubject<int?> _currentHoveredTileIndex = BehaviorSubject();
   final GameService _gameService = getIt.get<GameService>();
-  final GameStateService _gameStateService = getIt.get<GameStateService>();
   final GameEventService _gameEventService = getIt.get<GameEventService>();
 
   @override

@@ -3,7 +3,6 @@ import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-event.service.dart';
-import 'package:mobile/services/game-state.service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class TileRack {
