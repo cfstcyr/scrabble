@@ -133,17 +133,6 @@ describe('ChatboxContainerComponent', () => {
         });
     });
 
-    describe('handleJoinChannel', () => {
-        it('should open dialog', () => {
-            const dialog = TestBed.inject(MatDialog);
-            const spy = spyOn(dialog, 'open');
-
-            component.handleJoinChannel(CHANNEL_1);
-
-            expect(spy).toHaveBeenCalled();
-        });
-    });
-
     describe('handleDeleteChannel', () => {
         it('should open dialog', () => {
             const dialog = TestBed.inject(MatDialog);
