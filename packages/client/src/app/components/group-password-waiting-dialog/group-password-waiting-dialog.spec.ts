@@ -10,7 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -85,7 +85,7 @@ describe('GroupRequestWaitingDialogComponent', () => {
                     { path: 'join-waiting-room', component: JoinWaitingPageComponent },
                 ]),
             ],
-            providers: [MatDialog, { provide: MAT_DIALOG_DATA, useValue: { group: TEST_GROUP } }],
+            providers: [MatDialog, MatDialogRef, { provide: MAT_DIALOG_DATA, useValue: { group: TEST_GROUP } }],
         }).compileComponents();
     });
 
