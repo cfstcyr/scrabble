@@ -1,11 +1,8 @@
-import 'dart:developer';
-
-import 'package:mobile/classes/actions/action-data.dart';
+import 'package:mobile/classes/actions/action-place.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/board/navigator.dart';
 import 'package:mobile/classes/board/orientation.dart';
 import 'package:mobile/classes/board/position.dart';
-import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile.dart';
 
 class TilePlacement {
