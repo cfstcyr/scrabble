@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
