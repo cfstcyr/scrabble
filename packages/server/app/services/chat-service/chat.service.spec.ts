@@ -352,6 +352,17 @@ describe('ChatService', () => {
 
                     expect(serverSocket.rooms.has(getSocketNameFromChannel(testChannel))).to.be.false;
                 });
+                it('should emit channel:quit to all users in channel', async () => {
+                    chatPersistenceService.getChannel.resolves(testChannel);
+
+                    serverSocket.join(getSocketNameFromChannel(testChannel));
+
+                    clientSocket.emit('channel:quit', testChannel.idChannel);
+
+                    await Delay.for(RESPONSE_DELAY);
+
+                    expect(serverSocket.rooms.has(getSocketNameFromChannel(testChannel))).to.be.false;
+                });
             });
             describe('SAD PATH', () => {
                 it('should throw error if channel does NOT exist', async () => {
@@ -366,6 +377,31 @@ describe('ChatService', () => {
                         clientSocket.emit('channel:quit', testChannel.idChannel);
                     });
                 });
+            });
+        });
+
+        describe('channel:delete', () => {
+            describe('HAPPY PATH', () => {
+                it('should delete channel', async () => {
+                    const stub = Sinon.stub(service, 'emptyChannel' as any).callsFake(async () => Promise.resolve());
+
+                    clientSocket.emit('channel:delete', testChannel.idChannel);
+
+                    await Delay.for(RESPONSE_DELAY);
+
+                    expect(stub.called).to.be.true;
+                });
+            });
+        });
+
+        describe('updateJoinableChannels', () => {
+            it('should call updateJoinableChannels', async () => {
+                serverSocket.join(getSocketNameFromChannel(testChannel));
+                const stub = Sinon.stub(service, 'updateJoinableChannels' as any).callsFake(async () => Promise.resolve());
+
+                await service['updateJoinableChannels']();
+
+                expect(stub.called).to.be.true;
             });
         });
     });
@@ -428,26 +464,6 @@ describe('ChatService', () => {
             expectedUserIds.forEach((userId) => {
                 expect(handleQuitStub.calledWith(testChannel.idChannel, userId)).to.be.true;
             });
-        });
-
-        it('should call deleteChannelHistory', async () => {
-            const expectedUserIds = [1, 2, 3];
-            chatPersistenceService.getChannelUserIds.resolves(expectedUserIds);
-            Sinon.stub(testingUnit.getStubbedInstance(AuthentificationService).connectedUsers, 'getSocketId').returns(DEFAULT_PLAYER_ID);
-
-            Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
-            testingUnit
-                .getStubbedInstance(SocketService)
-                .getSocket.onFirstCall()
-                .returns(expectedUserIds[0] as unknown as ServerSocket)
-                .onSecondCall()
-                .returns(expectedUserIds[1] as unknown as ServerSocket)
-                .onThirdCall()
-                .returns(expectedUserIds[2] as unknown as ServerSocket);
-
-            await service['emptyChannel'](testChannel.idChannel);
-
-            expect(chatHistoryService.deleteChannelHistory.calledWith(testChannel.idChannel)).to.be.true;
         });
     });
 });

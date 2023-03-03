@@ -1,5 +1,11 @@
 import { IconName } from '@app/components/icon/icon.component.type';
 
+export interface DefaultDialogCheckboxParameters {
+    content: string;
+    checked: boolean;
+    action?: (checked: boolean) => void;
+}
+
 export interface DefaultDialogButtonParameters {
     content: string;
     closeDialog?: boolean;
@@ -12,4 +18,5 @@ export interface DefaultDialogParameters {
     title: string;
     content: string;
     buttons: DefaultDialogButtonParameters[];
+    checkbox?: DefaultDialogCheckboxParameters;
 }
