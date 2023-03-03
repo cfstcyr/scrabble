@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
             cardTheme:
                 CardTheme(color: Colors.white, surfaceTintColor: Colors.white)),
         navigatorKey: navigatorKey,
-        home: HomePage(),
+        home: MainPage(),
         routes: ROUTES,
       ),
     );
