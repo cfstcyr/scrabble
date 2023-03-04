@@ -3,6 +3,9 @@ import DatabaseService from '@app/services/database-service/database.service';
 import { EditableUserFields, PublicUser, User } from '@common/models/user';
 import { USER_TABLE } from '@app/constants/services-constants/database-const';
 import { TypeOfId } from '@common/types/id';
+import { HttpException } from '@app/classes/http-exception/http-exception';
+import { USER_NOT_FOUND } from '@app/constants/services-errors';
+import { StatusCodes } from 'http-status-codes';
 
 @Service()
 export class UserService {
@@ -23,27 +26,23 @@ export class UserService {
         if (fields.avatar) fieldsToUpdate.avatar = fields.avatar;
         if (fields.username) fieldsToUpdate.username = fields.username;
 
-        await this.table.where({ idUser }).update(fieldsToUpdate);
-    }
-
-    async getUserByEmail(email: string): Promise<User> {
-        return new Promise((resolve, reject) => {
-            this.table
-                .where('email', email)
-                .select('*')
-                .then((data) => resolve(data[0]))
-                .catch((err) => reject(err));
-        });
+        if (Object.keys(fieldsToUpdate).length > 0) await this.table.where({ idUser }).update(fieldsToUpdate);
     }
 
     async getUserById(idUser: TypeOfId<User>): Promise<User> {
-        return new Promise((resolve, reject) => {
-            this.table
-                .where('idUser', idUser)
-                .select('*')
-                .then((data) => resolve(data[0]))
-                .catch((err) => reject(err));
-        });
+        const user = await this.table.where({ idUser }).select('*').first();
+
+        if (!user) throw new HttpException(USER_NOT_FOUND, StatusCodes.NOT_FOUND);
+
+        return user;
+    }
+
+    async getUserByEmail(email: string): Promise<User> {
+        const user = await this.table.where({ email }).select('*').first();
+
+        if (!user) throw new HttpException(USER_NOT_FOUND, StatusCodes.NOT_FOUND);
+
+        return user;
     }
 
     async getPublicUserById(idUser: TypeOfId<User>): Promise<PublicUser> {

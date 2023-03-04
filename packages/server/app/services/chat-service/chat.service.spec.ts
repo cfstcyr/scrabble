@@ -7,7 +7,6 @@
 import { Application } from '@app/app';
 import { PlayerData } from '@app/classes/communication/player-data';
 import { ServerSocket } from '@app/classes/communication/socket-type';
-import { ConnectedUser } from '@app/classes/user/connected-user';
 import { GROUP_CHANNEL } from '@app/constants/chat';
 import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
@@ -90,20 +89,18 @@ describe('ChatService', () => {
     let testingUnit: ServicesTestingUnit;
     let chatPersistenceService: Sinon.SinonStubbedInstance<ChatPersistenceService>;
     let chatHistoryService: Sinon.SinonStubbedInstance<ChatHistoryService>;
+    let authenticationService: AuthentificationService;
 
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit()
             .withStubbed(ChatPersistenceService)
             .withStubbed(ChatHistoryService)
-            .withStubbed(AuthentificationService, undefined, {
-                connectedUsers: new ConnectedUser(),
-                getUserById: async () => Promise.resolve(USER),
-            })
             .withStubbed(SocketService)
             .withStubbedPrototypes(Application, { bindRoutes: undefined });
         chatHistoryService = testingUnit.setStubbed(ChatHistoryService);
         chatPersistenceService = testingUnit.setStubbed(ChatPersistenceService);
         await testingUnit.withMockDatabaseService();
+        authenticationService = Container.get(AuthentificationService);
     });
 
     beforeEach((done) => {
@@ -134,7 +131,7 @@ describe('ChatService', () => {
             service = new ChatService(
                 socketService as unknown as SocketService,
                 chatPersistenceService as unknown as ChatPersistenceService,
-                testingUnit.getStubbedInstance(AuthentificationService) as unknown as AuthentificationService,
+                authenticationService,
                 chatHistoryService as unknown as ChatHistoryService,
             );
 
@@ -410,9 +407,7 @@ describe('ChatService', () => {
         it('should call handleCreateChannel', async () => {
             const stub = Sinon.stub(service, 'handleCreateChannel' as any).callsFake(async () => Promise.resolve());
             // testingUnit.getStubbedInstance(AuthentificationService).connectedUsers = new ConnectedUser();
-            Sinon.stub(testingUnit.getStubbedInstance(AuthentificationService).connectedUsers, 'getSocketId')
-                .withArgs(USER.idUser)
-                .returns(DEFAULT_PLAYER_ID);
+            Sinon.stub(authenticationService.connectedUsers, 'getSocketId').withArgs(USER.idUser).returns(DEFAULT_PLAYER_ID);
             testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
 
             await service['createChannel'](channelCreation, USER.idUser);
@@ -447,7 +442,7 @@ describe('ChatService', () => {
         it('should make every userId in channel quit', async () => {
             const expectedUserIds = [1, 2, 3];
             chatPersistenceService.getChannelUserIds.resolves(expectedUserIds);
-            Sinon.stub(testingUnit.getStubbedInstance(AuthentificationService).connectedUsers, 'getSocketId').returns(DEFAULT_PLAYER_ID);
+            Sinon.stub(authenticationService.connectedUsers, 'getSocketId').returns(DEFAULT_PLAYER_ID);
 
             const handleQuitStub = Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
             testingUnit

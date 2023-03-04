@@ -5,7 +5,6 @@ import { Router } from 'express';
 import { Service } from 'typedi';
 import { StatusCodes } from 'http-status-codes';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
-import { UserGameStatisticInfo } from '@common/models/user-statistics';
 
 @Service()
 export class UserController extends BaseController {
@@ -33,23 +32,6 @@ export class UserController extends BaseController {
 
         router.get('/statistics', async (req: UserRequest, res, next) => {
             try {
-                res.status(StatusCodes.OK).json(await this.userStatisticsService.getStatistics(req.body.idUser));
-            } catch (e) {
-                next(e);
-            }
-        });
-
-        router.patch('/statistics', async (req: UserRequest<UserGameStatisticInfo>, res, next) => {
-            try {
-                res.status(StatusCodes.OK).json(await this.userStatisticsService.addGameToStatistics(req.body.idUser, req.body));
-            } catch (e) {
-                next(e);
-            }
-        });
-
-        router.delete('/statistics', async (req: UserRequest, res, next) => {
-            try {
-                await this.userStatisticsService.resetStatistics(req.body.idUser);
                 res.status(StatusCodes.OK).json(await this.userStatisticsService.getStatistics(req.body.idUser));
             } catch (e) {
                 next(e);
