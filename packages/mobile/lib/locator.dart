@@ -4,6 +4,7 @@ import 'package:mobile/controllers/gameplay-controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/chat-management.service.dart';
+import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
@@ -31,6 +32,7 @@ void setUpLocator() {
       () => ChatManagementController());
   getIt.registerLazySingleton<SocketService>(() => SocketService());
   getIt.registerLazySingleton<GameService>(() => GameService());
+  getIt.registerLazySingleton<GameEventService>(() => GameEventService());
   getIt.registerLazySingleton<ChatManagementService>(
       () => ChatManagementService());
   getIt.registerLazySingleton<RoundService>(() => RoundService());

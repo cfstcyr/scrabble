@@ -8,6 +8,8 @@ import 'package:mobile/classes/login.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/pages/login-page.dart';
+import 'package:mobile/routes/navigator-key.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:provider/provider.dart';
 
 import 'controllers/account-authentification-controller.dart';
@@ -42,10 +44,18 @@ class MyApp extends StatelessWidget {
             child: MaterialApp(
               title: 'Namer App',
               theme: ThemeData(
-                useMaterial3: true,
-                colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-              ),
+                  useMaterial3: true,
+                  scaffoldBackgroundColor: Colors.white,
+                  colorScheme: ColorScheme.fromSeed(
+                      seedColor: Color.fromRGBO(27, 94, 32, 1),
+                      background: Color.fromRGBO(243, 243, 243, 1),
+                      onBackground: Color.fromRGBO(232, 232, 232, 1),
+                      tertiary: Color.fromRGBO(216, 216, 216, 1)),
+                  cardTheme: CardTheme(
+                      color: Colors.white, surfaceTintColor: Colors.white)),
+              navigatorKey: navigatorKey,
               home: snapshot.data,
+              routes: ROUTES,
             ),
           );
         }

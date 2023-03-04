@@ -50,11 +50,11 @@ class ChatManagementController {
   }
 
   Future<void> getAllChannels() async {
-    socketService.socket.emit(ALL_CHANNELS_EVENT);
+    SocketService.socket.emit(ALL_CHANNELS_EVENT);
   }
 
   Future<void> _configureSocket() async {
-    socketService.socket.on(JOIN_EVENT, (channel) {
+    SocketService.socket.on(JOIN_EVENT, (channel) {
       Channel typedChannel = Channel.fromJson(channel);
       myChannels.add(typedChannel);
       myChannels$.add(myChannels);
@@ -64,7 +64,7 @@ class ChatManagementController {
       handleUnjoinedChannels();
     });
 
-    socketService.socket.on(QUIT_EVENT, (receivedChannel) {
+    SocketService.socket.on(QUIT_EVENT, (receivedChannel) {
       myChannels.removeWhere((channel) =>
           channel.idChannel == Channel.fromJson(receivedChannel).idChannel);
 
@@ -77,17 +77,17 @@ class ChatManagementController {
     //   print('channel:history: $channel');
     // });
 
-    socketService.socket.on(INIT_DONE_EVENT, (s) {
+    SocketService.socket.on(INIT_DONE_EVENT, (s) {
       shouldOpen$.add(true);
     });
 
-    socketService.socket.on(ALL_CHANNELS_EVENT, (receivedChannels) {
+    SocketService.socket.on(ALL_CHANNELS_EVENT, (receivedChannels) {
       channels = List<Channel>.from(
           receivedChannels.map((channel) => Channel.fromJson(channel)));
 
       channels$.add(handleUnjoinedChannels());
     });
-    socketService.socket.emit(INIT_EVENT);
+    SocketService.socket.emit(INIT_EVENT);
     getAllChannels();
   }
 
