@@ -77,7 +77,7 @@ class PublicUser {
     };
   }
 
-  List<PublicUser> usersFromJson(Map<String, dynamic> json) {
+  static List<PublicUser> usersFromJson(Map<String, dynamic> json) {
     return List<PublicUser>.from([
       json['user1'],
       json['user2'],

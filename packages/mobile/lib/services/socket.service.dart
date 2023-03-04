@@ -11,7 +11,7 @@ class SocketService {
   final String endpoint = "${Environment().config.apiUrl}/authentification";
   final userSessionHandler = getIt.get<UserSessionService>();
   static final SocketService _instance = SocketService._privateConstructor();
-  final IO.Socket socket = IO.io(
+  static final IO.Socket socket = IO.io(
       webSocketUrl,
       IO.OptionBuilder()
           .setTransports(['websocket']) // for Flutter or Dart VM
