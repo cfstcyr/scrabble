@@ -4,10 +4,12 @@ import { UserService } from '@app/services/user-service/user-service';
 import { Router } from 'express';
 import { Service } from 'typedi';
 import { StatusCodes } from 'http-status-codes';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
+import { UserGameStatisticInfo } from '@common/models/user-statistics';
 
 @Service()
 export class UserController extends BaseController {
-    constructor(private readonly userService: UserService) {
+    constructor(private readonly userService: UserService, private readonly userStatisticsService: UserStatisticsService) {
         super('/api/user');
     }
 
@@ -24,6 +26,31 @@ export class UserController extends BaseController {
             try {
                 await this.userService.editUser(req.body.idUser, req.body);
                 res.status(StatusCodes.OK).json(await this.userService.getPublicUserById(req.body.idUser));
+            } catch (e) {
+                next(e);
+            }
+        });
+
+        router.get('/statistics', async (req: UserRequest, res, next) => {
+            try {
+                res.status(StatusCodes.OK).json(await this.userStatisticsService.getStatistics(req.body.idUser));
+            } catch (e) {
+                next(e);
+            }
+        });
+
+        router.patch('/statistics', async (req: UserRequest<UserGameStatisticInfo>, res, next) => {
+            try {
+                res.status(StatusCodes.OK).json(await this.userStatisticsService.addGameToStatistics(req.body.idUser, req.body));
+            } catch (e) {
+                next(e);
+            }
+        });
+
+        router.delete('/statistics', async (req: UserRequest, res, next) => {
+            try {
+                await this.userStatisticsService.resetStatistics(req.body.idUser);
+                res.status(StatusCodes.OK).json(await this.userStatisticsService.getStatistics(req.body.idUser));
             } catch (e) {
                 next(e);
             }
