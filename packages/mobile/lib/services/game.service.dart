@@ -3,8 +3,8 @@ import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
-import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
+import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/action-service.dart';
@@ -27,12 +27,18 @@ class GameService {
         tileRack: TileRack(),
         players: PlayersContainer.fromPlayers(
           player1: Player(
-              user: PublicUser(username: "George"),
+              user: PublicUser(username: "George", avatar: '', email: ''),
               points: 420,
               isLocalPlayer: true),
-          player2: Player(user: PublicUser(username: "Léonard"), points: 69),
-          player3: Player(user: PublicUser(username: "Hernest"), points: 666),
-          player4: Player(user: PublicUser(username: "Bernard"), points: 2),
+          player2: Player(
+              user: PublicUser(username: "Léonard", avatar: '', email: ''),
+              points: 69),
+          player3: Player(
+              user: PublicUser(username: "Hernest", avatar: '', email: ''),
+              points: 666),
+          player4: Player(
+              user: PublicUser(username: "Bernard", avatar: '', email: ''),
+              points: 2),
         ),
         roundDuration: Duration(minutes: 1, seconds: 42)));
 

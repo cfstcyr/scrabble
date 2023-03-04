@@ -5,13 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/pages/login-page.dart';
-import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../constants/create-account-constants.dart';
+import '../controllers/account-authentification-controller.dart';
+import '../main.dart';
 import '../pages/home-page.dart';
-import '../services/account-authentification-service.dart';
 
 class CreateAccountForm extends StatefulWidget {
   @override
@@ -24,8 +23,8 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  AccountAuthenticationService accountService =
-      getIt.get<AccountAuthenticationService>();
+  AccountAuthenticationController accountController =
+      getIt.get<AccountAuthenticationController>();
 
   final emailHandler = TextFieldHandler();
   final usernameHandler = TextFieldHandler();
@@ -166,7 +165,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginPage()));
+                                builder: (context) => MainPage()));
                       },
                       child: const Text(
                         REDIRECT_LOGIN_LABEL_FR,
@@ -244,7 +243,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
       setState(() {
         emailHandler.errorMessage = EMAIL_INVALID_FORMAT_FR;
       });
-    } else if (!await accountService
+    } else if (!await accountController
         .isEmailUnique(emailHandler.controller.text)) {
       setState(() {
         emailHandler.errorMessage = EMAIL_ALREADY_USED_FR;
@@ -265,7 +264,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
       setState(() {
         usernameHandler.errorMessage = USERNAME_INVALID_FORMAT_FR;
       });
-    } else if (!await accountService
+    } else if (!await accountController
         .isUsernameUnique(usernameHandler.controller.text)) {
       setState(() {
         usernameHandler.errorMessage = USERNAME_ALREADY_USED_FR;
@@ -288,8 +287,9 @@ class CreateAccountFormState extends State<CreateAccountForm> {
         username: usernameHandler.controller.text,
         password: passwordHandler.controller.text,
         email: emailHandler.controller.text);
-    if (await accountService.createAccount(newAccount)) {
-      Navigator.pushNamed(context, HOME_ROUTE);
+    if (await accountController.createAccount(newAccount)) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
       validateUsername();
       validateEmail();

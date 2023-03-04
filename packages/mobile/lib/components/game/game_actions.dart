@@ -6,8 +6,6 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
 
-import '../../locator.dart';
-
 class GameActions extends StatelessWidget {
   GameService _gameService = getIt.get<GameService>();
 

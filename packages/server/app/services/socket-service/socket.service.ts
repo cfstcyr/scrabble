@@ -74,7 +74,6 @@ export class SocketService {
 
         this.sio.use(async (socket: io.Socket, next: NextFunction) => {
             const token = socket.handshake.auth.token;
-
             if (token) {
                 try {
                     await this.authentificationService.authentificateSocket(socket, token);
