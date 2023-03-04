@@ -13,12 +13,13 @@ import { StatusCodes } from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
+import { UserService } from '@app/services/user-service/user-service';
 
 @Service()
 export class AuthentificationService {
     connectedUsers: ConnectedUser;
 
-    constructor(private databaseService: DatabaseService) {
+    constructor(private databaseService: DatabaseService, private userService: UserService) {
         this.connectedUsers = new ConnectedUser();
     }
 
@@ -33,7 +34,7 @@ export class AuthentificationService {
 
         this.connectedUsers.connect(socket.id, idUser);
 
-        socket.data.user = await this.getUserById(idUser);
+        socket.data.user = await this.userService.getUserById(idUser);
     }
 
     disconnectSocket(socketId: string): void {
@@ -41,7 +42,7 @@ export class AuthentificationService {
     }
 
     async login(credentials: UserLoginCredentials): Promise<UserSession> {
-        const user = await this.getUserByEmail(credentials.email);
+        const user = await this.userService.getUserByEmail(credentials.email);
 
         if (this.connectedUsers.isConnected(user.idUser)) throw new HttpException(ALREADY_LOGGED, StatusCodes.UNAUTHORIZED);
 
@@ -71,31 +72,10 @@ export class AuthentificationService {
         } catch {
             throw new HttpException(NO_VALIDATE);
         }
-        const user = await this.getUserById(idUser);
+        const user = await this.userService.getUserById(idUser);
 
         return { token, user };
     }
-
-    async getUserByEmail(email: string): Promise<User> {
-        return new Promise((resolve, reject) => {
-            this.table
-                .where('email', email)
-                .select('*')
-                .then((data) => resolve(data[0]))
-                .catch((err) => reject(err));
-        });
-    }
-
-    async getUserById(idUser: TypeOfId<User>): Promise<User> {
-        return new Promise((resolve, reject) => {
-            this.table
-                .where('idUser', idUser)
-                .select('*')
-                .then((data) => resolve(data[0]))
-                .catch((err) => reject(err));
-        });
-    }
-
     async validateUsername(username: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.table
