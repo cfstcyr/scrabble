@@ -145,6 +145,7 @@ export class GamePlayService {
 
         updatedData.isGameOver = true;
         updatedData.winners = game.computeWinners();
+
         return game.endGameMessage();
     }
 
