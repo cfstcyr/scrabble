@@ -174,7 +174,7 @@ export class GamePlayService {
         if (!isIdVirtualPlayer(game.player2.id))
             addGameToStatistics.push(
                 this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player2.id), {
-                    hasWon: updatedData.winners?.includes(game.player1.publicUser.username) ?? false,
+                    hasWon: updatedData.winners?.includes(game.player2.publicUser.username) ?? false,
                     points: updatedData.player2?.score ?? 0,
                     time,
                 }),
@@ -183,7 +183,7 @@ export class GamePlayService {
         if (!isIdVirtualPlayer(game.player3.id))
             addGameToStatistics.push(
                 this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player3.id), {
-                    hasWon: updatedData.winners?.includes(game.player1.publicUser.username) ?? false,
+                    hasWon: updatedData.winners?.includes(game.player3.publicUser.username) ?? false,
                     points: updatedData.player3?.score ?? 0,
                     time,
                 }),
@@ -191,8 +191,8 @@ export class GamePlayService {
 
         if (!isIdVirtualPlayer(game.player4.id))
             addGameToStatistics.push(
-                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player1.id), {
-                    hasWon: updatedData.winners?.includes(game.player1.publicUser.username) ?? false,
+                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player4.id), {
+                    hasWon: updatedData.winners?.includes(game.player4.publicUser.username) ?? false,
                     points: updatedData.player4?.score ?? 0,
                     time,
                 }),
