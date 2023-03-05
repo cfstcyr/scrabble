@@ -22,6 +22,10 @@ import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
+import { PublicUserStatistics } from '@common/models/user-statistics';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 @Service()
 export class GamePlayService {
     constructor(
@@ -30,6 +34,8 @@ export class GamePlayService {
         private readonly dictionaryService: DictionaryService,
         private readonly gameHistoriesService: GameHistoriesService,
         private readonly virtualPlayerService: VirtualPlayerService,
+        private readonly userStatisticsService: UserStatisticsService,
+        private readonly authenticationService: AuthentificationService,
     ) {
         this.activeGameService.playerLeftEvent.on('playerLeftGame', async (gameId, playerWhoLeftId) => {
             await this.handlePlayerLeftEvent(gameId, playerWhoLeftId);
@@ -146,7 +152,53 @@ export class GamePlayService {
         updatedData.isGameOver = true;
         updatedData.winners = game.computeWinners();
 
+        await this.updateUserStatistics(game, updatedData);
+
         return game.endGameMessage();
+    }
+
+    private async updateUserStatistics(game: Game, updatedData: GameUpdateData): Promise<void> {
+        const time = (Date.now() - game.roundManager.getGameStartTime().getTime()) / SECONDS_TO_MILLISECONDS;
+
+        const addGameToStatistics: Promise<PublicUserStatistics>[] = [];
+
+        if (!isIdVirtualPlayer(game.player1.id))
+            addGameToStatistics.push(
+                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player1.id), {
+                    hasWon: updatedData.winners?.includes(game.player1.publicUser.username) ?? false,
+                    points: updatedData.player1?.score ?? 0,
+                    time,
+                }),
+            );
+
+        if (!isIdVirtualPlayer(game.player2.id))
+            addGameToStatistics.push(
+                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player2.id), {
+                    hasWon: updatedData.winners?.includes(game.player1.publicUser.username) ?? false,
+                    points: updatedData.player2?.score ?? 0,
+                    time,
+                }),
+            );
+
+        if (!isIdVirtualPlayer(game.player3.id))
+            addGameToStatistics.push(
+                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player3.id), {
+                    hasWon: updatedData.winners?.includes(game.player1.publicUser.username) ?? false,
+                    points: updatedData.player3?.score ?? 0,
+                    time,
+                }),
+            );
+
+        if (!isIdVirtualPlayer(game.player4.id))
+            addGameToStatistics.push(
+                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player1.id), {
+                    hasWon: updatedData.winners?.includes(game.player1.publicUser.username) ?? false,
+                    points: updatedData.player4?.score ?? 0,
+                    time,
+                }),
+            );
+
+        await Promise.all(addGameToStatistics);
     }
 
     private async handlePlayerLeftEvent(gameId: string, playerWhoLeftId: string): Promise<void> {
