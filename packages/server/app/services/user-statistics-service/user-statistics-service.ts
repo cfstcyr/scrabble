@@ -14,9 +14,10 @@ export class UserStatisticsService {
     async getStatistics(idUser: TypeOfId<User>): Promise<PublicUserStatistics> {
         let statistics = await this.tryGetStatistics(idUser);
 
-        if (!statistics) await this.createStatistics(idUser);
-
-        statistics = await this.tryGetStatistics(idUser);
+        if (!statistics) {
+            await this.createStatistics(idUser);
+            statistics = await this.tryGetStatistics(idUser);
+        }
 
         if (!statistics) throw new HttpException(CANNOT_GET_STATISTICS_FOR_USER);
 
