@@ -61,21 +61,23 @@ export class GameDispatcherService {
         return waitingRoom.convertToGroup();
     }
 
-    async requestJoinGame(waitingRoomId: string, playerId: string, publicUser: PublicUser, password: string): Promise<WaitingRoom> {
+    async requestJoinGame(
+        waitingRoomId: string,
+        playerId: string,
+        publicUser: PublicUser,
+        password: string,
+        isObserver: boolean,
+    ): Promise<WaitingRoom> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         const gameVisibility = waitingRoom.getConfig().gameVisibility;
         if (gameVisibility === GameVisibility.Private) {
-            waitingRoom.requestingPlayers.push(new Player(playerId, publicUser));
+            waitingRoom.addToRequesting(publicUser, playerId, isObserver);
         } else if (gameVisibility === GameVisibility.Protected && password === waitingRoom.getConfig().password) {
-            this.removeRequestingPlayer(waitingRoomId, playerId);
-
-            const newPlayer = new Player(playerId, publicUser);
-            await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), newPlayer.id);
-            waitingRoom.fillNextEmptySpot(newPlayer);
+            waitingRoom.changeRequestingToJoined(playerId, isObserver);
+            await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), playerId);
         } else if (gameVisibility === GameVisibility.Public) {
-            const newPlayer = new Player(playerId, publicUser);
-            await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), newPlayer.id);
-            waitingRoom.fillNextEmptySpot(newPlayer);
+            waitingRoom.addToJoined(publicUser, playerId, isObserver);
+            await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), playerId);
         } else {
             throw new HttpException(INVALID_PASSWORD, StatusCodes.FORBIDDEN);
         }
@@ -84,11 +86,12 @@ export class GameDispatcherService {
     }
 
     // TODO : Refactor to use player id instead of name
-    async handleJoinRequest(waitingRoomId: string, playerId: string, requestingPlayerName: string, isAccepted: boolean): Promise<[Player, Group]> {
+    async handleJoinRequest(waitingRoomId: string, playerId: string, requestingPlayerName: string, isAccepted: boolean, isO): Promise<[Player, Group]> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
+        waitingRoom.getFromRequesting(is)
         const requestingPlayers = waitingRoom.requestingPlayers.filter((player) => player.publicUser.username === requestingPlayerName);
 
         if (requestingPlayers.length === 0) throw new HttpException(NO_USER_FOUND_WITH_NAME, StatusCodes.NOT_FOUND);
@@ -167,18 +170,6 @@ export class GameDispatcherService {
 
         await this.chatService.quitChannel(waitingRoom.getGroupChannelId(), playerId);
         return waitingRoom.convertToGroup();
-    }
-
-    removeRequestingPlayer(waitingRoomId: string, playerId: string): PublicUser[] {
-        const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
-        const requestingPlayers = waitingRoom.requestingPlayers.filter((player) => player.id === playerId);
-        if (requestingPlayers.length === 0) throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
-
-        const requestingPlayer = requestingPlayers[0];
-        const index = waitingRoom.requestingPlayers.indexOf(requestingPlayer);
-        waitingRoom.requestingPlayers.splice(index, 1);
-
-        return waitingRoom.requestingPlayers.map((player) => player.publicUser);
     }
 
     async cancelGame(waitingRoomId: string, playerId: string): Promise<void> {

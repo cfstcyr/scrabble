@@ -8,12 +8,17 @@ import { GameConfig } from './game-config';
 import Room from './room';
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import { Group } from '@common/models/group';
+import { Observer } from '@common/models/observer';
+import { PublicUser } from '@common/models/user';
+import { INVALID_PLAYER_ID_FOR_GAME, INVALID_TYPES } from '@app/constants/services-errors';
 
 export default class WaitingRoom extends Room {
     joinedPlayer2?: Player;
     joinedPlayer3?: Player;
     joinedPlayer4?: Player;
     requestingPlayers: Player[];
+    requestingObservers: Observer[];
+    joinedObservers: Observer[];
     dictionarySummary: DictionarySummary;
 
     private config: GameConfig;
@@ -26,6 +31,8 @@ export default class WaitingRoom extends Room {
         this.joinedPlayer3 = undefined;
         this.joinedPlayer4 = undefined;
         this.requestingPlayers = [];
+        this.requestingObservers = [];
+        this.joinedObservers = [];
         this.groupChannelId = groupChannelId;
     }
 
@@ -77,5 +84,47 @@ export default class WaitingRoom extends Room {
             groupId: this.getId(),
             password: this.getConfig().password,
         };
+    }
+
+    addToRequesting(publicUser: PublicUser, playerId: string, isObserver: boolean): void {
+        if (isObserver) this.requestingObservers.push({ publicUser, id: playerId });
+        else this.requestingPlayers.push(new Player(playerId, publicUser));
+    }
+
+    addToJoined(publicUser: PublicUser, playerId: string, isObserver: boolean): void {
+        if (isObserver) this.joinedObservers.push({ publicUser, id: playerId });
+        else this.fillNextEmptySpot(new Player(playerId, publicUser));
+    }
+
+    getFromRequesting(isObserver: boolean, criteria: (user: Player | Observer) => boolean | Observer): Player | Observer {
+        let requestingArray: (Player | Observer)[];
+        if (isObserver) requestingArray = this.requestingObservers;
+        else requestingArray = this.requestingPlayers;
+
+        const matchingUsers: (Player | Observer)[] = requestingArray.filter((requesting) => criteria(requesting));
+        if (matchingUsers.length === 0) throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+        const matchingUser: Player | Observer = matchingUsers[0];
+        return matchingUser;
+    }
+
+    removeRequesting(playerId: string, isObserver: boolean): Player | Observer {
+        const userWanted = this.getFromRequesting(isObserver, (user) => user.id === playerId);
+        let requestingArray: (Player | Observer)[];
+        if (isObserver) requestingArray = this.requestingObservers;
+        else requestingArray = this.requestingPlayers;
+
+        const index = requestingArray.indexOf(userWanted);
+        return requestingArray.splice(index, 1)[0];
+    }
+
+    changeRequestingToJoined(playerId: string, isObserver: boolean): void {
+        const requestingUser: Player | Observer = this.removeRequesting(playerId, isObserver);
+        if (isObserver) {
+            this.joinedObservers.push(requestingUser);
+        } else if (requestingUser instanceof Player) {
+            this.fillNextEmptySpot(requestingUser);
+        } else {
+            throw new HttpException(INVALID_TYPES, StatusCodes.BAD_REQUEST);
+        }
     }
 }

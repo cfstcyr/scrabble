@@ -69,11 +69,12 @@ export class GameDispatcherController extends BaseController {
             const { gameId } = req.params;
             const userId: UserId = req.body.idUser;
             const { password }: { password: string } = req.body;
+            const { isObserver }: { isObserver: boolean } = req.body;
 
             const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
             const publicUser = await this.authentificationService.getUserById(userId);
             try {
-                await this.handleJoinGame(gameId, playerId, publicUser, password);
+                await this.handleJoinGame(gameId, playerId, publicUser, password, isObserver);
 
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
@@ -248,7 +249,13 @@ export class GameDispatcherController extends BaseController {
         return group;
     }
 
-    private async handleJoinGame(gameId: string, playerId: string, publicUser: PublicUser, password: string): Promise<void> {
+    private async handleJoinGame(
+        gameId: string,
+        playerId: string,
+        publicUser: PublicUser,
+        password: string,
+        isObersver: boolean = false,
+    ): Promise<void> {
         const waitingRoom = await this.gameDispatcherService.requestJoinGame(gameId, playerId, publicUser, password);
         if (waitingRoom.getConfig().gameVisibility === GameVisibility.Private) {
             this.socketService.emitToSocket(

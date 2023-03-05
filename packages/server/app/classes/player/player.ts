@@ -4,10 +4,11 @@ import { ObjectiveUpdate } from '@app/classes/objectives/objective-utils';
 import { ObjectiveValidationParameters } from '@app/classes/objectives/validation-parameters';
 import { Tile } from '@app/classes/tile';
 import ObjectivesService from '@app/services/objective-service/objective.service';
+import { Observer } from '@common/models/observer';
 import { PublicUser } from '@common/models/user';
 import { Container } from 'typedi';
 
-export default class Player {
+export default class Player implements Observer {
     publicUser: PublicUser;
     score: number;
     tiles: Tile[];
