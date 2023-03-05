@@ -7,11 +7,11 @@ exports.up = async function(knex) {
         table.integer('idUser').primary();
         table.integer('gamesPlayedCount').defaultTo(0);
         table.integer('gamesWonCount').defaultTo(0);
-        table.integer('averagePointsPerGame').defaultTo(0);
-        table.integer('averageTimePerGame').defaultTo(0);
+        table.double('averagePointsPerGame', 5, 2).defaultTo(0);
+        table.integer('averageTimePerGame', 8, 2).defaultTo(0);
         
         table.foreign('idUser').references('idUser').inTable('User');
-    })
+    });
 };
 
 /**
