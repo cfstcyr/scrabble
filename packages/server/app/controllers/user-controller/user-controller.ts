@@ -1,10 +1,11 @@
 import { BaseController } from '@app/controllers/base-controller';
-import { EditableUserFields, UserRequest } from '@common/models/user';
+import { EditableUserFields } from '@common/models/user';
 import { UserService } from '@app/services/user-service/user-service';
 import { Router } from 'express';
 import { Service } from 'typedi';
 import { StatusCodes } from 'http-status-codes';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
+import { UserRequest } from '@app/types/user';
 
 @Service()
 export class UserController extends BaseController {

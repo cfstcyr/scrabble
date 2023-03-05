@@ -1,6 +1,3 @@
-import { Request } from 'express';
-import { WithIdOf } from '../types/id';
-
 export interface User {
     idUser: number;
     email: string;
@@ -27,6 +24,3 @@ export interface UserFieldValidation {
 }
 
 export const UNKOWN_USER: PublicUser = { email: '', username: 'Inconnu', avatar: '' };
-
-export type UserBody<Body = object> = Body & WithIdOf<User>;
-export type UserRequest<Body = object> = Request<object, object, UserBody<Body>>;
