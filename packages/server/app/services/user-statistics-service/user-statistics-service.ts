@@ -55,17 +55,11 @@ export class UserStatisticsService {
     }
 
     private calculateNewAveragePointsPerGame(statistics: PublicUserStatistics, game: UserGameStatisticInfo): number {
-        return Math.round(
-            statistics.averagePointsPerGame * (statistics.gamesPlayedCount / (statistics.gamesPlayedCount + 1)) +
-                game.points * (1 / (statistics.gamesPlayedCount + 1)),
-        );
+        return (statistics.averagePointsPerGame * statistics.gamesPlayedCount + game.points) / (statistics.gamesPlayedCount + 1);
     }
 
     private calculateNewAverageTimePerGame(statistics: PublicUserStatistics, game: UserGameStatisticInfo): number {
-        return Math.round(
-            statistics.averageTimePerGame * (statistics.gamesPlayedCount / (statistics.gamesPlayedCount + 1)) +
-                game.time * (1 / (statistics.gamesPlayedCount + 1)),
-        );
+        return (statistics.averageTimePerGame * statistics.gamesPlayedCount + game.time) / (statistics.gamesPlayedCount + 1);
     }
 
     private get table() {
