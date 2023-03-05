@@ -8,12 +8,12 @@ import 'package:mobile/constants/user-constants.dart';
 import '../../pages/groups-request-waiting-page.dart';
 import '../../utils/duration-format.dart';
 
-
 class IndividualGroup extends StatelessWidget {
-  const IndividualGroup({super.key,
-    required this.theme,
-    required this.group,
-    required this.joinGroupFunction});
+  const IndividualGroup(
+      {super.key,
+      required this.theme,
+      required this.group,
+      required this.joinGroupFunction});
 
   final ThemeData theme;
   final Group group;
@@ -30,14 +30,14 @@ class IndividualGroup extends StatelessWidget {
         child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Row(
               children: List.generate(
-                MAX_PLAYER_COUNT,
-                    (index) {
-                  PublicUser userToShow = group.users.length > index
-                      ? group.users[index]
-                      : generateVirtualPlayerUser(group.virtualPlayerLevel);
-                  return PlayerInGroup(user: userToShow);
-                },
-              )),
+            MAX_PLAYER_COUNT,
+            (index) {
+              PublicUser userToShow = group.users.length > index
+                  ? group.users[index]
+                  : generateVirtualPlayerUser(group.virtualPlayerLevel);
+              return PlayerInGroup(user: userToShow);
+            },
+          )),
           VerticalDivider(
             width: 32,
             thickness: 2,
@@ -96,11 +96,16 @@ class IndividualGroup extends StatelessWidget {
                               width: 90,
                               height: 60,
                               child: ElevatedButton(
-                                  onPressed: group.canJoin! ? () {
-                                    joinGroupFunction(group.groupId);
-                                    Navigator.push(
-                                        context, MaterialPageRoute(builder: (context) => GroupRequestWaitingPage(group: group)));
-                                  }
+                                  onPressed: group.canJoin!
+                                      ? () {
+                                          joinGroupFunction(group.groupId);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      GroupRequestWaitingPage(
+                                                          group: group)));
+                                        }
                                       : null,
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: theme.primaryColor,
@@ -110,7 +115,7 @@ class IndividualGroup extends StatelessWidget {
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(2)))),
                                   child:
-                                  Icon(Icons.play_arrow_rounded, size: 60)),
+                                      Icon(Icons.play_arrow_rounded, size: 60)),
                             ),
                           ],
                         ),
@@ -155,16 +160,16 @@ class Observers extends StatelessWidget {
   Widget build(BuildContext context) {
     return numberOfObservers != 0
         ? Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(Icons.visibility_outlined, size: 30),
-        SizedBox(width: 4),
-        Text(
-          numberOfObservers.toString(),
-          style: TextStyle(fontSize: 24),
-        )
-      ],
-    )
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.visibility_outlined, size: 30),
+              SizedBox(width: 4),
+              Text(
+                numberOfObservers.toString(),
+                style: TextStyle(fontSize: 24),
+              )
+            ],
+          )
         : SizedBox.shrink();
   }
 }
@@ -259,19 +264,23 @@ class PlayerInGroup extends StatelessWidget {
             children: [
               FittedBox(
                 fit: BoxFit.cover,
-                child: getUserAvatar(avatar, getUsersInitials(username),
-                    theme.colorScheme.onBackground, 32),
+                child: getUserAvatar(avatar,
+                    initials: getUsersInitials(username),
+                    background: theme.colorScheme.onBackground,
+                    radius: 32,
+                    height: 100,
+                    width: 100),
               ),
               SizedBox(
                 height: 4,
               ),
               Center(
                   child: Text(
-                    username,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: true,
-                  ))
+                username,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                softWrap: true,
+              ))
             ],
           ),
         ),

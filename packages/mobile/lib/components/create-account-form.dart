@@ -4,9 +4,11 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/text-field-handler.dart';
+import 'package:mobile/components/avatar-field.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../constants/create-account-constants.dart';
 import '../controllers/account-authentification-controller.dart';
@@ -31,6 +33,9 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   final usernameHandler = TextFieldHandler();
   final passwordHandler = TextFieldHandler();
   final passwordMatchHandler = TextFieldHandler();
+  final avatarHandler = TextFieldHandler();
+  final avatarSrc = BehaviorSubject<String?>();
+  final avatarError = BehaviorSubject<String?>();
 
   @override
   void initState() {
@@ -59,7 +64,6 @@ class CreateAccountFormState extends State<CreateAccountForm> {
         child: Column(
           children: [
             Container(
-              // height: 585,
               width: 500,
               constraints: BoxConstraints(minHeight: 540),
               child: Card(
@@ -142,7 +146,17 @@ class CreateAccountFormState extends State<CreateAccountForm> {
                               });
                             },
                             controlAffinity: ListTileControlAffinity.leading,
-                          )
+                          ),
+                          SizedBox(
+                            height: SPACE_2,
+                            width: double.maxFinite,
+                          ),
+                          AvatarField(
+                              avatar: avatarSrc, avatarError: avatarError),
+                          SizedBox(
+                            height: SPACE_2,
+                            width: double.maxFinite,
+                          ),
                         ],
                       ),
                       Row(
@@ -270,16 +284,22 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   }
 
   Future<void> createAccount() async {
+    avatarError.add(null);
     setState(() {
       isFirstSubmit = false;
     });
     if (!isFormValid()) {
       return;
     }
+    if (avatarSrc.valueOrNull == null) {
+      avatarError.add('Veuillez choisir un avatar');
+      return;
+    }
     Account newAccount = Account(
         username: usernameHandler.controller.text,
         password: passwordHandler.controller.text,
-        email: emailHandler.controller.text);
+        email: emailHandler.controller.text,
+        avatar: avatarSrc.value!);
     if (await accountController.createAccount(newAccount)) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => HomePage()));
