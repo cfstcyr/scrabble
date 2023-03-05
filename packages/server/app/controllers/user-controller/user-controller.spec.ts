@@ -1,6 +1,5 @@
 /* eslint-disable dot-notation */
 import { Application } from '@app/app';
-// import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { UserService } from '@app/services/user-service/user-service';
 import { PublicUser, User } from '@common/models/user';
@@ -55,15 +54,15 @@ describe('UserController', () => {
         testingUnit.restore();
     });
 
-    describe('/api/user', () => {
+    describe('/api/users', () => {
         describe('GET', () => {
             it('should return user', async () => {
                 await userService['table'].insert(DEFAULT_USER);
-                return supertest(expressApp).get('/api/user').send({ idUser: DEFAULT_USER.idUser }).expect(StatusCodes.OK, DEFAULT_PUBLIC_USER);
+                return supertest(expressApp).get('/api/users').send({ idUser: DEFAULT_USER.idUser }).expect(StatusCodes.OK, DEFAULT_PUBLIC_USER);
             });
 
             it('should return 404 if not found', async () => {
-                return supertest(expressApp).get('/api/user').send({ idUser: DEFAULT_USER.idUser }).expect(StatusCodes.NOT_FOUND);
+                return supertest(expressApp).get('/api/users').send({ idUser: DEFAULT_USER.idUser }).expect(StatusCodes.NOT_FOUND);
             });
         });
 
@@ -73,21 +72,21 @@ describe('UserController', () => {
                 await userService['table'].insert(DEFAULT_USER);
 
                 return supertest(expressApp)
-                    .patch('/api/user')
+                    .patch('/api/users')
                     .send({ idUser: DEFAULT_USER.idUser, avatar })
                     .expect(StatusCodes.OK, { ...DEFAULT_PUBLIC_USER, avatar });
             });
         });
     });
 
-    describe('/api/user/statistics', () => {
+    describe('/api/users/statistics', () => {
         describe('GET', () => {
             it('should return user statistics', async () => {
                 await userService['table'].insert(DEFAULT_USER);
                 await userStatisticsService['table'].insert(DEFAULT_STATISTICS);
 
                 return supertest(expressApp)
-                    .get('/api/user/statistics')
+                    .get('/api/users/statistics')
                     .send({ idUser: DEFAULT_USER.idUser })
                     .expect(StatusCodes.OK, DEFAULT_PUBLIC_STATISTICS);
             });

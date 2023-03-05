@@ -9,7 +9,7 @@ import { UserStatisticsService } from '@app/services/user-statistics-service/use
 @Service()
 export class UserController extends BaseController {
     constructor(private readonly userService: UserService, private readonly userStatisticsService: UserStatisticsService) {
-        super('/api/user');
+        super('/api/users');
     }
 
     protected configure(router: Router): void {
