@@ -88,12 +88,6 @@ class MyAppState extends ChangeNotifier {}
 class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("Super Scrabble"),
-          automaticallyImplyLeading: false,
-        ),
-        backgroundColor: Colors.white,
-        body: LoginPage());
+    return LoginPage();
   }
 }
