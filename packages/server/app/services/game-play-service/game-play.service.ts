@@ -8,7 +8,6 @@ import { RoundData } from '@app/classes/communication/round-data';
 import Game from '@app/classes/game/game';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
-import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import { MUST_HAVE_7_TILES_TO_SWAP } from '@app/constants/classes-errors';
 import { INVALID_COMMAND, INVALID_PAYLOAD, NOT_PLAYER_TURN } from '@app/constants/services-errors';
@@ -21,7 +20,7 @@ import { VirtualPlayerService } from '@app/services/virtual-player-service/virtu
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 import { PublicUserStatistics } from '@common/models/user-statistics';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
@@ -34,6 +33,7 @@ export class GamePlayService {
         private readonly dictionaryService: DictionaryService,
         private readonly gameHistoriesService: GameHistoriesService,
         private readonly virtualPlayerService: VirtualPlayerService,
+        private readonly virtualPlayerFactory: VirtualPlayerFactory,
         private readonly userStatisticsService: UserStatisticsService,
         private readonly authenticationService: AuthentificationService,
     ) {
@@ -214,9 +214,7 @@ export class GamePlayService {
 
         const updatedData: GameUpdateData = game.replacePlayer(
             playerWhoLeftId,
-            game.virtualPlayerLevel === VirtualPlayerLevel.Beginner
-                ? new BeginnerVirtualPlayer(gameId, this.virtualPlayerService.getRandomVirtualPlayerName(playersStillInGame))
-                : new ExpertVirtualPlayer(gameId, this.virtualPlayerService.getRandomVirtualPlayerName(playersStillInGame)),
+            this.virtualPlayerFactory.generateVirtualPlayer(gameId, game.virtualPlayerLevel, playersStillInGame),
         );
 
         if (this.isVirtualPlayerTurn(game)) {

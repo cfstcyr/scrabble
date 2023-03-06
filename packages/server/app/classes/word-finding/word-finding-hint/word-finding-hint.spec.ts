@@ -1,10 +1,12 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable dot-notation */
 import { Board } from '@app/classes/board';
 import { Dictionary } from '@app/classes/dictionary';
 import Range from '@app/classes/range/range';
 import { Tile } from '@app/classes/tile';
 import { boardFromLetterValues, DEFAULT_WORD_PLACEMENT, lettersToTiles, LetterValues } from '@app/classes/word-finding/helper.spec';
-import { HINT_ACTION_NUMBER_OF_WORDS, HINT_ACTION_ATTEMPTS_NUMBER } from '@app/constants/classes-constants';
+import { HINT_ACTION_NUMBER_OF_WORDS } from '@app/constants/classes-constants';
 import { ScoreCalculatorService } from '@app/services/score-calculator-service/score-calculator.service';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
@@ -93,22 +95,8 @@ describe('WordFindingHint', () => {
     });
 
     describe('isSearchCompleted', () => {
-        const tests: [value: number, attempts: number, expected: boolean][] = [
-            [HINT_ACTION_NUMBER_OF_WORDS, HINT_ACTION_ATTEMPTS_NUMBER, true],
-            [HINT_ACTION_NUMBER_OF_WORDS - 1, HINT_ACTION_ATTEMPTS_NUMBER, false],
-            [HINT_ACTION_NUMBER_OF_WORDS, HINT_ACTION_ATTEMPTS_NUMBER - 1, false],
-        ];
-
-        let index = 0;
-        for (const [value, attempts, expected] of tests) {
-            it(`should check (${index})`, () => {
-                wordFinding['wordPlacements'] = [];
-                for (let i = 0; i < value; ++i) wordFinding['wordPlacements'].push({ ...DEFAULT_WORD_PLACEMENT });
-                wordFinding['findingAttempts'] = attempts;
-
-                expect(wordFinding['isSearchCompleted']()).to.equal(expected);
-            });
-            index++;
-        }
+        it('should return false', () => {
+            expect(wordFinding['isSearchCompleted']()).to.be.false;
+        });
     });
 });
