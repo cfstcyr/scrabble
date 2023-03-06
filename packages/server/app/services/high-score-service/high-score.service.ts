@@ -1,13 +1,13 @@
+import { HIGH_SCORE_COUNT } from '@app/constants/game-constants';
+import { DEFAULT_HIGH_SCORES_RELATIVE_PATH, HIGH_SCORE_PLAYER_TABLE, HIGH_SCORE_TABLE } from '@app/constants/services-constants/database-const';
 import DatabaseService from '@app/services/database-service/database.service';
+import { aggregate } from '@app/utils/aggregate/aggregate';
+import { HighScore, HighScorePlayer, HighScoresData, HighScoreWithPlayers } from '@common/models/high-score';
+import { NoId } from '@common/types/id';
 import { promises } from 'fs';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
 import { join } from 'path';
 import { Service } from 'typedi';
-import { HIGH_SCORE_COUNT } from '@app/constants/game-constants';
-import { DEFAULT_HIGH_SCORES_RELATIVE_PATH, HIGH_SCORE_PLAYER_TABLE, HIGH_SCORE_TABLE } from '@app/constants/services-constants/database-const';
-import { aggregate } from '@app/utils/aggregate/aggregate';
-import { NoId } from '@common/types/id';
-import { HighScore, HighScorePlayer, HighScoresData, HighScoreWithPlayers } from '@common/models/high-score';
 
 @Service()
 export default class HighScoresService {

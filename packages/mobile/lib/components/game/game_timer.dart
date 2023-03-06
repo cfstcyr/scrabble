@@ -49,7 +49,7 @@ class _GameTimerState extends State<GameTimer> {
     const oneSec = Duration(seconds: 1);
     widget.timer = Timer.periodic(
       oneSec,
-          (Timer timer) {
+      (Timer timer) {
         if (widget.timeLeft == 0) {
           setState(() {
             timerExpired();
@@ -80,7 +80,7 @@ class _GameTimerState extends State<GameTimer> {
           TimerWidget(
             duration: timeLeftToDuration(),
             style:
-            TextStyle(fontSize: 32, fontWeight: FontWeight.w600, height: 1),
+                TextStyle(fontSize: 32, fontWeight: FontWeight.w600, height: 1),
             stopped: widget.isStopped,
           )
         ]),

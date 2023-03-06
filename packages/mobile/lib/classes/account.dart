@@ -1,8 +1,10 @@
+import 'dart:math';
 
 class Account {
   final String username;
   final String password;
   final String email;
+  final String avatar = "https://placedog.net/${Random().nextInt(1000)}";
 
   Account({
     required this.username,
@@ -22,5 +24,6 @@ class Account {
         'username': username,
         'password': password,
         'email': email,
+        'avatar': avatar
       };
 }

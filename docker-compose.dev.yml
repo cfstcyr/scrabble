@@ -51,7 +51,7 @@ services:
 
     postgres:
         image: postgres
-        restart: always
+        restart: unless-stopped
         ports:
             - ${PG_PORT:-5432}:5432
         environment:
@@ -60,6 +60,15 @@ services:
             POSTGRES_DB: scrabble
         volumes:
             - db:/var/lib/postgresql/data
+
+    pgadmin:
+        image: dpage/pgadmin4
+        restart: unless-stopped
+        ports:
+            - ${PG_ADMIN_PORT:-55432}:80
+        environment:
+            PGADMIN_DEFAULT_EMAIL: root@pgadmin.com
+            PGADMIN_DEFAULT_PASSWORD: root
 
 volumes:
     db:
