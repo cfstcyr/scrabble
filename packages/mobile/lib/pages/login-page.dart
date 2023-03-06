@@ -8,7 +8,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Super Scrabble"),
+          title: Row(children: [Image.asset(LOGO_PATH, height: 60, width: 90)]),
           automaticallyImplyLeading: false,
         ),
         backgroundColor: Colors.white,
@@ -24,31 +24,5 @@ class LoginPage extends StatelessWidget {
             ],
           ),
         ));
-  }
-}
-
-class MainTitle extends StatelessWidget {
-  const MainTitle({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var theme = Theme.of(context);
-    var style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Card(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Image.asset(LOGO_PATH, height: 60, width: 90),
-        ),
-      ),
-      SizedBox(height: 5),
-      Card(
-        child: LoginForm(),
-      ),
-    ]);
   }
 }
