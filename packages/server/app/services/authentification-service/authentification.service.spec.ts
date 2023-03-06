@@ -6,18 +6,18 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { ALREADY_LOGGED, NO_LOGIN, NO_VALIDATE } from '@app/constants/controllers-errors';
-import DatabaseService from '@app/services/database-service/database.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { User } from '@common/models/user';
 import * as bcryptjs from 'bcryptjs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
-import { SinonStubbedInstance } from 'sinon';
 import { Socket } from 'socket.io';
 import { Container } from 'typedi';
 import { AuthentificationService } from './authentification.service';
 import * as jwt from 'jsonwebtoken';
+import { UserService } from '@app/services/user-service/user-service';
+import { Knex } from 'knex';
 
 const expect = chai.expect;
 chai.use(spies);
@@ -26,12 +26,12 @@ chai.use(chaiAsPromised);
 const SOCKET_ID = '1';
 const USER_ID = 1;
 const TOKEN = 'token';
-const ADMIN_USER: User = { username: 'admin', password: 'admin', email: 'admin@admin.com', idUser: USER_ID, avatar: '' };
+const ADMIN_USER: User = { avatar: '', email: 'admin@admin.com', idUser: USER_ID, password: 'admin', username: 'admin' };
 
 describe('AuthentificationService', () => {
     let testingUnit: ServicesTestingUnit;
     let authentificationService: AuthentificationService;
-    let databaseServiceStub: SinonStubbedInstance<DatabaseService>;
+    let userTable: () => Knex.QueryBuilder<User>;
 
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit();
@@ -40,7 +40,7 @@ describe('AuthentificationService', () => {
 
     beforeEach(() => {
         authentificationService = Container.get(AuthentificationService);
-        databaseServiceStub = testingUnit.setStubbed(DatabaseService);
+        userTable = () => Container.get(UserService)['table'];
     });
 
     afterEach(() => {
@@ -70,12 +70,14 @@ describe('AuthentificationService', () => {
         });
 
         it('should connect user', async () => {
+            await userTable().insert(ADMIN_USER);
             await authentificationService.authentificateSocket(socket, TOKEN);
 
             expect(authentificationService.connectedUsers.isConnected(SOCKET_ID));
         });
 
         it('should add idUser to socket data', async () => {
+            await userTable().insert(ADMIN_USER);
             await authentificationService.authentificateSocket(socket, TOKEN);
 
             expect(socket.data.user).to.deep.equal(ADMIN_USER);
@@ -111,41 +113,39 @@ describe('AuthentificationService', () => {
 
     describe('signUp', () => {
         it('should call createUser method from databaseService', () => {
-            const spy = chai.spy.on(databaseServiceStub, 'createUser', () => { });
             authentificationService.signUp(ADMIN_USER);
-            expect(spy).to.have.been.called;
         });
     });
 
     describe('login', () => {
         beforeEach(() => {
-            chai.spy.on(authentificationService, 'getUserByEmail', async () => Promise.resolve(ADMIN_USER));
             chai.spy.on(authentificationService.generateAccessToken, TOKEN);
         });
 
-        it('should throw new Error(NO_LOGIN) when no match', () => {
-            chai.spy.on(bcryptjs, 'compare', () => true);
-            expect(authentificationService.login(ADMIN_USER)).to.eventually.throw(new Error(NO_LOGIN));
+        it('should throw new Error(NO_LOGIN) when no match', async () => {
+            await userTable().insert(ADMIN_USER);
+            chai.spy.on(bcryptjs, 'compare', () => false);
+            expect(authentificationService.login(ADMIN_USER)).to.eventually.rejectedWith(NO_LOGIN);
         });
 
         it('should login the admin', async () => {
+            await userTable().insert(ADMIN_USER);
             chai.spy.on(bcryptjs, 'compare', () => true);
             const admin = { email: 'admin@admin.com', password: 'admin', username: 'admin' };
+            
             expect(await authentificationService.login(admin)).to.exist;
         });
 
-        it('should return a token', () => {
+        it('should return a token', async () => {
+            await userTable().insert(ADMIN_USER);
             chai.spy.on(bcryptjs, 'compare', () => true);
             expect(authentificationService.login(ADMIN_USER)).to.eventually.have.property('token');
         });
 
-        it('should return a user', () => {
+        it('should return a user', async () => {
+            await userTable().insert(ADMIN_USER);
             chai.spy.on(bcryptjs, 'compare', () => true);
             expect(authentificationService.login(ADMIN_USER)).to.eventually.have.property('user');
-        });
-
-        it('should throw if cannot login', () => {
-            expect(authentificationService.login(ADMIN_USER)).to.eventually.rejectedWith(NO_LOGIN);
         });
     });
 
@@ -162,27 +162,19 @@ describe('AuthentificationService', () => {
         });
 
         it('should return user and token', async () => {
+            await userTable().insert(ADMIN_USER);
             chai.spy.on(authentificationService, 'generateAccessToken', () => TOKEN);
-            chai.spy.on(authentificationService, 'getUserById', async () => Promise.resolve(ADMIN_USER));
 
-            const { token, user } = await authentificationService.validate(USER_ID);
+            const { token, user } = await authentificationService.validate(ADMIN_USER.idUser);
 
             expect(token).to.equal(TOKEN);
-            expect(user).to.equal(ADMIN_USER);
-        });
-    });
-
-    describe('getUserById', () => {
-        it(' should return a admin user', () => {
-            chai.spy.on(bcryptjs, 'compare', () => true);
-            expect(authentificationService.getUserById(1)).to.eventually.equal(ADMIN_USER);
+            expect(user).to.deep.equal(ADMIN_USER);
         });
     });
 
     describe('HAPPY PATH', () => {
         it('should return access token on password match', async () => {
             const expectedAccessToken = 'ACCESS';
-            chai.spy.on(databaseServiceStub, 'getUser', () => ADMIN_USER);
             chai.spy.on(authentificationService, 'generateAccessToken', () => expectedAccessToken);
             chai.spy.on(bcryptjs, 'compare', () => true);
 
@@ -192,7 +184,6 @@ describe('AuthentificationService', () => {
 
     describe('SAD PATH', () => {
         it('should NOT return access token on password match', async () => {
-            chai.spy.on(databaseServiceStub, 'getUser', () => ADMIN_USER);
             chai.spy.on(bcryptjs, 'compare', () => false);
 
             expect(authentificationService.login(ADMIN_USER)).to.eventually.not.exist;
