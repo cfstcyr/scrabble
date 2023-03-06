@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../classes/channel-message.dart';
 import '../classes/channel.dart';
 import '../constants/chat-management.constants.dart';
 import '../locator.dart';
@@ -18,12 +19,12 @@ class ChatManagementController {
 
   static final ChatManagementController _instance =
       ChatManagementController._privateConstructor();
-  List<Channel> channels = [DEFAULT_CHANNEL];
-  List<Channel> myChannels = [DEFAULT_CHANNEL];
+  List<Channel> channels = [];
+  List<Channel> myChannels = [];
   BehaviorSubject<List<Channel>> channels$ =
-      BehaviorSubject<List<Channel>>.seeded([DEFAULT_CHANNEL]);
+      BehaviorSubject<List<Channel>>.seeded([]);
   BehaviorSubject<List<Channel>> myChannels$ =
-      BehaviorSubject<List<Channel>>.seeded([DEFAULT_CHANNEL]);
+      BehaviorSubject<List<Channel>>.seeded([]);
   BehaviorSubject<bool> shouldOpen$ = BehaviorSubject<bool>.seeded(false);
   BehaviorSubject<Channel> channelToOpen$ =
       BehaviorSubject<Channel>.seeded(DEFAULT_CHANNEL);
@@ -58,9 +59,8 @@ class ChatManagementController {
       Channel typedChannel = Channel.fromJson(channel);
       myChannels.add(typedChannel);
       myChannels$.add(myChannels);
-      // TODO APRES RACHAD if (shouldOpen$.value)
       channelToOpen$.add(typedChannel);
-      scaffoldKey.currentState!.openEndDrawer();
+      if (shouldOpen$.value) scaffoldKey.currentState!.openEndDrawer();
       handleUnjoinedChannels();
     });
 
@@ -72,10 +72,16 @@ class ChatManagementController {
       handleUnjoinedChannels();
     });
 
-    // TODO w/ rachad mr
-    // SocketService.socket.on(HISTORY_EVENT, (channel) {
-    //   print('channel:history: $channel');
-    // });
+    SocketService.socket.on(HISTORY_EVENT, (chatMessages) {
+      List<ChannelMessage> history = List<ChannelMessage>.from(
+          chatMessages.map((message) => ChannelMessage.fromJson(message)));
+      int idChannel = history.length != 0 ? history[0].idChannel : 0;
+      if (idChannel != 0) {
+        Channel channelToFill = myChannels$.value
+            .firstWhere((channel) => channel.idChannel == idChannel);
+        channelToFill.messages = [...history];
+      }
+    });
 
     SocketService.socket.on(INIT_DONE_EVENT, (s) {
       shouldOpen$.add(true);
