@@ -16,4 +16,14 @@ class GameCreationService {
   Future<bool> createAccount(PublicUser opponent, String gameId) async {
     return await gameCreationController.handleAcceptOpponent(opponent, gameId);
   }
+
+  Future<String> createGame(
+    PublicUser opponent,
+  ) async {
+    return await gameCreationController.handleCreateGame(opponent);
+  }
+
+  // Future<bool> startGame(PublicUser user, String gameId) async {
+  //   return await gameCreationController.handleStartGame(user, gameId);
+  // }
 }

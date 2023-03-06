@@ -40,12 +40,13 @@ class GameCreationController {
   }
 
   // TODO
-  Future<bool> handleStartGame(PublicUser opponent, String gameId) async {
+  Future<bool> handleStartGame(
+      List<PublicUser> opponents, String gameId) async {
     // TODO PAS LES BONS ENDPOINTS: accept est pour le bouton "démarrer la partie"
     Response res = await post(
         Uri.parse(
             "${endpoint}/${gameId}/players/${SocketService.socket.id}/accept"),
-        body: jsonEncode(opponent));
+        body: jsonEncode(opponents));
     // TODO: Remove hack
     return (res.statusCode == 200);
   }
@@ -59,5 +60,10 @@ class GameCreationController {
         body: jsonEncode(opponent));
     // TODO: Remove hack
     return (res.statusCode == 200);
+  }
+
+  Future<String> handleCreateGame(PublicUser user) async {
+    Response res = await post(Uri.parse(endpoint), body: jsonEncode({}));
+    return res.body;
   }
 }

@@ -1,6 +1,8 @@
 import 'package:http/http.dart';
+import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/view-methods/group.methods.dart';
+import 'package:mobile/view-methods/create-lobby-methods.dart';
 
 import '../constants/socket-events/group-events.dart';
 import '../locator.dart';
@@ -58,5 +60,6 @@ class GroupJoinController {
         REJECTED_FROM_GROUP, (hostName) => rejectedJoinRequest$.add(hostName));
     socketService.on(
         CANCELED_GROUP, (hostName) => canceledGroup$.add(hostName));
+    socketService.on(START_GAME, (hostName) => startGame$.add(hostName));
   }
 }
