@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/animation/pulse.dart';
-import 'package:mobile/components/player/player.dart';
+import 'package:mobile/components/image.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -40,7 +40,8 @@ abstract class AbstractPlayer extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.grey,
             image: DecorationImage(
-                image: AssetImage(player.user.avatar), fit: BoxFit.cover),
+                image: AppImage(src: player.user.avatar).provider,
+                fit: BoxFit.cover),
             borderRadius: BorderRadius.all(Radius.circular(22)),
           ),
         ),
