@@ -82,7 +82,7 @@ describe('GamePlayService', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(VirtualPlayerFactoryService);
+        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(VirtualPlayerFactory);
     });
 
     beforeEach(() => {
@@ -468,7 +468,6 @@ describe('GamePlayService', () => {
         let virtualPlayerFactoryStub: SinonStubbedInstance<VirtualPlayerFactory>;
         let userStatisticsService: SinonStubbedInstance<UserStatisticsService>;
         let authenticationService: SinonStubbedInstance<AuthentificationService>;
-        let virtualPlayerFactoryStub: SinonStubbedInstance<VirtualPlayerFactoryService>;
 
         beforeEach(() => {
             activeGameServiceStub = createStubInstance(ActiveGameService);
@@ -476,7 +475,7 @@ describe('GamePlayService', () => {
             activeGameServiceStub.playerLeftEvent = new EventEmitter();
             activeGameServiceStub.getGame.returns(gameStub as unknown as Game);
             virtualPlayerServiceStub.triggerVirtualPlayerTurn.returns();
-            virtualPlayerFactoryStub = testingUnit.getStubbedInstance(VirtualPlayerFactoryService);
+            virtualPlayerFactoryStub = testingUnit.getStubbedInstance(VirtualPlayerFactory);
             userStatisticsService = createStubInstance(UserStatisticsService);
             authenticationService = createStubInstance(AuthentificationService);
             gamePlayService = new GamePlayService(
@@ -485,7 +484,7 @@ describe('GamePlayService', () => {
                 dictionaryServiceStub as unknown as DictionaryService,
                 gameHistoriesServiceStub as unknown as GameHistoriesService,
                 virtualPlayerServiceStub as unknown as VirtualPlayerService,
-                virtualPlayerFactoryStub as unknown as VirtualPlayerFactoryService,
+                virtualPlayerFactoryStub as unknown as VirtualPlayerFactory,
                 userStatisticsService as unknown as UserStatisticsService,
                 authenticationService as unknown as AuthentificationService,
             );
