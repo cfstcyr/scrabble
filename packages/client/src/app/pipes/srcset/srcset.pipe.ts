@@ -5,6 +5,7 @@ import { generateSrcset } from '@app/utils/image/srcset';
     name: 'srcset',
 })
 export class SrcsetPipe implements PipeTransform {
+    // Create srcset string
     transform(src: string, h: number | undefined, w: number | undefined): string {
         return generateSrcset(src, { h, w });
     }
