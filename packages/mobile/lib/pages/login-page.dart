@@ -27,21 +27,6 @@ class LoginPage extends StatelessWidget {
   }
 }
 
-// class LoginPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           MainTitle(),
-//           SizedBox(height: 10),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 class MainTitle extends StatelessWidget {
   const MainTitle({
     super.key,
@@ -67,26 +52,3 @@ class MainTitle extends StatelessWidget {
     ]);
   }
 }
-
-// body: SingleChildScrollView(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             Center(
-//               child: Column(
-//                 children: [CreateAccountForm()],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-
-
-// Scaffold(
-//         appBar: AppBar(
-//           title: const Text("Super Scrabble"),
-//           automaticallyImplyLeading: false,
-//         ),
-//         backgroundColor: Colors.white,
-//         body: LoginPage());
-//   }
