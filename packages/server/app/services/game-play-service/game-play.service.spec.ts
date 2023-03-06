@@ -36,7 +36,7 @@ import { EventEmitter } from 'events';
 import * as sinon from 'sinon';
 import { createStubInstance, restore, SinonStub, SinonStubbedInstance, stub } from 'sinon';
 import { Container } from 'typedi';
-import { VirtualPlayerFactoryService } from '@app/services/virtual-player-factory-service/virtual-player-factory.service';
+import { VirtualPlayerFactoryService } from '@app/factories/virtual-player-factory/virtual-player-factory';
 
 const expect = chai.expect;
 

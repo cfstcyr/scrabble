@@ -7,7 +7,7 @@ import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { Service } from 'typedi';
 
 @Service()
-export class VirtualPlayerFactoryService {
+export class VirtualPlayerFactory {
     generateVirtualPlayer(gameId: string, virtualPlayerLevel: VirtualPlayerLevel, playersInGame: Player[]): Player {
         return virtualPlayerLevel === VirtualPlayerLevel.Beginner
             ? new BeginnerVirtualPlayer(gameId, this.getRandomVirtualPlayerName(playersInGame))

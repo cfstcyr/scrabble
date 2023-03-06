@@ -34,7 +34,7 @@ import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatche
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import Room from '@app/classes/game/room';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
-import { VirtualPlayerFactoryService } from '@app/services/virtual-player-factory-service/virtual-player-factory.service';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 
 const expect = chai.expect;
 
@@ -86,7 +86,7 @@ describe('GameDispatcherService', () => {
     let virtualPlayerServiceStub: SinonStubbedInstance<VirtualPlayerService>;
 
     beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(ChatService).withStubbed(VirtualPlayerFactoryService);
+        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(ChatService).withStubbed(VirtualPlayerFactory);
         virtualPlayerServiceStub = createStubInstance(VirtualPlayerService);
         gameDispatcherService = Container.get(GameDispatcherService);
         gameDispatcherService['virtualPlayerService'] = virtualPlayerServiceStub as unknown as VirtualPlayerService;

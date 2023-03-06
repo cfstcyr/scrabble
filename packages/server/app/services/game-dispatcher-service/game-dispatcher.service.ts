@@ -22,7 +22,7 @@ import { UserId } from '@app/classes/user/connected-user-types';
 import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
 import { GameVisibility } from '@common/models/game-visibility';
-import { VirtualPlayerFactoryService } from '@app/services/virtual-player-factory-service/virtual-player-factory.service';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 @Service()
 export class GameDispatcherService {
     private waitingRooms: WaitingRoom[];
@@ -33,7 +33,7 @@ export class GameDispatcherService {
         private createGameService: CreateGameService,
         private dictionaryService: DictionaryService,
         private virtualPlayerService: VirtualPlayerService,
-        private readonly virtualPlayerFactory: VirtualPlayerFactoryService,
+        private readonly virtualPlayerFactory: VirtualPlayerFactory,
         private readonly chatService: ChatService,
     ) {
         this.waitingRooms = [];
