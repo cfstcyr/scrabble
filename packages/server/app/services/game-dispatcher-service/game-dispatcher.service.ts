@@ -3,7 +3,6 @@ import Room from '@app/classes/game/room';
 import WaitingRoom from '@app/classes/game/waiting-room';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
-import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import {
     CANT_START_GAME_WITH_NO_REAL_OPPONENT,
     INVALID_PASSWORD,
@@ -23,6 +22,7 @@ import { UserId } from '@app/classes/user/connected-user-types';
 import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
 import { GameVisibility } from '@common/models/game-visibility';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 @Service()
 export class GameDispatcherService {
     private waitingRooms: WaitingRoom[];
@@ -33,6 +33,7 @@ export class GameDispatcherService {
         private createGameService: CreateGameService,
         private dictionaryService: DictionaryService,
         private virtualPlayerService: VirtualPlayerService,
+        private readonly virtualPlayerFactory: VirtualPlayerFactory,
         private readonly chatService: ChatService,
     ) {
         this.waitingRooms = [];
@@ -117,16 +118,20 @@ export class GameDispatcherService {
 
         const player2 = waitingRoom.joinedPlayer2
             ? waitingRoom.joinedPlayer2
-            : new ExpertVirtualPlayer(waitingRoomId, this.virtualPlayerService.getRandomVirtualPlayerName(waitingRoom.getPlayers()));
+            : this.virtualPlayerFactory.generateVirtualPlayer(waitingRoomId, waitingRoom.getConfig().virtualPlayerLevel, waitingRoom.getPlayers());
         const player3 = waitingRoom.joinedPlayer3
             ? waitingRoom.joinedPlayer3
-            : new ExpertVirtualPlayer(waitingRoomId, this.virtualPlayerService.getRandomVirtualPlayerName([...waitingRoom.getPlayers(), player2]));
+            : this.virtualPlayerFactory.generateVirtualPlayer(waitingRoomId, waitingRoom.getConfig().virtualPlayerLevel, [
+                  ...waitingRoom.getPlayers(),
+                  player2,
+              ]);
         const player4 = waitingRoom.joinedPlayer4
             ? waitingRoom.joinedPlayer4
-            : new ExpertVirtualPlayer(
-                  waitingRoomId,
-                  this.virtualPlayerService.getRandomVirtualPlayerName([...waitingRoom.getPlayers(), player2, player3]),
-              );
+            : this.virtualPlayerFactory.generateVirtualPlayer(waitingRoomId, waitingRoom.getConfig().virtualPlayerLevel, [
+                  ...waitingRoom.getPlayers(),
+                  player2,
+                  player3,
+              ]);
         const config: ReadyGameConfig = {
             ...waitingRoom.getConfig(),
             player2,

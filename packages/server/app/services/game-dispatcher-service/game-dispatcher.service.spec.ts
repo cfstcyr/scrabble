@@ -34,6 +34,7 @@ import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatche
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import Room from '@app/classes/game/room';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 
 const expect = chai.expect;
 
@@ -85,7 +86,7 @@ describe('GameDispatcherService', () => {
     let virtualPlayerServiceStub: SinonStubbedInstance<VirtualPlayerService>;
 
     beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(ChatService);
+        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(ChatService).withStubbed(VirtualPlayerFactory);
         virtualPlayerServiceStub = createStubInstance(VirtualPlayerService);
         gameDispatcherService = Container.get(GameDispatcherService);
         gameDispatcherService['virtualPlayerService'] = virtualPlayerServiceStub as unknown as VirtualPlayerService;
@@ -137,7 +138,6 @@ describe('GameDispatcherService', () => {
             getMultiplayerGameFromIdSpy = spy.on(gameDispatcherService, 'getMultiplayerGameFromId', () => {
                 return newRoom;
             });
-            virtualPlayerServiceStub.getRandomVirtualPlayerName.returns('aa');
             newRoom.joinedPlayer4 = {} as unknown as Player;
             gameDispatcherService['waitingRooms'] = [newRoom, oldRoom];
         });
@@ -166,10 +166,6 @@ describe('GameDispatcherService', () => {
             gameDispatcherService.startRequest('newroomid', DEFAULT_MULTIPLAYER_CONFIG.player1.id);
             expect(gameDispatcherService['waitingRooms'].includes(newRoom)).to.be.false;
         });
-        // it('should call getRandomVirtualPlayerNameSpy', () => {
-        //     gameDispatcherService.startRequest('newroomid', DEFAULT_MULTIPLAYER_CONFIG.player1.id);
-        //     expect(getRandomVirtualPlayerNameSpy).to.have.been.called();
-        // });
     });
 
     describe('createMultiplayerGame', () => {
