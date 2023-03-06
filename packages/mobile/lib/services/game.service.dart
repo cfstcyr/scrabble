@@ -28,17 +28,17 @@ class GameService {
         players: PlayersContainer.fromPlayers(
           player1: Player(
               user: PublicUser(username: "George", avatar: '', email: ''),
-              points: 420,
+              score: 420,
               isLocalPlayer: true),
           player2: Player(
               user: PublicUser(username: "Léonard", avatar: '', email: ''),
-              points: 69),
+              score: 69),
           player3: Player(
               user: PublicUser(username: "Hernest", avatar: '', email: ''),
-              points: 666),
+              score: 666),
           player4: Player(
               user: PublicUser(username: "Bernard", avatar: '', email: ''),
-              points: 2),
+              score: 2),
         ),
         roundDuration: Duration(minutes: 1, seconds: 42)));
 

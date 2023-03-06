@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/services/game-creation-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
 import '../constants/create-lobby-constants.dart';
+import '../locator.dart';
 
 BehaviorSubject<List<PublicUser>> playerList$ =
     BehaviorSubject<List<PublicUser>>.seeded(playerList);
@@ -87,7 +89,7 @@ void refusePlayer(PublicUser player) {
 }
 
 void startGame(BuildContext context) {
-  // TODO socket + redirection game page
+  getIt.get<GameCreationService>().handleStartGame();
   playerList$.close();
 }
 
