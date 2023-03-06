@@ -20,6 +20,7 @@ import { VirtualPlayerService } from '@app/services/virtual-player-service/virtu
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
+import { VirtualPlayerFactoryService } from '@app/services/virtual-player-factory-service/virtual-player-factory.service';
 @Service()
 export class GamePlayService {
     constructor(
@@ -28,6 +29,7 @@ export class GamePlayService {
         private readonly dictionaryService: DictionaryService,
         private readonly gameHistoriesService: GameHistoriesService,
         private readonly virtualPlayerService: VirtualPlayerService,
+        private readonly virtualPlayerFactory: VirtualPlayerFactoryService,
     ) {
         this.activeGameService.playerLeftEvent.on('playerLeftGame', async (gameId, playerWhoLeftId) => {
             await this.handlePlayerLeftEvent(gameId, playerWhoLeftId);
@@ -159,11 +161,7 @@ export class GamePlayService {
 
         const updatedData: GameUpdateData = game.replacePlayer(
             playerWhoLeftId,
-            this.virtualPlayerService.generateVirtualPlayer(
-                gameId,
-                game.virtualPlayerLevel,
-                this.virtualPlayerService.getRandomVirtualPlayerName(playersStillInGame),
-            ),
+            this.virtualPlayerFactory.generateVirtualPlayer(gameId, game.virtualPlayerLevel, playersStillInGame),
         );
 
         if (this.isVirtualPlayerTurn(game)) {

@@ -4,14 +4,9 @@ import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import Game from '@app/classes/game/game';
 import { StartGameData } from '@app/classes/game/game-config';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import Player from '@app/classes/player/player';
 import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
-import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
-import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
-import { CONTENT_TYPE, GAME_SHOULD_CONTAIN_ROUND, VIRTUAL_PLAYER_NAMES } from '@app/constants/virtual-player-constants';
+import { CONTENT_TYPE, GAME_SHOULD_CONTAIN_ROUND } from '@app/constants/virtual-player-constants';
 import { env } from '@app/utils/environment/environment';
-import { Random } from '@app/utils/random/random';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { StatusCodes } from 'http-status-codes';
 import fetch, { Response } from 'node-fetch';
 import { Service } from 'typedi';
@@ -31,18 +26,6 @@ export class VirtualPlayerService {
         if (!data.round) throw new HttpException(GAME_SHOULD_CONTAIN_ROUND, StatusCodes.INTERNAL_SERVER_ERROR);
         const virtualPlayer = game.getPlayer(data.round.playerData.id) as AbstractVirtualPlayer;
         virtualPlayer.playTurn();
-    }
-
-    generateVirtualPlayer(gameId: string, virtualPlayerLevel: VirtualPlayerLevel, virtualPlayerName: string): Player {
-        return virtualPlayerLevel === VirtualPlayerLevel.Beginner
-            ? new BeginnerVirtualPlayer(gameId, virtualPlayerName)
-            : new ExpertVirtualPlayer(gameId, virtualPlayerName);
-    }
-
-    getRandomVirtualPlayerName(players: Player[]): string {
-        const usedNames = players.map((player) => player.publicUser.username);
-        const possibleNames = VIRTUAL_PLAYER_NAMES.filter((name) => !usedNames.includes(name));
-        return Random.getRandomElementsFromArray(possibleNames)[0];
     }
 
     private getEndPoint(): string {

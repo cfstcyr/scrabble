@@ -137,7 +137,6 @@ describe('GameDispatcherService', () => {
             getMultiplayerGameFromIdSpy = spy.on(gameDispatcherService, 'getMultiplayerGameFromId', () => {
                 return newRoom;
             });
-            virtualPlayerServiceStub.getRandomVirtualPlayerName.returns('aa');
             newRoom.joinedPlayer4 = {} as unknown as Player;
             gameDispatcherService['waitingRooms'] = [newRoom, oldRoom];
         });
@@ -166,10 +165,6 @@ describe('GameDispatcherService', () => {
             gameDispatcherService.startRequest('newroomid', DEFAULT_MULTIPLAYER_CONFIG.player1.id);
             expect(gameDispatcherService['waitingRooms'].includes(newRoom)).to.be.false;
         });
-        // it('should call getRandomVirtualPlayerNameSpy', () => {
-        //     gameDispatcherService.startRequest('newroomid', DEFAULT_MULTIPLAYER_CONFIG.player1.id);
-        //     expect(getRandomVirtualPlayerNameSpy).to.have.been.called();
-        // });
     });
 
     describe('createMultiplayerGame', () => {

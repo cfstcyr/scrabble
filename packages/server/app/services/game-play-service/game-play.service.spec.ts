@@ -36,6 +36,7 @@ import { EventEmitter } from 'events';
 import * as sinon from 'sinon';
 import { createStubInstance, restore, SinonStub, SinonStubbedInstance, stub } from 'sinon';
 import { Container } from 'typedi';
+import { VirtualPlayerFactoryService } from '@app/services/virtual-player-factory-service/virtual-player-factory.service';
 
 const expect = chai.expect;
 
@@ -459,6 +460,7 @@ describe('GamePlayService', () => {
         let dictionaryServiceStub: SinonStubbedInstance<DictionaryService>;
         let gameHistoriesServiceStub: SinonStubbedInstance<GameHistoriesService>;
         let virtualPlayerServiceStub: SinonStubbedInstance<VirtualPlayerService>;
+        let virtualPlayerFactoryStub: SinonStubbedInstance<VirtualPlayerFactoryService>;
 
         beforeEach(() => {
             activeGameServiceStub = createStubInstance(ActiveGameService);
@@ -472,6 +474,7 @@ describe('GamePlayService', () => {
                 dictionaryServiceStub as unknown as DictionaryService,
                 gameHistoriesServiceStub as unknown as GameHistoriesService,
                 virtualPlayerServiceStub as unknown as VirtualPlayerService,
+                virtualPlayerFactoryStub as unknown as VirtualPlayerFactoryService,
             );
             gameStub.player1 = new Player(DEFAULT_PLAYER_ID, USER1);
             gameStub.player2 = new Player(playerWhoLeftId, USER2);
