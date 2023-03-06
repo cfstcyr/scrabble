@@ -6,8 +6,7 @@ import 'package:rxdart/rxdart.dart';
 import '../classes/user.dart';
 import '../constants/create-lobby-constants.dart';
 
-GameCreationController gameCreationController =
-    getIt.get<GameCreationController>();
+final gameCreationController = getIt.get<GameCreationController>();
 
 BehaviorSubject<List<PublicUser>> playerList$ =
     BehaviorSubject<List<PublicUser>>.seeded(playerList);
