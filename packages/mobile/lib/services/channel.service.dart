@@ -1,9 +1,9 @@
+import 'package:mobile/controllers/chat-management.controller.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/channel-message.dart';
 import '../classes/channel.dart';
 import '../classes/chat-message.dart';
-import '../controllers/channel.controller.dart';
 import '../locator.dart';
 
 class ChannelService {
@@ -14,12 +14,18 @@ class ChannelService {
   factory ChannelService() {
     return _instance;
   }
-  final _channelController = getIt.get<ChannelController>();
+  final _chatController = getIt.get<ChatManagementController>();
 
   BehaviorSubject<List<ChannelMessage>> get messages$ =>
-      _channelController.messages$;
+      _chatController.messages$;
 
   Future<void> sendMessage(Channel channel, ChatMessage message) async {
-    _channelController.sendMessage(channel, message);
+    _chatController.sendMessage(channel, message);
+  }
+
+  void addMessage(ChannelMessage message) {
+    List<ChannelMessage> channelMessages = [...messages$.value];
+    channelMessages.insert(0, message);
+    messages$.add([...channelMessages]);
   }
 }

@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:mobile/controllers/channel.controller.dart';
 import 'package:mobile/controllers/gameplay-controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
 import 'package:mobile/services/action-service.dart';
@@ -29,7 +28,6 @@ void setUpLocator() {
   getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
   getIt.registerLazySingleton<AccountAuthenticationController>(
       () => AccountAuthenticationController());
-  getIt.registerLazySingleton<ChannelController>(() => ChannelController());
   getIt.registerLazySingleton<ChatManagementController>(
       () => ChatManagementController());
   getIt.registerLazySingleton<SocketService>(() => SocketService());

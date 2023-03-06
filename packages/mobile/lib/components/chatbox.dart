@@ -9,7 +9,6 @@ import 'package:uuid/uuid.dart';
 
 import '../classes/channel-message.dart';
 import '../classes/chat-message.dart';
-import '../controllers/channel.controller.dart';
 import '../locator.dart';
 import '../services/channel.service.dart';
 import '../services/user.service.dart';
@@ -26,13 +25,10 @@ class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
 
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  //TODO: Enlever le chat controller,  Add un Channel Service a la place qui lui parle au controller
-  ChannelController channelController = getIt.get<ChannelController>();
   ChannelService channelService = getIt.get<ChannelService>();
   UserService userService = getIt.get<UserService>();
-  // TODO: Set les infos des users avec les vrais infos
   late PublicUser userData;
-  late final _user;
+  late types.User _userView;
   BehaviorSubject<List<ChannelMessage>> get messages$ =>
       channelService.messages$;
 
@@ -40,7 +36,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     userData = userService.getUser();
-    _user = types.User(id: userData.email, firstName: userData.username);
+    _userView = types.User(id: userData.email, firstName: userData.username);
     messages$.add(widget.channel.messages);
     _messages = filterToChatBoxFormat(widget.channel.messages);
   }
@@ -49,7 +45,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.channel.name)),
+      appBar: AppBar(title: Text(widget.channel.idChannel.toString())),
       body: handleChannelChange(theme),
     );
   }
@@ -70,22 +66,13 @@ class _ChatPageState extends State<ChatPage> {
             onSendPressed: _handleSendPressed,
             showUserAvatars: true,
             showUserNames: true,
-            user: _user,
+            user: _userView,
           );
         });
   }
 
   void _handleSendPressed(types.PartialText message) {
-    // TODO: Refactor cette duplication de code, textMessage est utilisé
-    // pour l'affichage de store des messages par le package  et messageData pour le event: channel:newMessage
     if (message.text != "") {
-      final textMessage = types.TextMessage(
-        author: _user,
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        id: const Uuid().v4(),
-        text: message.text,
-      );
-
       final messageData = ChatMessage(
         sender: userData,
         content: message.text,
@@ -95,19 +82,9 @@ class _ChatPageState extends State<ChatPage> {
       final channelMessage = ChannelMessage(
           message: messageData, idChannel: widget.channel.idChannel);
 
-      _sendMessage(widget.channel, messageData);
-      _addMessage(channelMessage);
+      channelService.sendMessage(widget.channel, messageData);
+      channelService.addMessage(channelMessage);
     }
-  }
-
-  void _addMessage(ChannelMessage message) {
-    List<ChannelMessage> channelMessages = [...messages$.value];
-    channelMessages.insert(0, message);
-    messages$.add([...channelMessages]);
-  }
-
-  void _sendMessage(Channel channel, ChatMessage message) {
-    channelController.sendMessage(channel, message);
   }
 
   types.TextMessage toChatBoxFormat(ChatMessage message) {
