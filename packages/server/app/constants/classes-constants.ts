@@ -34,7 +34,6 @@ export const HELP_ACTIONS: HelpAction[] = [
 ];
 
 export const HINT_ACTION_NUMBER_OF_WORDS = 5;
-export const HINT_ACTION_ATTEMPTS_NUMBER = 12;
 
 export const START_TILES_AMOUNT = 7;
 export const TILE_RESERVE_THRESHOLD = 7;
