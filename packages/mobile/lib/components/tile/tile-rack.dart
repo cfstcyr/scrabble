@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/game/game.dart';
+import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
-import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';

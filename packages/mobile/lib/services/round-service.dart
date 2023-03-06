@@ -1,6 +1,6 @@
+import 'package:async/async.dart';
 import 'package:mobile/locator.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:async/async.dart';
 
 import 'game.service.dart';
 

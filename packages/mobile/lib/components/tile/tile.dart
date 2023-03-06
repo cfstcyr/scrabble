@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/animation/wiggle.dart';
 import 'package:mobile/constants/assets.constants.dart';
-import 'package:mobile/constants/layout.constants.dart';
 
 class Tile extends StatelessWidget {
   Tile({

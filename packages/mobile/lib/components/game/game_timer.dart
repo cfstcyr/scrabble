@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/timer.dart';
 import 'package:mobile/locator.dart';
