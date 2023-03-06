@@ -18,7 +18,9 @@ import { expect, spy } from 'chai';
 import * as sinon from 'sinon';
 import { io as ioClient, Socket } from 'socket.io-client';
 import { Container } from 'typedi';
+import { ServerActionService } from '@app/services/server-action-service/server-action.service';
 import { SocketService } from './socket.service';
+import { ConnectedUser } from '@app/classes/user/connected-user';
 
 const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
@@ -57,7 +59,13 @@ describe('SocketService', () => {
             testingUnit = new ServicesTestingUnit()
                 .withStubbed(DictionaryService)
                 .withStubbed(ChatService)
-                .withStubbed(AuthentificationService, { authentificateSocket: Promise.resolve() })
+                .withStubbed(
+                    AuthentificationService,
+                    {
+                        authentificateSocket: Promise.resolve(),
+                    },
+                    { connectedUsers: sinon.createStubInstance(ConnectedUser) as unknown as ConnectedUser },
+                )
                 .withStubbedPrototypes(Application, { bindRoutes: undefined });
         });
 
@@ -327,7 +335,10 @@ describe('SocketService', () => {
         let service: SocketService;
 
         beforeEach(async () => {
-            service = new SocketService(Container.get(AuthentificationService));
+            service = new SocketService(
+                Container.get(AuthentificationService),
+                sinon.createStubInstance(ServerActionService) as unknown as ServerActionService,
+            );
         });
 
         describe('addToRoom', () => {
