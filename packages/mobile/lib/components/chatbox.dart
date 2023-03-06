@@ -45,7 +45,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.channel.idChannel.toString())),
+      appBar: AppBar(title: Text(widget.channel.name)),
       body: handleChannelChange(theme),
     );
   }
