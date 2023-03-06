@@ -21,7 +21,6 @@ import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 import { PublicUserStatistics } from '@common/models/user-statistics';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
@@ -35,6 +34,8 @@ export class GamePlayService {
         private readonly gameHistoriesService: GameHistoriesService,
         private readonly virtualPlayerService: VirtualPlayerService,
         private readonly virtualPlayerFactory: VirtualPlayerFactory,
+        private readonly userStatisticsService: UserStatisticsService,
+        private readonly authenticationService: AuthentificationService,
     ) {
         this.activeGameService.playerLeftEvent.on('playerLeftGame', async (gameId, playerWhoLeftId) => {
             await this.handlePlayerLeftEvent(gameId, playerWhoLeftId);
