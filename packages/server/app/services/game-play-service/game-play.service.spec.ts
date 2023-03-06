@@ -80,7 +80,7 @@ describe('GamePlayService', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService();
+        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(VirtualPlayerFactoryService);
     });
 
     beforeEach(() => {
@@ -468,6 +468,7 @@ describe('GamePlayService', () => {
             activeGameServiceStub.playerLeftEvent = new EventEmitter();
             activeGameServiceStub.getGame.returns(gameStub as unknown as Game);
             virtualPlayerServiceStub.triggerVirtualPlayerTurn.returns();
+            virtualPlayerFactoryStub = testingUnit.getStubbedInstance(VirtualPlayerFactoryService);
             gamePlayService = new GamePlayService(
                 activeGameServiceStub as unknown as ActiveGameService,
                 highScoresServiceStub as unknown as HighScoresService,
