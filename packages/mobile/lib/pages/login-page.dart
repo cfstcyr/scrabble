@@ -2,22 +2,45 @@ import 'package:flutter/material.dart';
 
 import '../components/login-form.dart';
 import '../constants/login-constants.dart';
-import 'groups-page.dart';
 
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          MainTitle(),
-          SizedBox(height: 10),
-        ],
-      ),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Super Scrabble"),
+          automaticallyImplyLeading: false,
+        ),
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: Column(
+                  children: [LoginForm()],
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }
+
+// class LoginPage extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           MainTitle(),
+//           SizedBox(height: 10),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class MainTitle extends StatelessWidget {
   const MainTitle({
@@ -33,14 +56,37 @@ class MainTitle extends StatelessWidget {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Card(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Image.asset(LOGO_PATH, height: 80, width: 120),
+          padding: const EdgeInsets.all(10),
+          child: Image.asset(LOGO_PATH, height: 60, width: 90),
         ),
       ),
-      SizedBox(height: 10),
+      SizedBox(height: 5),
       Card(
         child: LoginForm(),
       ),
     ]);
   }
 }
+
+// body: SingleChildScrollView(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: <Widget>[
+//             Center(
+//               child: Column(
+//                 children: [CreateAccountForm()],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+
+
+// Scaffold(
+//         appBar: AppBar(
+//           title: const Text("Super Scrabble"),
+//           automaticallyImplyLeading: false,
+//         ),
+//         backgroundColor: Colors.white,
+//         body: LoginPage());
+//   }
