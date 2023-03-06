@@ -133,7 +133,7 @@ describe('WaitingRoom', () => {
                 { value: 4, letter: 'D' },
             ];
         });
-    
+
         it('should convertToGroup', () => {
             room.joinedPlayer3 = player3;
             expect(room.convertToGroup()).to.deep.equal({

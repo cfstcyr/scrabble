@@ -5,7 +5,7 @@ import * as express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import * as logger from 'morgan';
 import { join } from 'path';
-import Container, { Service } from 'typedi';
+import { Container, Service } from 'typedi';
 import { BaseController } from './controllers/base-controller';
 import { authenticateToken } from './middlewares/authentificate-token';
 import { errorHandler } from './middlewares/error-handler';
