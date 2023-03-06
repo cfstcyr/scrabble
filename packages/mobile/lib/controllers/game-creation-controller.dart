@@ -2,13 +2,16 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:mobile/classes/user.dart';
-import 'package:mobile/environments/environment.dart';
+import 'package:mobile/constants/endpoint.constants.dart';
 
+import '../constants/socket-events/game-events.dart';
 import '../locator.dart';
 import '../services/socket.service.dart';
 
 class GameCreationController {
-  GameCreationController._privateConstructor();
+  GameCreationController._privateConstructor() {
+    _configureSockets();
+  }
 
   static final GameCreationController _instance =
       GameCreationController._privateConstructor();
@@ -16,9 +19,10 @@ class GameCreationController {
   factory GameCreationController() {
     return _instance;
   }
+
   SocketService socketService = getIt.get<SocketService>();
 
-  final String endpoint = "${Environment().config.apiUrl}/games";
+  final String endpoint = GAME_ENDPOINT;
 
   Future<bool> handleAcceptOpponent(PublicUser opponent, String gameId) async {
     // TODO PAS LES BONS ENDPOINTS: accept est pour le bouton "démarrer la partie"
@@ -39,16 +43,8 @@ class GameCreationController {
     return (res.statusCode == 200);
   }
 
-  // TODO
-  Future<bool> handleStartGame(
-      List<PublicUser> opponents, String gameId) async {
-    // TODO PAS LES BONS ENDPOINTS: accept est pour le bouton "démarrer la partie"
-    Response res = await post(
-        Uri.parse(
-            "${endpoint}/${gameId}/players/${SocketService.socket.id}/accept"),
-        body: jsonEncode(opponents));
-    // TODO: Remove hack
-    return (res.statusCode == 200);
+  Future<Response> handleStartGame(String gameId) async {
+    return await post(Uri.parse("$endpoint/$gameId/players/start"));
   }
 
   // TODO
@@ -65,5 +61,11 @@ class GameCreationController {
   Future<String> handleCreateGame(PublicUser user) async {
     Response res = await post(Uri.parse(endpoint), body: jsonEncode({}));
     return res.body;
+  }
+
+  void _configureSockets() {
+    socketService.on(START_GAME_EVENT_NAME, (startGameData) {
+      print(startGameData);
+    });
   }
 }

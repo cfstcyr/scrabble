@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/services/game-creation-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
@@ -90,14 +91,8 @@ void refusePlayer(PublicUser player) {
   playerWaitingList.remove(player);
 }
 
-Subject<String> startGame$ = BehaviorSubject();
-
-Stream<String> get startGameStream => startGame$.stream;
-
-Future<void> startGame(BuildContext context) async {
-  // TODO socket + redirection game page
-  await gameCreationController.handleStartGame(playerList, "");
-
+void startGame(BuildContext context) {
+  getIt.get<GameCreationService>().handleStartGame();
   playerList$.close();
 }
 

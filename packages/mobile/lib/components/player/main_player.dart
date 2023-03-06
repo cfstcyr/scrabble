@@ -27,7 +27,7 @@ class MainPlayer extends AbstractPlayer {
                   Padding(
                     padding: EdgeInsets.only(bottom: SPACE_1),
                     child: Text(
-                      '${player.points}',
+                      '${player.score}',
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontSize: 32,

@@ -5,6 +5,7 @@ import 'package:mobile/controllers/gameplay-controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/chat-management.service.dart';
+import 'package:mobile/services/game-creation-service.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/group-join.service.dart';
@@ -45,6 +46,8 @@ void setUpLocator() {
   getIt.registerLazySingleton<GameplayController>(() => GameplayController());
   getIt.registerLazySingleton<ActionService>(() => ActionService());
   getIt.registerLazySingleton<PlayerLeaveService>(() => PlayerLeaveService());
+
   getIt.registerLazySingleton<GameCreationController>(
       () => GameCreationController());
+  getIt.registerLazySingleton<GameCreationService>(() => GameCreationService());
 }
