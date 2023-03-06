@@ -20,7 +20,6 @@ import BoardService from '@app/services/board-service/board.service';
 import ObjectivesService from '@app/services/objective-service/objective.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { Channel } from '@common/models/chat/channel';
-import { NoIdGameHistoryWithPlayers } from '@common/models/game-history';
 import { TypeOfId } from '@common/types/id';
 import { StatusCodes } from 'http-status-codes';
 import { Container } from 'typedi';
@@ -29,6 +28,7 @@ import { ReadyGameConfig, StartGameData } from './game-config';
 import { INVALID_LIST_LENGTH } from '@app/constants/classes-errors';
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
+import { GameHistoryCreation } from '@common/models/game-history';
 
 export default class Game {
     private static boardService: BoardService;
@@ -42,7 +42,7 @@ export default class Game {
     player4: Player;
     isAddedToDatabase: boolean;
     gameIsOver: boolean;
-    gameHistory: NoIdGameHistoryWithPlayers;
+    gameHistory: GameHistoryCreation;
     virtualPlayerLevel: VirtualPlayerLevel;
     private tileReserve: TileReserve;
     private id: string;
@@ -90,35 +90,37 @@ export default class Game {
 
     completeGameHistory(): void {
         this.gameHistory = {
-            startTime: this.roundManager.getGameStartTime(),
-            endTime: new Date(),
-            playersData: [
+            gameHistory: {
+                startTime: this.roundManager.getGameStartTime(),
+                endTime: new Date(),
+                hasBeenAbandoned: !this.player1.isConnected || !this.player2.isConnected || !this.player3.isConnected || !this.player4.isConnected,
+            },
+            players: [
                 {
-                    name: this.player1.publicUser.username,
+                    idUser: isIdVirtualPlayer(this.player1.id) ? undefined : this.player1.idUser,
                     score: this.player1.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player1.id),
                     isWinner: this.isPlayerWinner(this.player1),
                 },
                 {
-                    name: this.player2.publicUser.username,
+                    idUser: isIdVirtualPlayer(this.player2.id) ? undefined : this.player2.idUser,
                     score: this.player2.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player2.id),
                     isWinner: this.isPlayerWinner(this.player2),
                 },
                 {
-                    name: this.player3.publicUser.username,
+                    idUser: isIdVirtualPlayer(this.player3.id) ? undefined : this.player3.idUser,
                     score: this.player3.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player3.id),
                     isWinner: this.isPlayerWinner(this.player3),
                 },
                 {
-                    name: this.player4.publicUser.username,
+                    idUser: isIdVirtualPlayer(this.player4.id) ? undefined : this.player4.idUser,
                     score: this.player4.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player4.id),
                     isWinner: this.isPlayerWinner(this.player4),
                 },
             ],
-            hasBeenAbandoned: !this.player1.isConnected || !this.player2.isConnected || !this.player3.isConnected || !this.player4.isConnected,
         };
     }
 
