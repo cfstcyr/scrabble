@@ -35,7 +35,6 @@ class ChatManagementController {
       BehaviorSubject<List<Channel>>.seeded([]);
   BehaviorSubject<List<Channel>> myChannels$ =
       BehaviorSubject<List<Channel>>.seeded([]);
-  BehaviorSubject<bool> shouldOpen$ = BehaviorSubject<bool>.seeded(false);
   BehaviorSubject<Channel> channelToOpen$ =
       BehaviorSubject<Channel>.seeded(DEFAULT_CHANNEL);
   BehaviorSubject<List<Channel>> channelSearchResult$ =
@@ -55,7 +54,6 @@ class ChatManagementController {
     channels$ = BehaviorSubject<List<Channel>>.seeded([]);
     myChannels$ = BehaviorSubject<List<Channel>>.seeded([]);
     channelSearchResult$ = BehaviorSubject<List<Channel>>.seeded([]);
-    shouldOpen$ = BehaviorSubject<bool>.seeded(false);
     SocketService.socket.emit(INIT_EVENT);
     getAllChannels();
   }
@@ -88,7 +86,6 @@ class ChatManagementController {
       myChannels.add(typedChannel);
       myChannels$.add(myChannels);
       channelToOpen$.add(typedChannel);
-      if (shouldOpen$.value) scaffoldKey.currentState!.openEndDrawer();
       handleUnjoinedChannels();
     });
 
@@ -109,10 +106,6 @@ class ChatManagementController {
             .firstWhere((channel) => channel.idChannel == idChannel);
         channelToFill.messages = [...history];
       }
-    });
-
-    SocketService.socket.on(INIT_DONE_EVENT, (s) {
-      shouldOpen$.add(true);
     });
 
     SocketService.socket.on(MESSAGE_EVENT, (channelMessage) {
