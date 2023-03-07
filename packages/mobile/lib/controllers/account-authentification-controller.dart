@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:http/http.dart';
+import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/login-constants.dart';
 import 'package:mobile/environments/environment.dart';
+import 'package:mobile/services/client.dart';
 import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/services/user-session.service.dart';
 
@@ -23,8 +24,10 @@ class AccountAuthenticationController {
     return _instance;
   }
   final storageHandler = getIt.get<StorageHandlerService>();
+  final httpClient = getIt.get<PersonnalHttpClient>();
   final userSessionHandler = getIt.get<UserSessionService>();
   final socketService = getIt.get<SocketService>();
+  InterceptedHttp get http => httpClient.http;
 
   final String endpoint = "${Environment().config.apiUrl}/authentification";
   final Map<String, String> headers = {
@@ -32,8 +35,8 @@ class AccountAuthenticationController {
   };
 
   Future<bool> createAccount(Account account) async {
-    Response res =
-        await post(Uri.parse("${endpoint}/signUp"), body: account.toJson());
+    final res =
+        await http.post(Uri.parse("$endpoint/signUp"), body: account.toJson());
     bool isCreated = res.statusCode == HttpStatus.ok;
     if (isCreated) {
       await userSessionHandler
@@ -41,26 +44,25 @@ class AccountAuthenticationController {
       await socketService.initSocket(await storageHandler.getToken());
     }
     return isCreated;
-    ;
   }
 
   Future<bool> isEmailUnique(String email) async {
     Map<String, String> emailJson = {"email": email};
-    Response res = await post(Uri.parse("${endpoint}/validateEmail"),
+    final res = await http.post(Uri.parse("$endpoint/validateEmail"),
         headers: headers, body: json.encode(emailJson));
     return (json.decode(res.body)['isAvailable']);
   }
 
   Future<bool> isUsernameUnique(String username) async {
     Map<String, String> usernameMap = {"username": username};
-    Response res = await post(Uri.parse("${endpoint}/validateUsername"),
+    final res = await http.post(Uri.parse("$endpoint/validateUsername"),
         headers: headers, body: json.encode(usernameMap));
     return (json.decode(res.body)['isAvailable']);
   }
 
   Future<LoginResponse> login(UserLoginCredentials credentials) async {
-    Response res =
-        await post(Uri.parse("${endpoint}/login"), body: credentials.toJson());
+    final res = await http.post(Uri.parse("$endpoint/login"),
+        body: credentials.toJson());
     String message;
     if (res.statusCode == HttpStatus.ok) {
       message = AUTHORIZED;
@@ -82,19 +84,16 @@ class AccountAuthenticationController {
 
   Future<TokenValidation> validateToken() async {
     String token = await storageHandler.getToken() ?? "";
-    Map<String, String> requestHeaders = {
-      'authorization': "Bearer ${token}",
-    };
+
     if (token.isNotEmpty) {
-      Response res = await post(Uri.parse("${endpoint}/validate"),
-          body: token, headers: requestHeaders);
+      final res = await http.post(Uri.parse("$endpoint/validate"));
       if (res.statusCode == HttpStatus.ok) {
         userSessionHandler
             .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
         return TokenValidation.Ok;
       } else if (res.statusCode == HttpStatus.unauthorized) {
-        this.storageHandler.clearStorage();
-        this.socketService.disconnect();
+        storageHandler.clearStorage();
+        socketService.disconnect();
         return TokenValidation.AlreadyConnected;
       } else {
         return TokenValidation.UnknownError;

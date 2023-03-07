@@ -4,6 +4,7 @@ import 'package:mobile/controllers/gameplay-controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/chat-management.service.dart';
+import 'package:mobile/services/client.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/group-join.service.dart';
@@ -23,6 +24,7 @@ final GetIt getIt = GetIt.instance;
 void setUpLocator() {
   getIt.registerLazySingleton<StorageHandlerService>(
       () => StorageHandlerService());
+  getIt.registerLazySingleton<PersonnalHttpClient>(() => PersonnalHttpClient());
   getIt.registerLazySingleton<UserService>(() => UserService());
   getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
   getIt.registerLazySingleton<AccountAuthenticationController>(
