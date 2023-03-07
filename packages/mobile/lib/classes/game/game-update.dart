@@ -25,4 +25,36 @@ class GameUpdateData {
     this.round,
     this.tileReserve,
   });
+
+  factory GameUpdateData.fromJson(Map<String, dynamic> json) {
+    return GameUpdateData(
+      player1: json['player1'] != null
+          ? PlayerData.fromJson(json['player1'] as Map<String, dynamic>)
+          : null,
+      player2: json['player2'] != null
+          ? PlayerData.fromJson(json['player2'] as Map<String, dynamic>)
+          : null,
+      player3: json['player3'] != null
+          ? PlayerData.fromJson(json['player3'] as Map<String, dynamic>)
+          : null,
+      player4: json['player4'] != null
+          ? PlayerData.fromJson(json['player4'] as Map<String, dynamic>)
+          : null,
+      isGameOver: json['isGameOver'] as bool?,
+      winners: json['winners'] != null
+          ? List<String>.from(json['winners'] as List)
+          : null,
+      board: json['board'] != null
+          ? List<Square>.from(
+              (json['board'] as List).map((e) => Square.fromJson(e)))
+          : null,
+      round: json['round'] != null
+          ? RoundData.fromJson(json['round'] as Map<String, dynamic>)
+          : null,
+      tileReserve: json['tileReserve'] != null
+          ? List<TileReserveData>.from((json['tileReserve'] as List)
+              .map((e) => TileReserveData.fromJson(e)))
+          : null,
+    );
+  }
 }

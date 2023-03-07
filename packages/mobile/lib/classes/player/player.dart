@@ -15,4 +15,19 @@ class PlayerData {
     this.score,
     this.tiles,
   });
+
+  factory PlayerData.fromJson(Map<String, dynamic> json) {
+    return PlayerData(
+      id: json['id'] as String,
+      newId: json['newId'] as String?,
+      publicUser: json['publicUser'] != null
+          ? PublicUser.fromJson(json['publicUser'] as Map<String, dynamic>)
+          : null,
+      score: json['score'] as int?,
+      tiles: json['tiles'] != null
+          ? List<Tile>.from(
+              (json['tiles'] as List).map((e) => Tile.fromJson(e)))
+          : null,
+    );
+  }
 }
