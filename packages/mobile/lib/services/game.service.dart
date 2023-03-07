@@ -133,9 +133,10 @@ class GameService {
   }
 
   bool isLocalPlayerActivePlayer() {
-    if (_roundService.currentRound == null)
-      throw Exception(NO_ROUND_AT_THE_MOMENT);
+    return isActivePlayer(game.players.getLocalPlayer().socketId);
+  }
 
-    return game.players.localPlayerId == _roundService.getActivePlayerId();
+  bool isActivePlayer(String socketId) {
+    return _roundService.getActivePlayerId() == socketId;
   }
 }

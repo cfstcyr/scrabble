@@ -1,4 +1,5 @@
 import 'package:mobile/classes/game/player.dart';
+import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/constants/game.constants.dart';
 
 import '../../constants/erros/game-errors.dart';
@@ -43,5 +44,11 @@ class PlayersContainer {
   Player getLocalPlayer() {
     if (localPlayerId == null) throw Exception(NO_LOCAL_PLAYER_DEFINED);
     return players.firstWhere((Player player) => player.socketId == localPlayerId);
+  }
+
+  Player getNextPlayerInList(Player player) {
+    int givenPlayerIndex = players.indexOf(players.firstWhere((Player p) => p == player));
+    const int jumpToNextPlayer = 2;
+    return getPlayer((givenPlayerIndex + jumpToNextPlayer) % MAX_PLAYER_COUNT);
   }
 }
