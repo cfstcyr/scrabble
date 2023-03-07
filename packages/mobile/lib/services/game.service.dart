@@ -1,17 +1,24 @@
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/board/board.dart';
+import 'package:mobile/classes/game/game-config.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
+import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/constants/erros/game-errors.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/action-service.dart';
+import 'package:mobile/services/round-service.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../utils/round-utils.dart';
 
 class GameService {
   final ActionService _actionService = getIt.get<ActionService>();
+  final RoundService _roundService = getIt.get<RoundService>();
   final BehaviorSubject<Game?> _game$;
 
   static final GameService _instance = GameService._();
@@ -69,6 +76,30 @@ class GameService {
     // ]);
   }
 
+  void startGame(String localPlayerId, StartGameData startGameData) {
+    PlayersContainer playersContainer = PlayersContainer.fromPlayers(
+        player1: startGameData.player1,
+        player2: startGameData.player2,
+        player3: startGameData.player3,
+        player4: startGameData.player4);
+    playersContainer.localPlayerId = localPlayerId;
+
+    playersContainer.players
+        .where((Player player) => player.socketId == localPlayerId)
+        .map((Player player) => player.isLocalPlayer = true);
+
+    TileRack tileRack =
+        TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
+
+    _game$.add(Game(
+        board: Board(),
+        tileRack: tileRack,
+        players: playersContainer,
+        roundDuration: roundTimeToRoundDuration(startGameData.maxRoundTime)));
+
+    _roundService.startRound(startGameData.firstRound);
+  }
+
   Game get game {
     if (_game$.value == null) throw Exception("No game");
 
@@ -99,5 +130,12 @@ class GameService {
     }
 
     _actionService.sendAction(ActionType.place, placement.toActionPayload());
+  }
+
+  bool isLocalPlayerActivePlayer() {
+    if (_roundService.currentRound == null)
+      throw Exception(NO_ROUND_AT_THE_MOMENT);
+
+    return game.players.localPlayerId == _roundService.getActivePlayerId();
   }
 }
