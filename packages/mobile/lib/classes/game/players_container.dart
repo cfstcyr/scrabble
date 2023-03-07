@@ -1,6 +1,8 @@
 import 'package:mobile/classes/game/player.dart';
+import 'package:mobile/components/error-pop-up.dart';
 import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/constants/game.constants.dart';
+import 'package:mobile/routes/navigator-key.dart';
 
 import '../../constants/erros/game-errors.dart';
 
@@ -36,19 +38,27 @@ class PlayersContainer {
         return player4;
     }
 
-    throw Exception(INVALID_PLAYER_INDEX);
+     throw Exception(INVALID_PLAYER_INDEX);
   }
 
   List<Player> get players => [player1, player2, player3, player4];
 
   Player getLocalPlayer() {
-    if (localPlayerId == null) throw Exception(NO_LOCAL_PLAYER_DEFINED);
-    return players.firstWhere((Player player) => player.socketId == localPlayerId);
+    if (localPlayerId == null) {
+      errorSnackBar(navigatorKey.currentContext!, NO_LOCAL_PLAYER_DEFINED);
+    }
+    return players.firstWhere((Player player) {
+      return player.socketId == localPlayerId;
+    }, orElse: () {
+      errorSnackBar(navigatorKey.currentContext!, NO_LOCAL_PLAYER_DEFINED);
+      return player1;
+    });
   }
 
   Player getNextPlayerInList(Player player) {
-    int givenPlayerIndex = players.indexOf(players.firstWhere((Player p) => p == player));
-    const int jumpToNextPlayer = 2;
-    return getPlayer((givenPlayerIndex + jumpToNextPlayer) % MAX_PLAYER_COUNT);
+    int givenPlayerIndex =
+        players.indexOf(players.firstWhere((Player p) => p == player));
+    int nextPlayerIndex = (givenPlayerIndex + 1) % MAX_PLAYER_COUNT + 1;
+    return getPlayer(nextPlayerIndex);
   }
 }

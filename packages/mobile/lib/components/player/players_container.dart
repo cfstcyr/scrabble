@@ -16,10 +16,12 @@ class PlayersContainer extends StatelessWidget {
       p.PlayersContainer playersContainer) {
     List<c.Player> playerList = List.of([playersContainer.getLocalPlayer()]);
 
-    c.Player lastPlayerPushed = playerList[0];
-    while (lastPlayerPushed != playersContainer.getLocalPlayer()) {
+    c.Player lastPlayerPushed = playerList.last;
+    do {
       playerList.add(playersContainer.getNextPlayerInList(playerList.last));
-    }
+      lastPlayerPushed = playerList.last;
+    } while(lastPlayerPushed != playersContainer.getLocalPlayer());
+
     return playerList;
   }
 

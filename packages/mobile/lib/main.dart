@@ -22,7 +22,7 @@ Future<void> main() async {
     defaultValue: Environment.DEV,
   );
   Environment().initConfig(environment);
-  setUpLocator();
+  CustomLocator().setUpLocator();
   runApp(MyApp());
 }
 
