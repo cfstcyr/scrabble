@@ -22,35 +22,52 @@ import 'controllers/chat-management.controller.dart';
 
 final GetIt getIt = GetIt.instance;
 
-void setUpLocator() {
-  getIt.registerLazySingleton<StorageHandlerService>(
-      () => StorageHandlerService());
-  getIt.registerLazySingleton<UserService>(() => UserService());
-  getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
-  getIt.registerLazySingleton<AccountAuthenticationController>(
-      () => AccountAuthenticationController());
-  getIt.registerLazySingleton<ChannelController>(() => ChannelController());
-  getIt.registerLazySingleton<ChatManagementController>(
-      () => ChatManagementController());
-  getIt.registerLazySingleton<SocketService>(() => SocketService());
-  getIt.registerLazySingleton<GameEventService>(() => GameEventService());
-  getIt.registerLazySingleton<ChatManagementService>(
-      () => ChatManagementService());
-  getIt.registerLazySingleton<RoundService>(() => RoundService());
+class CustomLocator {
 
-  getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());
-  getIt.registerLazySingleton<GroupJoinController>(() => GroupJoinController());
-  getIt.registerLazySingleton<GroupJoinService>(() => GroupJoinService());
+  static final CustomLocator _instance = CustomLocator._();
 
-  getIt.registerLazySingleton<GameplayController>(() => GameplayController());
-  getIt.registerLazySingleton<ActionService>(() => ActionService());
-  getIt.registerLazySingleton<PlayerLeaveService>(() => PlayerLeaveService());
+  factory CustomLocator() {
+    return _instance;
+  }
 
-  getIt.registerLazySingleton<GameCreationController>(
-      () => GameCreationController());
+  CustomLocator._();
 
+  void setUpLocator() {
+    _registerLazySingletons();
+    _registerActiveSingleton();
+  }
 
-  getIt.registerSingleton<GameCreationService>(GameCreationService());
-  getIt.registerSingleton<GameService>(GameService());
+  void _registerLazySingletons() {
+    getIt.registerLazySingleton<StorageHandlerService>(
+        () => StorageHandlerService());
+    getIt.registerLazySingleton<UserService>(() => UserService());
+    getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
+    getIt.registerLazySingleton<AccountAuthenticationController>(
+        () => AccountAuthenticationController());
+    getIt.registerLazySingleton<ChannelController>(() => ChannelController());
+    getIt.registerLazySingleton<ChatManagementController>(
+        () => ChatManagementController());
+    getIt.registerLazySingleton<SocketService>(() => SocketService());
+    getIt.registerLazySingleton<GameEventService>(() => GameEventService());
+    getIt.registerLazySingleton<ChatManagementService>(
+        () => ChatManagementService());
+    getIt.registerLazySingleton<RoundService>(() => RoundService());
 
+    getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());
+    getIt.registerLazySingleton<GroupJoinController>(
+        () => GroupJoinController());
+    getIt.registerLazySingleton<GroupJoinService>(() => GroupJoinService());
+
+    getIt.registerLazySingleton<GameplayController>(() => GameplayController());
+    getIt.registerLazySingleton<ActionService>(() => ActionService());
+    getIt.registerLazySingleton<PlayerLeaveService>(() => PlayerLeaveService());
+
+    getIt.registerLazySingleton<GameCreationController>(
+        () => GameCreationController());
+  }
+
+  void _registerActiveSingleton() {
+    getIt.registerSingleton<GameCreationService>(GameCreationService());
+    getIt.registerSingleton<GameService>(GameService());
+  }
 }
