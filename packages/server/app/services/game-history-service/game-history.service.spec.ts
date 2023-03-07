@@ -3,26 +3,27 @@ import { expect } from 'chai';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import GameHistoriesService from './game-history.service';
 import { Container } from 'typedi';
-import { GameHistoryPlayer, NoIdGameHistoryWithPlayers } from '@common/models/game-history';
-import { NoId } from '@common/types/id';
+import { GameHistory, GameHistoryPlayerCreation } from '@common/models/game-history';
+import { DEFAULT_USER_1, DEFAULT_USER_2 } from '@app/constants/test/user';
+import { UserService } from '@app/services/user-service/user-service';
 
-const DEFAULT_PLAYER_1: NoId<GameHistoryPlayer, 'playerIndex'> = {
-    name: 'p1',
+const DEFAULT_PLAYER_1: GameHistoryPlayerCreation = {
+    idUser: DEFAULT_USER_1.idUser,
     score: 1,
     isVirtualPlayer: false,
     isWinner: false,
 };
-const DEFAULT_PLAYER_2: NoId<GameHistoryPlayer, 'playerIndex'> = {
-    name: 'p2',
+const DEFAULT_PLAYER_2: GameHistoryPlayerCreation = {
+    idUser: DEFAULT_USER_2.idUser,
     score: 2,
     isVirtualPlayer: true,
     isWinner: true,
 };
-const DEFAULT_GAME_HISTORY: NoIdGameHistoryWithPlayers = {
+const DEFAULT_GAME_HISTORY: GameHistory = {
+    idGameHistory: 1,
     startTime: new Date(),
     endTime: new Date(),
     hasBeenAbandoned: false,
-    playersData: [DEFAULT_PLAYER_1, DEFAULT_PLAYER_2],
 };
 
 describe('GameHistoriesService', () => {
@@ -34,50 +35,42 @@ describe('GameHistoriesService', () => {
         await testingUnit.withMockDatabaseService();
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
         gameHistoriesService = Container.get(GameHistoriesService);
+
+        const userTable = () => Container.get(UserService)['table'];
+        await userTable().insert(DEFAULT_USER_1);
+        await userTable().insert(DEFAULT_USER_2);
     });
 
     afterEach(() => {
         testingUnit.restore();
     });
 
-    describe('getAllGameHistories', () => {
-        it('should return empty array if none', async () => {
-            expect((await gameHistoriesService.getAllGameHistories()).length).to.equal(0);
-        });
-
-        it('should return game histories', async () => {
-            await gameHistoriesService.addGameHistory(DEFAULT_GAME_HISTORY);
-
-            expect((await gameHistoriesService.getAllGameHistories()).length).to.equal(1);
-        });
-    });
-
     describe('addGameHistory', () => {
         it('should insert data for GameHistory table', async () => {
-            await gameHistoriesService.addGameHistory(DEFAULT_GAME_HISTORY);
+            await gameHistoriesService.addGameHistory({ gameHistory: DEFAULT_GAME_HISTORY, players: [DEFAULT_PLAYER_1, DEFAULT_PLAYER_2] });
 
             expect((await gameHistoriesService['table'].select('*')).length).to.equal(1);
         });
 
         it('should insert data for GameHistoryPlayer table', async () => {
-            await gameHistoriesService.addGameHistory(DEFAULT_GAME_HISTORY);
+            await gameHistoriesService.addGameHistory({ gameHistory: DEFAULT_GAME_HISTORY, players: [DEFAULT_PLAYER_1, DEFAULT_PLAYER_2] });
 
-            expect((await gameHistoriesService['tableHistoryPlayer'].select('*')).length).to.equal(DEFAULT_GAME_HISTORY.playersData.length);
+            expect((await gameHistoriesService['tableHistoryPlayer'].select('*')).length).to.equal(2);
         });
     });
 
     describe('resetGameHistories', () => {
         it('should delete entries from GameHistory table', async () => {
-            await gameHistoriesService.addGameHistory(DEFAULT_GAME_HISTORY);
+            await gameHistoriesService.addGameHistory({ gameHistory: DEFAULT_GAME_HISTORY, players: [DEFAULT_PLAYER_1, DEFAULT_PLAYER_2] });
             await gameHistoriesService.resetGameHistories();
 
             expect((await gameHistoriesService['table'].select('*')).length).to.equal(0);
         });
 
         it('should delete entries from GameHistoryPlayer table', async () => {
-            await gameHistoriesService.addGameHistory(DEFAULT_GAME_HISTORY);
+            await gameHistoriesService.addGameHistory({ gameHistory: DEFAULT_GAME_HISTORY, players: [DEFAULT_PLAYER_1, DEFAULT_PLAYER_2] });
             await gameHistoriesService.resetGameHistories();
 
             expect((await gameHistoriesService['tableHistoryPlayer'].select('*')).length).to.equal(0);
