@@ -19,6 +19,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class GroupPasswordDialogComponent implements OnInit, OnDestroy {
     protectedGroup: Group;
+    isObserver: boolean;
     state: RequestState = RequestState.Ready;
     passwordForm: FormGroup;
     private componentDestroyed$: Subject<boolean>;
@@ -30,6 +31,7 @@ export class GroupPasswordDialogComponent implements OnInit, OnDestroy {
         @Inject(MAT_DIALOG_DATA) public data: GroupPasswordDialogParameters,
     ) {
         this.protectedGroup = data.group;
+        this.isObserver = data.isObserver;
         dialogRef.backdropClick().subscribe(() => {
             this.closeDialog();
         });
@@ -92,7 +94,7 @@ export class GroupPasswordDialogComponent implements OnInit, OnDestroy {
     sendRequest(): void {
         if (this.isFormValid()) {
             this.state = RequestState.Waiting;
-            this.gameDispatcherService.handleJoinGroup(this.protectedGroup, this.passwordForm?.get('password')?.value);
+            this.gameDispatcherService.handleJoinGroup(this.protectedGroup, this.isObserver, this.passwordForm?.get('password')?.value);
         }
     }
 

@@ -84,12 +84,13 @@ export class GameDispatcherController extends BaseController {
 
         router.patch('/:gameId', async (req: GameRequest, res: Response, next) => {
             const { gameId } = req.params;
+            const { isObserver }: { isObserver: boolean } = req.body;
             const userId: UserId = req.body.idUser;
 
             const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
             const publicUser = await this.authentificationService.getUserById(userId);
             try {
-                await this.handleGetGroupUpdates(gameId, playerId, publicUser);
+                await this.handleGetGroupUpdates(gameId, playerId, publicUser, isObserver);
 
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
@@ -205,9 +206,10 @@ export class GameDispatcherController extends BaseController {
         this.handleGroupsUpdate();
     }
 
-    private async handleGetGroupUpdates(gameId: string, playerId: string, publicUser: PublicUser): Promise<void> {
+    private async handleGetGroupUpdates(gameId: string, playerId: string, publicUser: PublicUser, isObserver: boolean): Promise<void> {
         const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
-        waitingRoom.requestingPlayers.push(new Player(playerId, publicUser));
+        if (isObserver) waitingRoom.requestingObservers.push({ publicUser, id: playerId });
+        else waitingRoom.requestingPlayers.push(new Player(playerId, publicUser));
         this.socketService.getSocket(playerId).leave(this.gameDispatcherService.getGroupsRoom().getId());
     }
 

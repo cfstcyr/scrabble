@@ -14,6 +14,7 @@ import { UserService } from '@app/services/user-service/user.service';
 import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
 import { ROUTE_CREATE_WAITING, ROUTE_JOIN_WAITING } from '@app/constants/routes-constants';
+import { RequestingUsers } from '@common/models/requesting-users';
 
 @Injectable({
     providedIn: 'root',
@@ -22,7 +23,7 @@ export default class GameDispatcherService implements OnDestroy {
     currentGroup: Group | undefined = undefined;
 
     private gameCreationFailed$: Subject<HttpErrorResponse> = new Subject();
-    private joinRequestEvent: Subject<PublicUser[]> = new Subject();
+    private joinRequestEvent: Subject<RequestingUsers> = new Subject();
     private playerJoinedGroupEvent: Subject<Group> = new Subject();
     private playerLeftGroupEvent: Subject<Group> = new Subject();
     private canceledGameEvent: Subject<PublicUser> = new Subject();
@@ -30,7 +31,7 @@ export default class GameDispatcherService implements OnDestroy {
     private invalidPasswordEvent: Subject<void> = new Subject();
     private groupsUpdateEvent: Subject<Group[]> = new Subject();
     private joinerRejectedEvent: Subject<PublicUser> = new Subject();
-    private playerCancelledRequestEvent: Subject<PublicUser[]> = new Subject();
+    private playerCancelledRequestEvent: Subject<RequestingUsers> = new Subject();
     private serviceDestroyed$: Subject<boolean> = new Subject();
 
     constructor(
@@ -40,15 +41,15 @@ export default class GameDispatcherService implements OnDestroy {
         private readonly gameViewEventManagerService: GameViewEventManagerService,
         private readonly userService: UserService,
     ) {
-        this.gameDispatcherController.subscribeToJoinRequestEvent(this.serviceDestroyed$, (requestingUsers: PublicUser[]) =>
+        this.gameDispatcherController.subscribeToJoinRequestEvent(this.serviceDestroyed$, (requestingUsers: RequestingUsers) =>
             this.handleJoinRequest(requestingUsers),
         );
         this.gameDispatcherController.subscribeToPlayerJoinedGroupEvent(this.serviceDestroyed$, (group: Group) =>
             this.handlePlayerJoinedRequest(group),
         );
         this.gameDispatcherController.subscribeToPlayerLeftGroupEvent(this.serviceDestroyed$, (group: Group) => this.handlePlayerLeftRequest(group));
-        this.gameDispatcherController.subscribeToPlayerCancelledRequestingEvent(this.serviceDestroyed$, (requestingPlayers: PublicUser[]) =>
-            this.handlePlayerCancelledRequest(requestingPlayers),
+        this.gameDispatcherController.subscribeToPlayerCancelledRequestingEvent(this.serviceDestroyed$, (requestingUsers: RequestingUsers) =>
+            this.handlePlayerCancelledRequest(requestingUsers),
         );
         this.gameDispatcherController.subscribeToGroupFullEvent(this.serviceDestroyed$, () => this.handleGroupFull());
         this.gameDispatcherController.subscribeToInvalidPasswordEvent(this.serviceDestroyed$, () => this.handleInvalidPassword());
@@ -85,14 +86,14 @@ export default class GameDispatcherService implements OnDestroy {
         this.currentGroup = undefined;
     }
 
-    handleJoinGroup(group: Group, password: string = ''): void {
+    handleJoinGroup(group: Group, isObserver: boolean, password: string = ''): void {
         this.currentGroup = group;
-        this.gameDispatcherController.handleGroupJoinRequest(this.getCurrentGroupId(), password);
+        this.gameDispatcherController.handleGroupJoinRequest(this.getCurrentGroupId(), isObserver, password);
     }
 
-    handleGroupUpdates(group: Group): void {
+    handleGroupUpdates(group: Group, isObserver: boolean): void {
         this.currentGroup = group;
-        this.gameDispatcherController.handleGroupUpdatesRequest(this.getCurrentGroupId());
+        this.gameDispatcherController.handleGroupUpdatesRequest(this.getCurrentGroupId(), isObserver);
     }
 
     handleGroupListRequest(): void {
@@ -102,6 +103,7 @@ export default class GameDispatcherService implements OnDestroy {
     handleCreateGame(gameParameters: FormGroup): void {
         const gameConfig: GroupData = {
             user1: this.userService.getUser(),
+            numberOfObservers: 0,
             maxRoundTime: gameParameters.get('timer')?.value as number,
             virtualPlayerLevel: gameParameters.get('level')?.value as VirtualPlayerLevel,
             gameVisibility: gameParameters.get('visibility')?.value as GameVisibility,
@@ -152,7 +154,7 @@ export default class GameDispatcherService implements OnDestroy {
         if (this.getCurrentGroupId()) this.gameDispatcherController.handleRejectionGameCreation(opponentName, this.getCurrentGroupId());
     }
 
-    subscribeToJoinRequestEvent(componentDestroyed$: Subject<boolean>, callback: (requestingUsers: PublicUser[]) => void): void {
+    subscribeToJoinRequestEvent(componentDestroyed$: Subject<boolean>, callback: (requestingUsers: RequestingUsers) => void): void {
         this.joinRequestEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
     }
 
@@ -164,7 +166,7 @@ export default class GameDispatcherService implements OnDestroy {
         this.playerLeftGroupEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
     }
 
-    subscribeToPlayerCancelledRequestEvent(componentDestroyed$: Subject<boolean>, callback: (requestingUsers: PublicUser[]) => void): void {
+    subscribeToPlayerCancelledRequestEvent(componentDestroyed$: Subject<boolean>, callback: (requestingUsers: RequestingUsers) => void): void {
         this.playerCancelledRequestEvent.pipe(takeUntil(componentDestroyed$)).subscribe(callback);
     }
 
@@ -206,7 +208,7 @@ export default class GameDispatcherService implements OnDestroy {
         );
     }
 
-    private handleJoinRequest(requestingUsers: PublicUser[]): void {
+    private handleJoinRequest(requestingUsers: RequestingUsers): void {
         this.joinRequestEvent.next(requestingUsers);
     }
 
@@ -218,7 +220,7 @@ export default class GameDispatcherService implements OnDestroy {
         this.playerLeftGroupEvent.next(group);
     }
 
-    private handlePlayerCancelledRequest(requestingUsers: PublicUser[]): void {
+    private handlePlayerCancelledRequest(requestingUsers: RequestingUsers): void {
         this.playerCancelledRequestEvent.next(requestingUsers);
     }
 

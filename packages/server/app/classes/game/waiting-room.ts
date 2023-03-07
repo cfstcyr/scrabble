@@ -84,6 +84,7 @@ export default class WaitingRoom extends Room {
             virtualPlayerLevel: this.config.virtualPlayerLevel,
             groupId: this.getId(),
             password: this.getConfig().password,
+            numberOfObservers: this.joinedObservers.length,
         };
     }
 

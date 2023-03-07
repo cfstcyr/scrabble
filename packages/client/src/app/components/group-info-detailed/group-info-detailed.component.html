@@ -41,7 +41,19 @@
             </div>
         </div>
       </div>
-      
+      <div class="info-container">
+        <div class="chip-list">
+          <div class="chip" *ngIf="group.numberOfObservers === 0">
+            <app-icon icon="eye" size="lg"></app-icon> Aucun Observateur
+        </div>
+            <div class="chip" *ngIf="group.numberOfObservers === 1">
+                <app-icon icon="eye" size="lg"></app-icon> {{ group.numberOfObservers }} Observateur
+            </div>
+            <div class="chip" *ngIf="group.numberOfObservers > 1">
+              <app-icon icon="eye" size="lg"></app-icon> {{ group.numberOfObservers }} Observateurs
+          </div>
+        </div>
+    </div>
       <div class="info-container">
         <div class="chip-list">
             <div class="chip">

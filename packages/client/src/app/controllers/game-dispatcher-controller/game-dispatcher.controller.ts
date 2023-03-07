@@ -66,15 +66,15 @@ export class GameDispatcherController implements OnDestroy {
         this.http.get(endpoint).subscribe();
     }
 
-    handleGroupUpdatesRequest(gameId: string): void {
+    handleGroupUpdatesRequest(gameId: string, isObserver: boolean): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}`;
-        this.http.patch(endpoint, {}).subscribe();
+        this.http.patch(endpoint, { isObserver }).subscribe();
     }
 
-    handleGroupJoinRequest(gameId: string, password: string): void {
+    handleGroupJoinRequest(gameId: string, isObserver: boolean, password: string): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/players/join`;
 
-        this.http.post<GameConfig>(endpoint, { password }, { observe: 'response' }).subscribe(
+        this.http.post<GameConfig>(endpoint, { password, isObserver }, { observe: 'response' }).subscribe(
             () => {
                 this.groupRequestValidEvent.next();
             },
@@ -150,7 +150,7 @@ export class GameDispatcherController implements OnDestroy {
         this.socketService.on('groupsUpdate', (groups: Group[]) => {
             this.groupsUpdateEvent.next(groups);
         });
-        this.socketService.on('joinRequest', (requestingUsers: PublicUser[]) => {
+        this.socketService.on('joinRequest', (requestingUsers: RequestingUsers) => {
             this.joinRequestEvent.next(requestingUsers);
         });
         this.socketService.on('rejectJoinRequest', (host: PublicUser) => {
@@ -161,8 +161,8 @@ export class GameDispatcherController implements OnDestroy {
         });
         this.socketService.on('acceptJoinRequest', (group: Group) => this.playerJoinedGroupEvent.next(group));
         this.socketService.on('userLeftGroup', (group: Group) => this.playerLeftGroupEvent.next(group));
-        this.socketService.on('joinRequestCancelled', (requestingPlayers: PublicUser[]) => {
-            this.playerCancelledRequestingEvent.next(requestingPlayers);
+        this.socketService.on('joinRequestCancelled', (requestingUsers: RequestingUsers) => {
+            this.playerCancelledRequestingEvent.next(requestingUsers);
         });
         this.socketService.on('startGame', (startGameData: StartGameData) => {
             this.initializeGame$.next({ localPlayerId: this.socketService.getId(), startGameData });

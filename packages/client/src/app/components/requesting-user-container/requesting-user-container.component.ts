@@ -9,19 +9,20 @@ import { PublicUser, UNKOWN_USER } from '@common/models/user';
 export class RequestingUserContainerComponent {
     @Input() requestingUser: PublicUser;
     @Input() isGroupFull: boolean;
-    @Output() acceptedUser: EventEmitter<PublicUser>;
-    @Output() rejectedUser: EventEmitter<PublicUser>;
+    @Input() isObserver: boolean;
+    @Output() acceptedUser: EventEmitter<[PublicUser, boolean]>;
+    @Output() rejectedUser: EventEmitter<[PublicUser, boolean]>;
 
     constructor() {
-        this.acceptedUser = new EventEmitter<PublicUser>();
-        this.rejectedUser = new EventEmitter<PublicUser>();
+        this.acceptedUser = new EventEmitter<[PublicUser, boolean]>();
+        this.rejectedUser = new EventEmitter<[PublicUser, boolean]>();
         this.requestingUser = UNKOWN_USER;
     }
     accept(): void {
-        this.acceptedUser.emit(this.requestingUser);
+        this.acceptedUser.emit([this.requestingUser, this.isObserver]);
     }
 
     reject(): void {
-        this.rejectedUser.emit(this.requestingUser);
+        this.rejectedUser.emit([this.requestingUser, this.isObserver]);
     }
 }

@@ -11,14 +11,15 @@ import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 })
 export class GroupInfoComponent implements OnInit {
     @Input() group: Group;
-    @Output() joinGroupId: EventEmitter<string>;
+    @Output() joinGroupId: EventEmitter<[string, boolean]>;
     roundTime: Timer;
     gameVisibilities = GameVisibility;
 
     constructor() {
-        this.joinGroupId = new EventEmitter<string>();
+        this.joinGroupId = new EventEmitter<[string, boolean]>();
         this.group = {
             groupId: '0',
+            numberOfObservers: 0,
             password: '',
             user1: UNKOWN_USER,
             maxRoundTime: 0,
@@ -33,6 +34,10 @@ export class GroupInfoComponent implements OnInit {
     }
 
     joinGroup(): void {
-        this.joinGroupId.emit(this.group.groupId);
+        this.joinGroupId.emit([this.group.groupId, false]);
+    }
+
+    observeGroup(): void {
+        this.joinGroupId.emit([this.group.groupId, true]);
     }
 }

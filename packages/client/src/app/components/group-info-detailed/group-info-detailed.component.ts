@@ -28,6 +28,7 @@ export class GroupInfoDetailedComponent {
             maxRoundTime: 0,
             gameVisibility: GameVisibility.Public,
             virtualPlayerLevel: VirtualPlayerLevel.Beginner,
+            numberOfObservers: 0,
         };
     }
 
