@@ -49,6 +49,9 @@ import { GroupRequestWaitingDialogComponent } from './components/group-request-w
 import { GroupInfoDetailedComponent } from './components/group-info-detailed/group-info-detailed.component';
 import { GroupPasswordDialogComponent } from './components/group-password-waiting-dialog/group-password-waiting-dialog';
 import { SrcsetPipe } from './pipes/srcset/srcset.pipe';
+import { UserProfileInfoComponent } from './components/user-profile/user-profile-info/user-profile-info.component';
+import { UserProfileStatsItemComponent } from './components/user-profile/user-profile-stats-item/user-profile-stats-item.component';
+import { UserProfileStatsComponent } from './components/user-profile/user-profile-stats/user-profile-stats.component';
 
 registerLocaleData(localeFr);
 
@@ -99,6 +102,9 @@ registerLocaleData(localeFr);
         GroupInfoDetailedComponent,
         GroupPasswordDialogComponent,
         SrcsetPipe,
+        UserProfileInfoComponent,
+        UserProfileStatsItemComponent,
+        UserProfileStatsComponent,
     ],
     imports: [
         AppMaterialModule,
