@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
+import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/game/game-config.dart';
 import '../constants/socket-events/game-events.dart';
@@ -72,7 +73,7 @@ class GameCreationController {
 
   void _configureSockets() {
     socketService.on(START_GAME_EVENT_NAME, (startGameData) {
-      print(StartGameData.fromJson(startGameData).player1.socketId);
+      startGame$.add(InitializeGameData(localPlayerSocketId: SocketService.socket.id!, startGameData: startGameData));
     });
   }
 }

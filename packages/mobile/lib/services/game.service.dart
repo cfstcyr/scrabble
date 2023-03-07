@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/game/game-config.dart';
@@ -10,8 +11,11 @@ import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/erros/game-errors.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/routes/navigator-key.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/round-service.dart';
+import 'package:mobile/view-methods/group.methods.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../utils/round-utils.dart';
@@ -28,6 +32,9 @@ class GameService {
   }
 
   GameService._() : _game$ = BehaviorSubject() {
+    startGameEvent.listen((InitializeGameData initializeGameData) => startGame(
+        initializeGameData.localPlayerSocketId,
+        initializeGameData.startGameData));
     // TODO: Not do this
     // _game$.add(Game(
     //     board: Board(),
@@ -98,6 +105,9 @@ class GameService {
         roundDuration: roundTimeToRoundDuration(startGameData.maxRoundTime)));
 
     _roundService.startRound(startGameData.firstRound);
+    print('game started');
+
+    Navigator.pushNamed(navigatorKey.currentContext!, GAME_PAGE_ROUTE);
   }
 
   Game get game {

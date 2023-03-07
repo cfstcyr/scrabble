@@ -54,5 +54,5 @@ Future<void> closeSubject<T>(Subject<T> subject) async {
   await subject.close();
 }
 
-Subject<StartGameData> startGame$ = PublishSubject();
-Stream<StartGameData> get startGameEvent => startGame$.stream;
+Subject<InitializeGameData> startGame$ = PublishSubject();
+Stream<InitializeGameData> get startGameEvent => startGame$.stream;

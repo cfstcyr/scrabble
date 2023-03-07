@@ -32,3 +32,11 @@ class StartGameData {
         firstRound: Round.fromJson(json['round']));
   }
 }
+
+class InitializeGameData {
+  final String localPlayerSocketId;
+  final StartGameData startGameData;
+
+  InitializeGameData(
+      {required this.localPlayerSocketId, required this.startGameData});
+}

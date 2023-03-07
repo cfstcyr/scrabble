@@ -29,11 +29,6 @@ class RoundService {
     return currentRound!.socketIdOfActivePlayer;
   }
 
-  bool isLocalPlayerActivePlayer() {
-    Game currentGame = getIt.get<GameService>().game;
-    return getActivePlayerId() == currentGame.players.localPlayerId;
-  }
-
   void startRound(Round round) {
     if (roundTimeout != null) roundTimeout!.cancel();
 
@@ -51,8 +46,9 @@ class RoundService {
   }
 
   void _onTimerExpires() {
-    if (isLocalPlayerActivePlayer()) {
+    if (getIt.get<GameService>().isLocalPlayerActivePlayer()) {
       // TODO: Send pass action when pass is implemented
+      print('pass');
     }
   }
 }
