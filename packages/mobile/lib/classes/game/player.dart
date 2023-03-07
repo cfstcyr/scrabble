@@ -22,7 +22,7 @@ class Player {
       socketId: json['id'],
       user: PublicUser.fromJson(json['publicUser']),
       score: json['score'] ?? 0,
-      tiles: List<Tile>.from(json['tiles']).map((dynamic tile) => Tile.fromJson(tile)).toList(),
+      tiles: json['tiles'] != null ? List<Tile>.from(json['tiles']).map((dynamic tile) => Tile.fromJson(tile)).toList() : List<Tile>.empty(),
     );
   }
 

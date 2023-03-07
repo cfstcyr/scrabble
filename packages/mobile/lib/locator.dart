@@ -33,7 +33,6 @@ void setUpLocator() {
   getIt.registerLazySingleton<ChatManagementController>(
       () => ChatManagementController());
   getIt.registerLazySingleton<SocketService>(() => SocketService());
-  getIt.registerLazySingleton<GameService>(() => GameService());
   getIt.registerLazySingleton<GameEventService>(() => GameEventService());
   getIt.registerLazySingleton<ChatManagementService>(
       () => ChatManagementService());
@@ -49,5 +48,9 @@ void setUpLocator() {
 
   getIt.registerLazySingleton<GameCreationController>(
       () => GameCreationController());
-  getIt.registerLazySingleton<GameCreationService>(() => GameCreationService());
+
+
+  getIt.registerSingleton<GameCreationService>(GameCreationService());
+  getIt.registerSingleton<GameService>(GameService());
+
 }

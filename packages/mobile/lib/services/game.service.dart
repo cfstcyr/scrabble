@@ -105,9 +105,8 @@ class GameService {
         roundDuration: roundTimeToRoundDuration(startGameData.maxRoundTime)));
 
     _roundService.startRound(startGameData.firstRound);
-    print('game started');
 
-    Navigator.pushNamed(navigatorKey.currentContext!, GAME_PAGE_ROUTE);
+    Navigator.pushReplacementNamed(navigatorKey.currentContext!, GAME_PAGE_ROUTE);
   }
 
   Game get game {

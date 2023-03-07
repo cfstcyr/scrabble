@@ -51,8 +51,8 @@ class GameCreationController {
     Map<String, String> requestHeaders = {
       'authorization': "Bearer ${token}",
     };
-    print(requestHeaders);
-    return await post(Uri.parse("$endpoint/$gameId/players/start"), headers: requestHeaders);
+    return await post(Uri.parse("$endpoint/$gameId/players/start"),
+        headers: requestHeaders);
   }
 
   // TODO
@@ -73,7 +73,9 @@ class GameCreationController {
 
   void _configureSockets() {
     socketService.on(START_GAME_EVENT_NAME, (startGameData) {
-      startGame$.add(InitializeGameData(localPlayerSocketId: SocketService.socket.id!, startGameData: startGameData));
+      startGame$.add(InitializeGameData(
+          localPlayerSocketId: SocketService.socket.id!,
+          startGameData: StartGameData.fromJson(startGameData)));
     });
   }
 }

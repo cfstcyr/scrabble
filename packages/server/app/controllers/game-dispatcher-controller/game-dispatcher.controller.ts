@@ -311,37 +311,37 @@ export class GameDispatcherController extends BaseController {
             gameId: '1',
             maxRoundTime: 60,
             player1: {
-                id: '1',
+                id: playerId,
                 publicUser: {
-                    avatar: 'avatar1',
-                    username: 'username1',
+                    avatar: 'https://ucarecdn.com/e1415137-973a-43d5-9cac-6b69fdd6389b/',
+                    username: 'Player 1',
                 } as unknown as PublicUser,
                 score: 0,
             },
             player2: {
                 id: '2',
                 publicUser: {
-                    avatar: 'avatar2',
-                    username: 'username2',
+                    avatar: 'https://ucarecdn.com/e1415137-973a-43d5-9cac-6b69fdd6389b/',
+                    username: 'Player 2',
                 } as unknown as PublicUser,
             },
             player3: {
                 id: '3',
                 publicUser: {
-                    avatar: 'avatar3',
-                    username: 'username3',
+                    avatar: 'https://ucarecdn.com/e1415137-973a-43d5-9cac-6b69fdd6389b/',
+                    username: 'Player 3',
                 } as unknown as PublicUser,
             },
             player4: {
                 id: '4',
                 publicUser: {
-                    avatar: 'avatar4',
-                    username: 'username4',
+                    avatar: 'https://ucarecdn.com/e1415137-973a-43d5-9cac-6b69fdd6389b/',
+                    username: 'Player 4',
                 } as unknown as PublicUser,
             },
             round: {
                 playerData: {
-                    id: '1',
+                    id: playerId,
                     publicUser: {
                         avatar: 'avatar1',
                         username: 'username1',
