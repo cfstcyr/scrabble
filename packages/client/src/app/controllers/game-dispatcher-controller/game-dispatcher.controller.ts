@@ -4,6 +4,7 @@ import { GameConfig, InitializeGameData, StartGameData } from '@app/classes/comm
 import SocketService from '@app/services/socket-service/socket.service';
 import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
+import { RequestingUsers } from '@common/models/requesting-users';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -12,11 +13,11 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class GameDispatcherController implements OnDestroy {
-    private joinRequestEvent: Subject<PublicUser[]> = new Subject();
+    private joinRequestEvent: Subject<RequestingUsers> = new Subject();
     private canceledGameEvent: Subject<PublicUser> = new Subject();
     private playerJoinedGroupEvent: Subject<Group> = new Subject();
     private playerLeftGroupEvent: Subject<Group> = new Subject();
-    private playerCancelledRequestingEvent: Subject<PublicUser[]> = new Subject();
+    private playerCancelledRequestingEvent: Subject<RequestingUsers> = new Subject();
     private groupFullEvent: Subject<void> = new Subject();
     private invalidPasswordEvent: Subject<void> = new Subject();
     private groupRequestValidEvent: Subject<void> = new Subject();
@@ -83,7 +84,7 @@ export class GameDispatcherController implements OnDestroy {
         );
     }
 
-    subscribeToJoinRequestEvent(serviceDestroyed$: Subject<boolean>, callback: (requestingPlayers: PublicUser[]) => void): void {
+    subscribeToJoinRequestEvent(serviceDestroyed$: Subject<boolean>, callback: (requestingUsers: RequestingUsers) => void): void {
         this.joinRequestEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
@@ -99,7 +100,7 @@ export class GameDispatcherController implements OnDestroy {
         this.playerLeftGroupEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 
-    subscribeToPlayerCancelledRequestingEvent(serviceDestroyed$: Subject<boolean>, callback: (requestingUsers: PublicUser[]) => void): void {
+    subscribeToPlayerCancelledRequestingEvent(serviceDestroyed$: Subject<boolean>, callback: (requestingUsers: RequestingUsers) => void): void {
         this.playerCancelledRequestingEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
 

@@ -2,7 +2,6 @@ import { ReadyGameConfig, ReadyGameConfigWithChannelId } from '@app/classes/game
 import Room from '@app/classes/game/room';
 import WaitingRoom from '@app/classes/game/waiting-room';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import Player from '@app/classes/player/player';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import {
     CANT_START_GAME_WITH_NO_REAL_OPPONENT,
@@ -10,7 +9,6 @@ import {
     INVALID_PLAYER_ID_FOR_GAME,
     NO_DICTIONARY_INITIALIZED,
     NO_GAME_FOUND_WITH_ID,
-    NO_USER_FOUND_WITH_NAME,
 } from '@app/constants/services-errors';
 import { CreateGameService } from '@app/services/create-game-service/create-game.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
@@ -23,6 +21,7 @@ import { UserId } from '@app/classes/user/connected-user-types';
 import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
 import { GameVisibility } from '@common/models/game-visibility';
+import { Observer } from '@common/models/observer';
 @Service()
 export class GameDispatcherService {
     private waitingRooms: WaitingRoom[];
@@ -86,23 +85,19 @@ export class GameDispatcherService {
     }
 
     // TODO : Refactor to use player id instead of name
-    async handleJoinRequest(waitingRoomId: string, playerId: string, requestingPlayerName: string, isAccepted: boolean, isO): Promise<[Player, Group]> {
+    async handleJoinRequest(waitingRoomId: string, playerId: string, requestingPlayerName: string, isAccepted: boolean): Promise<[Observer, Group]> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
-        waitingRoom.getFromRequesting(is)
-        const requestingPlayers = waitingRoom.requestingPlayers.filter((player) => player.publicUser.username === requestingPlayerName);
+        const [requestingPlayer, isObserver] = waitingRoom.getFromRequesting((user) => user.publicUser.username === requestingPlayerName);
 
-        if (requestingPlayers.length === 0) throw new HttpException(NO_USER_FOUND_WITH_NAME, StatusCodes.NOT_FOUND);
-
-        const requestingPlayer = requestingPlayers[0];
         if (isAccepted) {
+            waitingRoom.changeRequestingToJoined(requestingPlayer.id, isObserver);
             await this.chatService.joinChannel(waitingRoom.getGroupChannelId(), requestingPlayer.id);
-            waitingRoom.fillNextEmptySpot(requestingPlayer);
+        } else {
+            waitingRoom.removeRequesting(requestingPlayer.id);
         }
-        const index = waitingRoom.requestingPlayers.indexOf(requestingPlayer);
-        waitingRoom.requestingPlayers.splice(index, 1);
         return [requestingPlayer, waitingRoom.convertToGroup()];
     }
 
@@ -141,9 +136,15 @@ export class GameDispatcherService {
         return { ...config, idChannel: waitingRoom.getGroupChannelId() };
     }
 
-    isPlayerFromAcceptedPlayers(waitingRoomId: string, playerId: string): boolean {
+    isPlayerFromAcceptedUsers(waitingRoomId: string, playerId: string): boolean {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
-        return playerId === waitingRoom.joinedPlayer2?.id || playerId === waitingRoom.joinedPlayer3?.id || playerId === waitingRoom.joinedPlayer4?.id;
+
+        return (
+            playerId === waitingRoom.joinedPlayer2?.id ||
+            playerId === waitingRoom.joinedPlayer3?.id ||
+            playerId === waitingRoom.joinedPlayer4?.id ||
+            waitingRoom.joinedObservers.some((user) => user.id === playerId)
+        );
     }
 
     async leaveGroupRequest(waitingRoomId: string, playerId: string): Promise<Group> {
@@ -151,12 +152,10 @@ export class GameDispatcherService {
         switch (playerId) {
             case waitingRoom.joinedPlayer2?.id: {
                 waitingRoom.joinedPlayer2 = undefined;
-
                 break;
             }
             case waitingRoom.joinedPlayer3?.id: {
                 waitingRoom.joinedPlayer3 = undefined;
-
                 break;
             }
             case waitingRoom.joinedPlayer4?.id: {
@@ -164,7 +163,10 @@ export class GameDispatcherService {
                 break;
             }
             default: {
-                throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+                const matchingObservers = waitingRoom.joinedObservers.filter((observer) => observer.id === playerId);
+                if (matchingObservers.length === 0) throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
+                const index = waitingRoom.joinedObservers.indexOf(matchingObservers[0]);
+                waitingRoom.joinedObservers.splice(index, 1);
             }
         }
 

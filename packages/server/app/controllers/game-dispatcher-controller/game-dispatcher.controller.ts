@@ -213,17 +213,19 @@ export class GameDispatcherController extends BaseController {
 
     private async handleLeave(gameId: string, playerId: string): Promise<void> {
         if (this.gameDispatcherService.isGameInWaitingRooms(gameId)) {
-            if (this.gameDispatcherService.isPlayerFromAcceptedPlayers(gameId, playerId)) {
+            if (this.gameDispatcherService.isPlayerFromAcceptedUsers(gameId, playerId)) {
                 this.socketService.removeFromRoom(playerId, gameId);
 
                 const group = await this.gameDispatcherService.leaveGroupRequest(gameId, playerId);
                 this.socketService.emitToRoom(gameId, 'userLeftGroup', group);
                 this.handleGroupsUpdate();
             } else {
-                const requestingPlayers = this.gameDispatcherService.removeRequestingPlayer(gameId, playerId);
+                const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
+                waitingRoom.removeRequesting(playerId);
+
                 const config = this.gameDispatcherService.getMultiplayerGameFromId(gameId).getConfig();
                 if (config.gameVisibility === GameVisibility.Private) {
-                    this.socketService.emitToSocket(config.player1.id, 'joinRequestCancelled', requestingPlayers);
+                    this.socketService.emitToSocket(config.player1.id, 'joinRequestCancelled', waitingRoom.getRequestingUsers());
                 }
             }
             return;
@@ -254,15 +256,11 @@ export class GameDispatcherController extends BaseController {
         playerId: string,
         publicUser: PublicUser,
         password: string,
-        isObersver: boolean = false,
+        isObserver: boolean = false,
     ): Promise<void> {
-        const waitingRoom = await this.gameDispatcherService.requestJoinGame(gameId, playerId, publicUser, password);
+        const waitingRoom = await this.gameDispatcherService.requestJoinGame(gameId, playerId, publicUser, password, isObserver);
         if (waitingRoom.getConfig().gameVisibility === GameVisibility.Private) {
-            this.socketService.emitToSocket(
-                waitingRoom.getConfig().player1.id,
-                'joinRequest',
-                waitingRoom.requestingPlayers.map((player) => player.publicUser),
-            );
+            this.socketService.emitToSocket(waitingRoom.getConfig().player1.id, 'joinRequest', waitingRoom.getRequestingUsers());
         } else {
             this.socketService.addToRoom(playerId, gameId);
             this.socketService.emitToRoom(gameId, 'acceptJoinRequest', waitingRoom.convertToGroup());
