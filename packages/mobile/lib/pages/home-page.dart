@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/pages/groups-page.dart';
+import 'package:mobile/view-methods/group.methods.dart';
 
 import '../components/invalid-connection-popup.dart';
 import '../constants/login-constants.dart';
@@ -49,9 +50,9 @@ class HomePage extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    gameCreationController.handleCreateGame({} as PublicUser);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => GroupPage()));
+                    getIt.get<GameCreationController>().handleStartGame('1');
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) => GroupPage()));
                   },
                   child: Text('Rejoindre une partie'),
                 ),

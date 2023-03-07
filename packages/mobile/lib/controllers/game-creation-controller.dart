@@ -4,9 +4,11 @@ import 'package:http/http.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 
+import '../classes/game/game-config.dart';
 import '../constants/socket-events/game-events.dart';
 import '../locator.dart';
 import '../services/socket.service.dart';
+import '../services/storage.handler.dart';
 
 class GameCreationController {
   GameCreationController._privateConstructor() {
@@ -44,7 +46,12 @@ class GameCreationController {
   }
 
   Future<Response> handleStartGame(String gameId) async {
-    return await post(Uri.parse("$endpoint/$gameId/players/start"));
+    String token = await getIt.get<StorageHandlerService>().getToken() ?? "";
+    Map<String, String> requestHeaders = {
+      'authorization': "Bearer ${token}",
+    };
+    print(requestHeaders);
+    return await post(Uri.parse("$endpoint/$gameId/players/start"), headers: requestHeaders);
   }
 
   // TODO
@@ -65,7 +72,7 @@ class GameCreationController {
 
   void _configureSockets() {
     socketService.on(START_GAME_EVENT_NAME, (startGameData) {
-      print(startGameData);
+      print(StartGameData.fromJson(startGameData).player1.socketId);
     });
   }
 }

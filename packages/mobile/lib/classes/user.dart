@@ -63,9 +63,9 @@ class PublicUser {
 
   factory PublicUser.fromJson(Map<String, dynamic> json) {
     return PublicUser(
-      email: json['email'] as String,
+      email: json['email'] ?? '',
       username: json['username'] as String,
-      avatar: json['avatar'] as String,
+      avatar: json['avatar'] ?? "images/avatar-12.png",
     );
   }
 

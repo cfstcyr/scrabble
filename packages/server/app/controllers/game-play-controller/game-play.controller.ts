@@ -37,8 +37,8 @@ export class GamePlayController extends BaseController {
             const { gameId } = req.params;
             const data: ActionData = req.body;
             const userId: UserId = req.body.idUser;
-            const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
             try {
+                const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
                 await this.handlePlayAction(gameId, playerId, data);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:mobile/classes/game-visibility.dart';
+import 'package:mobile/classes/game/game-config.dart';
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
 import 'package:rxdart/rxdart.dart';
@@ -52,3 +53,6 @@ Future<void> closeSubject<T>(Subject<T> subject) async {
   await subject.drain();
   await subject.close();
 }
+
+Subject<StartGameData> startGame$ = PublishSubject();
+Stream<StartGameData> get startGameEvent => startGame$.stream;

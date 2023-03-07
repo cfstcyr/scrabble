@@ -60,6 +60,5 @@ class GroupJoinController {
         REJECTED_FROM_GROUP, (hostName) => rejectedJoinRequest$.add(hostName));
     socketService.on(
         CANCELED_GROUP, (hostName) => canceledGroup$.add(hostName));
-    socketService.on(START_GAME, (hostName) => startGame$.add(hostName));
   }
 }
