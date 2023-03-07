@@ -27,16 +27,20 @@ class GameService {
         tileRack: TileRack(),
         players: PlayersContainer.fromPlayers(
           player1: Player(
+              socketId: '1',
               user: PublicUser(username: "George", avatar: '', email: ''),
               score: 420,
               isLocalPlayer: true),
           player2: Player(
+              socketId: '2',
               user: PublicUser(username: "Léonard", avatar: '', email: ''),
               score: 69),
           player3: Player(
+              socketId: '3',
               user: PublicUser(username: "Hernest", avatar: '', email: ''),
               score: 666),
           player4: Player(
+              socketId: '4',
               user: PublicUser(username: "Bernard", avatar: '', email: ''),
               score: 2),
         ),

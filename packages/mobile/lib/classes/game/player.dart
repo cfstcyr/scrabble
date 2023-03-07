@@ -17,7 +17,7 @@ class Player {
     return Player(
       socketId: json['id'],
       user: PublicUser.fromJson(json['publicUser']),
-      score: json['score'] as int,
+      score: json['score'] ?? 0,
     );
   }
 
