@@ -52,6 +52,7 @@ import { SrcsetPipe } from './pipes/srcset/srcset.pipe';
 import { UserProfileInfoComponent } from './components/user-profile/user-profile-info/user-profile-info.component';
 import { UserProfileStatsItemComponent } from './components/user-profile/user-profile-stats-item/user-profile-stats-item.component';
 import { UserProfileStatsComponent } from './components/user-profile/user-profile-stats/user-profile-stats.component';
+import { UserProfilePageComponent } from './pages/user-profile-page/user-profile-page.component';
 
 registerLocaleData(localeFr);
 
@@ -105,6 +106,7 @@ registerLocaleData(localeFr);
         UserProfileInfoComponent,
         UserProfileStatsItemComponent,
         UserProfileStatsComponent,
+        UserProfilePageComponent,
     ],
     imports: [
         AppMaterialModule,

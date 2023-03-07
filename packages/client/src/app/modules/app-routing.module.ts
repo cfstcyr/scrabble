@@ -10,6 +10,8 @@ import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-wait
 import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.component';
 import { LoginPageComponent } from '@app/pages/login-page/login-page.component';
 import { SignUpPageComponent } from '@app/pages/signup-page/signup-page.component';
+import { UserProfilePageComponent } from '@app/pages/user-profile-page/user-profile-page.component';
+import { ROUTE_PROFILE } from '@app/constants/routes-constants';
 
 const privateRoute: Route = {
     canActivate: [PrivateRouteGuard],
@@ -31,6 +33,7 @@ const routes: Routes = [
     { path: 'groups', component: GroupsPageComponent, ...privateRoute },
     { path: 'create-waiting-room', component: CreateWaitingPageComponent, ...privateRoute },
     { path: 'join-waiting-room', component: JoinWaitingPageComponent, ...privateRoute },
+    { path: ROUTE_PROFILE, component: UserProfilePageComponent, ...privateRoute },
     { path: '**', redirectTo: '/home' },
 ];
 
