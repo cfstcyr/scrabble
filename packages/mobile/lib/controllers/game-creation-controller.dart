@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
+import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/environments/environment.dart';
 
 import '../locator.dart';
+import '../services/client.dart';
 import '../services/socket.service.dart';
 
 class GameCreationController {
@@ -17,21 +19,23 @@ class GameCreationController {
     return _instance;
   }
   SocketService socketService = getIt.get<SocketService>();
+  PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
+  InterceptedHttp get http => httpClient.http;
 
   final String endpoint = "${Environment().config.apiUrl}/games";
 
   Future<bool> handleAcceptOpponent(PublicUser opponent, String gameId) async {
     // TODO PAS LES BONS ENDPOINTS: accept est pour le bouton "démarrer la partie"
-    Response res = await post(
+    Response res = await http.post(
         Uri.parse(
-            "${endpoint}/${gameId}/players/${SocketService.socket.id}/accept"),
+            "$endpoint/$gameId/players/${SocketService.socket.id}/accept"),
         body: jsonEncode(opponent));
     // TODO: Remove hack
     return (res.statusCode == 200);
   }
 
   Future<bool> handleRejectOpponent(PublicUser opponent, String gameId) async {
-    Response res = await post(
+    Response res = await http.post(
         Uri.parse(
             "${endpoint}/${gameId}/players/${SocketService.socket.id}/reject"),
         body: jsonEncode(opponent));
@@ -42,7 +46,7 @@ class GameCreationController {
   // TODO
   Future<bool> handleStartGame(PublicUser opponent, String gameId) async {
     // TODO PAS LES BONS ENDPOINTS: accept est pour le bouton "démarrer la partie"
-    Response res = await post(
+    Response res = await http.post(
         Uri.parse(
             "${endpoint}/${gameId}/players/${SocketService.socket.id}/accept"),
         body: jsonEncode(opponent));
@@ -53,7 +57,7 @@ class GameCreationController {
   // TODO
   Future<bool> handleCancelGame(PublicUser opponent, String gameId) async {
     // TODO PAS LES BONS ENDPOINTS: accept est pour le bouton "démarrer la partie"
-    Response res = await post(
+    Response res = await http.post(
         Uri.parse(
             "${endpoint}/${gameId}/players/${SocketService.socket.id}/accept"),
         body: jsonEncode(opponent));

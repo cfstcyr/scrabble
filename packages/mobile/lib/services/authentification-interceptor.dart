@@ -13,9 +13,6 @@ class AuthentificationInterceptor implements InterceptorContract {
     try {
       token = await storageHandlerService.getToken();
       data.headers["authorization"] = "Bearer $token";
-      print("data.headers");
-      print(token);
-      print(data.headers["authorization"]);
     } catch (e) {
       print(e);
     }

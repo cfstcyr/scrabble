@@ -1,10 +1,10 @@
-import 'package:http/http.dart';
+import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/actions/action-data.dart';
 import '../constants/endpoint.constants.dart';
-import '../constants/socket-events/game-events.dart';
 import '../locator.dart';
+import '../services/client.dart';
 import '../services/socket.service.dart';
 
 class GameplayController {
@@ -24,14 +24,16 @@ class GameplayController {
   factory GameplayController() {
     return _instance;
   }
+  PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
+  InterceptedHttp get http => httpClient.http;
 
   Future<void> sendAction(ActionData actionData) async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/action");
-    post(endpoint, body: actionData).then((_) => _actionDone$.add(null));
+    http.post(endpoint, body: actionData).then((_) => _actionDone$.add(null));
   }
 
   Future<void> leaveGame() async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/leave");
-    await delete(endpoint);
+    await http.delete(endpoint);
   }
 }
