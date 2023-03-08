@@ -9,6 +9,7 @@ class Game {
   PlayersContainer players;
   Duration roundDuration;
   List<TileReserveData> tileReserve;
+  bool isOver;
 
   Game({
     required this.board,
@@ -16,6 +17,7 @@ class Game {
     required this.players,
     required this.roundDuration,
     required this.tileReserve,
+    this.isOver = false,
   });
 
   int computeNumberOfTilesLeft() {
