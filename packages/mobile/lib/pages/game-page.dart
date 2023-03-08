@@ -19,55 +19,58 @@ class GamePage extends StatelessWidget {
   Widget build(BuildContext context) {
     GameService gameService = getIt.get<GameService>();
     return StreamBuilder<Game?>(
-      stream: gameService.gameStream,
-      builder: (context, snapshot) {
-        return Container(
-          color: Colors.grey.shade100,
-          padding: EdgeInsets.all(SPACE_1),
-          child: SafeArea(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    child: IntrinsicWidth(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(child: GameBoard()),
-                      TileRack(),
-                    ],
+        stream: gameService.gameStream,
+        builder: (context, snapshot) {
+          return Container(
+            color: Colors.grey.shade100,
+            padding: EdgeInsets.all(SPACE_1),
+            child: SafeArea(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      child: IntrinsicWidth(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(child: GameBoard()),
+                        TileRack(),
+                      ],
+                    ),
+                  )),
+                  SizedBox(
+                    width: 425,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        PlayersContainer(),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: GameInfo(
+                                  value: snapshot.data != null
+                                      ? snapshot.data!
+                                          .computeNumberOfTilesLeft()
+                                          .toString()
+                                      : '0',
+                                  name: "Tuiles restantes",
+                                  icon: Icons.font_download),
+                            ),
+                            Expanded(
+                              child: GameTimer(),
+                            ),
+                          ],
+                        ),
+                        Expanded(child: GameMessages()),
+                        GameActions(),
+                      ],
+                    ),
                   ),
-                )),
-                SizedBox(
-                  width: 425,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      PlayersContainer(),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: GameInfo(
-                                value: snapshot.data != null ? snapshot.data!.computeNumberOfTilesLeft() : 0,
-                                name: "Tuiles restantes",
-                                icon: Icons.font_download),
-                          ),
-                          Expanded(
-                            child: GameTimer(),
-                          ),
-                        ],
-                      ),
-                      Expanded(child: GameMessages()),
-                      GameActions(),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      }
-    );
+          );
+        });
   }
 
   @override

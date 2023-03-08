@@ -22,13 +22,18 @@ class Player {
       socketId: json['id'],
       user: PublicUser.fromJson(json['publicUser']),
       score: json['score'] ?? 0,
-      tiles: json['tiles'] != null ? List<Tile>.from(json['tiles']).map((dynamic tile) => Tile.fromJson(tile)).toList() : List<Tile>.empty(),
+      tiles:
+          json['tiles'] != null && (json['tiles'] as List<dynamic>).isNotEmpty
+              ? (json['tiles'] as List<Map<String, dynamic>>)
+                  .map((Map<String, dynamic> tile) => Tile.fromJson(tile))
+                  .toList()
+              : List<Tile>.empty(),
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'id': socketId,
-    'publicUser': user,
-    'score': score,
-  };
+        'id': socketId,
+        'publicUser': user,
+        'score': score,
+      };
 }

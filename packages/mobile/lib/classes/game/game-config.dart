@@ -1,5 +1,6 @@
 import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/tile/tile-reserve.dart';
+import 'package:mobile/classes/tile/tile.dart';
 
 import '../rounds/round.dart';
 
@@ -25,6 +26,7 @@ class StartGameData {
   });
 
   factory StartGameData.fromJson(Map<String, dynamic> json) {
+    print(json['tileReserve']);
     return StartGameData(
         player1: Player.fromJson(json['player1']),
         player2: Player.fromJson(json['player2']),
@@ -33,9 +35,12 @@ class StartGameData {
         maxRoundTime: json['maxRoundTime'],
         gameId: json['gameId'],
         firstRound: Round.fromJson(json['round']),
-        tileReserve: List<TileReserveData>.of(json['tileReserve'])
-            .map((dynamic tile) => TileReserveData.fromJson(tile))
-            .toList());
+        tileReserve: json['tileReserve'] != null && (json['tileReserve'] as List<dynamic>).isNotEmpty
+            ? (json['tileReserve'] as List<Map<String, dynamic>>)
+                .map((Map<String, dynamic> tile) =>
+                    TileReserveData.fromJson(tile))
+                .toList()
+            : List<TileReserveData>.empty());
   }
 }
 
