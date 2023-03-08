@@ -22,8 +22,7 @@ class ChatManagementService {
       _chatManagementController.channels$;
   BehaviorSubject<List<Channel>> get myChannels$ =>
       _chatManagementController.myChannels$;
-  BehaviorSubject<bool> get shouldOpen$ =>
-      _chatManagementController.shouldOpen$;
+
   BehaviorSubject<Channel> get channelToOpen$ =>
       _chatManagementController.channelToOpen$;
   BehaviorSubject<List<Channel>> get channelSearchResult$ =>

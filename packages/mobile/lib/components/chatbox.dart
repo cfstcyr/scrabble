@@ -3,13 +3,15 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:mobile/classes/channel.dart';
 import 'package:mobile/classes/user.dart';
-import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
+import '../classes/channel-message.dart';
 import '../classes/chat-message.dart';
-import '../controllers/channel.controller.dart';
 import '../locator.dart';
+import '../services/channel.service.dart';
+import '../services/user.service.dart';
 
 class ChatPage extends StatefulWidget {
   final Channel channel;
@@ -23,20 +25,20 @@ class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
 
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  //TODO: Enlever le chat controller,  Add un Channel Service a la place qui lui parle au controller
-  ChannelController channelController = getIt.get<ChannelController>();
-  SocketService socketService = getIt.get<SocketService>();
-  // TODO: Set les infos des users avec les vrais infos
-  final userData = PublicUser(
-      username: "hardcoded:username",
-      avatar: "hardcoded:avatar",
-      email: 'test@gmail.com');
-  final _user = types.User(id: "UserId", firstName: "hardcoded:username");
+  ChannelService channelService = getIt.get<ChannelService>();
+  UserService userService = getIt.get<UserService>();
+  late PublicUser userData;
+  late types.User _userView;
+  BehaviorSubject<List<ChannelMessage>> get messages$ =>
+      channelService.messages$;
 
   @override
   void initState() {
     super.initState();
-    _listenMessages();
+    userData = userService.getUser();
+    _userView = types.User(id: userData.email, firstName: userData.username);
+    messages$.add(widget.channel.messages);
+    _messages = filterToChatBoxFormat(widget.channel.messages);
   }
 
   @override
@@ -44,63 +46,59 @@ class _ChatPageState extends State<ChatPage> {
     var theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(widget.channel.name)),
-      body: Chat(
-        theme: DefaultChatTheme(
-          inputBackgroundColor: theme.colorScheme.primary,
-          primaryColor: theme.colorScheme.primary,
-        ),
-        messages: _messages,
-        onSendPressed: _handleSendPressed,
-        showUserAvatars: true,
-        showUserNames: true,
-        user: _user,
-      ),
+      body: handleChannelChange(theme),
     );
   }
 
-  void _addMessage(types.Message message) {
-    setState(() {
-      _messages.insert(0, message);
-    });
+  StreamBuilder handleChannelChange(ThemeData theme) {
+    return StreamBuilder(
+        stream: channelService.messages$.stream,
+        builder: (context, snapshot) {
+          // update the channel history
+          widget.channel.messages = messages$.value;
+
+          return Chat(
+            theme: DefaultChatTheme(
+              inputBackgroundColor: theme.colorScheme.primary,
+              primaryColor: theme.colorScheme.primary,
+            ),
+            messages: filterToChatBoxFormat(messages$.value),
+            onSendPressed: _handleSendPressed,
+            showUserAvatars: true,
+            showUserNames: true,
+            user: _userView,
+          );
+        });
   }
 
   void _handleSendPressed(types.PartialText message) {
-    // TODO: Refactor cette duplication de code, textMessage est utilisé
-    // pour l'affichage de store des messages par le package  et messageData pour le event: channel:newMessage
     if (message.text != "") {
-      final textMessage = types.TextMessage(
-        author: _user,
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        id: const Uuid().v4(),
-        text: message.text,
-      );
-
       final messageData = ChatMessage(
         sender: userData,
         content: message.text,
         date: DateTime.now().toString(),
       );
 
-      _sendMessage(widget.channel, messageData);
-      _addMessage(textMessage);
+      final channelMessage = ChannelMessage(
+          message: messageData, idChannel: widget.channel.idChannel);
+
+      channelService.sendMessage(widget.channel, messageData);
+      channelService.addMessage(channelMessage);
     }
   }
 
-  void _sendMessage(Channel channel, ChatMessage message) {
-    print(message);
-    channelController.sendMessage(channel, message);
+  types.TextMessage toChatBoxFormat(ChatMessage message) {
+    return types.TextMessage(
+      author: types.User(
+          id: message.sender.email, firstName: message.sender.username),
+      createdAt: DateTime.parse(message.date).millisecondsSinceEpoch,
+      id: const Uuid().v4(),
+      text: message.content,
+    );
   }
 
-  void _handleNewMessage(types.Message message) async {
-    _addMessage(message);
-    setState(() {});
-  }
-
-  //TODO:  Add ce listener dans le controller
-  Future<void> _listenMessages() async {
-    SocketService.socket.on('channel:newMessage', (channelMessage) {
-      _handleNewMessage(channelMessage);
-      _addMessage(channelMessage);
-    });
+  List<types.TextMessage> filterToChatBoxFormat(List<ChannelMessage> messages) {
+    return List<types.TextMessage>.from(
+        messages.map((message) => toChatBoxFormat(message.message)));
   }
 }
