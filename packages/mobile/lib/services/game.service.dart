@@ -56,11 +56,13 @@ class GameService {
         board: Board(),
         tileRack: tileRack,
         players: playersContainer,
-        roundDuration: roundTimeToRoundDuration(startGameData.maxRoundTime)));
+        roundDuration: roundTimeToRoundDuration(startGameData.maxRoundTime),
+        tileReserve: startGameData.tileReserve));
 
     _roundService.startRound(startGameData.firstRound);
 
-    Navigator.pushReplacementNamed(navigatorKey.currentContext!, GAME_PAGE_ROUTE);
+    Navigator.pushReplacementNamed(
+        navigatorKey.currentContext!, GAME_PAGE_ROUTE);
   }
 
   Game get game {
