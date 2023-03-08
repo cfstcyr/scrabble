@@ -42,12 +42,12 @@ class GameActions extends StatelessWidget {
                         onPressed: () {},
                         icon: Icons.swap_horiz_rounded,
                         size: AppButtonSize.large,
-                      ),
+                      ), //Échanger
                       AppButton(
                         onPressed: () {},
                         icon: Icons.not_interested_rounded,
                         size: AppButtonSize.large,
-                      ),
+                      ), // Passer
                       StreamBuilder(
                         stream: game.data!.board.isValidPlacementStream,
                         builder: (context, isValidPlacement) {

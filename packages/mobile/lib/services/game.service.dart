@@ -50,7 +50,23 @@ class GameService {
         .map((Player player) => player.isLocalPlayer = true);
 
     TileRack tileRack =
-        TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
+        TileRack().setTiles([
+          Tile.create('P', 1),
+          Tile.create('E', 1),
+          Tile.create('N', 1),
+          Tile.create('I', 1),
+          Tile.create('S', 1),
+          Tile.create('I', 1),
+          Tile.wildcard(),
+        ]);
+
+    //   Tile.create("P", 1),
+    //   Tile.create("N", 1),
+    //   Tile.create("E", 1),
+    //   Tile.create("I", 1),
+    //   Tile.create("S", 1),
+    //   Tile.create("I", 1),
+    //   Tile.wildcard(),
 
     _game$.add(Game(
         board: Board(),

@@ -313,7 +313,7 @@ export class GameDispatcherController extends BaseController {
             player1: {
                 id: playerId,
                 publicUser: {
-                    avatar: 'https://ucarecdn.com/e1415137-973a-43d5-9cac-6b69fdd6389b/',
+                    avatar: '',
                     username: 'Player 1',
                 } as unknown as PublicUser,
                 score: 0,
@@ -321,21 +321,21 @@ export class GameDispatcherController extends BaseController {
             player2: {
                 id: '2',
                 publicUser: {
-                    avatar: 'https://ucarecdn.com/e1415137-973a-43d5-9cac-6b69fdd6389b/',
+                    avatar: '',
                     username: 'Player 2',
                 } as unknown as PublicUser,
             },
             player3: {
                 id: '3',
                 publicUser: {
-                    avatar: 'https://ucarecdn.com/e1415137-973a-43d5-9cac-6b69fdd6389b/',
+                    avatar: '',
                     username: 'Player 3',
                 } as unknown as PublicUser,
             },
             player4: {
                 id: '4',
                 publicUser: {
-                    avatar: 'https://ucarecdn.com/e1415137-973a-43d5-9cac-6b69fdd6389b/',
+                    avatar: '',
                     username: 'Player 4',
                 } as unknown as PublicUser,
             },
