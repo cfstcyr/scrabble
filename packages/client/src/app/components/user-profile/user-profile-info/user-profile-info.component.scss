@@ -3,6 +3,7 @@
     grid-template-columns: repeat(2, minmax(0, auto));
     justify-content: space-between;
     align-items: flex-start;
+    padding: 24px;
 
     .user-info {
         display: grid;

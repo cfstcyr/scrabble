@@ -1,0 +1,41 @@
+.page {
+    padding-top: 60px;
+
+    .page-content {
+        padding: 16px 24px;
+        max-width: 1024px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .game-result {
+        $size: 30px;
+        height: $size;
+        width: $size;
+        border-radius: $size;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 0.9em;
+
+        &--abandoned {
+            background-color: rgb(213, 213, 213);
+        }
+
+        &--winner {
+            background-color: rgb(255, 200, 0);
+        }
+
+        &--lost {
+            background-color: tomato;
+            color: white;
+        }
+    }
+
+    .table {
+        width: 100%;
+    }
+}
