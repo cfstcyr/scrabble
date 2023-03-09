@@ -48,6 +48,7 @@ import { RequestingUserContainerComponent } from './components/requesting-user-c
 import { GroupRequestWaitingDialogComponent } from './components/group-request-waiting-dialog/group-request-waiting-dialog';
 import { GroupInfoDetailedComponent } from './components/group-info-detailed/group-info-detailed.component';
 import { GroupPasswordDialogComponent } from './components/group-password-waiting-dialog/group-password-waiting-dialog';
+import { ObserverGamePageComponent } from './pages/observer-game-page/observer-game-page.component';
 
 registerLocaleData(localeFr);
 
@@ -97,6 +98,7 @@ registerLocaleData(localeFr);
         GroupRequestWaitingDialogComponent,
         GroupInfoDetailedComponent,
         GroupPasswordDialogComponent,
+        ObserverGamePageComponent,
     ],
     imports: [
         AppMaterialModule,

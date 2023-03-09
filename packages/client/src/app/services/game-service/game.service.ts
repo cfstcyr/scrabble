@@ -92,6 +92,11 @@ export default class GameService implements OnDestroy, IResetServiceData {
         return this.playerContainer.getLocalPlayerId();
     }
 
+    setLocalPlayer(playerNumber: number): void {
+        if (!this.playerContainer) return;
+        return this.playerContainer.setLocalPlayer(playerNumber);
+    }
+
     getTotalNumberOfTilesLeft(): number {
         if (!this.tileReserve) return 0;
         return this.tileReserve.reduce((prev, { amount }) => prev + amount, 0);
@@ -110,6 +115,8 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
 
     private async initializeGame(localPlayerId: string, startGameData: StartGameData): Promise<void> {
+        
+
         this.gameId = startGameData.gameId;
         this.playerContainer = new PlayerContainer(localPlayerId).initializePlayers([
             startGameData.player1,

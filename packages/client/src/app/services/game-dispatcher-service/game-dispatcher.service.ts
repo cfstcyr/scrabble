@@ -21,6 +21,7 @@ import { RequestingUsers } from '@common/models/requesting-users';
 })
 export default class GameDispatcherService implements OnDestroy {
     currentGroup: Group | undefined = undefined;
+    isObserver: boolean | undefined = undefined;
 
     private gameCreationFailed$: Subject<HttpErrorResponse> = new Subject();
     private joinRequestEvent: Subject<RequestingUsers> = new Subject();
@@ -84,15 +85,18 @@ export default class GameDispatcherService implements OnDestroy {
 
     resetServiceData(): void {
         this.currentGroup = undefined;
+        this.isObserver = undefined;
     }
 
     handleJoinGroup(group: Group, isObserver: boolean, password: string = ''): void {
         this.currentGroup = group;
+        this.isObserver = isObserver;
         this.gameDispatcherController.handleGroupJoinRequest(this.getCurrentGroupId(), isObserver, password);
     }
 
     handleGroupUpdates(group: Group, isObserver: boolean): void {
         this.currentGroup = group;
+        this.isObserver = isObserver;
         this.gameDispatcherController.handleGroupUpdatesRequest(this.getCurrentGroupId(), isObserver);
     }
 

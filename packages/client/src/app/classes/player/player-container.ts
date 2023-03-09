@@ -5,7 +5,7 @@ import Player from './player';
 
 export class PlayerContainer {
     private players: Map<number, Player>;
-    private readonly localPlayerId: string;
+    private localPlayerId: string;
 
     constructor(localPlayerId: string) {
         this.players = new Map();
@@ -14,6 +14,10 @@ export class PlayerContainer {
 
     getLocalPlayerId(): string {
         return this.localPlayerId;
+    }
+
+    setLocalPlayer(playerNumber: number) {
+        this.localPlayerId = this.getPlayer(playerNumber).id;
     }
 
     getLocalPlayer(): Player | undefined {
