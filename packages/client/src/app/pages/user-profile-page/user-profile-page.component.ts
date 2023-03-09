@@ -56,4 +56,8 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
         this.gameHistory.paginator = this.gameHistoryPaginator;
         this.serverActions.paginator = this.serverActionsPaginator;
     }
+
+    openEditUserDialog(): void {
+        this.userService.openEditUserDialog();
+    }
 }

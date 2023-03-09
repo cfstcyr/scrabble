@@ -53,6 +53,7 @@ import { UserProfileInfoComponent } from './components/user-profile/user-profile
 import { UserProfileStatsItemComponent } from './components/user-profile/user-profile-stats-item/user-profile-stats-item.component';
 import { UserProfileStatsComponent } from './components/user-profile/user-profile-stats/user-profile-stats.component';
 import { UserProfilePageComponent } from './pages/user-profile-page/user-profile-page.component';
+import { UserProfileEditDialogComponent } from './components/user-profile/user-profile-edit-dialog/user-profile-edit-dialog.component';
 
 registerLocaleData(localeFr);
 
@@ -107,6 +108,7 @@ registerLocaleData(localeFr);
         UserProfileStatsItemComponent,
         UserProfileStatsComponent,
         UserProfilePageComponent,
+        UserProfileEditDialogComponent,
     ],
     imports: [
         AppMaterialModule,

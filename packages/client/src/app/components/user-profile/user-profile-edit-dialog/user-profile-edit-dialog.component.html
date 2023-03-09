@@ -1,0 +1,21 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="user-profile-edit-dialog">
+    <mat-form-field appearance="outline">
+        <mat-label><app-icon icon="user"></app-icon> Pseudonyme</mat-label>
+        <input matInput id="username" type="text" [formControl]="username" autocomplete="off" required />
+        <mat-error *ngIf="username.invalid">{{getUsernameError()}}</mat-error>
+    </mat-form-field>
+
+    <div class="avatar__container">
+        <label *ngFor="let avatar of avatars">
+            <input type="radio" name="avatar" [value]="avatar" class="avatar__input" formControlName="avatar" />
+            <img [srcset]="avatar | srcset:50:50" class="avatar__img" />
+        </label>
+    </div>
+
+    <br><br><br>
+
+    <div class="buttons">
+        <button mat-flat-button mat-dialog-close>Fermer</button>
+        <button mat-flat-button color="primary" type="submit">Enregistrer</button>
+    </div>
+</form>

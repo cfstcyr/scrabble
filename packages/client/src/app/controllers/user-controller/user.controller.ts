@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { PublicUserStatistics } from '@common/models/user-statistics';
 import { GameHistoryForUser } from '@common/models/game-history';
 import { PublicServerAction } from '@common/models/server-action';
+import { EditableUserFields, PublicUser } from '@common/models/user';
 
 @Injectable({
     providedIn: 'root',
@@ -12,6 +13,10 @@ import { PublicServerAction } from '@common/models/server-action';
 export class UserController extends AbstractController {
     constructor(private readonly http: HttpClient) {
         super('/');
+    }
+
+    editUser(edits: EditableUserFields): Observable<PublicUser> {
+        return this.http.patch<PublicUser>(this.url('/users'), edits);
     }
 
     getUserStatistics(): Observable<PublicUserStatistics> {

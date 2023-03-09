@@ -6,7 +6,11 @@
             [avatar]="(avatar | async) ?? ''"
             [username]="(username | async) ?? ''"
             [email]="(email | async) ?? ''"
-        ></app-user-profile-info>
+        >
+            <button color="primary" mat-flat-button user-action (click)="openEditUserDialog()">
+                <app-icon icon="user-edit" styling="solid"></app-icon>
+            </button>
+        </app-user-profile-info>
 
         <app-user-profile-stats>
             <app-user-profile-stats-item title="Parties jouées" [value]="(gamesPlayedCount | async) ?? 0">
