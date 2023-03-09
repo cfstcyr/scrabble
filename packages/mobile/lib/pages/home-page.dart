@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/pages/groups-page.dart';
-import 'package:mobile/view-methods/group.methods.dart';
 
 import '../components/invalid-connection-popup.dart';
 import '../constants/login-constants.dart';
@@ -40,11 +37,14 @@ class HomePage extends StatelessWidget {
                 SizedBox(width: 10), // c'est un spacing fancy
 
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CreateLobbyPage()));
+                  onPressed: () async {
+                    await gameCreationController.handleCreateGame();
+                    if (context.mounted) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CreateLobbyPage()));
+                    }
                   },
                   child: Text('Créer une partie'),
                 ),

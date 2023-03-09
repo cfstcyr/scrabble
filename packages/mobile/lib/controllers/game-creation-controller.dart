@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:developer';
 import 'package:http/http.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
@@ -66,8 +66,9 @@ class GameCreationController {
     return (res.statusCode == 200);
   }
 
-  Future<String> handleCreateGame(PublicUser user) async {
+  Future<String> handleCreateGame() async {
     Response res = await post(Uri.parse(endpoint), body: jsonEncode({}));
+    log(res.body);
     return res.body;
   }
 

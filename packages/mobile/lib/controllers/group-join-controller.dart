@@ -8,6 +8,8 @@ import '../constants/socket-events/group-events.dart';
 import '../locator.dart';
 import '../services/socket.service.dart';
 
+import 'dart:developer';
+
 class GroupJoinController {
   final String endpoint = GAME_ENDPOINT;
 
@@ -27,7 +29,8 @@ class GroupJoinController {
   }
 
   Future<void> handleGetGroups() async {
-    await get(Uri.parse("$endpoint/${SocketService.socket.id}"));
+    Response res = await get(Uri.parse("$endpoint/${SocketService.socket.id}"));
+    log('data: $res');
   }
 
   Future<Response> handleJoinGroup(String groupId) async {

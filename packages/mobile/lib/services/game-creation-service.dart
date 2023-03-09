@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:mobile/classes/user.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
 
 import '../components/error-pop-up.dart';
@@ -31,10 +30,8 @@ class GameCreationService {
     });
   }
 
-  Future<String> createGame(
-    PublicUser opponent,
-  ) async {
-    return await gameCreationController.handleCreateGame(opponent);
+  Future<String> createGame() async {
+    return await gameCreationController.handleCreateGame();
   }
 
   // Future<bool> startGame(PublicUser user, String gameId) async {
