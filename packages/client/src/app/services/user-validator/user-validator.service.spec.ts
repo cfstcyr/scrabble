@@ -1,16 +1,16 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import { UserController } from './user.controller';
+import { UserValidatorService } from './user-validator.service';
 
-describe('UserController', () => {
-    let service: UserController;
+describe('UserValidatorService', () => {
+    let service: UserValidatorService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
         });
-        service = TestBed.inject(UserController);
+        service = TestBed.inject(UserValidatorService);
     });
 
     it('should be created', () => {

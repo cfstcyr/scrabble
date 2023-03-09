@@ -1,4 +1,7 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { UserService } from '@app/services/user-service/user.service';
 
 import { UserProfilePageComponent } from './user-profile-page.component';
@@ -10,6 +13,7 @@ describe('UserProfilePageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [UserProfilePageComponent],
+            imports: [HttpClientTestingModule, MatSnackBarModule, MatDialogModule],
             providers: [UserService],
         }).compileComponents();
     });

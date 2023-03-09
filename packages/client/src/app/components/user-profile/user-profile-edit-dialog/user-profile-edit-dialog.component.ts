@@ -10,7 +10,7 @@ import {
 import { AVATARS } from '@app/constants/avatar-constants';
 import { NAME_VALIDATION } from '@app/constants/name-validation';
 import { AlertService } from '@app/services/alert-service/alert.service';
-import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
+import { UserValidatorService } from '@app/services/user-validator/user-validator.service';
 import { EditableUserFields } from '@common/models/user';
 
 @Component({
@@ -27,7 +27,7 @@ export class UserProfileEditDialogComponent implements OnInit {
     constructor(
         private readonly dialogRef: MatDialogRef<UserProfileEditDialogComponent>,
         @Inject(MAT_DIALOG_DATA) private readonly initialValues: EditableUserFields,
-        private readonly authenticationService: AuthenticationService,
+        private readonly userValidatorService: UserValidatorService,
         private readonly alertService: AlertService,
     ) {
         this.isUsernameTaken = false;
@@ -59,7 +59,7 @@ export class UserProfileEditDialogComponent implements OnInit {
             if (this.username.value === this.lastUsernameValue) return;
             this.lastUsernameValue = this.username.value;
 
-            this.authenticationService.validateUsername(this.username.value).subscribe(
+            this.userValidatorService.validateUsername(this.username.value).subscribe(
                 (isAvailable) => {
                     this.isUsernameTaken = !isAvailable;
                     this.username.updateValueAndValidity();

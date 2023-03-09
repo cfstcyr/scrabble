@@ -25,6 +25,7 @@ import { TileComponent } from '@app/components/tile/tile.component';
 import { TimerSelectionComponent } from '@app/components/timer-selection/timer-selection.component';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { LoadingPageComponent } from '@app/pages/loading-page/loading-page.component';
+import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
 import { GameDispatcherService } from '@app/services/';
 import { Subject } from 'rxjs';
 import { GameCreationPageComponent } from './game-creation-page.component';
@@ -61,6 +62,7 @@ describe('GameCreationPageComponent', () => {
                 LoadingPageComponent,
                 TileComponent,
                 HeaderBtnComponent,
+                SrcsetPipe,
             ],
             imports: [
                 AppMaterialModule,

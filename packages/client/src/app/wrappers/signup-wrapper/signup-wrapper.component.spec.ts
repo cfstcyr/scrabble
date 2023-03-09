@@ -11,6 +11,7 @@ import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
+import { UserValidatorService } from '@app/services/user-validator/user-validator.service';
 import { UserSession, UserSignupInformation } from '@common/models/user';
 import { Subject } from 'rxjs';
 import { SignupWrapperComponent } from './signup-wrapper.component';
@@ -31,9 +32,11 @@ describe('SignupWrapperComponent', () => {
     let component: SignupWrapperComponent;
     let fixture: ComponentFixture<SignupWrapperComponent>;
     let authenticationService: jasmine.SpyObj<AuthenticationService>;
+    let userValidatorService: jasmine.SpyObj<UserValidatorService>;
 
     beforeEach(async () => {
-        authenticationService = jasmine.createSpyObj(AuthenticationService, ['signup', 'validateEmail', 'validateUsername']);
+        authenticationService = jasmine.createSpyObj(AuthenticationService, ['signup']);
+        userValidatorService = jasmine.createSpyObj(UserValidatorService, ['validateEmail', 'validateUsername']);
 
         await TestBed.configureTestingModule({
             declarations: [SignupWrapperComponent, SignupContainerComponent, SrcsetPipe],
@@ -44,7 +47,11 @@ describe('SignupWrapperComponent', () => {
                 MatMenuModule,
                 BrowserAnimationsModule,
             ],
-            providers: [{ provide: AuthenticationService, useValue: authenticationService }, AlertService],
+            providers: [
+                { provide: AuthenticationService, useValue: authenticationService },
+                { provide: UserValidatorService, useValue: userValidatorService },
+                AlertService,
+            ],
         }).compileComponents();
     });
 
@@ -93,7 +100,7 @@ describe('SignupWrapperComponent', () => {
             const isAvailable = true;
             const validateEmailSubject = new Subject<boolean>();
             component.isEmailTaken = undefined as unknown as boolean;
-            authenticationService.validateEmail.and.returnValue(validateEmailSubject);
+            userValidatorService.validateEmail.and.returnValue(validateEmailSubject);
 
             component.handleCheckEmailUnicity('');
 
@@ -106,7 +113,7 @@ describe('SignupWrapperComponent', () => {
             const isAvailable = false;
             const validateEmailSubject = new Subject<boolean>();
             component.isEmailTaken = undefined as unknown as boolean;
-            authenticationService.validateEmail.and.returnValue(validateEmailSubject);
+            userValidatorService.validateEmail.and.returnValue(validateEmailSubject);
 
             component.handleCheckEmailUnicity('');
 
@@ -117,7 +124,7 @@ describe('SignupWrapperComponent', () => {
 
         it('should call error on error', () => {
             const validateEmailSubject = new Subject<boolean>();
-            authenticationService.validateEmail.and.returnValue(validateEmailSubject);
+            userValidatorService.validateEmail.and.returnValue(validateEmailSubject);
 
             const alertService = TestBed.inject(AlertService);
             const spy = spyOn(alertService, 'error');
@@ -135,7 +142,7 @@ describe('SignupWrapperComponent', () => {
             const isAvailable = true;
             const validateUsernameSubject = new Subject<boolean>();
             component.isUsernameTaken = undefined as unknown as boolean;
-            authenticationService.validateUsername.and.returnValue(validateUsernameSubject);
+            userValidatorService.validateUsername.and.returnValue(validateUsernameSubject);
 
             component.handleCheckUsernameUnicity('');
 
@@ -148,7 +155,7 @@ describe('SignupWrapperComponent', () => {
             const isAvailable = false;
             const validateUsernameSubject = new Subject<boolean>();
             component.isUsernameTaken = undefined as unknown as boolean;
-            authenticationService.validateUsername.and.returnValue(validateUsernameSubject);
+            userValidatorService.validateUsername.and.returnValue(validateUsernameSubject);
 
             component.handleCheckUsernameUnicity('');
 
@@ -159,7 +166,7 @@ describe('SignupWrapperComponent', () => {
 
         it('should call error on error', () => {
             const validateUsernameSubject = new Subject<boolean>();
-            authenticationService.validateUsername.and.returnValue(validateUsernameSubject);
+            userValidatorService.validateUsername.and.returnValue(validateUsernameSubject);
 
             const alertService = TestBed.inject(AlertService);
             const spy = spyOn(alertService, 'error');

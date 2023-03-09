@@ -30,6 +30,7 @@ import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
+import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
 
 const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
@@ -68,7 +69,7 @@ describe('GroupPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GroupsPageComponent, GroupInfoComponent, IconComponent, PageHeaderComponent, HeaderBtnComponent],
+            declarations: [GroupsPageComponent, GroupInfoComponent, IconComponent, PageHeaderComponent, HeaderBtnComponent, SrcsetPipe],
             imports: [
                 MatInputModule,
                 MatFormFieldModule,

@@ -14,6 +14,8 @@ import { Location } from '@angular/common';
 import { ROUTE_LOGIN } from '@app/constants/routes-constants';
 import { UserService } from '@app/services/user-service/user.service';
 import { PublicUser } from '@common/models/user';
+import { MatDialogModule } from '@angular/material/dialog';
+import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
 
 @Component({
     template: '',
@@ -33,7 +35,7 @@ describe('PageHeaderComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [PageHeaderComponent, IconComponent, HeaderBtnComponent],
+            declarations: [PageHeaderComponent, IconComponent, HeaderBtnComponent, SrcsetPipe],
             imports: [
                 BrowserAnimationsModule,
                 MatCardModule,
@@ -41,6 +43,7 @@ describe('PageHeaderComponent', () => {
                 HttpClientTestingModule,
                 MatSnackBarModule,
                 MatMenuModule,
+                MatDialogModule,
             ],
             providers: [AuthenticationService, UserService],
         }).compileComponents();

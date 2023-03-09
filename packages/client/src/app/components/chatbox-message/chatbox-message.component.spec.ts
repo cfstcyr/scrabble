@@ -1,5 +1,8 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';
 import { IconButtonComponent } from '@app/components/icon-button/icon-button.component';
 import { IconComponent } from '@app/components/icon/icon.component';
@@ -24,7 +27,7 @@ describe('ChatboxMessageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [ReactiveFormsModule],
+            imports: [ReactiveFormsModule, HttpClientTestingModule, MatSnackBarModule, MatDialogModule],
             providers: [FormBuilder, UserService],
             declarations: [ChatboxMessageComponent, ChatBoxComponent, IconComponent, IconButtonComponent],
         }).compileComponents();

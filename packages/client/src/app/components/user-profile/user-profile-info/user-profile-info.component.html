@@ -1,6 +1,6 @@
 <mat-card class="user-profile-info">
     <div class="user-info">
-        <img class="avatar" srcset="{{ avatar | srcset:110:100 }}" />
+        <img class="avatar" srcset="{{ avatar ?? '' | srcset:110:100 }}" />
         <div class="user">
             <h2 class="username">{{ username }}</h2>
             <h3 class="email">{{ email }}</h3>
