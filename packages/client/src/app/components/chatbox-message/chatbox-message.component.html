@@ -17,7 +17,8 @@
                     <div class="chatbox-message__group__content">
                         <img 
                             class="chatbox-message__group__avatar"
-                            [src]="messageGroup.sender.avatar" 
+                            [appSrc]="messageGroup.sender.avatar" 
+                            [square]="20"
                             *ngIf="!messageGroup.isCurrentUser"
                         />
                         <div class="chatbox-message__group__messages">

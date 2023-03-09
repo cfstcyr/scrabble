@@ -49,6 +49,7 @@ import { GroupRequestWaitingDialogComponent } from './components/group-request-w
 import { GroupInfoDetailedComponent } from './components/group-info-detailed/group-info-detailed.component';
 import { GroupPasswordDialogComponent } from './components/group-password-waiting-dialog/group-password-waiting-dialog';
 import { SrcsetPipe } from './pipes/srcset/srcset.pipe';
+import { SrcDirective } from './directives/src-directive/src.directive';
 
 registerLocaleData(localeFr);
 
@@ -99,6 +100,7 @@ registerLocaleData(localeFr);
         GroupInfoDetailedComponent,
         GroupPasswordDialogComponent,
         SrcsetPipe,
+        SrcDirective,
     ],
     imports: [
         AppMaterialModule,
