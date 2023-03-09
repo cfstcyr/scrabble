@@ -68,7 +68,8 @@ export default class GameDispatcherService implements OnDestroy {
         this.gameDispatcherController.subscribeToGroupsUpdateEvent(this.serviceDestroyed$, (groups: Group[]) => this.handleGroupsUpdate(groups));
         this.gameDispatcherController.subscribeToInitializeGame(
             this.serviceDestroyed$,
-            async (initializeValue: InitializeGameData | undefined) => await this.gameService.handleInitializeGame(initializeValue),
+            async (initializeValue: InitializeGameData | undefined) =>
+                await this.gameService.handleInitializeGame(initializeValue, this.isObserver ?? false),
         );
 
         this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());

@@ -51,4 +51,5 @@ export const DEFAULT_GROUP: Group = {
     gameVisibility: GameVisibility.Public,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     password: '',
+    numberOfObservers: 0,
 };

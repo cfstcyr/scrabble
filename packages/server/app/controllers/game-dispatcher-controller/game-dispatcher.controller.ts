@@ -201,8 +201,10 @@ export class GameDispatcherController extends BaseController {
         for (const requestingPlayer of waitingRoom.requestingPlayers) {
             this.socketService.emitToSocket(requestingPlayer.id, 'cancelledGroup', waitingRoom.getConfig().player1.publicUser);
         }
+        for (const requestingObserver of waitingRoom.requestingObservers) {
+            this.socketService.emitToSocket(requestingObserver.id, 'cancelledGroup', waitingRoom.getConfig().player1.publicUser);
+        }
         await this.gameDispatcherService.cancelGame(gameId, playerId);
-
         this.handleGroupsUpdate();
     }
 

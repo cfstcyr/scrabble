@@ -58,9 +58,9 @@ export default class GameService implements OnDestroy, IResetServiceData {
         this.serviceDestroyed$.complete();
     }
 
-    async handleInitializeGame(initializeGameData: InitializeGameData | undefined): Promise<void> {
+    async handleInitializeGame(initializeGameData: InitializeGameData | undefined, isObserver: boolean): Promise<void> {
         if (!initializeGameData) return;
-        await this.initializeGame(initializeGameData.localPlayerId, initializeGameData.startGameData);
+        await this.initializeGame(initializeGameData.localPlayerId, initializeGameData.startGameData, isObserver);
         this.gameViewEventManagerService.emitGameViewEvent('gameInitialized', initializeGameData);
     }
 
@@ -114,11 +114,9 @@ export default class GameService implements OnDestroy, IResetServiceData {
         return this.roundManager.getActivePlayer().id;
     }
 
-    private async initializeGame(localPlayerId: string, startGameData: StartGameData): Promise<void> {
-        
-
+    private async initializeGame(localPlayerId: string, startGameData: StartGameData, isObserver: boolean): Promise<void> {
         this.gameId = startGameData.gameId;
-        this.playerContainer = new PlayerContainer(localPlayerId).initializePlayers([
+        this.playerContainer = new PlayerContainer(isObserver ? startGameData.player1.id : localPlayerId).initializePlayers([
             startGameData.player1,
             startGameData.player2,
             startGameData.player3,
