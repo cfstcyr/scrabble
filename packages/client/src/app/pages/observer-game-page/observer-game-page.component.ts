@@ -38,7 +38,6 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
         public gameService: GameService,
         private readonly reconnectionService: ReconnectionService,
         public surrenderDialog: MatDialog,
-        // private playerLeavesService: PlayerLeavesService,
         private gameViewEventManagerService: GameViewEventManagerService,
     ) {
         this.mustDisconnectGameOnLeave = true;
@@ -148,6 +147,5 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
 
     private handlePlayerLeaves(): void {
         this.mustDisconnectGameOnLeave = false;
-        // this.playerLeavesService.handleLocalPlayerLeavesGame();
     }
 }
