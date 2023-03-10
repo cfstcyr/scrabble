@@ -19,9 +19,9 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameDispatcherService } from '@app/services';
-import { PublicUser } from '@common/models/user';
 import { of, Subject } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
+import { RequestingUsers } from '@common/models/requesting-users';
 
 @Component({
     template: '',
@@ -58,7 +58,7 @@ describe('RequestingUserContainerComponent', () => {
         gameDispatcherServiceSpy.observeGameCreationFailed.and.returnValue(gameDispatcherCreationSubject.asObservable());
         gameDispatcherServiceSpy['joinRequestEvent'] = new Subject();
         gameDispatcherServiceSpy.subscribeToJoinRequestEvent.and.callFake(
-            (componentDestroyed$: Subject<boolean>, callBack: (users: PublicUser[]) => void) => {
+            (componentDestroyed$: Subject<boolean>, callBack: (requestingUsers: RequestingUsers) => void) => {
                 gameDispatcherServiceSpy['joinRequestEvent'].subscribe(callBack);
             },
         );

@@ -61,7 +61,7 @@ class MatDialogRefMock {
     }
 }
 
-describe('GroupPageComponent', () => {
+describe('GroupsPageComponent', () => {
     let component: GroupsPageComponent;
     let fixture: ComponentFixture<GroupsPageComponent>;
     let gameDispatcherServiceMock: GameDispatcherService;
@@ -123,6 +123,7 @@ describe('GroupPageComponent', () => {
                 gameVisibility: GameVisibility.Public,
                 password: '',
                 user1: USER1,
+                numberOfObservers: 0,
             },
             {
                 groupId: '2',
@@ -131,6 +132,7 @@ describe('GroupPageComponent', () => {
                 gameVisibility: GameVisibility.Public,
                 password: '',
                 user1: USER2,
+                numberOfObservers: 1,
             },
             {
                 groupId: '3',
@@ -139,6 +141,7 @@ describe('GroupPageComponent', () => {
                 gameVisibility: GameVisibility.Public,
                 password: '',
                 user1: USER3,
+                numberOfObservers: 0,
             },
         ];
     });
@@ -157,6 +160,7 @@ describe('GroupPageComponent', () => {
                     gameVisibility: GameVisibility.Public,
                     user1: USER1,
                     password: '',
+                    numberOfObservers: 0,
                 },
             ];
             component['updateGroups']([]);
@@ -184,7 +188,7 @@ describe('GroupPageComponent', () => {
             const group = { groupId: 'game-id' };
             getRandomGroupSpy.and.returnValue(group);
             component.joinRandomGroup();
-            expect(joinGroupSpy).toHaveBeenCalledWith(group.groupId);
+            expect(joinGroupSpy).toHaveBeenCalledWith([group.groupId, false]);
         });
 
         it('should open snack bar if an error occurs', () => {
@@ -232,6 +236,7 @@ describe('GroupPageComponent', () => {
                     user2: {} as unknown as PublicUser,
                     user3: {} as unknown as PublicUser,
                     user4: {} as unknown as PublicUser,
+                    numberOfObservers: 0,
                 },
             ];
 
@@ -245,7 +250,7 @@ describe('GroupPageComponent', () => {
         });
         const groupWanted = component.groups[0];
         groupWanted.gameVisibility = GameVisibility.Public;
-        component.joinGroup(groupWanted.groupId);
+        component.joinGroup([groupWanted.groupId, false]);
         expect(gameDispatcherSpy).toHaveBeenCalled();
     });
 
@@ -258,7 +263,7 @@ describe('GroupPageComponent', () => {
         });
         const groupWanted = component.groups[0];
         groupWanted.gameVisibility = GameVisibility.Protected;
-        component.joinGroup(groupWanted.groupId);
+        component.joinGroup([groupWanted.groupId, false]);
         expect(gameDispatcherSpy).toHaveBeenCalled();
         expect(spyGroupPasswordDialog).toHaveBeenCalled();
     });
@@ -272,7 +277,7 @@ describe('GroupPageComponent', () => {
         });
         const groupWanted = component.groups[0];
         groupWanted.gameVisibility = GameVisibility.Private;
-        component.joinGroup(groupWanted.groupId);
+        component.joinGroup([groupWanted.groupId, false]);
         expect(gameDispatcherSpy).toHaveBeenCalled();
         expect(spyGroupRequestWaitingDialog).toHaveBeenCalled();
     });
@@ -287,7 +292,7 @@ describe('GroupPageComponent', () => {
         const spy = spyOn(component.dialog, 'open').and.callFake(() => {
             return new MatDialogRefMock() as unknown as MatDialogRef<any, any>;
         });
-        component['groupPasswordDialog'](component.groups[0]);
+        component['groupPasswordDialog'](component.groups[0], false);
         expect(spy).toHaveBeenCalled();
     });
 
@@ -314,6 +319,7 @@ describe('GroupPageComponent', () => {
                 gameVisibility: GameVisibility.Public,
                 user1: USER1,
                 password: '',
+                numberOfObservers: 0,
             },
             {
                 groupId: '2',
@@ -322,6 +328,7 @@ describe('GroupPageComponent', () => {
                 gameVisibility: GameVisibility.Public,
                 user1: USER2,
                 password: '',
+                numberOfObservers: 0,
             },
             {
                 groupId: '3',
@@ -330,6 +337,7 @@ describe('GroupPageComponent', () => {
                 gameVisibility: GameVisibility.Public,
                 user1: USER3,
                 password: '',
+                numberOfObservers: 0,
             },
         ];
         const spySetOpponent = spyOn<any>(component, 'updateGroups').and.callFake(() => {
