@@ -26,17 +26,20 @@
       
       .scrollable-container {
         flex-grow: 1; 
-        max-height: 500px;
-        height: 500px;
+        max-height: 600px;
+        height: 600px;
         overflow-y: auto;
         background-color: #e8e8e8;
         border-radius: 10px;
         padding: 10px;
-        margin-top: 10px;
+        margin: 10px 0;
       }
       
+      .scrollable-container:last-child {
+        margin-bottom: 0px;
+    }
     mat-card {
-        height: 500px;
+        height: 600px;
         justify-content: space-between;
         display: flex;
         flex-direction: column;

@@ -64,10 +64,14 @@ $img-size: 50px;
 
     .name {
     font-size: 1.2em;
-    margin: 0 0 8px 0;
+    margin: 0 12px 8px 0;
     text-align: center;
     white-space: nowrap; 
     text-overflow: ellipsis; 
     max-width: 200px; 
+    }
+
+    #observer-icon {
+        margin-bottom: 4px;
     }
 }

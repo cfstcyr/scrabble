@@ -16,8 +16,12 @@ export class PlayerContainer {
         return this.localPlayerId;
     }
 
-    setLocalPlayer(playerNumber: number) {
+    setLocalPlayer(playerNumber: number): void {
         this.localPlayerId = this.getPlayer(playerNumber).id;
+    }
+
+    setLocalPlayerId(playerId: string): void {
+        this.localPlayerId = playerId;
     }
 
     getLocalPlayer(): Player | undefined {
@@ -49,7 +53,10 @@ export class PlayerContainer {
         playersData.forEach((playerData: PlayerData) => {
             [...this.players.values()]
                 .filter((player: Player) => player.id === playerData.id)
-                .forEach((player: Player) => player.updatePlayerData(playerData));
+                .forEach((player: Player) => {
+                    player.updatePlayerData(playerData);
+                    if (playerData.newId && playerData.id === this.getLocalPlayerId()) this.setLocalPlayerId(playerData.newId);
+                });
         });
         return this;
     }

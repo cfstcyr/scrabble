@@ -74,10 +74,13 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     selectTileToExchange(tile: RackTile): boolean {
+        if (this.isObserver) return false;
+
         return this.selectTile(TileRackSelectType.Exchange, tile);
     }
 
     selectTileToMove(tile: RackTile): boolean {
+        if (this.isObserver) return false;
         return this.selectTile(TileRackSelectType.Move, tile);
     }
 
