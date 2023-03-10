@@ -29,6 +29,7 @@ import { Container } from 'typedi';
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import Game from './game';
 import { ReadyGameConfig, StartGameData } from './game-config';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 const expect = chai.expect;
 
 chai.use(spies);
@@ -88,6 +89,8 @@ describe('Game', () => {
             this['referenceTiles'] = [...this['tiles']];
             return Promise.resolve();
         };
+
+        sinon.stub(Container.get(AuthentificationService).connectedUsers, 'getUserId').returns(1);
 
         Game.injectServices();
     });
@@ -593,19 +596,19 @@ describe('Game', () => {
 
         it('should set hasBeenAbandonned to false if no player is disconnected', () => {
             game.completeGameHistory();
-            expect(game.gameHistory.hasBeenAbandoned).to.be.false;
+            expect(game.gameHistory.gameHistory.hasBeenAbandoned).to.be.false;
         });
 
         it('should set hasBeenAbandonned to true if player1 is disconnected', () => {
             game.player1.isConnected = false;
             game.completeGameHistory();
-            expect(game.gameHistory.hasBeenAbandoned).to.be.true;
+            expect(game.gameHistory.gameHistory.hasBeenAbandoned).to.be.true;
         });
 
         it('should set hasBeenAbandonned to true if player2 is disconnected', () => {
             game.player2.isConnected = false;
             game.completeGameHistory();
-            expect(game.gameHistory.hasBeenAbandoned).to.be.true;
+            expect(game.gameHistory.gameHistory.hasBeenAbandoned).to.be.true;
         });
 
         describe('isPlayerWinner', () => {
@@ -649,10 +652,10 @@ describe('Game', () => {
                 expect(game.isPlayerWinner(game.player2)).to.be.true;
                 expect(game.isPlayerWinner(game.player3)).to.be.true;
                 game.completeGameHistory();
-                expect(game.gameHistory.playersData[0].isWinner).to.be.false;
-                expect(game.gameHistory.playersData[1].isWinner).to.be.true;
-                expect(game.gameHistory.playersData[2].isWinner).to.be.true;
-                expect(game.gameHistory.playersData[3].isWinner).to.be.false;
+                expect(game.gameHistory.players[0].isWinner).to.be.false;
+                expect(game.gameHistory.players[1].isWinner).to.be.true;
+                expect(game.gameHistory.players[2].isWinner).to.be.true;
+                expect(game.gameHistory.players[3].isWinner).to.be.false;
             });
         });
     });

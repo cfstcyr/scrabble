@@ -9,6 +9,7 @@ export const USER_STATISTICS_TABLE = 'UserStatistics';
 export const CHANNEL_TABLE = 'Channel';
 export const USER_CHANNEL_TABLE = 'UserChannel';
 export const CHAT_HISTORY_TABLE = 'ChatHistory';
+export const SERVER_ACTION_TABLE = 'UserAction';
 
 // Data
 export const DEFAULT_HIGH_SCORES_RELATIVE_PATH = '../../../assets/default-high-scores.json';

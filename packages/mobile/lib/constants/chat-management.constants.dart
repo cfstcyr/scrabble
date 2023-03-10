@@ -13,5 +13,6 @@ const QUIT_EVENT = 'channel:quit';
 const CREATE_EVENT = 'channel:newChannel';
 const INIT_EVENT = 'channel:init';
 const INIT_DONE_EVENT = 'channel:initDone';
+const MESSAGE_EVENT = 'channel:newMessage';
 const ALL_CHANNELS_EVENT = 'channel:joinableChannels';
 const HISTORY_EVENT = 'channel:history';

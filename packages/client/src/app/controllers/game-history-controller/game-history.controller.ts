@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GameHistoriesData } from '@app/classes/communication/game-histories';
+import { GameHistoryForUser } from '@common/models/game-history';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -12,8 +12,8 @@ export class GameHistoryController {
 
     constructor(private readonly http: HttpClient) {}
 
-    getGameHistories(): Observable<GameHistoriesData> {
-        return this.http.get<GameHistoriesData>(this.endpoint);
+    getGameHistories(): Observable<GameHistoryForUser[]> {
+        return this.http.get<GameHistoryForUser[]>(this.endpoint);
     }
 
     resetGameHistories(): Observable<void> {

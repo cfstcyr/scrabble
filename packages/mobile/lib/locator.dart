@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:mobile/controllers/channel.controller.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
@@ -43,7 +42,6 @@ class CustomLocator {
     getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
     getIt.registerLazySingleton<AccountAuthenticationController>(
         () => AccountAuthenticationController());
-    getIt.registerLazySingleton<ChannelController>(() => ChannelController());
     getIt.registerLazySingleton<ChatManagementController>(
         () => ChatManagementController());
     getIt.registerLazySingleton<SocketService>(() => SocketService());

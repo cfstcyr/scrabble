@@ -3,8 +3,10 @@ import { AbstractObjective } from '@app/classes/objectives/abstract-objective/ab
 import { ObjectiveUpdate } from '@app/classes/objectives/objective-utils';
 import { ObjectiveValidationParameters } from '@app/classes/objectives/validation-parameters';
 import { Tile } from '@app/classes/tile';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import ObjectivesService from '@app/services/objective-service/objective.service';
-import { PublicUser } from '@common/models/user';
+import { PublicUser, User } from '@common/models/user';
+import { TypeOfId } from '@common/types/id';
 import { Container } from 'typedi';
 
 export default class Player {
@@ -73,6 +75,10 @@ export default class Player {
             tiles: this.tiles,
             isConnected: this.isConnected,
         };
+    }
+
+    get idUser(): TypeOfId<User> {
+        return Container.get(AuthentificationService).connectedUsers.getUserId(this.id);
     }
 
     private tilesToString(): string {

@@ -111,8 +111,12 @@ class PlayerInRoom extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                getUserAvatar(user.avatar, getUsersInitials(user.username),
-                    theme.colorScheme.onBackground, 24),
+                getUserAvatar(user.avatar,
+                    initials: getUsersInitials(user.username),
+                    background: theme.colorScheme.onBackground,
+                    radius: 24,
+                    width: 60,
+                    height: 60),
                 SizedBox(
                   width: 8,
                 ),
@@ -131,9 +135,7 @@ SizedBox setPlayerName(String username, ThemeData theme) {
       username,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-          fontSize: 17,
-          color: theme.primaryColor,
-          fontWeight: FontWeight.w500),
+          fontSize: 17, color: theme.primaryColor, fontWeight: FontWeight.w500),
     ),
   );
 }
