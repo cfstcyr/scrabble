@@ -5,7 +5,7 @@ import { Timer } from '@app/classes/round/timer';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
 import { DEFAULT_GROUP, DIALOG_BUTTON_CONTENT_RETURN_GROUP, DIALOG_CANCEL_CONTENT, DIALOG_CANCEL_TITLE } from '@app/constants/pages-constants';
-import { ROUTE_GROUPS } from '@app/constants/routes-constants';
+import { ROUTE_GAME, ROUTE_GAME_OBSERVER, ROUTE_GROUPS } from '@app/constants/routes-constants';
 import GameDispatcherService from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { Group } from '@common/models/group';
@@ -70,7 +70,7 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
     }
 
     private routerChangeMethod(url: string): void {
-        if (url !== '/game') {
+        if (url !== ROUTE_GAME && url !== ROUTE_GAME_OBSERVER) {
             this.playerLeavesService.handleLeaveGroup();
         }
     }
