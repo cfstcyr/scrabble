@@ -34,7 +34,7 @@ export const DIALOG_END_OF_GAME_CONTENT = (isLocalPlayerWinner: boolean) =>
     isLocalPlayerWinner ? 'Bravo pour votre victoire!' : 'Meilleure chance la prochaine fois!';
 export const DIALOG_END_OF_GAME_OBSERVER_TITLE = 'Fin de la partie';
 export const DIALOG_END_OF_GAME_OBSERVER_CONTENT = (winnerNames: string[]) =>
-    `Bravo pour à${winnerNames.reduce((acc: string, current: string) => acc + ' ' + current, '')}!`;
+    `Bravo à${winnerNames.reduce((acc: string, current: string) => acc + ' ' + current, '')} pour la victoire!`;
 export const DIALOG_END_OF_GAME_CLOSE_BUTTON = 'Rester sur cette page';
 export const DIALOG_END_OF_GAME_EXIT_BUTTON = "Retourner à l'acceuil";
 export const MIN_CONFETTI_COUNT = 100;
