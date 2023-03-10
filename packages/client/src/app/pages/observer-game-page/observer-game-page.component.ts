@@ -5,8 +5,8 @@ import { DefaultDialogComponent } from '@app/components/default-dialog/default-d
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
 import {
     DIALOG_END_OF_GAME_CLOSE_BUTTON,
-    DIALOG_END_OF_GAME_CONTENT,
-    DIALOG_END_OF_GAME_TITLE,
+    DIALOG_END_OF_GAME_OBSERVER_CONTENT,
+    DIALOG_END_OF_GAME_OBSERVER_TITLE,
     DIALOG_NO_ACTIVE_GAME_BUTTON,
     DIALOG_NO_ACTIVE_GAME_CONTENT,
     DIALOG_NO_ACTIVE_GAME_TITLE,
@@ -56,7 +56,9 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.gameViewEventManagerService.subscribeToGameViewEvent('noActiveGame', this.componentDestroyed$, () => this.noActiveGameDialog());
-        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, () => this.endOfGameDialog());
+        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, (winnerNames: string[]) =>
+            this.endOfGameDialog(winnerNames),
+        );
         if (!this.gameService.getGameId()) {
             this.reconnectionService.reconnectGame();
         }
@@ -119,11 +121,11 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
         });
     }
 
-    private endOfGameDialog(): void {
+    private endOfGameDialog(winnerNames: string[]): void {
         this.dialog.open(DefaultDialogComponent, {
             data: {
-                title: DIALOG_END_OF_GAME_TITLE(false),
-                content: DIALOG_END_OF_GAME_CONTENT(false),
+                title: DIALOG_END_OF_GAME_OBSERVER_TITLE,
+                content: DIALOG_END_OF_GAME_OBSERVER_CONTENT(winnerNames),
                 buttons: [
                     {
                         content: DIALOG_QUIT_BUTTON_CONFIRM,
