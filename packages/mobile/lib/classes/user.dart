@@ -83,7 +83,11 @@ class PublicUser {
       json['user2'],
       json['user3'],
       json['user4']
-    ].map((dynamic publicUser) => PublicUser.fromJson(publicUser)).toList());
+    ]
+        .map((dynamic publicUser) => publicUser == null
+            ? PublicUser(username: '', avatar: "", email: '')
+            : PublicUser.fromJson(publicUser))
+        .toList());
   }
 }
 
