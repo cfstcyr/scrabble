@@ -7,12 +7,53 @@ interface AggregateConfig<
     MainItemKeys extends keyof T,
     AggregatedItemKey extends keyof Omit<T, FieldKey>,
 > {
+    /** Key used to identify row. Rows with the same id key will be aggregated together */
     idKey: IdKey;
+    /** Key used to group aggregated items */
     fieldKey: FieldKey;
+    /** Item keys that will be kept in the parent object. */
     mainItemKeys: MainItemKeys[];
+    /** Item keys that will be placed in the aggregated rows */
     aggregatedItemKeys: AggregatedItemKey | AggregatedItemKey[];
 }
 
+/**
+ * Aggregate rows together.
+ *
+ * **Example :**
+ * ```typescript
+ * const rows = [
+ *  { id: 1, name: 'john', fruit: 'banana' },
+ *  { id: 1, name: 'john', fruit: 'pineapple' },
+ *  { id: 2, name: 'anna', fruit: 'apple' },
+ * ];
+ *
+ * const result = aggregate(rows, {
+ *  idKey: 'id',
+ *  fieldKey: 'favoriteFruit',
+ *  mainItemKeys: ['id', 'name'],
+ *  aggregatedItemKeys: ['fruit'],
+ * });
+ *
+ * expect(rows).toEqual([
+ *  {
+ *    id: 1,
+ *    name: 'john',
+ *    favoriteFruit: [
+ *      { fruit: 'banana' },
+ *      { fruit: 'pineapple' },
+ *    ],
+ *  },
+ *  {
+ *    id: 2,
+ *    name: 'anna',
+ *    favoriteFruit: [
+ *      { fruit: 'apple' },
+ *    ],
+ *  },
+ * ]); // true
+ * ```
+ */
 export const aggregate = <
     T extends object,
     IdKey extends keyof T,

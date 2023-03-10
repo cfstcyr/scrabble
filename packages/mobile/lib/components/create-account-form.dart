@@ -4,14 +4,16 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/text-field-handler.dart';
+import 'package:mobile/components/avatar-field.dart';
+import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/pages/login-page.dart';
-import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../constants/create-account-constants.dart';
+import '../controllers/account-authentification-controller.dart';
+import '../main.dart';
 import '../pages/home-page.dart';
-import '../services/account-authentification-service.dart';
 
 class CreateAccountForm extends StatefulWidget {
   @override
@@ -24,13 +26,16 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  AccountAuthenticationService accountService =
-      getIt.get<AccountAuthenticationService>();
+  AccountAuthenticationController accountController =
+      getIt.get<AccountAuthenticationController>();
 
   final emailHandler = TextFieldHandler();
   final usernameHandler = TextFieldHandler();
   final passwordHandler = TextFieldHandler();
   final passwordMatchHandler = TextFieldHandler();
+  final avatarHandler = TextFieldHandler();
+  final avatarSrc = BehaviorSubject<String?>();
+  final avatarError = BehaviorSubject<String?>();
 
   @override
   void initState() {
@@ -53,152 +58,153 @@ class CreateAccountFormState extends State<CreateAccountForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 50),
-        Container(
-          height: 585,
-          width: 500,
-          decoration: BoxDecoration(
-              border: Border.all(
-                color: themeColor,
-              ),
-              borderRadius: BorderRadius.circular(5)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15.0, bottom: 0),
-                    child: TextField(
-                      controller: emailHandler.controller,
-                      focusNode: emailHandler.focusNode,
-                      obscureText: false,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: EMAIL_LABEL_FR,
-                        errorText: emailHandler.errorMessage.isEmpty
-                            ? null
-                            : emailHandler.errorMessage,
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: SPACE_3),
+        child: Column(
+          children: [
+            Container(
+              width: 500,
+              constraints: BoxConstraints(minHeight: 540),
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(SPACE_2),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Wrap(
+                        runSpacing: SPACE_2,
+                        children: [
+                          TextField(
+                            controller: emailHandler.controller,
+                            focusNode: emailHandler.focusNode,
+                            obscureText: false,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: EMAIL_LABEL_FR,
+                              errorText: emailHandler.errorMessage.isEmpty
+                                  ? null
+                                  : emailHandler.errorMessage,
+                            ),
+                          ),
+                          TextField(
+                            controller: usernameHandler.controller,
+                            focusNode: usernameHandler.focusNode,
+                            obscureText: false,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: USERNAME_LABEL_FR,
+                              errorText: usernameHandler.errorMessage.isEmpty
+                                  ? null
+                                  : usernameHandler.errorMessage,
+                            ),
+                          ),
+                          SizedBox(
+                            height: SPACE_1,
+                            width: double.maxFinite,
+                          ),
+                          TextField(
+                            controller: passwordHandler.controller,
+                            focusNode: passwordHandler.focusNode,
+                            keyboardType: TextInputType.visiblePassword,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            obscureText: !isPasswordShown,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: PASSWORD_LABEL_FR,
+                              errorText: passwordHandler.errorMessage.isEmpty
+                                  ? null
+                                  : passwordHandler.errorMessage,
+                            ),
+                          ),
+                          TextField(
+                            controller: passwordMatchHandler.controller,
+                            focusNode: passwordMatchHandler.focusNode,
+                            autocorrect: false,
+                            keyboardType: TextInputType.visiblePassword,
+                            enableSuggestions: false,
+                            obscureText: !isPasswordShown,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: PASSWORD_MATCH_LABEL_FR,
+                              helperText: PASSWORD_HELPER_TEXT_FR,
+                              helperMaxLines: 3,
+                              errorText:
+                                  passwordMatchHandler.errorMessage.isEmpty
+                                      ? null
+                                      : passwordMatchHandler.errorMessage,
+                            ),
+                          ),
+                          CheckboxListTile(
+                            title: Text(CHECKBOX_SHOW_PASSWORD_LABEL_FR),
+                            value: isPasswordShown,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                isPasswordShown = value!;
+                              });
+                            },
+                            controlAffinity: ListTileControlAffinity.leading,
+                          ),
+                          SizedBox(
+                            height: SPACE_2,
+                            width: double.maxFinite,
+                          ),
+                          AvatarField(
+                              avatar: avatarSrc, avatarError: avatarError),
+                          SizedBox(
+                            height: SPACE_2,
+                            width: double.maxFinite,
+                          ),
+                        ],
                       ),
-                    ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MainPage()));
+                            },
+                            child: const Text(
+                              REDIRECT_LOGIN_LABEL_FR,
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 15),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: isButtonEnabled
+                                ? () => {createAccount()}
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: themeColor,
+                              shadowColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(3.0),
+                              ),
+                            ),
+                            child: Text(
+                              CREATE_ACCOUNT_LABEL_FR,
+                              style: isButtonEnabled
+                                  ? TextStyle(color: Colors.white, fontSize: 15)
+                                  : TextStyle(
+                                      color: Color.fromARGB(255, 87, 87, 87),
+                                      fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15.0, bottom: 0),
-                    child: TextField(
-                      controller: usernameHandler.controller,
-                      focusNode: usernameHandler.focusNode,
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: USERNAME_LABEL_FR,
-                        errorText: usernameHandler.errorMessage.isEmpty
-                            ? null
-                            : usernameHandler.errorMessage,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15.0, bottom: 0),
-                    child: TextField(
-                      controller: passwordHandler.controller,
-                      focusNode: passwordHandler.focusNode,
-                      keyboardType: TextInputType.visiblePassword,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      obscureText: !isPasswordShown,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: PASSWORD_LABEL_FR,
-                        errorText: passwordHandler.errorMessage.isEmpty
-                            ? null
-                            : passwordHandler.errorMessage,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15.0, bottom: 0),
-                    child: TextField(
-                      controller: passwordMatchHandler.controller,
-                      focusNode: passwordMatchHandler.focusNode,
-                      autocorrect: false,
-                      keyboardType: TextInputType.visiblePassword,
-                      enableSuggestions: false,
-                      obscureText: !isPasswordShown,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: PASSWORD_MATCH_LABEL_FR,
-                        helperText: PASSWORD_HELPER_TEXT_FR,
-                        helperMaxLines: 3,
-                        errorText: passwordMatchHandler.errorMessage.isEmpty
-                            ? null
-                            : passwordMatchHandler.errorMessage,
-                      ),
-                    ),
-                  ),
-                  CheckboxListTile(
-                    title: Text(CHECKBOX_SHOW_PASSWORD_LABEL_FR),
-                    value: isPasswordShown,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        isPasswordShown = value!;
-                      });
-                    },
-                    controlAffinity: ListTileControlAffinity.leading,
-                  ),
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                    left: 15.0, right: 15.0, top: 15.0, bottom: 15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()));
-                      },
-                      child: const Text(
-                        REDIRECT_LOGIN_LABEL_FR,
-                        style: TextStyle(color: Colors.black, fontSize: 15),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed:
-                          isButtonEnabled ? () => {createAccount()} : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: themeColor,
-                        shadowColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(3.0),
-                        ),
-                      ),
-                      child: Text(
-                        CREATE_ACCOUNT_LABEL_FR,
-                        style: isButtonEnabled
-                            ? TextStyle(color: Colors.white, fontSize: 15)
-                            : TextStyle(
-                                color: Color.fromARGB(255, 87, 87, 87),
-                                fontSize: 15),
-                      ),
-                    ),
-                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -244,7 +250,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
       setState(() {
         emailHandler.errorMessage = EMAIL_INVALID_FORMAT_FR;
       });
-    } else if (!await accountService
+    } else if (!await accountController
         .isEmailUnique(emailHandler.controller.text)) {
       setState(() {
         emailHandler.errorMessage = EMAIL_ALREADY_USED_FR;
@@ -265,7 +271,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
       setState(() {
         usernameHandler.errorMessage = USERNAME_INVALID_FORMAT_FR;
       });
-    } else if (!await accountService
+    } else if (!await accountController
         .isUsernameUnique(usernameHandler.controller.text)) {
       setState(() {
         usernameHandler.errorMessage = USERNAME_ALREADY_USED_FR;
@@ -278,18 +284,25 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   }
 
   Future<void> createAccount() async {
+    avatarError.add(null);
     setState(() {
       isFirstSubmit = false;
     });
     if (!isFormValid()) {
       return;
     }
+    if (avatarSrc.valueOrNull == null) {
+      avatarError.add('Veuillez choisir un avatar');
+      return;
+    }
     Account newAccount = Account(
         username: usernameHandler.controller.text,
         password: passwordHandler.controller.text,
-        email: emailHandler.controller.text);
-    if (await accountService.createAccount(newAccount)) {
-      Navigator.pushNamed(context, HOME_ROUTE);
+        email: emailHandler.controller.text,
+        avatar: avatarSrc.value!);
+    if (await accountController.createAccount(newAccount)) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
       validateUsername();
       validateEmail();

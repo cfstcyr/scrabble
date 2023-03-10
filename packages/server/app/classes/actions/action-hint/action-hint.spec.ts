@@ -73,6 +73,7 @@ describe('ActionHint', () => {
                     orientation: Orientation.Horizontal,
                     startPosition: new Position(0, 0),
                     tilesToPlace: [],
+                    score: 0,
                 });
             }
 
@@ -94,6 +95,7 @@ describe('ActionHint', () => {
                     orientation: Orientation.Horizontal,
                     startPosition: new Position(0, 0),
                     tilesToPlace: [],
+                    score: 0,
                 });
             }
 

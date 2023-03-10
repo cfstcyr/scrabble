@@ -8,12 +8,14 @@ import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
 import { SocketErrorResponse } from '@common/models/error';
+import { ServerActionType } from '@common/models/server-action';
 import { EventEmitter } from 'events';
 import { NextFunction } from 'express';
 import * as http from 'http';
 import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
 import { Service } from 'typedi';
+import { ServerActionService } from '@app/services/server-action-service/server-action.service';
 import {
     AcceptJoinRequestEmitArgs,
     CancelledGroupEmitArgs,
@@ -36,7 +38,7 @@ export class SocketService {
     private sockets: Map<string, io.Socket>;
     private configureSocketsEvent: EventEmitter;
 
-    constructor(private readonly authentificationService: AuthentificationService) {
+    constructor(private readonly authentificationService: AuthentificationService, private readonly serverActionService: ServerActionService) {
         this.sockets = new Map();
         this.configureSocketsEvent = new EventEmitter();
     }
@@ -73,7 +75,7 @@ export class SocketService {
         }
 
         this.sio.use(async (socket: io.Socket, next: NextFunction) => {
-            const token = socket.handshake.auth.token;
+            const token = socket.handshake.auth.token ?? socket.handshake.headers.authorization;
 
             if (token) {
                 try {
@@ -90,6 +92,11 @@ export class SocketService {
         this.sio.on('connection', (socket) => {
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
+
+            this.serverActionService.addAction({
+                idUser: this.authentificationService.connectedUsers.getUserId(socket.id),
+                actionType: ServerActionType.LOGIN,
+            });
 
             this.configureSocketsEvent.emit(SOCKET_CONFIGURE_EVENT_NAME, socket);
             socket.on('disconnect', () => {
@@ -198,6 +205,11 @@ export class SocketService {
     }
 
     private handleDisconnect(socket: io.Socket): void {
+        this.serverActionService.addAction({
+            idUser: this.authentificationService.connectedUsers.getUserId(socket.id),
+            actionType: ServerActionType.LOGOUT,
+        });
+
         this.authentificationService.disconnectSocket(socket.id);
         this.sockets.delete(socket.id);
     }

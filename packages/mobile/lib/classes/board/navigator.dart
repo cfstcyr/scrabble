@@ -35,6 +35,11 @@ class Navigator {
     return this;
   }
 
+  Navigator go(Position position) {
+    this.position = position;
+    return this;
+  }
+
   Navigator nextLine() {
     switch (orientation) {
       case Orientation.horizontal:
@@ -55,11 +60,25 @@ class Navigator {
     return this;
   }
 
+  Navigator clone() {
+    return Navigator(
+        board: board, orientation: orientation, position: position);
+  }
+
   bool isEmpty() {
-    return square.tile == null;
+    return !isWithinBounds() || square.getTile() == null;
   }
 
   bool isWithinBounds() {
-    return position.column >= 0 && position.column < GRID_SIZE && position.row >= 0 && position.row < GRID_SIZE;
+    return position.column >= 0 &&
+        position.column < GRID_SIZE &&
+        position.row >= 0 &&
+        position.row < GRID_SIZE;
+  }
+
+  bool hasNonEmptyNeighbor({bool perpendicular = true}) {
+    var navigator = perpendicular ? clone().switchOrientation() : clone();
+    return !navigator.clone().forward().isEmpty() ||
+        !navigator.clone().backward().isEmpty();
   }
 }

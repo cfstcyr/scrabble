@@ -1,63 +1,85 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/game/game.dart';
+import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
-import 'package:mobile/classes/tile/tile.dart' as c;
+import 'package:mobile/constants/game-events.dart';
+import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class TileRack extends StatelessWidget {
-  final double _tileSize = 42;
   final BehaviorSubject<int?> _currentTileIndex = BehaviorSubject();
   final BehaviorSubject<int?> _currentHoveredTileIndex = BehaviorSubject();
   final GameService _gameService = getIt.get<GameService>();
+  final GameEventService _gameEventService = getIt.get<GameEventService>();
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: SPACE_2, horizontal: SPACE_3),
-        height: 70,
-        child: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          alignment: WrapAlignment.spaceEvenly,
-          spacing: SPACE_4,
-          children: [
-            AppButton(
-              onPressed: () {},
-              icon: Icons.repeat,
-              iconOnly: true,
-            ),
-            StreamBuilder(
-                stream: _gameService.getTileRack().stream,
-                builder: ((context, snapshot) {
-                  return snapshot.data != null
-                      ? Wrap(
-                          children: [
-                            _buildTarget(-1,
-                                width: SPACE_2,
-                                height: _tileSize,
-                                changeOnActive: true),
-                            ...List.generate(
-                              snapshot.data!.length,
-                              (index) =>
-                                  _buildTile(snapshot.data![index], index),
-                            )
-                          ],
-                        )
-                      : Container();
-                })),
-            AppButton(
-              onPressed: null,
-              icon: Icons.close,
-              size: AppButtonSize.large,
-            ),
-          ],
-        ),
-      ),
+    return StreamBuilder<Game?>(
+      stream: _gameService.gameStream,
+      builder: (context, game) {
+        return Card(
+          child: Container(
+            padding:
+                EdgeInsets.symmetric(vertical: SPACE_2, horizontal: SPACE_3),
+            height: 70,
+            child: game.data != null
+                ? Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    alignment: WrapAlignment.spaceBetween,
+                    spacing: SPACE_4,
+                    children: [
+                      AppButton(
+                        onPressed: () {
+                          _gameService.getTileRack().shuffle();
+                        },
+                        icon: Icons.repeat,
+                        iconOnly: true,
+                      ),
+                      StreamBuilder(
+                          stream: game.data!.tileRack.stream,
+                          builder: ((context, snapshot) {
+                            return snapshot.data != null
+                                ? Wrap(
+                                    children: [
+                                      _buildTarget(-1,
+                                          width: SPACE_2,
+                                          height: TILE_SIZE,
+                                          changeOnActive: true),
+                                      ...List.generate(
+                                        snapshot.data!.length,
+                                        (index) => _buildTile(
+                                            snapshot.data![index], index),
+                                      )
+                                    ],
+                                  )
+                                : Container();
+                          })),
+                      StreamBuilder<bool>(
+                        stream: game.data!.board.hasPlacementStream,
+                        builder: (context, snapshot) {
+                          return AppButton(
+                            onPressed: snapshot.data ?? false
+                                ? () {
+                                    _gameEventService.add<void>(
+                                        PUT_BACK_TILES_ON_TILE_RACK, null);
+                                  }
+                                : null,
+                            icon: Icons.close,
+                            iconOnly: true,
+                          );
+                        },
+                      )
+                    ],
+                  )
+                : Container(),
+          ),
+        );
+      },
     );
   }
 
@@ -74,10 +96,14 @@ class TileRack extends StatelessWidget {
               _currentTileIndex.add(null);
               _currentHoveredTileIndex.add(null);
             },
-            feedback: Tile(
-              tile: tile,
-              size: _tileSize * 1.1,
-              isSelected: true,
+            feedback: Card(
+              color: Colors.transparent,
+              shadowColor: Colors.transparent,
+              child: Tile(
+                tile: tile,
+                size: TILE_SIZE_DRAG,
+                isSelected: true,
+              ),
             ),
             childWhenDragging: StreamBuilder(
               stream: _currentHoveredTileIndex,
@@ -86,8 +112,8 @@ class TileRack extends StatelessWidget {
                         snapshot.data == index - 1 ||
                         snapshot.data == null
                     ? SizedBox(
-                        height: _tileSize,
-                        width: _tileSize + SPACE_2,
+                        height: TILE_SIZE,
+                        width: TILE_SIZE + SPACE_2,
                       )
                     : SizedBox();
               },
@@ -98,20 +124,20 @@ class TileRack extends StatelessWidget {
                   children: [
                     Tile(
                       tile: tile,
-                      size: _tileSize,
+                      size: TILE_SIZE,
                     ),
                     Wrap(
                       children: [
                         _buildTarget(index - 1,
-                            width: _tileSize / 2, height: _tileSize),
+                            width: TILE_SIZE / 2, height: TILE_SIZE),
                         _buildTarget(index,
-                            width: _tileSize / 2, height: _tileSize),
+                            width: TILE_SIZE / 2, height: TILE_SIZE),
                       ],
                     ),
                   ],
                 ),
                 _buildTarget(index,
-                    width: SPACE_2, height: _tileSize, changeOnActive: true)
+                    width: SPACE_2, height: TILE_SIZE, changeOnActive: true)
               ],
             )),
       ],
@@ -145,7 +171,7 @@ class TileRack extends StatelessWidget {
             });
       },
       onAccept: (data) {
-        _gameService.getTileRack().moveTile(data, index);
+        _gameService.getTileRack().placeTile(data, to: index);
         _currentHoveredTileIndex.add(null);
       },
       onMove: (details) {

@@ -4,6 +4,7 @@ import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
+import { UserRequest } from '@app/types/user';
 
 @Service()
 export class GameHistoriesController extends BaseController {
@@ -12,10 +13,9 @@ export class GameHistoriesController extends BaseController {
     }
 
     protected configure(router: Router): void {
-        router.get('/', async (req: GameHistoriesRequest, res: Response, next) => {
+        router.get('/', async (req: UserRequest, res: Response, next) => {
             try {
-                const gameHistories = await this.gameHistoriesService.getAllGameHistories();
-                res.status(StatusCodes.OK).send({ gameHistories });
+                res.status(StatusCodes.OK).json(await this.gameHistoriesService.getGameHistory(req.body.idUser));
             } catch (exception) {
                 next(exception);
             }

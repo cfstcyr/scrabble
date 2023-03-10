@@ -1,19 +1,19 @@
 import { CHAT_HISTORY_TABLE } from '@app/constants/services-constants/database-const';
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import DatabaseService from '@app/services/database-service/database.service';
 import { Channel } from '@common/models/chat/channel';
 import { ChannelMessage, ChatHistoryMessage } from '@common/models/chat/chat-message';
 import { UNKOWN_USER } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
 import { Service } from 'typedi';
+import { UserService } from '@app/services/user-service/user-service';
 
 @Service()
 export class ChatHistoryService {
-    constructor(private databaseService: DatabaseService, private authentificationService: AuthentificationService) {}
+    constructor(private databaseService: DatabaseService, private userService: UserService) {}
 
     async saveMessage(message: ChannelMessage): Promise<void> {
         try {
-            const user = await this.authentificationService.getUserByEmail(message.message.sender.email);
+            const user = await this.userService.getUserByEmail(message.message.sender.email);
 
             await this.table.insert({
                 idChannel: message.idChannel,
@@ -33,7 +33,7 @@ export class ChatHistoryService {
             channelHistory.map(async (message: ChatHistoryMessage) => {
                 let user;
                 try {
-                    user = await this.authentificationService.getUserById(message.idUser);
+                    user = await this.userService.getUserById(message.idUser);
                 } catch {
                     user = UNKOWN_USER;
                 }

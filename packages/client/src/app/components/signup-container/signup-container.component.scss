@@ -56,8 +56,6 @@ $border-radius: 6px;
     }
 
     .avatar {
-        $img-size: 50px;
-
         &__container {
             display: flex;
             justify-content: center;
@@ -73,8 +71,6 @@ $border-radius: 6px;
         }
 
         &__img {
-            height: $img-size;
-            width: $img-size;
             border-radius: 100px;
             cursor: pointer;
             border: solid 2px transparent;

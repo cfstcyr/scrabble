@@ -21,7 +21,7 @@ class Group {
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
         groupId: json['groupId'] as String,
-        users: usersFromJson(json),
+        users: PublicUser.usersFromJson(json),
         maxRoundTime: json['maxRoundTime'] as int,
         virtualPlayerLevel:
             VirtualPlayerLevel.fromJson(json['virtualPlayerLevel']),

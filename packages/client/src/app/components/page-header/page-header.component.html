@@ -17,7 +17,7 @@
             <app-header-btn *ngIf="user | async" [matMenuTriggerFor]="userMenu">
                 <div class="user-container">
                     <p class="username">{{ getUsername() | async }}</p>
-                    <img src="{{ getAvatar() | async }}" class="avatar">
+                    <img [srcset]="(getAvatar() | async) ?? '' | srcset:32:32" class="avatar">
                 </div>
             </app-header-btn>
 

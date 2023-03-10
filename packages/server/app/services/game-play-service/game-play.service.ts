@@ -8,7 +8,6 @@ import { RoundData } from '@app/classes/communication/round-data';
 import Game from '@app/classes/game/game';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
-import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import { MUST_HAVE_7_TILES_TO_SWAP } from '@app/constants/classes-errors';
 import { INVALID_COMMAND, INVALID_PAYLOAD, NOT_PLAYER_TURN } from '@app/constants/services-errors';
@@ -21,7 +20,11 @@ import { VirtualPlayerService } from '@app/services/virtual-player-service/virtu
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
+import { PublicUserStatistics } from '@common/models/user-statistics';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 @Service()
 export class GamePlayService {
     constructor(
@@ -30,6 +33,9 @@ export class GamePlayService {
         private readonly dictionaryService: DictionaryService,
         private readonly gameHistoriesService: GameHistoriesService,
         private readonly virtualPlayerService: VirtualPlayerService,
+        private readonly virtualPlayerFactory: VirtualPlayerFactory,
+        private readonly userStatisticsService: UserStatisticsService,
+        private readonly authenticationService: AuthentificationService,
     ) {
         this.activeGameService.playerLeftEvent.on('playerLeftGame', async (gameId, playerWhoLeftId) => {
             await this.handlePlayerLeftEvent(gameId, playerWhoLeftId);
@@ -145,7 +151,54 @@ export class GamePlayService {
 
         updatedData.isGameOver = true;
         updatedData.winners = game.computeWinners();
+
+        await this.updateUserStatistics(game, updatedData);
+
         return game.endGameMessage();
+    }
+
+    private async updateUserStatistics(game: Game, updatedData: GameUpdateData): Promise<void> {
+        const time = (Date.now() - game.roundManager.getGameStartTime().getTime()) / SECONDS_TO_MILLISECONDS;
+
+        const addGameToStatistics: Promise<PublicUserStatistics>[] = [];
+
+        if (!isIdVirtualPlayer(game.player1.id))
+            addGameToStatistics.push(
+                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player1.id), {
+                    hasWon: updatedData.winners?.includes(game.player1.publicUser.username) ?? false,
+                    points: updatedData.player1?.score ?? 0,
+                    time,
+                }),
+            );
+
+        if (!isIdVirtualPlayer(game.player2.id))
+            addGameToStatistics.push(
+                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player2.id), {
+                    hasWon: updatedData.winners?.includes(game.player2.publicUser.username) ?? false,
+                    points: updatedData.player2?.score ?? 0,
+                    time,
+                }),
+            );
+
+        if (!isIdVirtualPlayer(game.player3.id))
+            addGameToStatistics.push(
+                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player3.id), {
+                    hasWon: updatedData.winners?.includes(game.player3.publicUser.username) ?? false,
+                    points: updatedData.player3?.score ?? 0,
+                    time,
+                }),
+            );
+
+        if (!isIdVirtualPlayer(game.player4.id))
+            addGameToStatistics.push(
+                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player4.id), {
+                    hasWon: updatedData.winners?.includes(game.player4.publicUser.username) ?? false,
+                    points: updatedData.player4?.score ?? 0,
+                    time,
+                }),
+            );
+
+        await Promise.all(addGameToStatistics);
     }
 
     private async handlePlayerLeftEvent(gameId: string, playerWhoLeftId: string): Promise<void> {
@@ -161,9 +214,7 @@ export class GamePlayService {
 
         const updatedData: GameUpdateData = game.replacePlayer(
             playerWhoLeftId,
-            game.virtualPlayerLevel === VirtualPlayerLevel.Beginner
-                ? new BeginnerVirtualPlayer(gameId, this.virtualPlayerService.getRandomVirtualPlayerName(playersStillInGame))
-                : new ExpertVirtualPlayer(gameId, this.virtualPlayerService.getRandomVirtualPlayerName(playersStillInGame)),
+            this.virtualPlayerFactory.generateVirtualPlayer(gameId, game.virtualPlayerLevel, playersStillInGame),
         );
 
         if (this.isVirtualPlayerTurn(game)) {

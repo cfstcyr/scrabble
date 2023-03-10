@@ -34,6 +34,7 @@ export class ChatPersistenceService {
                 .leftJoin<UserChannel>(USER_CHANNEL_TABLE, `${CHANNEL_TABLE}.idChannel`, `${USER_CHANNEL_TABLE}.idChannel`)
                 .where(`${USER_CHANNEL_TABLE}.idUser`, idUser)
                 .orWhere({ default: true })
+                .distinct(`${CHANNEL_TABLE}.idChannel`)
         ).map(({ idChannel }) => idChannel);
     }
 

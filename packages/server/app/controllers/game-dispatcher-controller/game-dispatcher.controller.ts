@@ -22,6 +22,7 @@ import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
 import { GameVisibility } from '@common/models/game-visibility';
 import Player from '@app/classes/player/player';
+import { UserService } from '@app/services/user-service/user-service';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -29,6 +30,7 @@ export class GameDispatcherController extends BaseController {
         private socketService: SocketService,
         private activeGameService: ActiveGameService,
         private authentificationService: AuthentificationService,
+        private userService: UserService,
     ) {
         super('/api/games');
 
@@ -72,7 +74,7 @@ export class GameDispatcherController extends BaseController {
             const { isObserver }: { isObserver: boolean } = req.body;
 
             const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
-            const publicUser = await this.authentificationService.getUserById(userId);
+            const publicUser = await this.userService.getUserById(userId);
             try {
                 await this.handleJoinGame(gameId, playerId, publicUser, password, isObserver);
 
@@ -88,7 +90,7 @@ export class GameDispatcherController extends BaseController {
             const userId: UserId = req.body.idUser;
 
             const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
-            const publicUser = await this.authentificationService.getUserById(userId);
+            const publicUser = await this.userService.getUserById(userId);
             try {
                 await this.handleGetGroupUpdates(gameId, playerId, publicUser, isObserver);
 

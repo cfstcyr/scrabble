@@ -8,7 +8,7 @@ class ChannelMessage {
 
   factory ChannelMessage.fromJson(Map<String, dynamic> json) {
     return ChannelMessage(
-      message: json['message'] as ChatMessage,
+      message: ChatMessage.fromJson(json['message']),
       idChannel: json['idChannel'] as int,
     );
   }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/animation/wiggle.dart';
 import 'package:mobile/constants/assets.constants.dart';
-import 'package:mobile/constants/layout.constants.dart';
 
 class Tile extends StatelessWidget {
   Tile({
@@ -56,9 +55,15 @@ class Tile extends StatelessWidget {
                           : Matrix4.translationValues(0, 0, 0),
                       child: Center(
                         child: Text(
-                          tile?.letter ?? '',
+                          tile != null
+                              ? (tile!.isWildcard
+                                  ? (tile!.playedLetter ?? '')
+                                  : (tile!.letter ?? ''))
+                              : '',
                           style: TextStyle(
-                            color: Color.fromRGBO(80, 55, 10, 1),
+                            color: (tile?.isWildcard ?? false)
+                                ? Colors.red
+                                : Color.fromRGBO(80, 55, 10, 1),
                             fontWeight: FontWeight.w600,
                             fontSize: size / 1.7,
                           ),

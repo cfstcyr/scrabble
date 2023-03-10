@@ -9,6 +9,7 @@ import { IconComponent } from '@app/components/icon/icon.component';
 
 import { SignupContainerComponent } from './signup-container.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
 
 const DEFAULT_CREDENTIALS: UserSignupInformation = {
     avatar: 'avatar',
@@ -26,7 +27,7 @@ describe('SignupContainerComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SignupContainerComponent, IconComponent],
+            declarations: [SignupContainerComponent, IconComponent, SrcsetPipe],
             imports: [MatTooltipModule],
         }).compileComponents();
     });

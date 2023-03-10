@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/components/player/main_player.dart';
 import 'package:mobile/components/player/player.dart';
 import 'package:mobile/locator.dart';
@@ -11,24 +12,33 @@ class PlayersContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-        child: Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(child: MainPlayer(player: _gameService.game!.players.player1)),
-        Expanded(
-          child: Column(
-            children: [
-              Player(player: _gameService.game!.players.player2),
-              Player(
-                player: _gameService.game!.players.player3,
-                isPlaying: true,
-              ),
-              Player(player: _gameService.game!.players.player4),
-            ],
-          ),
-        )
-      ],
-    ));
+    return StreamBuilder<Game?>(
+      stream: _gameService.gameStream,
+      builder: (context, snapshot) {
+        return snapshot.data != null
+            ? IntrinsicHeight(
+                child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                      child:
+                          MainPlayer(player: snapshot.data!.players.player1)),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Player(player: snapshot.data!.players.player2),
+                        Player(
+                          player: snapshot.data!.players.player3,
+                          isPlaying: true,
+                        ),
+                        Player(player: snapshot.data!.players.player4),
+                      ],
+                    ),
+                  )
+                ],
+              ))
+            : Container();
+      },
+    );
   }
 }

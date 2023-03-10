@@ -1,9 +1,10 @@
 import { GAME_HISTORY_PLAYER_TABLE, GAME_HISTORY_TABLE } from '@app/constants/services-constants/database-const';
 import DatabaseService from '@app/services/database-service/database.service';
-import { aggregate } from '@app/utils/aggregate/aggregate';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
 import { Service } from 'typedi';
-import { GameHistory, GameHistoryPlayer, NoIdGameHistoryWithPlayers } from '@common/models/game-history';
+import { GameHistory, GameHistoryCreation, GameHistoryForUser, GameHistoryPlayer } from '@common/models/game-history';
+import { TypeOfId } from '@common/types/id';
+import { User } from '@common/models/user';
 
 @Service()
 export default class GameHistoriesService {
@@ -17,39 +18,21 @@ export default class GameHistoriesService {
         return this.databaseService.knex<GameHistoryPlayer>(GAME_HISTORY_PLAYER_TABLE);
     }
 
-    async getAllGameHistories(): Promise<NoIdGameHistoryWithPlayers[]> {
-        const gameHistories = await this.table
-            .select('*')
+    async addGameHistory({ gameHistory, players }: GameHistoryCreation): Promise<void> {
+        const [{ idGameHistory }] = await this.table.insert(gameHistory, ['idGameHistory']);
+
+        await Promise.all(players.map((player) => this.tableHistoryPlayer.insert({ ...player, idGameHistory })));
+    }
+
+    async getGameHistory(idUser: TypeOfId<User>): Promise<GameHistoryForUser[]> {
+        return await this.table
+            .select('startTime', 'endTime', 'hasBeenAbandoned', 'score', 'isWinner')
             .leftJoin<GameHistoryPlayer>(
                 GAME_HISTORY_PLAYER_TABLE,
                 `${GAME_HISTORY_TABLE}.idGameHistory`,
                 `${GAME_HISTORY_PLAYER_TABLE}.idGameHistory`,
             )
-            .orderBy('endTime');
-
-        return aggregate(gameHistories, {
-            idKey: 'idGameHistory',
-            fieldKey: 'playersData',
-            mainItemKeys: ['startTime', 'endTime', 'hasBeenAbandoned'],
-            aggregatedItemKeys: ['name', 'score', 'isVirtualPlayer', 'isWinner'],
-        });
-    }
-
-    async addGameHistory(newHistory: NoIdGameHistoryWithPlayers): Promise<void> {
-        const [{ idGameHistory }] = await this.table.insert(
-            {
-                startTime: newHistory.startTime,
-                endTime: newHistory.endTime,
-                hasBeenAbandoned: newHistory.hasBeenAbandoned,
-            },
-            ['idGameHistory'],
-        );
-
-        await Promise.all(
-            newHistory.playersData.map(
-                async (playerData, i) => await this.tableHistoryPlayer.insert({ ...playerData, playerIndex: i, idGameHistory }),
-            ),
-        );
+            .where({ idUser });
     }
 
     async resetGameHistories(): Promise<void> {

@@ -36,6 +36,9 @@ import { EventEmitter } from 'events';
 import * as sinon from 'sinon';
 import { createStubInstance, restore, SinonStub, SinonStubbedInstance, stub } from 'sinon';
 import { Container } from 'typedi';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 
 const expect = chai.expect;
 
@@ -79,7 +82,7 @@ describe('GamePlayService', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService();
+        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(VirtualPlayerFactory);
     });
 
     beforeEach(() => {
@@ -113,6 +116,9 @@ describe('GamePlayService', () => {
         game = gameStub as unknown as Game;
 
         getGameStub = stub(gamePlayService['activeGameService'], 'getGame').returns(game);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        stub(gamePlayService as any, 'updateUserStatistics').resolves();
     });
 
     afterEach(() => {
@@ -459,6 +465,9 @@ describe('GamePlayService', () => {
         let dictionaryServiceStub: SinonStubbedInstance<DictionaryService>;
         let gameHistoriesServiceStub: SinonStubbedInstance<GameHistoriesService>;
         let virtualPlayerServiceStub: SinonStubbedInstance<VirtualPlayerService>;
+        let virtualPlayerFactoryStub: SinonStubbedInstance<VirtualPlayerFactory>;
+        let userStatisticsService: SinonStubbedInstance<UserStatisticsService>;
+        let authenticationService: SinonStubbedInstance<AuthentificationService>;
 
         beforeEach(() => {
             activeGameServiceStub = createStubInstance(ActiveGameService);
@@ -466,12 +475,18 @@ describe('GamePlayService', () => {
             activeGameServiceStub.playerLeftEvent = new EventEmitter();
             activeGameServiceStub.getGame.returns(gameStub as unknown as Game);
             virtualPlayerServiceStub.triggerVirtualPlayerTurn.returns();
+            virtualPlayerFactoryStub = testingUnit.getStubbedInstance(VirtualPlayerFactory);
+            userStatisticsService = createStubInstance(UserStatisticsService);
+            authenticationService = createStubInstance(AuthentificationService);
             gamePlayService = new GamePlayService(
                 activeGameServiceStub as unknown as ActiveGameService,
                 highScoresServiceStub as unknown as HighScoresService,
                 dictionaryServiceStub as unknown as DictionaryService,
                 gameHistoriesServiceStub as unknown as GameHistoriesService,
                 virtualPlayerServiceStub as unknown as VirtualPlayerService,
+                virtualPlayerFactoryStub as unknown as VirtualPlayerFactory,
+                userStatisticsService as unknown as UserStatisticsService,
+                authenticationService as unknown as AuthentificationService,
             );
             gameStub.player1 = new Player(DEFAULT_PLAYER_ID, USER1);
             gameStub.player2 = new Player(playerWhoLeftId, USER2);

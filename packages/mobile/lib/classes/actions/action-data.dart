@@ -39,7 +39,9 @@ enum ActionType {
 }
 
 abstract class ActionPayload {
-  ActionPayload fromJson(Map<String, dynamic> json);
+  ActionPayload();
+
+  ActionPayload.fromJson(Map<String, dynamic> json);
 
   Map toJson();
 }

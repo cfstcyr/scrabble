@@ -87,8 +87,6 @@ describe('ChatHistoryService', () => {
             await userTable().insert(USER);
             await channelTable().insert(testChannel);
 
-            testingUnit.getStubbedInstance(AuthentificationService).getUserByEmail.resolves(USER);
-
             await service.saveMessage(message);
 
             const savedMessage = await chatHistoryTable().select('*').where('idChannel', testChannel.idChannel);
@@ -105,9 +103,6 @@ describe('ChatHistoryService', () => {
             await userTable().insert(USER);
             await channelTable().insert(testChannel);
 
-            testingUnit.getStubbedInstance(AuthentificationService).getUserById.resolves(USER);
-            testingUnit.getStubbedInstance(AuthentificationService).getUserByEmail.resolves(USER);
-
             await service.saveMessage(message);
 
             const channelHistory = await service.getChannelHistory(testChannel.idChannel);
@@ -122,8 +117,6 @@ describe('ChatHistoryService', () => {
             it('should delete the history of a channel', async () => {
                 await userTable().insert(USER);
                 await channelTable().insert(testChannel);
-
-                testingUnit.getStubbedInstance(AuthentificationService).getUserByEmail.resolves(USER);
 
                 await service.saveMessage(message);
 

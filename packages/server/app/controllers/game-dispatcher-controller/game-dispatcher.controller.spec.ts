@@ -22,9 +22,10 @@ import { ChatService } from '@app/services/chat-service/chat.service';
 import { GameDispatcherService } from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { SocketService } from '@app/services/socket-service/socket.service';
+import { UserService } from '@app/services/user-service/user-service';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group, GroupData } from '@common/models/group';
-import { UNKOWN_USER } from '@common/models/user';
+import { UNKOWN_USER, User } from '@common/models/user';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -43,8 +44,8 @@ const expect = chai.expect;
 chai.use(spies);
 chai.use(chaiAsPromised);
 
-const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
-const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const USER1: User = { username: 'user1', email: 'email1', avatar: 'avatar1', idUser: 1, password: '1' };
+const USER2: User = { username: 'user2', email: 'email2', avatar: 'avatar2', idUser: 2, password: '2' };
 
 const DEFAULT_PLAYER_ID = 'playerId';
 const DEFAULT_GAME_ID = 'gameId';
@@ -82,6 +83,7 @@ const DEFAULT_JOINED_PLAYER3 = new Player(DEFAULT_PLAYER_ID, USER1);
 describe('GameDispatcherController', () => {
     let controller: GameDispatcherController;
     let authentificationServiceStub: SinonStubbedInstance<AuthentificationService>;
+    let userService: UserService;
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
@@ -98,12 +100,14 @@ describe('GameDispatcherController', () => {
 
     beforeEach(() => {
         controller = Container.get(GameDispatcherController);
+        userService = Container.get(UserService);
         authentificationServiceStub.connectedUsers = new ConnectedUser();
         authentificationServiceStub.connectedUsers.connect(DEFAULT_SOCKETID_ID, DEFAULT_USER_ID);
     });
 
     afterEach(() => {
         sinon.restore();
+        chai.spy.restore();
         testingUnit.restore();
     });
 
@@ -154,22 +158,24 @@ describe('GameDispatcherController', () => {
 
         describe('/games/:gameId/players/join', () => {
             it('should return NO_CONTENT', async () => {
+                await userService['table'].insert(USER1);
                 chai.spy.on(controller, 'handleJoinGame', () => {});
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/join`)
-                    .send({ idUser: DEFAULT_USER_ID })
+                    .send({ idUser: USER1.idUser })
                     .expect(StatusCodes.NO_CONTENT);
             });
 
             it('should return BAD_REQUEST on throw', async () => {
+                await userService['table'].insert(USER1);
                 chai.spy.on(controller, 'handleJoinGame', () => {
                     throw new HttpException(DEFAULT_EXCEPTION, StatusCodes.BAD_REQUEST);
                 });
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/join`)
-                    .send({ idUser: DEFAULT_USER_ID })
+                    .send({ idUser: USER1.idUser })
                     .expect(StatusCodes.BAD_REQUEST);
             });
         });
@@ -198,22 +204,24 @@ describe('GameDispatcherController', () => {
 
         describe('PATCH /games/:gameId/', () => {
             it('should return NO_CONTENT', async () => {
+                await userService['table'].insert(USER1);
                 chai.spy.on(controller, 'handleGetGroupUpdates', () => {});
 
                 return await supertest(expressApp)
                     .patch(`/api/games/${DEFAULT_GAME_ID}`)
-                    .send({ idUser: DEFAULT_USER_ID, password: '' })
+                    .send({ idUser: USER1.idUser, password: '' })
                     .expect(StatusCodes.NO_CONTENT);
             });
 
             it('should return BAD_REQUEST on throw', async () => {
+                await userService['table'].insert(USER1);
                 chai.spy.on(controller, 'handleGetGroupUpdates', () => {
                     throw new HttpException(DEFAULT_EXCEPTION, StatusCodes.BAD_REQUEST);
                 });
 
                 return await supertest(expressApp)
                     .patch(`/api/games/${DEFAULT_GAME_ID}`)
-                    .send({ idUser: DEFAULT_USER_ID, password: '' })
+                    .send({ idUser: USER1.idUser, password: '' })
                     .expect(StatusCodes.BAD_REQUEST);
             });
         });

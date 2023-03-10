@@ -63,7 +63,7 @@
             <div class="avatar__container">
                 <label *ngFor="let avatar of avatars">
                     <input type="radio" name="avatar" [value]="avatar" class="avatar__input" formControlName="avatar" />
-                    <img [src]="avatar" class="avatar__img" />
+                    <img [srcset]="avatar | srcset:50:50" class="avatar__img" />
                 </label>
             </div>
             <p
