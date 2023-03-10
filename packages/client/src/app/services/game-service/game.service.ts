@@ -9,7 +9,7 @@ import { Round } from '@app/classes/round/round';
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
-import { ROUTE_GAME } from '@app/constants/routes-constants';
+import { ROUTE_GAME, ROUTE_GAME_OBSERVER } from '@app/constants/routes-constants';
 import { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';
 import BoardService from '@app/services/board-service/board.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
@@ -94,7 +94,8 @@ export default class GameService implements OnDestroy, IResetServiceData {
 
     setLocalPlayer(playerNumber: number): void {
         if (!this.playerContainer) return;
-        return this.playerContainer.setLocalPlayer(playerNumber);
+        this.playerContainer.setLocalPlayer(playerNumber);
+        this.gameViewEventManagerService.emitGameViewEvent('tileRackUpdate', this.getLocalPlayerId());
     }
 
     getTotalNumberOfTilesLeft(): number {
@@ -131,14 +132,18 @@ export default class GameService implements OnDestroy, IResetServiceData {
         this.isGameSetUp = true;
         this.isGameOver = false;
 
-        await this.handleReRouteOrReconnect(startGameData);
+        await this.handleReRouteOrReconnect(startGameData, isObserver);
     }
 
-    private async handleReRouteOrReconnect(startGameData: StartGameData): Promise<void> {
-        if (this.router.url !== '/game') {
+    private async handleReRouteOrReconnect(startGameData: StartGameData, isObserver: boolean): Promise<void> {
+        if (this.router.url !== ROUTE_GAME && this.router.url !== ROUTE_GAME_OBSERVER) {
             this.roundManager.initializeEvents();
             this.roundManager.startRound();
-            await this.router.navigateByUrl(ROUTE_GAME);
+            if (isObserver) {
+                await this.router.navigateByUrl(ROUTE_GAME_OBSERVER);
+            } else {
+                await this.router.navigateByUrl(ROUTE_GAME);
+            }
         } else {
             this.reconnectReinitialize(startGameData);
         }

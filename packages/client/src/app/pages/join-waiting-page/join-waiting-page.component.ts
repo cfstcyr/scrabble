@@ -76,7 +76,7 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
     }
 
     private hostHasCanceled(hostName: string): void {
-        this.dialog.open(DefaultDialogComponent, {
+        const dialogRef = this.dialog.open(DefaultDialogComponent, {
             data: {
                 title: DIALOG_CANCEL_TITLE,
                 content: hostName + DIALOG_CANCEL_CONTENT,
@@ -88,6 +88,9 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
                     },
                 ],
             },
+        });
+        dialogRef.backdropClick().subscribe(() => {
+            this.router.navigateByUrl(ROUTE_GROUPS);
         });
     }
 }
