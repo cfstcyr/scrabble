@@ -4,6 +4,7 @@ import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/chat-management.service.dart';
+import 'package:mobile/services/client.dart';
 import 'package:mobile/services/game-creation-service.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
@@ -36,6 +37,8 @@ class CustomLocator {
   }
 
   void _registerLazySingletons() {
+    getIt.registerLazySingleton<PersonnalHttpClient>(
+        () => PersonnalHttpClient());
     getIt.registerLazySingleton<StorageHandlerService>(
         () => StorageHandlerService());
     getIt.registerLazySingleton<UserService>(() => UserService());
