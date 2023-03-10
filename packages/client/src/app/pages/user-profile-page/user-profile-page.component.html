@@ -12,7 +12,7 @@
             </button>
         </app-user-profile-info>
 
-        <app-user-profile-stats>
+        <mat-card class="user-stats">
             <app-user-profile-stats-item title="Parties jouées" [value]="(gamesPlayedCount | async) ?? 0">
                 <app-icon icon="gamepad" styling="solid" stats-icon></app-icon>
             </app-user-profile-stats-item>
@@ -25,7 +25,7 @@
             <app-user-profile-stats-item title="Temps moyen" [value]="(((averageTimePerGame | async) | number:'1.0-0') ?? 0) + ' s'">
                 <app-icon icon="clock" styling="solid" stats-icon></app-icon>
             </app-user-profile-stats-item>
-        </app-user-profile-stats>
+        </mat-card>
 
         <mat-card style="padding: 24px">
             <h2>Historique de partie</h2>

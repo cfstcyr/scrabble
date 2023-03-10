@@ -10,6 +10,15 @@
         gap: 16px;
     }
 
+    .user-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+        padding: 24px;
+    }
+
     .game-result {
         $size: 30px;
         height: $size;

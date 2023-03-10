@@ -51,7 +51,6 @@ import { GroupPasswordDialogComponent } from './components/group-password-waitin
 import { SrcsetPipe } from './pipes/srcset/srcset.pipe';
 import { UserProfileInfoComponent } from './components/user-profile/user-profile-info/user-profile-info.component';
 import { UserProfileStatsItemComponent } from './components/user-profile/user-profile-stats-item/user-profile-stats-item.component';
-import { UserProfileStatsComponent } from './components/user-profile/user-profile-stats/user-profile-stats.component';
 import { UserProfilePageComponent } from './pages/user-profile-page/user-profile-page.component';
 import { UserProfileEditDialogComponent } from './components/user-profile/user-profile-edit-dialog/user-profile-edit-dialog.component';
 
@@ -106,7 +105,6 @@ registerLocaleData(localeFr);
         SrcsetPipe,
         UserProfileInfoComponent,
         UserProfileStatsItemComponent,
-        UserProfileStatsComponent,
         UserProfilePageComponent,
         UserProfileEditDialogComponent,
     ],
