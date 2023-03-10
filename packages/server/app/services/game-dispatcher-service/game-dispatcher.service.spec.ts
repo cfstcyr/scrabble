@@ -13,7 +13,6 @@ import {
     INVALID_PLAYER_ID_FOR_GAME,
     NO_DICTIONARY_INITIALIZED,
     NO_GAME_FOUND_WITH_ID,
-    NO_USER_FOUND_WITH_NAME,
 } from '@app/constants/services-errors';
 import { CreateGameService } from '@app/services/create-game-service/create-game.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
@@ -61,6 +60,7 @@ const DEFAULT_GROUP_DATA: GroupData = {
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     gameVisibility: GameVisibility.Private,
     password: '',
+    numberOfObservers: 0,
 };
 
 const DEFAULT_JOINED_PLAYER1 = new Player(DEFAULT_PLAYER_ID1, USER2);
@@ -226,7 +226,7 @@ describe('GameDispatcherService', () => {
         it('should add the player to the requestingPlayers if group is private', () => {
             DEFAULT_WAITING_ROOM.getConfig().gameVisibility = GameVisibility.Private;
             expect(DEFAULT_WAITING_ROOM.requestingPlayers.length).to.equal(0);
-            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER, '');
+            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER, '', false);
             expect(DEFAULT_WAITING_ROOM.requestingPlayers.length).to.equal(1);
         });
 
@@ -234,14 +234,14 @@ describe('GameDispatcherService', () => {
             DEFAULT_WAITING_ROOM.getConfig().gameVisibility = GameVisibility.Protected;
             DEFAULT_WAITING_ROOM.getConfig().password = 'Protected';
             DEFAULT_WAITING_ROOM.requestingPlayers = [new Player(DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER)];
-            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER, 'Protected');
+            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER, 'Protected', false);
             expect(chatServiceStub.joinChannel.calledWith(DEFAULT_GAME_CHANNEL_ID, DEFAULT_OPPONENT_ID)).to.be.true;
         });
 
         it('should add the to the channel and room if public', () => {
             DEFAULT_WAITING_ROOM.getConfig().gameVisibility = GameVisibility.Public;
             DEFAULT_WAITING_ROOM.requestingPlayers = [new Player(DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER)];
-            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER, '');
+            gameDispatcherService.requestJoinGame(id, DEFAULT_OPPONENT_ID, DEFAULT_OPPONENT_USER, '', false);
             expect(chatServiceStub.joinChannel.calledWith(DEFAULT_GAME_CHANNEL_ID, DEFAULT_OPPONENT_ID)).to.be.true;
         });
     });
@@ -272,17 +272,6 @@ describe('GameDispatcherService', () => {
             stubbedJoinedPlayer.id = DEFAULT_OPPONENT_ID;
             DEFAULT_WAITING_ROOM.joinedPlayer2 = stubbedJoinedPlayer as unknown as Player;
             await expect(gameDispatcherService.handleJoinRequest(id, 'weongid', 'wrongname', ACCEPT)).to.be.rejectedWith(INVALID_PLAYER_ID_FOR_GAME);
-        });
-
-        it('should throw if name not in requesting players', async () => {
-            const stubbedJoinedPlayer = sinon.createStubInstance(Player);
-            stubbedJoinedPlayer.publicUser = DEFAULT_OPPONENT_USER;
-            stubbedJoinedPlayer.id = DEFAULT_OPPONENT_ID;
-            DEFAULT_WAITING_ROOM.joinedPlayer2 = stubbedJoinedPlayer as unknown as Player;
-
-            await expect(gameDispatcherService.handleJoinRequest(id, DEFAULT_PLAYER_ID1, 'wrongname', ACCEPT)).to.be.rejectedWith(
-                NO_USER_FOUND_WITH_NAME,
-            );
         });
 
         it("should make user join group's channel if accepted", async () => {
@@ -450,30 +439,28 @@ describe('GameDispatcherService', () => {
         });
 
         it('should call getMultiplayerGameFromIdSpy', () => {
-            gameDispatcherService.isPlayerFromAcceptedPlayers('newroomid', 'playerid');
+            gameDispatcherService.isPlayerFromAcceptedUsers('newroomid', 'playerid');
             expect(getMultiplayerGameFromIdSpy).to.have.been.called();
         });
 
         it('should false if not from joined players', () => {
-            expect(gameDispatcherService.isPlayerFromAcceptedPlayers('newroomid', 'notjoinedplayerid')).to.be.false;
+            expect(gameDispatcherService.isPlayerFromAcceptedUsers('newroomid', 'notjoinedplayerid')).to.be.false;
         });
 
         it('should false if host id', () => {
-            expect(gameDispatcherService.isPlayerFromAcceptedPlayers('newroomid', DEFAULT_PLAYER_ID1)).to.be.false;
+            expect(gameDispatcherService.isPlayerFromAcceptedUsers('newroomid', DEFAULT_PLAYER_ID1)).to.be.false;
         });
 
         it('should true if player 4', () => {
             newRoom.joinedPlayer4 = { id: 'joinedPlayer4id' } as unknown as Player;
-            expect(gameDispatcherService.isPlayerFromAcceptedPlayers('newroomid', 'joinedPlayer4id')).to.be.true;
+            expect(gameDispatcherService.isPlayerFromAcceptedUsers('newroomid', 'joinedPlayer4id')).to.be.true;
         });
     });
 
     describe('removeRequestingPlayer', () => {
         let getMultiplayerGameFromIdSpy: unknown;
-        let id: string;
         beforeEach(() => {
             gameDispatcherService['waitingRooms'] = [DEFAULT_WAITING_ROOM];
-            id = DEFAULT_WAITING_ROOM.getId();
             getMultiplayerGameFromIdSpy = spy.on(gameDispatcherService, 'getMultiplayerGameFromId', () => {
                 return DEFAULT_WAITING_ROOM;
             });
@@ -484,25 +471,8 @@ describe('GameDispatcherService', () => {
         });
 
         it('should call getMultiplayerGameFromIdSpy', () => {
-            gameDispatcherService.isPlayerFromAcceptedPlayers('newroomid', 'playerid');
+            gameDispatcherService.isPlayerFromAcceptedUsers('newroomid', 'playerid');
             expect(getMultiplayerGameFromIdSpy).to.have.been.called();
-        });
-
-        it('should throw if not from joined players', () => {
-            expect(() => gameDispatcherService.removeRequestingPlayer(id, 'invaliduserid')).to.throw(INVALID_PLAYER_ID_FOR_GAME);
-        });
-
-        it('should remove the player', () => {
-            expect(DEFAULT_WAITING_ROOM.requestingPlayers.includes(DEFAULT_OPPONENT)).to.be.true;
-            gameDispatcherService.removeRequestingPlayer(id, DEFAULT_OPPONENT.id);
-            expect(DEFAULT_WAITING_ROOM.requestingPlayers.includes(DEFAULT_OPPONENT)).to.be.false;
-        });
-
-        it('should return the left players public user', () => {
-            expect(gameDispatcherService.removeRequestingPlayer(id, DEFAULT_OPPONENT.id)).to.deep.equal([
-                DEFAULT_OPPONENT2.publicUser,
-                DEFAULT_OPPONENT3.publicUser,
-            ]);
         });
     });
 
