@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/client.dart';
@@ -26,5 +27,10 @@ class UserController {
   Future<UserStatistics> getUserStatistics() async {
     return UserStatistics.fromJson(jsonDecode(
         (await _http.get(Uri.parse("$endpoint/users/statistics"))).body));
+  }
+
+  Future<List<GameHistory>> getGameHistory() async {
+    return GameHistory.fromJsonList(jsonDecode(
+        (await _http.get(Uri.parse("$endpoint/gameHistories"))).body));
   }
 }

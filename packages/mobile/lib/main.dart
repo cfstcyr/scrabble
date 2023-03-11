@@ -4,6 +4,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/login-page.dart';
@@ -15,6 +17,9 @@ import 'controllers/account-authentification-controller.dart';
 import 'environments/environment.dart';
 
 Future<void> main() async {
+  Intl.defaultLocale = 'fr_CA';
+  initializeDateFormatting('fr_CA', null);
+
   await dotenv.load(fileName: ".env");
   const String environment = String.fromEnvironment(
     'ENVIRONMENT',

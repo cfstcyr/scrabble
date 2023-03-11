@@ -1,3 +1,4 @@
+import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:rxdart/rxdart.dart';
@@ -35,5 +36,9 @@ class UserService {
 
   Future<UserStatistics> getUserStatistics() async {
     return await _userController.getUserStatistics();
+  }
+
+  Future<List<GameHistory>> getGameHistory() async {
+    return await _userController.getGameHistory();
   }
 }
