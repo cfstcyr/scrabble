@@ -21,7 +21,7 @@ class PlayerData {
       id: json['id'] as String,
       newId: json['newId'] as String?,
       publicUser: json['publicUser'] != null
-          ? PublicUser.fromJson(json['publicUser'] as Map<String, dynamic>)
+          ? PublicUser.fromJson(json['publicUser'])
           : null,
       score: json['score'] as int?,
       tiles: json['tiles'] != null
