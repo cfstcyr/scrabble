@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/board/board.dart';
@@ -8,6 +10,7 @@ import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
 import 'package:mobile/classes/player/player.dart';
 import 'package:mobile/classes/rounds/round.dart';
+import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/user.dart';
@@ -94,6 +97,9 @@ class GameService {
       game.players.getPlayer(3).updatePlayerData(gameUpdate.player3!);
     }
 
+    if (gameUpdate.board != null) {
+      game.board.updateBoardData(gameUpdate.board!);
+    }
 
     _game$.add(game);
   }
@@ -137,5 +143,13 @@ class GameService {
 
   bool isActivePlayer(String socketId) {
     return _roundService.getActivePlayerId() == socketId;
+  }
+
+  void handleUpdatePlayerData(List<PlayerData> playersData) {
+    _game$.value?.players.updatePlayerData(playersData);
+  }
+
+  void handleUpdateBoardData(List<Square> boardData) {
+    _game$.value?.board.updateBoardData(boardData);
   }
 }
