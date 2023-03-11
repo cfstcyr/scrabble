@@ -1,3 +1,5 @@
+import 'package:mobile/controllers/user-controller.dart';
+import 'package:mobile/locator.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
@@ -12,6 +14,8 @@ class UserService {
     return _instance;
   }
 
+  UserController _userController = getIt.get<UserController>();
+
   ValueStream<PublicUser?> get user => _user.stream;
 
   PublicUser getUser() {
@@ -21,5 +25,11 @@ class UserService {
 
   void setUser(PublicUser user) {
     _user.add(user);
+  }
+
+  Future<PublicUser> editUser(EditableUserFields edits) async {
+    PublicUser user = await _userController.editUser(edits);
+    _user.add(user);
+    return user;
   }
 }

@@ -107,3 +107,17 @@ class UserSession {
     );
   }
 }
+
+class EditableUserFields {
+  String username;
+  String avatar;
+
+  EditableUserFields({required this.username, required this.avatar});
+
+  Map<String, String> toJson() {
+    return {
+      'username': username,
+      'avatar': avatar,
+    };
+  }
+}

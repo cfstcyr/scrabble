@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:mobile/controllers/gameplay-controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
+import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/channel.service.dart';
 import 'package:mobile/services/chat-management.service.dart';
@@ -26,6 +27,7 @@ void setUpLocator() {
       () => StorageHandlerService());
   getIt.registerLazySingleton<PersonnalHttpClient>(() => PersonnalHttpClient());
   getIt.registerLazySingleton<UserService>(() => UserService());
+  getIt.registerLazySingleton<UserController>(() => UserController());
   getIt.registerLazySingleton<ChannelService>(() => ChannelService());
   getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
   getIt.registerLazySingleton<AccountAuthenticationController>(
