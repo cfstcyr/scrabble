@@ -33,8 +33,10 @@ const publicRoute: Route = {
     runGuardsAndResolvers: 'paramsOrQueryParamsChange',
 };
 
+const removeStartSlash = (str: string) => (str.startsWith('/') ? str.substring(1) : str);
+
 const routes: Routes = [
-    { path: '', redirectTo: '/home', pathMatch: 'full' },
+    { path: '', redirectTo: ROUTE_HOME, pathMatch: 'full' },
     { path: ROUTE_SIGNUP, component: SignUpPageComponent, ...publicRoute },
     { path: ROUTE_LOGIN, component: LoginPageComponent, ...publicRoute },
     { path: ROUTE_HOME, component: HomePageComponent, ...privateRoute },
@@ -44,8 +46,8 @@ const routes: Routes = [
     { path: ROUTE_CREATE_WAITING, component: CreateWaitingPageComponent, ...privateRoute },
     { path: ROUTE_JOIN_WAITING, component: JoinWaitingPageComponent, ...privateRoute },
     { path: ROUTE_PROFILE, component: UserProfilePageComponent, ...privateRoute },
-    { path: '**', redirectTo: '/home' },
-];
+    { path: '**', redirectTo: ROUTE_HOME },
+].map((route) => ({ ...route, path: removeStartSlash(route.path) }));
 
 @NgModule({
     imports: [RouterModule.forRoot(routes, { useHash: true })],
