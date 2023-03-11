@@ -101,6 +101,14 @@ class GameService {
       game.board.updateBoardData(gameUpdate.board!);
     }
 
+    if (gameUpdate.round != null) {
+      _roundService.updateRoundData(gameUpdate.round!);
+    }
+
+    if (gameUpdate.isGameOver != null) {
+      game.isOver = gameUpdate.isGameOver!;
+    }
+
     _game$.add(game);
   }
 
