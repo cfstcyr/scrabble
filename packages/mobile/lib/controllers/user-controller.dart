@@ -15,11 +15,16 @@ class UserController {
   }
 
   final String endpoint = "${Environment().config.apiUrl}";
-  final _httpClient = getIt.get<PersonnalHttpClient>();
+  final _http = getIt.get<PersonnalHttpClient>().http;
 
   Future<PublicUser> editUser(EditableUserFields edits) async {
-    return PublicUser.fromJson(jsonDecode((await _httpClient.http
-            .patch(Uri.parse("$endpoint/users"), body: edits.toJson()))
-        .body));
+    return PublicUser.fromJson(jsonDecode(
+        (await _http.patch(Uri.parse("$endpoint/users"), body: edits.toJson()))
+            .body));
+  }
+
+  Future<UserStatistics> getUserStatistics() async {
+    return UserStatistics.fromJson(jsonDecode(
+        (await _http.get(Uri.parse("$endpoint/users/statistics"))).body));
   }
 }

@@ -32,4 +32,8 @@ class UserService {
     _user.add(user);
     return user;
   }
+
+  Future<UserStatistics> getUserStatistics() async {
+    return await _userController.getUserStatistics();
+  }
 }

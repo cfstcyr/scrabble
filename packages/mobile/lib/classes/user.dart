@@ -121,3 +121,23 @@ class EditableUserFields {
     };
   }
 }
+
+class UserStatistics {
+  int gamesPlayedCount;
+  int gamesWonCount;
+  double averagePointsPerGame;
+  double averageTimePerGame;
+
+  UserStatistics(
+      {required this.averagePointsPerGame,
+      required this.averageTimePerGame,
+      required this.gamesPlayedCount,
+      required this.gamesWonCount});
+
+  UserStatistics.fromJson(Map<String, dynamic> json)
+      : this(
+            averagePointsPerGame: json['averagePointsPerGame'],
+            averageTimePerGame: json['averageTimePerGame'],
+            gamesPlayedCount: json['gamesPlayedCount'],
+            gamesWonCount: json['gamesWonCount']);
+}
