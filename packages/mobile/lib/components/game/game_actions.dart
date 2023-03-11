@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
 
 class GameActions extends StatelessWidget {
   GameService _gameService = getIt.get<GameService>();
+  ActionService _actionService = getIt.get<ActionService>();
 
   void surrender(BuildContext context) {
     getIt.get<PlayerLeaveService>().leaveGame(context);
+  }
+
+  bool canPlay(Game game) {
+    return _gameService.isLocalPlayerActivePlayer() &&
+        !game.isOver &&
+        !_actionService.isActionBeingProcessed;
   }
 
   @override
@@ -44,7 +53,9 @@ class GameActions extends StatelessWidget {
                         size: AppButtonSize.large,
                       ), //Échanger
                       AppButton(
-                        onPressed: () {},
+                        onPressed: canPlay(game.data!)
+                            ? () => _actionService.sendAction(ActionType.pass)
+                            : null,
                         icon: Icons.not_interested_rounded,
                         size: AppButtonSize.large,
                       ), // Passer

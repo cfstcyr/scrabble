@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart';
+import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/game/game-update.dart';
 import 'package:mobile/classes/message/message.dart';
@@ -9,6 +10,8 @@ import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../services/client.dart';
 
 class GamePlayController {
   GamePlayController._privateConstructor() {
@@ -25,6 +28,8 @@ class GamePlayController {
   SocketService socketService = getIt.get<SocketService>();
 
   final String baseEndpoint = GAME_ENDPOINT;
+  PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
+  InterceptedHttp get http => httpClient.http;
 
   String? currentGameId;
 
@@ -48,22 +53,22 @@ class GamePlayController {
 
   Future<void> sendAction(ActionData actionData) async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/action");
-    post(endpoint, body: actionData).then((_) => _actionDone$.add(null));
+    http.post(endpoint, body: jsonEncode(actionData)).then((_) => _actionDone$.add(null));
   }
 
   Future<void> leaveGame() async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/leave");
-    await delete(endpoint);
+    await http.delete(endpoint);
   }
 
   void sendMessage(String gameId, Message message) {
-    post(Uri.parse("$baseEndpoint/$gameId/message"), body: jsonEncode(message))
+    http.post(Uri.parse("$baseEndpoint/$gameId/message"), body: jsonEncode(message))
         .then((response) {});
   }
 
   void sendError(String gameId, Message message) {
     final endpoint = "$baseEndpoint/$currentGameId/players/error";
-    post(Uri.parse(endpoint), body: jsonEncode(message)).then((response) {});
+    http.post(Uri.parse(endpoint), body: jsonEncode(message)).then((response) {});
   }
 
   void handleReconnection(String gameId, String newPlayerId) {
