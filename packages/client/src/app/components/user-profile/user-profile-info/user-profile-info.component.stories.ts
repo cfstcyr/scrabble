@@ -2,7 +2,6 @@ import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { UserProfileInfoComponent } from './user-profile-info.component';
 import { MatCardModule } from '@angular/material/card';
-import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
 import { MatButtonModule } from '@angular/material/button';
 
 export default {
@@ -10,7 +9,7 @@ export default {
     component: UserProfileInfoComponent,
     decorators: [
         moduleMetadata({
-            declarations: [IconComponent, SrcsetPipe],
+            declarations: [IconComponent],
             imports: [MatCardModule, MatButtonModule],
         }),
     ],
