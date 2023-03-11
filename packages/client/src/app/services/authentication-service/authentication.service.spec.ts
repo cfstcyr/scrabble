@@ -9,6 +9,7 @@ import { UserService } from '@app/services/user-service/user.service';
 import { AuthenticationService } from './authentication.service';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { TokenValidation } from '@app/classes/authentication/token-validation';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const DEFAULT_TOKEN = 'my-token';
 const DEFAULT_CREDENTIALS: UserLoginCredentials = {
@@ -38,7 +39,7 @@ describe('AuthenticationService', () => {
     beforeEach(() => {
         authenticationController = jasmine.createSpyObj('AuthenticationController', ['login', 'signup', 'validateToken']);
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, MatSnackBarModule],
+            imports: [HttpClientTestingModule, MatSnackBarModule, MatDialogModule],
             providers: [{ provide: AuthenticationController, useValue: authenticationController }, UserService],
         });
         service = TestBed.inject(AuthenticationService);

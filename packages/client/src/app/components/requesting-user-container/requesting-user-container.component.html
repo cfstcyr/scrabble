@@ -1,6 +1,6 @@
 <mat-card class="content">
     <div class="avatar__container">
-        <img [src]=" requestingUser.avatar" class="avatar__img" />
+        <img [appSrc]=" requestingUser.avatar" [square]="50" class="avatar__img" />
     </div>
     <div class="name">
       {{ requestingUser.username }}

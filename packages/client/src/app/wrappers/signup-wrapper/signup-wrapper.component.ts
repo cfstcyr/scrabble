@@ -10,6 +10,7 @@ import {
 import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
+import { UserValidatorService } from '@app/services/user-validator/user-validator.service';
 import { UserSignupInformation } from '@common/models/user';
 
 @Component({
@@ -23,6 +24,7 @@ export class SignupWrapperComponent {
 
     constructor(
         private readonly authenticationService: AuthenticationService,
+        private readonly userValidatorService: UserValidatorService,
         private readonly alertService: AlertService,
         private readonly router: Router,
     ) {}
@@ -39,7 +41,7 @@ export class SignupWrapperComponent {
     }
 
     handleCheckEmailUnicity(email: string): void {
-        this.authenticationService.validateEmail(email).subscribe(
+        this.userValidatorService.validateEmail(email).subscribe(
             (isAvailable) => (this.isEmailTaken = !isAvailable),
             (error) => {
                 this.alertService.error(CANNOT_VERIFY_EMAIL_UNICITY, { log: error });
@@ -48,7 +50,7 @@ export class SignupWrapperComponent {
     }
 
     handleCheckUsernameUnicity(username: string): void {
-        this.authenticationService.validateUsername(username).subscribe(
+        this.userValidatorService.validateUsername(username).subscribe(
             (isAvailable) => (this.isUsernameTaken = !isAvailable),
             (error) => {
                 this.alertService.error(CANNOT_VERIFY_USERNAME_UNICITY, { log: error });

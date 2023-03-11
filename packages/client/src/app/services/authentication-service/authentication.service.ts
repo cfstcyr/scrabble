@@ -60,14 +60,6 @@ export class AuthenticationService {
         );
     }
 
-    validateUsername(username: string): Observable<boolean> {
-        return this.authenticationController.validateUsername(username).pipe(map((res) => res.isAvailable));
-    }
-
-    validateEmail(email: string): Observable<boolean> {
-        return this.authenticationController.validateEmail(email).pipe(map((res) => res.isAvailable));
-    }
-
     private handleUserSessionInitialisation(session: UserSession): void {
         authenticationSettings.setToken(session.token);
         this.userService.user.next(session.user);

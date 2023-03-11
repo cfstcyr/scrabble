@@ -6,10 +6,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserSignupInformation } from '@common/models/user';
 import { IconComponent } from '@app/components/icon/icon.component';
-
 import { SignupContainerComponent } from './signup-container.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
+import { SrcDirective } from '@app/directives/src-directive/src.directive';
 
 const DEFAULT_CREDENTIALS: UserSignupInformation = {
     avatar: 'avatar',
@@ -27,7 +26,7 @@ describe('SignupContainerComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SignupContainerComponent, IconComponent, SrcsetPipe],
+            declarations: [SignupContainerComponent, IconComponent, SrcDirective],
             imports: [MatTooltipModule],
         }).compileComponents();
     });

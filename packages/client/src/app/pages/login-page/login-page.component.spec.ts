@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HeaderBtnComponent } from '@app/components/header-btn/header-btn.component';
@@ -13,7 +14,7 @@ describe('LoginPageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule],
+            imports: [HttpClientTestingModule, MatSnackBarModule, RouterTestingModule, MatDialogModule],
             declarations: [LoginPageComponent, TileComponent, HeaderBtnComponent, LoginWrapperComponent],
         }).compileComponents();
     });

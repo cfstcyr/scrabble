@@ -6,3 +6,4 @@ export const ROUTE_GROUPS = '/groups';
 export const ROUTE_CREATE_WAITING = '/create-waiting-room';
 export const ROUTE_JOIN_WAITING = '/join-waiting-room';
 export const ROUTE_SIGNUP = '/signup';
+export const ROUTE_PROFILE = '/profile';
