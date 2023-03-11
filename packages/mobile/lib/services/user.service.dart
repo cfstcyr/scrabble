@@ -20,7 +20,6 @@ class UserService {
   }
 
   void setUser(PublicUser user) {
-    assert(_user.valueOrNull != null, USER_NOT_INITIALIZED);
     _user.add(user);
   }
 }
