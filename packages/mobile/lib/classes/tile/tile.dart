@@ -22,4 +22,25 @@ class Tile {
       playedLetter: json['playedLetter'] as String?,
     );
   }
+
+  RackTile toRackTile() {
+    return RackTile(letter, value, isWildcard, playedLetter);
+  }
+}
+
+class RackTile extends Tile {
+  bool isSelected;
+
+  RackTile(String? letter, int? value, bool isWildcard, String? playedLetter)
+      : isSelected = false,
+        super(
+            letter: letter,
+            value: value,
+            isWildcard: isWildcard,
+            playedLetter: playedLetter);
+
+  factory RackTile.fromTile(Tile tile) {
+    return RackTile(
+        tile.letter, tile.value, tile.isWildcard, tile.playedLetter);
+  }
 }
