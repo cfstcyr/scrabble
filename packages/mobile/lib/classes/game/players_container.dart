@@ -43,14 +43,6 @@ class PlayersContainer {
 
   List<Player> get players => [player1, player2, player3, player4];
 
-  PlayersContainer updatePlayerData(List<PlayerData> playersData) {
-    player1.updatePlayerData(playersData[0]);
-    player2.updatePlayerData(playersData[1]);
-    player3.updatePlayerData(playersData[2]);
-    player4.updatePlayerData(playersData[3]);
-    return this;
-  }
-
   Player getLocalPlayer() {
     if (localPlayerId == null) {
       errorSnackBar(navigatorKey.currentContext!, NO_LOCAL_PLAYER_DEFINED);

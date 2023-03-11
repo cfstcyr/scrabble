@@ -161,10 +161,6 @@ class GameService {
     return _roundService.getActivePlayerId() == socketId;
   }
 
-  void handleUpdatePlayerData(List<PlayerData> playersData) {
-    _game.value?.players.updatePlayerData(playersData);
-  }
-
   void handleUpdateBoardData(List<Square> boardData) {
     _game.value?.board.updateBoardData(boardData);
   }
