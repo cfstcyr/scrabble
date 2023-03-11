@@ -7,18 +7,18 @@ import 'package:rxdart/rxdart.dart';
 
 class TileRack {
   final GameEventService _gameEventService = getIt.get<GameEventService>();
-  final BehaviorSubject<List<RackTile>> _tiles;
+  final BehaviorSubject<List<Tile>> _tiles;
   final BehaviorSubject<bool> _isExchangeModeEnabled$;
 
-  TileRack({List<RackTile> tiles = const []})
+  TileRack({List<Tile> tiles = const []})
       : _tiles = BehaviorSubject.seeded(tiles),
         _isExchangeModeEnabled$ = BehaviorSubject.seeded(false) {
     _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD, (placement) {
-      removeTile(RackTile.fromTile(placement.tile));
+      removeTile(placement.tile);
     });
   }
 
-  ValueStream<List<RackTile>> get stream {
+  ValueStream<List<Tile>> get stream {
     return _tiles.stream;
   }
 
@@ -26,30 +26,30 @@ class TileRack {
     return _isExchangeModeEnabled$.stream;
   }
 
-  Stream<List<RackTile>> get selectedTiles {
-    return stream.map((List<RackTile> tileRack) => tileRack.where((RackTile tile) => tile.isSelected).toList());
+  Stream<List<Tile>> get selectedTiles {
+    return stream.map((List<Tile> tileRack) => tileRack.where((Tile tile) => tile.isSelectedForExchange).toList());
   }
 
-  TileRack setTiles(List<RackTile> tiles) {
+  TileRack setTiles(List<Tile> tiles) {
     _tiles.add(tiles);
     return this;
   }
 
-  TileRack addTiles(List<RackTile> tiles) {
+  TileRack addTiles(List<Tile> tiles) {
     _tiles.add([..._tiles.value, ...tiles]);
     return this;
   }
 
-  TileRack removeTile(RackTile tile) {
-    List<RackTile> tiles = _tiles.value;
+  TileRack removeTile(Tile tile) {
+    List<Tile> tiles = _tiles.value;
 
     tiles.remove(tile);
     _tiles.add([...tiles]);
     return this;
   }
 
-  placeTile(RackTile tile, {int? to}) {
-    List<RackTile> tiles = _tiles.value;
+  placeTile(Tile tile, {int? to}) {
+    List<Tile> tiles = _tiles.value;
 
     if (to != null) {
       int from = tiles.indexOf(tile);

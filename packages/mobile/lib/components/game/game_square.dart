@@ -164,7 +164,7 @@ class GameSquare extends StatelessWidget {
     var tile = square.getTile();
 
     if (!square.getIsApplied() && tile != null) {
-      _gameService.getTileRack().placeTile(tile.toRackTile());
+      _gameService.getTileRack().placeTile(tile);
       removeTile();
     }
   }

@@ -11,6 +11,8 @@ import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../animation/wiggle.dart';
+
 class TileRack extends StatelessWidget {
   final BehaviorSubject<int?> _currentTileIndex = BehaviorSubject();
   final BehaviorSubject<int?> _currentHoveredTileIndex = BehaviorSubject();
@@ -59,6 +61,16 @@ class TileRack extends StatelessWidget {
                                   )
                                 : Container();
                           })),
+                      // StreamBuilder<bool>(
+                      //     stream: game.data!.tileRack.isExchangeModeEnabled,
+                      //     builder: (context, snapshot) {
+                      //       return ToggleButtons(
+                      //           isSelected: [snapshot.data ?? false],
+                      //           onPressed: (int index) {
+                      //             game.data!.tileRack.toggleExchangeMode();
+                      //           },
+                      //           children: [Icon(Icons.swap_horiz_rounded)]);
+                      //     }),
                       StreamBuilder<bool>(
                         stream: game.data!.board.hasPlacementStream,
                         builder: (context, snapshot) {
@@ -69,7 +81,7 @@ class TileRack extends StatelessWidget {
                                         PUT_BACK_TILES_ON_TILE_RACK, null);
                                   }
                                 : null,
-                            icon: Icons.close,
+                            icon: Icons.clear,
                             iconOnly: true,
                           );
                         },
@@ -84,6 +96,22 @@ class TileRack extends StatelessWidget {
   }
 
   Widget _buildTile(c.Tile tile, int index) {
+    // return StreamBuilder<bool>(
+    //     stream: _gameService.getTileRack().isExchangeModeEnabled,
+    //     builder: (context, isExchangeModeEnabled) {
+    //       return isExchangeModeEnabled.data == null ||
+    //               isExchangeModeEnabled.data == false
+    //           ? _buildDraggableTile(tile, index)
+    //           : Wiggle(
+    //               amount: 0.025,
+    //               speed: Duration(milliseconds: 125),
+    //               child: Tile(tile: tile, size: TILE_SIZE),
+    //             );
+    //     });
+    return _buildDraggableTile(tile, index);
+  }
+
+  Widget _buildDraggableTile(c.Tile tile, int index) {
     return Wrap(
       children: [
         Draggable(
