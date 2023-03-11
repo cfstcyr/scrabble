@@ -43,9 +43,8 @@ class GameUpdateData {
         round: RoundData.fromJson(json['round'] as Map<String, dynamic>),
         tileReserve: json['tileReserve'] != null &&
                 (json['tileReserve'] as List<dynamic>).isNotEmpty
-            ? (json['tileReserve'] as List<Map<String, dynamic>>)
-                .map((Map<String, dynamic> tile) =>
-                    TileReserveData.fromJson(tile))
+            ? (json['tileReserve'] as List<dynamic>)
+                .map((dynamic tile) => TileReserveData.fromJson(tile))
                 .toList()
             : List<TileReserveData>.empty());
   }
