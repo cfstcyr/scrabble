@@ -1,14 +1,14 @@
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:http/http.dart';
+import 'package:mobile/classes/actions/action-data.dart';
+import 'package:mobile/classes/game/game-update.dart';
+import 'package:mobile/classes/message/message.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:mobile/classes/message/message.dart';
-import 'package:mobile/classes/game/game-update.dart';
-import 'package:mobile/classes/actions/action-data.dart';
-
-import 'package:http/http.dart';
 
 class GamePlayController {
   GamePlayController._privateConstructor() {
@@ -31,6 +31,14 @@ class GamePlayController {
   final Subject<void> _actionDone$ = PublishSubject();
 
   Stream<void> get actionDoneEvent => _actionDone$.stream;
+
+  final Subject<GameUpdateData> _gameUpdate$ = PublishSubject();
+
+  Stream<GameUpdateData> get gameUpdateEvent => _gameUpdate$.stream;
+
+  final Subject<Message?> _message$ = PublishSubject();
+
+  Stream<Message?> get messageEvent => _message$.stream;
 
   final BehaviorSubject<GameUpdateData> gameUpdate$ =
       BehaviorSubject<GameUpdateData>();
@@ -89,6 +97,7 @@ class GamePlayController {
 
   void configureSocket() {
     socketService.on('gameUpdate', (dynamic newData) {
+      log('gameUpdate');
       gameUpdate$.add(GameUpdateData.fromJson(newData));
     });
     socketService.on('newMessage', (dynamic newMessage) {

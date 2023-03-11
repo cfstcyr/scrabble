@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:async/async.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/board/board.dart';
@@ -15,6 +16,7 @@ import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/erros/game-errors.dart';
+import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
@@ -40,7 +42,12 @@ class GameService {
     startGameEvent.listen((InitializeGameData initializeGameData) => startGame(
         initializeGameData.localPlayerSocketId,
         initializeGameData.startGameData));
+
+    gamePlayController.gameUpdateEvent
+        .listen((GameUpdateData gameUpdate) => updateGame(gameUpdate));
   }
+
+  GamePlayController gamePlayController = getIt.get<GamePlayController>();
 
   void startGame(String localPlayerId, StartGameData startGameData) {
     PlayersContainer playersContainer = PlayersContainer.fromPlayers(
