@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/user.dart';
+import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/user-constants.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/pages/profile-page.dart';
+import 'package:mobile/services/user.service.dart';
 
 import 'chat-management.dart';
 
 class MyScaffold extends StatelessWidget {
+  UserService _userService = getIt.get<UserService>();
   final Widget body;
   final String title;
 
@@ -25,6 +32,27 @@ class MyScaffold extends StatelessWidget {
               onPressed: () => Scaffold.of(context).openEndDrawer(),
             ),
           ),
+          Builder(
+              builder: (context) => InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePage()));
+                    },
+                    child: StreamBuilder<PublicUser?>(
+                      stream: _userService.user,
+                      builder: (context, snapshot) {
+                        return snapshot.data != null
+                            ? Padding(
+                                padding: EdgeInsets.only(right: SPACE_2),
+                                child: getUserAvatar(snapshot.data!.avatar,
+                                    height: 48, width: 48),
+                              )
+                            : Container();
+                      },
+                    ),
+                  )),
         ],
       ),
       endDrawer: Container(width: 325, child: const ChatManagement()),

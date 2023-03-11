@@ -36,6 +36,9 @@ class _LoginFormState extends State<LoginForm> {
   void initState() {
     super.initState();
     emailHandler.addListener(validateEmail);
+
+    emailHandler.controller.text = 'charles@me.com';
+    passwordHandler.controller.text = '12345aA!';
   }
 
   @override
