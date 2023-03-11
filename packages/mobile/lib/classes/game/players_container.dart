@@ -1,4 +1,5 @@
 import 'package:mobile/classes/game/player.dart';
+import 'package:mobile/classes/player/player.dart';
 import 'package:mobile/components/error-pop-up.dart';
 import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/constants/game.constants.dart';
@@ -38,10 +39,18 @@ class PlayersContainer {
         return player4;
     }
 
-     throw Exception(INVALID_PLAYER_INDEX);
+    throw Exception(INVALID_PLAYER_INDEX);
   }
 
   List<Player> get players => [player1, player2, player3, player4];
+
+  PlayersContainer updatePlayerData(List<PlayerData> playersData) {
+    player1.updatePlayerData(playersData[0]);
+    player2.updatePlayerData(playersData[1]);
+    player3.updatePlayerData(playersData[2]);
+    player4.updatePlayerData(playersData[3]);
+    return this;
+  }
 
   Player getLocalPlayer() {
     if (localPlayerId == null) {

@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/game/game-config.dart';
+import 'package:mobile/classes/game/game-update.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
+import 'package:mobile/classes/player/player.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
@@ -65,6 +67,37 @@ class GameService {
         navigatorKey.currentContext!, GAME_PAGE_ROUTE);
   }
 
+  void updateGame(GameUpdateData gameUpdate) {
+    if (_game$.value == null) {
+      throw Exception('Cannot update game: game is null');
+    }
+
+    Game game = _game$.value!;
+
+    if (gameUpdate.tileReserve != null) {
+      game.tileReserve = gameUpdate.tileReserve!;
+    }
+
+    if (gameUpdate.player1 != null) {
+      game.players.getPlayer(0).updatePlayerData(gameUpdate.player1!);
+    }
+
+    if (gameUpdate.player2 != null) {
+      game.players.getPlayer(1).updatePlayerData(gameUpdate.player2!);
+    }
+
+    if (gameUpdate.player3 != null) {
+      game.players.getPlayer(2).updatePlayerData(gameUpdate.player3!);
+    }
+
+    if (gameUpdate.player4 != null) {
+      game.players.getPlayer(3).updatePlayerData(gameUpdate.player3!);
+    }
+
+
+    _game$.add(game);
+  }
+
   Game get game {
     if (_game$.value == null) throw Exception("No game");
 
@@ -85,6 +118,7 @@ class GameService {
     return _game$.value!.tileRack;
   }
 
+//TODO
   void playPlacement() {
     if (!(_game$.value?.board.isValidPlacement ?? false)) return;
 
