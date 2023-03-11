@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IconComponent } from '@app/components/icon/icon.component';
+import { SrcDirective } from '@app/directives/src-directive/src.directive';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.component';
 import { GameVisibility } from '@common/models/game-visibility';
@@ -59,7 +60,7 @@ describe('GroupInfoComponent', () => {
                     { path: 'groups', component: GroupsPageComponent },
                 ]),
             ],
-            declarations: [GroupInfoComponent, IconComponent],
+            declarations: [GroupInfoComponent, IconComponent, SrcDirective],
         }).compileComponents();
     });
 

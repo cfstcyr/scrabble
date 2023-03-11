@@ -8,7 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SignupContainerComponent } from '@app/components/signup-container/signup-container.component';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
-import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
+import { SrcDirective } from '@app/directives/src-directive/src.directive';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserValidatorService } from '@app/services/user-validator/user-validator.service';
@@ -39,7 +39,7 @@ describe('SignupWrapperComponent', () => {
         userValidatorService = jasmine.createSpyObj(UserValidatorService, ['validateEmail', 'validateUsername']);
 
         await TestBed.configureTestingModule({
-            declarations: [SignupWrapperComponent, SignupContainerComponent, SrcsetPipe],
+            declarations: [SignupWrapperComponent, SignupContainerComponent, SrcDirective],
             imports: [
                 HttpClientTestingModule,
                 RouterTestingModule.withRoutes([{ path: 'home', component: DefaultComponent }]),

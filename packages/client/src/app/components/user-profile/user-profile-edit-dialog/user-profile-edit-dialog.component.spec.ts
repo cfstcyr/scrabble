@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
+import { SrcDirective } from '@app/directives/src-directive/src.directive';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserService } from '@app/services/user-service/user.service';
@@ -20,7 +20,7 @@ describe('UserProfileEditDialogComponent', () => {
         dialogRef = jasmine.createSpyObj(MatDialogRef, ['close']);
 
         await TestBed.configureTestingModule({
-            declarations: [UserProfileEditDialogComponent, SrcsetPipe],
+            declarations: [UserProfileEditDialogComponent, SrcDirective],
             imports: [HttpClientTestingModule, MatSnackBarModule, ReactiveFormsModule, BrowserAnimationsModule, MatDialogModule],
             providers: [
                 {

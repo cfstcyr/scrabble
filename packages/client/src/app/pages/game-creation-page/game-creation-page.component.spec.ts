@@ -23,9 +23,9 @@ import { IconComponent } from '@app/components/icon/icon.component';
 import { PageHeaderComponent } from '@app/components/page-header/page-header.component';
 import { TileComponent } from '@app/components/tile/tile.component';
 import { TimerSelectionComponent } from '@app/components/timer-selection/timer-selection.component';
+import { SrcDirective } from '@app/directives/src-directive/src.directive';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { LoadingPageComponent } from '@app/pages/loading-page/loading-page.component';
-import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
 import { GameDispatcherService } from '@app/services/';
 import { Subject } from 'rxjs';
 import { GameCreationPageComponent } from './game-creation-page.component';
@@ -62,7 +62,7 @@ describe('GameCreationPageComponent', () => {
                 LoadingPageComponent,
                 TileComponent,
                 HeaderBtnComponent,
-                SrcsetPipe,
+                SrcDirective,
             ],
             imports: [
                 AppMaterialModule,

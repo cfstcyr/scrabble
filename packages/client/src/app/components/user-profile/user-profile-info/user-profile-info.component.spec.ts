@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
+import { SrcDirective } from '@app/directives/src-directive/src.directive';
 
 import { UserProfileInfoComponent } from './user-profile-info.component';
 
@@ -10,7 +10,7 @@ describe('UserProfileInfoComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [UserProfileInfoComponent, SrcsetPipe],
+            declarations: [UserProfileInfoComponent, SrcDirective],
             imports: [MatSnackBarModule],
         }).compileComponents();
     });
