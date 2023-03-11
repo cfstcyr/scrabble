@@ -61,12 +61,14 @@ class Square {
 
   factory Square.fromJson(Map<String, dynamic> json) {
     return Square(
-      position: Position.fromJson(json['position']),
+      position: Position.fromJson(json['position'] as Map<String, dynamic>),
       multiplier: json['multiplier'] != null
-          ? Multiplier.fromJson(json['multiplier'])
+          ? Multiplier.fromJson(json['multiplier'] as Map<String, dynamic>)
           : null,
       isCenter: json['isCenter'] as bool,
-      tile: json['tile'] != null ? Tile.fromJson(json['tile']) : null,
+      tile: json['tile'] != null
+          ? Tile.fromJson(json['tile'] as Map<String, dynamic>)
+          : null,
       isApplied: json['isApplied'] as bool,
     );
   }

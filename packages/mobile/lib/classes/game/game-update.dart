@@ -48,7 +48,9 @@ class GameUpdateData {
           ? List<Square>.from(
               (json['board'] as List).map((e) => Square.fromJson(e)))
           : null,
-      round: json['round'] != null ? RoundData.fromJson(json['round']) : null,
+      round: json['round'] != null
+          ? RoundData.fromJson(json['round'] as Map<String, dynamic>)
+          : null,
       tileReserve: json['tileReserve'] != null
           ? List<TileReserveData>.from((json['tileReserve'] as List)
               .map((e) => TileReserveData.fromJson(e)))

@@ -14,7 +14,8 @@ class RoundData {
 
   factory RoundData.fromJson(Map<String, dynamic> json) {
     return RoundData(
-      playerData: PlayerData.fromJson(json['playerData']),
+      playerData:
+          PlayerData.fromJson(json['playerData'] as Map<String, dynamic>),
       startTime: DateTime.parse(json['startTime'] as String),
       limitTime: DateTime.parse(json['limitTime'] as String),
       completedTime: json['completedTime'] != null
