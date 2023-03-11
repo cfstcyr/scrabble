@@ -47,7 +47,7 @@ class SocketService {
     socket.emit(eventName, data);
   }
 
-  Future<IO.Socket> getSocket() async {
+  IO.Socket getSocket() {
     return socket;
   }
 

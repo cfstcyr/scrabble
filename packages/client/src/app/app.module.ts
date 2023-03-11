@@ -48,7 +48,7 @@ import { RequestingUserContainerComponent } from './components/requesting-user-c
 import { GroupRequestWaitingDialogComponent } from './components/group-request-waiting-dialog/group-request-waiting-dialog';
 import { GroupInfoDetailedComponent } from './components/group-info-detailed/group-info-detailed.component';
 import { GroupPasswordDialogComponent } from './components/group-password-waiting-dialog/group-password-waiting-dialog';
-import { SrcsetPipe } from './pipes/srcset/srcset.pipe';
+import { SrcDirective } from './directives/src-directive/src.directive';
 import { UserProfileInfoComponent } from './components/user-profile/user-profile-info/user-profile-info.component';
 import { UserProfileStatsItemComponent } from './components/user-profile/user-profile-stats-item/user-profile-stats-item.component';
 import { UserProfilePageComponent } from './pages/user-profile-page/user-profile-page.component';
@@ -102,7 +102,7 @@ registerLocaleData(localeFr);
         GroupRequestWaitingDialogComponent,
         GroupInfoDetailedComponent,
         GroupPasswordDialogComponent,
-        SrcsetPipe,
+        SrcDirective,
         UserProfileInfoComponent,
         UserProfileStatsItemComponent,
         UserProfilePageComponent,
