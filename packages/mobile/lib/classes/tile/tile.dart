@@ -23,5 +23,16 @@ class Tile {
       playedLetter: json['playedLetter'] as String?,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'letter': letter,
+    'value': value,
+    'isWildcard': isWildcard,
+    'playedLetter': playedLetter,
+  };
+
+  void toggleIsSelected() {
+    isSelectedForExchange = !isSelectedForExchange;
+  }
 }
 

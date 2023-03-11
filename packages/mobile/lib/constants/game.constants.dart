@@ -21,3 +21,5 @@ const String CANNOT_CONVERT_PLACEMENT_TO_PAYLOAD_IS_INVALID =
     'Cannot convert placement to action payload: placement is not valid.';
 const String CANNOT_VALIDATE_PLACEMENT_IS_OUT_OF_BOUNDS =
     'Cannot validate placement: placement is out of bounds';
+
+const int MAX_TILES_PER_PLAYER = 7;

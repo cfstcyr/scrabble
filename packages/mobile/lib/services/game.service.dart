@@ -169,7 +169,8 @@ class GameService {
   }
 
   bool isLocalPlayerActivePlayer() {
-    return isActivePlayer(game.players.getLocalPlayer().socketId);
+    return true;
+    // return isActivePlayer(game.players.getLocalPlayer().socketId);
   }
 
   bool isActivePlayer(String socketId) {

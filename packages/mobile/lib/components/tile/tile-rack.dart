@@ -167,9 +167,14 @@ class TileRack extends StatelessWidget {
   }
 
   Widget _buildSelectableTile(c.Tile tile, int index, bool shouldWiggle) {
-    return GestureDetector(
-        onTap: () => _gameService.getTileRack().toggleSelectedTile(tile),
-        child: _buildWrappedTile(tile, index, shouldWiggle));
+    return StreamBuilder(
+      stream: _gameService.tileRackStream,
+      builder: (context, snapshot) {
+        return GestureDetector(
+            onTap: snapshot.data != null ? () => snapshot.data!.toggleSelectedTile(tile) : null,
+            child: _buildWrappedTile(tile, index, shouldWiggle));
+      }
+    );
   }
 
   Widget _buildWrappedTile(c.Tile tile, int index, bool shouldWiggle) {

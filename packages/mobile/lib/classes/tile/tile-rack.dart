@@ -1,3 +1,5 @@
+import 'package:mobile/classes/actions/action-data.dart';
+import 'package:mobile/classes/actions/action-exchange.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
@@ -26,8 +28,9 @@ class TileRack {
     return _isExchangeModeEnabled$.stream;
   }
 
-  Stream<List<Tile>> get selectedTiles {
-    return stream.map((List<Tile> tileRack) => tileRack.where((Tile tile) => tile.isSelectedForExchange).toList());
+  List<Tile> get selectedTiles {
+    return stream.value.where((Tile tile) => tile.isSelectedForExchange)
+        .toList();
   }
 
   TileRack setTiles(List<Tile> tiles) {
@@ -85,9 +88,24 @@ class TileRack {
   void toggleExchangeMode() {
     bool currentMode = isExchangeModeEnabled.value;
     _isExchangeModeEnabled$.add(!currentMode);
+
+    if(!isExchangeModeEnabled.value) _resetSelectedTiles();
   }
 
+
   void toggleSelectedTile(Tile tile) {
-    tile.isSelectedForExchange = !tile.isSelectedForExchange;
+    tile.toggleIsSelected();
+    setTiles(stream.value);
+  }
+
+  ActionExchangePayload getSelectedTilesPayload() {
+    return ActionExchangePayload(tiles: selectedTiles);
+  }
+
+  void _resetSelectedTiles() {
+    setTiles(stream.value.map((Tile tile) {
+      tile.isSelectedForExchange = false;
+      return tile;
+    }).toList());
   }
 }
