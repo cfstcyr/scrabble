@@ -49,11 +49,10 @@ class RoundService {
   void _onTimerExpires() {
     if (getIt.get<GameService>().isLocalPlayerActivePlayer()) {
       // TODO: Send pass action when pass is implemented
-      print('pass');
     }
   }
 
-  updateRoundData(RoundData round) {
-    //Idk what to do here
+  void updateRoundData(Round round) {
+    startRound(round);
   }
 }

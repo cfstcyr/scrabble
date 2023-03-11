@@ -109,7 +109,8 @@ class GameService {
     }
 
     if (gameUpdate.round != null) {
-      _roundService.updateRoundData(gameUpdate.round!);
+      _roundService.updateRoundData(
+          Round(socketIdOfActivePlayer: gameUpdate.round!.playerData.id));
     }
 
     if (gameUpdate.isGameOver != null) {
