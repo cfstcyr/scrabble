@@ -30,7 +30,7 @@ import '../utils/round-utils.dart';
 class GameService {
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
-  final BehaviorSubject<Game?> _game$;
+  final BehaviorSubject<Game?> _game;
 
   static final GameService _instance = GameService._();
 
@@ -38,7 +38,7 @@ class GameService {
     return _instance;
   }
 
-  GameService._() : _game$ = BehaviorSubject() {
+  GameService._() : _game = BehaviorSubject() {
     startGameEvent.listen((InitializeGameData initializeGameData) => startGame(
         initializeGameData.localPlayerSocketId,
         initializeGameData.startGameData));
@@ -64,7 +64,7 @@ class GameService {
     TileRack tileRack =
         TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
 
-    _game$.add(Game(
+    _game.add(Game(
         board: Board(),
         tileRack: tileRack,
         players: playersContainer,
@@ -78,11 +78,11 @@ class GameService {
   }
 
   void updateGame(GameUpdateData gameUpdate) {
-    if (_game$.value == null) {
+    if (_game.value == null) {
       throw Exception('Cannot update game: game is null');
     }
 
-    Game game = _game$.value!;
+    Game game = _game.value!;
 
     if (gameUpdate.tileReserve != null) {
       game.tileReserve = gameUpdate.tileReserve!;
@@ -117,34 +117,34 @@ class GameService {
       game.isOver = gameUpdate.isGameOver!;
     }
 
-    _game$.add(game);
+    _game.add(game);
   }
 
   Game get game {
-    if (_game$.value == null) throw Exception("No game");
+    if (_game.value == null) throw Exception("No game");
 
-    return _game$.value!;
+    return _game.value!;
   }
 
   ValueStream<Game?> get gameStream {
-    return _game$.stream;
+    return _game.stream;
   }
 
   Stream<TileRack?> get tileRackStream {
-    return _game$.map((game) => game?.tileRack);
+    return _game.map((game) => game?.tileRack);
   }
 
   TileRack getTileRack() {
-    if (_game$.value == null) throw Exception("No game");
+    if (_game.value == null) throw Exception("No game");
 
-    return _game$.value!.tileRack;
+    return _game.value!.tileRack;
   }
 
 //TODO
   void playPlacement() {
-    if (!(_game$.value?.board.isValidPlacement ?? false)) return;
+    if (!(_game.value?.board.isValidPlacement ?? false)) return;
 
-    var placement = _game$.value?.board.currentPlacement;
+    var placement = _game.value?.board.currentPlacement;
 
     if (placement == null) {
       throw Exception('Cannot play placement: placement is null');
@@ -162,10 +162,10 @@ class GameService {
   }
 
   void handleUpdatePlayerData(List<PlayerData> playersData) {
-    _game$.value?.players.updatePlayerData(playersData);
+    _game.value?.players.updatePlayerData(playersData);
   }
 
   void handleUpdateBoardData(List<Square> boardData) {
-    _game$.value?.board.updateBoardData(boardData);
+    _game.value?.board.updateBoardData(boardData);
   }
 }
