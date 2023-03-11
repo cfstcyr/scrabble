@@ -1,6 +1,14 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LOGIN_REQUIRED } from '@app/constants/services-errors';
+import { UserController } from '@app/controllers/user-controller/user.controller';
+import { GameHistoryForUser } from '@common/models/game-history';
+import { PublicServerAction } from '@common/models/server-action';
 import { PublicUser } from '@common/models/user';
+import { PublicUserStatistics } from '@common/models/user-statistics';
+import { of } from 'rxjs';
 import { UserService } from './user.service';
 
 const USER: PublicUser = {
@@ -11,9 +19,14 @@ const USER: PublicUser = {
 
 describe('UserService', () => {
     let service: UserService;
+    let userController: jasmine.SpyObj<UserController>;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        userController = jasmine.createSpyObj(UserController, ['editUser', 'getUserStatistics', 'getGameHistory', 'getServerActions']);
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, MatSnackBarModule, MatDialogModule],
+            providers: [{ provide: UserController, useValue: userController }],
+        });
         service = TestBed.inject(UserService);
     });
 
@@ -78,6 +91,39 @@ describe('UserService', () => {
 
         it('should return false if no user', () => {
             expect(service.isUser(USER.username)).toBeFalse();
+        });
+    });
+
+    describe('updateStatistics', () => {
+        it('should pass value to statistics', () => {
+            const statistics: PublicUserStatistics = {} as PublicUserStatistics;
+            userController.getUserStatistics.and.returnValue(of(statistics));
+
+            service.updateStatistics();
+
+            expect(service.statistics.value).toBe(statistics);
+        });
+    });
+
+    describe('updateGameHistory', () => {
+        it('should pass value to gameHistory', () => {
+            const gameHistory: GameHistoryForUser[] = [];
+            userController.getGameHistory.and.returnValue(of(gameHistory));
+
+            service.updateGameHistory();
+
+            expect(service.gameHistory.value).toBe(gameHistory);
+        });
+    });
+
+    describe('updateServerActions', () => {
+        it('should pass value to serverActions', () => {
+            const serverActions: PublicServerAction[] = [];
+            userController.getServerActions.and.returnValue(of(serverActions));
+
+            service.updateServerActions();
+
+            expect(service.serverActions.value).toBe(serverActions);
         });
     });
 });

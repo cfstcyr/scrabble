@@ -12,9 +12,9 @@ export class AbstractController {
     }
 
     private join(base: string, path: string = '/'): string {
-        path = path.endsWith('/') ? path.substring(-1) : path;
+        path = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
         path = path.startsWith('/') ? path : `/${path}`;
 
-        return `${base.endsWith('/') ? base.substring(-1) : base}${path}`;
+        return `${base.endsWith('/') ? base.substring(0, base.length - 1) : base}${path}`;
     }
 }

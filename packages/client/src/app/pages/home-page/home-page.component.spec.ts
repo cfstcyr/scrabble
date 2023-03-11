@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TileComponent } from '@app/components/tile/tile.component';
-import { SrcsetPipe } from '@app/pipes/srcset/srcset.pipe';
+import { SrcDirective } from '@app/directives/src-directive/src.directive';
 import { HomePageComponent } from './home-page.component';
 
 describe('HomePageComponent', () => {
@@ -9,7 +9,7 @@ describe('HomePageComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [HomePageComponent, TileComponent, SrcsetPipe],
+            declarations: [HomePageComponent, TileComponent, SrcDirective],
         }).compileComponents();
     });
 

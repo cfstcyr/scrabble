@@ -1,13 +1,13 @@
 export interface ImageSize {
-    h?: number;
-    w?: number;
+    height?: number;
+    width?: number;
 }
 
-export const scaleImageSize = ({ h, w }: ImageSize, scale: number) => {
+export const scaleImageSize = ({ height, width }: ImageSize, scale: number) => {
     const size: ImageSize = {};
 
-    if (h !== undefined) size.h = h * scale;
-    if (w !== undefined) size.w = w * scale;
+    if (height !== undefined) size.height = height * scale;
+    if (width !== undefined) size.width = width * scale;
 
     return size;
 };
