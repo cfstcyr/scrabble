@@ -1,15 +1,22 @@
+import 'dart:developer';
+
+import 'package:async/async.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/game/game-config.dart';
+import 'package:mobile/classes/game/game-update.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
+import 'package:mobile/classes/player/player.dart';
 import 'package:mobile/classes/rounds/round.dart';
+import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/erros/game-errors.dart';
+import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
@@ -35,7 +42,12 @@ class GameService {
     startGameEvent.listen((InitializeGameData initializeGameData) => startGame(
         initializeGameData.localPlayerSocketId,
         initializeGameData.startGameData));
+
+    gamePlayController.gameUpdateEvent
+        .listen((GameUpdateData gameUpdate) => updateGame(gameUpdate));
   }
+
+  GamePlayController gamePlayController = getIt.get<GamePlayController>();
 
   void startGame(String localPlayerId, StartGameData startGameData) {
     PlayersContainer playersContainer = PlayersContainer.fromPlayers(
@@ -81,6 +93,48 @@ class GameService {
         navigatorKey.currentContext!, GAME_PAGE_ROUTE);
   }
 
+  void updateGame(GameUpdateData gameUpdate) {
+    if (_game$.value == null) {
+      throw Exception('Cannot update game: game is null');
+    }
+
+    Game game = _game$.value!;
+
+    if (gameUpdate.tileReserve != null) {
+      game.tileReserve = gameUpdate.tileReserve!;
+    }
+
+    if (gameUpdate.player1 != null) {
+      game.players.getPlayer(0).updatePlayerData(gameUpdate.player1!);
+    }
+
+    if (gameUpdate.player2 != null) {
+      game.players.getPlayer(1).updatePlayerData(gameUpdate.player2!);
+    }
+
+    if (gameUpdate.player3 != null) {
+      game.players.getPlayer(2).updatePlayerData(gameUpdate.player3!);
+    }
+
+    if (gameUpdate.player4 != null) {
+      game.players.getPlayer(3).updatePlayerData(gameUpdate.player3!);
+    }
+
+    if (gameUpdate.board != null) {
+      game.board.updateBoardData(gameUpdate.board!);
+    }
+
+    if (gameUpdate.round != null) {
+      _roundService.updateRoundData(gameUpdate.round!);
+    }
+
+    if (gameUpdate.isGameOver != null) {
+      game.isOver = gameUpdate.isGameOver!;
+    }
+
+    _game$.add(game);
+  }
+
   Game get game {
     if (_game$.value == null) throw Exception("No game");
 
@@ -101,6 +155,7 @@ class GameService {
     return _game$.value!.tileRack;
   }
 
+//TODO
   void playPlacement() {
     if (!(_game$.value?.board.isValidPlacement ?? false)) return;
 
@@ -119,5 +174,13 @@ class GameService {
 
   bool isActivePlayer(String socketId) {
     return _roundService.getActivePlayerId() == socketId;
+  }
+
+  void handleUpdatePlayerData(List<PlayerData> playersData) {
+    _game$.value?.players.updatePlayerData(playersData);
+  }
+
+  void handleUpdateBoardData(List<Square> boardData) {
+    _game$.value?.board.updateBoardData(boardData);
   }
 }

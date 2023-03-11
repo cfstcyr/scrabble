@@ -1,10 +1,9 @@
-import { NoId } from '../types/id';
+import { IdOf, NoId, TypeOfId } from '../types/id';
+import { User } from './user';
 
 export interface GameHistoryPlayer {
-    idGameHistoryPlayer: number;
+    idUser?: TypeOfId<User>;
     idGameHistory: number;
-    playerIndex: number;
-    name: string;
     score: number;
     isVirtualPlayer: boolean;
     isWinner: boolean;
@@ -17,8 +16,8 @@ export interface GameHistory {
     hasBeenAbandoned: boolean;
 }
 
-export interface GameHistoryWithPlayers extends GameHistory {
-    playersData: GameHistoryPlayer[];
-}
+export type GameHistoryPlayerCreation = Omit<GameHistoryPlayer, IdOf<GameHistory>>;
 
-export type NoIdGameHistoryWithPlayers = NoId<GameHistoryWithPlayers, 'playerIndex'>;
+export type GameHistoryCreation = { gameHistory: NoId<GameHistory>; players: GameHistoryPlayerCreation[] };
+
+export type GameHistoryForUser = NoId<GameHistory> & Pick<GameHistoryPlayer, 'score' | 'isWinner'>;

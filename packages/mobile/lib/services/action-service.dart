@@ -1,4 +1,3 @@
-
 import 'package:mobile/controllers/game-play.controller.dart';
 
 import '../classes/actions/action-data.dart';
@@ -21,7 +20,8 @@ class ActionService {
     return _instance;
   }
 
-  Future<void> sendAction(ActionType actionType, [ActionPayload? payload]) async {
+  Future<void> sendAction(ActionType actionType,
+      [ActionPayload? payload]) async {
     if (_isActionBeingProcessed) return;
 
     ActionData actionData = ActionData(type: actionType, payload: payload);

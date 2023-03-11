@@ -71,6 +71,12 @@ class Board {
     return _isValidPlacement$.value;
   }
 
+  updateBoardData(List<Square> squares) {
+    for (var square in squares) {
+      grid[square.position.row][square.position.column] = square;
+    }
+  }
+
   _applyMultipliers() {
     // Center
     grid[7][7].multiplier = Multiplier(value: 2, type: MultiplierType.word);

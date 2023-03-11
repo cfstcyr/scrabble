@@ -1,11 +1,13 @@
+import 'dart:developer';
+
 import 'package:http/http.dart';
-import 'package:mobile/constants/create-lobby-constants.dart';
+import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/view-methods/group.methods.dart';
-import 'package:mobile/view-methods/create-lobby-methods.dart';
 
 import '../constants/socket-events/group-events.dart';
 import '../locator.dart';
+import '../services/client.dart';
 import '../services/socket.service.dart';
 
 class GroupJoinController {
@@ -14,6 +16,8 @@ class GroupJoinController {
   String? joinedGroupedId;
 
   SocketService socketService = getIt.get<SocketService>();
+  PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
+  InterceptedHttp get http => httpClient.http;
 
   GroupJoinController._privateConstructor() {
     _configureSocket();
@@ -27,14 +31,15 @@ class GroupJoinController {
   }
 
   Future<void> handleGetGroups() async {
-    await get(Uri.parse("$endpoint/${SocketService.socket.id}"));
+    Response res = await get(Uri.parse("$endpoint/${SocketService.socket.id}"));
+    log('data: $res');
   }
 
   Future<Response> handleJoinGroup(String groupId) async {
     // TODO Use UserService to get user's username
     String username = 'Player';
     joinedGroupedId = groupId;
-    return post(
+    return http.post(
         Uri.parse("$endpoint/$groupId/players/${SocketService.socket.id}/join"),
         body: {'playerName': username});
   }
@@ -44,7 +49,7 @@ class GroupJoinController {
   }
 
   Future<Response> handleLeaveGroup() async {
-    Future<Response> response = delete(Uri.parse(
+    Future<Response> response = http.delete(Uri.parse(
         "$endpoint/$joinedGroupedId/players/${SocketService.socket.id}/leave"));
     joinedGroupedId = null;
     return response;

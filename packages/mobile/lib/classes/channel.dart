@@ -1,14 +1,18 @@
+import 'channel-message.dart';
+
 class Channel {
   final int idChannel;
   final String name;
   final bool canQuit;
   final bool isPrivate;
+  List<ChannelMessage> messages = List.empty();
 
-  Channel(
-      {required this.idChannel,
-      required this.name,
-      required this.canQuit,
-      required this.isPrivate});
+  Channel({
+    required this.idChannel,
+    required this.name,
+    required this.canQuit,
+    required this.isPrivate,
+  });
 
   factory Channel.fromJson(Map<String, dynamic> json) {
     return Channel(

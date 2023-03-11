@@ -1,5 +1,6 @@
 import 'package:async/async.dart';
 import 'package:mobile/classes/game/game.dart';
+import 'package:mobile/classes/rounds/round-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/locator.dart';
 import 'package:rxdart/rxdart.dart';
@@ -50,5 +51,9 @@ class RoundService {
       // TODO: Send pass action when pass is implemented
       print('pass');
     }
+  }
+
+  updateRoundData(RoundData round) {
+    //Idk what to do here
   }
 }

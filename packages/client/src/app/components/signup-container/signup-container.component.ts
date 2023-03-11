@@ -1,11 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { matchValidator, PASSWORD_REGEX } from '@app/constants/authentification-constants';
+import { AVATARS } from '@app/constants/avatar-constants';
 import { NAME_VALIDATION } from '@app/constants/name-validation';
 import { UserSignupInformation } from '@common/models/user';
-
-const AVATAR_COUNT = 17;
-const AVATARS = new Array(AVATAR_COUNT).fill(0).map((_, i) => `/assets/img/avatars/avatar-${i + 1}.png`);
 
 @Component({
     selector: 'app-signup-container',

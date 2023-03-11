@@ -49,7 +49,6 @@ class _ChatManagementState extends State<ChatManagement> {
   BehaviorSubject<List<Channel>> get channels$ => _chatManagerService.channels$;
   BehaviorSubject<List<Channel>> get myChannels$ =>
       _chatManagerService.myChannels$;
-  BehaviorSubject<bool> get shouldOpen$ => _chatManagerService.shouldOpen$;
   BehaviorSubject<Channel> get channelToOpen$ =>
       _chatManagerService.channelToOpen$;
   BehaviorSubject<List<Channel>> get channelSearchResult$ =>
@@ -116,8 +115,8 @@ class _ChatManagementState extends State<ChatManagement> {
 
   StreamBuilder handleMyChannelsChange() {
     return StreamBuilder(
-      stream: CombineLatestStream.list(
-          [myChannels$.stream, shouldOpen$.stream, channelToOpen$.stream]),
+      stream:
+          CombineLatestStream.list([myChannels$.stream, channelToOpen$.stream]),
       builder: (context, snapshot) {
         return ListView.builder(
             scrollDirection: Axis.vertical,
