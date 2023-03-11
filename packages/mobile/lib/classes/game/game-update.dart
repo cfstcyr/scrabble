@@ -1,4 +1,4 @@
-import 'package:mobile/classes/player/player.dart';
+import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/classes/rounds/round-data.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-reserve.dart';

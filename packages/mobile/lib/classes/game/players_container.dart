@@ -1,8 +1,7 @@
 import 'package:mobile/classes/game/player.dart';
-import 'package:mobile/classes/player/player.dart';
+import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/components/error-pop-up.dart';
 import 'package:mobile/constants/create-lobby-constants.dart';
-import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/routes/navigator-key.dart';
 
 import '../../constants/erros/game-errors.dart';

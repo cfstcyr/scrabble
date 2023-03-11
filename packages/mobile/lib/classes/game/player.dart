@@ -1,4 +1,4 @@
-import 'package:mobile/classes/player/player.dart';
+import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/classes/user.dart';
 
 import '../tile/tile.dart';

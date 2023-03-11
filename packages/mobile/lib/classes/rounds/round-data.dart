@@ -1,4 +1,4 @@
-import 'package:mobile/classes/player/player.dart';
+import 'package:mobile/classes/player/player-data.dart';
 
 class RoundData {
   PlayerData playerData;
