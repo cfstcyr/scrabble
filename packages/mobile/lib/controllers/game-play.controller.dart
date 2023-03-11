@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'package:http/http.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/game/game-update.dart';
-import 'package:mobile/classes/message/message.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/socket.service.dart';
@@ -36,14 +35,14 @@ class GamePlayController {
 
   Stream<GameUpdateData> get gameUpdateEvent => _gameUpdate$.stream;
 
-  final Subject<Message?> _message$ = PublishSubject();
+  final Subject<GameMessage?> _message$ = PublishSubject();
 
-  Stream<Message?> get messageEvent => _message$.stream;
+  Stream<GameMessage?> get messageEvent => _message$.stream;
 
   final BehaviorSubject<GameUpdateData> gameUpdate$ =
       BehaviorSubject<GameUpdateData>();
-  final BehaviorSubject<Message?> newMessage$ =
-      BehaviorSubject<Message?>.seeded(null);
+  final BehaviorSubject<GameMessage?> newMessage$ =
+      BehaviorSubject<GameMessage?>.seeded(null);
   final PublishSubject<void> actionDone$ = PublishSubject<void>();
 
   Future<void> sendAction(ActionData actionData) async {
@@ -56,12 +55,12 @@ class GamePlayController {
     await delete(endpoint);
   }
 
-  void sendMessage(String gameId, Message message) {
+  void sendMessage(String gameId, GameMessage message) {
     post(Uri.parse("$baseEndpoint/$gameId/message"), body: jsonEncode(message))
         .then((response) {});
   }
 
-  void sendError(String gameId, Message message) {
+  void sendError(String gameId, GameMessage message) {
     final endpoint = "$baseEndpoint/$currentGameId/players/error";
     post(Uri.parse(endpoint), body: jsonEncode(message)).then((response) {});
   }
@@ -87,7 +86,7 @@ class GamePlayController {
     return gameUpdate$.stream;
   }
 
-  Stream<Message?> observeNewMessage() {
+  Stream<GameMessage?> observeNewMessage() {
     return newMessage$.stream;
   }
 
@@ -101,7 +100,7 @@ class GamePlayController {
       gameUpdate$.add(GameUpdateData.fromJson(newData));
     });
     socketService.on('newMessage', (dynamic newMessage) {
-      newMessage$.add(Message.fromJson(newMessage));
+      newMessage$.add(GameMessage.fromJson(newMessage));
     });
   }
 
