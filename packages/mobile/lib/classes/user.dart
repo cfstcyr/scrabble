@@ -1,5 +1,3 @@
-import 'package:mobile/constants/unkown-user.dart';
-
 PublicUser UNKOWN_USER = PublicUser(
     username: 'Unkown User', avatar: 'images/avatar-12.png', email: '');
 

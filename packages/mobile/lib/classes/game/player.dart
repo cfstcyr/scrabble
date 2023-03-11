@@ -32,7 +32,7 @@ class Player {
     );
   }
 
-  Player updatePlayerData(PlayerData playerData) {
+  Player updatePlayerData(PlayerUpdateData playerData) {
     return Player(
         socketId: playerData.id,
         user: playerData.publicUser!,
