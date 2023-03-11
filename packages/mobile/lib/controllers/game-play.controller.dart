@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:http/http.dart';
 import 'package:mobile/classes/actions/action-data.dart';
+import 'package:mobile/classes/game/game-message.dart';
 import 'package:mobile/classes/game/game-update.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/locator.dart';
@@ -80,18 +81,6 @@ class GamePlayController {
       final statusCode = error.statusCode;
       if (statusCode != 0) throw Exception(errorMessage);
     });
-  }
-
-  Stream<GameUpdateData> observeGameUpdate() {
-    return gameUpdate$.stream;
-  }
-
-  Stream<GameMessage?> observeNewMessage() {
-    return newMessage$.stream;
-  }
-
-  Stream<void> observeActionDone() {
-    return actionDone$.stream;
   }
 
   void configureSocket() {
