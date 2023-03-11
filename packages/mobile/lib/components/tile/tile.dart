@@ -8,6 +8,7 @@ class Tile extends StatelessWidget {
     this.tile,
     this.size = 40,
     this.tint = Colors.transparent,
+    this.shouldWiggle = false,
     this.isSelected = false,
   });
 
@@ -17,12 +18,14 @@ class Tile extends StatelessWidget {
 
   final Color tint;
 
+  final bool shouldWiggle;
+
   final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
     return Wiggle(
-        active: isSelected,
+        active: shouldWiggle,
         amount: 0.025,
         speed: Duration(milliseconds: 125),
         child: Stack(

@@ -86,4 +86,8 @@ class TileRack {
     bool currentMode = isExchangeModeEnabled.value;
     _isExchangeModeEnabled$.add(!currentMode);
   }
+
+  void toggleSelectedTile(Tile tile) {
+    tile.isSelectedForExchange = !tile.isSelectedForExchange;
+  }
 }

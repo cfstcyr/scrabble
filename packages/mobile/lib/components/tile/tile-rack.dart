@@ -61,30 +61,49 @@ class TileRack extends StatelessWidget {
                                   )
                                 : Container();
                           })),
-                      // StreamBuilder<bool>(
-                      //     stream: game.data!.tileRack.isExchangeModeEnabled,
-                      //     builder: (context, snapshot) {
-                      //       return ToggleButtons(
-                      //           isSelected: [snapshot.data ?? false],
-                      //           onPressed: (int index) {
-                      //             game.data!.tileRack.toggleExchangeMode();
-                      //           },
-                      //           children: [Icon(Icons.swap_horiz_rounded)]);
-                      //     }),
-                      StreamBuilder<bool>(
-                        stream: game.data!.board.hasPlacementStream,
-                        builder: (context, snapshot) {
-                          return AppButton(
-                            onPressed: snapshot.data ?? false
-                                ? () {
-                                    _gameEventService.add<void>(
-                                        PUT_BACK_TILES_ON_TILE_RACK, null);
-                                  }
-                                : null,
-                            icon: Icons.clear,
-                            iconOnly: true,
-                          );
-                        },
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          StreamBuilder<bool>(
+                              stream: game.data!.tileRack.isExchangeModeEnabled,
+                              builder: (context, snapshot) {
+                                return ToggleButtons(
+                                    isSelected: [snapshot.data ?? false],
+                                    onPressed: (int index) {
+                                      game.data!.tileRack.toggleExchangeMode();
+                                    },
+                                    borderRadius: BorderRadius.circular(8),
+                                    constraints: BoxConstraints(
+                                        maxWidth: 36,
+                                        maxHeight: 36,
+                                        minHeight: 36,
+                                        minWidth: 36),
+                                    fillColor: Theme.of(context).primaryColor,
+                                    selectedColor: Colors.white,
+                                    color: Theme.of(context).primaryColor,
+                                    children: [Icon(Icons.swap_horiz_rounded)]);
+                              }),
+                          SizedBox(
+                            width: SPACE_2,
+                          ),
+                          StreamBuilder<bool>(
+                            stream: game.data!.board.hasPlacementStream,
+                            builder: (context, snapshot) {
+                              return AppButton(
+                                onPressed: snapshot.data ?? false
+                                    ? () {
+                                        _gameEventService.add<void>(
+                                            PUT_BACK_TILES_ON_TILE_RACK, null);
+                                      }
+                                    : null,
+                                icon: Icons.clear,
+                                iconOnly: true,
+                              );
+                            },
+                          ),
+                        ],
                       )
                     ],
                   )
@@ -96,19 +115,15 @@ class TileRack extends StatelessWidget {
   }
 
   Widget _buildTile(c.Tile tile, int index) {
-    // return StreamBuilder<bool>(
-    //     stream: _gameService.getTileRack().isExchangeModeEnabled,
-    //     builder: (context, isExchangeModeEnabled) {
-    //       return isExchangeModeEnabled.data == null ||
-    //               isExchangeModeEnabled.data == false
-    //           ? _buildDraggableTile(tile, index)
-    //           : Wiggle(
-    //               amount: 0.025,
-    //               speed: Duration(milliseconds: 125),
-    //               child: Tile(tile: tile, size: TILE_SIZE),
-    //             );
-    //     });
-    return _buildDraggableTile(tile, index);
+    return StreamBuilder<bool>(
+        stream: _gameService.getTileRack().isExchangeModeEnabled,
+        builder: (context, isExchangeModeEnabled) {
+          return isExchangeModeEnabled.data == null ||
+                  isExchangeModeEnabled.data == false
+              ? _buildDraggableTile(tile, index)
+              : _buildSelectableTile(tile, index, true);
+        });
+    // return _buildDraggableTile(tile, index);
   }
 
   Widget _buildDraggableTile(c.Tile tile, int index) {
@@ -130,7 +145,7 @@ class TileRack extends StatelessWidget {
               child: Tile(
                 tile: tile,
                 size: TILE_SIZE_DRAG,
-                isSelected: true,
+                shouldWiggle: true,
               ),
             ),
             childWhenDragging: StreamBuilder(
@@ -146,28 +161,38 @@ class TileRack extends StatelessWidget {
                     : SizedBox();
               },
             ),
-            child: Wrap(
+            child: _buildWrappedTile(tile, index, false)),
+      ],
+    );
+  }
+
+  Widget _buildSelectableTile(c.Tile tile, int index, bool shouldWiggle) {
+    return GestureDetector(
+        onTap: () => _gameService.getTileRack().toggleSelectedTile(tile),
+        child: _buildWrappedTile(tile, index, shouldWiggle));
+  }
+
+  Widget _buildWrappedTile(c.Tile tile, int index, bool shouldWiggle) {
+    return Wrap(
+      children: [
+        Stack(
+          children: [
+            Tile(
+              tile: tile,
+              size: TILE_SIZE,
+              shouldWiggle: shouldWiggle,
+            ),
+            Wrap(
               children: [
-                Stack(
-                  children: [
-                    Tile(
-                      tile: tile,
-                      size: TILE_SIZE,
-                    ),
-                    Wrap(
-                      children: [
-                        _buildTarget(index - 1,
-                            width: TILE_SIZE / 2, height: TILE_SIZE),
-                        _buildTarget(index,
-                            width: TILE_SIZE / 2, height: TILE_SIZE),
-                      ],
-                    ),
-                  ],
-                ),
-                _buildTarget(index,
-                    width: SPACE_2, height: TILE_SIZE, changeOnActive: true)
+                _buildTarget(index - 1,
+                    width: TILE_SIZE / 2, height: TILE_SIZE),
+                _buildTarget(index, width: TILE_SIZE / 2, height: TILE_SIZE),
               ],
-            )),
+            ),
+          ],
+        ),
+        _buildTarget(index,
+            width: SPACE_2, height: TILE_SIZE, changeOnActive: true)
       ],
     );
   }
