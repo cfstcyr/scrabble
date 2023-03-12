@@ -1,4 +1,6 @@
-import 'package:http/http.dart';
+import 'dart:convert';
+
+import 'package:http_interceptor/http/http.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/game/game-message.dart';
 import 'package:mobile/classes/game/game-update.dart';
@@ -7,6 +9,8 @@ import 'package:mobile/constants/socket-events/game-events.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../services/client.dart';
 
 class GamePlayController {
   GamePlayController._privateConstructor() {
@@ -20,6 +24,7 @@ class GamePlayController {
     return _instance;
   }
 
+  final httpClient = getIt.get<PersonnalHttpClient>();
   SocketService socketService = getIt.get<SocketService>();
 
   final String baseEndpoint = GAME_ENDPOINT;
@@ -32,6 +37,8 @@ class GamePlayController {
 
   Stream<GameMessage?> get messageEvent => gameMessage$.stream;
 
+  InterceptedHttp get http => httpClient.http;
+
   final BehaviorSubject<GameUpdateData> gameUpdate$ =
       BehaviorSubject<GameUpdateData>();
   final BehaviorSubject<GameMessage?> gameMessage$ =
@@ -40,12 +47,14 @@ class GamePlayController {
 
   Future<void> sendAction(ActionData actionData) async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/action");
-    post(endpoint, body: actionData).then((_) => _actionDone$.add(null));
+    http
+        .post(endpoint, body: jsonEncode(actionData))
+        .then((_) => _actionDone$.add(null));
   }
 
   Future<void> leaveGame() async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/leave");
-    await delete(endpoint);
+    await http.delete(endpoint);
   }
 
   void configureSocket() {
