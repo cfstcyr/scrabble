@@ -24,12 +24,12 @@ class Group {
 
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
-        groupId: json['groupId'] as String,
         users: PublicUser.usersFromJson(json),
         maxRoundTime: json['maxRoundTime'] as int,
         virtualPlayerLevel:
             VirtualPlayerLevel.fromJson(json['virtualPlayerLevel']),
-        gameVisibility: GameVisibility.fromJson(json['gameVisibility']));
+        gameVisibility: GameVisibility.fromJson(json['gameVisibility']),
+        groupId: json['groupId'] as String);
   }
 
   Map<String, dynamic> toJson() => {
@@ -48,4 +48,11 @@ class Group {
         'virtualPLayerLevel': virtualPlayerLevel.levelName,
         'gameVisibility': gameVisibility.name,
       };
+}
+
+class GroupCreationResponse {
+  Group? group;
+  bool isCreated;
+
+  GroupCreationResponse({required this.group, required this.isCreated});
 }
