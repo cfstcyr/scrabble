@@ -140,7 +140,6 @@ class GameService {
     return _game.value!.tileRack;
   }
 
-//TODO
   void playPlacement() {
     if (!(_game.value?.board.isValidPlacement ?? false)) return;
 
