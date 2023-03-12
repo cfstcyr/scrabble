@@ -65,86 +65,94 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
 
-    return MyScaffold(
-        title: WAITING_ROOM_TITLE,
-        body: FractionallySizedBox(
-          widthFactor: 1,
-          heightFactor: 1,
-          child: Flex(
-            direction: Axis.horizontal,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Flexible(
-                flex: 1,
-                child: FractionallySizedBox(
-                  widthFactor: 0.5,
-                  heightFactor: 0.7,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 7,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(5.0))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: <Widget>[
-                          Text(GAME_GROUP_TITLE,
-                              style: TextStyle(fontSize: 18)),
-                          Expanded(
-                            child: WaitingRoom(
-                              virtualPlayerLevel:
-                                  widget.currentGroup.virtualPlayerLevel,
+    return WillPopScope(
+      child: MyScaffold(
+          title: WAITING_ROOM_TITLE,
+          body: FractionallySizedBox(
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Flex(
+              direction: Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Flexible(
+                  flex: 1,
+                  child: FractionallySizedBox(
+                    widthFactor: 0.5,
+                    heightFactor: 0.7,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
                             ),
-                          ),
-                          Row(children: <Widget>[
+                          ],
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: <Widget>[
+                            Text(GAME_GROUP_TITLE,
+                                style: TextStyle(fontSize: 18)),
                             Expanded(
-                              child: Divider(
-                                height: 10,
-                                thickness: 2,
-                                indent: 5,
-                                endIndent: 5,
-                                color: Colors.grey.shade500,
+                              child: WaitingRoom(
+                                virtualPlayerLevel:
+                                    widget.currentGroup.virtualPlayerLevel,
                               ),
                             ),
-                            Text(GAME_PARAMETERS_TITLE),
-                            Expanded(
-                              child: Divider(
-                                height: 10,
-                                thickness: 2,
-                                indent: 5,
-                                endIndent: 5,
-                                color: Colors.grey.shade500,
+                            Row(children: <Widget>[
+                              Expanded(
+                                child: Divider(
+                                  height: 10,
+                                  thickness: 2,
+                                  indent: 5,
+                                  endIndent: 5,
+                                  color: Colors.grey.shade500,
+                                ),
                               ),
+                              Text(GAME_PARAMETERS_TITLE),
+                              Expanded(
+                                child: Divider(
+                                  height: 10,
+                                  thickness: 2,
+                                  indent: 5,
+                                  endIndent: 5,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                            ]),
+                            Parameters(
+                                maxRoundTime: widget.currentGroup.maxRoundTime,
+                                virtualPlayerLevel:
+                                    widget.currentGroup.virtualPlayerLevel),
+                            AppButton(
+                              onPressed: () {
+                                _onBack(context);
+                              },
+                              icon: Icons.keyboard_arrow_left_sharp,
+                              text: QUIT_GROUP,
+                              theme: AppButtonTheme.primary,
                             ),
-                          ]),
-                          Parameters(
-                              maxRoundTime: widget.currentGroup.maxRoundTime,
-                              virtualPlayerLevel:
-                                  widget.currentGroup.virtualPlayerLevel),
-                          AppButton(
-                            onPressed: () {
-                              getIt.get<GroupJoinService>().handleLeaveGroup();
-                              Navigator.pop(context);
-                            },
-                            icon: Icons.keyboard_arrow_left_sharp,
-                            text: QUIT_GROUP,
-                            theme: AppButtonTheme.primary,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ));
+              ],
+            ),
+          )),
+      onWillPop: () => _onBack(context),
+    );
+  }
+  
+  Future<bool> _onBack(BuildContext context) {
+    getIt.get<GroupJoinService>().handleLeaveGroup();
+    Navigator.pop(context);
+    return Future.value(true);
   }
 }
