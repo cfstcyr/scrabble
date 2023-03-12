@@ -41,13 +41,10 @@ class HomePage extends StatelessWidget {
 
                 ElevatedButton(
                   onPressed: () async {
-                    await gameCreationController.handleCreateGame();
-                    if (context.mounted) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CreateLobbyPage()));
-                    }
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CreateLobbyPage()));
                   },
                   child: Text('Créer une partie'),
                 ),
