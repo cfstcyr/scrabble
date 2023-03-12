@@ -39,3 +39,5 @@ export const INVALID_CONNECTION_CONTENT =
 export const INVALID_CONNECTION_RETURN = 'Se déconnecter';
 
 export const LOGIN_REQUIRED = 'Vous devez être connecté pour performer cet action.';
+
+export const USER_NOT_FOUND = "L'utilisateur n'existe pas";

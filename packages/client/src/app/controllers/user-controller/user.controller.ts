@@ -5,7 +5,8 @@ import { Observable } from 'rxjs';
 import { PublicUserStatistics } from '@common/models/user-statistics';
 import { GameHistoryForUser } from '@common/models/game-history';
 import { PublicServerAction } from '@common/models/server-action';
-import { EditableUserFields, PublicUser, SharedUser } from '@common/models/user';
+import { EditableUserFields, PublicUser } from '@common/models/user';
+import { UserSearchItem, UserSearchResult } from '@common/models/user-search';
 
 @Injectable({
     providedIn: 'root',
@@ -19,8 +20,12 @@ export class UserController extends AbstractController {
         return this.http.patch<PublicUser>(this.url('/users'), edits);
     }
 
-    searchUsers(query: string): Observable<SharedUser[]> {
-        return this.http.get<SharedUser[]>(this.url('/users/search', { q: query }));
+    searchUsers(query: string): Observable<UserSearchItem[]> {
+        return this.http.get<UserSearchItem[]>(this.url('/users/search', { q: query }));
+    }
+
+    getUserByUsername(username: string): Observable<UserSearchResult> {
+        return this.http.get<UserSearchResult>(this.url(`/users/search/${username}`));
     }
 
     getUserStatistics(): Observable<PublicUserStatistics> {

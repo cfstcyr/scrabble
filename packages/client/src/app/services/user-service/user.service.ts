@@ -5,11 +5,12 @@ import { DEBOUNCE_TIME, LOGIN_REQUIRED } from '@app/constants/services-errors';
 import { UserController } from '@app/controllers/user-controller/user.controller';
 import { GameHistoryForUser } from '@common/models/game-history';
 import { PublicServerAction } from '@common/models/server-action';
-import { EditableUserFields, PublicUser, SharedUser } from '@common/models/user';
+import { EditableUserFields, PublicUser } from '@common/models/user';
 import { PublicUserStatistics } from '@common/models/user-statistics';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert-service/alert.service';
+import { UserSearchQueryResult, UserSearchResult } from '@common/models/user-search';
 
 @Injectable({
     providedIn: 'root',
@@ -44,11 +45,34 @@ export class UserService {
         return this.userController.editUser(edits).pipe(tap((user) => this.user.next(user)));
     }
 
-    searchUsers(query: Observable<string>): Observable<SharedUser[]> {
+    searchUsers(query: Observable<string>): Observable<UserSearchQueryResult> {
         return query.pipe(
             debounceTime(DEBOUNCE_TIME),
             distinctUntilChanged(),
-            switchMap((value) => (value.length > 0 ? this.userController.searchUsers(value) : of([]))),
+            switchMap((value) =>
+                value.length > 0
+                    ? this.userController.searchUsers(value).pipe(map((results) => ({ query: value, results })))
+                    : of({ query: value, results: [] }),
+            ),
+        );
+    }
+
+    getUserByUsername(username: Observable<string>): Observable<UserSearchResult> {
+        return username.pipe(
+            switchMap((value) => {
+                if (value === undefined || value.length === 0) throw new Error("Nom d'utilisateur requis");
+
+                return this.userController.getUserByUsername(value).pipe(
+                    map((user) => ({
+                        ...user,
+                        gameHistory: user.gameHistory.map((gameHistory) => ({
+                            ...gameHistory,
+                            startTime: new Date(gameHistory.startTime),
+                            endTime: new Date(gameHistory.endTime),
+                        })),
+                    })),
+                );
+            }),
         );
     }
 

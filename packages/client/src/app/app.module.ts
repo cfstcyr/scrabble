@@ -54,6 +54,7 @@ import { UserProfileStatsItemComponent } from './components/user-profile/user-pr
 import { UserProfilePageComponent } from './pages/user-profile-page/user-profile-page.component';
 import { UserProfileEditDialogComponent } from './components/user-profile/user-profile-edit-dialog/user-profile-edit-dialog.component';
 import { SearchPageComponent } from './pages/search-page/search-page.component';
+import { UserSearchResultPageComponent } from './pages/user-search-result-page/user-search-result-page.component';
 
 registerLocaleData(localeFr);
 
@@ -109,6 +110,7 @@ registerLocaleData(localeFr);
         UserProfilePageComponent,
         UserProfileEditDialogComponent,
         SearchPageComponent,
+        UserSearchResultPageComponent,
     ],
     imports: [
         AppMaterialModule,
