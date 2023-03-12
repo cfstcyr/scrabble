@@ -1,3 +1,6 @@
+PublicUser UNKOWN_USER = PublicUser(
+    username: 'Unkown User', avatar: 'images/avatar-12.png', email: '');
+
 class User {
   int idUser;
   String hash;
@@ -63,9 +66,9 @@ class PublicUser {
 
   factory PublicUser.fromJson(Map<String, dynamic> json) {
     return PublicUser(
-      email: json['email'] as String,
+      email: json['email'] ?? '',
       username: json['username'] as String,
-      avatar: json['avatar'] as String,
+      avatar: json['avatar'] ?? "images/avatar-12.png",
     );
   }
 
@@ -83,7 +86,10 @@ class PublicUser {
       json['user2'],
       json['user3'],
       json['user4']
-    ].map((dynamic publicUser) => PublicUser.fromJson(publicUser)).toList());
+    ]
+        .map((dynamic publicUser) =>
+            publicUser == null ? UNKOWN_USER : PublicUser.fromJson(publicUser))
+        .toList());
   }
 }
 

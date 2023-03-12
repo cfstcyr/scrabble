@@ -1,12 +1,17 @@
 import 'package:async/async.dart';
+import 'package:mobile/classes/game/game.dart';
+import 'package:mobile/classes/rounds/round-data.dart';
+import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/locator.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../constants/erros/game-errors.dart';
 import 'game.service.dart';
 
 class RoundService {
   final Subject<Duration> _startRound$ = BehaviorSubject();
   final Subject _endRound$ = BehaviorSubject();
+  Round? currentRound;
   CancelableOperation? roundTimeout;
 
   RoundService._privateConstructor();
@@ -15,21 +20,22 @@ class RoundService {
   Stream<void> get endRoundEvent => _endRound$.stream;
 
   static final RoundService _instance = RoundService._privateConstructor();
-  static final GameService gameService = getIt.get<GameService>();
 
   factory RoundService() {
     return _instance;
   }
 
-  bool isLocalPlayerActivePlayer() {
-    // TODO: Implement when user is known and currentRound is known
-    return true;
+  String getActivePlayerId() {
+    if (currentRound == null) throw Exception(NO_ROUND_AT_THE_MOMENT);
+    return currentRound!.socketIdOfActivePlayer;
   }
 
-  void startRound() {
+  void startRound(Round round) {
     if (roundTimeout != null) roundTimeout!.cancel();
 
-    Duration roundDuration = gameService.game.roundDuration;
+    currentRound = round;
+
+    Duration roundDuration = getIt.get<GameService>().game.roundDuration;
     roundTimeout = CancelableOperation.fromFuture(
         Future.delayed(roundDuration, () => _onTimerExpires()));
 
@@ -41,9 +47,13 @@ class RoundService {
   }
 
   void _onTimerExpires() {
-    if (isLocalPlayerActivePlayer()) {
+    if (getIt.get<GameService>().isLocalPlayerActivePlayer()) {
       // TODO: Send pass action when pass is implemented
-      startRound();
     }
+  }
+
+  void updateRoundData(Round round) {
+    endRound();
+    startRound(round);
   }
 }

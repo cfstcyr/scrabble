@@ -27,7 +27,7 @@ export class UserSearchService {
         return sqlQuery;
     }
 
-    async getUser(username: string): Promise<UserSearchResult> {
+    async findProfileWithUsername(username: string): Promise<UserSearchResult> {
         const user = await this.table.select('idUser', 'username', 'avatar').where({ username }).first();
 
         if (!user) throw new HttpException(USER_NOT_FOUND, StatusCodes.NOT_FOUND);
