@@ -249,6 +249,7 @@ class CreateGameFormState extends State<CreateGameForm> {
     );
     GroupCreationResponse createdGroup =
         await gameCreationController.handleCreateGame(groupData);
+    groupData.groupId = createdGroup.groupId;
 
     createdGroup.isCreated
         ? {
@@ -256,7 +257,7 @@ class CreateGameFormState extends State<CreateGameForm> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => JoinWaitingPage(
-                          currentGroup: createdGroup.group!,
+                          currentGroup: groupData,
                         )))
           }
         : {};
