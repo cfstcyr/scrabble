@@ -69,7 +69,7 @@ class Square {
       tile: json['tile'] != null
           ? Tile.fromJson(json['tile'] as Map<String, dynamic>)
           : null,
-      isApplied: json['isApplied'] as bool,
+      isApplied: json['isApplied'] != null ? json['isApplied'] as bool : true,
     );
   }
 }

@@ -33,10 +33,10 @@ class Player {
   }
 
   void updatePlayerData(PlayerUpdateData playerData) {
-    socketId = playerData.newId!;
-    user = playerData.publicUser!;
-    score = playerData.score ?? 0;
-    tiles = playerData.tiles!;
+    socketId = playerData.newId ?? socketId;
+    user = playerData.publicUser ?? user;
+    score = playerData.score ?? score;
+    tiles = playerData.tiles ?? tiles;
   }
 
   Map<String, dynamic> toJson() => {
