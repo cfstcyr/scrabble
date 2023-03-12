@@ -24,7 +24,7 @@ export class UserSearchResultPageComponent implements AfterViewInit {
     gameHistory: MatTableDataSource<GameHistoryForUser>;
 
     constructor(private readonly route: ActivatedRoute, private readonly userService: UserService) {
-        this.user$ = this.userService.getUserByUsername(this.route.params.pipe(map((params) => params.username)));
+        this.user$ = this.userService.getProfileByUsername(this.route.params.pipe(map((params) => params.username)));
         this.error$ = this.user$.pipe(
             map(() => undefined),
             catchError(() => of(USER_NOT_FOUND)),

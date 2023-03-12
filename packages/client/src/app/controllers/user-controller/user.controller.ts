@@ -24,8 +24,8 @@ export class UserController extends AbstractController {
         return this.http.get<UserSearchItem[]>(this.url('/users/search', { q: query }));
     }
 
-    getUserByUsername(username: string): Observable<UserSearchResult> {
-        return this.http.get<UserSearchResult>(this.url(`/users/search/${username}`));
+    getProfileByUsername(username: string): Observable<UserSearchResult> {
+        return this.http.get<UserSearchResult>(this.url(`/users/profile/${username}`));
     }
 
     getUserStatistics(): Observable<PublicUserStatistics> {

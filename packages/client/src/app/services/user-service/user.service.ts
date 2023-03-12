@@ -57,12 +57,12 @@ export class UserService {
         );
     }
 
-    getUserByUsername(username: Observable<string>): Observable<UserSearchResult> {
+    getProfileByUsername(username: Observable<string>): Observable<UserSearchResult> {
         return username.pipe(
             switchMap((value) => {
                 if (value === undefined || value.length === 0) throw new Error("Nom d'utilisateur requis");
 
-                return this.userController.getUserByUsername(value).pipe(
+                return this.userController.getProfileByUsername(value).pipe(
                     map((user) => ({
                         ...user,
                         gameHistory: user.gameHistory.map((gameHistory) => ({
