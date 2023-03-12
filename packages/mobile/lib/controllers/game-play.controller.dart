@@ -26,27 +26,21 @@ class GamePlayController {
 
   String? currentGameId;
 
-  final Subject<void> _actionDone = PublishSubject();
+  Stream<void> get actionDoneEvent => _actionDone$.stream;
 
-  Stream<void> get actionDoneEvent => _actionDone.stream;
+  Stream<GameUpdateData> get gameUpdateEvent => gameUpdate$.stream;
 
-  final Subject<GameUpdateData> _gameUpdate = PublishSubject();
+  Stream<GameMessage?> get messageEvent => gameMessage$.stream;
 
-  Stream<GameUpdateData> get gameUpdateEvent => _gameUpdate.stream;
-
-  final Subject<GameMessage?> _message = PublishSubject();
-
-  Stream<GameMessage?> get messageEvent => _message.stream;
-
-  final BehaviorSubject<GameUpdateData> gameUpdate =
+  final BehaviorSubject<GameUpdateData> gameUpdate$ =
       BehaviorSubject<GameUpdateData>();
-  final BehaviorSubject<GameMessage?> newMessage =
+  final BehaviorSubject<GameMessage?> gameMessage$ =
       BehaviorSubject<GameMessage?>.seeded(null);
-  final PublishSubject<void> actionDone$ = PublishSubject<void>();
+  final PublishSubject<void> _actionDone$ = PublishSubject<void>();
 
   Future<void> sendAction(ActionData actionData) async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/action");
-    post(endpoint, body: actionData).then((_) => _actionDone.add(null));
+    post(endpoint, body: actionData).then((_) => _actionDone$.add(null));
   }
 
   Future<void> leaveGame() async {
@@ -56,10 +50,10 @@ class GamePlayController {
 
   void configureSocket() {
     socketService.on(GAME_UPDATE_EVENT_NAME, (dynamic newData) {
-      gameUpdate.add(GameUpdateData.fromJson(newData));
+      gameUpdate$.add(GameUpdateData.fromJson(newData));
     });
-    socketService.on(GAME_MESSAGE_EVENT_NAME, (dynamic newMessage) {
-      newMessage.add(GameMessage.fromJson(newMessage));
+    socketService.on(GAME_MESSAGE_EVENT_NAME, (dynamic gameMessage) {
+      gameMessage$.add(GameMessage.fromJson(gameMessage));
     });
   }
 
