@@ -1,8 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:mobile/components/animation/pulse.dart';
-import 'package:mobile/components/image.dart';
+import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/user-constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/classes/game/player.dart' as c;
 
@@ -30,21 +33,30 @@ abstract class AbstractPlayer extends StatelessWidget {
   Widget getContent(BuildContext context);
 
   Widget getPlayerInfo({bool large = false}) {
+    var theme = Theme.of(navigatorKey.currentContext!);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          height: large ? 32 : 22,
-          width: large ? 32 : 22,
-          margin: EdgeInsets.only(right: SPACE_1),
-          decoration: BoxDecoration(
-            color: Colors.grey,
-            image: DecorationImage(
-                image: AppImage(src: player.user.avatar).provider,
-                fit: BoxFit.cover),
-            borderRadius: BorderRadius.all(Radius.circular(22)),
-          ),
-        ),
+        Avatar(
+            avatar: player.user.avatar,
+            forceInitials: player.user.avatar.isEmpty,
+            initials: getUsersInitials(player.user.username),
+            background: theme.colorScheme.onBackground,
+            radius: 16,
+            size: large ? 44 : 22),
+        // Container(
+        //   height: large ? 32 : 22,
+        //   width: large ? 32 : 22,
+        //   margin: EdgeInsets.only(right: SPACE_1),
+        //   decoration: BoxDecoration(
+        //     color: Colors.grey,
+        //     image: DecorationImage(
+        //         image: AppImage(src: player.user.avatar, height: 15, width: 15,).provider,
+        //         fit: BoxFit.cover),
+        //     borderRadius: BorderRadius.all(Radius.circular(22)),
+        //   ),
+        // ),
+        SizedBox(width: SPACE_1,),
         Expanded(
             child: Container(
           margin: EdgeInsets.only(right: SPACE_2),
