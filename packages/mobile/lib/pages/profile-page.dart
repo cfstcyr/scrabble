@@ -10,14 +10,15 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MyScaffold(
       title: 'Mon profile',
-      body: Container(
+      body: SingleChildScrollView(
+          child: Container(
         padding: EdgeInsets.all(SPACE_3),
         child: Column(children: [
           UserProfileInfo(),
           UserProfileStatistics(),
           UserProfileGameHistory()
         ]),
-      ),
+      )),
     );
   }
 }
