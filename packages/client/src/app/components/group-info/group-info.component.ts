@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { GroupRequest } from '@app/classes/communication/group-request';
 import { Timer } from '@app/classes/round/timer';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
@@ -11,12 +12,12 @@ import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 })
 export class GroupInfoComponent implements OnInit {
     @Input() group: Group;
-    @Output() joinGroupId: EventEmitter<[string, boolean]>;
+    @Output() joinGroupId: EventEmitter<GroupRequest>;
     roundTime: Timer;
     gameVisibilities = GameVisibility;
 
     constructor() {
-        this.joinGroupId = new EventEmitter<[string, boolean]>();
+        this.joinGroupId = new EventEmitter<GroupRequest>();
         this.group = {
             groupId: '0',
             numberOfObservers: 0,
@@ -34,10 +35,10 @@ export class GroupInfoComponent implements OnInit {
     }
 
     joinGroup(): void {
-        this.joinGroupId.emit([this.group.groupId, false]);
+        this.joinGroupId.emit({ groupId: this.group.groupId, isObserver: false });
     }
 
     observeGroup(): void {
-        this.joinGroupId.emit([this.group.groupId, true]);
+        this.joinGroupId.emit({ groupId: this.group.groupId, isObserver: true });
     }
 }
