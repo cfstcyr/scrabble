@@ -43,13 +43,10 @@ class CreateGameFormState extends State<CreateGameForm> {
   void initState() {
     super.initState();
     _user = userService.getUser();
-
-    //emailHandler.addListener(validateEmail);
   }
 
   @override
   void dispose() {
-    // emailHandler.dispose();
     super.dispose();
   }
 
