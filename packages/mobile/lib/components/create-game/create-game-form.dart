@@ -245,7 +245,7 @@ class CreateGameFormState extends State<CreateGameForm> {
       maxRoundTime: _timePerTurn.inSeconds,
       virtualPlayerLevel: VirtualPlayerLevel.fromString(_playerLevel!),
       gameVisibility: GameVisibility.fromString(_visibility!),
-      password: _password,
+      password: _visibility == PROTECTED_LABEL_FR ? _password : '',
     );
     GroupCreationResponse createdGroup =
         await gameCreationController.handleCreateGame(groupData);
