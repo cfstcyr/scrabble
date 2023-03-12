@@ -14,7 +14,7 @@ import '../../classes/group.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/create-game.constants.dart';
 import '../../controllers/game-creation-controller.dart';
-import '../../pages/group-waiting-page.dart';
+import '../../pages/create-lobby.dart';
 import '../../pages/home-page.dart';
 
 class CreateGameForm extends StatefulWidget {
@@ -249,16 +249,10 @@ class CreateGameFormState extends State<CreateGameForm> {
     );
     GroupCreationResponse createdGroup =
         await gameCreationController.handleCreateGame(groupData);
-    groupData.groupId = createdGroup.groupId;
-
     createdGroup.isCreated
         ? {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => JoinWaitingPage(
-                          currentGroup: groupData,
-                        )))
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => CreateLobbyPage()))
           }
         : {};
   }
