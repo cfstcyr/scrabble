@@ -60,7 +60,7 @@ class PlayersContainer extends StatelessWidget {
                   Player(
                     player: orderedPlayerList[2],
                     isPlaying: _roundService.isActivePlayer(
-                        activePlayerId, orderedPlayerList[1].socketId),
+                        activePlayerId, orderedPlayerList[2].socketId),
                   ),
                   Player(
                     player: orderedPlayerList[3],

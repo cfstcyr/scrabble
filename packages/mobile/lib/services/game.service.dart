@@ -8,7 +8,7 @@ import 'package:mobile/classes/game/game-config.dart';
 import 'package:mobile/classes/game/game-update.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
-import 'package:mobile/classes/game/players-container.dart';
+import 'package:mobile/classes/game/players_container.dart';
 import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/square.dart';
