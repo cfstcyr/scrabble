@@ -4,12 +4,15 @@ import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/image.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/controllers/account-authentification-controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/user.service.dart';
 
 class UserProfileInfo extends StatelessWidget {
   final UserService _userService = getIt.get<UserService>();
+  final AccountAuthenticationController _authService =
+      getIt.get<AccountAuthenticationController>();
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,14 @@ class UserProfileInfo extends StatelessWidget {
                             onPressed: () => Navigator.pushNamed(
                                 context, PROFILE_EDIT_ROUTE),
                             icon: Icons.manage_accounts_rounded,
-                          )
+                          ),
+                          AppButton(
+                            onPressed: () {
+                              _authService.signOut();
+                              Navigator.pushNamed(context, LOGIN_ROUTE);
+                            },
+                            icon: Icons.logout_rounded,
+                          ),
                         ],
                       )
                     ],
