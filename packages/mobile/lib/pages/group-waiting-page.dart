@@ -61,7 +61,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                             offset: Offset(0, 3),
                           ),
                         ],
-                        color: theme.colorScheme.background,
+                        color: Colors.white,
                         borderRadius: BorderRadius.all(Radius.circular(5.0))),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

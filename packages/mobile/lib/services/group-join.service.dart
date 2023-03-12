@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/pages/groups-page.dart';
 import 'package:mobile/routes/navigator-key.dart';
@@ -23,8 +24,8 @@ class GroupJoinService {
       closeSubject(acceptedJoinRequest$);
     });
 
-    rejectedStream.listen((String hostname) {
-      triggerDialogBox("Demande rejetée", "$hostname a rejeté votre demande", [
+    rejectedStream.listen((PublicUser host) {
+      triggerDialogBox("Demande rejetée", "${host.username} a rejeté votre demande", [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,
@@ -34,8 +35,8 @@ class GroupJoinService {
       ]);
     });
 
-    canceledStream.listen((String hostname) {
-      triggerDialogBox("Partie annulée", "$hostname a annulé la partie", [
+    canceledStream.listen((PublicUser host) {
+      triggerDialogBox("Partie annulée", "${host.username} a annulé la partie", [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,

@@ -60,8 +60,8 @@ class GroupJoinController {
     socketService.on(
         ACCEPTED_IN_GROUP, (group) => handleAcceptedJoinRequest(group));
     socketService.on(
-        REJECTED_FROM_GROUP, (hostName) => rejectedJoinRequest$.add(hostName));
+        REJECTED_FROM_GROUP, (host) => rejectedJoinRequest$.add(host));
     socketService.on(
-        CANCELED_GROUP, (hostName) => canceledGroup$.add(hostName));
+        CANCELED_GROUP, (host) => canceledGroup$.add(host));
   }
 }

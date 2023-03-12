@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:mobile/classes/group.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../constants/create-lobby-constants.dart';
@@ -26,13 +27,13 @@ Subject<Group> acceptedJoinRequest$ = BehaviorSubject();
 
 Stream<Group> get acceptedStream => acceptedJoinRequest$.stream;
 
-Subject<String> rejectedJoinRequest$ = BehaviorSubject();
+Subject<PublicUser> rejectedJoinRequest$ = BehaviorSubject();
 
-Stream<String> get rejectedStream => rejectedJoinRequest$.stream;
+Stream<PublicUser> get rejectedStream => rejectedJoinRequest$.stream;
 
-Subject<String> canceledGroup$ = BehaviorSubject();
+Subject<PublicUser> canceledGroup$ = BehaviorSubject();
 
-Stream<String> get canceledStream => canceledGroup$.stream;
+Stream<PublicUser> get canceledStream => canceledGroup$.stream;
 
 void reOpenSubject<T>(Subject<T> subject, [T? seed]) {
   if (!subject.isClosed) return;
