@@ -2,13 +2,13 @@
     <div class="players-container">
         <div class="player-row">
             <div class="player">
-                <img [src]="group.user1.avatar" class="avatar__img" />
+                <img [appSrc]="group.user1.avatar" [square]="50" class="avatar__img" />
               <div class="player-details">
                 <span class="player-name">{{ group.user1.username }}</span>
               </div>
             </div>
             <div class="player">
-                <img *ngIf="group.user2 !== undefined" [src]="group.user2.avatar" class="avatar__img" />
+                <img *ngIf="group.user2 !== undefined" [appSrc]="group.user2.avatar" [square]="50" class="avatar__img" />
                 <div class="app-icon-container" *ngIf="group.user2 === undefined">
                     <app-icon  icon="question" size="2x"></app-icon>
                 </div>
@@ -22,7 +22,7 @@
           </div>
         <div class="player-row">
             <div class="player">
-                <img *ngIf="group.user3 !== undefined" [src]="group.user3.avatar" class="avatar__img" />
+                <img *ngIf="group.user3 !== undefined" [appSrc]="group.user3.avatar" [square]="50" class="avatar__img" />
                 <div class="app-icon-container" *ngIf="group.user3 === undefined">
                     <app-icon  icon="question" size="2x"></app-icon>
                 </div>    
@@ -31,7 +31,7 @@
               </div>
             </div>
             <div class="player">
-                <img *ngIf="group.user4 !== undefined" [src]="group.user4.avatar" class="avatar__img" />
+                <img *ngIf="group.user4 !== undefined" [appSrc]="group.user4.avatar" [square]="50" class="avatar__img" />
                 <div class="app-icon-container" *ngIf="group.user4 === undefined">
                     <app-icon  icon="question" size="2x"></app-icon>
                 </div>

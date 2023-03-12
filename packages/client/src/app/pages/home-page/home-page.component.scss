@@ -90,6 +90,7 @@
         box-sizing: border-box;
         img {
             width: calc(40vw + 30vh);
+            max-width: 800px;
         }
         #button-group {
             display: flex;

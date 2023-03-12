@@ -32,7 +32,8 @@ export default class GameHistoriesService {
                 `${GAME_HISTORY_TABLE}.idGameHistory`,
                 `${GAME_HISTORY_PLAYER_TABLE}.idGameHistory`,
             )
-            .where({ idUser });
+            .where({ idUser })
+            .orderBy('startTime', 'desc');
     }
 
     async resetGameHistories(): Promise<void> {

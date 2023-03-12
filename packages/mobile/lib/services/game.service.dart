@@ -108,8 +108,7 @@ class GameService {
     }
 
     if (gameUpdate.round != null) {
-      _roundService.updateRoundData(
-          Round(socketIdOfActivePlayer: gameUpdate.round!.playerData.id));
+      _roundService.updateRoundData(gameUpdate.round!);
     }
 
     if (gameUpdate.isGameOver != null) {
@@ -139,7 +138,6 @@ class GameService {
     return _game.value!.tileRack;
   }
 
-//TODO
   void playPlacement() {
     if (!(_game.value?.board.isValidPlacement ?? false)) return;
 
@@ -158,9 +156,5 @@ class GameService {
 
   bool isActivePlayer(String socketId) {
     return _roundService.getActivePlayerId() == socketId;
-  }
-
-  void handleUpdateBoardData(List<Square> boardData) {
-    _game.value?.board.updateBoardData(boardData);
   }
 }

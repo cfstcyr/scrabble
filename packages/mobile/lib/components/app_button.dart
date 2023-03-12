@@ -42,7 +42,7 @@ class AppButton extends StatelessWidget {
       onPressed: onPressed,
       color: _getColor(),
       disabledColor: Colors.grey.shade300,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
       height: _getSize(),
       minWidth: _getSize(),
       padding: iconOnly ? EdgeInsets.zero : null,
