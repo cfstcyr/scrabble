@@ -68,9 +68,9 @@ describe('UserSearchService', () => {
         });
     });
 
-    describe('getUser', () => {
+    describe('findProfileWithUsername', () => {
         it('should return user with gameHistory and statistics', async () => {
-            const userResult = await service.getUser('user1');
+            const userResult = await service.findProfileWithUsername('user1');
 
             expect(userResult).to.exist;
             expect(userResult).to.haveOwnProperty('username');
@@ -80,7 +80,7 @@ describe('UserSearchService', () => {
         });
 
         it('should return a 404 if not found', async () => {
-            expect(service.getUser('notmatching')).to.eventually.be.rejectedWith(USER_NOT_FOUND);
+            expect(service.findProfileWithUsername('notmatching')).to.eventually.be.rejectedWith(USER_NOT_FOUND);
         });
     });
 });

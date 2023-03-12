@@ -58,9 +58,9 @@ export class UserController extends BaseController {
             }
         });
 
-        router.get('/search/:username', async (req, res, next) => {
+        router.get('/profile/:username', async (req, res, next) => {
             try {
-                res.status(StatusCodes.OK).json(await this.userSearchService.getUser(req.params.username));
+                res.status(StatusCodes.OK).json(await this.userSearchService.findProfileWithUsername(req.params.username));
             } catch (e) {
                 next(e);
             }
