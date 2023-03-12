@@ -4,6 +4,7 @@ import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
 import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/services/action-service.dart';
+import 'package:mobile/services/channel.service.dart';
 import 'package:mobile/services/chat-management.service.dart';
 import 'package:mobile/services/client.dart';
 import 'package:mobile/services/game-creation-service.dart';
@@ -55,6 +56,7 @@ class CustomLocator {
     getIt.registerLazySingleton<GameEventService>(() => GameEventService());
     getIt.registerLazySingleton<ChatManagementService>(
         () => ChatManagementService());
+    getIt.registerLazySingleton<ChannelService>(() => ChannelService());
     getIt.registerLazySingleton<RoundService>(() => RoundService());
 
     getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());

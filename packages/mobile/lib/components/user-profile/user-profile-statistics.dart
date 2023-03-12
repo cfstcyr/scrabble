@@ -56,12 +56,12 @@ class UserProfileStatistics extends StatelessWidget {
                         child: UserProfileStatisticsItem(
                             title: "Moyenne de points",
                             value:
-                                "${(snapshot.data?.averagePointsPerGame ?? 0).round()}")),
+                                "${(snapshot.data?.averagePointsPerGame ?? 0).round()} pts")),
                     Expanded(
                         child: UserProfileStatisticsItem(
                             title: "Temps moyen",
                             value:
-                                "${(snapshot.data?.averageTimePerGame ?? 0).round()}")),
+                                "${(snapshot.data?.averageTimePerGame ?? 0).round()} s")),
                   ],
                 )
               : snapshot.hasError
