@@ -247,13 +247,16 @@ class CreateGameFormState extends State<CreateGameForm> {
       gameVisibility: GameVisibility.fromString(_visibility!),
       password: _password,
     );
-    await gameCreationController.handleCreateGame(groupData)
+    GroupCreationResponse createdGroup =
+        await gameCreationController.handleCreateGame(groupData);
+
+    createdGroup.isCreated
         ? {
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => JoinWaitingPage(
-                          currentGroup: groupData,
+                          currentGroup: createdGroup.group!,
                         )))
           }
         : {};
