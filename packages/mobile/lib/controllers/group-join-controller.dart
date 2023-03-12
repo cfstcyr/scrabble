@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
+import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
 import '../constants/socket-events/group-events.dart';
@@ -31,8 +32,7 @@ class GroupJoinController {
   }
 
   Future<void> handleGetGroups() async {
-    Response res = await get(Uri.parse("$endpoint/${SocketService.socket.id}"));
-    log('data: $res');
+    await get(Uri.parse("$endpoint"));
   }
 
   Future<Response> handleJoinGroup(String groupId) async {

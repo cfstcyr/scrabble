@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/user.dart';
@@ -51,12 +52,7 @@ class GameCreationController {
   }
 
   Future<Response> handleStartGame(String gameId) async {
-    String token = await getIt.get<StorageHandlerService>().getToken() ?? "";
-    Map<String, String> requestHeaders = {
-      'authorization': "Bearer ${token}",
-    };
-    return await post(Uri.parse("$endpoint/$gameId/players/start"),
-        headers: requestHeaders);
+    return await post(Uri.parse("$endpoint/$gameId/players/start"));
   }
 
   // TODO
@@ -71,8 +67,13 @@ class GameCreationController {
   }
 
   Future<String> handleCreateGame() async {
-    Response res = await post(Uri.parse(endpoint), body: jsonEncode({}));
-    log(res.body);
+    Response res = await post(Uri.parse(endpoint),
+        body: jsonEncode({
+          'gameVisibility': 'public',
+          'groupId': '5f9f1b9b0e2c4c0004e1b0e0',
+          'maxRoundTime': 60,
+          'password': ''
+        }));
     return res.body;
   }
 
