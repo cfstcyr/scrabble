@@ -68,10 +68,10 @@ class GameCreationController {
 
   Future<GroupCreationResponse> handleCreateGame(Group groupData) async {
     Response res = await http.post(Uri.parse(endpoint),
-        body: groupData.GroupCreationDatatoJson());
+        body: jsonEncode(groupData.GroupCreationDatatoJson()));
     return GroupCreationResponse(
         isCreated: res.statusCode == HttpStatus.created,
-        groupId: json.decode(res.body)["group"]["groupId"]);
+        groupId: jsonDecode(res.body)["group"]["groupId"]);
   }
 
   void _configureSockets() {
