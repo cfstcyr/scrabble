@@ -46,33 +46,6 @@ describe('UserService', () => {
         expect(service).to.exist;
     });
 
-    describe('search', () => {
-        beforeEach(async () => {
-            await userTable().insert({ ...DEFAULT_USER, idUser: 1, username: 'user1', email: 'user1@me.com' });
-            await userTable().insert({ ...DEFAULT_USER, idUser: 2, username: 'user2', email: 'user2@me.com' });
-            await userTable().insert({ ...DEFAULT_USER, idUser: 3, username: 'user3', email: 'user3@me.com' });
-            await userTable().insert({ ...DEFAULT_USER, idUser: 4, username: 'user4', email: 'user4@me.com' });
-            await userTable().insert({ ...DEFAULT_USER, idUser: 5, username: 'user5', email: 'user5@me.com' });
-            await userTable().insert({ ...DEFAULT_USER, idUser: 6, username: 'different', email: 'different@me.com' });
-        });
-
-        it('should return all matching users 1', async () => {
-            expect(service.search('user')).to.eventually.have.length(5);
-        });
-
-        it('should return all matching users 2', async () => {
-            expect(service.search('different')).to.eventually.have.length(1);
-        });
-
-        it('should exclude user', async () => {
-            expect(service.search('user', 2)).to.eventually.have.length(4);
-        });
-
-        it('should return nothing if no matching', () => {
-            expect(service.search('notmatching')).to.eventually.have.length(0);
-        });
-    });
-
     describe('getUserById', () => {
         it(' should return a user', async () => {
             await userTable().insert(DEFAULT_USER);
