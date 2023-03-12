@@ -105,7 +105,7 @@ export default class WaitingRoom extends Room {
         else this.fillNextEmptySpot(new Player(playerId, publicUser));
     }
 
-    getFromRequesting(criteria: (user: Observer) => boolean, isObserver?: boolean): [Observer, boolean] {
+    getUserFromRequestingUsers(criteria: (user: Observer) => boolean, isObserver?: boolean): [Observer, boolean] {
         let requestingArray: Observer[] = [];
         if (isObserver === undefined || isObserver) requestingArray = requestingArray.concat(this.requestingObservers);
         if (isObserver === undefined || !isObserver) requestingArray = requestingArray.concat(this.requestingPlayers);
@@ -117,7 +117,7 @@ export default class WaitingRoom extends Room {
     }
 
     removeRequesting(playerId: string): Observer {
-        const [userWanted, isObserver] = this.getFromRequesting((user) => user.id === playerId);
+        const [userWanted, isObserver] = this.getUserFromRequestingUsers((user) => user.id === playerId);
         let requestingArray: Observer[];
         if (isObserver) requestingArray = this.requestingObservers;
         else requestingArray = this.requestingPlayers;

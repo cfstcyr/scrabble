@@ -261,26 +261,26 @@ describe('WaitingRoom', () => {
 
         it('should throw if no user matches', () => {
             expect(() => {
-                room.getFromRequesting((user) => user.id === 'unknownid');
+                room.getUserFromRequestingUsers((user) => user.id === 'unknownid');
             }).to.throw(INVALID_PLAYER_ID_FOR_GAME);
         });
 
         it('should throw if no player matches and is not an observer', () => {
             expect(() => {
-                room.getFromRequesting((user) => user.id === ID3, false);
+                room.getUserFromRequestingUsers((user) => user.id === ID3, false);
             }).to.throw(INVALID_PLAYER_ID_FOR_GAME);
         });
 
         it('should return the correct player from requesting players with isObserver specified', () => {
-            expect(room.getFromRequesting((user) => user.id === ID2, false)).to.deep.equal([player2, false]);
+            expect(room.getUserFromRequestingUsers((user) => user.id === ID2, false)).to.deep.equal([player2, false]);
         });
 
         it('should return the correct player from observers players with isObserver specified', () => {
-            expect(room.getFromRequesting((user) => user.id === ID3, true)).to.deep.equal([observer1, true]);
+            expect(room.getUserFromRequestingUsers((user) => user.id === ID3, true)).to.deep.equal([observer1, true]);
         });
 
         it('should return the correct player from observers players without isObserver specified', () => {
-            expect(room.getFromRequesting((user) => user.id === ID3)).to.deep.equal([observer1, true]);
+            expect(room.getUserFromRequestingUsers((user) => user.id === ID3)).to.deep.equal([observer1, true]);
         });
     });
 
@@ -375,19 +375,3 @@ describe('WaitingRoom', () => {
         });
     });
 });
-// it('should throw if not from joined players', () => {
-//     expect(() => gameDispatcherService.removeRequestingPlayer(id, 'invaliduserid')).to.throw(INVALID_PLAYER_ID_FOR_GAME);
-// });
-
-// it('should remove the player', () => {
-//     expect(DEFAULT_WAITING_ROOM.requestingPlayers.includes(DEFAULT_OPPONENT)).to.be.true;
-//     gameDispatcherService.removeRequestingPlayer(id, DEFAULT_OPPONENT.id);
-//     expect(DEFAULT_WAITING_ROOM.requestingPlayers.includes(DEFAULT_OPPONENT)).to.be.false;
-// });
-
-// it('should return the left players public user', () => {
-//     expect(gameDispatcherService.removeRequestingPlayer(id, DEFAULT_OPPONENT.id)).to.deep.equal([
-//         DEFAULT_OPPONENT2.publicUser,
-//         DEFAULT_OPPONENT3.publicUser,
-//     ]);
-// });
