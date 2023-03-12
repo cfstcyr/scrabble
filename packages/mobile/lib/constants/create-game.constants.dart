@@ -1,5 +1,5 @@
 const String PUBLIC_LABEL_FR = "Public";
-const String PRIVATE_LABEL_FR = "Privée";
+const String PRIVATE_LABEL_FR = "Privé";
 const String PROTECTED_LABEL_FR = "Protégé";
 const String VP_LEVEL_FIELD_TITLE_FR =
     "Choisissez le niveau des joueurs virtuels qui vont compléter les joueurs manquants  ";
