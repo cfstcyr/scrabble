@@ -14,7 +14,7 @@ import '../../classes/group.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/create-game.constants.dart';
 import '../../controllers/game-creation-controller.dart';
-import '../../pages/groups-page.dart';
+import '../../pages/group-waiting-page.dart';
 import '../../pages/home-page.dart';
 
 class CreateGameForm extends StatefulWidget {
@@ -101,8 +101,8 @@ class CreateGameFormState extends State<CreateGameForm> {
                               Expanded(
                                 child: RadioListTile(
                                   title: Wrap(children: [
-                                    Icon(Icons.public),
                                     Text(PUBLIC_LABEL_FR),
+                                    Icon(Icons.public),
                                   ]),
                                   value: PUBLIC_LABEL_FR,
                                   groupValue: _visibility,
@@ -250,7 +250,11 @@ class CreateGameFormState extends State<CreateGameForm> {
     await gameCreationController.handleCreateGame(groupData)
         ? {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => GroupPage()))
+                context,
+                MaterialPageRoute(
+                    builder: (context) => JoinWaitingPage(
+                          currentGroup: groupData,
+                        )))
           }
         : {};
   }
