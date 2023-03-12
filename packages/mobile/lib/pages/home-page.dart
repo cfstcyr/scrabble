@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/pages/groups-page.dart';
 
 import '../components/invalid-connection-popup.dart';
 import '../constants/login-constants.dart';
 import '../controllers/account-authentification-controller.dart';
 import '../locator.dart';
 import '../main.dart';
-import 'create-lobby.dart';
+import 'create-game-page.dart';
+import 'groups-page.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => CreateLobbyPage()));
+                            builder: (context) => CreateGamePage()));
                   },
                   child: Text('Créer une partie'),
                 ),
