@@ -20,19 +20,22 @@ class TileRack {
     return _tiles.stream;
   }
 
-  setTiles(List<Tile> tiles) {
+  TileRack setTiles(List<Tile> tiles) {
     _tiles.add(tiles);
+    return this;
   }
 
-  addTiles(List<Tile> tiles) {
+  TileRack addTiles(List<Tile> tiles) {
     _tiles.add([..._tiles.value, ...tiles]);
+    return this;
   }
 
-  removeTile(Tile tile) {
+  TileRack removeTile(Tile tile) {
     List<Tile> tiles = _tiles.value;
 
     tiles.remove(tile);
     _tiles.add([...tiles]);
+    return this;
   }
 
   placeTile(Tile tile, {int? to}) {

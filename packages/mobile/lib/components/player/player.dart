@@ -24,7 +24,7 @@ class Player extends AbstractPlayer {
             children: [
               Expanded(child: getPlayerInfo()),
               Text(
-                '${player.points}',
+                '${player.score}',
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 16,

@@ -35,8 +35,8 @@ class AccountAuthenticationController {
   };
 
   Future<bool> createAccount(Account account) async {
-    final res =
-        await http.post(Uri.parse("$endpoint/signUp"), body: account.toJson());
+    final res = await http.post(Uri.parse("$endpoint/signUp"),
+        body: jsonEncode(account.toJson()));
     bool isCreated = res.statusCode == HttpStatus.ok;
     if (isCreated) {
       await userSessionHandler
@@ -49,20 +49,20 @@ class AccountAuthenticationController {
   Future<bool> isEmailUnique(String email) async {
     Map<String, String> emailJson = {"email": email};
     final res = await http.post(Uri.parse("$endpoint/validateEmail"),
-        headers: headers, body: json.encode(emailJson));
+        headers: headers, body: jsonEncode(emailJson));
     return (json.decode(res.body)['isAvailable']);
   }
 
   Future<bool> isUsernameUnique(String username) async {
     Map<String, String> usernameMap = {"username": username};
     final res = await http.post(Uri.parse("$endpoint/validateUsername"),
-        headers: headers, body: json.encode(usernameMap));
+        headers: headers, body: jsonEncode(usernameMap));
     return (json.decode(res.body)['isAvailable']);
   }
 
   Future<LoginResponse> login(UserLoginCredentials credentials) async {
     final res = await http.post(Uri.parse("$endpoint/login"),
-        body: credentials.toJson());
+        body: jsonEncode(credentials.toJson()));
     String message;
     if (res.statusCode == HttpStatus.ok) {
       message = AUTHORIZED;

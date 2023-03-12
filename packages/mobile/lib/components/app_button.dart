@@ -50,7 +50,7 @@ class AppButton extends StatelessWidget {
       disabledColor: type == AppButtonType.normal
           ? Colors.grey.shade300
           : Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
       height: _getSize(),
       minWidth: _getSize(),
       padding: iconOnly ? EdgeInsets.zero : null,

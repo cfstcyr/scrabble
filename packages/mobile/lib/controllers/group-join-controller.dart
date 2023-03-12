@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
@@ -29,7 +31,7 @@ class GroupJoinController {
   }
 
   Future<void> handleGetGroups() async {
-    await http.get(Uri.parse("$endpoint/${SocketService.socket.id}"));
+    await get(Uri.parse("$endpoint"));
   }
 
   Future<Response> handleJoinGroup(String groupId) async {
@@ -38,7 +40,7 @@ class GroupJoinController {
     joinedGroupedId = groupId;
     return http.post(
         Uri.parse("$endpoint/$groupId/players/${SocketService.socket.id}/join"),
-        body: {'playerName': username});
+        body: jsonEncode({'playerName': username}));
   }
 
   Future<Response> handleCancelJoinRequest() async {

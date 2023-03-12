@@ -1,4 +1,4 @@
-import 'package:mobile/controllers/gameplay-controller.dart';
+import 'package:mobile/controllers/game-play.controller.dart';
 
 import '../classes/actions/action-data.dart';
 import '../locator.dart';
@@ -8,7 +8,7 @@ class ActionService {
 
   bool get isActionBeingProcessed => _isActionBeingProcessed;
 
-  GameplayController gameplayController = getIt.get<GameplayController>();
+  GamePlayController gameplayController = getIt.get<GamePlayController>();
 
   ActionService._privateConstructor() {
     gameplayController.actionDoneEvent.listen((_) => _actionProcessed());
@@ -20,7 +20,8 @@ class ActionService {
     return _instance;
   }
 
-  Future<void> sendAction(ActionType actionType, [ActionPayload? payload]) async {
+  Future<void> sendAction(ActionType actionType,
+      [ActionPayload? payload]) async {
     if (_isActionBeingProcessed) return;
 
     ActionData actionData = ActionData(type: actionType, payload: payload);

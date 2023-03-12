@@ -1,5 +1,3 @@
-import 'dart:math';
-
 class Account {
   final String username;
   final String password;

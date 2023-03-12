@@ -46,4 +46,11 @@ class Multiplier {
 
     return Colors.transparent;
   }
+
+  factory Multiplier.fromJson(Map<String, dynamic> json) {
+    return Multiplier(
+      value: json['value'] as int,
+      type: json['type'] as MultiplierType,
+    );
+  }
 }
