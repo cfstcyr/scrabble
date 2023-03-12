@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
@@ -9,11 +9,11 @@ import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/game/game-config.dart';
+import '../classes/group.dart';
 import '../constants/socket-events/game-events.dart';
 import '../locator.dart';
 import '../services/client.dart';
 import '../services/socket.service.dart';
-import '../services/storage.handler.dart';
 
 class GameCreationController {
   GameCreationController._privateConstructor() {
@@ -67,15 +67,12 @@ class GameCreationController {
     return (res.statusCode == 200);
   }
 
-  Future<String> handleCreateGame() async {
-    Response res = await post(Uri.parse(endpoint),
-        body: jsonEncode({
-          'gameVisibility': 'public',
-          'groupId': '5f9f1b9b0e2c4c0004e1b0e0',
-          'maxRoundTime': 60,
-          'password': ''
-        }));
-    return res.body;
+  Future<GroupCreationResponse> handleCreateGame(Group groupData) async {
+    Response res = await http.post(Uri.parse(endpoint),
+        body: jsonEncode(groupData.GroupCreationDatatoJson()));
+    return GroupCreationResponse(
+        isCreated: res.statusCode == HttpStatus.created,
+        groupId: jsonDecode(res.body)["group"]["groupId"]);
   }
 
   void _configureSockets() {

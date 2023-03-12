@@ -28,7 +28,6 @@ class GamePlayController {
   SocketService socketService = getIt.get<SocketService>();
 
   final String baseEndpoint = GAME_ENDPOINT;
-  PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
   InterceptedHttp get http => httpClient.http;
 
   String? currentGameId;
@@ -38,8 +37,6 @@ class GamePlayController {
   Stream<GameUpdateData> get gameUpdateEvent => gameUpdate$.stream;
 
   Stream<GameMessage?> get messageEvent => gameMessage$.stream;
-
-  InterceptedHttp get http => httpClient.http;
 
   final BehaviorSubject<GameUpdateData> gameUpdate$ =
       BehaviorSubject<GameUpdateData>();
