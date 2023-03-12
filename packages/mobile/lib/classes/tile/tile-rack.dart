@@ -28,8 +28,12 @@ class TileRack {
     return _isExchangeModeEnabled$.stream;
   }
 
+  Stream<List<Tile>> get selectedTilesStream => stream.map((List<Tile> tiles) =>
+      tiles.where((Tile tile) => tile.isSelectedForExchange).toList());
+
   List<Tile> get selectedTiles {
-    return stream.value.where((Tile tile) => tile.isSelectedForExchange)
+    return stream.value
+        .where((Tile tile) => tile.isSelectedForExchange)
         .toList();
   }
 
@@ -89,9 +93,8 @@ class TileRack {
     bool currentMode = isExchangeModeEnabled.value;
     _isExchangeModeEnabled$.add(!currentMode);
 
-    if(!isExchangeModeEnabled.value) _resetSelectedTiles();
+    if (!isExchangeModeEnabled.value) _resetSelectedTiles();
   }
-
 
   void toggleSelectedTile(Tile tile) {
     tile.toggleIsSelected();

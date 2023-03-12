@@ -168,15 +168,6 @@ class GameService {
     _actionService.sendAction(ActionType.place, placement.toActionPayload());
   }
 
-  bool isLocalPlayerActivePlayer() {
-    return true;
-    // return isActivePlayer(game.players.getLocalPlayer().socketId);
-  }
-
-  bool isActivePlayer(String socketId) {
-    return _roundService.getActivePlayerId() == socketId;
-  }
-
   void handleUpdatePlayerData(List<PlayerData> playersData) {
     _game$.value?.players.updatePlayerData(playersData);
   }
