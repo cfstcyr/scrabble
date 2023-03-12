@@ -25,7 +25,7 @@ class CreateGameForm extends StatefulWidget {
 @visibleForTesting
 class CreateGameFormState extends State<CreateGameForm> {
   String _password = "";
-  String? _playerLevel = VP_LEVEL_BEGINNER_LABEL_FR;
+  String? _playerLevel = VirtualPlayerLevel.beginner.levelName;
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
