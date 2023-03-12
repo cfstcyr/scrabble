@@ -11,3 +11,7 @@ const String CANCEL_CREATION_LABEL_FR = "Annuler";
 const String VP_LEVEL_EXPERT_LABEL_FR = "Expert";
 const String VP_LEVEL_BEGINNER_LABEL_FR = "Débutant";
 const int DEFAULT_TIME = 60;
+const int MAX_TIME = 5;
+const int MIN_TIME = 30;
+const int _TIME = 60;
+const String ZERO = '0';
