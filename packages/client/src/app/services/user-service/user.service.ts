@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { UserProfileEditDialogComponent } from '@app/components/user-profile/user-profile-edit-dialog/user-profile-edit-dialog.component';
-import { LOGIN_REQUIRED } from '@app/constants/services-errors';
+import { DEBOUNCE_TIME, LOGIN_REQUIRED } from '@app/constants/services-errors';
 import { UserController } from '@app/controllers/user-controller/user.controller';
 import { GameHistoryForUser } from '@common/models/game-history';
 import { PublicServerAction } from '@common/models/server-action';
-import { EditableUserFields, PublicUser } from '@common/models/user';
+import { EditableUserFields, PublicUser, SharedUser } from '@common/models/user';
 import { PublicUserStatistics } from '@common/models/user-statistics';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert-service/alert.service';
 
 @Injectable({
@@ -42,6 +42,14 @@ export class UserService {
 
     editUser(edits: EditableUserFields): Observable<PublicUser> {
         return this.userController.editUser(edits).pipe(tap((user) => this.user.next(user)));
+    }
+
+    searchUsers(query: Observable<string>): Observable<SharedUser[]> {
+        return query.pipe(
+            debounceTime(DEBOUNCE_TIME),
+            distinctUntilChanged(),
+            switchMap((value) => (value.length > 0 ? this.userController.searchUsers(value) : of([]))),
+        );
     }
 
     updateStatistics(): void {

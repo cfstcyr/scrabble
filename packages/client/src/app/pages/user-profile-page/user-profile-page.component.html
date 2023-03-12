@@ -2,6 +2,8 @@
 
 <div class="page">
     <div class="page-content">
+        <button routerLink="/search">Search</button>
+
         <app-user-profile-info
             [avatar]="(avatar | async) ?? ''"
             [username]="(username | async) ?? ''"
