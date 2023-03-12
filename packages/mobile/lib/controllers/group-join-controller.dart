@@ -36,8 +36,7 @@ class GroupJoinController {
     // TODO Use UserService to get user's username
     String username = 'Player';
     joinedGroupedId = groupId;
-    return http.post(
-        Uri.parse("$endpoint/$groupId/players/${SocketService.socket.id}/join"),
+    return http.post(Uri.parse("$endpoint/$groupId/players/join"),
         body: {'playerName': username});
   }
 
@@ -46,8 +45,8 @@ class GroupJoinController {
   }
 
   Future<Response> handleLeaveGroup() async {
-    Future<Response> response = http.delete(Uri.parse(
-        "$endpoint/$joinedGroupedId/players/${SocketService.socket.id}/leave"));
+    Future<Response> response =
+        http.delete(Uri.parse("$endpoint/$joinedGroupedId/players/leave"));
     joinedGroupedId = null;
     return response;
   }
