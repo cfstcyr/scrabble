@@ -19,3 +19,5 @@ export const NO_VALIDATE = 'Could generate a token';
 export const ALREADY_LOGGED = "L'utilisateur est déjà connecté";
 export const SOCKET_ID_IS_REQUIRED = 'Socket ID is required';
 export const USER_ID_IS_REQUIRED = 'User ID is required';
+
+export const SEARCH_QUERY_IS_REQUIRED = 'Le champ "q" est requis';

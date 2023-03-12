@@ -11,6 +11,7 @@ import '../constants/home-page.constants.dart';
 import '../constants/login-constants.dart';
 import '../controllers/account-authentification-controller.dart';
 import '../controllers/game-creation-controller.dart';
+import '../controllers/group-join-controller.dart';
 import '../locator.dart';
 
 class HomePage extends StatelessWidget {

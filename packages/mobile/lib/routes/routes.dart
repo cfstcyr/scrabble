@@ -12,7 +12,6 @@ const CREATE_LOBBY_ROUTE = '/create-waiting-room';
 const JOIN_LOBBY_ROUTE = '/join-waiting-room';
 const MAIN_PAGE = '/main';
 const GAME_PAGE_ROUTE = '/game';
-
 final ROUTES = {
   HOME_ROUTE: (context) => HomePage(),
   CREATE_LOBBY_ROUTE: (context) => CreateLobbyPage(),

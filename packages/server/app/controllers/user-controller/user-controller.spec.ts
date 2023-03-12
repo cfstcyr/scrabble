@@ -92,4 +92,25 @@ describe('UserController', () => {
             });
         });
     });
+
+    describe('/api/users/search', () => {
+        describe('GET', () => {
+            it('should return search', async () => {
+                return supertest(expressApp).get('/api/users/search?q=').send({ idUser: -1 }).expect(StatusCodes.OK);
+            });
+        });
+    });
+
+    describe('/api/users/profile/:username', () => {
+        describe('GET', () => {
+            it('should return search', async () => {
+                await userService['table'].insert(DEFAULT_USER);
+                return supertest(expressApp).get(`/api/users/profile/${DEFAULT_USER.username}`).send({ idUser: -1 }).expect(StatusCodes.OK);
+            });
+
+            it('should return 404 if not found', async () => {
+                return supertest(expressApp).get(`/api/users/profile/${DEFAULT_USER.username}`).send({ idUser: -1 }).expect(StatusCodes.NOT_FOUND);
+            });
+        });
+    });
 });
