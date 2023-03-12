@@ -1,38 +1,9 @@
 import 'dart:async';
 
-import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/group.dart';
-import 'package:mobile/classes/virtual-player-level.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../classes/user.dart';
 import '../constants/create-lobby-constants.dart';
-
-Group publicGroup = Group(
-    groupId: '1',
-    users: [PublicUser(username: 'Thomas')],
-    maxRoundTime: 30,
-    virtualPlayerLevel: VirtualPlayerLevel.beginner,
-    gameVisibility: GameVisibility.public);
-Group privateGroup = Group(
-    groupId: '2',
-    users: [PublicUser(username: 'Rachad'), PublicUser(username: 'Amine')],
-    maxRoundTime: 60,
-    virtualPlayerLevel: VirtualPlayerLevel.expert,
-    gameVisibility: GameVisibility.private);
-Group protectedGroup = Group(
-    groupId: '3',
-    users: [
-      PublicUser(username: 'Thomas'),
-      PublicUser(username: 'Charles'),
-      PublicUser(username: 'Raphael'),
-      PublicUser(username: 'Ahmed')
-    ],
-    maxRoundTime: 90,
-    virtualPlayerLevel: VirtualPlayerLevel.beginner,
-    gameVisibility: GameVisibility.protected);
-// BehaviorSubject<List<Group>> groups$ = BehaviorSubject.seeded(
-//     List.of([publicGroup, privateGroup, protectedGroup]));
 
 BehaviorSubject<List<Group>> groups$ = BehaviorSubject.seeded([]);
 
