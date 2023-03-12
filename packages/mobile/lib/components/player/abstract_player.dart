@@ -44,18 +44,6 @@ abstract class AbstractPlayer extends StatelessWidget {
             background: theme.colorScheme.onBackground,
             radius: 16,
             size: large ? 44 : 22),
-        // Container(
-        //   height: large ? 32 : 22,
-        //   width: large ? 32 : 22,
-        //   margin: EdgeInsets.only(right: SPACE_1),
-        //   decoration: BoxDecoration(
-        //     color: Colors.grey,
-        //     image: DecorationImage(
-        //         image: AppImage(src: player.user.avatar, height: 15, width: 15,).provider,
-        //         fit: BoxFit.cover),
-        //     borderRadius: BorderRadius.all(Radius.circular(22)),
-        //   ),
-        // ),
         SizedBox(width: SPACE_1,),
         Expanded(
             child: Container(
