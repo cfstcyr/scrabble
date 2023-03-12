@@ -4,6 +4,7 @@ import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/image.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
+import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,12 +16,13 @@ import '../controllers/group-join-controller.dart';
 import '../locator.dart';
 
 class HomePage extends StatelessWidget {
-  @override
   final AccountAuthenticationController authService =
       getIt.get<AccountAuthenticationController>();
 
   final gameCreationController = getIt.get<GameCreationController>();
   final gameJoinController = getIt.get<GroupJoinController>();
+
+  @override
   Widget build(BuildContext context) {
     return MyScaffold(
       title: "Home",
@@ -39,7 +41,7 @@ class HomePage extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 100, bottom: 80),
                 child: AppImage(
                   src: LOGO_PATH,
-                  height: 600,
+                  height: 100,
                 ),
               ),
               SizedBox(
@@ -79,39 +81,50 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: 30),
               Text('Équipe 103', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(
+                height: SPACE_2,
+              ),
               Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      tile('T',
-                          'https://www.linkedin.com/in/thomas-tr%C3%A9panier/'),
-                      Text('homas Trépanier'),
-                      tile('R',
-                          'https://www.linkedin.com/in/rachad-chazbek-a06489212/'),
-                      Text('achad Chazbek'),
-                    ],
+                  SizedBox(
+                    height: 32,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        tile('T', 'homas Trépanier',
+                            'https://www.linkedin.com/in/thomas-tr%C3%A9panier/'),
+                        tile('R', 'achad Chazbek',
+                            'https://www.linkedin.com/in/rachad-chazbek-a06489212/'),
+                      ],
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      tile('C', 'https://www.linkedin.com/in/cfstcyr/'),
-                      Text('harles-François St-Cyr'),
-                      tile('A',
-                          'https://www.linkedin.com/in/ahmed-mewloud-b0a481195/'),
-                      Text('hmed Mewloud'),
-                    ],
+                  SizedBox(
+                    height: 32,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        tile('C', 'harles-François St-Cyr',
+                            'https://www.linkedin.com/in/cfstcyr/'),
+                        tile('A', 'hmed Mewloud',
+                            'https://www.linkedin.com/in/ahmed-mewloud-b0a481195/'),
+                      ],
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      tile('R', 'https://www.linkedin.com/in/raphael-salvas/'),
-                      Text('aphael Salvas'),
-                      tile('A',
-                          'https://www.linkedin.com/in/bourdache-amine-26b67a22a/'),
-                      Text('mine Bourdache'),
-                    ],
-                  )
+                  SizedBox(
+                    height: 32,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        tile('R', 'aphael Salvas',
+                            'https://www.linkedin.com/in/raphael-salvas/'),
+                        tile('A', 'mine Bourdache',
+                            'https://www.linkedin.com/in/bourdache-amine-26b67a22a/'),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -131,16 +144,23 @@ _launchURL(String link) async {
   }
 }
 
-Widget tile(String letter, String link) {
+Widget tile(String letter, String name, String link) {
   return TextButton(
     style: TextButton.styleFrom(
       minimumSize: Size.zero,
-      padding: EdgeInsets.zero,
+      padding: EdgeInsets.symmetric(vertical: SPACE_1, horizontal: SPACE_2),
     ),
     onPressed: () => _launchURL(link),
-    child: Tile(
-      tile: c.Tile(letter: letter),
-      size: 30,
-    ),
+    child: Row(children: [
+      Tile(
+        tile: c.Tile(letter: letter),
+        size: 20,
+      ),
+      SizedBox(width: 2),
+      Text(
+        name,
+        style: TextStyle(color: Colors.black),
+      ),
+    ]),
   );
 }

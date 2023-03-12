@@ -10,7 +10,7 @@ import '../main.dart';
 import '../pages/create-lobby.dart';
 import '../pages/groups-page.dart';
 
-const HOME_ROUTE = '/home';
+const HOME_ROUTE = '/';
 const CREATE_LOBBY_ROUTE = '/create-waiting-room';
 const JOIN_LOBBY_ROUTE = '/join-waiting-room';
 const MAIN_PAGE = '/main';

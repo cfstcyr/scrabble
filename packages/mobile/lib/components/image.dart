@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart' as c;
 import 'package:flutter/widgets.dart';
 
@@ -74,10 +76,11 @@ class AppImage extends c.StatelessWidget {
 
   @override
   c.Widget build(c.BuildContext context) {
+    log(_getSrc());
     return c.Image.network(
       _getSrc(),
-      height: (height ?? 0.0),
-      width: (width ?? 0.0),
+      height: (height),
+      width: (width),
       frameBuilder: frameBuilder,
     );
   }
@@ -87,9 +90,12 @@ class AppImage extends c.StatelessWidget {
   }
 
   String _getSrc() {
+    var w = width == null ? '' : (width! * 1.5).round();
+    var h = height == null ? '' : (height! * 1.5).round();
+
     return src.startsWith('https://ucarecdn.com/') &&
             (height != null || width != null)
-        ? '$src-/resize/${height?.floor() ?? ''}x${width?.floor() ?? ''}/-/progressive/yes/-/format/auto/'
+        ? '$src-/resize/${w}x$h/-/progressive/yes/-/format/auto/'
         : src;
   }
 }

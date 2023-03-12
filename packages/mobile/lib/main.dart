@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
       case TokenValidation.NoToken:
       case TokenValidation.UnknownError:
         {
-          return LOGIN_ROUTE;
+          return MAIN_PAGE;
         }
     }
   }

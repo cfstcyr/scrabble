@@ -42,8 +42,11 @@ class CustomLocator {
         () => PersonnalHttpClient());
     getIt.registerLazySingleton<StorageHandlerService>(
         () => StorageHandlerService());
+
     getIt.registerLazySingleton<UserService>(() => UserService());
     getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
+    getIt.registerLazySingleton<UserController>(() => UserController());
+
     getIt.registerLazySingleton<AccountAuthenticationController>(
         () => AccountAuthenticationController());
     getIt.registerLazySingleton<ChatManagementController>(

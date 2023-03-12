@@ -11,8 +11,9 @@ class LoginPage extends StatelessWidget {
         appBar: AppBar(
           title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [AppImage(src: LOGO_PATH, height: 60, width: 20)]),
+              children: [AppImage(src: LOGO_PATH, height: 24)]),
           automaticallyImplyLeading: false,
+          surfaceTintColor: Colors.white,
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
