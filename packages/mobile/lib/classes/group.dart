@@ -1,22 +1,26 @@
+import 'dart:convert';
+
 import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
 
 class Group {
-  final String groupId;
+  final String? groupId;
   final List<PublicUser> users;
   final int maxRoundTime;
   final VirtualPlayerLevel virtualPlayerLevel;
   final GameVisibility gameVisibility;
+  final String? password;
   bool? canJoin;
 
   Group(
-      {required this.groupId,
-      required this.users,
+      {required this.users,
       required this.maxRoundTime,
       required this.virtualPlayerLevel,
       required this.gameVisibility,
-      this.canJoin});
+      this.canJoin,
+      this.groupId,
+      this.password});
 
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
@@ -35,7 +39,13 @@ class Group {
         'user3': users[2],
         'user4': users[3],
         'maxRoundTime': maxRoundTime,
-        'virtualPLayerLevel': virtualPlayerLevel,
-        'gameVisibility': gameVisibility,
+        'virtualPLayerLevel': virtualPlayerLevel.levelName,
+        'gameVisibility': gameVisibility.name,
+      };
+  Map<String, dynamic> GroupCreationDatatoJson() => {
+        'user1': jsonEncode(users[0].toJson()),
+        'maxRoundTime': maxRoundTime,
+        'virtualPLayerLevel': virtualPlayerLevel.levelName,
+        'gameVisibility': gameVisibility.name,
       };
 }
