@@ -26,7 +26,7 @@ class UserSessionService {
   }
 
   UserSession? getSession() {
-    return _userSession?.value;
+    return _userSession?.valueOrNull;
   }
 
   void clearUserSession() {

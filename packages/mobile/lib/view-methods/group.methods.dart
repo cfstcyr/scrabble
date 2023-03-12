@@ -11,11 +11,10 @@ import '../constants/create-lobby-constants.dart';
 BehaviorSubject<List<Group>> groups$ = BehaviorSubject.seeded([]);
 
 Stream<List<Group>> get groupStream {
-  return groups$.map((List<Group> groups) {
+  return groups$.doOnData((List<Group> groups) {
     for (Group group in groups) {
       group.canJoin = group.users.length < MAX_PLAYER_COUNT;
     }
-    return groups;
   });
 }
 

@@ -270,10 +270,11 @@ class PlayerInGroup extends StatelessWidget {
                 fit: BoxFit.cover,
                 child: Avatar(
                     avatar: avatar,
+                    forceInitials: avatar == null,
                     initials: getUsersInitials(username),
                     background: theme.colorScheme.onBackground,
                     radius: 32,
-                    size: 100),
+                    size: 60),
               ),
               SizedBox(
                 height: 4,

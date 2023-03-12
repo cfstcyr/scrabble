@@ -59,7 +59,6 @@ class GroupJoinController {
 
   void _configureSocket() {
     socketService.on(GROUP_UPDATE, (groups) async {
-      print('group update');
       handleGroupsUpdate(groups);
     });
     socketService.on(ACCEPTED_IN_GROUP,
