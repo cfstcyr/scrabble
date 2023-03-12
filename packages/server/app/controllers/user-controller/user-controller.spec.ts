@@ -92,4 +92,12 @@ describe('UserController', () => {
             });
         });
     });
+
+    describe('/api/users/search', () => {
+        describe('GET', () => {
+            it('should return search', async () => {
+                return supertest(expressApp).get('/api/users/search?q=').send({ idUser: -1 }).expect(StatusCodes.OK);
+            });
+        });
+    });
 });
