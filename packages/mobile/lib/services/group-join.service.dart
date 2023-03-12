@@ -74,6 +74,10 @@ class GroupJoinService {
     });
   }
 
+  Future<void> handleLeaveGroup() async {
+    await groupJoinController.handleLeaveGroup();
+  }
+
   Future<bool> handleCancelJoinRequest() async {
     return await groupJoinController
         .handleCancelJoinRequest()

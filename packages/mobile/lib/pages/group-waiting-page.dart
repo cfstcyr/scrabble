@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/app_button.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/group.dart';
@@ -102,6 +104,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                               virtualPlayerLevel:
                               widget.currentGroup.virtualPlayerLevel),
                           AppButton(onPressed: () {
+                            getIt.get<GroupJoinService>().handleLeaveGroup();
                             Navigator.pop(context);
                           },
                           icon: Icons.keyboard_arrow_left_sharp,
