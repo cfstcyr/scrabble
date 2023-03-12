@@ -3,7 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/group.dart';
-import 'package:mobile/pages/group-waiting-page.dart';
+import 'package:mobile/pages/join-waiting-page.dart';
 import 'package:mobile/pages/groups-page.dart';
 import 'package:mobile/pages/home-page.dart';
 

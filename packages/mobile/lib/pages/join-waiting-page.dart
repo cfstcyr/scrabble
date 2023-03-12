@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/components/app_button.dart';
+import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
@@ -26,7 +27,6 @@ class JoinWaitingPage extends StatefulWidget {
 }
 
 class _JoinWaitingPageState extends State<JoinWaitingPage> {
-
   late StreamSubscription groupUpdateSubscription;
   late StreamSubscription canceledSubscription;
 
@@ -41,11 +41,15 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
     });
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
-      triggerDialogBox("Partie annulée", "${host.username} a annulé la partie", [
+      triggerDialogBox(
+          "Partie annulée", "${host.username} a annulé la partie", [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,
-            onPressed: () => Navigator.pushReplacementNamed(context, GROUPS_ROUTE))
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+            })
       ]);
     });
   }
@@ -61,16 +65,8 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
 
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(WAITING_ROOM_TITLE),
-          shadowColor: Colors.black,
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.white,
-          elevation: 1,
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-        ),
+    return MyScaffold(
+        title: WAITING_ROOM_TITLE,
         body: FractionallySizedBox(
           widthFactor: 1,
           heightFactor: 1,
@@ -104,7 +100,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                           Expanded(
                             child: WaitingRoom(
                               virtualPlayerLevel:
-                              widget.currentGroup.virtualPlayerLevel,
+                                  widget.currentGroup.virtualPlayerLevel,
                             ),
                           ),
                           Row(children: <Widget>[
@@ -131,14 +127,16 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                           Parameters(
                               maxRoundTime: widget.currentGroup.maxRoundTime,
                               virtualPlayerLevel:
-                              widget.currentGroup.virtualPlayerLevel),
-                          AppButton(onPressed: () {
-                            getIt.get<GroupJoinService>().handleLeaveGroup();
-                            Navigator.pop(context);
-                          },
-                          icon: Icons.keyboard_arrow_left_sharp,
-                          text: QUIT_GROUP,
-                          theme: AppButtonTheme.primary,),
+                                  widget.currentGroup.virtualPlayerLevel),
+                          AppButton(
+                            onPressed: () {
+                              getIt.get<GroupJoinService>().handleLeaveGroup();
+                              Navigator.pop(context);
+                            },
+                            icon: Icons.keyboard_arrow_left_sharp,
+                            text: QUIT_GROUP,
+                            theme: AppButtonTheme.primary,
+                          ),
                         ],
                       ),
                     ),
@@ -147,7 +145,6 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
               ),
             ],
           ),
-        ),
-        backgroundColor: theme.colorScheme.background);
+        ));
   }
 }

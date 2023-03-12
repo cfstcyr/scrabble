@@ -8,7 +8,7 @@ import '../classes/group.dart';
 import '../components/app_button.dart';
 import '../controllers/group-join-controller.dart';
 import '../locator.dart';
-import '../pages/group-waiting-page.dart';
+import '../pages/join-waiting-page.dart';
 import '../view-methods/group.methods.dart';
 
 class GroupJoinService {
