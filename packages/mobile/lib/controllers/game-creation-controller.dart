@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/environments/environment.dart';
 
+import '../classes/group.dart';
 import '../locator.dart';
 import '../services/client.dart';
 import '../services/socket.service.dart';
@@ -63,5 +65,11 @@ class GameCreationController {
         body: jsonEncode(opponent));
     // TODO: Remove hack
     return (res.statusCode == 200);
+  }
+
+  Future<bool> handleCreateGame(Group groupData) async {
+    Response res = await http.post(Uri.parse(endpoint),
+        body: groupData.GroupCreationDatatoJson());
+    return res.statusCode == HttpStatus.created;
   }
 }
