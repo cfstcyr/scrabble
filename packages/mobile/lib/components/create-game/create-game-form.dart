@@ -169,20 +169,22 @@ class CreateGameFormState extends State<CreateGameForm> {
                               IconButton(
                                 icon: Icon(Icons.remove),
                                 onPressed: () => setState(() {
-                                  _timePerTurn -= Duration(seconds: 30);
-                                  if (_timePerTurn < Duration(seconds: 30)) {
-                                    _timePerTurn = Duration(seconds: 30);
+                                  _timePerTurn -= Duration(seconds: MIN_TIME);
+                                  if (_timePerTurn <
+                                      Duration(seconds: MIN_TIME)) {
+                                    _timePerTurn = Duration(seconds: MIN_TIME);
                                   }
                                 }),
                               ),
                               Text(
-                                  '${_timePerTurn.inMinutes}:${_timePerTurn.inSeconds.remainder(60).toString().padLeft(2, '0')}'),
+                                  '${_timePerTurn.inMinutes}:${_timePerTurn.inSeconds.remainder(DEFAULT_TIME).toString().padLeft(2, ZERO)}'),
                               IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: () => setState(() {
-                                  _timePerTurn += Duration(seconds: 30);
-                                  if (_timePerTurn > Duration(minutes: 5)) {
-                                    _timePerTurn = Duration(minutes: 5);
+                                  _timePerTurn += Duration(seconds: MIN_TIME);
+                                  if (_timePerTurn >
+                                      Duration(minutes: MAX_TIME)) {
+                                    _timePerTurn = Duration(minutes: MAX_TIME);
                                   }
                                 }),
                               ),
