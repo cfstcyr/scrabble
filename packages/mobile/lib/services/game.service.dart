@@ -8,7 +8,7 @@ import 'package:mobile/classes/game/game-config.dart';
 import 'package:mobile/classes/game/game-update.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
-import 'package:mobile/classes/game/players-container.dart';
+import 'package:mobile/classes/game/players_container.dart';
 import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/square.dart';
@@ -61,8 +61,7 @@ class GameService {
         .where((Player player) => player.socketId == localPlayerId)
         .map((Player player) => player.isLocalPlayer = true);
 
-    TileRack tileRack =
-        TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
+    TileRack tileRack = TileRack();
 
     _game.add(Game(
         board: Board(),

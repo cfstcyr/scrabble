@@ -4,13 +4,15 @@ import 'package:mobile/components/player/main_player.dart';
 import 'package:mobile/components/player/player.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
+import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/classes/game/player.dart' as c;
-import 'package:mobile/classes/game/players-container.dart' as p;
+import 'package:mobile/classes/game/players_container.dart' as p;
+import 'package:rxdart/rxdart.dart';
 
 class PlayersContainer extends StatelessWidget {
-  ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
   GameService _gameService = getIt.get<GameService>();
+  RoundService _roundService = getIt.get<RoundService>();
 
   List<c.Player> generateOrderedPlayerList(
       p.PlayersContainer playersContainer) {
@@ -27,13 +29,17 @@ class PlayersContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Game?>(
-      stream: _gameService.gameStream,
+    return StreamBuilder(
+      stream: CombineLatestStream.list<dynamic>(
+          [_gameService.gameStream, _roundService.getActivePlayerId()]),
       builder: (context, snapshot) {
         if (snapshot.data == null) return Container();
 
+        Game game = snapshot.data![0];
+        String activePlayerId = snapshot.data![1];
+
         List<c.Player> orderedPlayerList =
-            generateOrderedPlayerList(snapshot.data!.players);
+            generateOrderedPlayerList(game.players);
 
         return IntrinsicHeight(
             child: Row(
@@ -42,24 +48,25 @@ class PlayersContainer extends StatelessWidget {
             Expanded(
                 child: MainPlayer(
                     player: orderedPlayerList[0],
-                    isPlaying: _gameService
-                        .isActivePlayer(orderedPlayerList[0].socketId))),
+                    isPlaying: _roundService.isActivePlayer(
+                        activePlayerId, orderedPlayerList[0].socketId))),
             Expanded(
               child: Column(
                 children: [
                   Player(
                       player: orderedPlayerList[1],
-                      isPlaying: _gameService
-                          .isActivePlayer(orderedPlayerList[1].socketId)),
+                      isPlaying: _roundService.isActivePlayer(
+                          activePlayerId, orderedPlayerList[1].socketId)),
                   Player(
                     player: orderedPlayerList[2],
-                    isPlaying: _gameService
-                        .isActivePlayer(orderedPlayerList[2].socketId),
+                    isPlaying: _roundService.isActivePlayer(
+                        activePlayerId, orderedPlayerList[2].socketId),
                   ),
                   Player(
-                      player: orderedPlayerList[3],
-                      isPlaying: _gameService
-                          .isActivePlayer(orderedPlayerList[3].socketId)),
+                    player: orderedPlayerList[3],
+                    isPlaying: _roundService.isActivePlayer(
+                        activePlayerId, orderedPlayerList[3].socketId),
+                  ),
                 ],
               ),
             )
