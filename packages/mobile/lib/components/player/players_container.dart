@@ -6,7 +6,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/classes/game/player.dart' as c;
-import 'package:mobile/classes/game/players_container.dart' as p;
+import 'package:mobile/classes/game/players-container.dart' as p;
 
 class PlayersContainer extends StatelessWidget {
   ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
@@ -20,7 +20,7 @@ class PlayersContainer extends StatelessWidget {
     do {
       playerList.add(playersContainer.getNextPlayerInList(playerList.last));
       lastPlayerPushed = playerList.last;
-    } while(lastPlayerPushed != playersContainer.getLocalPlayer());
+    } while (lastPlayerPushed != playersContainer.getLocalPlayer());
 
     return playerList;
   }
