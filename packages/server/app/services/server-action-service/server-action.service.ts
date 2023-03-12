@@ -15,7 +15,7 @@ export class ServerActionService {
     }
 
     async getActions(idUser: TypeOfId<User>): Promise<PublicServerAction[]> {
-        return this.table.select(['actionType', 'timestamp']).where({ idUser });
+        return this.table.select(['actionType', 'timestamp']).where({ idUser }).orderBy('timestamp', 'desc');
     }
 
     private get table(): Knex.QueryBuilder<ServerAction> {

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { ROUTE_LOGIN } from '@app/constants/routes-constants';
+import { ROUTE_LOGIN, ROUTE_PROFILE } from '@app/constants/routes-constants';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
 import { UserService } from '@app/services/user-service/user.service';
 import { PublicUser } from '@common/models/user';
@@ -30,6 +30,10 @@ export class PageHeaderComponent {
     signOut(): void {
         this.authenticationService.signOut();
         this.router.navigate([ROUTE_LOGIN]);
+    }
+
+    navigateToProfile(): void {
+        this.router.navigate([ROUTE_PROFILE]);
     }
 
     getUsername(): Observable<string | undefined> {
