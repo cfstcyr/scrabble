@@ -1,11 +1,12 @@
 import { Service } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
-import { EditableUserFields, PublicUser, User } from '@common/models/user';
+import { EditableUserFields, PublicUser, SharedUser, User } from '@common/models/user';
 import { USER_TABLE } from '@app/constants/services-constants/database-const';
 import { TypeOfId } from '@common/types/id';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { USER_NOT_FOUND } from '@app/constants/services-errors';
 import { StatusCodes } from 'http-status-codes';
+import { USER_SEARCH_LIMIT } from '@app/constants/controllers-constants';
 
 @Service()
 export class UserService {
@@ -17,6 +18,14 @@ export class UserService {
             avatar: user.avatar,
             email: user.email,
         };
+    }
+
+    async search(query: string, exclude?: TypeOfId<User>): Promise<SharedUser[]> {
+        const sqlQuery = this.table.select('username', 'avatar').where('username', 'like', `%${query}%`).limit(USER_SEARCH_LIMIT);
+
+        if (exclude !== undefined) sqlQuery.andWhereNot({ idUser: exclude });
+
+        return sqlQuery;
     }
 
     async editUser(idUser: TypeOfId<User>, fields: EditableUserFields): Promise<void> {

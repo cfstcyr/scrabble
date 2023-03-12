@@ -23,4 +23,6 @@ export interface UserFieldValidation {
     isAvailable: boolean;
 }
 
+export type SharedUser = Pick<User, 'username' | 'avatar'>;
+
 export const UNKOWN_USER: PublicUser = { email: '', username: 'Inconnu', avatar: '' };
