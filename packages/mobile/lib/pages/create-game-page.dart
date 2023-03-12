@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-import 'create-game.dart';
+import '../components/create-game/create-game-form.dart';
 
 class CreateGamePage extends StatelessWidget {
   @override
