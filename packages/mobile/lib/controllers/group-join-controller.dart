@@ -1,5 +1,6 @@
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
+import 'package:mobile/classes/group.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
@@ -48,12 +49,16 @@ class GroupJoinController {
     return response;
   }
 
+  void handleAcceptedJoinRequest(Map<String, dynamic> group) {
+    acceptedJoinRequest$.add(Group.fromJson(group));
+  }
+
   void _configureSocket() {
     socketService.on(GROUP_UPDATE, (groups) async {
       handleGroupsUpdate(groups);
     });
     socketService.on(
-        ACCEPTED_IN_GROUP, (group) => acceptedJoinRequest$.add(group));
+        ACCEPTED_IN_GROUP, (group) => handleAcceptedJoinRequest(group));
     socketService.on(
         REJECTED_FROM_GROUP, (hostName) => rejectedJoinRequest$.add(hostName));
     socketService.on(
