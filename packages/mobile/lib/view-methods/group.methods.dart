@@ -1,25 +1,20 @@
 import 'dart:async';
 
-import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/game/game-config.dart';
+import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/group.dart';
-import 'package:mobile/classes/virtual-player-level.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../classes/user.dart';
 import '../constants/create-lobby-constants.dart';
 
-Group publicGroup = Group(groupId: '1', users: [PublicUser(username: 'Thomas')], maxRoundTime: 30, virtualPlayerLevel: VirtualPlayerLevel.beginner, gameVisibility: GameVisibility.public);
-Group privateGroup = Group(groupId: '2', users: [PublicUser(username: 'Rachad'), PublicUser(username: 'Amine')], maxRoundTime: 60, virtualPlayerLevel: VirtualPlayerLevel.expert, gameVisibility: GameVisibility.private);
-Group protectedGroup = Group(groupId: '3', users: [PublicUser(username: 'Thomas'), PublicUser(username: 'Charles'), PublicUser(username: 'Raphael'), PublicUser(username: 'Ahmed')], maxRoundTime: 90, virtualPlayerLevel: VirtualPlayerLevel.beginner, gameVisibility: GameVisibility.protected);
-BehaviorSubject<List<Group>> groups$ = BehaviorSubject.seeded(List.of([publicGroup, privateGroup, protectedGroup]));
+BehaviorSubject<List<Group>> groups$ = BehaviorSubject.seeded([]);
 
 Stream<List<Group>> get groupStream {
-  return groups$.map((List<Group> groups) {
+  return groups$.doOnData((List<Group> groups) {
     for (Group group in groups) {
       group.canJoin = group.users.length < MAX_PLAYER_COUNT;
     }
-    return groups;
   });
 }
 
@@ -29,30 +24,17 @@ void handleGroupsUpdate(dynamic newGroupsJson) {
   groups$.add(receivedGroups);
 }
 
-Subject<Group> acceptedJoinRequest$ = BehaviorSubject();
+Subject<Group> currentGroupUpdate$ = PublishSubject();
 
-Stream<Group> get acceptedStream => acceptedJoinRequest$.stream;
+Stream<Group> get currentGroupUpdateStream => currentGroupUpdate$.stream;
 
-Subject<String> rejectedJoinRequest$ = BehaviorSubject();
+Subject<PublicUser> rejectedJoinRequest$ = PublishSubject();
 
-Stream<String> get rejectedStream => rejectedJoinRequest$.stream;
+Stream<PublicUser> get rejectedStream => rejectedJoinRequest$.stream;
 
-Subject<String> canceledGroup$ = BehaviorSubject();
+Subject<PublicUser> canceledGroup$ = PublishSubject();
 
-Stream<String> get canceledStream => canceledGroup$.stream;
+Stream<PublicUser> get canceledStream => canceledGroup$.stream;
 
-void reOpenSubject<T>(Subject<T> subject, [T? seed]) {
-  if (!subject.isClosed) return;
-
-  subject = seed == null ? BehaviorSubject() : BehaviorSubject.seeded(seed);
-}
-
-Future<void> closeSubject<T>(Subject<T> subject) async {
-  if (subject.isClosed) return;
-  await subject.done;
-  await subject.drain();
-  await subject.close();
-}
-
-Subject<InitializeGameData> startGame$ = PublishSubject();
 Stream<InitializeGameData> get startGameEvent => startGame$.stream;
+Subject<InitializeGameData> startGame$ = PublishSubject();

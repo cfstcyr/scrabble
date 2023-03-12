@@ -62,7 +62,7 @@ class ActionData<T extends ActionPayload> {
   }
 
   Map<String, dynamic> toJson() => {
-        'type': type,
+        'type': type.name,
         'payload': payload != null ? payload!.toJson() : null,
       };
 }

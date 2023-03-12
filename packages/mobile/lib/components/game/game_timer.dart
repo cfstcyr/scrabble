@@ -65,7 +65,7 @@ class _GameTimerState extends State<GameTimer> {
   }
 
   void timerExpired() {
-    widget.timer!.cancel();
+    if (widget.timer != null) widget.timer!.cancel();
     widget.timeLeft = 0;
     widget.isStopped = true;
   }

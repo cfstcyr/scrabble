@@ -3,8 +3,9 @@ class Tile {
   final int? value;
   final bool isWildcard;
   String? playedLetter;
+  bool isSelectedForExchange;
 
-  Tile({this.letter, this.value, this.isWildcard = false, this.playedLetter});
+  Tile({this.letter, this.value, this.isWildcard = false, this.playedLetter, this.isSelectedForExchange = false});
 
   static Tile wildcard() {
     return Tile(isWildcard: true);
@@ -22,4 +23,16 @@ class Tile {
       playedLetter: json['playedLetter'] as String?,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'letter': letter,
+    'value': value,
+    'isWildcard': isWildcard,
+    'playedLetter': playedLetter,
+  };
+
+  void toggleIsSelected() {
+    isSelectedForExchange = !isSelectedForExchange;
+  }
 }
+

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
+import 'package:mobile/classes/group.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
@@ -17,6 +19,7 @@ class GroupJoinController {
 
   SocketService socketService = getIt.get<SocketService>();
   PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
+
   InterceptedHttp get http => httpClient.http;
 
   GroupJoinController._privateConstructor() {
@@ -31,16 +34,12 @@ class GroupJoinController {
   }
 
   Future<void> handleGetGroups() async {
-    await get(Uri.parse("$endpoint"));
+    await http.get(Uri.parse(endpoint));
   }
 
   Future<Response> handleJoinGroup(String groupId) async {
-    // TODO Use UserService to get user's username
-    String username = 'Player';
     joinedGroupedId = groupId;
-    return http.post(
-        Uri.parse("$endpoint/$groupId/players/${SocketService.socket.id}/join"),
-        body: jsonEncode({'playerName': username}));
+    return http.post(Uri.parse("$endpoint/$groupId/players/join"));
   }
 
   Future<Response> handleCancelJoinRequest() async {
@@ -48,21 +47,28 @@ class GroupJoinController {
   }
 
   Future<Response> handleLeaveGroup() async {
-    Future<Response> response = http.delete(Uri.parse(
-        "$endpoint/$joinedGroupedId/players/${SocketService.socket.id}/leave"));
+    Future<Response> response =
+        http.delete(Uri.parse("$endpoint/$joinedGroupedId/players/leave"));
     joinedGroupedId = null;
     return response;
+  }
+
+  void handleCurrentGroupUpdate(Group group) {
+    currentGroupUpdate$.add(group);
   }
 
   void _configureSocket() {
     socketService.on(GROUP_UPDATE, (groups) async {
       handleGroupsUpdate(groups);
     });
-    socketService.on(
-        ACCEPTED_IN_GROUP, (group) => acceptedJoinRequest$.add(group));
-    socketService.on(
-        REJECTED_FROM_GROUP, (hostName) => rejectedJoinRequest$.add(hostName));
-    socketService.on(
-        CANCELED_GROUP, (hostName) => canceledGroup$.add(hostName));
+    socketService.on(ACCEPTED_IN_GROUP,
+        (group) => handleCurrentGroupUpdate(Group.fromJson(group)));
+    socketService.on(REJECTED_FROM_GROUP,
+        (host) => rejectedJoinRequest$.add(PublicUser.fromJson(host)));
+    socketService.on(CANCELED_GROUP,
+        (host) => canceledGroup$.add(PublicUser.fromJson(host)));
+
+    socketService.on(USER_LEFT_GROUP,
+        (group) => handleCurrentGroupUpdate(Group.fromJson(group)));
   }
 }

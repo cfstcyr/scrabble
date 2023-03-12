@@ -1,5 +1,4 @@
-PublicUser UNKOWN_USER = PublicUser(
-    username: 'Unkown User', avatar: 'images/avatar-12.png', email: '');
+import 'package:mobile/constants/avatars-constants.dart';
 
 class User {
   int idUser;
@@ -60,7 +59,7 @@ class PublicUser {
   String avatar;
   PublicUser({
     required this.username,
-    this.avatar = "images/avatar-12.png",
+    this.avatar = '',
     this.email = '',
   });
 
@@ -68,7 +67,7 @@ class PublicUser {
     return PublicUser(
       email: json['email'] ?? '',
       username: json['username'] as String,
-      avatar: json['avatar'] ?? "images/avatar-12.png",
+      avatar: json['avatar'] ?? AVATARS.first,
     );
   }
 
@@ -81,15 +80,14 @@ class PublicUser {
   }
 
   static List<PublicUser> usersFromJson(Map<String, dynamic> json) {
-    return List<PublicUser>.from([
-      json['user1'],
-      json['user2'],
-      json['user3'],
-      json['user4']
-    ]
-        .map((dynamic publicUser) =>
-            publicUser == null ? UNKOWN_USER : PublicUser.fromJson(publicUser))
-        .toList());
+    List<PublicUser> users = [];
+
+    for (int i = 1; i <= 4; i++) {
+      if(json['user$i'] != null) {
+        users.add(PublicUser.fromJson(json['user$i']));
+      }
+    }
+    return users;
   }
 }
 

@@ -26,7 +26,6 @@ class StartGameData {
   });
 
   factory StartGameData.fromJson(Map<String, dynamic> json) {
-    print(json['tileReserve']);
     return StartGameData(
         player1: Player.fromJson(json['player1']),
         player2: Player.fromJson(json['player2']),
@@ -35,11 +34,10 @@ class StartGameData {
         maxRoundTime: json['maxRoundTime'],
         gameId: json['gameId'],
         firstRound: Round.fromJson(json['round']),
-        tileReserve: json['tileReserve'] != null &&
-                (json['tileReserve'] as List<dynamic>).isNotEmpty
+        tileReserve: json['tileReserve'] != null && (json['tileReserve'] as List<dynamic>).isNotEmpty
             ? (json['tileReserve'] as List<dynamic>)
-                .map((dynamic tile) => TileReserveData.fromJson(tile))
-                .toList()
+                .map((dynamic tile) =>
+                    TileReserveData.fromJson(tile)).toList()
             : List<TileReserveData>.empty());
   }
 }
