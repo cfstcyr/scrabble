@@ -78,12 +78,15 @@ class PublicUser {
   }
 
   static List<PublicUser> usersFromJson(Map<String, dynamic> json) {
-    return List<PublicUser>.from([
-      json['user1'],
-      json['user2'],
-      json['user3'],
-      json['user4']
-    ].map((dynamic publicUser) => PublicUser.fromJson(publicUser)).toList());
+    List<PublicUser> users = [];
+
+    for (var i = 1; i <= 4; i++) {
+      if (json['user$i'] != null) {
+        users.add(PublicUser.fromJson(json['user$i']));
+      }
+    }
+
+    return users;
   }
 }
 
