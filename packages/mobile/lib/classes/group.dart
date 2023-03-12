@@ -44,7 +44,7 @@ class Group {
       };
   Map<String, dynamic> GroupCreationDatatoJson() => {
         'user1': jsonEncode(users[0].toJson()),
-        'maxRoundTime': maxRoundTime,
+        'maxRoundTime': jsonEncode(maxRoundTime),
         'virtualPLayerLevel': virtualPlayerLevel.levelName,
         'gameVisibility': gameVisibility.name,
       };
