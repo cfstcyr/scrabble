@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/app_button.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/group.dart';
@@ -72,7 +73,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                           Expanded(
                             child: WaitingRoom(
                               virtualPlayerLevel:
-                                  widget.currentGroup.virtualPlayerLevel,
+                              widget.currentGroup.virtualPlayerLevel,
                             ),
                           ),
                           Row(children: <Widget>[
@@ -99,20 +100,13 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                           Parameters(
                               maxRoundTime: widget.currentGroup.maxRoundTime,
                               virtualPlayerLevel:
-                                  widget.currentGroup.virtualPlayerLevel),
-                          ElevatedButton.icon(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              style: setStyleSecondaryActionButtons(),
-                              icon: Icon(
-                                Icons.keyboard_arrow_left_sharp,
-                                size: 20,
-                              ),
-                              label: Text(
-                                QUIT_GROUP,
-                                style: TextStyle(fontSize: 15),
-                              )),
+                              widget.currentGroup.virtualPlayerLevel),
+                          AppButton(onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icons.keyboard_arrow_left_sharp,
+                          text: QUIT_GROUP,
+                          theme: AppButtonTheme.primary,),
                         ],
                       ),
                     ),

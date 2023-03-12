@@ -1,6 +1,7 @@
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/group.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
@@ -60,8 +61,8 @@ class GroupJoinController {
     socketService.on(
         ACCEPTED_IN_GROUP, (group) => handleAcceptedJoinRequest(group));
     socketService.on(
-        REJECTED_FROM_GROUP, (host) => rejectedJoinRequest$.add(host));
+        REJECTED_FROM_GROUP, (host) => rejectedJoinRequest$.add(PublicUser.fromJson(host)));
     socketService.on(
-        CANCELED_GROUP, (host) => canceledGroup$.add(host));
+        CANCELED_GROUP, (host) => canceledGroup$.add(PublicUser.fromJson(host)));
   }
 }
