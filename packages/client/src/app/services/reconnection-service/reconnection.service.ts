@@ -31,14 +31,16 @@ export class ReconnectionService {
         this.gamePlayController.handleReconnection(gameIdCookie, socketIdCookie);
     }
 
-    disconnectGame(): void {
+    disconnectGame(letReconnect: boolean = true): void {
         const gameId = this.gameService.getGameId();
         const localPlayerId = this.gameService.getLocalPlayerId();
         this.gameService.resetServiceData();
 
         if (!localPlayerId) throw new Error(NO_LOCAL_PLAYER);
-        this.cookieService.setCookie(GAME_ID_COOKIE, gameId, TIME_TO_RECONNECT);
-        this.cookieService.setCookie(SOCKET_ID_COOKIE, localPlayerId, TIME_TO_RECONNECT);
+        if (letReconnect) {
+            this.cookieService.setCookie(GAME_ID_COOKIE, gameId, TIME_TO_RECONNECT);
+            this.cookieService.setCookie(SOCKET_ID_COOKIE, localPlayerId, TIME_TO_RECONNECT);
+        }
         this.gamePlayController.handleDisconnection(gameId);
     }
 
