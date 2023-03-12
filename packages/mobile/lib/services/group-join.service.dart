@@ -16,35 +16,11 @@ class GroupJoinService {
       getIt.get<GroupJoinController>();
 
   GroupJoinService._privateConstructor() {
-    acceptedStream.listen((Group group) {
-      Navigator.pushReplacement(
-          navigatorKey.currentContext!,
-          MaterialPageRoute(
-              builder: (context) => JoinWaitingPage(currentGroup: group)));
-      closeSubject(acceptedJoinRequest$);
-    });
 
-    rejectedStream.listen((PublicUser host) {
-      triggerDialogBox("Demande rejetée", "${host.username} a rejeté votre demande", [
-        DialogBoxButtonParameters(
-            content: 'OK',
-            theme: AppButtonTheme.primary,
-            onPressed: () => Navigator.of(navigatorKey.currentContext!)
-                .pushReplacement(
-                    MaterialPageRoute(builder: (context) => GroupPage())))
-      ]);
-    });
 
-    canceledStream.listen((PublicUser host) {
-      triggerDialogBox("Partie annulée", "${host.username} a annulé la partie", [
-        DialogBoxButtonParameters(
-            content: 'OK',
-            theme: AppButtonTheme.primary,
-            onPressed: () => Navigator.of(navigatorKey.currentContext!)
-                .pushReplacement(
-                    MaterialPageRoute(builder: (context) => GroupPage())))
-      ]);
-    });
+
+
+
   }
 
   static final GroupJoinService _instance =

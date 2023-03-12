@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/user.dart';
+import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
@@ -12,20 +17,44 @@ import '../constants/locale/groups-constants.dart';
 import '../view-methods/create-lobby-methods.dart';
 
 class JoinWaitingPage extends StatefulWidget {
-  const JoinWaitingPage({super.key, required this.currentGroup});
+  JoinWaitingPage({super.key, required this.currentGroup});
 
-  final Group currentGroup;
+  Group currentGroup;
 
   @override
   State<JoinWaitingPage> createState() => _JoinWaitingPageState();
 }
 
 class _JoinWaitingPageState extends State<JoinWaitingPage> {
+
+  late StreamSubscription groupUpdateSubscription;
+  late StreamSubscription canceledSubscription;
+
   @override
   void initState() {
     super.initState();
-    reOpenSubject(playerList$);
     playerList$.add(widget.currentGroup.users);
+
+    groupUpdateSubscription = currentGroupUpdateStream.listen((Group group) {
+      widget.currentGroup = group;
+      playerList$.add(widget.currentGroup.users);
+    });
+
+    canceledSubscription = canceledStream.listen((PublicUser host) {
+      triggerDialogBox("Partie annulée", "${host.username} a annulé la partie", [
+        DialogBoxButtonParameters(
+            content: 'OK',
+            theme: AppButtonTheme.primary,
+            onPressed: () => Navigator.pushReplacementNamed(context, GROUPS_ROUTE))
+      ]);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    groupUpdateSubscription.cancel();
+    canceledSubscription.cancel();
   }
 
   @override

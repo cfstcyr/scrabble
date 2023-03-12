@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
                     SizedBox(height: 10),
                     AppButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, JOIN_LOBBY_ROUTE);
+                        Navigator.pushNamed(context, GROUPS_ROUTE);
                       },
                       size: AppButtonSize.large,
                       child: Text(JOIN_PAGE_MESSAGE,

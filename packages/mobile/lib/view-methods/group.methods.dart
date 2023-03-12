@@ -23,27 +23,14 @@ void handleGroupsUpdate(dynamic newGroupsJson) {
   groups$.add(receivedGroups);
 }
 
-Subject<Group> acceptedJoinRequest$ = BehaviorSubject();
+Subject<Group> currentGroupUpdate$ = PublishSubject();
 
-Stream<Group> get acceptedStream => acceptedJoinRequest$.stream;
+Stream<Group> get currentGroupUpdateStream => currentGroupUpdate$.stream;
 
-Subject<PublicUser> rejectedJoinRequest$ = BehaviorSubject();
+Subject<PublicUser> rejectedJoinRequest$ = PublishSubject();
 
 Stream<PublicUser> get rejectedStream => rejectedJoinRequest$.stream;
 
-Subject<PublicUser> canceledGroup$ = BehaviorSubject();
+Subject<PublicUser> canceledGroup$ = PublishSubject();
 
 Stream<PublicUser> get canceledStream => canceledGroup$.stream;
-
-void reOpenSubject<T>(Subject<T> subject, [T? seed]) {
-  if (!subject.isClosed) return;
-
-  subject = seed == null ? BehaviorSubject() : BehaviorSubject.seeded(seed);
-}
-
-Future<void> closeSubject<T>(Subject<T> subject) async {
-  if (subject.isClosed) return;
-  await subject.done;
-  await subject.drain();
-  await subject.close();
-}

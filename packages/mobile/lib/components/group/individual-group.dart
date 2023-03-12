@@ -4,6 +4,9 @@ import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/constants/user-constants.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/group-join.service.dart';
 
 import '../../pages/groups-request-waiting-page.dart';
 import '../../utils/duration-format.dart';
@@ -99,12 +102,12 @@ class IndividualGroup extends StatelessWidget {
                                   onPressed: group.canJoin!
                                       ? () {
                                           joinGroupFunction(group.groupId);
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      GroupRequestWaitingPage(
-                                                          group: group)));
+                                          Navigator.pushNamed(
+                                                  context, JOIN_WAITING_ROUTE,
+                                                  arguments: group)
+                                              .then((_) => getIt
+                                                  .get<GroupJoinService>()
+                                                  .getGroups());
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(

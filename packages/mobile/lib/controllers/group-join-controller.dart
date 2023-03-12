@@ -17,6 +17,7 @@ class GroupJoinController {
 
   SocketService socketService = getIt.get<SocketService>();
   PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
+
   InterceptedHttp get http => httpClient.http;
 
   GroupJoinController._privateConstructor() {
@@ -50,19 +51,23 @@ class GroupJoinController {
     return response;
   }
 
-  void handleAcceptedJoinRequest(Map<String, dynamic> group) {
-    acceptedJoinRequest$.add(Group.fromJson(group));
+  void handleCurrentGroupUpdate(Group group) {
+    currentGroupUpdate$.add(group);
   }
 
   void _configureSocket() {
     socketService.on(GROUP_UPDATE, (groups) async {
+      print('group update');
       handleGroupsUpdate(groups);
     });
-    socketService.on(
-        ACCEPTED_IN_GROUP, (group) => handleAcceptedJoinRequest(group));
-    socketService.on(
-        REJECTED_FROM_GROUP, (host) => rejectedJoinRequest$.add(PublicUser.fromJson(host)));
-    socketService.on(
-        CANCELED_GROUP, (host) => canceledGroup$.add(PublicUser.fromJson(host)));
+    socketService.on(ACCEPTED_IN_GROUP,
+        (group) => handleCurrentGroupUpdate(Group.fromJson(group)));
+    socketService.on(REJECTED_FROM_GROUP,
+        (host) => rejectedJoinRequest$.add(PublicUser.fromJson(host)));
+    socketService.on(CANCELED_GROUP,
+        (host) => canceledGroup$.add(PublicUser.fromJson(host)));
+
+    socketService.on(USER_LEFT_GROUP,
+        (group) => handleCurrentGroupUpdate(Group.fromJson(group)));
   }
 }

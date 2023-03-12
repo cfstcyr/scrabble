@@ -1,7 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/user.dart';
+import 'package:mobile/components/alert-dialog.dart';
+import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/group/individual-group.dart';
 import 'package:mobile/components/group/parameters.dart';
+import 'package:mobile/pages/group-waiting-page.dart';
+import 'package:mobile/routes/navigator-key.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
+import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/group.dart';
 import '../constants/locale/group-selection-constants.dart';
@@ -19,6 +28,46 @@ class GroupRequestWaitingPage extends StatefulWidget {
 }
 
 class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
+
+  late StreamSubscription acceptedSubscription;
+  late StreamSubscription rejectedSubscription;
+  late StreamSubscription canceledSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    acceptedSubscription = currentGroupUpdateStream.listen((Group group) {
+      Navigator.pushReplacementNamed(context, JOIN_LOBBY_ROUTE, arguments: group);
+    });
+
+    rejectedSubscription = rejectedStream.listen((PublicUser host) {
+      triggerDialogBox("Demande rejetée", "${host.username} a rejeté votre demande", [
+        DialogBoxButtonParameters(
+            content: 'OK',
+            theme: AppButtonTheme.primary,
+            onPressed: () => Navigator.pushReplacementNamed(context, GROUPS_ROUTE))
+      ]);
+    });
+
+    canceledSubscription = canceledStream.listen((PublicUser host) {
+      triggerDialogBox("Partie annulée", "${host.username} a annulé la partie", [
+        DialogBoxButtonParameters(
+            content: 'OK',
+            theme: AppButtonTheme.primary,
+            onPressed: () => Navigator.pushReplacementNamed(context, GROUPS_ROUTE))
+      ]);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    acceptedSubscription.cancel();
+    rejectedSubscription.cancel();
+    canceledSubscription.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
