@@ -33,11 +33,8 @@ class GroupJoinController {
   }
 
   Future<Response> handleJoinGroup(String groupId) async {
-    // TODO Use UserService to get user's username
-    String username = 'Player';
     joinedGroupedId = groupId;
-    return http.post(Uri.parse("$endpoint/$groupId/players/join"),
-        body: {'playerName': username});
+    return http.post(Uri.parse("$endpoint/$groupId/players/join"));
   }
 
   Future<Response> handleCancelJoinRequest() async {
