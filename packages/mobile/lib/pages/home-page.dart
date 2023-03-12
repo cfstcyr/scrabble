@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
+import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/image.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
-import 'package:mobile/pages/groups-page.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/home-page.constants.dart';
 import '../constants/login-constants.dart';
 import '../controllers/account-authentification-controller.dart';
 import '../locator.dart';
-import '../main.dart';
-import 'create-lobby.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -24,7 +23,7 @@ class HomePage extends StatelessWidget {
         constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
             image: DecorationImage(
-          opacity: 0.5,
+          opacity: 0.3,
           image: AssetImage(BACKGROUND_PATH),
           fit: BoxFit.cover,
         )),
@@ -38,37 +37,40 @@ class HomePage extends StatelessWidget {
                   height: 600,
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CreateLobbyPage()));
-                },
-                style: setStyleMainActionButtons(),
-                child: Text(CREATE_PAGE_MESSAGE,
-                    style: TextStyle(color: Colors.white, fontSize: 18)),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => GroupPage()));
-                },
-                style: setStyleMainActionButtons(),
-                child: Text(JOIN_PAGE_MESSAGE,
-                    style: TextStyle(color: Colors.white, fontSize: 18)),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  authService.signOut();
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MainPage()));
-                },
-                style: setStyleMainActionButtons(),
-                child: Text(SIGNOUT_LABEL_FR,
-                    style: TextStyle(color: Colors.white, fontSize: 18)),
+              SizedBox(
+                width: 250,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AppButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, CREATE_LOBBY_ROUTE);
+                      },
+                      size: AppButtonSize.large,
+                      child: Text(CREATE_PAGE_MESSAGE,
+                          style: TextStyle(color: Colors.white, fontSize: 18)),
+                    ),
+                    SizedBox(height: 10),
+                    AppButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, JOIN_LOBBY_ROUTE);
+                      },
+                      size: AppButtonSize.large,
+                      child: Text(JOIN_PAGE_MESSAGE,
+                          style: TextStyle(color: Colors.white, fontSize: 18)),
+                    ),
+                    SizedBox(height: 10),
+                    AppButton(
+                      onPressed: () {
+                        authService.signOut();
+                        Navigator.pushNamed(context, MAIN_PAGE);
+                      },
+                      size: AppButtonSize.large,
+                      child: Text(SIGNOUT_LABEL_FR,
+                          style: TextStyle(color: Colors.white, fontSize: 18)),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 30),
               Text('Équipe 103', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -113,15 +115,6 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-}
-
-ButtonStyle setStyleMainActionButtons() {
-  return ElevatedButton.styleFrom(
-      backgroundColor: Colors.green.shade900,
-      foregroundColor: Colors.white,
-      fixedSize: Size(220, 50),
-      shape: BeveledRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(2))));
 }
 
 _launchURL(String link) async {
