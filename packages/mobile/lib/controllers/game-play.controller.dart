@@ -56,8 +56,4 @@ class GamePlayController {
       gameMessage$.add(GameMessage.fromJson(gameMessage));
     });
   }
-
-  void handleDisconnectResponse() {
-    return;
-  }
 }

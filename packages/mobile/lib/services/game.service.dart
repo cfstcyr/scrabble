@@ -158,8 +158,4 @@ class GameService {
   bool isActivePlayer(String socketId) {
     return _roundService.getActivePlayerId() == socketId;
   }
-
-  void handleUpdateBoardData(List<Square> boardData) {
-    _game.value?.board.updateBoardData(boardData);
-  }
 }

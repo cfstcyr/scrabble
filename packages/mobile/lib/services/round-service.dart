@@ -53,6 +53,7 @@ class RoundService {
   }
 
   void updateRoundData(Round round) {
+    endRound();
     startRound(round);
   }
 }
