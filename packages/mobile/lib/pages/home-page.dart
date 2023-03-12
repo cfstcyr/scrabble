@@ -10,12 +10,16 @@ import 'package:url_launcher/url_launcher.dart';
 import '../constants/home-page.constants.dart';
 import '../constants/login-constants.dart';
 import '../controllers/account-authentification-controller.dart';
+import '../controllers/game-creation-controller.dart';
 import '../locator.dart';
 
 class HomePage extends StatelessWidget {
   @override
   final AccountAuthenticationController authService =
       getIt.get<AccountAuthenticationController>();
+
+  final gameCreationController = getIt.get<GameCreationController>();
+  final gameJoinController = getIt.get<GroupJoinController>();
   Widget build(BuildContext context) {
     return MyScaffold(
       title: "Home",

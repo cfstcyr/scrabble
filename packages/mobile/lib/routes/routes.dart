@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, constant_identifier_names
 
+import 'package:mobile/pages/game-page.dart';
 import 'package:mobile/pages/home-page.dart';
 
 import '../main.dart';
