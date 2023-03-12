@@ -14,6 +14,7 @@ enum GameVisibility {
         ? GAME_VISIBILITY_TO_NAME[this]!
         : '';
   }
+
   IconData get icon {
     return GAME_VISIBILITY_TO_ICON[this] != null
         ? GAME_VISIBILITY_TO_ICON[this]!
@@ -27,7 +28,8 @@ enum GameVisibility {
   }
 
   static GameVisibility fromString(String value) {
-    return GameVisibility.values.firstWhere((GameVisibility gameVisibility) => gameVisibility.name.toLowerCase() == value.toLowerCase());
+    return GameVisibility.values.firstWhere((GameVisibility gameVisibility) =>
+        gameVisibility.name.toLowerCase() == value.toLowerCase());
   }
 
   static GameVisibility fromInteger(int value) {
@@ -46,8 +48,8 @@ enum GameVisibility {
 
 final Map<GameVisibility, String> GAME_VISIBILITY_TO_NAME = {
   GameVisibility.public: 'Public',
-  GameVisibility.private: 'Privé',
-  GameVisibility.protected: 'Protégé'
+  GameVisibility.private: 'Private',
+  GameVisibility.protected: 'Protected'
 };
 
 final Map<GameVisibility, IconData> GAME_VISIBILITY_TO_ICON = {
