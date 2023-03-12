@@ -26,6 +26,10 @@ const String ACCOUNT_CREATION_DIALOG_RETURN_FR =
     "Retourner à la création de compte";
 const String ACCOUNT_CREATION_DIALOG_TITLE_FR = "Erreur";
 
+const PROFILE_EDIT_DIALOG_ERROR_TITLE = 'Impossible de modifier le profile';
+const PROFILE_EDIT_DIALOG_ERROR_BODY =
+    'Un erreur est survenue lors de la modification du profile.';
+
 const String USERNAME_REGEX_PATTERN = r'^.{1,40}$';
 const String PASSWORD_REGEX_PATTERN =
     r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';

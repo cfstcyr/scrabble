@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:mobile/classes/user.dart';
+import 'package:mobile/components/user-avatar.dart';
+import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/user-constants.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/pages/profile-page.dart';
+import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/user.service.dart';
 
 import 'chat-management.dart';
 
@@ -15,8 +24,8 @@ class MyScaffold extends StatelessWidget {
         title: Text(title),
         shadowColor: Colors.black,
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         elevation: 1,
-        automaticallyImplyLeading: false,
         centerTitle: true,
         actions: [
           Builder(
@@ -25,9 +34,28 @@ class MyScaffold extends StatelessWidget {
               onPressed: () => Scaffold.of(context).openEndDrawer(),
             ),
           ),
+          Builder(
+              builder: (context) => InkWell(
+                    onTap: _canNavigateToProfile(context)
+                        ? () {
+                            Navigator.pushNamed(context, PROFILE_ROUTE);
+                          }
+                        : null,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: SPACE_2),
+                      child: Avatar(
+                        size: 38,
+                      ),
+                    ),
+                  )),
         ],
       ),
       endDrawer: Container(width: 325, child: const ChatManagement()),
     );
+  }
+
+  bool _canNavigateToProfile(BuildContext context) {
+    return ModalRoute.of(context)?.settings.name != PROFILE_ROUTE &&
+        ModalRoute.of(context)?.settings.name != PROFILE_EDIT_ROUTE;
   }
 }

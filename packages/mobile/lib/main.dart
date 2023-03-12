@@ -4,9 +4,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
@@ -16,23 +17,28 @@ import 'controllers/account-authentification-controller.dart';
 import 'environments/environment.dart';
 
 Future<void> main() async {
+  Intl.defaultLocale = 'fr_CA';
+  initializeDateFormatting('fr_CA', null);
+
   await dotenv.load(fileName: ".env");
   const String environment = String.fromEnvironment(
     'ENVIRONMENT',
     defaultValue: Environment.DEV,
   );
   Environment().initConfig(environment);
-  setUpLocator();
+  CustomLocator().setUpLocator();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  AccountAuthenticationController authController =
+  final AccountAuthenticationController authController =
       getIt.get<AccountAuthenticationController>();
+
   MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Widget>(
+    return FutureBuilder<String>(
       future: getEntryPage(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -54,7 +60,7 @@ class MyApp extends StatelessWidget {
                   cardTheme: CardTheme(
                       color: Colors.white, surfaceTintColor: Colors.white)),
               navigatorKey: navigatorKey,
-              home: snapshot.data,
+              initialRoute: snapshot.data,
               routes: ROUTES,
               onGenerateRoute: customOnGenerateRoute,
             ),
@@ -64,21 +70,18 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  Future<Widget>? getEntryPage() async {
+  Future<String>? getEntryPage() async {
     TokenValidation tokenValidation = await authController.validateToken();
     switch (tokenValidation) {
       case TokenValidation.Ok:
+      case TokenValidation.AlreadyConnected:
         {
-          return HomePage();
+          return HOME_ROUTE;
         }
-
       case TokenValidation.NoToken:
+      case TokenValidation.UnknownError:
         {
-          return MainPage();
-        }
-      default:
-        {
-          return MainPage();
+          return MAIN_PAGE;
         }
     }
   }

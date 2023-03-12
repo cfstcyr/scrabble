@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/constants/user-constants.dart';
 import 'package:mobile/locator.dart';
@@ -267,12 +268,12 @@ class PlayerInGroup extends StatelessWidget {
             children: [
               FittedBox(
                 fit: BoxFit.cover,
-                child: getUserAvatar(avatar,
+                child: Avatar(
+                    avatar: avatar,
                     initials: getUsersInitials(username),
                     background: theme.colorScheme.onBackground,
                     radius: 32,
-                    height: 100,
-                    width: 100),
+                    size: 100),
               ),
               SizedBox(
                 height: 4,

@@ -8,7 +8,6 @@ enum AppButtonTheme {
   secondary,
   danger,
   tomato,
-  transparent,
 }
 
 enum AppButtonSize {
@@ -16,11 +15,17 @@ enum AppButtonSize {
   large,
 }
 
+enum AppButtonType {
+  normal,
+  ghost,
+}
+
 class AppButton extends StatelessWidget {
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
   final Function()? onPressed;
   final AppButtonTheme theme;
   final AppButtonSize size;
+  final AppButtonType type;
   final String? text;
   final IconData? icon;
   final Widget? child;
@@ -30,6 +35,7 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.theme = AppButtonTheme.primary,
     this.size = AppButtonSize.normal,
+    this.type = AppButtonType.normal,
     this.text,
     this.icon,
     this.child,
@@ -40,14 +46,24 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
       onPressed: onPressed,
-      color: _getColor(),
-      disabledColor: Colors.grey.shade300,
+      color: _getButtonColor(),
+      disabledColor: type == AppButtonType.normal
+          ? Colors.grey.shade300
+          : Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
       height: _getSize(),
       minWidth: _getSize(),
       padding: iconOnly ? EdgeInsets.zero : null,
+      elevation: type == AppButtonType.normal ? 1 : 0,
+      focusElevation: type == AppButtonType.normal ? 4 : 0,
+      hoverElevation: type == AppButtonType.normal ? 4 : 0,
+      highlightElevation: type == AppButtonType.normal ? 8 : 0,
       child: _getChild(),
     );
+  }
+
+  Color _getButtonColor() {
+    return type == AppButtonType.ghost ? Colors.transparent : _getColor();
   }
 
   Color _getColor() {
@@ -59,14 +75,18 @@ class AppButton extends StatelessWidget {
       case AppButtonTheme.tomato:
         return Color.fromRGBO(248, 100, 95, 1);
       case AppButtonTheme.secondary:
-        return _themeColorService.secondaryButton;
-      case AppButtonTheme.transparent:
-        return Colors.transparent;
+        return type == AppButtonType.ghost
+            ? Colors.black
+            : _themeColorService.secondaryButton;
     }
   }
 
   Color _getAccentColor() {
-    if (onPressed == null) return Colors.white;
+    if (onPressed == null) {
+      return type == AppButtonType.normal
+          ? Colors.white
+          : _getColor().withAlpha(100);
+    }
 
     switch (theme) {
       case AppButtonTheme.primary:
@@ -74,7 +94,6 @@ class AppButton extends StatelessWidget {
       case AppButtonTheme.tomato:
         return Colors.white;
       case AppButtonTheme.secondary:
-      case AppButtonTheme.transparent:
         return Colors.black;
     }
   }

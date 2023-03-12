@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/controllers/gameplay-controller.dart';
+import 'package:mobile/controllers/game-play.controller.dart';
 
 import '../components/alert-dialog.dart';
 import '../components/app_button.dart';
 import '../constants/locale/game-constants.dart';
 import '../locator.dart';
-import '../pages/home-page.dart';
 import '../routes/routes.dart';
 
 class PlayerLeaveService {
 
-  GameplayController gameplayController = getIt.get<GameplayController>();
+  GamePlayController gameplayController = getIt.get<GamePlayController>();
 
   PlayerLeaveService._privateConstructor();
 
@@ -24,7 +23,7 @@ class PlayerLeaveService {
     triggerDialogBox(DIALOG_SURRENDER_TITLE, DIALOG_SURRENDER_CONTENT, [
       DialogBoxButtonParameters(
           content: DIALOG_ABANDON_BUTTON_CONFIRM, theme: AppButtonTheme.tomato, onPressed: () async {
-        await getIt.get<GameplayController>().leaveGame();
+        await getIt.get<GamePlayController>().leaveGame();
 
         if (!context.mounted) return;
         Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
