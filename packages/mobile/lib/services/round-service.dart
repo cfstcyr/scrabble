@@ -62,7 +62,7 @@ class RoundService {
     // }
   }
 
-  updateRoundData(RoundData round) {
-    //Idk what to do here
+  void updateRoundData(Round round) {
+    startRound(round);
   }
 }

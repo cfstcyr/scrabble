@@ -1,14 +1,14 @@
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/classes/user.dart';
 
-class PlayerData {
+class PlayerUpdateData {
   String id;
   String? newId;
   PublicUser? publicUser;
   int? score;
   List<Tile>? tiles;
 
-  PlayerData({
+  PlayerUpdateData({
     required this.id,
     this.newId,
     this.publicUser,
@@ -16,8 +16,8 @@ class PlayerData {
     this.tiles,
   });
 
-  factory PlayerData.fromJson(Map<String, dynamic> json) {
-    return PlayerData(
+  factory PlayerUpdateData.fromJson(Map<String, dynamic> json) {
+    return PlayerUpdateData(
       id: json['id'] as String,
       newId: json['newId'] as String?,
       publicUser: json['publicUser'] != null

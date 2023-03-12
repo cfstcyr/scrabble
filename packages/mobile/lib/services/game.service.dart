@@ -8,8 +8,8 @@ import 'package:mobile/classes/game/game-config.dart';
 import 'package:mobile/classes/game/game-update.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
-import 'package:mobile/classes/game/players_container.dart';
-import 'package:mobile/classes/player/player.dart';
+import 'package:mobile/classes/game/players-container.dart';
+import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
@@ -30,7 +30,7 @@ import '../utils/round-utils.dart';
 class GameService {
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
-  final BehaviorSubject<Game?> _game$;
+  final BehaviorSubject<Game?> _game;
 
   static final GameService _instance = GameService._();
 
@@ -38,7 +38,7 @@ class GameService {
     return _instance;
   }
 
-  GameService._() : _game$ = BehaviorSubject() {
+  GameService._() : _game = BehaviorSubject() {
     startGameEvent.listen((InitializeGameData initializeGameData) => startGame(
         initializeGameData.localPlayerSocketId,
         initializeGameData.startGameData));
@@ -61,26 +61,9 @@ class GameService {
         .where((Player player) => player.socketId == localPlayerId)
         .map((Player player) => player.isLocalPlayer = true);
 
-    TileRack tileRack =
-        TileRack().setTiles([
-          Tile.create('P', 1),
-          Tile.create('E', 1),
-          Tile.create('N', 1),
-          Tile.create('I', 1),
-          Tile.create('S', 1),
-          Tile.create('I', 1),
-          Tile.wildcard(),
-        ]);
+    TileRack tileRack = TileRack();
 
-    //   Tile.create("P", 1),
-    //   Tile.create("N", 1),
-    //   Tile.create("E", 1),
-    //   Tile.create("I", 1),
-    //   Tile.create("S", 1),
-    //   Tile.create("I", 1),
-    //   Tile.wildcard(),
-
-    _game$.add(Game(
+    _game.add(Game(
         board: Board(),
         tileRack: tileRack,
         players: playersContainer,
@@ -94,11 +77,11 @@ class GameService {
   }
 
   void updateGame(GameUpdateData gameUpdate) {
-    if (_game$.value == null) {
+    if (_game.value == null) {
       throw Exception('Cannot update game: game is null');
     }
 
-    Game game = _game$.value!;
+    Game game = _game.value!;
 
     if (gameUpdate.tileReserve != null) {
       game.tileReserve = gameUpdate.tileReserve!;
@@ -125,41 +108,42 @@ class GameService {
     }
 
     if (gameUpdate.round != null) {
-      _roundService.updateRoundData(gameUpdate.round!);
+      _roundService.updateRoundData(
+          Round(socketIdOfActivePlayer: gameUpdate.round!.playerData.id));
     }
 
     if (gameUpdate.isGameOver != null) {
       game.isOver = gameUpdate.isGameOver!;
     }
 
-    _game$.add(game);
+    _game.add(game);
   }
 
   Game get game {
-    if (_game$.value == null) throw Exception("No game");
+    if (_game.value == null) throw Exception("No game");
 
-    return _game$.value!;
+    return _game.value!;
   }
 
   ValueStream<Game?> get gameStream {
-    return _game$.stream;
+    return _game.stream;
   }
 
   Stream<TileRack?> get tileRackStream {
-    return _game$.map((game) => game?.tileRack);
+    return _game.map((game) => game?.tileRack);
   }
 
   TileRack getTileRack() {
-    if (_game$.value == null) throw Exception("No game");
+    if (_game.value == null) throw Exception("No game");
 
-    return _game$.value!.tileRack;
+    return _game.value!.tileRack;
   }
 
 //TODO
   void playPlacement() {
-    if (!(_game$.value?.board.isValidPlacement ?? false)) return;
+    if (!(_game.value?.board.isValidPlacement ?? false)) return;
 
-    var placement = _game$.value?.board.currentPlacement;
+    var placement = _game.value?.board.currentPlacement;
 
     if (placement == null) {
       throw Exception('Cannot play placement: placement is null');
@@ -168,11 +152,15 @@ class GameService {
     _actionService.sendAction(ActionType.place, placement.toActionPayload());
   }
 
-  void handleUpdatePlayerData(List<PlayerData> playersData) {
-    _game$.value?.players.updatePlayerData(playersData);
+  bool isLocalPlayerActivePlayer() {
+    return isActivePlayer(game.players.getLocalPlayer().socketId);
+  }
+
+  bool isActivePlayer(String socketId) {
+    return _roundService.getActivePlayerId() == socketId;
   }
 
   void handleUpdateBoardData(List<Square> boardData) {
-    _game$.value?.board.updateBoardData(boardData);
+    _game.value?.board.updateBoardData(boardData);
   }
 }

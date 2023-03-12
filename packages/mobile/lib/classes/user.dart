@@ -1,3 +1,6 @@
+PublicUser UNKOWN_USER = PublicUser(
+    username: 'Unkown User', avatar: 'images/avatar-12.png', email: '');
+
 class User {
   int idUser;
   String hash;
@@ -84,9 +87,8 @@ class PublicUser {
       json['user3'],
       json['user4']
     ]
-        .map((dynamic publicUser) => publicUser == null
-            ? PublicUser(username: '', avatar: "", email: '')
-            : PublicUser.fromJson(publicUser))
+        .map((dynamic publicUser) =>
+            publicUser == null ? UNKOWN_USER : PublicUser.fromJson(publicUser))
         .toList());
   }
 }

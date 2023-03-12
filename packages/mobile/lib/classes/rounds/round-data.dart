@@ -1,7 +1,7 @@
-import 'package:mobile/classes/player/player.dart';
+import 'package:mobile/classes/player/player-data.dart';
 
 class RoundData {
-  PlayerData playerData;
+  PlayerUpdateData playerData;
   DateTime startTime;
   DateTime limitTime;
   DateTime? completedTime;
@@ -15,7 +15,7 @@ class RoundData {
   factory RoundData.fromJson(Map<String, dynamic> json) {
     return RoundData(
       playerData:
-          PlayerData.fromJson(json['playerData'] as Map<String, dynamic>),
+          PlayerUpdateData.fromJson(json['playerData'] as Map<String, dynamic>),
       startTime: DateTime.parse(json['startTime'] as String),
       limitTime: DateTime.parse(json['limitTime'] as String),
       completedTime: json['completedTime'] != null

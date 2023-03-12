@@ -31,7 +31,9 @@ class GameCreationService {
   }
 
   Future<String> createGame() async {
-    return await gameCreationController.handleCreateGame();
+    String groupId = await gameCreationController.handleCreateGame();
+    this.groupId = groupId;
+    return groupId;
   }
 
   // Future<bool> startGame(PublicUser user, String gameId) async {

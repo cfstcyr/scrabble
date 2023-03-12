@@ -1,13 +1,13 @@
-import 'package:mobile/classes/player/player.dart';
+import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/classes/rounds/round-data.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-reserve.dart';
 
 class GameUpdateData {
-  final PlayerData? player1;
-  final PlayerData? player2;
-  final PlayerData? player3;
-  final PlayerData? player4;
+  final PlayerUpdateData? player1;
+  final PlayerUpdateData? player2;
+  final PlayerUpdateData? player3;
+  final PlayerUpdateData? player4;
   final bool? isGameOver;
   final List<String>? winners;
   final List<Square>? board;
@@ -28,33 +28,24 @@ class GameUpdateData {
 
   factory GameUpdateData.fromJson(Map<String, dynamic> json) {
     return GameUpdateData(
-      player1: json['player1'] != null
-          ? PlayerData.fromJson(json['player1'] as Map<String, dynamic>)
-          : null,
-      player2: json['player2'] != null
-          ? PlayerData.fromJson(json['player2'] as Map<String, dynamic>)
-          : null,
-      player3: json['player3'] != null
-          ? PlayerData.fromJson(json['player3'] as Map<String, dynamic>)
-          : null,
-      player4: json['player4'] != null
-          ? PlayerData.fromJson(json['player4'] as Map<String, dynamic>)
-          : null,
-      isGameOver: json['isGameOver'] as bool?,
-      winners: json['winners'] != null
-          ? List<String>.from(json['winners'] as List)
-          : null,
-      board: json['board'] != null
-          ? List<Square>.from(
-              (json['board'] as List).map((e) => Square.fromJson(e)))
-          : null,
-      round: json['round'] != null
-          ? RoundData.fromJson(json['round'] as Map<String, dynamic>)
-          : null,
-      tileReserve: json['tileReserve'] != null
-          ? List<TileReserveData>.from((json['tileReserve'] as List)
-              .map((e) => TileReserveData.fromJson(e)))
-          : null,
-    );
+        player1:
+            PlayerUpdateData.fromJson(json['player1'] as Map<String, dynamic>),
+        player2:
+            PlayerUpdateData.fromJson(json['player2'] as Map<String, dynamic>),
+        player3:
+            PlayerUpdateData.fromJson(json['player3'] as Map<String, dynamic>),
+        player4:
+            PlayerUpdateData.fromJson(json['player4'] as Map<String, dynamic>),
+        isGameOver: json['isGameOver'] as bool?,
+        winners: List<String>.from(json['winners'] as List),
+        board: List<Square>.from(
+            (json['board'] as List).map((e) => Square.fromJson(e))),
+        round: RoundData.fromJson(json['round'] as Map<String, dynamic>),
+        tileReserve: json['tileReserve'] != null &&
+                (json['tileReserve'] as List<dynamic>).isNotEmpty
+            ? (json['tileReserve'] as List<dynamic>)
+                .map((dynamic tile) => TileReserveData.fromJson(tile))
+                .toList()
+            : List<TileReserveData>.empty());
   }
 }
