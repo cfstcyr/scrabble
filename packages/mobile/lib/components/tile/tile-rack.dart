@@ -73,6 +73,7 @@ class TileRack extends StatelessWidget {
                                     isSelected: [snapshot.data ?? false],
                                     onPressed: (int index) {
                                       game.data!.tileRack.toggleExchangeMode();
+                                      _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
                                     },
                                     borderRadius: BorderRadius.circular(8),
                                     constraints: BoxConstraints(

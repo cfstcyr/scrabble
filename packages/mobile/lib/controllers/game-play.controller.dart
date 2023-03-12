@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/actions/action-data.dart';
@@ -45,7 +47,7 @@ class GamePlayController {
 
   Future<void> sendAction(ActionData actionData) async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/action");
-    post(endpoint, body: actionData).then((_) => _actionDone$.add(null));
+    post(endpoint, body: jsonEncode(actionData)).then((_) => _actionDone$.add(null));
   }
 
   Future<void> leaveGame() async {
