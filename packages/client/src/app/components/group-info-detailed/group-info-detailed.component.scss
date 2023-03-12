@@ -103,10 +103,17 @@ mat-card {
           font-size: 14px;
           color: #333;
           width: 100px;
-  
+
+          
           app-icon {
-              margin-right: 8px;
-            }
+            margin-right: 8px;
+
+          }
+        }
+        #observers {
+          font-size: 23px;
+          display: flex;
+          margin-bottom: 2px;
         }
       }
 

@@ -42,11 +42,11 @@
         </div>
       </div>
 
-      <div class="observer-list">
+      <!-- <div class="observer-list">
         <div class="observer">
             <app-icon icon="eye" size="2x"></app-icon> {{ group.numberOfObservers }}
         </div>
-    </div>
+    </div> -->
       <div class="info-container">
         <div class="chip-list">
             <div class="chip">
@@ -62,6 +62,16 @@
           </div>
         </div>
     </div>
+    <div class="info-container">
+      <div class="chip-list">
+          <div class="chip" >
+              <app-icon icon="eye" styling="solid" size="2x"></app-icon>
+              <div id="observers">
+                {{ group.numberOfObservers }}
+              </div>
+          </div>
+      </div>
+  </div>
 
     <div *ngIf="isHost" class="button-box">
         <button id="cancel-button" mat-flat-button class="button" color="primary" [routerLink]="routeGameCreation">
