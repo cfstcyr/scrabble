@@ -5,7 +5,7 @@ import 'package:mobile/classes/user.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
 
 class Group {
-  final String? groupId;
+  String? groupId;
   final List<PublicUser> users;
   final int maxRoundTime;
   final VirtualPlayerLevel virtualPlayerLevel;
@@ -51,8 +51,8 @@ class Group {
 }
 
 class GroupCreationResponse {
-  Group? group;
   bool isCreated;
+  String groupId;
 
-  GroupCreationResponse({required this.group, required this.isCreated});
+  GroupCreationResponse({required this.isCreated, required this.groupId});
 }
