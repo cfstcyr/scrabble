@@ -10,3 +10,4 @@ const String CREATE_GAME_LABEL_FR = "Créer la partie";
 const String CANCEL_CREATION_LABEL_FR = "Annuler";
 const String VP_LEVEL_EXPERT_LABEL_FR = "Expert";
 const String VP_LEVEL_BEGINNER_LABEL_FR = "Débutant";
+const int DEFAULT_TIME = 60;
