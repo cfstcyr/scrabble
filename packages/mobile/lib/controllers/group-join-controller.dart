@@ -29,7 +29,7 @@ class GroupJoinController {
   }
 
   Future<void> handleGetGroups() async {
-    await http.get(Uri.parse("$endpoint/${SocketService.socket.id}"));
+    await http.get(Uri.parse(endpoint));
   }
 
   Future<Response> handleJoinGroup(String groupId) async {
