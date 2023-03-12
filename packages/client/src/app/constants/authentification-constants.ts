@@ -17,5 +17,9 @@ export const INVALID_SIGNUP_INFORMATION = 'Certains champs sont invalides';
 export const LOGIN_ERROR = 'Erreur lors de la connexion';
 export const SIGNUP_ERROR = 'Erreur lors de la création du compte';
 
+export const USERNAME_IS_INVALID = 'Le pseudonyme est invalide';
+export const USERNAME_IS_REQUIRED = 'Le pseudonyme ne peut pas être vide';
+export const USERNAME_IS_TOO_LONG = (max: number, actual: number) => `Le pseudonyme est trop long (maximum: ${max}, actuel: ${actual})`;
+
 export const CANNOT_VERIFY_EMAIL_UNICITY = 'Le courriel est déjà utilisé';
 export const CANNOT_VERIFY_USERNAME_UNICITY = 'Le pseudonyme est déjà utilisé';

@@ -3,7 +3,7 @@
         <div class="left">
             <button *ngIf="!hideBackButton" class="back-btn" [routerLink]="'/'">
                 <app-icon icon="arrow-left" styling="solid"></app-icon>
-                <img src="https://bit.ly/3m206ss" />
+                <img appSrc="https://ucarecdn.com/d53bcb33-e937-4e0b-bd89-192468b2bb9f/" [height]="22" />
             </button>
         </div>
 
@@ -17,12 +17,17 @@
             <app-header-btn *ngIf="user | async" [matMenuTriggerFor]="userMenu">
                 <div class="user-container">
                     <p class="username">{{ getUsername() | async }}</p>
-                    <img [srcset]="(getAvatar() | async) ?? '' | srcset:32:32" class="avatar">
+                    <img [appSrc]="(getAvatar() | async) ?? ''" [square]="32" class="avatar" alt="">
                 </div>
             </app-header-btn>
 
             <mat-menu #userMenu="matMenu">
-                <button mat-menu-item (click)="signOut()">Se déconnecter</button>
+                <button class="menu-btn" mat-menu-item (click)="navigateToProfile()">
+                    <app-icon icon="user" style="width: 14px; margin-right: 12px"></app-icon> Mon profil
+                </button>
+                <button class="menu-btn" mat-menu-item (click)="signOut()">
+                    <app-icon icon="sign-out" style="width: 14px; margin-right: 12px"></app-icon> Se déconnecter
+                </button>
             </mat-menu>
         </div>
     </div>

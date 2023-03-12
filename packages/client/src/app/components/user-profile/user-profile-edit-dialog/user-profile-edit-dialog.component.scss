@@ -1,0 +1,45 @@
+@import '../../../style/variables.scss';
+
+.user-profile-edit-dialog {
+    max-width: 500px;
+
+    mat-form-field {
+        width: 100%;
+    }
+
+    .avatar {
+        &__container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        &__input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        &__img {
+            border-radius: 100px;
+            cursor: pointer;
+            border: solid 3px transparent;
+            opacity: 0.75;
+            scale: 0.95;
+        }
+    }
+
+    .avatar__input:checked + .avatar__img {
+        scale: 1.1;
+        border-color: $primary;
+        opacity: 1;
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+}
