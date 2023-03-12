@@ -2,7 +2,9 @@ import 'package:get_it/get_it.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
+import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/services/action-service.dart';
+import 'package:mobile/services/channel.service.dart';
 import 'package:mobile/services/chat-management.service.dart';
 import 'package:mobile/services/client.dart';
 import 'package:mobile/services/game-creation-service.dart';
@@ -41,8 +43,11 @@ class CustomLocator {
         () => PersonnalHttpClient());
     getIt.registerLazySingleton<StorageHandlerService>(
         () => StorageHandlerService());
+
     getIt.registerLazySingleton<UserService>(() => UserService());
     getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
+    getIt.registerLazySingleton<UserController>(() => UserController());
+
     getIt.registerLazySingleton<AccountAuthenticationController>(
         () => AccountAuthenticationController());
     getIt.registerLazySingleton<ChatManagementController>(
@@ -51,6 +56,7 @@ class CustomLocator {
     getIt.registerLazySingleton<GameEventService>(() => GameEventService());
     getIt.registerLazySingleton<ChatManagementService>(
         () => ChatManagementService());
+    getIt.registerLazySingleton<ChannelService>(() => ChannelService());
     getIt.registerLazySingleton<RoundService>(() => RoundService());
 
     getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());

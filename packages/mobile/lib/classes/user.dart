@@ -113,3 +113,37 @@ class UserSession {
     );
   }
 }
+
+class EditableUserFields {
+  String username;
+  String avatar;
+
+  EditableUserFields({required this.username, required this.avatar});
+
+  Map<String, String> toJson() {
+    return {
+      'username': username,
+      'avatar': avatar,
+    };
+  }
+}
+
+class UserStatistics {
+  int gamesPlayedCount;
+  int gamesWonCount;
+  double averagePointsPerGame;
+  double averageTimePerGame;
+
+  UserStatistics(
+      {required this.averagePointsPerGame,
+      required this.averageTimePerGame,
+      required this.gamesPlayedCount,
+      required this.gamesWonCount});
+
+  UserStatistics.fromJson(Map<String, dynamic> json)
+      : this(
+            averagePointsPerGame: json['averagePointsPerGame'],
+            averageTimePerGame: json['averageTimePerGame'],
+            gamesPlayedCount: json['gamesPlayedCount'],
+            gamesWonCount: json['gamesWonCount']);
+}

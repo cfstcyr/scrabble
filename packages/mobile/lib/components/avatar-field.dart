@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/avatars-constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/constants/user-constants.dart';
@@ -46,8 +47,8 @@ class AvatarField extends StatelessWidget {
                                 splashColor: Colors.transparent,
                                 child: Opacity(
                                   opacity: snapshot.data == avatarUrl ? 1 : 0.8,
-                                  child: getUserAvatar(avatarUrl,
-                                      radius: 20, height: 48, width: 48),
+                                  child: Avatar(
+                                      avatar: avatarUrl, radius: 20, size: 48),
                                 ),
                               ),
                             ),
