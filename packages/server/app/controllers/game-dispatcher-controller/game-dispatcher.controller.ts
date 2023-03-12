@@ -14,7 +14,6 @@ import { SocketService } from '@app/services/socket-service/socket.service';
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-// import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import Player from '@app/classes/player/player';
 import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatcher-const';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
@@ -299,40 +298,6 @@ export class GameDispatcherController extends BaseController {
                 .getVirtualPlayerService()
                 .triggerVirtualPlayerTurn(startGameData, this.activeGameService.getGame(gameId, startGameData.round.playerData.id));
         }
-
-        //Hack pour accéder à la vue du jeu
-        // const player2 = new VirtualPlayerFactory().generateVirtualPlayer('1', VirtualPlayerLevel.Beginner, []);
-        // const player3 = new VirtualPlayerFactory().generateVirtualPlayer('1', VirtualPlayerLevel.Beginner, []);
-        // const player4 = new VirtualPlayerFactory().generateVirtualPlayer('1', VirtualPlayerLevel.Beginner, []);
-        // const startGameData: StartGameData = {
-        //     board: {} as unknown as Square[][],
-        //     gameId: '1',
-        //     maxRoundTime: 60,
-        //     player1: {
-        //         id: playerId,
-        //         publicUser: {
-        //             avatar: 'https://ucarecdn.com/e1415137-973a-43d5-9cac-6b69fdd6389b/',
-        //             username: 'Player 1',
-        //         } as unknown as PublicUser,
-        //         score: 0,
-        //     },
-        //     player2,
-        //     player3,
-        //     player4,
-        //     round: {
-        //         playerData: {
-        //             id: playerId,
-        //             publicUser: {
-        //                 avatar: 'avatar1',
-        //                 username: 'username1',
-        //             } as unknown as PublicUser,
-        //         } as unknown as PlayerData,
-        //     } as unknown as RoundData,
-        //     tileReserve: [] as unknown as TileReserveData[],
-        // };
-        // console.log('startGame:', startGameData);
-        // console.log(playerId);
-        // this.socketService.getSocket(playerId).nsp.emit('startGame', startGameData);
     }
 
     private handleGroupsRequest(playerId: string): void {
