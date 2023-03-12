@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IconButtonComponent } from '@app/components/icon-button/icon-button.component';
 import { IconComponent } from '@app/components/icon/icon.component';
+import { SrcDirective } from '@app/directives/src-directive/src.directive';
 
 import { ChatBoxComponent } from './chatbox.component';
 
@@ -10,7 +11,7 @@ describe('ChatboxComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [ChatBoxComponent, IconButtonComponent, IconComponent],
+            declarations: [ChatBoxComponent, IconButtonComponent, IconComponent, SrcDirective],
         }).compileComponents();
     });
 

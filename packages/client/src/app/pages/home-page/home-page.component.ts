@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LOGO } from '@app/constants/app-constants';
 import { ROUTE_GAME_CREATION, ROUTE_GROUPS } from '@app/constants/routes-constants';
 
 @Component({
@@ -9,4 +10,5 @@ import { ROUTE_GAME_CREATION, ROUTE_GROUPS } from '@app/constants/routes-constan
 export class HomePageComponent {
     routeGroups = ROUTE_GROUPS;
     routeGameCreation = ROUTE_GAME_CREATION;
+    logo = LOGO;
 }

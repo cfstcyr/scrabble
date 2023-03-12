@@ -22,6 +22,7 @@ import { GameDispatcherService } from '@app/services';
 import { PublicUser } from '@common/models/user';
 import { of, Subject } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
+import { SrcDirective } from '@app/directives/src-directive/src.directive';
 
 @Component({
     template: '',
@@ -67,7 +68,7 @@ describe('RequestingUserContainerComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [RequestingUserContainerComponent, IconComponent],
+            declarations: [RequestingUserContainerComponent, IconComponent, SrcDirective],
             imports: [
                 HttpClientTestingModule,
                 MatProgressBarModule,

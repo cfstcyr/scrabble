@@ -43,7 +43,7 @@ services:
         image: node:14.15
         volumes:
             - ./packages/client:/var/www/app
-            - ./packages/client:/var/www/common
+            - ./packages/common:/var/www/common
         working_dir: /var/www/app
         command: npm run docker:storybook
         ports:
