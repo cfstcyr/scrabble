@@ -5,6 +5,7 @@ import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/timer.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/round-service.dart';
+import 'package:mobile/utils/round-utils.dart';
 
 class GameTimer extends StatefulWidget {
   Timer? timer;
@@ -69,16 +70,12 @@ class _GameTimerState extends State<GameTimer> {
     widget.isStopped = true;
   }
 
-  Duration timeLeftToDuration() {
-    return Duration(seconds: widget.timeLeft);
-  }
-
   @override
   Widget build(BuildContext context) {
     return GameInfo(
         value: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
           TimerWidget(
-            duration: timeLeftToDuration(),
+            duration: roundTimeToRoundDuration(widget.timeLeft),
             style:
                 TextStyle(fontSize: 32, fontWeight: FontWeight.w600, height: 1),
             stopped: widget.isStopped,
