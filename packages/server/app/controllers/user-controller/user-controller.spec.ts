@@ -100,4 +100,17 @@ describe('UserController', () => {
             });
         });
     });
+
+    describe('/api/users/search/:username', () => {
+        describe('GET', () => {
+            it('should return search', async () => {
+                await userService['table'].insert(DEFAULT_USER);
+                return supertest(expressApp).get(`/api/users/search/${DEFAULT_USER.username}`).send({ idUser: -1 }).expect(StatusCodes.OK);
+            });
+
+            it('should return 404 if not found', async () => {
+                return supertest(expressApp).get(`/api/users/search/${DEFAULT_USER.username}`).send({ idUser: -1 }).expect(StatusCodes.NOT_FOUND);
+            });
+        });
+    });
 });
