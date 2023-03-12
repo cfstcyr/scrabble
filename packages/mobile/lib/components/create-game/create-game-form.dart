@@ -7,6 +7,7 @@ import 'package:mobile/classes/user.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/services/user.service.dart';
 
@@ -14,7 +15,6 @@ import '../../classes/group.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/create-game.constants.dart';
 import '../../controllers/game-creation-controller.dart';
-import '../../pages/create-lobby.dart';
 import '../../pages/home-page.dart';
 
 class CreateGameForm extends StatefulWidget {
@@ -34,7 +34,7 @@ class CreateGameFormState extends State<CreateGameForm> {
   UserService userService = getIt.get<UserService>();
 
   final emailHandler = TextFieldHandler();
-  String? _visibility = PUBLIC_LABEL_FR;
+  String? _visibility = GameVisibility.public.name;
   Duration _timePerTurn = Duration(minutes: 1);
   late PublicUser _user;
   final passwordHandler = TextFieldHandler();
@@ -101,10 +101,10 @@ class CreateGameFormState extends State<CreateGameForm> {
                               Expanded(
                                 child: RadioListTile(
                                   title: Wrap(children: [
-                                    Text(PUBLIC_LABEL_FR),
+                                    Text(GameVisibility.public.name),
                                     Icon(Icons.public),
                                   ]),
-                                  value: PUBLIC_LABEL_FR,
+                                  value: GameVisibility.public.name,
                                   groupValue: _visibility,
                                   onChanged: (value) =>
                                       setState(() => _visibility = value),
@@ -113,10 +113,10 @@ class CreateGameFormState extends State<CreateGameForm> {
                               Expanded(
                                 child: RadioListTile(
                                   title: Wrap(children: [
-                                    Text(PROTECTED_LABEL_FR),
+                                    Text(GameVisibility.protected.name),
                                     Icon(Icons.security)
                                   ]),
-                                  value: PROTECTED_LABEL_FR,
+                                  value: GameVisibility.protected.name,
                                   groupValue: _visibility,
                                   onChanged: (value) =>
                                       setState(() => _visibility = value),
@@ -125,10 +125,10 @@ class CreateGameFormState extends State<CreateGameForm> {
                               Expanded(
                                 child: RadioListTile(
                                   title: Wrap(children: [
-                                    Text(PRIVATE_LABEL_FR),
+                                    Text(GameVisibility.private.name),
                                     Icon(Icons.lock)
                                   ]),
-                                  value: PRIVATE_LABEL_FR,
+                                  value: GameVisibility.private.name,
                                   groupValue: _visibility,
                                   onChanged: (value) =>
                                       setState(() => _visibility = value),
@@ -141,7 +141,8 @@ class CreateGameFormState extends State<CreateGameForm> {
                                 height: SPACE_1,
                                 width: double.maxFinite,
                               ),
-                              visible: _visibility == PROTECTED_LABEL_FR),
+                              visible:
+                                  _visibility == GameVisibility.protected.name),
                           Visibility(
                             child: TextField(
                               controller: passwordHandler.controller,
@@ -157,7 +158,8 @@ class CreateGameFormState extends State<CreateGameForm> {
                                     : passwordHandler.errorMessage,
                               ),
                             ),
-                            visible: _visibility == PROTECTED_LABEL_FR,
+                            visible:
+                                _visibility == GameVisibility.protected.name,
                           ),
                           SizedBox(height: 16.0),
                           Wrap(children: [
@@ -247,20 +249,17 @@ class CreateGameFormState extends State<CreateGameForm> {
       maxRoundTime: _timePerTurn.inSeconds,
       virtualPlayerLevel: VirtualPlayerLevel.fromString(_playerLevel!),
       gameVisibility: GameVisibility.fromString(_visibility!),
-      password: _visibility == PROTECTED_LABEL_FR ? _password : '',
+      password: _visibility == GameVisibility.protected.name ? _password : '',
     );
     GroupCreationResponse createdGroup =
         await gameCreationController.handleCreateGame(groupData);
     createdGroup.isCreated
-        ? {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CreateLobbyPage()))
-          }
+        ? Navigator.pushNamed(context, CREATE_LOBBY_ROUTE)
         : {};
   }
 
   bool isFormValid() {
-    if (_visibility == PROTECTED_LABEL_FR) {
+    if (_visibility == GameVisibility.protected.name) {
       return passwordHandler.controller.text.isNotEmpty;
     }
     return true;
