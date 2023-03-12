@@ -124,7 +124,6 @@ class TileRack extends StatelessWidget {
               ? _buildDraggableTile(tile, index)
               : _buildSelectableTile(tile, index, true);
         });
-    // return _buildDraggableTile(tile, index);
   }
 
   Widget _buildDraggableTile(c.Tile tile, int index) {
