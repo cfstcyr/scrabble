@@ -28,24 +28,34 @@ class GameUpdateData {
 
   factory GameUpdateData.fromJson(Map<String, dynamic> json) {
     return GameUpdateData(
-        player1:
-            PlayerUpdateData.fromJson(json['player1'] as Map<String, dynamic>),
-        player2:
-            PlayerUpdateData.fromJson(json['player2'] as Map<String, dynamic>),
-        player3:
-            PlayerUpdateData.fromJson(json['player3'] as Map<String, dynamic>),
-        player4:
-            PlayerUpdateData.fromJson(json['player4'] as Map<String, dynamic>),
+        player1: json['player1'] != null
+            ? PlayerUpdateData.fromJson(json['player1'] as Map<String, dynamic>)
+            : null,
+        player2: json['player2'] != null
+            ? PlayerUpdateData.fromJson(json['player2'] as Map<String, dynamic>)
+            : null,
+        player3: json['player3'] != null
+            ? PlayerUpdateData.fromJson(json['player3'] as Map<String, dynamic>)
+            : null,
+        player4: json['player4'] != null
+            ? PlayerUpdateData.fromJson(json['player4'] as Map<String, dynamic>)
+            : null,
         isGameOver: json['isGameOver'] as bool?,
-        winners: List<String>.from(json['winners'] as List),
-        board: List<Square>.from(
-            (json['board'] as List).map((e) => Square.fromJson(e))),
-        round: Round.fromJson(json['round'] as Map<String, dynamic>),
+        winners: json['winners'] != null
+            ? List<String>.from(json['winners'] as List)
+            : null,
+        board: json['board'] != null
+            ? List<Square>.from(
+                (json['board'] as List).map((e) => Square.fromJson(e)))
+            : null,
+        round: json['round'] != null
+            ? Round.fromJson(json['round'] as Map<String, dynamic>)
+            : null,
         tileReserve: json['tileReserve'] != null &&
                 (json['tileReserve'] as List<dynamic>).isNotEmpty
             ? (json['tileReserve'] as List<dynamic>)
                 .map((dynamic tile) => TileReserveData.fromJson(tile))
                 .toList()
-            : List<TileReserveData>.empty());
+            : null);
   }
 }

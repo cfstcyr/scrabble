@@ -114,10 +114,11 @@ class PlayerInRoom extends StatelessWidget {
               children: [
                 Avatar(
                     avatar: user.avatar,
+                    forceInitials: user.avatar.isEmpty,
                     initials: getUsersInitials(user.username),
                     background: theme.colorScheme.onBackground,
-                    radius: 24,
-                    size: 60),
+                    radius: 16,
+                    size: 40),
                 SizedBox(
                   width: 8,
                 ),

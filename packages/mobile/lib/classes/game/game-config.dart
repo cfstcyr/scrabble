@@ -26,7 +26,6 @@ class StartGameData {
   });
 
   factory StartGameData.fromJson(Map<String, dynamic> json) {
-    print(json['tileReserve']);
     return StartGameData(
         player1: Player.fromJson(json['player1']),
         player2: Player.fromJson(json['player2']),

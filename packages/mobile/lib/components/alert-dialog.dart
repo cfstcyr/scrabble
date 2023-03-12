@@ -51,11 +51,7 @@ void triggerDialogBox(
                               ? () => Navigator.pop(context)
                               : null),
                       theme: button.theme,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Text(button.content,
-                            style: TextStyle(fontSize: 16)),
-                      ),
+                      text: button.content,
                     ),
                     index < buttons.length - 1
                         ? SizedBox(

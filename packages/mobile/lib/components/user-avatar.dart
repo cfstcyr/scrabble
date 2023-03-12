@@ -14,27 +14,31 @@ class Avatar extends StatelessWidget {
   final double size;
   final double radius;
   final Color? background;
+  final bool forceInitials;
 
   Avatar(
       {this.avatar,
       required this.size,
       this.initials,
       this.background,
-      this.radius = double.maxFinite});
+      this.radius = double.maxFinite,
+      this.forceInitials = false});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: size,
       width: size,
-      child: avatar == null
-          ? StreamBuilder<PublicUser?>(
-              stream: _userService.user,
-              builder: (context, snapshot) => snapshot.hasData
-                  ? _getImageAvatar(snapshot.data!.avatar)
-                  : _getInitialsAvatar(getUsersInitials(initials ?? '')),
-            )
-          : _getImageAvatar(avatar!),
+      child: forceInitials
+          ? _getInitialsAvatar(getUsersInitials(initials ?? ''))
+          : avatar == null
+              ? StreamBuilder<PublicUser?>(
+                  stream: _userService.user,
+                  builder: (context, snapshot) => snapshot.hasData
+                      ? _getImageAvatar(snapshot.data!.avatar)
+                      : _getInitialsAvatar(getUsersInitials(initials ?? '')),
+                )
+              : _getImageAvatar(avatar!),
     );
   }
 

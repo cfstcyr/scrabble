@@ -25,18 +25,18 @@ class Player {
       score: json['score'] ?? 0,
       tiles:
           json['tiles'] != null && (json['tiles'] as List<dynamic>).isNotEmpty
-              ? (json['tiles'] as List<Map<String, dynamic>>)
-                  .map((Map<String, dynamic> tile) => Tile.fromJson(tile))
+              ? (json['tiles'] as List<dynamic>)
+                  .map((dynamic tile) => Tile.fromJson(tile))
                   .toList()
               : List<Tile>.empty(),
     );
   }
 
   void updatePlayerData(PlayerUpdateData playerData) {
-    socketId = playerData.newId!;
-    user = playerData.publicUser!;
-    score = playerData.score ?? 0;
-    tiles = playerData.tiles!;
+    socketId = playerData.newId ?? socketId;
+    user = playerData.publicUser ?? user;
+    score = playerData.score ?? score;
+    tiles = playerData.tiles ?? tiles;
   }
 
   Map<String, dynamic> toJson() => {

@@ -62,6 +62,7 @@ class MyApp extends StatelessWidget {
               navigatorKey: navigatorKey,
               initialRoute: snapshot.data,
               routes: ROUTES,
+              onGenerateRoute: customOnGenerateRoute,
             ),
           );
         }

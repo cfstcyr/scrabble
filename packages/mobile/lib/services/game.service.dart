@@ -89,19 +89,19 @@ class GameService {
     }
 
     if (gameUpdate.player1 != null) {
-      game.players.getPlayer(0).updatePlayerData(gameUpdate.player1!);
+      game.players.getPlayer(1).updatePlayerData(gameUpdate.player1!);
     }
 
     if (gameUpdate.player2 != null) {
-      game.players.getPlayer(1).updatePlayerData(gameUpdate.player2!);
+      game.players.getPlayer(2).updatePlayerData(gameUpdate.player2!);
     }
 
     if (gameUpdate.player3 != null) {
-      game.players.getPlayer(2).updatePlayerData(gameUpdate.player3!);
+      game.players.getPlayer(3).updatePlayerData(gameUpdate.player3!);
     }
 
     if (gameUpdate.player4 != null) {
-      game.players.getPlayer(3).updatePlayerData(gameUpdate.player3!);
+      game.players.getPlayer(4).updatePlayerData(gameUpdate.player4!);
     }
 
     if (gameUpdate.board != null) {
