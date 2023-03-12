@@ -117,7 +117,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
 
     private async initializeGame(localPlayerId: string, startGameData: StartGameData, isObserver: boolean): Promise<void> {
         this.gameId = startGameData.gameId;
-        this.playerContainer = new PlayerContainer(isObserver ? startGameData.player1.id : localPlayerId).initializePlayers([
+        this.playerContainer = new PlayerContainer(isObserver ? startGameData.player1.id : localPlayerId, isObserver).initializePlayers([
             startGameData.player1,
             startGameData.player2,
             startGameData.player3,

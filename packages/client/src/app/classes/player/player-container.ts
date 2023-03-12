@@ -6,10 +6,12 @@ import Player from './player';
 export class PlayerContainer {
     private players: Map<number, Player>;
     private localPlayerId: string;
+    private isObserver: boolean;
 
-    constructor(localPlayerId: string) {
+    constructor(localPlayerId: string, isObserver: boolean) {
         this.players = new Map();
         this.localPlayerId = localPlayerId;
+        this.isObserver = isObserver;
     }
 
     getLocalPlayerId(): string {
@@ -17,10 +19,12 @@ export class PlayerContainer {
     }
 
     setLocalPlayer(playerNumber: number): void {
+        if (!this.isObserver) return;
         this.localPlayerId = this.getPlayer(playerNumber).id;
     }
 
     setLocalPlayerId(playerId: string): void {
+        if (!this.isObserver) return;
         this.localPlayerId = playerId;
     }
 
@@ -55,7 +59,7 @@ export class PlayerContainer {
                 .filter((player: Player) => player.id === playerData.id)
                 .forEach((player: Player) => {
                     player.updatePlayerData(playerData);
-                    if (playerData.newId && playerData.id === this.getLocalPlayerId()) this.setLocalPlayerId(playerData.newId);
+                    if (this.isObserver && playerData.newId && playerData.id === this.getLocalPlayerId()) this.setLocalPlayerId(playerData.newId);
                 });
         });
         return this;
