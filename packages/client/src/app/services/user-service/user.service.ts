@@ -11,6 +11,7 @@ import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { UserSearchQueryResult, UserSearchResult } from '@common/models/user-search';
+import { USERNAME_IS_REQUIRED } from '@app/constants/authentification-constants';
 
 @Injectable({
     providedIn: 'root',
@@ -60,7 +61,7 @@ export class UserService {
     getProfileByUsername(username: Observable<string>): Observable<UserSearchResult> {
         return username.pipe(
             switchMap((value) => {
-                if (value === undefined || value.length === 0) throw new Error("Nom d'utilisateur requis");
+                if (value === undefined || value.length === 0) throw new Error(USERNAME_IS_REQUIRED);
 
                 return this.userController.getProfileByUsername(value).pipe(
                     map((user) => ({
