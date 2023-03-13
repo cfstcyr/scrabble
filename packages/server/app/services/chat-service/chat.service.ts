@@ -203,6 +203,15 @@ export class ChatService {
         await this.chatPersistenceService.leaveChannel(idChannel, user.idUser);
 
         socket.emit('channel:quit', channel);
+
+        if (!channel.default) {
+            const userCount = await this.chatPersistenceService.getUserCountInChannel(idChannel);
+
+            if (userCount === 0) {
+                await this.deleteChannel(idChannel);
+            }
+        }
+
         await this.updateJoinableChannelsForUser(user.idUser);
     }
 

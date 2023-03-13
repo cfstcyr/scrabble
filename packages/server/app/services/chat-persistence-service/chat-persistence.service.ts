@@ -60,6 +60,11 @@ export class ChatPersistenceService {
         }
     }
 
+    async getUserCountInChannel(idChannel: TypeOfId<Channel>): Promise<number> {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return Number((await this.userChatTable.count('idUser').where({ idChannel }).first())!.count);
+    }
+
     async deleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
         await this.userChatTable.delete().where({ idChannel });
         await this.chatHistoryService.deleteChannelHistory(idChannel);
