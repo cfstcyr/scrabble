@@ -34,7 +34,7 @@ import {
 
 @Service()
 export class SocketService {
-    private sio?: io.Server;
+    sio?: io.Server;
     private sockets: Map<string, io.Socket>;
     private configureSocketsEvent: EventEmitter;
 

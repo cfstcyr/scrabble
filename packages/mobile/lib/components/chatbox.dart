@@ -83,7 +83,6 @@ class _ChatPageState extends State<ChatPage> {
           message: messageData, idChannel: widget.channel.idChannel);
 
       channelService.sendMessage(widget.channel, messageData);
-      channelService.addMessage(channelMessage);
     }
   }
 
