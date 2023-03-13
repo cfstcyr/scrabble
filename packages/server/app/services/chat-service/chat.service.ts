@@ -2,13 +2,7 @@ import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SocketId, UserId } from '@app/classes/user/connected-user-types';
 import { DEFAULT_CHANNELS, GROUP_CHANNEL } from '@app/constants/chat';
-import {
-    ALREADY_EXISTING_CHANNEL_NAME,
-    ALREADY_IN_CHANNEL,
-    CANNOT_SEND_MESSAGE,
-    CHANNEL_DOES_NOT_EXISTS,
-    NOT_IN_CHANNEL,
-} from '@app/constants/services-errors';
+import { ALREADY_EXISTING_CHANNEL_NAME, ALREADY_IN_CHANNEL, CHANNEL_DOES_NOT_EXISTS, NOT_IN_CHANNEL } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ChatHistoryService } from '@app/services/chat-history/chat-history.service';
 import { ChatPersistenceService } from '@app/services/chat-persistence-service/chat-persistence.service';
@@ -97,13 +91,8 @@ export class ChatService {
 
     // TODO: User userId when playerId has been replaced in requests !153
     async quitChannel(idChannel: TypeOfId<Channel>, playerId: SocketId): Promise<void> {
-        try {
-            const socket: ServerSocket = this.socketService.getSocket(playerId);
-            return this.handleQuitChannel(idChannel, socket);
-        } catch {
-            // TODO Toggle on comment when userId parameter is given !153
-            // return await this.chatPersistenceService.leaveChannel(idChannel, userId);
-        }
+        const socket: ServerSocket = this.socketService.getSocket(playerId);
+        return this.handleQuitChannel(idChannel, socket);
     }
 
     async emptyChannel(idChannel: TypeOfId<Channel>): Promise<void> {
@@ -139,9 +128,11 @@ export class ChatService {
 
         await this.chatHistoryService.saveMessage(channelMessage);
 
-        if (!this.socketService.sio?.in(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage)) {
-            throw new HttpException(CANNOT_SEND_MESSAGE);
-        }
+        socket.nsp.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
+
+        // if (!this.socketService.sio?.in(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage)) {
+        //     throw new HttpException(CANNOT_SEND_MESSAGE);
+        // }
     }
 
     private async handleDeleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
