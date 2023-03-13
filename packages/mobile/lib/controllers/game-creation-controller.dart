@@ -33,31 +33,24 @@ class GameCreationController {
 
   final String endpoint = GAME_ENDPOINT;
 
-  Future<bool> handleAcceptOpponent(PublicUser opponent, String gameId) async {
-    Response res = await http.post(
-        Uri.parse("$endpoint/$gameId/players/accept"),
+  Future<Response> handleAcceptOpponent(
+      PublicUser opponent, String gameId) async {
+    return await http.post(Uri.parse("$endpoint/$gameId/players/accept"),
         body: jsonEncode(opponent));
-    return (res.statusCode == 200);
   }
 
-  Future<bool> handleRejectOpponent(PublicUser opponent, String gameId) async {
-    Response res = await http.post(
-        Uri.parse("${endpoint}/${gameId}/players/reject"),
+  Future<Response> handleRejectOpponent(
+      PublicUser opponent, String gameId) async {
+    return await http.post(Uri.parse("$endpoint/$gameId/players/reject"),
         body: jsonEncode(opponent));
-    // TODO: Remove hack
-    return (res.statusCode == 200);
   }
 
   Future<Response> handleStartGame(String gameId) async {
     return await post(Uri.parse("$endpoint/$gameId/players/start"));
   }
 
-  // TODO
-  Future<bool> handleCancelGame(PublicUser opponent, String gameId) async {
-    Response res = await http.post(
-        Uri.parse("${endpoint}/${gameId}/players/accept"),
-        body: jsonEncode(opponent));
-    return (res.statusCode == 200);
+  Future<Response> handleCancelGame(PublicUser opponent, String gameId) async {
+    return await http.delete(Uri.parse("$endpoint/$gameId/players/cancel"));
   }
 
   Future<GroupCreationResponse> handleCreateGame(Group groupData) async {
