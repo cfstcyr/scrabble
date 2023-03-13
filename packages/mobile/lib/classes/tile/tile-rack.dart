@@ -96,6 +96,11 @@ class TileRack {
     if (!isExchangeModeEnabled.value) _resetSelectedTiles();
   }
 
+  void disableExchangeMode() {
+    _isExchangeModeEnabled$.add(false);
+    _resetSelectedTiles();
+  }
+
   void toggleSelectedTile(Tile tile) {
     tile.toggleIsSelected();
     setTiles(stream.value);
