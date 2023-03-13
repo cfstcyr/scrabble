@@ -6,7 +6,9 @@ import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
+import 'package:mobile/constants/socket-events/group-events.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
+import 'package:mobile/view-methods/create-lobby-methods.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/game/game-config.dart';
@@ -70,5 +72,20 @@ class GameCreationController {
           localPlayerSocketId: SocketService.socket.id!,
           startGameData: startGameData));
     });
+
+    socketService.on(JOIN_REQUEST, (data) {
+      handleJoinRequest(PublicUser.usersFromJson(data));
+    });
+    socketService.on(JOIN_REQUEST_CANCELLED, (data) {
+      handleJoinRequestCancelled(PublicUser.usersFromJson(data));
+    });
+  }
+
+  void handleJoinRequest(List<PublicUser> data) {
+    playerList$.add(data);
+  }
+
+  void handleJoinRequestCancelled(List<PublicUser> data) {
+    playerWaitingList$.add(data);
   }
 }

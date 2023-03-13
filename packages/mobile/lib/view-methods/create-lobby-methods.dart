@@ -9,8 +9,14 @@ import '../constants/create-lobby-constants.dart';
 GameCreationService gameCreationService = getIt.get<GameCreationService>();
 
 BehaviorSubject<List<PublicUser>> playerList$ =
-    BehaviorSubject<List<PublicUser>>.seeded(playerList);
-Stream<List<PublicUser>> get _stream => playerList$.stream;
+    BehaviorSubject<List<PublicUser>>.seeded([]);
+
+Stream<List<PublicUser>> get playerListStream => playerList$.stream;
+
+BehaviorSubject<List<PublicUser>> playerWaitingList$ =
+    BehaviorSubject<List<PublicUser>>.seeded([]);
+
+Stream get playerWaitingListStream => playerWaitingList$.stream;
 
 List<PublicUser> playerWaitingList = [
 // TODO : requete joueurs lobby

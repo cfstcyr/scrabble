@@ -15,13 +15,7 @@ class GroupJoinService {
   final GroupJoinController groupJoinController =
       getIt.get<GroupJoinController>();
 
-  GroupJoinService._privateConstructor() {
-
-
-
-
-
-  }
+  GroupJoinService._privateConstructor();
 
   static final GroupJoinService _instance =
       GroupJoinService._privateConstructor();
