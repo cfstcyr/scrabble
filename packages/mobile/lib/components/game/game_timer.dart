@@ -25,11 +25,14 @@ class _GameTimerState extends State<GameTimer> {
 
   @override
   void initState() {
-    startRoundSubscription = _roundService.startRoundEvent.listen((Duration duration) {
+    startRoundSubscription =
+        _roundService.startRoundEvent.listen((Duration duration) {
       _startTimer(duration);
     });
 
-    if (_timer == null) _startTimer(getIt.get<GameService>().game.roundDuration);
+    if (_timer == null) {
+      _startTimer(getIt.get<GameService>().game.roundDuration);
+    }
 
     super.initState();
   }
@@ -48,16 +51,12 @@ class _GameTimerState extends State<GameTimer> {
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
-          (Timer timer) {
+      (Timer timer) {
         if (_timeLeft.value == 0) {
-          setState(() {
-            timer.cancel();
-            _isStopped = true;
-          });
+          timer.cancel();
+          _isStopped = true;
         } else {
-          setState(() {
-            _timeLeft.add(--_timeLeft.value);
-          });
+          _timeLeft.add(--_timeLeft.value);
         }
       },
     );
@@ -69,16 +68,16 @@ class _GameTimerState extends State<GameTimer> {
     return GameInfo(
         value: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
           StreamBuilder<int>(
-            stream: _timeLeft,
-            builder: (context, snapshot) {
-              return TimerWidget(
-                duration: roundTimeToRoundDuration(snapshot.hasData ? snapshot.data! : 0),
-                style:
-                TextStyle(fontSize: 32, fontWeight: FontWeight.w600, height: 1),
-                stopped: _isStopped,
-              );
-            }
-          ),
+              stream: _timeLeft,
+              builder: (context, snapshot) {
+                return TimerWidget(
+                  duration: roundTimeToRoundDuration(
+                      snapshot.hasData ? snapshot.data! : 0),
+                  style: TextStyle(
+                      fontSize: 32, fontWeight: FontWeight.w600, height: 1),
+                  stopped: _isStopped,
+                );
+              }),
         ]),
         name: "Restant",
         icon: Icons.hourglass_bottom_rounded);
