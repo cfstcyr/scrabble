@@ -1,16 +1,20 @@
 import 'package:async/async.dart';
+import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/rounds/round-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/routes/navigator-key.dart';
+import 'package:mobile/services/action-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../constants/erros/game-errors.dart';
 import 'game.service.dart';
 
 class RoundService {
-  final Subject<Duration> _startRound$ = BehaviorSubject();
-  final Subject _endRound$ = BehaviorSubject();
+  final ActionService _actionService = getIt.get<ActionService>();
+  final Subject<Duration> _startRound$ = PublishSubject();
+  final Subject _endRound$ = PublishSubject();
   BehaviorSubject<Round?> currentRound$ = BehaviorSubject.seeded(null);
   CancelableOperation? roundTimeout;
 
@@ -56,10 +60,10 @@ class RoundService {
   }
 
   void _onTimerExpires() {
-    // if (getIt.get<GameService>().isLocalPlayerActivePlayer()) {
-    //   // TODO: Send pass action when pass is implemented
-    //   print('pass');
-    // }
+    if (currentRound.socketIdOfActivePlayer == getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
+      endRound();
+      _actionService.sendAction(ActionType.pass);
+    }
   }
 
   void updateRoundData(Round round) {
