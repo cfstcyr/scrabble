@@ -49,40 +49,46 @@ class GameActions extends StatelessWidget {
                     size: AppButtonSize.large,
                   ),
                   StreamBuilder<bool>(
-                    stream: _canExchangeStream(),
-                    initialData: false,
-                    builder: (context, snapshot) {
-                      return AppButton(
-                        onPressed: snapshot.hasData && snapshot.data!
-                            ? () => _actionService.sendAction(
-                                ActionType.exchange,
-                                _gameService
-                                    .getTileRack()
-                                    .getSelectedTilesPayload())
-                            : null,
-                        icon: Icons.swap_horiz_rounded,
-                        size: AppButtonSize.large,
-                      );
-                    }
-                  ), //Échanger
-                  StreamBuilder<bool>(
-                    stream: _canPlayStream(),
-                    initialData: false,
-                    builder: (context, snapshot) {
-                      return AppButton(
-                        onPressed: snapshot.hasData && snapshot.data!
-                            ? () {
-                          _actionService.sendAction(ActionType.pass);
-                          _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
-                        }
+                      stream: _canExchangeStream(),
+                      initialData: false,
+                      builder: (context, snapshot) {
+                        return AppButton(
+                          onPressed: snapshot.hasData && snapshot.data!
+                              ? () {
+                                  _actionService.sendAction(
+                                      ActionType.exchange,
+                                      _gameService
+                                          .getTileRack()
+                                          .getSelectedTilesPayload());
+                                  _gameService
+                                      .getTileRack()
+                                      .disableExchangeMode();
+                                }
                               : null,
-                        icon: Icons.not_interested_rounded,
-                        size: AppButtonSize.large,
-                      );
-                    }
-                  ), // Passer
+                          icon: Icons.swap_horiz_rounded,
+                          size: AppButtonSize.large,
+                        );
+                      }), //Échanger
                   StreamBuilder<bool>(
-                    stream: snapshot.hasData ? _canPlaceStream(snapshot.data!) : Stream.value(false),
+                      stream: _canPlayStream(),
+                      initialData: false,
+                      builder: (context, snapshot) {
+                        return AppButton(
+                          onPressed: snapshot.hasData && snapshot.data!
+                              ? () {
+                                  _actionService.sendAction(ActionType.pass);
+                                  _gameEventService.add<void>(
+                                      PUT_BACK_TILES_ON_TILE_RACK, null);
+                                }
+                              : null,
+                          icon: Icons.not_interested_rounded,
+                          size: AppButtonSize.large,
+                        );
+                      }), // Passer
+                  StreamBuilder<bool>(
+                    stream: snapshot.hasData
+                        ? _canPlaceStream(snapshot.data!)
+                        : Stream.value(false),
                     builder: (context, canPlace) {
                       return AppButton(
                         onPressed: canPlace.data ?? false
@@ -101,17 +107,26 @@ class GameActions extends StatelessWidget {
   }
 
   Stream<bool> _canPlayStream() {
-    return CombineLatestStream<dynamic, bool>([_gameService.gameStream, _actionService.isActionBeingProcessedStream, _roundService.getActivePlayerId()], (values) {
+    return CombineLatestStream<dynamic, bool>([
+      _gameService.gameStream,
+      _actionService.isActionBeingProcessedStream,
+      _roundService.getActivePlayerId()
+    ], (values) {
       Game game = values[0];
       bool isActionBeingProcessed = values[1];
       String activePlayerSocketId = values[2];
 
-      return _roundService.isActivePlayer(activePlayerSocketId, game.players.getLocalPlayer().socketId) && !game.isOver && !isActionBeingProcessed;
+      return _roundService.isActivePlayer(
+              activePlayerSocketId, game.players.getLocalPlayer().socketId) &&
+          !game.isOver &&
+          !isActionBeingProcessed;
     });
   }
 
   Stream<bool> _canExchangeStream() {
-    return CombineLatestStream<dynamic, bool>([_canPlayStream(), _gameService.getTileRack().selectedTilesStream], (values) {
+    return CombineLatestStream<dynamic, bool>(
+        [_canPlayStream(), _gameService.getTileRack().selectedTilesStream],
+        (values) {
       bool canPlay = values[0];
       List<Tile> selectedTiles = values[1];
 
@@ -120,7 +135,8 @@ class GameActions extends StatelessWidget {
   }
 
   Stream<bool> _canPlaceStream(Game game) {
-    return CombineLatestStream([_canPlayStream(), game.board.isValidPlacementStream], (values) {
+    return CombineLatestStream(
+        [_canPlayStream(), game.board.isValidPlacementStream], (values) {
       bool canPlay = values[0];
       bool isValidPlacement = values[1];
       return canPlay && isValidPlacement;

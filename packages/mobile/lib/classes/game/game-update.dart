@@ -29,16 +29,16 @@ class GameUpdateData {
   factory GameUpdateData.fromJson(Map<String, dynamic> json) {
     return GameUpdateData(
         player1: json['player1'] != null
-            ? PlayerUpdateData.fromJson(json['player1'] as Map<String, dynamic>)
+            ? PlayerUpdateData.fromJson(json['player1'])
             : null,
         player2: json['player2'] != null
-            ? PlayerUpdateData.fromJson(json['player2'] as Map<String, dynamic>)
+            ? PlayerUpdateData.fromJson(json['player2'])
             : null,
         player3: json['player3'] != null
-            ? PlayerUpdateData.fromJson(json['player3'] as Map<String, dynamic>)
+            ? PlayerUpdateData.fromJson(json['player3'])
             : null,
         player4: json['player4'] != null
-            ? PlayerUpdateData.fromJson(json['player4'] as Map<String, dynamic>)
+            ? PlayerUpdateData.fromJson(json['player4'])
             : null,
         isGameOver: json['isGameOver'] as bool?,
         winners: json['winners'] != null

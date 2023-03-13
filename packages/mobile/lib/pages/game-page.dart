@@ -11,10 +11,23 @@ import 'package:mobile/components/timer.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
+import 'package:mobile/services/round-service.dart';
 
 import '../components/game/game_messages.dart';
 
-class GamePage extends StatelessWidget {
+class GamePage extends StatefulWidget {
+  @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> {
+
+  @override
+  void dispose() {
+    getIt.get<RoundService>().roundTimeout?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     GameService gameService = getIt.get<GameService>();

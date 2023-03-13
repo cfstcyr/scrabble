@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:async/async.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/board/board.dart';
@@ -9,18 +6,13 @@ import 'package:mobile/classes/game/game-update.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
-import 'package:mobile/classes/player/player-data.dart';
-import 'package:mobile/classes/rounds/round.dart';
-import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
-import 'package:mobile/classes/tile/tile.dart';
-import 'package:mobile/classes/user.dart';
-import 'package:mobile/constants/erros/game-errors.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/action-service.dart';
+import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 import 'package:rxdart/rxdart.dart';
@@ -61,7 +53,7 @@ class GameService {
         .where((Player player) => player.socketId == localPlayerId)
         .map((Player player) => player.isLocalPlayer = true);
 
-    TileRack tileRack = TileRack();
+    TileRack tileRack = TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
 
     _game.add(Game(
         board: Board(),
@@ -71,7 +63,7 @@ class GameService {
         tileReserve: startGameData.tileReserve));
 
     _roundService.startRound(startGameData.firstRound);
-
+    getIt.get<GameMessagesService>().resetMessages();
     Navigator.pushReplacementNamed(
         navigatorKey.currentContext!, GAME_PAGE_ROUTE);
   }
@@ -114,6 +106,8 @@ class GameService {
     if (gameUpdate.isGameOver != null) {
       game.isOver = gameUpdate.isGameOver!;
     }
+
+    game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
 
     _game.add(game);
   }

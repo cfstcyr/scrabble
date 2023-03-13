@@ -24,10 +24,10 @@ class GamePlayController {
     return _instance;
   }
 
-  final httpClient = getIt.get<PersonnalHttpClient>();
   SocketService socketService = getIt.get<SocketService>();
 
   final String baseEndpoint = GAME_ENDPOINT;
+  PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
   InterceptedHttp get http => httpClient.http;
 
   String? currentGameId;
@@ -38,6 +38,7 @@ class GamePlayController {
 
   Stream<GameMessage?> get messageEvent => gameMessage$.stream;
 
+
   final BehaviorSubject<GameUpdateData> gameUpdate$ =
       BehaviorSubject<GameUpdateData>();
   final BehaviorSubject<GameMessage?> gameMessage$ =
@@ -45,14 +46,14 @@ class GamePlayController {
   final PublishSubject<void> _actionDone$ = PublishSubject<void>();
 
   Future<void> sendAction(ActionData actionData) async {
-    Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/action");
+    Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/players/action");
     http
         .post(endpoint, body: jsonEncode(actionData))
         .then((_) => _actionDone$.add(null));
   }
 
   Future<void> leaveGame() async {
-    Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/leave");
+    Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/players/leave");
     await http.delete(endpoint);
   }
 
