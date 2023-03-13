@@ -53,7 +53,7 @@ class GameService {
         .where((Player player) => player.socketId == localPlayerId)
         .map((Player player) => player.isLocalPlayer = true);
 
-    TileRack tileRack = TileRack();
+    TileRack tileRack = TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
 
     _game.add(Game(
         board: Board(),
@@ -106,6 +106,8 @@ class GameService {
     if (gameUpdate.isGameOver != null) {
       game.isOver = gameUpdate.isGameOver!;
     }
+
+    game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
 
     _game.add(game);
   }
