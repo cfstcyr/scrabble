@@ -127,6 +127,7 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     }
 
     closeMenu(): void {
+        this.createChannelField.setValue('');
         this.channelMenuIsOpen = false;
     }
 
