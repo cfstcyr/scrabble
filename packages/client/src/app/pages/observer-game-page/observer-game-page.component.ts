@@ -18,6 +18,7 @@ import {
 import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
 import { Subject } from 'rxjs';
 
@@ -39,6 +40,7 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
         private readonly reconnectionService: ReconnectionService,
         public surrenderDialog: MatDialog,
         private gameViewEventManagerService: GameViewEventManagerService,
+        private playerLeavesService: PlayerLeavesService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
@@ -47,7 +49,7 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         if (this.mustDisconnectGameOnLeave) {
-            this.reconnectionService.disconnectGame(false);
+            this.reconnectionService.disconnectGame();
         }
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
@@ -147,5 +149,6 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
 
     private handlePlayerLeaves(): void {
         this.mustDisconnectGameOnLeave = false;
+        this.playerLeavesService.handleLocalPlayerLeavesGame();
     }
 }
