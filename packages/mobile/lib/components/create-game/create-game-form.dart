@@ -8,13 +8,13 @@ import 'package:mobile/classes/virtual-player-level.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/game-creation-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/services/user.service.dart';
 
 import '../../classes/group.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/create-game.constants.dart';
-import '../../controllers/game-creation-controller.dart';
 import '../../pages/home-page.dart';
 
 class CreateGameForm extends StatefulWidget {
@@ -29,8 +29,7 @@ class CreateGameFormState extends State<CreateGameForm> {
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  GameCreationController gameCreationController =
-      getIt.get<GameCreationController>();
+  GameCreationService gameCreationService = getIt.get<GameCreationService>();
   UserService userService = getIt.get<UserService>();
 
   final emailHandler = TextFieldHandler();
@@ -211,8 +210,9 @@ class CreateGameFormState extends State<CreateGameForm> {
                             ),
                           ),
                           ElevatedButton(
-                            onPressed:
-                                isButtonEnabled ? () => {CreateGame()} : null,
+                            onPressed: isButtonEnabled
+                                ? () async => await createGame()
+                                : null,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: themeColor,
                               shadowColor: Colors.black,
@@ -242,7 +242,7 @@ class CreateGameFormState extends State<CreateGameForm> {
     );
   }
 
-  Future<void> CreateGame() async {
+  Future<void> createGame() async {
     List<PublicUser> _users = [_user];
     Group groupData = Group(
       users: _users,
@@ -251,11 +251,10 @@ class CreateGameFormState extends State<CreateGameForm> {
       gameVisibility: GameVisibility.fromString(_visibility!),
       password: _visibility == GameVisibility.protected.name ? _password : '',
     );
-    GroupCreationResponse createdGroup =
-        await gameCreationController.handleCreateGame(groupData);
-    createdGroup.isCreated
-        ? Navigator.pushNamed(context, CREATE_LOBBY_ROUTE)
-        : {};
+    bool isCreated = await gameCreationService.handleCreateGame(groupData);
+    if (context.mounted) {
+      isCreated ? {Navigator.pushNamed(context, CREATE_LOBBY_ROUTE)} : {};
+    }
   }
 
   bool isFormValid() {

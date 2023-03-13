@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
 
@@ -30,6 +33,7 @@ class GameCreationService {
   }
 
   Future<void> handleCancelGame() async {
+    log(groupId.toString());
     if (groupId == null) return;
 
     await gameCreationController.handleCancelGame(groupId!).catchError((error) {
@@ -58,5 +62,17 @@ class GameCreationService {
       errorSnackBar(navigatorKey.currentContext!, GAME_REJECT_FAILED);
       return error;
     });
+  }
+
+  Future<bool> handleCreateGame(Group groupData) async {
+    GroupCreationResponse response = await gameCreationController
+        .handleCreateGame(groupData)
+        .catchError((error) {
+      errorSnackBar(navigatorKey.currentContext!, GAME_CREATE_FAILED);
+      return GroupCreationResponse(isCreated: false, groupId: '');
+    });
+    groupId = response.groupId;
+    log(groupId.toString());
+    return response.isCreated;
   }
 }

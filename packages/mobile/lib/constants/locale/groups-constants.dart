@@ -11,3 +11,5 @@ const GAME_ACCEPT_FAILED =
     'Erreur lors de l\'acceptation de l\'adversaire, veuillez réessayer';
 const GAME_REJECT_FAILED =
     'Erreur lors du rejet de l\'adversaire, veuillez réessayer';
+
+const GAME_CREATE_FAILED = 'Erreur lors de la création de la partie';
