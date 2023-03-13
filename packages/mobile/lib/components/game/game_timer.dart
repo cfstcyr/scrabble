@@ -33,8 +33,6 @@ class _GameTimerState extends State<GameTimer> {
     });
 
     endGameStream = getIt.get<EndGameService>().endGameStream.listen((isOver) {
-      print("isOver");
-      print(isOver);
       if (isOver) {
         handleEndGame();
       }

@@ -44,7 +44,7 @@ class GameActions extends StatelessWidget {
                       stream: _endGameStream(),
                       initialData: false,
                       builder: (context, snapshot) {
-                        bool isOver = snapshot.hasData ? snapshot.data! : false;
+                        bool isOver = snapshot.hasData && snapshot.data!;
                         return AppButton(
                           onPressed: () =>
                               isOver ? leave(context) : surrender(context),
@@ -53,11 +53,21 @@ class GameActions extends StatelessWidget {
                           theme: AppButtonTheme.danger,
                         );
                       }),
-                  AppButton(
-                    onPressed: () {},
-                    icon: Icons.lightbulb,
-                    size: AppButtonSize.large,
-                  ),
+                  StreamBuilder<bool>(
+                      stream: _canPlayStream(),
+                      initialData: false,
+                      builder: (context, snapshot) {
+                        return AppButton(
+                          onPressed: snapshot.hasData && snapshot.data!
+                              ? () {
+                                  _actionService.sendAction(ActionType.hint);
+                                }
+                              : null,
+                          icon: Icons.lightbulb,
+                          size: AppButtonSize.large,
+                        );
+                      }),
+
                   StreamBuilder<bool>(
                       stream: _canExchangeStream(),
                       initialData: false,
