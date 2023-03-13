@@ -38,9 +38,9 @@ class PlayerLeaveService {
   }
 
   Future<void> leaveGame(BuildContext context) async {
-    triggerDialogBox("Quitter la partie", DIALOG_SURRENDER_CONTENT, [
+    triggerDialogBox(DIALOG_LEAVE_BUTTON_CONTINUE, DIALOG_SURRENDER_CONTENT, [
       DialogBoxButtonParameters(
-          content: "Quitter la partie",
+          content: DIALOG_LEAVE_BUTTON_CONTINUE,
           theme: AppButtonTheme.tomato,
           onPressed: () async {
             await getIt.get<GamePlayController>().leaveGame();
@@ -49,7 +49,7 @@ class PlayerLeaveService {
             Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
           }),
       DialogBoxButtonParameters(
-          content: "Rester dans la partie",
+          content: DIALOG_STAY_BUTTON_CONTINUE,
           theme: AppButtonTheme.secondary,
           closesDialog: true)
     ]);
