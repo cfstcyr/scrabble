@@ -89,7 +89,7 @@ export class GamePlayController extends BaseController {
         if (data.payload === undefined) throw new HttpException('payload is required', StatusCodes.BAD_REQUEST);
 
         try {
-            if (data.input.length > 0) {
+            if (data.input && data.input.length > 0) {
                 this.socketService.emitToSocket(playerId, 'newMessage', {
                     content: data.input,
                     senderId: playerId,
