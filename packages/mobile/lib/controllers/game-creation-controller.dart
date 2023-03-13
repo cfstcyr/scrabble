@@ -34,19 +34,15 @@ class GameCreationController {
   final String endpoint = GAME_ENDPOINT;
 
   Future<bool> handleAcceptOpponent(PublicUser opponent, String gameId) async {
-    // TODO PAS LES BONS ENDPOINTS: accept est pour le bouton "démarrer la partie"
     Response res = await http.post(
-        Uri.parse(
-            "$endpoint/$gameId/players/${SocketService.socket.id}/accept"),
+        Uri.parse("$endpoint/$gameId/players/accept"),
         body: jsonEncode(opponent));
-    // TODO: Remove hack
     return (res.statusCode == 200);
   }
 
   Future<bool> handleRejectOpponent(PublicUser opponent, String gameId) async {
     Response res = await http.post(
-        Uri.parse(
-            "${endpoint}/${gameId}/players/${SocketService.socket.id}/reject"),
+        Uri.parse("${endpoint}/${gameId}/players/reject"),
         body: jsonEncode(opponent));
     // TODO: Remove hack
     return (res.statusCode == 200);
@@ -58,12 +54,9 @@ class GameCreationController {
 
   // TODO
   Future<bool> handleCancelGame(PublicUser opponent, String gameId) async {
-    // TODO PAS LES BONS ENDPOINTS: accept est pour le bouton "démarrer la partie"
     Response res = await http.post(
-        Uri.parse(
-            "${endpoint}/${gameId}/players/${SocketService.socket.id}/accept"),
+        Uri.parse("${endpoint}/${gameId}/players/accept"),
         body: jsonEncode(opponent));
-    // TODO: Remove hack
     return (res.statusCode == 200);
   }
 
