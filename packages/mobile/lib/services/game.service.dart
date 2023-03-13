@@ -14,7 +14,6 @@ import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game-messages.service.dart';
-import 'package:mobile/services/player-leave-service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/user.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
@@ -165,8 +164,11 @@ class GameService {
       DialogBoxButtonParameters(
           content: DIALOG_LEAVE_BUTTON_CONTINUE,
           theme: AppButtonTheme.secondary,
-          onPressed: () {
-            getIt.get<PlayerLeaveService>().leaveGame(context);
+          onPressed: () async {
+            await getIt.get<GamePlayController>().leaveGame();
+
+            if (!context.mounted) return;
+            Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
           }),
       DialogBoxButtonParameters(
         content: DIALOG_STAY_BUTTON_CONTINUE,
