@@ -55,11 +55,13 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                     child: Container(
                       child: IconButton(
                         onPressed: () {
-                          setState(() {
-                            bool isAccepted =
-                                addPlayerToLobby(playerWaitingList[index]);
+                          setState(() async {
+                            bool isAccepted = await addPlayerToLobby(
+                                playerWaitingList[index]);
                             if (!isAccepted) {
-                              errorSnackBar(context, FULL_LOBBY_ERROR);
+                              if (context.mounted) {
+                                errorSnackBar(context, FULL_LOBBY_ERROR);
+                              }
                             }
                           });
                         },

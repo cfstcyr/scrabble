@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-creation-service.dart';
 import 'package:rxdart/rxdart.dart';
@@ -7,7 +6,7 @@ import 'package:rxdart/rxdart.dart';
 import '../classes/user.dart';
 import '../constants/create-lobby-constants.dart';
 
-final gameCreationController = getIt.get<GameCreationController>();
+GameCreationService gameCreationService = getIt.get<GameCreationService>();
 
 BehaviorSubject<List<PublicUser>> playerList$ =
     BehaviorSubject<List<PublicUser>>.seeded(playerList);
@@ -75,31 +74,31 @@ Widget setWaitingPlayerIcon(int index) {
   return setAvatar(playerWaitingList[index].avatar);
 }
 
-bool addPlayerToLobby(PublicUser player) {
+Future<bool> addPlayerToLobby(PublicUser player) async {
   if (playerList$.isClosed) reOpen();
-
-  // TODO COTE SERVEUR req
   if (playerList.length >= MAX_PLAYER_COUNT) return false;
+
+  await gameCreationService.handleAcceptOpponent(player);
+
   playerWaitingList.remove(player);
   playerList.add(player);
   playerList$.add(playerList);
   return true;
 }
 
-void refusePlayer(PublicUser player) {
-  // TODO COTE SERVEUR req
+Future<void> refusePlayer(PublicUser player) async {
+  await gameCreationService.handleRejectOpponent(player);
   playerWaitingList.remove(player);
 }
 
-void startGame(BuildContext context) {
-  getIt.get<GameCreationService>().handleStartGame();
+Future<void> startGame() async {
+  await gameCreationService.handleStartGame();
   playerList$.close();
 }
 
-void backOut(BuildContext context) {
-  // TODO socket close lobby
+Future<void> backOut() async {
+  await gameCreationService.handleCancelGame();
   playerList$.close();
-  Navigator.pop(context);
 }
 
 void reOpen() {

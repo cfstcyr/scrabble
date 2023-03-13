@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/user.dart';
 
-import '../../classes/user.dart';
 import '../../constants/create-lobby-constants.dart';
 import '../../view-methods/create-lobby-methods.dart';
 
 class GroupManagement extends StatelessWidget {
-  const GroupManagement({
+  GroupManagement({
     super.key,
   });
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -18,8 +17,9 @@ class GroupManagement extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton.icon(
-              onPressed: () {
-                backOut(context);
+              onPressed: () async {
+                await backOut();
+                if (context.mounted) Navigator.pop(context);
               },
               style: setStyleSecondaryActionButtons(),
               icon: Icon(
@@ -44,8 +44,8 @@ StreamBuilder<List<PublicUser>> handleStartGameButton() {
       return ElevatedButton.icon(
           onPressed: isMinimumPlayerCount()
               ? null
-              : () {
-                  startGame(context);
+              : () async {
+                  await startGame();
                 },
           style: setStyleMainActionButtons(),
           icon: Icon(Icons.start, size: 20),

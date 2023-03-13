@@ -49,7 +49,7 @@ class GameCreationController {
     return await post(Uri.parse("$endpoint/$gameId/players/start"));
   }
 
-  Future<Response> handleCancelGame(PublicUser opponent, String gameId) async {
+  Future<Response> handleCancelGame(String gameId) async {
     return await http.delete(Uri.parse("$endpoint/$gameId/players/cancel"));
   }
 
