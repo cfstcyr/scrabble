@@ -4,7 +4,6 @@ import { PlayerData } from '@app/classes/communication/player-data';
 import { CreateGameRequest, GameRequest, GroupsRequest } from '@app/classes/communication/request';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { UserId } from '@app/classes/user/connected-user-types';
-import { SECONDS_TO_MILLISECONDS, TIME_TO_RECONNECT } from '@app/constants/controllers-constants';
 import { GAME_IS_OVER, MAX_ROUND_TIME_REQUIRED, PLAYER_NAME_REQUIRED } from '@app/constants/controllers-errors';
 import { SYSTEM_ID } from '@app/constants/game-constants';
 import { BaseController } from '@app/controllers/base-controller';
@@ -300,7 +299,7 @@ export class GameDispatcherController extends BaseController {
 
         const gameConfig = this.gameDispatcherService.startRequest(gameId, playerId);
 
-        const startGameData = await this.activeGameService.beginGame(gameId, gameConfig.idChannel, gameConfig);
+        const startGameData = await this.activeGameService.beginGame(gameId, gameConfig.idChannel, gameConfig, waitingRoom.joinedObservers);
 
         this.socketService.emitToRoom(gameId, 'startGame', startGameData);
         this.handleGroupsUpdate();
@@ -347,13 +346,7 @@ export class GameDispatcherController extends BaseController {
         const game = this.activeGameService.getGame(gameId, playerId);
 
         if (!game.areGameOverConditionsMet()) {
-            const disconnectedPlayer = game.getPlayer(playerId);
-            disconnectedPlayer.isConnected = false;
-            setTimeout(() => {
-                if (!disconnectedPlayer.isConnected) {
-                    this.handleLeave(gameId, playerId);
-                }
-            }, TIME_TO_RECONNECT * SECONDS_TO_MILLISECONDS);
+            this.handleLeave(gameId, playerId);
         }
     }
 }

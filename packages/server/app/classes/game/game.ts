@@ -29,6 +29,7 @@ import { INVALID_LIST_LENGTH } from '@app/constants/classes-errors';
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { GameHistoryCreation } from '@common/models/game-history';
+import { Observer } from '@common/models/observer';
 
 export default class Game {
     private static boardService: BoardService;
@@ -40,6 +41,7 @@ export default class Game {
     player2: Player;
     player3: Player;
     player4: Player;
+    observers: Observer[];
     isAddedToDatabase: boolean;
     gameIsOver: boolean;
     gameHistory: GameHistoryCreation;
@@ -61,7 +63,7 @@ export default class Game {
         }
     }
 
-    static async createGame(id: string, groupChannelId: TypeOfId<Channel>, config: ReadyGameConfig): Promise<Game> {
+    static async createGame(id: string, groupChannelId: TypeOfId<Channel>, config: ReadyGameConfig, observers: Observer[]): Promise<Game> {
         const game = new Game(groupChannelId);
 
         game.id = id;
@@ -69,6 +71,7 @@ export default class Game {
         game.player2 = config.player2;
         game.player3 = config.player3;
         game.player4 = config.player4;
+        game.observers = observers;
         game.roundManager = new RoundManager(config.maxRoundTime, config.player1, config.player2, config.player3, config.player4);
         game.dictionarySummary = config.dictionarySummary;
         game.tileReserve = new TileReserve();

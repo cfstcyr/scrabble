@@ -91,7 +91,7 @@ export class GameDispatcherService {
         if (waitingRoom.getConfig().player1.id !== playerId) {
             throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.FORBIDDEN);
         }
-        const [requestingPlayer, isObserver] = waitingRoom.getFromRequesting((user) => user.publicUser.username === requestingPlayerName);
+        const [requestingPlayer, isObserver] = waitingRoom.getUserFromRequestingUsers((user) => user.publicUser.username === requestingPlayerName);
 
         if (isAccepted) {
             waitingRoom.changeRequestingToJoined(requestingPlayer.id, isObserver);
