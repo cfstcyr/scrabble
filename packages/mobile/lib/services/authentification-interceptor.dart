@@ -13,6 +13,7 @@ class AuthentificationInterceptor implements InterceptorContract {
     try {
       token = await storageHandlerService.getToken();
       data.headers["authorization"] = "Bearer $token";
+      data.headers["Content-Type"] = "application/json";
     } catch (e) {
       print(e);
     }

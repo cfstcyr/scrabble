@@ -1,5 +1,5 @@
 <app-page-header [hideBackButton]="true">
-    <img [srcset]="'https://ucarecdn.com/4e315b15-d733-4a18-b59b-956672c163ba/' | srcset:0:22" header-title />
+    <img [appSrc]="logo" [height]="22" header-title />
 </app-page-header>
 
 <div id="page-content">
@@ -14,7 +14,7 @@
     </div>
 
     <div class="content">
-        <img src="https://ucarecdn.com/4e315b15-d733-4a18-b59b-956672c163ba/" alt="Logo Scrabble" />
+        <img [appSrc]="logo" [width]="800" alt="Logo Scrabble" />
         <section id="button-group" class="justified">
             <button mat-flat-button color="primary" [routerLink]="routeGroups">Rejoindre une partie</button>
             <button mat-flat-button color="primary" [routerLink]="routeGameCreation">Créer une partie</button>

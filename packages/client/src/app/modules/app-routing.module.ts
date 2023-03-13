@@ -11,6 +11,19 @@ import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.componen
 import { LoginPageComponent } from '@app/pages/login-page/login-page.component';
 import { SignUpPageComponent } from '@app/pages/signup-page/signup-page.component';
 import { ObserverGamePageComponent } from '@app/pages/observer-game-page/observer-game-page.component';
+import { UserProfilePageComponent } from '@app/pages/user-profile-page/user-profile-page.component';
+import {
+    ROUTE_CREATE_WAITING,
+    ROUTE_GAME,
+    ROUTE_GAME_CREATION,
+    ROUTE_GAME_OBSERVER,
+    ROUTE_GROUPS,
+    ROUTE_HOME,
+    ROUTE_JOIN_WAITING,
+    ROUTE_LOGIN,
+    ROUTE_PROFILE,
+    ROUTE_SIGNUP,
+} from '@app/constants/routes-constants';
 
 const privateRoute: Route = {
     canActivate: [PrivateRouteGuard],
@@ -22,19 +35,22 @@ const publicRoute: Route = {
     runGuardsAndResolvers: 'paramsOrQueryParamsChange',
 };
 
+const removeStartSlash = (str: string) => (str.startsWith('/') ? str.substring(1) : str);
+
 const routes: Routes = [
-    { path: '', redirectTo: '/home', pathMatch: 'full' },
-    { path: 'signup', component: SignUpPageComponent, ...publicRoute },
-    { path: 'login', component: LoginPageComponent, ...publicRoute },
-    { path: 'home', component: HomePageComponent, ...privateRoute },
-    { path: 'game', component: GamePageComponent, ...privateRoute },
-    { path: 'game-observer', component: ObserverGamePageComponent, ...privateRoute },
-    { path: 'game-creation', component: GameCreationPageComponent, ...privateRoute },
-    { path: 'groups', component: GroupsPageComponent, ...privateRoute },
-    { path: 'create-waiting-room', component: CreateWaitingPageComponent, ...privateRoute },
-    { path: 'join-waiting-room', component: JoinWaitingPageComponent, ...privateRoute },
-    { path: '**', redirectTo: '/home' },
-];
+    { path: '', redirectTo: ROUTE_HOME, pathMatch: 'full' },
+    { path: ROUTE_SIGNUP, component: SignUpPageComponent, ...publicRoute },
+    { path: ROUTE_LOGIN, component: LoginPageComponent, ...publicRoute },
+    { path: ROUTE_HOME, component: HomePageComponent, ...privateRoute },
+    { path: ROUTE_GAME, component: GamePageComponent, ...privateRoute },
+    { path: ROUTE_GAME_OBSERVER, component: ObserverGamePageComponent, ...privateRoute },
+    { path: ROUTE_GAME_CREATION, component: GameCreationPageComponent, ...privateRoute },
+    { path: ROUTE_GROUPS, component: GroupsPageComponent, ...privateRoute },
+    { path: ROUTE_CREATE_WAITING, component: CreateWaitingPageComponent, ...privateRoute },
+    { path: ROUTE_JOIN_WAITING, component: JoinWaitingPageComponent, ...privateRoute },
+    { path: ROUTE_PROFILE, component: UserProfilePageComponent, ...privateRoute },
+    { path: '**', redirectTo: ROUTE_HOME },
+].map((route) => ({ ...route, path: removeStartSlash(route.path) }));
 
 @NgModule({
     imports: [RouterModule.forRoot(routes, { useHash: true })],

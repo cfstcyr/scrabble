@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
+import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/user-constants.dart';
 
 import '../../classes/user.dart';
@@ -111,12 +112,13 @@ class PlayerInRoom extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                getUserAvatar(user.avatar,
+                Avatar(
+                    avatar: user.avatar,
+                    forceInitials: user.avatar.isEmpty,
                     initials: getUsersInitials(user.username),
                     background: theme.colorScheme.onBackground,
-                    radius: 24,
-                    width: 60,
-                    height: 60),
+                    radius: 16,
+                    size: 40),
                 SizedBox(
                   width: 8,
                 ),

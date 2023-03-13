@@ -1,11 +1,17 @@
 import 'package:mobile/classes/game/player.dart';
-import 'package:mobile/constants/game.constants.dart';
+import 'package:mobile/classes/player/player-data.dart';
+import 'package:mobile/components/error-pop-up.dart';
+import 'package:mobile/constants/create-lobby-constants.dart';
+import 'package:mobile/routes/navigator-key.dart';
+
+import '../../constants/erros/game-errors.dart';
 
 class PlayersContainer {
   Player player1;
   Player player2;
   Player player3;
   Player player4;
+  String? localPlayerId;
 
   PlayersContainer.fromPlayers(
       {required this.player1,
@@ -36,4 +42,23 @@ class PlayersContainer {
   }
 
   List<Player> get players => [player1, player2, player3, player4];
+
+  Player getLocalPlayer() {
+    if (localPlayerId == null) {
+      errorSnackBar(navigatorKey.currentContext!, NO_LOCAL_PLAYER_DEFINED);
+    }
+    return players.firstWhere((Player player) {
+      return player.socketId == localPlayerId;
+    }, orElse: () {
+      errorSnackBar(navigatorKey.currentContext!, NO_LOCAL_PLAYER_DEFINED);
+      return player1;
+    });
+  }
+
+  Player getNextPlayerInList(Player player) {
+    int givenPlayerIndex =
+        players.indexOf(players.firstWhere((Player p) => p == player));
+    int nextPlayerIndex = (givenPlayerIndex + 1) % MAX_PLAYER_COUNT + 1;
+    return getPlayer(nextPlayerIndex);
+  }
 }

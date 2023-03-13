@@ -1,14 +1,16 @@
-import 'package:mobile/controllers/gameplay-controller.dart';
+import 'package:mobile/controllers/game-play.controller.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../classes/actions/action-data.dart';
 import '../locator.dart';
 
 class ActionService {
-  bool _isActionBeingProcessed = false;
+  BehaviorSubject<bool> _isActionBeingProcessed = BehaviorSubject.seeded(false);
 
-  bool get isActionBeingProcessed => _isActionBeingProcessed;
+  ValueStream<bool> get isActionBeingProcessedStream => _isActionBeingProcessed.stream;
+  bool get isActionBeingProcessed => _isActionBeingProcessed.value;
 
-  GameplayController gameplayController = getIt.get<GameplayController>();
+  GamePlayController gameplayController = getIt.get<GamePlayController>();
 
   ActionService._privateConstructor() {
     gameplayController.actionDoneEvent.listen((_) => _actionProcessed());
@@ -20,16 +22,17 @@ class ActionService {
     return _instance;
   }
 
-  Future<void> sendAction(ActionType actionType, [ActionPayload? payload]) async {
-    if (_isActionBeingProcessed) return;
+  Future<void> sendAction(ActionType actionType,
+      [ActionPayload? payload]) async {
+    if (isActionBeingProcessed) return;
 
     ActionData actionData = ActionData(type: actionType, payload: payload);
 
     gameplayController.sendAction(actionData);
-    _isActionBeingProcessed = true;
+    _isActionBeingProcessed.add(true);
   }
 
   void _actionProcessed() {
-    _isActionBeingProcessed = false;
+    _isActionBeingProcessed.add(false);
   }
 }

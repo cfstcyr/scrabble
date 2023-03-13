@@ -123,7 +123,7 @@ class GameSquare extends StatelessWidget {
                                   shadowColor: Colors.transparent,
                                   child: Tile(
                                     tile: snapshot.data,
-                                    isSelected: true,
+                                    shouldWiggle: true,
                                     size: TILE_SIZE_DRAG,
                                   ),
                                 ),

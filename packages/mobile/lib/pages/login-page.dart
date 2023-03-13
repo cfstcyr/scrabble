@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../components/image.dart';
 import '../components/login-form.dart';
 import '../constants/login-constants.dart';
 
@@ -8,8 +9,11 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Row(children: [Image.asset(LOGO_PATH, height: 60, width: 90)]),
+          title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [AppImage(src: LOGO_PATH, height: 24)]),
           automaticallyImplyLeading: false,
+          surfaceTintColor: Colors.white,
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(

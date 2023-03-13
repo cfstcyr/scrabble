@@ -2,8 +2,8 @@
     <div class="chatbox__header">
         <div class="chatbox__header__left">
             <div [ngClass]="{'chatbox__header__icons': true, 'chatbox__header__icons--two-icons': !!icon2}" *ngIf="!hideIcon">
-                <img class="chatbox__header__icon" [src]="icon" />
-                <img class="chatbox__header__icon" [src]="icon2" *ngIf="icon2" />
+                <img class="chatbox__header__icon" [appSrc]="icon" [square]="28" />
+                <img class="chatbox__header__icon" [appSrc]="icon2" [square]="28" *ngIf="icon2" />
             </div>
             <div class="chatbox__header__title">{{ title }}</div>
         </div>

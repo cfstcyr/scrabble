@@ -1,3 +1,5 @@
+import 'package:mobile/classes/actions/action-data.dart';
+import 'package:mobile/classes/actions/action-exchange.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
@@ -8,9 +10,11 @@ import 'package:rxdart/rxdart.dart';
 class TileRack {
   final GameEventService _gameEventService = getIt.get<GameEventService>();
   final BehaviorSubject<List<Tile>> _tiles;
+  final BehaviorSubject<bool> _isExchangeModeEnabled$;
 
   TileRack({List<Tile> tiles = const []})
-      : _tiles = BehaviorSubject.seeded(tiles) {
+      : _tiles = BehaviorSubject.seeded(tiles),
+        _isExchangeModeEnabled$ = BehaviorSubject.seeded(false) {
     _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD, (placement) {
       removeTile(placement.tile);
     });
@@ -20,19 +24,35 @@ class TileRack {
     return _tiles.stream;
   }
 
-  setTiles(List<Tile> tiles) {
+  ValueStream<bool> get isExchangeModeEnabled {
+    return _isExchangeModeEnabled$.stream;
+  }
+
+  Stream<List<Tile>> get selectedTilesStream => stream.map((List<Tile> tiles) =>
+      tiles.where((Tile tile) => tile.isSelectedForExchange).toList());
+
+  List<Tile> get selectedTiles {
+    return stream.value
+        .where((Tile tile) => tile.isSelectedForExchange)
+        .toList();
+  }
+
+  TileRack setTiles(List<Tile> tiles) {
     _tiles.add(tiles);
+    return this;
   }
 
-  addTiles(List<Tile> tiles) {
+  TileRack addTiles(List<Tile> tiles) {
     _tiles.add([..._tiles.value, ...tiles]);
+    return this;
   }
 
-  removeTile(Tile tile) {
+  TileRack removeTile(Tile tile) {
     List<Tile> tiles = _tiles.value;
 
     tiles.remove(tile);
     _tiles.add([...tiles]);
+    return this;
   }
 
   placeTile(Tile tile, {int? to}) {
@@ -67,5 +87,28 @@ class TileRack {
     var tiles = _tiles.value;
     tiles.shuffle();
     _tiles.add(tiles);
+  }
+
+  void toggleExchangeMode() {
+    bool currentMode = isExchangeModeEnabled.value;
+    _isExchangeModeEnabled$.add(!currentMode);
+
+    if (!isExchangeModeEnabled.value) _resetSelectedTiles();
+  }
+
+  void toggleSelectedTile(Tile tile) {
+    tile.toggleIsSelected();
+    setTiles(stream.value);
+  }
+
+  ActionExchangePayload getSelectedTilesPayload() {
+    return ActionExchangePayload(tiles: selectedTiles);
+  }
+
+  void _resetSelectedTiles() {
+    setTiles(stream.value.map((Tile tile) {
+      tile.isSelectedForExchange = false;
+      return tile;
+    }).toList());
   }
 }

@@ -8,7 +8,7 @@ class Tile extends StatelessWidget {
     this.tile,
     this.size = 40,
     this.tint = Colors.transparent,
-    this.isSelected = false,
+    this.shouldWiggle = false,
   });
 
   final c.Tile? tile;
@@ -17,12 +17,12 @@ class Tile extends StatelessWidget {
 
   final Color tint;
 
-  final bool isSelected;
+  final bool shouldWiggle;
 
   @override
   Widget build(BuildContext context) {
     return Wiggle(
-        active: isSelected,
+        active: shouldWiggle,
         amount: 0.025,
         speed: Duration(milliseconds: 125),
         child: Stack(
@@ -36,7 +36,7 @@ class Tile extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAlias,
               child: ColorFiltered(
-                colorFilter: ColorFilter.mode(tint, BlendMode.color),
+                colorFilter: ColorFilter.mode(_getTintColor(), BlendMode.color),
                 child: Image.asset(
                   ASSET_TILE,
                   height: size,
@@ -94,5 +94,9 @@ class Tile extends StatelessWidget {
                 ))
           ],
         ));
+  }
+
+  Color _getTintColor() {
+    return tile != null && tile!.isSelectedForExchange ? Colors.lightBlue : tint;
   }
 }

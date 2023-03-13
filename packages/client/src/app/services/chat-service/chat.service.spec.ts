@@ -1,5 +1,8 @@
 /* eslint-disable dot-notation */
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ClientChannel } from '@app/classes/chat/channel';
 import { ClientSocket } from '@app/classes/communication/socket-type';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
@@ -52,6 +55,7 @@ describe('ChatService', () => {
         });
 
         TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, MatSnackBarModule, MatDialogModule],
             providers: [{ provide: SocketService, useValue: socketService }, UserService],
         });
         service = TestBed.inject(ChatService);
