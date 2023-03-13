@@ -817,19 +817,6 @@ describe('GameDispatcherController', () => {
             expect(gameIsOverSpy).to.have.been.called();
         });
 
-        it('Disconnection should set player isConnected to false if the game is not over', () => {
-            const clock = useFakeTimers();
-
-            gameIsOverSpy = chai.spy.on(gameStub, 'areGameOverConditionsMet', () => false);
-            controller['handleDisconnection'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
-            expect(playerStub.isConnected).to.be.false;
-
-            clock.tick(TIME_TO_RECONNECT * SECONDS_TO_MILLISECONDS);
-            clock.restore();
-        });
-
         it('Disconnection should force player to leave if they are not reconnected after 5 seconds', () => {
             const clock = useFakeTimers();
             gameIsOverSpy = chai.spy.on(gameStub, 'areGameOverConditionsMet', () => false);

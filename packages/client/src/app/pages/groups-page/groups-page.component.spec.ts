@@ -188,7 +188,7 @@ describe('GroupsPageComponent', () => {
             const group = { groupId: 'game-id' };
             getRandomGroupSpy.and.returnValue(group);
             component.joinRandomGroup();
-            expect(joinGroupSpy).toHaveBeenCalledWith([group.groupId, false]);
+            expect(joinGroupSpy).toHaveBeenCalledWith({ groupId: group.groupId, isObserver: false });
         });
 
         it('should open snack bar if an error occurs', () => {
@@ -250,7 +250,7 @@ describe('GroupsPageComponent', () => {
         });
         const groupWanted = component.groups[0];
         groupWanted.gameVisibility = GameVisibility.Public;
-        component.joinGroup([groupWanted.groupId, false]);
+        component.joinGroup({ groupId: groupWanted.groupId, isObserver: false });
         expect(gameDispatcherSpy).toHaveBeenCalled();
     });
 
@@ -263,7 +263,7 @@ describe('GroupsPageComponent', () => {
         });
         const groupWanted = component.groups[0];
         groupWanted.gameVisibility = GameVisibility.Protected;
-        component.joinGroup([groupWanted.groupId, false]);
+        component.joinGroup({ groupId: groupWanted.groupId, isObserver: false });
         expect(gameDispatcherSpy).toHaveBeenCalled();
         expect(spyGroupPasswordDialog).toHaveBeenCalled();
     });
@@ -277,7 +277,7 @@ describe('GroupsPageComponent', () => {
         });
         const groupWanted = component.groups[0];
         groupWanted.gameVisibility = GameVisibility.Private;
-        component.joinGroup([groupWanted.groupId, false]);
+        component.joinGroup({ groupId: groupWanted.groupId, isObserver: false });
         expect(gameDispatcherSpy).toHaveBeenCalled();
         expect(spyGroupRequestWaitingDialog).toHaveBeenCalled();
     });

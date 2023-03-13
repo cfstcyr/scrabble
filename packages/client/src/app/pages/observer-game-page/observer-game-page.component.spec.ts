@@ -116,7 +116,6 @@ describe('ObserverGamePageComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         gameServiceMock = TestBed.inject(GameService);
-        component['mustDisconnectGameOnLeave'] = false;
     });
 
     it('should create', () => {
