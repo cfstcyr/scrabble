@@ -11,7 +11,7 @@
                 </app-tile>
             </div>
 
-            <button *ngIf="isObserver" mat-raised-button color="primary" class="shuffle-button"  (click)="shuffleTiles()"><app-icon icon="random"></app-icon></button>
+            <button *ngIf="!isObserver" mat-raised-button color="primary" class="shuffle-button"  (click)="shuffleTiles()"><app-icon icon="random"></app-icon></button>
         </div>
         <div id="rack-button-container" class="rack-card">
             <div *ngIf="isObserver" matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur" matTooltipPosition="above">
