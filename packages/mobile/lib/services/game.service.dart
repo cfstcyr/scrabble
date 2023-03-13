@@ -16,11 +16,13 @@ import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
 import 'package:mobile/services/round-service.dart';
+import 'package:mobile/services/user.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../components/alert-dialog.dart';
 import '../components/app_button.dart';
+import '../constants/locale/game-constants.dart';
 import '../utils/round-utils.dart';
 
 class GameService {
@@ -111,7 +113,9 @@ class GameService {
     if (gameUpdate.isGameOver != null) {
       game.isOver = gameUpdate.isGameOver!;
       if (game.isOver) {
-        getIt.get<EndGameService>().setIsOver(game.isOver);
+        getIt
+            .get<EndGameService>()
+            .setEndGame(game.isOver, gameUpdate.winners ?? []);
       }
     }
 
@@ -153,16 +157,19 @@ class GameService {
   }
 
   void handleEndGame(BuildContext context) {
-    triggerDialogBox("Fin de la partie - TODO victoire/defaite ",
-        "Meilleur chance la prochaine fois !", [
+    String player = getIt.get<UserService>().getUser().username;
+    bool isWinner = getIt.get<EndGameService>().winners$.value.contains(player);
+
+    triggerDialogBox(DIALOG_END_OF_GAME_TITLE(isWinner),
+        DIALOG_END_OF_GAME_CONTENT(isWinner), [
       DialogBoxButtonParameters(
-          content: 'Quitter la partie',
+          content: DIALOG_LEAVE_BUTTON_CONTINUE,
           theme: AppButtonTheme.secondary,
           onPressed: () {
             getIt.get<PlayerLeaveService>().leaveGame(context);
           }),
       DialogBoxButtonParameters(
-        content: 'Rester sur cette page',
+        content: DIALOG_STAY_BUTTON_CONTINUE,
         theme: AppButtonTheme.secondary,
         closesDialog: true,
       ),

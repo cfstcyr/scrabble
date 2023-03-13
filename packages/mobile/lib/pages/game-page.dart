@@ -11,8 +11,6 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/round-service.dart';
 
-import '../components/alert-dialog.dart';
-import '../components/app_button.dart';
 import '../components/game/game_messages.dart';
 
 class GamePage extends StatefulWidget {
@@ -27,24 +25,6 @@ class _GamePageState extends State<GamePage> {
     super.dispose();
   }
 
-  handleEndGame() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      triggerDialogBox("Fin de la partie - TODO victoire/defaite ",
-          "Meilleur chance la prochaine fois !", [
-        DialogBoxButtonParameters(
-            content: 'Quitter la partie',
-            theme: AppButtonTheme.primary,
-            onPressed: () {
-              // getIt.get<PlayerLeaveService>().leaveGame(context);
-            }),
-        DialogBoxButtonParameters(
-            content: 'Rester sur cette page',
-            theme: AppButtonTheme.primary,
-            onPressed: () => print("GG")),
-      ]);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     GameService gameService = getIt.get<GameService>();
@@ -57,7 +37,6 @@ class _GamePageState extends State<GamePage> {
               gameService.handleEndGame(context);
             });
           }
-
           return Container(
             color: Colors.grey.shade100,
             padding: EdgeInsets.all(SPACE_1),

@@ -2,6 +2,8 @@ import 'package:rxdart/rxdart.dart';
 
 class EndGameService {
   BehaviorSubject<bool> _isOver$ = BehaviorSubject<bool>.seeded(false);
+  BehaviorSubject<List<String>> winners$ =
+      BehaviorSubject<List<String>>.seeded([]);
 
   EndGameService._privateConstructor();
 
@@ -13,7 +15,8 @@ class EndGameService {
     return _instance;
   }
 
-  void setIsOver(bool value) {
+  void setEndGame(bool value, List<String> winners) {
     _isOver$.add(value);
+    winners$.add(winners);
   }
 }
