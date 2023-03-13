@@ -1,4 +1,3 @@
-import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/game/game.dart';
@@ -21,6 +20,10 @@ class GameActions extends StatelessWidget {
   final GameEventService _gameEventService = getIt.get<GameEventService>();
 
   void surrender(BuildContext context) {
+    getIt.get<PlayerLeaveService>().abandonGame(context);
+  }
+
+  void leave(BuildContext context) {
     getIt.get<PlayerLeaveService>().leaveGame(context);
   }
 
@@ -37,12 +40,19 @@ class GameActions extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  AppButton(
-                    onPressed: () => surrender(context),
-                    icon: Icons.flag,
-                    size: AppButtonSize.large,
-                    theme: AppButtonTheme.danger,
-                  ),
+                  StreamBuilder<bool>(
+                      stream: _endGameStream(),
+                      initialData: false,
+                      builder: (context, snapshot) {
+                        bool isOver = snapshot.hasData ? snapshot.data! : false;
+                        return AppButton(
+                          onPressed: () =>
+                              isOver ? leave(context) : surrender(context),
+                          icon: isOver ? Icons.output_outlined : Icons.flag,
+                          size: AppButtonSize.large,
+                          theme: AppButtonTheme.danger,
+                        );
+                      }),
                   AppButton(
                     onPressed: () {},
                     icon: Icons.lightbulb,
@@ -120,6 +130,16 @@ class GameActions extends StatelessWidget {
               activePlayerSocketId, game.players.getLocalPlayer().socketId) &&
           !game.isOver &&
           !isActionBeingProcessed;
+    });
+  }
+
+  Stream<bool> _endGameStream() {
+    return CombineLatestStream<dynamic, bool>([
+      _gameService.gameStream,
+    ], (values) {
+      Game game = values[0];
+
+      return game.isOver;
     });
   }
 

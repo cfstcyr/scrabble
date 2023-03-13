@@ -1,14 +1,10 @@
 import 'package:async/async.dart';
 import 'package:mobile/classes/actions/action-data.dart';
-import 'package:mobile/classes/game/game.dart';
-import 'package:mobile/classes/rounds/round-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../constants/erros/game-errors.dart';
 import 'game.service.dart';
 
 class RoundService {
@@ -60,7 +56,8 @@ class RoundService {
   }
 
   void _onTimerExpires() {
-    if (currentRound.socketIdOfActivePlayer == getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
+    if (currentRound.socketIdOfActivePlayer ==
+        getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
       endRound();
       _actionService.sendAction(ActionType.pass);
     }

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/game/game.dart';
-import 'package:mobile/components/animation/pulse.dart';
 import 'package:mobile/components/game/game_actions.dart';
 import 'package:mobile/components/game/game_board.dart';
 import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/game/game_timer.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/tile/tile-rack.dart';
-import 'package:mobile/components/timer.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/round-service.dart';
 
+import '../components/alert-dialog.dart';
+import '../components/app_button.dart';
 import '../components/game/game_messages.dart';
 
 class GamePage extends StatefulWidget {
@@ -21,19 +21,43 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-
   @override
   void dispose() {
     getIt.get<RoundService>().roundTimeout?.cancel();
     super.dispose();
   }
 
+  handleEndGame() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      triggerDialogBox("Fin de la partie - TODO victoire/defaite ",
+          "Meilleur chance la prochaine fois !", [
+        DialogBoxButtonParameters(
+            content: 'Quitter la partie',
+            theme: AppButtonTheme.primary,
+            onPressed: () {
+              // getIt.get<PlayerLeaveService>().leaveGame(context);
+            }),
+        DialogBoxButtonParameters(
+            content: 'Rester sur cette page',
+            theme: AppButtonTheme.primary,
+            onPressed: () => print("GG")),
+      ]);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     GameService gameService = getIt.get<GameService>();
+
     return StreamBuilder<Game?>(
         stream: gameService.gameStream,
         builder: (context, snapshot) {
+          if (snapshot.data != null && snapshot.data!.isOver) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              gameService.handleEndGame(context);
+            });
+          }
+
           return Container(
             color: Colors.grey.shade100,
             padding: EdgeInsets.all(SPACE_1),
@@ -84,11 +108,5 @@ class _GamePageState extends State<GamePage> {
             ),
           );
         });
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    throw UnimplementedError();
   }
 }

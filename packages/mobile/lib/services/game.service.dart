@@ -12,11 +12,15 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/action-service.dart';
+import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game-messages.service.dart';
+import 'package:mobile/services/player-leave-service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../components/alert-dialog.dart';
+import '../components/app_button.dart';
 import '../utils/round-utils.dart';
 
 class GameService {
@@ -53,7 +57,8 @@ class GameService {
         .where((Player player) => player.socketId == localPlayerId)
         .map((Player player) => player.isLocalPlayer = true);
 
-    TileRack tileRack = TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
+    TileRack tileRack =
+        TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
 
     _game.add(Game(
         board: Board(),
@@ -105,6 +110,9 @@ class GameService {
 
     if (gameUpdate.isGameOver != null) {
       game.isOver = gameUpdate.isGameOver!;
+      if (game.isOver) {
+        getIt.get<EndGameService>().setIsOver(game.isOver);
+      }
     }
 
     game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
@@ -142,6 +150,23 @@ class GameService {
     }
 
     _actionService.sendAction(ActionType.place, placement.toActionPayload());
+  }
+
+  void handleEndGame(BuildContext context) {
+    triggerDialogBox("Fin de la partie - TODO victoire/defaite ",
+        "Meilleur chance la prochaine fois !", [
+      DialogBoxButtonParameters(
+          content: 'Quitter la partie',
+          theme: AppButtonTheme.secondary,
+          onPressed: () {
+            getIt.get<PlayerLeaveService>().leaveGame(context);
+          }),
+      DialogBoxButtonParameters(
+        content: 'Rester sur cette page',
+        theme: AppButtonTheme.secondary,
+        closesDialog: true,
+      ),
+    ]);
   }
 
   bool isLocalPlayerActivePlayer() {
