@@ -29,9 +29,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     gameHistory: MatTableDataSource<GameHistoryForUser>;
     serverActions: MatTableDataSource<PublicServerAction>;
 
-    constructor(private readonly userService: UserService) {}
-
-    ngOnInit(): void {
+    constructor(private readonly userService: UserService) {
         this.avatar = this.userService.user.pipe(map((user) => user?.avatar));
         this.username = this.userService.user.pipe(map((user) => user?.username));
         this.email = this.userService.user.pipe(map((user) => user?.email));
@@ -46,6 +44,9 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
 
         this.userService.gameHistory.subscribe((gameHistory) => (this.gameHistory.data = gameHistory ?? []));
         this.userService.serverActions.subscribe((serverActions) => (this.serverActions.data = serverActions ?? []));
+    }
+
+    ngOnInit(): void {
         this.userService.updateStatistics();
         this.userService.updateGameHistory();
         this.userService.updateServerActions();
