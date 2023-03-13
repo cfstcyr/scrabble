@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:mobile/controllers/game-creation-controller.dart';
 
 import '../components/error-pop-up.dart';
@@ -28,12 +26,6 @@ class GameCreationService {
       errorSnackBar(navigatorKey.currentContext!, GAME_START_FAILED);
       return error;
     });
-  }
-
-  Future<String> createGame() async {
-    String groupId = await gameCreationController.handleCreateGame();
-    this.groupId = groupId;
-    return groupId;
   }
 
   // Future<bool> startGame(PublicUser user, String gameId) async {

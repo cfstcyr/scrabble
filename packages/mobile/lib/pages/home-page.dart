@@ -51,7 +51,7 @@ class HomePage extends StatelessWidget {
                   children: [
                     AppButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, CREATE_LOBBY_ROUTE);
+                        Navigator.pushNamed(context, CREATE_GAME);
                       },
                       size: AppButtonSize.large,
                       child: Text(CREATE_PAGE_MESSAGE,

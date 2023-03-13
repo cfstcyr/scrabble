@@ -27,7 +27,6 @@ class GamePlayController {
   SocketService socketService = getIt.get<SocketService>();
 
   final String baseEndpoint = GAME_ENDPOINT;
-  PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
   InterceptedHttp get http => httpClient.http;
 
   String? currentGameId;

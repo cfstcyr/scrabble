@@ -1,22 +1,24 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:mobile/components/create-account-form.dart';
 
-import '../components/scaffold-persistance.dart';
+import '../components/create-game/create-game-form.dart';
 
-class CreateAccountPage extends StatelessWidget {
+class CreateGamePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(
-      title: "Création d'un compte",
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text("Création de partie"),
+      ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Center(
               child: Column(
-                children: [CreateAccountForm()],
+                children: [CreateGameForm()],
               ),
             ),
           ],
