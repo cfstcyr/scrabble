@@ -1,7 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UserService } from '@app/services/user-service/user.service';
 import { GameHistoryForUser } from '@common/models/game-history';
 import { PublicServerAction } from '@common/models/server-action';
@@ -28,7 +30,7 @@ describe('UserProfilePageComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [UserProfilePageComponent],
-            imports: [HttpClientTestingModule, MatSnackBarModule, MatDialogModule],
+            imports: [HttpClientTestingModule, MatSnackBarModule, MatDialogModule, MatPaginatorModule, BrowserAnimationsModule],
             providers: [{ provide: UserService, useValue: userService }],
         }).compileComponents();
     });
