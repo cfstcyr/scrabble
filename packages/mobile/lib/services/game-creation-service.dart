@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/constants/socket-events/group-events.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
+import 'package:mobile/services/socket.service.dart';
 
 import '../components/error-pop-up.dart';
 import '../constants/locale/groups-constants.dart';
@@ -12,7 +14,9 @@ import '../routes/navigator-key.dart';
 class GameCreationService {
   String? groupId;
 
-  GameCreationService._privateConstructor();
+  GameCreationService._privateConstructor() {
+    _configureSockets();
+  }
 
   static final GameCreationService _instance =
       GameCreationService._privateConstructor();
@@ -22,6 +26,7 @@ class GameCreationService {
   }
 
   final gameCreationController = getIt.get<GameCreationController>();
+  final socketService = getIt.get<SocketService>();
 
   Future<void> handleStartGame() async {
     if (groupId == null) return;
@@ -74,5 +79,14 @@ class GameCreationService {
     groupId = response.groupId;
     log(groupId.toString());
     return response.isCreated;
+  }
+
+  void _configureSockets() {
+    socketService.on(JOIN_REQUEST, (data) {
+      log(data.toString());
+    });
+    socketService.on(JOIN_REQUEST_CANCELLED, (data) {
+      log(data.toString());
+    });
   }
 }

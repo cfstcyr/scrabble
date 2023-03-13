@@ -67,7 +67,6 @@ class GroupJoinController {
         (host) => rejectedJoinRequest$.add(PublicUser.fromJson(host)));
     socketService.on(CANCELED_GROUP,
         (host) => canceledGroup$.add(PublicUser.fromJson(host)));
-
     socketService.on(USER_LEFT_GROUP,
         (group) => handleCurrentGroupUpdate(Group.fromJson(group)));
   }
