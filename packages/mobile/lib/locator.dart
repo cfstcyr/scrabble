@@ -9,6 +9,7 @@ import 'package:mobile/services/chat-management.service.dart';
 import 'package:mobile/services/client.dart';
 import 'package:mobile/services/game-creation-service.dart';
 import 'package:mobile/services/game-event.service.dart';
+import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
@@ -75,5 +76,6 @@ class CustomLocator {
   void _registerActiveSingleton() {
     getIt.registerSingleton<GameCreationService>(GameCreationService());
     getIt.registerSingleton<GameService>(GameService());
+    getIt.registerSingleton<GameMessagesService>(GameMessagesService());
   }
 }
