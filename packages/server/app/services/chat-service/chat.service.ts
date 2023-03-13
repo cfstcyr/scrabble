@@ -129,10 +129,6 @@ export class ChatService {
         await this.chatHistoryService.saveMessage(channelMessage);
 
         socket.nsp.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
-
-        // if (!this.socketService.sio?.in(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage)) {
-        //     throw new HttpException(CANNOT_SEND_MESSAGE);
-        // }
     }
 
     private async handleDeleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
