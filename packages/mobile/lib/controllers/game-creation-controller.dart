@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
+import 'package:mobile/classes/opponent.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/constants/socket-events/group-events.dart';
@@ -36,16 +36,16 @@ class GameCreationController {
 
   final String endpoint = GAME_ENDPOINT;
 
-  Future<Response> handleAcceptOpponent(
-      PublicUser opponent, String gameId) async {
+  Future<Response> handleAcceptOpponent(PublicUser user, String gameId) async {
+    Opponent opponent = Opponent(name: user.username);
     return await http.post(Uri.parse("$endpoint/$gameId/players/accept"),
-        body: jsonEncode({"opponentName": opponent.username}));
+        body: jsonEncode(opponent.toJson()));
   }
 
-  Future<Response> handleRejectOpponent(
-      PublicUser opponent, String gameId) async {
+  Future<Response> handleRejectOpponent(PublicUser user, String gameId) async {
+    Opponent opponent = Opponent(name: user.username);
     return await http.post(Uri.parse("$endpoint/$gameId/players/reject"),
-        body: jsonEncode({"opponentName": opponent.username}));
+        body: jsonEncode(opponent.toJson()));
   }
 
   Future<Response> handleStartGame(String gameId) async {
