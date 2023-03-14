@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/login-constants.dart';
 import 'package:mobile/environments/environment.dart';
+import 'package:mobile/routes/navigator-key.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/client.dart';
 import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/services/user-session.service.dart';
@@ -68,6 +71,7 @@ class AccountAuthenticationController {
       message = AUTHORIZED;
       await userSessionHandler
           .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
+      print(await storageHandler.getToken());
       await socketService.initSocket(await storageHandler.getToken());
     } else if (res.statusCode == HttpStatus.unauthorized) {
       message = ALREADY_LOGGED_IN_FR;
@@ -85,21 +89,31 @@ class AccountAuthenticationController {
   Future<TokenValidation> validateToken() async {
     String token = await storageHandler.getToken() ?? "";
 
+    print('validate');
+
     if (token.isNotEmpty) {
       final res = await http.post(Uri.parse("$endpoint/validate"));
       if (res.statusCode == HttpStatus.ok) {
         userSessionHandler
             .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
+        print(token);
+        await socketService.initSocket(await storageHandler.getToken());
         return TokenValidation.Ok;
       } else if (res.statusCode == HttpStatus.unauthorized) {
-        storageHandler.clearStorage();
+        print('already connected');
+        await storageHandler.clearStorage();
         socketService.disconnect();
+        // Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, LOGIN_ROUTE, (route) => false);
+        print('login page');
         return TokenValidation.AlreadyConnected;
       } else {
+        print('unknown');
         return TokenValidation.UnknownError;
       }
     } else {
-      userSessionHandler.clearUserSession();
+      print('no token');
+      await userSessionHandler.clearUserSession();
+      // Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, LOGIN_ROUTE, (route) => false);
       return TokenValidation.NoToken;
     }
   }

@@ -6,6 +6,7 @@ import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/home-page.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../classes/user.dart';
@@ -23,6 +24,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   bool isPasswordShown = false;
   bool isFirstSubmit = true;
+
   bool get isButtonEnabled => isFirstSubmit;
   SocketService socketService = getIt.get<SocketService>();
   Color themeColor = getIt.get<ThemeColorService>().themeColor;
@@ -143,10 +145,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CreateAccountPage()));
+                    Navigator.pushNamed(context, SIGNUP_ROUTE);
                   },
                   child: Text(CREATE_ACCOUNT_LABEL_FR),
                 ),

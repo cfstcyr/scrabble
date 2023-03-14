@@ -12,16 +12,19 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
+    console.log(!token);
     if (!token) {
         return next(new HttpException(NO_TOKEN, StatusCodes.NOT_ACCEPTABLE));
     }
 
     try {
+        console.log(token);
         const idUser = Number(jwt.verify(token, env.TOKEN_SECRET));
 
         req.body = { ...req.body, idUser };
         next();
     } catch (error) {
+        console.log(error);
         next(new HttpException(TOKEN_INVALID, StatusCodes.NOT_ACCEPTABLE));
     }
 };

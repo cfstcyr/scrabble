@@ -74,14 +74,12 @@ class MyApp extends StatelessWidget {
     TokenValidation tokenValidation = await authController.validateToken();
     switch (tokenValidation) {
       case TokenValidation.Ok:
+        return HOME_ROUTE;
       case TokenValidation.AlreadyConnected:
-        {
-          return HOME_ROUTE;
-        }
       case TokenValidation.NoToken:
       case TokenValidation.UnknownError:
         {
-          return MAIN_PAGE;
+          return LOGIN_ROUTE;
         }
     }
   }
