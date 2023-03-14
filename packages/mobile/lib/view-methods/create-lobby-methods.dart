@@ -1,30 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-creation-service.dart';
+import 'package:mobile/services/user.service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/user.dart';
 import '../constants/create-lobby-constants.dart';
 
 GameCreationService gameCreationService = getIt.get<GameCreationService>();
+UserService userService = getIt.get<UserService>();
 
 BehaviorSubject<List<PublicUser>> playerList$ =
-    BehaviorSubject<List<PublicUser>>.seeded([]);
-
-Stream<List<PublicUser>> get playerListStream => playerList$.stream;
+    BehaviorSubject<List<PublicUser>>.seeded([userService.getUser()]);
 
 BehaviorSubject<List<PublicUser>> playerWaitingList$ =
     BehaviorSubject<List<PublicUser>>.seeded([]);
-
-Stream get playerWaitingListStream => playerWaitingList$.stream;
-
-List<PublicUser> playerWaitingList = [
-// TODO : requete joueurs lobby
-];
-
-List<PublicUser> playerList = [
-// TODO : requete joueurs lobby -- GET PROPRE USERNAME AVEC PAGE D'AVANT
-];
 
 ButtonStyle setStyleRoomButtons() {
   return ElevatedButton.styleFrom(
@@ -77,41 +67,53 @@ ButtonStyle setStyleSecondaryActionButtons() {
 }
 
 Widget setWaitingPlayerIcon(int index) {
-  return setAvatar(playerWaitingList[index].avatar);
+  return setAvatar(playerWaitingList$.value[index].avatar);
 }
 
 Future<bool> addPlayerToLobby(PublicUser player) async {
   if (playerList$.isClosed) reOpen();
-  if (playerList.length >= MAX_PLAYER_COUNT) return false;
+
+  //todo Check if playerList is full from Real Players
+  // if (isMaximumPlayerCount()) return false;
 
   await gameCreationService.handleAcceptOpponent(player);
 
-  playerWaitingList.remove(player);
-  playerList.add(player);
-  playerList$.add(playerList);
+  List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
+  newPlayerWaitingList.remove(player);
+  playerWaitingList$.add(newPlayerWaitingList);
   return true;
 }
 
 Future<void> refusePlayer(PublicUser player) async {
   await gameCreationService.handleRejectOpponent(player);
-  playerWaitingList.remove(player);
+  List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
+  newPlayerWaitingList.remove(player);
+  playerWaitingList$.add(newPlayerWaitingList);
 }
 
 Future<void> startGame() async {
   await gameCreationService.handleStartGame();
   playerList$.close();
+  playerWaitingList$.close();
 }
 
 Future<void> backOut() async {
   await gameCreationService.handleCancelGame();
   playerList$.close();
+  playerWaitingList$.close();
 }
 
 void reOpen() {
-  playerList$ = BehaviorSubject<List<PublicUser>>.seeded(playerList);
+  playerList$ =
+      BehaviorSubject<List<PublicUser>>.seeded([userService.getUser()]);
+  playerWaitingList$ = BehaviorSubject<List<PublicUser>>.seeded([]);
 }
 
 bool isMinimumPlayerCount() {
   print(playerList$.value);
   return playerList$.value.length < MINIMUM_PLAYER_COUNT;
+}
+
+bool isMaximumPlayerCount() {
+  return playerList$.value.length >= MAX_PLAYER_COUNT;
 }
