@@ -21,7 +21,10 @@ import {
     ROUTE_LOGIN,
     ROUTE_PROFILE,
     ROUTE_SIGNUP,
+    ROUTE_SEARCH,
 } from '@app/constants/routes-constants';
+import { SearchPageComponent } from '@app/pages/search-page/search-page.component';
+import { UserSearchResultPageComponent } from '@app/pages/user-search-result-page/user-search-result-page.component';
 
 const privateRoute: Route = {
     canActivate: [PrivateRouteGuard],
@@ -46,6 +49,13 @@ const routes: Routes = [
     { path: ROUTE_CREATE_WAITING, component: CreateWaitingPageComponent, ...privateRoute },
     { path: ROUTE_JOIN_WAITING, component: JoinWaitingPageComponent, ...privateRoute },
     { path: ROUTE_PROFILE, component: UserProfilePageComponent, ...privateRoute },
+    {
+        path: ROUTE_SEARCH,
+        children: [
+            { path: '', component: SearchPageComponent, ...privateRoute },
+            { path: ':username', component: UserSearchResultPageComponent, ...privateRoute },
+        ],
+    },
     { path: '**', redirectTo: ROUTE_HOME },
 ].map((route) => ({ ...route, path: removeStartSlash(route.path) }));
 
