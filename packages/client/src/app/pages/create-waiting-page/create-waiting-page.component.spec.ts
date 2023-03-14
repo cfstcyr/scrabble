@@ -285,7 +285,7 @@ describe('CreateWaitingPageComponent', () => {
                 user4: undefined,
             } as unknown as Group;
             component.requestingUsers = { requestingPlayers: [UNKOWN_USER], requestingObservers: [] };
-            component.acceptUser([UNKOWN_USER, false]);
+            component.acceptUser({ publicUser: UNKOWN_USER, isObserver: false });
             expect(component.currentGroup.user4).toEqual(UNKOWN_USER);
             expect(gameDispatcherServiceSpy['handleConfirmation']).toHaveBeenCalled();
         });
@@ -299,7 +299,7 @@ describe('CreateWaitingPageComponent', () => {
                 user4: undefined,
             } as unknown as Group;
             component.requestingUsers = { requestingPlayers: [UNKOWN_USER], requestingObservers: [] };
-            component.rejectUser([UNKOWN_USER, false]);
+            component.rejectUser({ publicUser: UNKOWN_USER, isObserver: false });
             expect(gameDispatcherServiceSpy['handleRejection']).toHaveBeenCalled();
         });
     });

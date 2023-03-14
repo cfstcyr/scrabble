@@ -3,6 +3,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { UserRequest } from '@app/classes/communication/group-request';
 import { Timer } from '@app/classes/round/timer';
 import { ERROR_SNACK_BAR_CONFIG } from '@app/constants/components-constants';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
@@ -90,34 +91,34 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         this.isGroupFull = this.currentGroup.user2 !== undefined && this.currentGroup.user3 !== undefined && this.currentGroup.user4 !== undefined;
     }
 
-    acceptUser([acceptedUser, isObserver]: [PublicUser, boolean]): void {
-        if (this.isGroupFull && isObserver) return;
+    acceptUser(userRequest: UserRequest): void {
+        if (this.isGroupFull && userRequest.isObserver) return;
 
-        if (!this.removeRequestingUser(acceptedUser, isObserver)) return;
+        if (!this.removeRequestingUser(userRequest)) return;
 
-        if (isObserver) this.currentGroup.numberOfObservers++;
+        if (userRequest.isObserver) this.currentGroup.numberOfObservers++;
         else {
-            if (!this.currentGroup.user2) this.currentGroup.user2 = acceptedUser;
-            else if (!this.currentGroup.user3) this.currentGroup.user3 = acceptedUser;
-            else if (!this.currentGroup.user4) this.currentGroup.user4 = acceptedUser;
+            if (!this.currentGroup.user2) this.currentGroup.user2 = userRequest.publicUser;
+            else if (!this.currentGroup.user3) this.currentGroup.user3 = userRequest.publicUser;
+            else if (!this.currentGroup.user4) this.currentGroup.user4 = userRequest.publicUser;
 
             this.updateGroupStatus();
         }
-        this.gameDispatcherService.handleConfirmation(acceptedUser.username);
+        this.gameDispatcherService.handleConfirmation(userRequest.publicUser.username);
     }
 
-    rejectUser([rejectedUser, isObserver]: [PublicUser, boolean]): void {
-        if (!this.removeRequestingUser(rejectedUser, isObserver)) return;
+    rejectUser(userRequest: UserRequest): void {
+        if (!this.removeRequestingUser(userRequest)) return;
 
-        this.gameDispatcherService.handleRejection(rejectedUser.username);
+        this.gameDispatcherService.handleRejection(userRequest.publicUser.username);
     }
 
-    private removeRequestingUser(user: PublicUser, isObserver: boolean): boolean {
+    private removeRequestingUser(userRequest: UserRequest): boolean {
         let requestingArray: PublicUser[] = [];
-        if (isObserver) requestingArray = this.requestingUsers.requestingObservers;
+        if (userRequest.isObserver) requestingArray = this.requestingUsers.requestingObservers;
         else requestingArray = this.requestingUsers.requestingPlayers;
 
-        const requestingUsers = requestingArray.filter((user_) => user === user_);
+        const requestingUsers = requestingArray.filter((user_) => userRequest.publicUser === user_);
         if (requestingUsers.length === 0) return false;
         const requestingUser = requestingUsers[0];
         const index = requestingArray.indexOf(requestingUser);
