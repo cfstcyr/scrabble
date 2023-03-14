@@ -23,14 +23,9 @@ class InitializerService {
   ValueStream<String?> get entryPageStream => _entryPage$.stream;
 
   Future<void> initialize() async {
-    print('initialize');
     String entryPage = await _getEntryPage();
     _entryPage$.add(entryPage);
   }
-  //
-  // void clearEntryPage() {
-  //   _entryPage$.add(null);
-  // }
 
   Future<String> _getEntryPage() async {
     TokenValidation tokenValidation = await authController.validateToken();

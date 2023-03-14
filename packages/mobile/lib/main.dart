@@ -44,7 +44,6 @@ class MyApp extends StatelessWidget {
     return StreamBuilder<String?>(
         stream: _initializerService.entryPageStream,
         builder: (context, snapshot) {
-          print('EntryPage: ${snapshot.data}');
           if (!snapshot.hasData || snapshot.hasError) {
             return CircularProgressIndicator();
           }

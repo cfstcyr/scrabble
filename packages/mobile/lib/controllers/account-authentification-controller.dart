@@ -71,7 +71,6 @@ class AccountAuthenticationController {
       message = AUTHORIZED;
       await userSessionHandler
           .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
-      print(await storageHandler.getToken());
       await socketService.initSocket(await storageHandler.getToken());
     } else if (res.statusCode == HttpStatus.unauthorized) {
       message = ALREADY_LOGGED_IN_FR;
@@ -90,8 +89,6 @@ class AccountAuthenticationController {
     socketService.disconnect();
     String token = await storageHandler.getToken() ?? "";
 
-    print('validate');
-
     if (token.isNotEmpty) {
       final res = await http.post(Uri.parse("$endpoint/validate"));
       if (res.statusCode == HttpStatus.ok) {
@@ -104,14 +101,12 @@ class AccountAuthenticationController {
         await storageHandler.clearStorage();
         socketService.disconnect();
         if (res.statusCode == HttpStatus.unauthorized) {
-          print('already connected');
           return TokenValidation.AlreadyConnected;
         } else {
           return TokenValidation.UnknownError;
         }
       }
     } else {
-      print('no token');
       await userSessionHandler.clearUserSession();
       socketService.disconnect();
       return TokenValidation.NoToken;
