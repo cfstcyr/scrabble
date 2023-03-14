@@ -26,7 +26,7 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
         builder: (context, snapshot) {
           return Container(
             child: ListView.builder(
-              itemCount: playerWaitingList$.value.length,
+              itemCount: snapshot.data?.length ?? 0,
               itemBuilder: (_, int index) {
                 return Padding(
                   padding: EdgeInsets.only(
@@ -47,7 +47,7 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                             padding: EdgeInsets.only(
                                 left: 15.0, right: 5.0, top: 0, bottom: 0),
                             child: Text(
-                              playerWaitingList$.value[index].username,
+                              snapshot.data![index].username,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(fontSize: 16),
                             ),
@@ -61,7 +61,7 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                               onPressed: () {
                                 setState(() async {
                                   bool isAccepted = await addPlayerToLobby(
-                                      playerWaitingList$.value[index]);
+                                      snapshot.data![index]);
                                   if (!isAccepted) {
                                     if (context.mounted) {
                                       errorSnackBar(context, FULL_LOBBY_ERROR);
@@ -83,7 +83,7 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                           child: IconButton(
                             onPressed: () {
                               setState(() {
-                                refusePlayer(playerWaitingList$.value[index]);
+                                refusePlayer(snapshot.data![index]);
                               });
                             },
                             icon: Icon(Icons.clear_outlined),
