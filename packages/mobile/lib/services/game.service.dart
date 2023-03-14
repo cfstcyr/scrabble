@@ -12,11 +12,16 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/action-service.dart';
+import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/round-service.dart';
+import 'package:mobile/services/user.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../components/alert-dialog.dart';
+import '../components/app_button.dart';
+import '../constants/locale/game-constants.dart';
 import '../utils/round-utils.dart';
 
 class GameService {
@@ -53,7 +58,8 @@ class GameService {
         .where((Player player) => player.socketId == localPlayerId)
         .map((Player player) => player.isLocalPlayer = true);
 
-    TileRack tileRack = TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
+    TileRack tileRack =
+        TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
 
     _game.add(Game(
         board: Board(),
@@ -105,6 +111,11 @@ class GameService {
 
     if (gameUpdate.isGameOver != null) {
       game.isOver = gameUpdate.isGameOver!;
+      if (game.isOver) {
+        getIt
+            .get<EndGameService>()
+            .setEndGame(game.isOver, gameUpdate.winners ?? []);
+      }
     }
 
     game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
@@ -142,6 +153,29 @@ class GameService {
     }
 
     _actionService.sendAction(ActionType.place, placement.toActionPayload());
+  }
+
+  void handleEndGame(BuildContext context) {
+    String player = getIt.get<UserService>().getUser().username;
+    bool isWinner = getIt.get<EndGameService>().winners$.value.contains(player);
+
+    triggerDialogBox(DIALOG_END_OF_GAME_TITLE(isWinner),
+        DIALOG_END_OF_GAME_CONTENT(isWinner), [
+      DialogBoxButtonParameters(
+          content: DIALOG_LEAVE_BUTTON_CONTINUE,
+          theme: AppButtonTheme.secondary,
+          onPressed: () async {
+            await getIt.get<GamePlayController>().leaveGame();
+
+            if (!context.mounted) return;
+            Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
+          }),
+      DialogBoxButtonParameters(
+        content: DIALOG_STAY_BUTTON_CONTINUE,
+        theme: AppButtonTheme.secondary,
+        closesDialog: true,
+      ),
+    ]);
   }
 
   bool isLocalPlayerActivePlayer() {

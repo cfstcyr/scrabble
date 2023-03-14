@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -30,6 +31,7 @@ class GameMessagesService {
   factory GameMessagesService() {
     return _instance;
   }
+
   final _chatController = getIt.get<GamePlayController>();
 
   void resetMessages() {
@@ -41,9 +43,14 @@ class GameMessagesService {
 
     if (placement != null) return _buildPlacementMessage(placement);
 
+    List<String> subMessages = message.split('<br>');
     return Container(
       margin: EdgeInsets.only(bottom: SPACE_2),
-      child: Text(message),
+      child: Column(
+        children: subMessages
+            .map((String message) => MarkdownBody(data: message))
+            .toList(),
+      ),
     );
   }
 

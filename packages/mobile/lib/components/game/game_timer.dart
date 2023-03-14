@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/timer.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/utils/round-utils.dart';
@@ -22,12 +23,19 @@ class _GameTimerState extends State<GameTimer> {
   bool _isStopped = false;
 
   late StreamSubscription startRoundSubscription;
+  late StreamSubscription endGameStream;
 
   @override
   void initState() {
     startRoundSubscription =
         _roundService.startRoundEvent.listen((Duration duration) {
       _startTimer(duration);
+    });
+
+    endGameStream = getIt.get<EndGameService>().endGameStream.listen((isOver) {
+      if (isOver) {
+        handleEndGame();
+      }
     });
 
     if (_timer == null) {
@@ -41,7 +49,14 @@ class _GameTimerState extends State<GameTimer> {
   void dispose() {
     _timer?.cancel();
     startRoundSubscription.cancel();
+    endGameStream.cancel();
     super.dispose();
+  }
+
+  void handleEndGame() {
+    _timeLeft.add(0);
+    _timer?.cancel();
+    startRoundSubscription.cancel();
   }
 
   void _startTimer(Duration duration) {
