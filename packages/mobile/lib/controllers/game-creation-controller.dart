@@ -53,7 +53,7 @@ class GameCreationController {
   }
 
   Future<Response> handleStartGame(String gameId) async {
-    return await post(Uri.parse("$endpoint/$gameId/players/start"));
+    return await http.post(Uri.parse("$endpoint/$gameId/players/start"));
   }
 
   // TODO
