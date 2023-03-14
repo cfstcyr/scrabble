@@ -13,7 +13,7 @@ abstract class BaseConfig {
 }
 
 class DevConfig implements BaseConfig {
-  String get ipAddress => 'localhost';
+  String get ipAddress => '10.0.2.2';
 
   String get apiUrl => 'http://'
       '$ipAddress:${dotenv.env['SERVER_PORT']}/api';

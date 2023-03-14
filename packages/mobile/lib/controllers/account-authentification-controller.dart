@@ -87,6 +87,7 @@ class AccountAuthenticationController {
   }
 
   Future<TokenValidation> validateToken() async {
+    socketService.disconnect();
     String token = await storageHandler.getToken() ?? "";
 
     print('validate');
@@ -96,24 +97,23 @@ class AccountAuthenticationController {
       if (res.statusCode == HttpStatus.ok) {
         userSessionHandler
             .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
-        print(token);
         await socketService.initSocket(await storageHandler.getToken());
+
         return TokenValidation.Ok;
-      } else if (res.statusCode == HttpStatus.unauthorized) {
-        print('already connected');
+      } else {
         await storageHandler.clearStorage();
         socketService.disconnect();
-        // Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, LOGIN_ROUTE, (route) => false);
-        print('login page');
-        return TokenValidation.AlreadyConnected;
-      } else {
-        print('unknown');
-        return TokenValidation.UnknownError;
+        if (res.statusCode == HttpStatus.unauthorized) {
+          print('already connected');
+          return TokenValidation.AlreadyConnected;
+        } else {
+          return TokenValidation.UnknownError;
+        }
       }
     } else {
       print('no token');
       await userSessionHandler.clearUserSession();
-      // Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, LOGIN_ROUTE, (route) => false);
+      socketService.disconnect();
       return TokenValidation.NoToken;
     }
   }

@@ -61,7 +61,7 @@ class UserProfileInfo extends StatelessWidget {
                           AppButton(
                             onPressed: () {
                               _authService.signOut();
-                              Navigator.pushNamed(context, MAIN_PAGE);
+                              Navigator.pushNamed(context, LOGIN_ROUTE);
                             },
                             icon: Icons.logout_rounded,
                           ),
