@@ -74,10 +74,10 @@ class GameCreationController {
     });
 
     socketService.on(JOIN_REQUEST, (data) {
-      handleJoinRequest(PublicUser.usersFromJson(data));
+      handleJoinRequest(PublicUser.usersFromJsonList(data));
     });
     socketService.on(JOIN_REQUEST_CANCELLED, (data) {
-      handleJoinRequestCancelled(PublicUser.usersFromJson(data));
+      handleJoinRequestCancelled(PublicUser.usersFromJsonList(data));
     });
   }
 

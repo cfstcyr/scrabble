@@ -61,13 +61,17 @@ class GroupJoinController {
     socketService.on(GROUP_UPDATE, (groups) async {
       handleGroupsUpdate(groups);
     });
-    socketService.on(ACCEPTED_IN_GROUP,
-        (group) => handleCurrentGroupUpdate(Group.fromJson(group)));
-    socketService.on(REJECTED_FROM_GROUP,
-        (host) => rejectedJoinRequest$.add(PublicUser.fromJson(host)));
-    socketService.on(CANCELED_GROUP,
-        (host) => canceledGroup$.add(PublicUser.fromJson(host)));
-    socketService.on(USER_LEFT_GROUP,
-        (group) => handleCurrentGroupUpdate(Group.fromJson(group)));
+    socketService.on(ACCEPTED_IN_GROUP, (group) {
+      handleCurrentGroupUpdate(Group.fromJson(group));
+    });
+    socketService.on(REJECTED_FROM_GROUP, (host) {
+      rejectedJoinRequest$.add(PublicUser.fromJson(host));
+    });
+    socketService.on(CANCELED_GROUP, (host) {
+      canceledGroup$.add(PublicUser.fromJson(host));
+    });
+    socketService.on(USER_LEFT_GROUP, (group) {
+      handleCurrentGroupUpdate(Group.fromJson(group));
+    });
   }
 }
