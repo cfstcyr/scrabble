@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
@@ -35,7 +33,6 @@ class GameCreationService {
   }
 
   Future<void> handleCancelGame() async {
-    log(groupId.toString());
     if (groupId == null) return;
 
     await gameCreationController.handleCancelGame(groupId!).catchError((error) {
@@ -74,7 +71,6 @@ class GameCreationService {
       return GroupCreationResponse(isCreated: false, groupId: '');
     });
     groupId = response.groupId;
-    log(groupId.toString());
     return response.isCreated;
   }
 }
