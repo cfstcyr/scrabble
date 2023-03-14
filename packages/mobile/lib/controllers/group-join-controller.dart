@@ -1,10 +1,9 @@
-import 'dart:convert';
-
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
+import 'package:mobile/view-methods/create-lobby-methods.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
 import '../constants/socket-events/group-events.dart';
@@ -55,10 +54,11 @@ class GroupJoinController {
 
   void handleCurrentGroupUpdate(Group group) {
     currentGroupUpdate$.add(group);
+    playerList$.add(group.users);
   }
 
   void _configureSocket() {
-    socketService.on(GROUP_UPDATE, (groups) async {
+    socketService.on(GROUP_UPDATE, (groups) {
       handleGroupsUpdate(groups);
     });
     socketService.on(ACCEPTED_IN_GROUP, (group) {

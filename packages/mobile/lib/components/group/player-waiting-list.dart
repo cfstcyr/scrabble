@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/error-pop-up.dart';
 
 import '../../constants/create-lobby-constants.dart';
@@ -20,81 +21,85 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
     var style = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
-    return Container(
-      child: ListView.builder(
-        itemCount: playerWaitingList.length,
-        itemBuilder: (_, int index) {
-          return Padding(
-            padding:
-                EdgeInsets.only(left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
-              child: Row(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: 15.0, right: 0, top: 10.0, bottom: 10.0),
-                    child: setWaitingPlayerIcon(index),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          left: 15.0, right: 5.0, top: 0, bottom: 0),
-                      child: Text(
-                        playerWaitingList[index].username,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 16),
-                      ),
+    return StreamBuilder<List<PublicUser>>(
+        stream: playerWaitingList$.stream,
+        builder: (context, snapshot) {
+          return Container(
+            child: ListView.builder(
+              itemCount: playerWaitingList$.value.length,
+              itemBuilder: (_, int index) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                      left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                    child: Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 15.0, right: 0, top: 10.0, bottom: 10.0),
+                          child: setWaitingPlayerIcon(index),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                left: 15.0, right: 5.0, top: 0, bottom: 0),
+                            child: Text(
+                              playerWaitingList$.value[index].username,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 5.0, right: 5.0, top: 0, bottom: 0),
+                          child: Container(
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() async {
+                                  bool isAccepted = await addPlayerToLobby(
+                                      playerWaitingList$.value[index]);
+                                  if (!isAccepted) {
+                                    if (context.mounted) {
+                                      errorSnackBar(context, FULL_LOBBY_ERROR);
+                                    }
+                                  }
+                                });
+                              },
+                              icon: Icon(Icons.check),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey.shade200,
+                                  foregroundColor: Colors.green.shade900,
+                                  shape: CircleBorder()),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 5.0, right: 15.0, top: 0, bottom: 0),
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                refusePlayer(playerWaitingList$.value[index]);
+                              });
+                            },
+                            icon: Icon(Icons.clear_outlined),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey.shade200,
+                                foregroundColor: Colors.black,
+                                shape: CircleBorder()),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: 5.0, right: 5.0, top: 0, bottom: 0),
-                    child: Container(
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() async {
-                            bool isAccepted = await addPlayerToLobby(
-                                playerWaitingList[index]);
-                            if (!isAccepted) {
-                              if (context.mounted) {
-                                errorSnackBar(context, FULL_LOBBY_ERROR);
-                              }
-                            }
-                          });
-                        },
-                        icon: Icon(Icons.check),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey.shade200,
-                            foregroundColor: Colors.green.shade900,
-                            shape: CircleBorder()),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: 5.0, right: 15.0, top: 0, bottom: 0),
-                    child: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          refusePlayer(playerWaitingList[index]);
-                        });
-                      },
-                      icon: Icon(Icons.clear_outlined),
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey.shade200,
-                          foregroundColor: Colors.black,
-                          shape: CircleBorder()),
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           );
-        },
-      ),
-    );
+        });
   }
 }

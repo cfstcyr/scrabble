@@ -39,7 +39,7 @@ class GroupManagement extends StatelessWidget {
 
 StreamBuilder<List<PublicUser>> handleStartGameButton() {
   return StreamBuilder<List<PublicUser>>(
-    stream: playerList$,
+    stream: playerList$.stream,
     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
       return ElevatedButton.icon(
           onPressed: isMinimumPlayerCount()
