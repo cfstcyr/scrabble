@@ -28,12 +28,7 @@ class ActionPlacePayload extends ActionPayload {
   @override
   Map toJson() {
     return {
-      'tiles': tiles.map((tile) => {
-            'letter': tile.letter,
-            'value': tile.value,
-            'isBlank': tile.isWildcard,
-            'playedLetter': tile.playedLetter,
-          }),
+      'tiles': tiles.map((tile) => tile.toJson()).toList(),
       'startPosition': {
         'column': position.column,
         'row': position.row,
