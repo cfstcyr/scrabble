@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActionType, PlaceActionPayload } from '@app/classes/actions/action-data';
 import Direction from '@app/classes/board-navigator/direction';
@@ -12,10 +13,9 @@ import { ActionService } from '@app/services/action-service/action.service';
 import { FocusableComponentsService } from '@app/services/focusable-components-service/focusable-components.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import Delay from '@app/utils/delay/delay';
-import { nextIndex } from '@app/utils/next-index/next-index';
 import { preserveArrayOrder } from '@app/utils/preserve-array-order/preserve-array-order';
 import { Random } from '@app/utils/random/random';
-import { pipe, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 const SHUFFLE_ANIMATION_DELAY = 250;
@@ -49,6 +49,12 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
         this.componentDestroyed$ = new Subject();
     }
 
+    drop(event: CdkDragDrop<RackTile[]>) {
+        if (event.previousContainer === event.container) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        }
+    }
+
     ngOnInit(): void {
         this.subscribeToFocusableEvents();
         this.updateTileRack(this.gameService.getLocalPlayerId());
@@ -65,13 +71,13 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
         this.componentDestroyed$.complete();
     }
 
-    selectTileToExchange(tile: RackTile): boolean {
-        return this.selectTile(TileRackSelectType.Exchange, tile);
-    }
+    // selectTileToExchange(tile: RackTile): boolean {
+    //     return this.selectTile(TileRackSelectType.Exchange, tile);
+    // }
 
-    selectTileToMove(tile: RackTile): boolean {
-        return this.selectTile(TileRackSelectType.Move, tile);
-    }
+    // selectTileToMove(tile: RackTile): boolean {
+    //     return this.selectTile(TileRackSelectType.Move, tile);
+    // }
 
     unselectAll(): void {
         this.selectedTiles.forEach((rackTile: RackTile) => (rackTile.isSelected = false));
@@ -130,45 +136,46 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
             case ARROW_RIGHT:
                 this.moveSelectedTile(Direction.Right);
                 break;
-            default:
-                this.selectTileFromKey(event.key);
+            // default:
+            //     this.selectTileFromKey(event.key);
         }
     }
 
-    private selectTile(selectType: TileRackSelectType, tile: RackTile): boolean {
-        this.focus();
+    // private selectTile(selectType: TileRackSelectType, tile: RackTile): boolean {
+    //     return false;
+    //     this.focus();
 
-        if (this.selectionType === selectType && tile.isSelected) {
-            this.unselectTile(tile);
-            return false;
-        }
+    //     if (this.selectionType === selectType && tile.isSelected) {
+    //         this.unselectTile(tile);
+    //         return false;
+    //     }
 
-        if (this.selectionType !== selectType || selectType === TileRackSelectType.Move) {
-            this.selectionType = selectType;
-            this.unselectAll();
-        }
+    //     if (this.selectionType !== selectType || selectType === TileRackSelectType.Move) {
+    //         this.selectionType = selectType;
+    //         this.unselectAll();
+    //     }
 
-        tile.isSelected = true;
-        this.selectedTiles.push(tile);
+    //     tile.isSelected = true;
+    //     this.selectedTiles.push(tile);
 
-        return false; // return false so the browser doesn't show the context menu
-    }
+    //     return false; // return false so the browser doesn't show the context menu
+    // }
 
-    private unselectTile(tile: RackTile): void {
-        tile.isSelected = false;
-        const index = this.selectedTiles.indexOf(tile);
-        if (index >= 0) {
-            this.selectedTiles.splice(index, 1);
-        }
-    }
+    // private unselectTile(tile: RackTile): void {
+    //     tile.isSelected = false;
+    //     const index = this.selectedTiles.indexOf(tile);
+    //     if (index >= 0) {
+    //         this.selectedTiles.splice(index, 1);
+    //     }
+    // }
 
-    private selectTileFromKey(key: string): void {
-        const tiles = this.tiles.filter((tile) => tile.letter.toLowerCase() === key.toLowerCase());
+    // private selectTileFromKey(key: string): void {
+    //     const tiles = this.tiles.filter((tile) => tile.letter.toLowerCase() === key.toLowerCase());
 
-        if (tiles.length === 0) return this.unselectAll();
+    //     if (tiles.length === 0) return this.unselectAll();
 
-        pipe(this.getSelectedTileIndex, nextIndex(tiles.length), (index) => tiles[index], this.selectTileToMove.bind(this))(tiles);
-    }
+    //     pipe(this.getSelectedTileIndex, nextIndex(tiles.length), (index) => tiles[index], this.selectTileToMove.bind(this))(tiles);
+    // }
 
     private moveSelectedTile(direction: Direction | number): void {
         if (this.selectionType !== TileRackSelectType.Move) return;
@@ -215,7 +222,7 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
         this.tiles.forEach((tile) => (tile.isUsed = false));
     }
 
-    private getSelectedTileIndex(tiles: RackTile[]): number {
-        return tiles.findIndex((tile) => tile.isSelected);
-    }
+    // private getSelectedTileIndex(tiles: RackTile[]): number {
+    //     return tiles.findIndex((tile) => tile.isSelected);
+    // }
 }
