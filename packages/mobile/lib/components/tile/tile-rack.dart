@@ -11,8 +11,6 @@ import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../animation/wiggle.dart';
-
 class TileRack extends StatelessWidget {
   final BehaviorSubject<int?> _currentTileIndex = BehaviorSubject();
   final BehaviorSubject<int?> _currentHoveredTileIndex = BehaviorSubject();
@@ -33,7 +31,6 @@ class TileRack extends StatelessWidget {
                 ? Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     alignment: WrapAlignment.spaceBetween,
-                    spacing: SPACE_4,
                     children: [
                       AppButton(
                         onPressed: () {
@@ -73,7 +70,8 @@ class TileRack extends StatelessWidget {
                                     isSelected: [snapshot.data ?? false],
                                     onPressed: (int index) {
                                       game.data!.tileRack.toggleExchangeMode();
-                                      _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
+                                      _gameEventService.add<void>(
+                                          PUT_BACK_TILES_ON_TILE_RACK, null);
                                     },
                                     borderRadius: BorderRadius.circular(8),
                                     constraints: BoxConstraints(
@@ -168,13 +166,14 @@ class TileRack extends StatelessWidget {
 
   Widget _buildSelectableTile(c.Tile tile, int index, bool shouldWiggle) {
     return StreamBuilder(
-      stream: _gameService.tileRackStream,
-      builder: (context, snapshot) {
-        return GestureDetector(
-            onTap: snapshot.data != null ? () => snapshot.data!.toggleSelectedTile(tile) : null,
-            child: _buildWrappedTile(tile, index, shouldWiggle));
-      }
-    );
+        stream: _gameService.tileRackStream,
+        builder: (context, snapshot) {
+          return GestureDetector(
+              onTap: snapshot.data != null
+                  ? () => snapshot.data!.toggleSelectedTile(tile)
+                  : null,
+              child: _buildWrappedTile(tile, index, shouldWiggle));
+        });
   }
 
   Widget _buildWrappedTile(c.Tile tile, int index, bool shouldWiggle) {
