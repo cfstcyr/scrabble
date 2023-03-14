@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:mobile/classes/game/game-config.dart';
-import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:rxdart/rxdart.dart';
@@ -18,7 +17,7 @@ Stream<List<Group>> get groupStream {
   });
 }
 
-BehaviorSubject<Group> currentGroupUpdate$ = BehaviorSubject<Group>();
+Subject<Group> currentGroupUpdate$ = PublishSubject();
 Stream<Group> get currentGroupUpdateStream => currentGroupUpdate$.stream;
 
 void handleGroupsUpdate(dynamic newGroupsJson) {

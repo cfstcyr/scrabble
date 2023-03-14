@@ -71,7 +71,6 @@ Widget setWaitingPlayerIcon(int index) {
 }
 
 Future<bool> addPlayerToLobby(PublicUser player) async {
-  if (playerList$.isClosed) reOpen();
 
   //todo Check if playerList is full from Real Players
   // if (isMaximumPlayerCount()) return false;
@@ -93,20 +92,10 @@ Future<void> refusePlayer(PublicUser player) async {
 
 Future<void> startGame() async {
   await gameCreationService.handleStartGame();
-  playerList$.close();
-  playerWaitingList$.close();
 }
 
 Future<void> backOut() async {
   await gameCreationService.handleCancelGame();
-  playerList$.close();
-  playerWaitingList$.close();
-}
-
-void reOpen() {
-  playerList$ =
-      BehaviorSubject<List<PublicUser>>.seeded([userService.getUser()]);
-  playerWaitingList$ = BehaviorSubject<List<PublicUser>>.seeded([]);
 }
 
 bool isMinimumPlayerCount() {

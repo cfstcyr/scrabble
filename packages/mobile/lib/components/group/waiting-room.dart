@@ -36,7 +36,6 @@ class _WaitingRoomState extends State<WaitingRoom> {
 
 StreamBuilder<List<PublicUser>> handlePlayerListChange(
     ThemeData theme, VirtualPlayerLevel virtualPlayerLevel) {
-  reOpen();
   return StreamBuilder<List<PublicUser>>(
     stream: playerList$.stream,
     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
