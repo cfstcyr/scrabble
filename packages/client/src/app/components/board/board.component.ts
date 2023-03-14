@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+/* eslint-disable max-lines */
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActionType, PlaceActionPayload } from '@app/classes/actions/action-data';
 import { Orientation } from '@app/classes/actions/orientation';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
@@ -26,6 +27,8 @@ import { Subject } from 'rxjs';
     styleUrls: ['./board.component.scss'],
 })
 export class BoardComponent extends FocusableComponent<KeyboardEvent> implements OnInit, OnDestroy {
+    @Input() isObserver: boolean;
+
     readonly marginColumnSize: number;
     gridSize: Vec2;
     marginLetters: LetterValue[];
@@ -62,20 +65,28 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
         this.boardService.subscribeToInitializeBoard(this.componentDestroyed$, (board: Square[][]) => this.initializeBoard(board));
         this.boardService.subscribeToBoardUpdate(this.componentDestroyed$, (squaresToUpdate: Square[]) => this.updateBoard(squaresToUpdate));
         this.gameViewEventManagerService.subscribeToGameViewEvent('usedTiles', this.componentDestroyed$, (payload) => this.handlePlaceTiles(payload));
-        this.roundManagerService.subscribeToEndRoundEvent(this.componentDestroyed$, () => this.clearCursor());
+        if (!this.isObserver) {
+            this.roundManagerService.subscribeToEndRoundEvent(this.componentDestroyed$, () => this.clearCursor());
+        }
 
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());
-        this.subscribeToFocusableEvents();
+        if (!this.isObserver) {
+            this.subscribeToFocusableEvents();
+        }
     }
 
     ngOnDestroy(): void {
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
-        this.unsubscribeToFocusableEvents();
+        if (!this.isObserver) {
+            this.unsubscribeToFocusableEvents();
+        }
     }
 
     onSquareClick(squareView: SquareView): boolean {
+        if (this.isObserver) return false;
+
         this.focusableComponentService.setActiveKeyboardComponent(this);
 
         if (squareView.square.tile !== null) return false;
@@ -113,6 +124,8 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
     }
 
     protected onFocusableEvent(event: KeyboardEvent): void {
+        if (this.isObserver) return;
+
         switch (event.key) {
             case BACKSPACE:
                 if (event.type === KEYDOWN) this.handleBackspace();
@@ -133,6 +146,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
     }
 
     private handlePlaceLetter(letter: string, isUppercase: boolean, squareView: SquareView | undefined): void {
+        if (this.isObserver) return;
         if (!this.canPlace(squareView)) return;
 
         letter = removeAccents(letter.toUpperCase());
@@ -173,6 +187,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
     }
 
     private handleBackspace(): void {
+        if (this.isObserver) return;
         if (!this.canBackspace()) return;
 
         let index = this.notAppliedSquares.indexOf(this.navigator.currentSquareView);
@@ -199,6 +214,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
     }
 
     private handleEnter(): void {
+        if (this.isObserver) return;
         const placePayload: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
         if (!placePayload) return;
         this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PLACE, placePayload));

@@ -23,6 +23,7 @@ import { DEFAULT_GROUP } from '@app/constants/pages-constants';
 import { ROUTE_GAME_CREATION } from '@app/constants/routes-constants';
 import GameDispatcherService from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { Group } from '@common/models/group';
+import { RequestingUsers } from '@common/models/requesting-users';
 import { PublicUser, UNKOWN_USER } from '@common/models/user';
 import { of, Subject } from 'rxjs';
 import { CreateWaitingPageComponent } from './create-waiting-page.component';
@@ -63,7 +64,7 @@ describe('CreateWaitingPageComponent', () => {
         gameDispatcherServiceSpy.observeGameCreationFailed.and.returnValue(gameDispatcherCreationSubject.asObservable());
         gameDispatcherServiceSpy['joinRequestEvent'] = new Subject();
         gameDispatcherServiceSpy.subscribeToJoinRequestEvent.and.callFake(
-            (componentDestroyed$: Subject<boolean>, callBack: (users: PublicUser[]) => void) => {
+            (componentDestroyed$: Subject<boolean>, callBack: (requestingUsers: RequestingUsers) => void) => {
                 gameDispatcherServiceSpy['joinRequestEvent'].subscribe(callBack);
             },
         );
@@ -235,9 +236,9 @@ describe('CreateWaitingPageComponent', () => {
 
     describe('updateRequestingUsers', () => {
         it('should change is game starting', () => {
-            component['requestingUsers'] = [];
-            component.updateRequestingUsers([UNKOWN_USER]);
-            expect(component['requestingUsers']).toEqual([UNKOWN_USER]);
+            component['requestingUsers'] = { requestingPlayers: [], requestingObservers: [] };
+            component.updateRequestingUsers({ requestingPlayers: [UNKOWN_USER], requestingObservers: [] });
+            expect(component['requestingUsers']).toEqual({ requestingPlayers: [UNKOWN_USER], requestingObservers: [] });
         });
     });
 
@@ -283,8 +284,8 @@ describe('CreateWaitingPageComponent', () => {
                 user3: {} as unknown as PublicUser,
                 user4: undefined,
             } as unknown as Group;
-            component.requestingUsers = [UNKOWN_USER];
-            component.acceptUser(UNKOWN_USER);
+            component.requestingUsers = { requestingPlayers: [UNKOWN_USER], requestingObservers: [] };
+            component.acceptUser({ publicUser: UNKOWN_USER, isObserver: false });
             expect(component.currentGroup.user4).toEqual(UNKOWN_USER);
             expect(gameDispatcherServiceSpy['handleConfirmation']).toHaveBeenCalled();
         });
@@ -297,8 +298,8 @@ describe('CreateWaitingPageComponent', () => {
                 user3: {} as unknown as PublicUser,
                 user4: undefined,
             } as unknown as Group;
-            component.requestingUsers = [UNKOWN_USER];
-            component.rejectUser(UNKOWN_USER);
+            component.requestingUsers = { requestingPlayers: [UNKOWN_USER], requestingObservers: [] };
+            component.rejectUser({ publicUser: UNKOWN_USER, isObserver: false });
             expect(gameDispatcherServiceSpy['handleRejection']).toHaveBeenCalled();
         });
     });

@@ -10,11 +10,13 @@ import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-wait
 import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.component';
 import { LoginPageComponent } from '@app/pages/login-page/login-page.component';
 import { SignUpPageComponent } from '@app/pages/signup-page/signup-page.component';
+import { ObserverGamePageComponent } from '@app/pages/observer-game-page/observer-game-page.component';
 import { UserProfilePageComponent } from '@app/pages/user-profile-page/user-profile-page.component';
 import {
     ROUTE_CREATE_WAITING,
     ROUTE_GAME,
     ROUTE_GAME_CREATION,
+    ROUTE_GAME_OBSERVER,
     ROUTE_GROUPS,
     ROUTE_HOME,
     ROUTE_JOIN_WAITING,
@@ -44,6 +46,7 @@ const routes: Routes = [
     { path: ROUTE_LOGIN, component: LoginPageComponent, ...publicRoute },
     { path: ROUTE_HOME, component: HomePageComponent, ...privateRoute },
     { path: ROUTE_GAME, component: GamePageComponent, ...privateRoute },
+    { path: ROUTE_GAME_OBSERVER, component: ObserverGamePageComponent, ...privateRoute },
     { path: ROUTE_GAME_CREATION, component: GameCreationPageComponent, ...privateRoute },
     { path: ROUTE_GROUPS, component: GroupsPageComponent, ...privateRoute },
     { path: ROUTE_CREATE_WAITING, component: CreateWaitingPageComponent, ...privateRoute },

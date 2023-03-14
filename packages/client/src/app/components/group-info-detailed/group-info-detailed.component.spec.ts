@@ -34,6 +34,7 @@ const TEST_GROUP: Group = {
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     gameVisibility: GameVisibility.Private,
     password: '',
+    numberOfObservers: 0,
 };
 
 describe('GroupInfoComponent', () => {

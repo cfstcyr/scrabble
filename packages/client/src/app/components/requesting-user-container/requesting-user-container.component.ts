@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { UserRequest } from '@app/classes/communication/group-request';
 import { PublicUser, UNKOWN_USER } from '@common/models/user';
 
 @Component({
@@ -9,19 +10,20 @@ import { PublicUser, UNKOWN_USER } from '@common/models/user';
 export class RequestingUserContainerComponent {
     @Input() requestingUser: PublicUser;
     @Input() isGroupFull: boolean;
-    @Output() acceptedUser: EventEmitter<PublicUser>;
-    @Output() rejectedUser: EventEmitter<PublicUser>;
+    @Input() isObserver: boolean;
+    @Output() acceptedUser: EventEmitter<UserRequest>;
+    @Output() rejectedUser: EventEmitter<UserRequest>;
 
     constructor() {
-        this.acceptedUser = new EventEmitter<PublicUser>();
-        this.rejectedUser = new EventEmitter<PublicUser>();
+        this.acceptedUser = new EventEmitter<UserRequest>();
+        this.rejectedUser = new EventEmitter<UserRequest>();
         this.requestingUser = UNKOWN_USER;
     }
     accept(): void {
-        this.acceptedUser.emit(this.requestingUser);
+        this.acceptedUser.emit({ publicUser: this.requestingUser, isObserver: this.isObserver });
     }
 
     reject(): void {
-        this.rejectedUser.emit(this.requestingUser);
+        this.acceptedUser.emit({ publicUser: this.requestingUser, isObserver: this.isObserver });
     }
 }

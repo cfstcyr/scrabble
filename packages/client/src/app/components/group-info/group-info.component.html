@@ -41,12 +41,20 @@
         </div>
 
     </div>
+
+    <div class="observer-list">
+        <div class="observer">
+            <app-icon icon="eye" size="2x"></app-icon> {{ group.numberOfObservers }}
+        </div>
+    </div>
+
+
     <div class="button-container">
         <app-icon *ngIf="group.gameVisibility === gameVisibilities.Public" id="visibility" icon="globe" size="3x"></app-icon>
         <app-icon *ngIf="group.gameVisibility === gameVisibilities.Private" id="visibility" styling="solid" icon="lock" size="3x"></app-icon>
         <app-icon *ngIf="group.gameVisibility === gameVisibilities.Protected" id="visibility" icon="shield" size="3x"></app-icon>
 
-        <button mat-flat-button id="observe-button" color="primary">
+        <button mat-flat-button id="observe-button" color="primary" (click)="observeGroup()">
             <app-icon icon="eye" size="2x"></app-icon>
         </button>
         <button mat-flat-button id="join-button" color="primary" [disabled]="group.user2 !== undefined && group.user3 !== undefined && group.user4 !== undefined"  (click)="joinGroup()">

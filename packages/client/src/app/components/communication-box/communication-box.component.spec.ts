@@ -125,7 +125,7 @@ describe('CommunicationBoxComponent', () => {
         }).compileComponents();
 
         gameServiceMock = TestBed.inject(GameService);
-        gameServiceMock['playerContainer'] = new PlayerContainer(CURRENT_PLAYER_ID);
+        gameServiceMock['playerContainer'] = new PlayerContainer(CURRENT_PLAYER_ID, false);
         gameServiceMock['playerContainer']['players'].set(1, new Player(CURRENT_PLAYER_ID, USER1, []));
         gameServiceMock['playerContainer']['players'].set(2, new Player(OPPONENT_PLAYER_ID, USER2, []));
     });

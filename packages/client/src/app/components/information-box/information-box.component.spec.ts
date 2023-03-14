@@ -343,7 +343,7 @@ describe('InformationBoxComponent', () => {
 
     describe('getPlayer', () => {
         beforeEach(() => {
-            gameServiceSpy['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER.id);
+            gameServiceSpy['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER.id, false);
         });
 
         it('getPlayer1 should return current gameservice player1 if it exists', () => {

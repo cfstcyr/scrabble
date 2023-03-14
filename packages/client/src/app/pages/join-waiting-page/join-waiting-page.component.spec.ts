@@ -1,10 +1,11 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -22,6 +23,24 @@ import { JoinWaitingPageComponent } from './join-waiting-page.component';
     template: '',
 })
 class TestComponent {}
+
+export class MatDialogMock {
+    confirmationObservable: Subject<void> = new Subject<void>();
+    close() {
+        return {
+            close: () => ({}),
+        };
+    }
+    open() {
+        return {
+            afterClosed: () => of({}),
+        };
+    }
+    // confirmationSpy = spyOn(service['gameDispatcherController'], 'handleStartGame').and.returnValue(confirmationObservable);
+    backdropClick() {
+        return this.confirmationObservable.asObservable();
+    }
+}
 
 const EMPTY_GROUP = {} as unknown as Group;
 
@@ -46,7 +65,13 @@ describe('JoinWaitingPageComponent', () => {
                 ]),
                 MatSnackBarModule,
             ],
-            providers: [GameDispatcherService],
+            providers: [
+                GameDispatcherService,
+                {
+                    provide: MatDialogRef,
+                    useClass: MatDialogMock,
+                },
+            ],
         }).compileComponents();
     });
 
@@ -64,7 +89,7 @@ describe('JoinWaitingPageComponent', () => {
     });
 
     it('hostHasCanceled should open the cancel dialog when host cancels the game', () => {
-        const spy = spyOn(component.dialog, 'open');
+        const spy = spyOn(component.dialog, 'open').and.callThrough();
         component['hostHasCanceled'](opponentName);
         expect(spy).toHaveBeenCalled();
     });

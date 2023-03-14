@@ -10,6 +10,7 @@ import { Service } from 'typedi';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
+import { Observer } from '@common/models/observer';
 
 @Service()
 export class ActiveGameService {
@@ -22,8 +23,8 @@ export class ActiveGameService {
         Game.injectServices();
     }
 
-    async beginGame(id: string, groupChannelId: TypeOfId<Channel>, config: ReadyGameConfig): Promise<StartGameData> {
-        const game = await Game.createGame(id, groupChannelId, config);
+    async beginGame(id: string, groupChannelId: TypeOfId<Channel>, config: ReadyGameConfig, joinedObservers: Observer[]): Promise<StartGameData> {
+        const game = await Game.createGame(id, groupChannelId, config, joinedObservers);
         this.activeGames.push(game);
         return game.createStartGameData();
     }
@@ -34,7 +35,10 @@ export class ActiveGameService {
         if (filteredGames.length === 0) throw new HttpException(NO_GAME_FOUND_WITH_ID, StatusCodes.NOT_FOUND);
 
         const game = filteredGames[0];
+
         if (game.player1.id === playerId || game.player2.id === playerId || game.player3.id === playerId || game.player4.id === playerId) return game;
+        const filteredObservers = game.observers.filter((observer) => observer.id === playerId);
+        if (filteredObservers.length > 0) return game;
         throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.NOT_FOUND);
     }
 
@@ -70,10 +74,22 @@ export class ActiveGameService {
         } catch (exception) {
             // catch errors caused by inexistent socket after client closed application
         }
-        const playerName = game.getPlayer(playerId).publicUser.username;
+        let disconnectedPlayer;
+        // Try to get the name of the player. If it is an observer remove from observers and return
+        try {
+            disconnectedPlayer = game.getPlayer(playerId);
+        } catch (exception) {
+            const matchingObservers = game.observers.filter((obs) => obs.id === playerId);
+            if (matchingObservers.length < 1) throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.NOT_FOUND);
+
+            const index = game.observers.indexOf(matchingObservers[0]);
+            game.observers.splice(index, 1);
+            return;
+        }
+        disconnectedPlayer.isConnected = false;
 
         this.socketService.emitToRoom(gameId, 'newMessage', {
-            content: `${playerName} ${PLAYER_LEFT_GAME(this.isGameOver(gameId, playerId))}`,
+            content: `${disconnectedPlayer.publicUser.username} ${PLAYER_LEFT_GAME(this.isGameOver(gameId, playerId))}`,
             senderId: 'system',
             gameId,
         });
