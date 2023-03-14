@@ -43,7 +43,7 @@ class Group {
         'gameVisibility': gameVisibility.name,
       };
   Map<String, dynamic> GroupCreationDatatoJson() => {
-        'user1': users[0].toJson(),
+        'user1': users[0],
         'maxRoundTime': maxRoundTime,
         'virtualPlayerLevel': virtualPlayerLevel.levelName,
         'gameVisibility': gameVisibility.name,
