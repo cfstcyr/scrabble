@@ -203,6 +203,23 @@ describe('ChatPersistenceService', () => {
         });
     });
 
+    describe('getUserCountInChannel', () => {
+        it('should return user count', async () => {
+            await userTable().insert(USER);
+            await channelTable().insert(CHANNEL_1);
+            await userChannelTable().insert({ idChannel: CHANNEL_1.idChannel, idUser: USER.idUser });
+
+            expect(await service.getUserCountInChannel(CHANNEL_1.idChannel)).to.equal(1);
+        });
+
+        it('should return 0 if no user in channel', async () => {
+            await userTable().insert(USER);
+            await channelTable().insert(CHANNEL_1);
+
+            expect(await service.getUserCountInChannel(CHANNEL_1.idChannel)).to.equal(0);
+        });
+    });
+
     describe('isChannelNameAvailable', () => {
         it('should return true if no channel with name exists', async () => {
             expect(await service.isChannelNameAvailable(CHANNEL_1)).to.be.true;

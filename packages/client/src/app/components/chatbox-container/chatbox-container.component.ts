@@ -16,7 +16,8 @@ import {
 } from '@app/constants/chat-constants';
 import { CANCEL } from '@app/constants/components-constants';
 import { Channel } from '@common/models/chat/channel';
-import { Observable, Subject } from 'rxjs';
+import { TypeOfId } from '@common/types/id';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -38,17 +39,28 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     @ViewChild('joinChannelInput') joinChannelInput: ElementRef<HTMLInputElement>;
     createChannelForm: FormGroup;
     joinChannelForm: FormGroup;
-    openedChannels: ClientChannel[] = [];
+    openedChannels: BehaviorSubject<TypeOfId<Channel>[]>;
     channelMenuIsOpen: boolean = false;
     channelNameMaxLength: number = CHANNEL_NAME_MAX_LENGTH;
     private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
 
     constructor(private readonly formBuilder: FormBuilder, private readonly dialog: MatDialog) {
-        this.openedChannels = [];
+        this.openedChannels = new BehaviorSubject<TypeOfId<Channel>[]>([]);
 
         this.createChannelForm = this.formBuilder.group({
             createChannel: new FormControl(''),
         });
+    }
+
+    get createChannelField(): FormControl {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.createChannelForm.get('createChannel')! as FormControl;
+    }
+
+    getOpenedChannels(): Observable<ClientChannel[]> {
+        return combineLatest([this.channels, this.openedChannels]).pipe(
+            map(([channels, openedChannels]) => channels.filter((channel) => openedChannels.includes(channel.idChannel))),
+        );
     }
 
     ngOnInit(): void {
@@ -69,47 +81,53 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     }
 
     getChannelsForMenu(): Observable<ViewClientChannel[]> {
-        const channelName = this.createChannelForm.value.createChannel.trim();
+        const channelName: string = this.createChannelField.value;
 
-        return this.channels.pipe(
-            map<ClientChannel[], ViewClientChannel[]>((channels) =>
+        return combineLatest([this.channels, this.openedChannels]).pipe(
+            map(([channels, openedChannels]) =>
                 channels
-                    .filter((channel) => channel.name.startsWith(channelName))
-                    .map((channel) => ({
-                        ...channel,
-                        canOpen: !this.openedChannels.find((c) => channel.idChannel === c.idChannel),
-                    })),
+                    .filter((channel) => channel.name.toLowerCase().startsWith(channelName.trim().toLowerCase()))
+                    .map((channel) => ({ ...channel, canOpen: !openedChannels.find((id) => channel.idChannel === id) })),
             ),
         );
     }
 
     getJoinableChannelsForMenu(): Observable<ViewClientChannel[]> {
-        const channelName = this.createChannelForm.value.createChannel.trim();
+        const channelName: string = this.createChannelField.value;
 
-        return this.joinableChannels.pipe(
-            map<ClientChannel[], ViewClientChannel[]>((channels) =>
-                channels
-                    .filter((channel) => channel.name.startsWith(channelName))
+        return combineLatest([this.joinableChannels, this.openedChannels]).pipe(
+            map(([joinableChannels, openedChannels]) =>
+                joinableChannels
+                    .filter((channel) => channel.name.toLowerCase().startsWith(channelName.trim().toLowerCase()))
                     .map((channel) => ({
                         ...channel,
-                        canOpen: !this.openedChannels.find((c) => channel.idChannel === c.idChannel),
+                        canOpen: !openedChannels.find((id) => channel.idChannel === id),
                     })),
             ),
         );
     }
 
     showChannel(channel: ClientChannel): void {
-        this.openedChannels.push(channel);
-        this.openedChannels = this.openedChannels.slice(-1 * MAX_OPEN_CHAT);
+        let openedChannels = this.openedChannels.value;
+        openedChannels.push(channel.idChannel);
+        openedChannels = openedChannels.slice(-1 * MAX_OPEN_CHAT);
+
+        this.openedChannels.next(openedChannels);
+
         this.closeMenu();
     }
 
     minimizeChannel(channel: ClientChannel): void {
-        const index = this.openedChannels.findIndex(({ idChannel }) => channel.idChannel === idChannel);
-        if (index >= 0) this.openedChannels.splice(index, 1);
+        const index = this.openedChannels.value.findIndex((idChannel) => channel.idChannel === idChannel);
+        if (index >= 0) {
+            const openedChannels = this.openedChannels.value;
+            openedChannels.splice(index, 1);
+            this.openedChannels.next(openedChannels);
+        }
     }
 
     closeMenu(): void {
+        this.createChannelField.setValue('');
         this.channelMenuIsOpen = false;
     }
 
@@ -117,7 +135,8 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
         this.channelMenuIsOpen = !this.channelMenuIsOpen;
 
         if (this.channelMenuIsOpen) {
-            this.openedChannels = this.openedChannels.slice(-1);
+            const openedChannels = this.openedChannels.value;
+            this.openedChannels.next(openedChannels.slice(-1));
         }
     }
 
