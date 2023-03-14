@@ -39,17 +39,17 @@ class GameCreationController {
   Future<Response> handleAcceptOpponent(
       PublicUser opponent, String gameId) async {
     return await http.post(Uri.parse("$endpoint/$gameId/players/accept"),
-        body: jsonEncode(opponent));
+        body: jsonEncode({"opponentName": opponent.username}));
   }
 
   Future<Response> handleRejectOpponent(
       PublicUser opponent, String gameId) async {
     return await http.post(Uri.parse("$endpoint/$gameId/players/reject"),
-        body: jsonEncode(opponent));
+        body: jsonEncode({"opponentName": opponent.username}));
   }
 
   Future<Response> handleStartGame(String gameId) async {
-    return await post(Uri.parse("$endpoint/$gameId/players/start"));
+    return await http.post(Uri.parse("$endpoint/$gameId/players/start"));
   }
 
   Future<Response> handleCancelGame(String gameId) async {
@@ -72,7 +72,6 @@ class GameCreationController {
           localPlayerSocketId: SocketService.socket.id!,
           startGameData: startGameData));
     });
-
     socketService.on(JOIN_REQUEST, (data) {
       handleJoinRequest(PublicUser.usersFromJsonList(data));
     });
@@ -82,7 +81,7 @@ class GameCreationController {
   }
 
   void handleJoinRequest(List<PublicUser> data) {
-    playerList$.add(data);
+    playerWaitingList$.add(data);
   }
 
   void handleJoinRequestCancelled(List<PublicUser> data) {
