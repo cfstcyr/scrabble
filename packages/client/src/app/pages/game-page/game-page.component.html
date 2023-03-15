@@ -6,10 +6,10 @@
         <div class="horizontal-grid">
             <div class="vertical-grid">
                 <div class="grid-item-container">
-                    <app-board #boardComponent></app-board>
+                    <app-board [isObserver]="false" #boardComponent></app-board>
                 </div>
                 <div class="grid-item-container">
-                    <app-tile-rack #tileRackComponent></app-tile-rack>
+                    <app-tile-rack [isObserver]="false" #tileRackComponent></app-tile-rack>
                 </div>
                 <div class="grid-item-container" id="button-group">
                     <mat-card>

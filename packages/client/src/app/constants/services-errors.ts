@@ -24,6 +24,7 @@ export const WAIT_FOR_COMMAND_CONFIRMATION_MESSAGE = (gameId: string): Message =
 
 export const RECONNECTION_DELAY = 1500;
 export const RECONNECTION_RETRIES = 3;
+export const DEBOUNCE_TIME = 300;
 
 export const STATE_LOADING_MESSAGE = "Chargement de l'application";
 export const STATE_ERROR_SERVER_NOT_CONNECTED_MESSAGE = "Impossible d'établir une connexion avec le serveur.";
@@ -38,3 +39,5 @@ export const INVALID_CONNECTION_CONTENT =
 export const INVALID_CONNECTION_RETURN = 'Se déconnecter';
 
 export const LOGIN_REQUIRED = 'Vous devez être connecté pour performer cet action.';
+
+export const USER_NOT_FOUND = "L'utilisateur n'existe pas";

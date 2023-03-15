@@ -1,14 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:mobile/classes/user.dart';
-import 'package:mobile/components/alert-dialog.dart';
-import 'package:mobile/pages/groups-page.dart';
-import 'package:mobile/routes/navigator-key.dart';
-
-import '../classes/group.dart';
-import '../components/app_button.dart';
 import '../controllers/group-join-controller.dart';
 import '../locator.dart';
-import '../pages/join-waiting-page.dart';
 import '../view-methods/group.methods.dart';
 
 class GroupJoinService {

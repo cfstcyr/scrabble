@@ -5,11 +5,12 @@ import { ObjectiveValidationParameters } from '@app/classes/objectives/validatio
 import { Tile } from '@app/classes/tile';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import ObjectivesService from '@app/services/objective-service/objective.service';
+import { Observer } from '@common/models/observer';
 import { PublicUser, User } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
 import { Container } from 'typedi';
 
-export default class Player {
+export default class Player implements Observer {
     publicUser: PublicUser;
     score: number;
     tiles: Tile[];

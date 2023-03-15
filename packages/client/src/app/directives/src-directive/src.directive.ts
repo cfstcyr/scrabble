@@ -27,7 +27,7 @@ export class SrcDirective implements OnInit, OnChanges {
         );
     }
 
-    private getSrc() {
-        return this.appSrc === undefined || this.appSrc.length === 0 ? this.el.nativeElement.src : this.appSrc;
+    private getSrc(): string {
+        return this.appSrc && this.appSrc.length > 0 ? this.appSrc : this.el.nativeElement.src;
     }
 }

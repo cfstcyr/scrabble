@@ -17,6 +17,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { UserService } from '@app/services/user-service/user.service';
 import SpyObj = jasmine.SpyObj;
 import { ROUTE_CREATE_WAITING } from '@app/constants/routes-constants';
+import { RequestingUsers } from '@common/models/requesting-users';
 
 @Component({
     template: '',
@@ -29,7 +30,12 @@ const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
 const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
 const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
-const PUBLIC_USERS = [USER1, USER2, USER3, USER4];
+const USER5 = { username: 'user5', email: 'email5', avatar: 'avatar5' };
+const USER6 = { username: 'user6', email: 'email6', avatar: 'avatar6' };
+const USER7 = { username: 'user7', email: 'email7', avatar: 'avatar7' };
+const PUBLIC_USERS_PLAYERS = [USER1, USER2, USER3, USER4];
+const PUBLIC_USERS_OBSERVERS = [USER5, USER6, USER7];
+const REQUESTING_USERS: RequestingUsers = { requestingPlayers: PUBLIC_USERS_PLAYERS, requestingObservers: PUBLIC_USERS_OBSERVERS };
 const TEST_GROUP: Group = {
     groupId: BASE_GAME_ID,
     user1: USER1,
@@ -37,6 +43,7 @@ const TEST_GROUP: Group = {
     gameVisibility: GameVisibility.Public,
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     password: '',
+    numberOfObservers: 0,
 };
 
 const TEST_GROUPS = [TEST_GROUP];
@@ -111,8 +118,8 @@ describe('GameDispatcherService', () => {
     describe('Subscriptions', () => {
         it('should call handleJoinRequest on joinRequestEvent', () => {
             const spy = spyOn<any>(service, 'handleJoinRequest');
-            service['gameDispatcherController']['joinRequestEvent'].next(PUBLIC_USERS);
-            expect(spy).toHaveBeenCalledWith(PUBLIC_USERS);
+            service['gameDispatcherController']['joinRequestEvent'].next(REQUESTING_USERS);
+            expect(spy).toHaveBeenCalledWith(REQUESTING_USERS);
         });
 
         it('should call handleGroupFull on groupFullEvent', () => {
@@ -141,8 +148,8 @@ describe('GameDispatcherService', () => {
 
         it('should call handlePlayerCancelledRequest on playerCancelledRequestingEvent', () => {
             const spy = spyOn<any>(service, 'handlePlayerCancelledRequest');
-            service['gameDispatcherController']['playerCancelledRequestingEvent'].next(PUBLIC_USERS);
-            expect(spy).toHaveBeenCalledWith(PUBLIC_USERS);
+            service['gameDispatcherController']['playerCancelledRequestingEvent'].next(REQUESTING_USERS);
+            expect(spy).toHaveBeenCalledWith(REQUESTING_USERS);
         });
 
         it('should call handlePlayerJoinedRequest on playerJoinedGroupEvent', () => {
@@ -156,7 +163,7 @@ describe('GameDispatcherService', () => {
                 return;
             });
             service['gameDispatcherController']['initializeGame$'].next(undefined);
-            expect(spy).toHaveBeenCalledWith(undefined);
+            expect(spy).toHaveBeenCalledWith(undefined, false);
         });
 
         it('on resetServices event, should call resetServiceData', () => {
@@ -218,15 +225,15 @@ describe('GameDispatcherService', () => {
             });
         });
         it('handleJoinGroup should call gameDispatcherController.handleGroupJoinRequest with the correct parameters', () => {
-            service.handleJoinGroup(TEST_GROUPS[0], 'aa');
-            expect(spyHandleGroupJoinRequest).toHaveBeenCalledWith(TEST_GROUPS[0].groupId, 'aa');
+            service.handleJoinGroup(TEST_GROUPS[0], false, 'aa');
+            expect(spyHandleGroupJoinRequest).toHaveBeenCalledWith(TEST_GROUPS[0].groupId, false, 'aa');
         });
 
         it('handleJoinGroup should set right attributes', () => {
             service.currentGroup = undefined;
             getCurrentGroupIdSpy.and.callThrough();
 
-            service.handleJoinGroup(TEST_GROUP);
+            service.handleJoinGroup(TEST_GROUP, false);
             expect(service.currentGroup).toBeTruthy();
             expect(service.getCurrentGroupId()).toEqual(TEST_GROUP.groupId);
         });
@@ -251,6 +258,7 @@ describe('GameDispatcherService', () => {
             virtualPlayerLevel: VirtualPlayerLevel.Beginner,
             gameVisibility: GameVisibility.Public,
             password: '',
+            numberOfObservers: 0,
         };
 
         service.handleCreateGame(TEST_FORM);
@@ -476,8 +484,8 @@ describe('GameDispatcherService', () => {
     describe('handleJoinRequest', () => {
         it('should emit to joinRequestEvent', () => {
             const spy = spyOn(service['joinRequestEvent'], 'next');
-            service['handleJoinRequest'](PUBLIC_USERS);
-            expect(spy).toHaveBeenCalledWith(PUBLIC_USERS);
+            service['handleJoinRequest'](REQUESTING_USERS);
+            expect(spy).toHaveBeenCalledWith(REQUESTING_USERS);
         });
 
         it('should emit to playerJoinedGroupEvent', () => {
@@ -494,8 +502,8 @@ describe('GameDispatcherService', () => {
 
         it('should emit to playerCancelledRequestEvent', () => {
             const spy = spyOn(service['playerCancelledRequestEvent'], 'next');
-            service['handlePlayerCancelledRequest'](PUBLIC_USERS);
-            expect(spy).toHaveBeenCalledWith(PUBLIC_USERS);
+            service['handlePlayerCancelledRequest'](REQUESTING_USERS);
+            expect(spy).toHaveBeenCalledWith(REQUESTING_USERS);
         });
     });
 

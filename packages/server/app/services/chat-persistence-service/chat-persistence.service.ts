@@ -60,6 +60,15 @@ export class ChatPersistenceService {
         }
     }
 
+    async getUserCountInChannel(idChannel: TypeOfId<Channel>): Promise<number> {
+        const count = (await this.userChatTable.count('idUser').where({ idChannel }).first())?.count;
+
+        // eslint-disable-next-line no-console
+        if (count === undefined) console.warn('Cannot find user count in channel. Defaults to 0.');
+
+        return count !== undefined ? Number(count) : 0;
+    }
+
     async deleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
         await this.userChatTable.delete().where({ idChannel });
         await this.chatHistoryService.deleteChannelHistory(idChannel);

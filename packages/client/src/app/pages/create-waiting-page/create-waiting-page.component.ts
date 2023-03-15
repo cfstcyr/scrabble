@@ -3,6 +3,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { UserRequest } from '@app/classes/communication/group-request';
 import { Timer } from '@app/classes/round/timer';
 import { ERROR_SNACK_BAR_CONFIG } from '@app/constants/components-constants';
 import { getRandomFact } from '@app/constants/fun-facts-scrabble-constants';
@@ -11,6 +12,7 @@ import { ROUTE_GAME_CREATION } from '@app/constants/routes-constants';
 import { GameDispatcherService } from '@app/services/';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
+import { RequestingUsers } from '@common/models/requesting-users';
 import { PublicUser } from '@common/models/user';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -21,7 +23,7 @@ import { takeUntil } from 'rxjs/operators';
     styleUrls: ['./create-waiting-page.component.scss'],
 })
 export class CreateWaitingPageComponent implements OnInit, OnDestroy {
-    requestingUsers: PublicUser[] = [];
+    requestingUsers: RequestingUsers = { requestingObservers: [], requestingPlayers: [] };
 
     isGroupEmpty: boolean = true;
     isGroupFull: boolean = false;
@@ -54,10 +56,10 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         this.roundTime = `${roundTime.minutes}:${roundTime.getTimerSecondsPadded()}`;
         this.funFact = getRandomFact();
 
-        this.gameDispatcherService.subscribeToJoinRequestEvent(this.componentDestroyed$, (requestingUsers: PublicUser[]) =>
+        this.gameDispatcherService.subscribeToJoinRequestEvent(this.componentDestroyed$, (requestingUsers: RequestingUsers) =>
             this.updateRequestingUsers(requestingUsers),
         );
-        this.gameDispatcherService.subscribeToPlayerCancelledRequestEvent(this.componentDestroyed$, (requestingUsers: PublicUser[]) =>
+        this.gameDispatcherService.subscribeToPlayerCancelledRequestEvent(this.componentDestroyed$, (requestingUsers: RequestingUsers) =>
             this.updateRequestingUsers(requestingUsers),
         );
         this.gameDispatcherService.subscribeToPlayerLeftGroupEvent(this.componentDestroyed$, (group: Group) => this.updateGroup(group));
@@ -80,7 +82,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         this.updateGroupStatus();
     }
 
-    updateRequestingUsers(requestingUsers: PublicUser[]) {
+    updateRequestingUsers(requestingUsers: RequestingUsers) {
         this.requestingUsers = requestingUsers;
     }
 
@@ -89,31 +91,38 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
         this.isGroupFull = this.currentGroup.user2 !== undefined && this.currentGroup.user3 !== undefined && this.currentGroup.user4 !== undefined;
     }
 
-    acceptUser(acceptedUser: PublicUser): void {
-        if (this.isGroupFull) return;
+    acceptUser(userRequest: UserRequest): void {
+        if (this.isGroupFull && userRequest.isObserver) return;
 
-        if (!this.removeRequestingUser(acceptedUser)) return;
+        if (!this.removeRequestingUser(userRequest)) return;
 
-        if (!this.currentGroup.user2) this.currentGroup.user2 = acceptedUser;
-        else if (!this.currentGroup.user3) this.currentGroup.user3 = acceptedUser;
-        else if (!this.currentGroup.user4) this.currentGroup.user4 = acceptedUser;
+        if (userRequest.isObserver) this.currentGroup.numberOfObservers++;
+        else {
+            if (!this.currentGroup.user2) this.currentGroup.user2 = userRequest.publicUser;
+            else if (!this.currentGroup.user3) this.currentGroup.user3 = userRequest.publicUser;
+            else if (!this.currentGroup.user4) this.currentGroup.user4 = userRequest.publicUser;
 
-        this.updateGroupStatus();
-        this.gameDispatcherService.handleConfirmation(acceptedUser.username);
+            this.updateGroupStatus();
+        }
+        this.gameDispatcherService.handleConfirmation(userRequest.publicUser.username);
     }
 
-    rejectUser(rejectedUser: PublicUser): void {
-        if (!this.removeRequestingUser(rejectedUser)) return;
+    rejectUser(userRequest: UserRequest): void {
+        if (!this.removeRequestingUser(userRequest)) return;
 
-        this.gameDispatcherService.handleRejection(rejectedUser.username);
+        this.gameDispatcherService.handleRejection(userRequest.publicUser.username);
     }
 
-    private removeRequestingUser(user: PublicUser): boolean {
-        const requestingUsers = this.requestingUsers.filter((user_) => user === user_);
+    private removeRequestingUser(userRequest: UserRequest): boolean {
+        let requestingArray: PublicUser[] = [];
+        if (userRequest.isObserver) requestingArray = this.requestingUsers.requestingObservers;
+        else requestingArray = this.requestingUsers.requestingPlayers;
+
+        const requestingUsers = requestingArray.filter((user_) => userRequest.publicUser === user_);
         if (requestingUsers.length === 0) return false;
         const requestingUser = requestingUsers[0];
-        const index = this.requestingUsers.indexOf(requestingUser);
-        this.requestingUsers.splice(index, 1);
+        const index = requestingArray.indexOf(requestingUser);
+        requestingArray.splice(index, 1);
         return true;
     }
 

@@ -91,13 +91,8 @@ export class ChatService {
 
     // TODO: User userId when playerId has been replaced in requests !153
     async quitChannel(idChannel: TypeOfId<Channel>, playerId: SocketId): Promise<void> {
-        try {
-            const socket: ServerSocket = this.socketService.getSocket(playerId);
-            return this.handleQuitChannel(idChannel, socket);
-        } catch {
-            // TODO Toggle on comment when userId parameter is given !153
-            // return await this.chatPersistenceService.leaveChannel(idChannel, userId);
-        }
+        const socket: ServerSocket = this.socketService.getSocket(playerId);
+        return this.handleQuitChannel(idChannel, socket);
     }
 
     async emptyChannel(idChannel: TypeOfId<Channel>): Promise<void> {
@@ -129,9 +124,11 @@ export class ChatService {
             throw new HttpException(NOT_IN_CHANNEL, StatusCodes.FORBIDDEN);
         }
 
+        channelMessage = { ...channelMessage, message: { ...channelMessage.message, date: new Date() } };
+
         await this.chatHistoryService.saveMessage(channelMessage);
 
-        socket.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
+        socket.nsp.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
     }
 
     private async handleDeleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
@@ -193,6 +190,15 @@ export class ChatService {
         await this.chatPersistenceService.leaveChannel(idChannel, user.idUser);
 
         socket.emit('channel:quit', channel);
+
+        if (!channel.default) {
+            const userCount = await this.chatPersistenceService.getUserCountInChannel(idChannel);
+
+            if (userCount === 0) {
+                await this.deleteChannel(idChannel);
+            }
+        }
+
         await this.updateJoinableChannelsForUser(user.idUser);
     }
 

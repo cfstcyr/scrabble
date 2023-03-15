@@ -112,6 +112,32 @@
           }
     }
 
+    .observer-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+      }
+      
+      .observer {
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        border-radius: 10px;
+        font-size: 25px;
+        color: #333;
+        width: 100%;
+        margin-right: 25px;
+
+        app-icon {
+            margin-right: 8px;
+            font-size: 15px;
+          }
+        
+        
+      }
+
     .button-container {
         display: flex;
         align-items: center;

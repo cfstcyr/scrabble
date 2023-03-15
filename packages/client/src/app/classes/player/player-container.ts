@@ -5,15 +5,27 @@ import Player from './player';
 
 export class PlayerContainer {
     private players: Map<number, Player>;
-    private readonly localPlayerId: string;
+    private localPlayerId: string;
+    private isObserver: boolean;
 
-    constructor(localPlayerId: string) {
+    constructor(localPlayerId: string, isObserver: boolean) {
         this.players = new Map();
         this.localPlayerId = localPlayerId;
+        this.isObserver = isObserver;
     }
 
     getLocalPlayerId(): string {
         return this.localPlayerId;
+    }
+
+    setLocalPlayer(playerNumber: number): void {
+        if (!this.isObserver) return;
+        this.localPlayerId = this.getPlayer(playerNumber).id;
+    }
+
+    setLocalPlayerId(playerId: string): void {
+        if (!this.isObserver) return;
+        this.localPlayerId = playerId;
     }
 
     getLocalPlayer(): Player | undefined {
@@ -45,7 +57,10 @@ export class PlayerContainer {
         playersData.forEach((playerData: PlayerData) => {
             [...this.players.values()]
                 .filter((player: Player) => player.id === playerData.id)
-                .forEach((player: Player) => player.updatePlayerData(playerData));
+                .forEach((player: Player) => {
+                    player.updatePlayerData(playerData);
+                    if (this.isObserver && playerData.newId && playerData.id === this.getLocalPlayerId()) this.setLocalPlayerId(playerData.newId);
+                });
         });
         return this;
     }

@@ -13,6 +13,7 @@ export interface Group {
     gameVisibility: GameVisibility;
     virtualPlayerLevel: VirtualPlayerLevel;
     password: string;
+    numberOfObservers: number;
 }
 
 export type GroupData = Omit<Group, 'groupId'>;

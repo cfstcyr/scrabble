@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { GroupRequest } from '@app/classes/communication/group-request';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { GroupPasswordDialogComponent } from '@app/components/group-password-waiting-dialog/group-password-waiting-dialog';
 import { GroupRequestWaitingDialogComponent } from '@app/components/group-request-waiting-dialog/group-request-waiting-dialog';
@@ -36,22 +37,22 @@ export class GroupsPageComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.complete();
     }
 
-    joinGroup(groupId: string): void {
-        const wantedGroup = this.groups.filter((group) => group.groupId === groupId)[0];
+    joinGroup(groupRequest: GroupRequest): void {
+        const wantedGroup = this.groups.filter((group) => group.groupId === groupRequest.groupId)[0];
 
         switch (wantedGroup.gameVisibility) {
             case GameVisibility.Private: {
-                this.gameDispatcherService.handleJoinGroup(wantedGroup);
+                this.gameDispatcherService.handleJoinGroup(wantedGroup, groupRequest.isObserver);
                 this.groupRequestWaitingDialog(wantedGroup);
                 break;
             }
             case GameVisibility.Protected: {
-                this.gameDispatcherService.handleGroupUpdates(wantedGroup);
-                this.groupPasswordDialog(wantedGroup);
+                this.gameDispatcherService.handleGroupUpdates(wantedGroup, groupRequest.isObserver);
+                this.groupPasswordDialog(wantedGroup, groupRequest.isObserver);
                 break;
             }
             case GameVisibility.Public: {
-                this.gameDispatcherService.handleJoinGroup(wantedGroup);
+                this.gameDispatcherService.handleJoinGroup(wantedGroup, groupRequest.isObserver);
                 break;
             }
             // No default
@@ -61,7 +62,7 @@ export class GroupsPageComponent implements OnInit, OnDestroy {
     joinRandomGroup(): void {
         try {
             const group = this.getRandomGroup();
-            this.joinGroup(group.groupId);
+            this.joinGroup({ groupId: group.groupId, isObserver: false });
         } catch (exception) {
             this.snackBar.open((exception as Error).toString(), 'Ok', {
                 duration: 3000,
@@ -88,10 +89,11 @@ export class GroupsPageComponent implements OnInit, OnDestroy {
         });
     }
 
-    private groupPasswordDialog(group: Group): void {
+    private groupPasswordDialog(group: Group, isObserver: boolean): void {
         const dialogRef = this.dialog.open(GroupPasswordDialogComponent, {
             data: {
                 group,
+                isObserver,
             },
         });
 

@@ -29,6 +29,7 @@ export const WORD_CONTAINS_ASTERISK = " Le mot ne peut pas contenir d'astérisqu
 export const NO_GAME_FOUND_WITH_ID = 'Aucune partie trouvée avec cet identifiant';
 export const NO_USER_FOUND_WITH_NAME = 'Aucun utilisateur trouvé avec ce nom';
 export const INVALID_PLAYER_ID_FOR_GAME = 'Identifiant de joueur invalide pour cette partie';
+export const INVALID_TYPES = 'Type incohérent retourné';
 export const CANT_START_GAME_WITH_NO_REAL_OPPONENT = 'Interdit de commencer une partie sans avoir au moins 1 adversaire humain';
 export const COMMAND_IS_INVALID = (command: string) => `La commande **${command}** est invalide :<br>`;
 export const OPPONENT_PLAYED_INVALID_WORD = "Votre adversaire a joué un mot qui n'est pas dans le dictionnaire. Il perd son tour.";
@@ -48,6 +49,7 @@ export const ALREADY_EXISTING_CHANNEL_NAME = 'Le canal que vous voulez créer ex
 export const ALREADY_IN_CHANNEL = 'Vous appartenez déjà à ce canal';
 export const NOT_IN_CHANNEL = "Vous n'êtes pas dans ce canal";
 export const UNKNOWN_ERROR_JOINING_CHANNEL = 'Il y a eu une erreur en rejoignant le canal de discussion';
+export const CANNOT_SEND_MESSAGE = "Erreur lors de l'envoi du message";
 
 export const NO_TOKEN = 'Vous devez être connecté pour faire cette action';
 export const TOKEN_INVALID = 'Votre session est expirée. Veuillez vous reconnecter';

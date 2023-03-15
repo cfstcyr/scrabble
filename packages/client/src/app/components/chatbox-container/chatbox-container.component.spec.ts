@@ -7,7 +7,7 @@ import { ChatboxMessageComponent } from '@app/components/chatbox-message/chatbox
 import { ChatBoxComponent } from '@app/components/chatbox/chatbox.component';
 import { IconButtonComponent } from '@app/components/icon-button/icon-button.component';
 import { IconComponent } from '@app/components/icon/icon.component';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { ChatboxContainerComponent } from './chatbox-container.component';
 
@@ -71,15 +71,15 @@ describe('ChatboxContainerComponent', () => {
     describe('showChannel', () => {
         it('should add an open channel', () => {
             component.showChannel(CHANNEL_1);
-            expect(component.openedChannels).toHaveSize(1);
+            expect(component.openedChannels.value).toHaveSize(1);
         });
     });
 
     describe('minimizeChannel', () => {
         it('should add an open channel', () => {
-            component.openedChannels = [CHANNEL_1];
+            component.openedChannels = new BehaviorSubject([CHANNEL_1.idChannel]);
             component.minimizeChannel(CHANNEL_1);
-            expect(component.openedChannels).toHaveSize(0);
+            expect(component.openedChannels.value).toHaveSize(0);
         });
     });
 

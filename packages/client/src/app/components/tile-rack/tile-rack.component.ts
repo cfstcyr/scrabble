@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActionType, PlaceActionPayload } from '@app/classes/actions/action-data';
 import Direction from '@app/classes/board-navigator/direction';
 import { FocusableComponent } from '@app/classes/focusable-component/focusable-component';
@@ -26,6 +26,8 @@ const SHUFFLE_ANIMATION_DELAY = 250;
     styleUrls: ['./tile-rack.component.scss', './tile-rack-2.component.scss'],
 })
 export class TileRackComponent extends FocusableComponent<KeyboardEvent> implements OnInit, OnDestroy {
+    @Input() isObserver: boolean;
+
     tiles: RackTile[];
     selectedTiles: RackTile[];
     selectionType: TileRackSelectType;
@@ -50,26 +52,35 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     ngOnInit(): void {
-        this.subscribeToFocusableEvents();
+        if (!this.isObserver) {
+            this.subscribeToFocusableEvents();
+            this.gameViewEventManagerService.subscribeToGameViewEvent('usedTiles', this.componentDestroyed$, (payload) =>
+                this.handleUsedTiles(payload),
+            );
+            this.gameViewEventManagerService.subscribeToGameViewEvent('resetUsedTiles', this.componentDestroyed$, () => this.resetUsedTiles());
+        }
         this.updateTileRack(this.gameService.getLocalPlayerId());
         this.gameViewEventManagerService.subscribeToGameViewEvent('tileRackUpdate', this.componentDestroyed$, (playerId: string) =>
             this.updateTileRack(playerId),
         );
-        this.gameViewEventManagerService.subscribeToGameViewEvent('usedTiles', this.componentDestroyed$, (payload) => this.handleUsedTiles(payload));
-        this.gameViewEventManagerService.subscribeToGameViewEvent('resetUsedTiles', this.componentDestroyed$, () => this.resetUsedTiles());
     }
 
     ngOnDestroy(): void {
-        this.unsubscribeToFocusableEvents();
+        if (!this.isObserver) {
+            this.unsubscribeToFocusableEvents();
+        }
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
     }
 
     selectTileToExchange(tile: RackTile): boolean {
+        if (this.isObserver) return false;
+
         return this.selectTile(TileRackSelectType.Exchange, tile);
     }
 
     selectTileToMove(tile: RackTile): boolean {
+        if (this.isObserver) return false;
         return this.selectTile(TileRackSelectType.Move, tile);
     }
 
@@ -104,10 +115,13 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     onScroll(event: WheelEvent): void {
+        if (this.isObserver) return;
         this.moveSelectedTile(event.deltaY);
     }
 
     async shuffleTiles(): Promise<void> {
+        if (this.isObserver) return;
+
         this.isShuffling = true;
         await Delay.for(SHUFFLE_ANIMATION_DELAY);
         this.tiles = Random.randomize(this.tiles);
@@ -120,6 +134,7 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     protected onFocusableEvent(event: KeyboardEvent): void {
+        if (this.isObserver) return;
         switch (event.key) {
             case ESCAPE:
                 this.unselectAll();
