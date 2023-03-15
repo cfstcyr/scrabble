@@ -253,7 +253,12 @@ class CreateGameFormState extends State<CreateGameForm> {
     );
     bool isCreated = await gameCreationService.handleCreateGame(groupData);
     if (context.mounted) {
-      isCreated ? {Navigator.pushNamed(context, CREATE_LOBBY_ROUTE)} : {};
+      isCreated
+          ? {
+              Navigator.pushNamed(context, CREATE_LOBBY_ROUTE,
+                  arguments: groupData)
+            }
+          : {};
     }
   }
 
