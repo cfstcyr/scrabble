@@ -71,7 +71,8 @@ Widget setWaitingPlayerIcon(int index) {
 }
 
 Future<bool> addPlayerToLobby(PublicUser player) async {
-  if (isMaximumPlayerCount()) return false;
+  //todo Check if playerList is full from Real Players
+  // if (isMaximumPlayerCount()) return false;
 
   await gameCreationService.handleAcceptOpponent(player);
 
