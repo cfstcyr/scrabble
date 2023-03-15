@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
 import 'package:mobile/components/user-avatar.dart';
+import 'package:mobile/constants/avatars-constants.dart';
 import 'package:mobile/constants/user-constants.dart';
 
 import '../../classes/user.dart';
@@ -116,8 +117,8 @@ class PlayerInRoom extends StatelessWidget {
                     forceInitials: user.avatar.isEmpty,
                     initials: getUsersInitials(user.username),
                     background: theme.colorScheme.onBackground,
-                    radius: 16,
-                    size: 40),
+                    radius: LOBBY_AVATAR_RADIUS,
+                    size: LOBBY_AVATAR_SIZE),
                 SizedBox(
                   width: 8,
                 ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/error-pop-up.dart';
+import 'package:mobile/components/user-avatar.dart';
+import 'package:mobile/constants/avatars-constants.dart';
+import 'package:mobile/constants/user-constants.dart';
 
 import '../../constants/create-lobby-constants.dart';
 import '../../view-methods/create-lobby-methods.dart';
@@ -40,7 +43,12 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                         Padding(
                           padding: EdgeInsets.only(
                               left: 15.0, right: 0, top: 10.0, bottom: 10.0),
-                          child: setWaitingPlayerIcon(index),
+                          child: Avatar(
+                            avatar: snapshot.data![index].avatar,
+                            initials: getUsersInitials(snapshot.data![index].username),
+                            size: LOBBY_AVATAR_SIZE,
+                            radius: LOBBY_AVATAR_RADIUS,
+                          ),
                         ),
                         Expanded(
                           child: Padding(
