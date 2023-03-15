@@ -71,9 +71,7 @@ Widget setWaitingPlayerIcon(int index) {
 }
 
 Future<bool> addPlayerToLobby(PublicUser player) async {
-
-  //todo Check if playerList is full from Real Players
-  // if (isMaximumPlayerCount()) return false;
+  if (isMaximumPlayerCount()) return false;
 
   await gameCreationService.handleAcceptOpponent(player);
 
@@ -104,5 +102,9 @@ bool isMinimumPlayerCount() {
 }
 
 bool isMaximumPlayerCount() {
-  return playerList$.value.length >= MAX_PLAYER_COUNT;
+  int count = 0;
+  playerList$.value.map((element) {
+    if (element.email != '') count++;
+  });
+  return count >= MAX_PLAYER_COUNT;
 }
