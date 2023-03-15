@@ -36,7 +36,6 @@ final ROUTES = {
   CREATE_GAME: (context) => CreateGamePage(),
   HOME_ROUTE: (context) => HomePage(),
   GROUPS_ROUTE: (context) => GroupPage(),
-  CREATE_LOBBY_ROUTE: (context) => CreateLobbyPage(),
   GAME_PAGE_ROUTE: (context) => GamePage(),
   PROFILE_ROUTE: (context) => ProfilePage(),
   PROFILE_EDIT_ROUTE: (context) => ProfileEditPage(),
@@ -44,6 +43,10 @@ final ROUTES = {
 
 Route<dynamic>? customOnGenerateRoute(RouteSettings settings) {
   switch (settings.name) {
+    case (CREATE_LOBBY_ROUTE):
+      return MaterialPageRoute(builder: (context) {
+        return CreateLobbyPage(group: settings.arguments as Group);
+      });
     case (JOIN_WAITING_ROUTE):
       return MaterialPageRoute(builder: (context) {
         return GroupRequestWaitingPage(group: settings.arguments as Group);

@@ -1,4 +1,7 @@
+import 'package:mobile/classes/group.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
+import 'package:mobile/services/socket.service.dart';
 
 import '../components/error-pop-up.dart';
 import '../constants/locale/groups-constants.dart';
@@ -18,17 +21,56 @@ class GameCreationService {
   }
 
   final gameCreationController = getIt.get<GameCreationController>();
+  final socketService = getIt.get<SocketService>();
 
-  void handleStartGame() {
+  Future<void> handleStartGame() async {
     if (groupId == null) return;
 
-    gameCreationController.handleStartGame(groupId!).catchError((error) {
+    await gameCreationController.handleStartGame(groupId!).catchError((error) {
       errorSnackBar(navigatorKey.currentContext!, GAME_START_FAILED);
       return error;
     });
   }
 
-  // Future<bool> startGame(PublicUser user, String gameId) async {
-  //   return await gameCreationController.handleStartGame(user, gameId);
-  // }
+  Future<void> handleCancelGame() async {
+    if (groupId == null) return;
+
+    await gameCreationController.handleCancelGame(groupId!).catchError((error) {
+      errorSnackBar(navigatorKey.currentContext!, GAME_CANCEL_FAILED);
+      return error;
+    });
+  }
+
+  Future<void> handleAcceptOpponent(PublicUser opponent) async {
+    if (groupId == null) return;
+
+    await gameCreationController
+        .handleAcceptOpponent(opponent, groupId!)
+        .catchError((error) {
+      errorSnackBar(navigatorKey.currentContext!, GAME_ACCEPT_FAILED);
+      return error;
+    });
+  }
+
+  Future<void> handleRejectOpponent(PublicUser opponent) async {
+    if (groupId == null) return;
+
+    await gameCreationController
+        .handleRejectOpponent(opponent, groupId!)
+        .catchError((error) {
+      errorSnackBar(navigatorKey.currentContext!, GAME_REJECT_FAILED);
+      return error;
+    });
+  }
+
+  Future<bool> handleCreateGame(Group groupData) async {
+    GroupCreationResponse response = await gameCreationController
+        .handleCreateGame(groupData)
+        .catchError((error) {
+      errorSnackBar(navigatorKey.currentContext!, GAME_CREATE_FAILED);
+      return GroupCreationResponse(isCreated: false, groupId: '');
+    });
+    groupId = response.groupId;
+    return response.isCreated;
+  }
 }
