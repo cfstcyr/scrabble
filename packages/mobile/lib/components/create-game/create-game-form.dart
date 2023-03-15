@@ -11,6 +11,7 @@ import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/game-creation-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/services/user.service.dart';
+import 'package:mobile/view-methods/create-lobby-methods.dart';
 
 import '../../classes/group.dart';
 import '../../constants/create-account-constants.dart';
@@ -255,6 +256,7 @@ class CreateGameFormState extends State<CreateGameForm> {
     if (context.mounted) {
       isCreated
           ? {
+              reInitialize(),
               Navigator.pushNamed(context, CREATE_LOBBY_ROUTE,
                   arguments: groupData)
             }

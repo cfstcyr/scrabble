@@ -90,15 +90,22 @@ Future<void> refusePlayer(PublicUser player) async {
 
 Future<void> startGame() async {
   await gameCreationService.handleStartGame();
+  reInitialize();
 }
 
 Future<void> backOut() async {
   await gameCreationService.handleCancelGame();
+  reInitialize();
 }
 
 bool isMinimumPlayerCount() {
   print(playerList$.value);
   return playerList$.value.length < MINIMUM_PLAYER_COUNT;
+}
+
+void reInitialize() {
+  playerList$.add([userService.getUser()]);
+  playerWaitingList$.add([]);
 }
 
 bool isMaximumPlayerCount() {
