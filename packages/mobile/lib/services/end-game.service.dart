@@ -15,6 +15,11 @@ class EndGameService {
     return _instance;
   }
 
+  void resetEndGame() {
+    _isOver$ = BehaviorSubject<bool>.seeded(false);
+    winners$ = BehaviorSubject<List<String>>.seeded([]);
+  }
+
   void setEndGame(bool value, List<String> winners) {
     _isOver$.add(value);
     winners$.add(winners);
