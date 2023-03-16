@@ -3,6 +3,7 @@ import { Vec2 } from '@app/classes/board/vec2';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { Square } from '@app/classes/square';
 import { Multiplier } from '@app/classes/square/square';
+import { LetterValue, Tile, TileReserve } from '@app/classes/tile';
 import { BOARD_CONFIG, BOARD_CONFIG_MAP } from '@app/constants/board-config';
 import { BOARD_SIZE } from '@app/constants/game-constants';
 import { BOARD_CONFIG_UNDEFINED_AT, NO_MULTIPLIER_MAPPED_TO_INPUT } from '@app/constants/services-errors';
@@ -32,6 +33,37 @@ export default class BoardService {
         }
         return new Board(grid);
     }
+
+    initializeBoardSquares(boardString: string): Square[] {
+        const center: Position = new Position(Math.floor(BoardService.size.x / 2), Math.floor(BoardService.size.y / 2));
+        // await TileReserve.fetchLetterDistribution();
+        const filledSquares: Square[] = [];
+        for (let i = 0; i < boardString.length; i++) {
+            // check if this is the correct position
+            const position = new Position(Math.floor(i / BoardService.size.y), i % BoardService.size.x);
+            let tile: Tile;
+            if (boardString[i] === ' ') continue;
+            else if (boardString[i] === boardString[i].toLowerCase()) {
+                tile =
+                    // it is a blanktile
+                    tile = { letter: '*', value: 0, isBlank: true, playedLetter: boardString[i] as LetterValue };
+            } else {
+                // TODO: Get real value
+                tile = { letter: boardString[i] as LetterValue, value: 1, isBlank: false };
+            }
+            const isCenter = position.row === center.row && position.column === center.column;
+            const square: Square = {
+                tile,
+                position,
+                scoreMultiplier: this.readScoreMultiplierConfig(position),
+                wasMultiplierUsed: true,
+                isCenter,
+            };
+            filledSquares.push(square);
+        }
+        return filledSquares;
+    }
+
     private readScoreMultiplierConfig(position: Position): Multiplier {
         if (!this.isBoardConfigDefined(position)) throw new HttpException(BOARD_CONFIG_UNDEFINED_AT(position), StatusCodes.BAD_REQUEST);
         return this.parseSquareConfig(BOARD_CONFIG[position.row][position.column]);
