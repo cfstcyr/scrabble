@@ -118,6 +118,7 @@ export default class RoundManager {
     private saveCompletedRound(round: Round, actionPlayed: Action): void {
         const now = new Date();
         this.completedRounds.push({ ...round, completedTime: now, actionPlayed });
+        console.log(this.completedRounds[this.completedRounds.length - 1]);
     }
 
     private getNextPlayer(): Player {
