@@ -34,7 +34,7 @@ class _GameTimerState extends State<GameTimer> {
     });
 
     endRoundSubscription = _roundService.endRoundEvent.listen((_) {
-      _timer!.cancel();
+      if (_timer != null) _timer!.cancel();
     });
 
     endGameSubscription =
