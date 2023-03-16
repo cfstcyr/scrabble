@@ -23,10 +23,10 @@ import { IMPOSSIBLE_ACTION } from './action-errors';
 
 export default class ActionPlace extends ActionPlay {
     wordPlacement: WordPlacement;
+    scoredPoints: number;
     private scoreCalculator: ScoreCalculatorService;
     private wordValidator: WordsVerificationService;
     private objectivesCompletedMessages: string[];
-    private scoredPoints: number;
 
     constructor(player: Player, game: Game, wordPlacement: WordPlacement) {
         super(player, game);

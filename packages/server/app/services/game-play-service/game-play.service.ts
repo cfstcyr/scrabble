@@ -48,6 +48,7 @@ export class GamePlayService {
         if (player.id !== playerId) throw new HttpException(NOT_PLAYER_TURN, StatusCodes.FORBIDDEN);
         if (game.gameIsOver) return [undefined, undefined];
 
+        const board = game.board;
         const action: Action = this.getAction(player, game, actionData);
 
         let updatedData: void | GameUpdateData = action.execute();
@@ -62,7 +63,7 @@ export class GamePlayService {
         }
 
         if (action.willEndTurn()) {
-            const nextRound = game.roundManager.nextRound(action);
+            const nextRound = game.roundManager.nextRound(action, board);
             const nextRoundData: RoundData = game.roundManager.convertRoundToRoundData(nextRound);
             if (updatedData) updatedData.round = nextRoundData;
             else updatedData = { round: nextRoundData };

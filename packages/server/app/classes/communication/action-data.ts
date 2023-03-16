@@ -9,6 +9,12 @@ export enum ActionType {
     HELP = 'aide',
     HINT = 'indice',
 }
+
+export enum ActionTurnEndingType {
+    PLACE = 'placer',
+    EXCHANGE = 'échanger',
+    PASS = 'passer',
+}
 export interface ActionPlacePayload {
     startPosition: { column: number; row: number };
     orientation: Orientation;

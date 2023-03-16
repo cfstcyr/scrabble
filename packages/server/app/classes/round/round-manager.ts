@@ -10,6 +10,7 @@ import { StatusCodes } from 'http-status-codes';
 import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { CompletedRound, Round } from './round';
 import { NUMBER_OF_PASSING_ROUNDS_TO_END_GAME, NUMBER_OF_PLAYERS_IN_GAME } from '@app/constants/classes-constants';
+import { Board } from '../board';
 
 const SECONDS_TO_MILLISECONDS = 1000;
 
@@ -45,9 +46,9 @@ export default class RoundManager {
         };
     }
 
-    nextRound(actionPlayed: Action): Round {
+    nextRound(actionPlayed: Action, board: Board): Round {
         if (this.currentRound !== undefined) {
-            this.saveCompletedRound(this.currentRound, actionPlayed);
+            this.saveCompletedRound(this.currentRound, actionPlayed, board);
         }
         return this.beginRound();
     }
@@ -115,9 +116,9 @@ export default class RoundManager {
         return true;
     }
 
-    private saveCompletedRound(round: Round, actionPlayed: Action): void {
+    private saveCompletedRound(round: Round, actionPlayed: Action, board: Board): void {
         const now = new Date();
-        this.completedRounds.push({ ...round, completedTime: now, actionPlayed });
+        this.completedRounds.push({ ...round, completedTime: now, actionPlayed, board });
         console.log(this.completedRounds[this.completedRounds.length - 1]);
     }
 

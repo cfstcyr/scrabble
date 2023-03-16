@@ -315,6 +315,10 @@ export default class Game {
         return winners;
     }
 
+    getPlayerArray(): Player[] {
+        return [this.player1, this.player2, this.player3, this.player4];
+    }
+
     private computeEndOfGameScore(playerHasWon: boolean[], playerPointsToDeduct: number[]): number[] {
         const players = this.getPlayerArray();
         if (playerHasWon.length !== players.length || playerPointsToDeduct.length !== players.length)
@@ -353,9 +357,5 @@ export default class Game {
 
     private isPlayerIdFromGame(playerId: string): boolean {
         return this.player1.id === playerId || this.player2.id === playerId || this.player3.id === playerId || this.player4.id === playerId;
-    }
-
-    private getPlayerArray(): Player[] {
-        return [this.player1, this.player2, this.player3, this.player4];
     }
 }

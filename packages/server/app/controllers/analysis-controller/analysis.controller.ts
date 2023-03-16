@@ -26,7 +26,7 @@ export class AnalysisController extends BaseController {
         });
     }
 
-    private handleRequestAnalysis(gameId: string, userId: UserId) {
-        this.analysisPersistenceService.requestAnalysis(gameId, userId);
+    private async handleRequestAnalysis(gameId: string, userId: UserId) {
+        await this.analysisPersistenceService.requestAnalysis(gameId, userId);
     }
 }
