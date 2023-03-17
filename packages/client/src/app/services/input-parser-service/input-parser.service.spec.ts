@@ -289,14 +289,6 @@ describe('InputParserService', () => {
             expect(positionSpy).toHaveBeenCalled();
         });
 
-        it('should emit playingTiles', () => {
-            const emitSpy = spyOn<any>(service['gameViewEventManagerService'], 'emitGameViewEvent').and.callFake(() => {
-                return;
-            });
-            service['createPlaceActionPayload'](VALID_LOCATION_INPUT, VALID_LETTERS_INPUT_SINGLE);
-            expect(emitSpy).toHaveBeenCalled();
-        });
-
         it('should call createPlaceActionPayload if input is a valid place command', () => {
             service['createPlaceActionPayload'](VALID_LOCATION_INPUT, VALID_LETTERS_INPUT_SINGLE);
             expect(actionServiceSpy.createPlaceActionPayload).toHaveBeenCalled();

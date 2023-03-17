@@ -20,7 +20,6 @@ import { Player } from '@app/classes/player';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { TileComponent } from '@app/components/tile/tile.component';
-import { ARROW_LEFT, ARROW_RIGHT, BACKSPACE, ESCAPE } from '@app/constants/components-constants';
 import { DEFAULT_PLAYER } from '@app/constants/game-constants';
 import { DIALOG_QUIT_BUTTON_CONFIRM, DIALOG_QUIT_CONTENT, DIALOG_QUIT_STAY, DIALOG_QUIT_TITLE } from '@app/constants/pages-constants';
 import {
@@ -208,33 +207,6 @@ describe('GamePageComponent', () => {
             spyOn(component['gameService'], 'getLocalPlayer').and.returnValue({ publicUser: USER1 } as unknown as Player);
             expect(component['isLocalPlayerWinner'](['Jérôme'])).toBeFalse();
         });
-    });
-
-    describe('keypress/keydown', () => {
-        const tests: [method: keyof GamePageComponent, key: string][] = [
-            ['handleKeyboardEvent', 'a'],
-            ['handleKeyboardEventEsc', ESCAPE],
-            ['handleKeyboardEventBackspace', BACKSPACE],
-            ['handleKeyboardEventArrowLeft', ARROW_LEFT],
-            ['handleKeyboardEventArrowRight', ARROW_RIGHT],
-        ];
-        let emitKeyboardSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            emitKeyboardSpy = spyOn(component['focusableComponentService'], 'emitKeyboard');
-        });
-
-        for (const [method, key] of tests) {
-            it(`should call emitKeyboard on ${method}`, () => {
-                const event: KeyboardEvent = new KeyboardEvent('keypress', {
-                    key,
-                    cancelable: true,
-                });
-
-                (component[method] as (e: unknown) => void)(event);
-                expect(emitKeyboardSpy).toHaveBeenCalledWith(event);
-            });
-        }
     });
 
     describe('hintButtonClicked', () => {
