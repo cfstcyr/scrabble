@@ -20,12 +20,16 @@ $text-color: rgb(80, 55, 10);
         line-height: 1em;
     }
     p.letter {
-        top: calc(50% - #{$letter-offset});
-        left: calc(50% - #{$letter-offset});
+        top: calc(50%);
+        left: calc(50%);
         transform: translate(-50%, -50%);
         font-size: 1.4em;
         font-weight: 600;
         color: $text-color;
+    }
+    &:not(.value-hidden) p.letter {
+        top: calc(50% - #{$letter-offset});
+        left: calc(50% - #{$letter-offset});
     }
     p.value {
         bottom: 3px;

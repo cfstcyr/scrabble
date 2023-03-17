@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Orientation } from '@app/classes/actions/orientation';
 import { Position } from '@app/classes/board-navigator/position';
-import { TilePlacement } from '@app/classes/tile';
+import { LetterValue, TilePlacement } from '@app/classes/tile';
 import { CANNOT_REMOVE_UNUSED_TILE } from '@app/constants/component-errors';
 import { BOARD_SIZE } from '@app/constants/game-constants';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -9,6 +9,11 @@ import BoardService from '@app/services/board-service/board.service';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { comparePlacements, comparePositions } from '@app/utils/comparator/comparator';
 import { PlaceActionPayload } from '@app/classes/actions/action-data';
+import { MatDialog } from '@angular/material/dialog';
+import {
+    ChooseBlankTileDialogComponent,
+    ChooseBlankTileDialogParameters,
+} from '@app/components/choose-blank-tile-dialog/choose-blank-tile-dialog.component';
 
 @Injectable({
     providedIn: 'root',
@@ -17,7 +22,7 @@ export class TilePlacementService {
     private tilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private isPlacementValidSubject$: BehaviorSubject<boolean>;
 
-    constructor(private readonly boardService: BoardService) {
+    constructor(private readonly boardService: BoardService, private readonly dialog: MatDialog) {
         this.tilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
         this.isPlacementValidSubject$ = new BehaviorSubject<boolean>(false);
     }
@@ -39,8 +44,16 @@ export class TilePlacementService {
     }
 
     placeTile(tilePlacement: TilePlacement): void {
-        this.tilePlacementsSubject$.next([...this.tilePlacementsSubject$.value, tilePlacement]);
-        this.updatePlacement();
+        if (tilePlacement.tile.isBlank || tilePlacement.tile.letter === '*') {
+            this.askFillBlankLetter((letter) => {
+                tilePlacement.tile.playedLetter = letter as LetterValue;
+                this.tilePlacementsSubject$.next([...this.tilePlacementsSubject$.value, tilePlacement]);
+                this.updatePlacement();
+            });
+        } else {
+            this.tilePlacementsSubject$.next([...this.tilePlacementsSubject$.value, tilePlacement]);
+            this.updatePlacement();
+        }
     }
 
     moveTile(tilePlacement: TilePlacement, previousPosition: Position): void {
@@ -50,19 +63,29 @@ export class TilePlacementService {
         const index = placements.findIndex((t) => comparePlacements(t, previousPlacement));
 
         if (index >= 0) {
-            placements.splice(index, 1);
-            placements.push(tilePlacement);
+            if (tilePlacement.tile.isBlank || tilePlacement.tile.letter === '*') {
+                this.askFillBlankLetter((letter) => {
+                    tilePlacement.tile.playedLetter = letter as LetterValue;
 
-            this.tilePlacementsSubject$.next(placements);
+                    placements.splice(index, 1);
+                    placements.push(tilePlacement);
+                    this.tilePlacementsSubject$.next(placements);
+                    this.updatePlacement();
+                });
+            } else {
+                placements.splice(index, 1);
+                placements.push(tilePlacement);
+                this.tilePlacementsSubject$.next(placements);
+                this.updatePlacement();
+            }
         }
-
-        this.updatePlacement();
     }
 
     removeTile(tilePlacement: TilePlacement): void {
         const placements = [...this.tilePlacements];
 
         const index = placements.findIndex((t) => comparePlacements(t, tilePlacement));
+        placements[index].tile.playedLetter = undefined;
 
         if (index < 0) throw new Error(CANNOT_REMOVE_UNUSED_TILE);
 
@@ -72,6 +95,7 @@ export class TilePlacementService {
     }
 
     resetTiles(): void {
+        this.tilePlacements.forEach(({ tile }) => (tile.playedLetter = undefined));
         this.tilePlacementsSubject$.next([]);
         this.updatePlacement();
     }
@@ -89,6 +113,14 @@ export class TilePlacementService {
             startPosition: tilePlacements[0].position,
             tiles: tilePlacements.map(({ tile }) => tile),
         };
+    }
+
+    private askFillBlankLetter(onComplete: (letter: string) => void): void {
+        const parameters: ChooseBlankTileDialogParameters = {
+            onConfirm: onComplete,
+        };
+
+        this.dialog.open(ChooseBlankTileDialogComponent, { data: parameters });
     }
 
     private updatePlacement(): void {

@@ -33,6 +33,8 @@ export class InitializedGameService implements OnDestroy {
                 { letter: 'C', value: 1 },
                 { letter: 'D', value: 1 },
                 { letter: 'E', value: 1 },
+                { letter: '*', value: 0, isBlank: true },
+                { letter: '*', value: 0 },
             ],
             publicUser: { username: '1', avatar: '1', email: '1' },
         },

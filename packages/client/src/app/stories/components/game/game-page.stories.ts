@@ -9,6 +9,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BoardComponent } from '@app/components/board/board.component';
+import { ChooseBlankTileDialogComponent } from '@app/components/choose-blank-tile-dialog/choose-blank-tile-dialog.component';
 import { CommunicationBoxComponent } from '@app/components/communication-box/communication-box.component';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { InformationBoxComponent } from '@app/components/information-box/information-box.component';
@@ -32,6 +33,7 @@ export default {
                 CommunicationBoxComponent,
                 TileComponent,
                 SquareComponent,
+                ChooseBlankTileDialogComponent,
             ],
             imports: [
                 InitializedGameStoriesModule,
