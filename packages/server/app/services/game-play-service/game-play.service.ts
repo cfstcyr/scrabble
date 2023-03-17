@@ -25,6 +25,7 @@ import { UserStatisticsService } from '@app/services/user-statistics-service/use
 import { PublicUserStatistics } from '@common/models/user-statistics';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
+import { AnalysisService } from '@app/services/analysis-service/analysis.service';
 @Service()
 export class GamePlayService {
     constructor(
@@ -36,6 +37,7 @@ export class GamePlayService {
         private readonly virtualPlayerFactory: VirtualPlayerFactory,
         private readonly userStatisticsService: UserStatisticsService,
         private readonly authenticationService: AuthentificationService,
+        private readonly analysisService: AnalysisService,
     ) {
         this.activeGameService.playerLeftEvent.on('playerLeftGame', async (gameId, playerWhoLeftId) => {
             await this.handlePlayerLeftEvent(gameId, playerWhoLeftId);
@@ -135,6 +137,8 @@ export class GamePlayService {
             for (const player of connectedRealPlayers) {
                 await this.highScoresService.addHighScore(player.publicUser.username, player.score);
             }
+            await this.analysisService.addAnalysis(game);
+
             await this.gameHistoriesService.addGameHistory(game.gameHistory);
             game.isAddedToDatabase = true;
         }

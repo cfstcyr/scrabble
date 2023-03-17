@@ -1,5 +1,4 @@
 import { ActionTurnEndingType } from '@app/classes/communication/action-data';
-import { Square } from '@app/classes/square';
 import { Tile } from '@app/classes/tile';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { ScoredWordPlacement } from '@app/classes/word-finding';
@@ -11,6 +10,28 @@ export interface Analysis {
     criticalMoments: CriticalMoment[];
 }
 
+export interface AnalysisData {
+    gameId: string;
+    userId: UserId;
+}
+
+export interface CriticalMomentData {
+    criticalMomentId: number;
+    actionType: ActionTurnEndingType;
+    tiles: string;
+    board: string;
+    playedPlacementId?: number;
+    bestPlacementId: number;
+}
+
+export interface PlacementData {
+    placementId: number;
+    tilesToPlace: string;
+    isHorizontal: boolean;
+    score: number;
+    row: number;
+    column: number;
+}
 export interface CriticalMoment {
     tiles: Tile[];
     actionType: ActionTurnEndingType;
@@ -19,30 +40,3 @@ export interface CriticalMoment {
     // board: (Square | undefined)[];
     bestPlacement: ScoredWordPlacement;
 }
-
-analysis table 
-
-gameid: string 
-userid: string 
-
-
-criticalmomenttable
-
-criticalmomentid: id NOTNULL
-gameid: string 
-userid: string 
-tiles: string NOTNULL
-actiontype: value in 'PASS', 'EXCHANGE', 'PLAY' NOTNULL
-board: string NOTNULL
-playedplacementId: id 
-bestPlacementId: id 
-
-placementtable
-placementId: id NOTNULL
-Score: integer NOTNULL
-Tiles: string NOTNULL
-IsHorizontal: boolean NOTNULL
-Row: integer NOTNULL
-Column: integer NOTNULL
-
-

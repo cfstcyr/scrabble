@@ -3,7 +3,7 @@ import { Vec2 } from '@app/classes/board/vec2';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { Square } from '@app/classes/square';
 import { Multiplier } from '@app/classes/square/square';
-import { LetterValue, Tile, TileReserve } from '@app/classes/tile';
+import { LetterValue, Tile } from '@app/classes/tile';
 import { BOARD_CONFIG, BOARD_CONFIG_MAP } from '@app/constants/board-config';
 import { BOARD_SIZE } from '@app/constants/game-constants';
 import { BOARD_CONFIG_UNDEFINED_AT, NO_MULTIPLIER_MAPPED_TO_INPUT } from '@app/constants/services-errors';

@@ -1,22 +1,97 @@
 import { UserId } from '@app/classes/user/connected-user-types';
-import { ANALYSIS_TABLE } from '@app/constants/services-constants/database-const';
+import { ANALYSIS_TABLE, CRITICAL_MOMENTS_TABLE, PLACEMENT_TABLE } from '@app/constants/services-constants/database-const';
 import { Service } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
-import { Board } from '@app/classes/board';
-import { Square } from '@app/classes/square';
-import BoardService from '../board-service/board.service';
-import { Analysis } from '@app/classes/analysis/analysis';
+// import { Board } from '@app/classes/board';
+import { Analysis, AnalysisData, CriticalMomentData, PlacementData } from '@app/classes/analysis/analysis';
+import { ScoredWordPlacement } from '@app/classes/word-finding';
+import { Board, Orientation } from '@app/classes/board';
+import { Tile } from '@app/classes/tile';
+// import BoardService from '@app/services/board-service/board.service';
 
 @Service()
 export class AnalysisPersistenceService {
-    constructor(private readonly databaseService: DatabaseService, private boardService: BoardService) {}
+    constructor(private readonly databaseService: DatabaseService) {}
 
+    // eslint-disable-next-line no-unused-vars
     async requestAnalysis(gameId: string, userId: UserId) {
-        return this.analysisTable.select('*').where({ gameId, userId });
+        // const databaseRows =
+        this.analysisTable
+            .select(`${CRITICAL_MOMENTS_TABLE}.*`, `${PLACEMENT_TABLE}.*`)
+            .join(CRITICAL_MOMENTS_TABLE, `${ANALYSIS_TABLE}.analysisId`, '=', `${CRITICAL_MOMENTS_TABLE}.analysisId`)
+            .join(PLACEMENT_TABLE, `${CRITICAL_MOMENTS_TABLE}.playedPlacementId`, '=', `${PLACEMENT_TABLE}.placementId`)
+            .orWhere(`${CRITICAL_MOMENTS_TABLE}.bestPlacementId`, '=', `${PLACEMENT_TABLE}.placementId`)
+            .where({
+                'analysis.gameId': gameId,
+                'analysis.userId': userId,
+            })
+            .then((rows) => {
+                console.log(rows);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        // const analysis: Analysis = { gameId, userId, criticalMoments: [] };
+
+        // for (const databaseRow of databaseRows) {
+
+        // }
     }
 
     async addAnalysis(gameId: string, userId: UserId, analysis: Analysis) {
+        console.log('-------------------START-----------------------');
+        console.log(`ANALYSIS OF GAME: ${gameId} FOR ${userId}`);
+        console.log(`Critical moments length: ${analysis.criticalMoments.length}`);
+        for (const criticalMoment of analysis.criticalMoments) {
+            console.log(`   actionType: ${criticalMoment.actionType}`);
+            console.log(`   tiles: ${criticalMoment.tiles.map((tile) => tile.letter).join('')}`);
+            console.log(`   boardgrid[7]: ${criticalMoment.board.grid[7].map((square) => square.tile?.letter ?? ' ').join('')}`);
+        }
+
+        console.log('------------------END------------------------');
+
         // return this.analysisTable.select('*').where({ gameId, userId });
+
+
+        await this.analysisTable.insert({ gameId, userId });
+        for (const criticalMoment of analysis.criticalMoments) {
+            const bestPlacementId = await this.addPlacement(criticalMoment.bestPlacement);
+            let playedPlacementId;
+            if (criticalMoment.playedPlacement) playedPlacementId = await this.addPlacement(criticalMoment.playedPlacement);
+
+            await this.criticalMomentTable.insert({
+                actionType: criticalMoment.actionType,
+                tiles: criticalMoment.tiles.map((tile) => this.convertTileToString(tile)).join(''),
+                board: this.convertBoardToString(criticalMoment.board),
+                playedPlacementId,
+                bestPlacementId,
+            });
+        }
+    }
+
+    private async addPlacement(placement: ScoredWordPlacement): Promise<number> {
+        const insertedValue = await this.placementTable
+            .insert({
+                tilesToPlace: placement.tilesToPlace.map((tile) => this.convertTileToString(tile)).join(''),
+                isHorizontal: placement.orientation === Orientation.Horizontal,
+                score: placement.score,
+                row: placement.startPosition.row,
+                column: placement.startPosition.column,
+            })
+            .returning('placementId');
+        return insertedValue[0].placementId;
+    }
+
+    private convertTileToString(tile: Tile): string {
+        if (tile.isBlank) {
+            if (tile.playedLetter) {
+                return tile.playedLetter.toLowerCase();
+            } else {
+                return tile.letter.toLowerCase();
+            }
+        } else {
+            return tile.letter;
+        }
     }
 
     private convertBoardToString(board: Board): string {
@@ -25,29 +100,23 @@ export class AnalysisPersistenceService {
             for (const square of row) {
                 if (!square.tile) {
                     outputString += ' ';
-                } else if (square.tile.isBlank) {
-                    if (square.tile.playedLetter) {
-                        outputString += square.tile.playedLetter.toLowerCase();
-                    } else {
-                        outputString += square.tile.letter.toLowerCase();
-                    }
                 } else {
-                    outputString += square.tile.letter;
+                    outputString += this.convertTileToString(square.tile);
                 }
             }
         }
         return outputString;
     }
 
-    private convertStringToSquares(boardString: string) {
-        this.boardService.initializeBoardSquares(boardString)
+    // private convertStringToSquares(boardString: string) {
+    //     this.boardService.initializeBoardSquares(boardString);
 
-        // for (let i = 0; i < 15; i++) {
-        //     for (let j = 0; j < 15; j++) {
-        //         bo
-        //     }
-        // }
-    }
+    //     // for (let i = 0; i < 15; i++) {
+    //     //     for (let j = 0; j < 15; j++) {
+    //     //         bo
+    //     //     }
+    //     // }
+    // }
 
     // const boardFromLetterValues = (letterValues: LetterValues) => {
     //     const grid: Square[][] = [];
@@ -71,6 +140,14 @@ export class AnalysisPersistenceService {
     //     return new Board(grid);
     // };
     private get analysisTable() {
-        return this.databaseService.knex<AnalysisPersistenceService>(ANALYSIS_TABLE);
+        return this.databaseService.knex<AnalysisData>(ANALYSIS_TABLE);
+    }
+
+    private get criticalMomentTable() {
+        return this.databaseService.knex<CriticalMomentData>(CRITICAL_MOMENTS_TABLE);
+    }
+
+    private get placementTable() {
+        return this.databaseService.knex<PlacementData>(PLACEMENT_TABLE);
     }
 }

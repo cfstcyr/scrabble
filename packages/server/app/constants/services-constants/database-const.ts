@@ -11,6 +11,8 @@ export const USER_CHANNEL_TABLE = 'UserChannel';
 export const CHAT_HISTORY_TABLE = 'ChatHistory';
 export const SERVER_ACTION_TABLE = 'UserAction';
 export const ANALYSIS_TABLE = 'Analysis';
+export const CRITICAL_MOMENTS_TABLE = 'CriticalMoment';
+export const PLACEMENT_TABLE = 'Placement';
 
 // Data
 export const DEFAULT_HIGH_SCORES_RELATIVE_PATH = '../../../assets/default-high-scores.json';

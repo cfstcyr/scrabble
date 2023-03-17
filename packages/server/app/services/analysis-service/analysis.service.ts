@@ -8,7 +8,7 @@ import { Service } from 'typedi';
 import WordFindingService from '@app/services/word-finding-service/word-finding.service';
 import { ActionPass, ActionPlace } from '@app/classes/actions';
 import { ActionTurnEndingType } from '@app/classes/communication/action-data';
-import { AnalysisPersistenceService } from '../analysis-persistence-service/analysis-persistence.service';
+import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
 
 const POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD = 25;
 @Service()
@@ -25,9 +25,9 @@ export class AnalysisService {
         //
     }
 
-    analyseGame(game: Game) {
+    addAnalysis(game: Game) {
         // eslint-disable-next-line dot-notation
-        const completedRounds: CompletedRound[] = game.roundManager['completedRounds'];
+        const completedRounds: CompletedRound[] = game.roundManager.completedRounds;
 
         for (const player of game.getPlayerArray()) {
             if (player instanceof AbstractVirtualPlayer) continue;
@@ -39,7 +39,7 @@ export class AnalysisService {
                     if (criticalMoment) analysis.criticalMoments.push(criticalMoment);
                 }
             }
-            this.analysisPersistenceService.addAnalysis(analysis);
+            this.analysisPersistenceService.addAnalysis(game.getId(), player.idUser, analysis);
         }
     }
 
@@ -53,11 +53,11 @@ export class AnalysisService {
             if (!(bestPlacement.score > POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD)) return;
             const actionType = playedAction instanceof ActionPass ? ActionTurnEndingType.PASS : ActionTurnEndingType.EXCHANGE;
 
-            return { tiles: round.player.tiles, actionType, board: round.board, bestPlacement };
+            return { tiles: round.tiles, actionType, board: round.board, bestPlacement };
         }
         return bestPlacement.score - playedAction.scoredPoints > POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD
             ? {
-                  tiles: round.player.tiles,
+                  tiles: round.tiles,
                   actionType: ActionTurnEndingType.PLACE,
                   playedPlacement: { ...playedAction.wordPlacement, score: playedAction.scoredPoints },
                   board: round.board,
