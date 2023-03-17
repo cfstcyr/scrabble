@@ -4,6 +4,7 @@ import { ActionType } from '@app/classes/actions/action-data';
 import { BoardComponent } from '@app/components/board/board.component';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
+import { ENTER } from '@app/constants/components-constants';
 import { FontSizeChangeOperations } from '@app/constants/font-size-operations';
 import {
     DIALOG_ABANDON_BUTTON_CONFIRM,
@@ -34,7 +35,6 @@ import {
 } from '@app/constants/tile-font-size-constants';
 import { GameService } from '@app/services';
 import { ActionService } from '@app/services/action-service/action.service';
-import { FocusableComponentsService } from '@app/services/focusable-components-service/focusable-components.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
@@ -58,7 +58,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
     constructor(
         public dialog: MatDialog,
         public gameService: GameService,
-        private focusableComponentService: FocusableComponentsService,
         private readonly reconnectionService: ReconnectionService,
         public surrenderDialog: MatDialog,
         private playerLeavesService: PlayerLeavesService,
@@ -72,25 +71,16 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     @HostListener('document:keypress', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent): void {
-        this.focusableComponentService.emitKeyboard(event);
+        // this.focusableComponentService.emitKeyboard(event);
+        switch (event.key) {
+            case ENTER:
+                this.gameService.playTilesOnBoard();
+                break;
+        }
     }
     @HostListener('document:keydown.escape', ['$event'])
-    handleKeyboardEventEsc(event: KeyboardEvent): void {
-        this.focusableComponentService.emitKeyboard(event);
-    }
-    @HostListener('document:keydown.backspace', ['$event'])
-    handleKeyboardEventBackspace(event: KeyboardEvent): void {
-        this.focusableComponentService.emitKeyboard(event);
-    }
-    @HostListener('document:keydown.arrowleft', ['$event'])
-    handleKeyboardEventArrowLeft(event: KeyboardEvent): void {
-        event.preventDefault();
-        this.focusableComponentService.emitKeyboard(event);
-    }
-    @HostListener('document:keydown.arrowright', ['$event'])
-    handleKeyboardEventArrowRight(event: KeyboardEvent): void {
-        event.preventDefault();
-        this.focusableComponentService.emitKeyboard(event);
+    handleKeyboardEventEsc(): void {
+        this.tilePlacementService.resetTiles();
     }
 
     @HostListener('window:beforeunload')
@@ -121,10 +111,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     placeButtonClicked(): void {
-        // TODO: do
-        // const placePayload: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
-        // if (!placePayload) return;
-        // this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PLACE, placePayload));
+        this.gameService.playTilesOnBoard();
     }
 
     quitButtonClicked(): void {

@@ -8,8 +8,6 @@ export interface EventTypes {
     noActiveGame: void;
     reRender: void;
     newMessage: Message | null;
-    // usedTiles: PlaceActionPayload | undefined;
-    resetUsedTiles: void;
     gameInitialized: InitializeGameData | undefined;
     resetServices: void;
     endOfGame: string[];

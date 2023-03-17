@@ -8,7 +8,9 @@ import { Observable, Subject } from 'rxjs';
 })
 export class GamePlayController {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    sendAction(): void {}
+    sendAction(): void {
+        alert('Send action!');
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     sendMessage(): void {}

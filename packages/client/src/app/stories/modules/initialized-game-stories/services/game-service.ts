@@ -61,7 +61,10 @@ export class InitializedGameService implements OnDestroy {
             })),
         );
 
-        board[7][7].tile = { letter: 'A', value: 1 };
+        // board[7][7].tile = { letter: 'A', value: 1 };
+        // board[7][8].tile = { letter: 'B', value: 1 };
+        // board[7][9].tile = { letter: 'C', value: 1 };
+
         board[2][2].scoreMultiplier = { multiplier: 2, multiplierEffect: MultiplierEffect.LETTER };
 
         this.boardService.initializeBoard(board);
