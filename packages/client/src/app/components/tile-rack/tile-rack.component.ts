@@ -1,24 +1,27 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActionType, PlaceActionPayload } from '@app/classes/actions/action-data';
+import { ActionType } from '@app/classes/actions/action-data';
 import Direction from '@app/classes/board-navigator/direction';
 import { FocusableComponent } from '@app/classes/focusable-component/focusable-component';
-import { Tile } from '@app/classes/tile';
+import { Tile, TilePlacement } from '@app/classes/tile';
 import { ARROW_LEFT, ARROW_RIGHT, ESCAPE } from '@app/constants/components-constants';
 import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
 import { RACK_TILE_DEFAULT_FONT_SIZE } from '@app/constants/tile-font-size-constants';
 import { TileRackSelectType } from '@app/constants/tile-rack-select-type';
 import { GameService } from '@app/services';
 import { ActionService } from '@app/services/action-service/action.service';
+import { DragAndDropService } from '@app/services/drag-and-drop-service/drag-and-drop.service';
 import { FocusableComponentsService } from '@app/services/focusable-components-service/focusable-components.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import Delay from '@app/utils/delay/delay';
+import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
+// import Delay from '@app/utils/delay/delay';
 import { preserveArrayOrder } from '@app/utils/preserve-array-order/preserve-array-order';
 import { Random } from '@app/utils/random/random';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
-const SHUFFLE_ANIMATION_DELAY = 250;
+// const SHUFFLE_ANIMATION_DELAY = 250;
 
 @Component({
     selector: 'app-tile-rack',
@@ -27,6 +30,7 @@ const SHUFFLE_ANIMATION_DELAY = 250;
 })
 export class TileRackComponent extends FocusableComponent<KeyboardEvent> implements OnInit, OnDestroy {
     tiles: RackTile[];
+    others: RackTile[];
     selectedTiles: RackTile[];
     selectionType: TileRackSelectType;
     tileFontSize: number;
@@ -39,9 +43,12 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
         private readonly focusableComponentService: FocusableComponentsService,
         private readonly gameViewEventManagerService: GameViewEventManagerService,
         private readonly actionService: ActionService,
+        private readonly tilePlacementService: TilePlacementService,
+        readonly dragAndDropService: DragAndDropService,
     ) {
         super();
         this.tiles = [];
+        this.others = [];
         this.selectedTiles = [];
         this.selectionType = TileRackSelectType.Exchange;
         this.tileFontSize = RACK_TILE_DEFAULT_FONT_SIZE;
@@ -50,6 +57,10 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     drop(event: CdkDragDrop<RackTile[]>) {
+        const tile: RackTile = event.previousContainer.data[event.previousIndex];
+
+        if (tile.isBlank || tile.letter === '*') tile.playedLetter = undefined;
+
         if (event.previousContainer === event.container) {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         }
@@ -61,7 +72,9 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
         this.gameViewEventManagerService.subscribeToGameViewEvent('tileRackUpdate', this.componentDestroyed$, (playerId: string) =>
             this.updateTileRack(playerId),
         );
-        this.gameViewEventManagerService.subscribeToGameViewEvent('usedTiles', this.componentDestroyed$, (payload) => this.handleUsedTiles(payload));
+        this.tilePlacementService.tilePlacements$
+            .pipe(takeUntil(this.componentDestroyed$))
+            .subscribe((tilePlacements) => this.handleUsedTiles(tilePlacements));
         this.gameViewEventManagerService.subscribeToGameViewEvent('resetUsedTiles', this.componentDestroyed$, () => this.resetUsedTiles());
     }
 
@@ -79,9 +92,14 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     //     return this.selectTile(TileRackSelectType.Move, tile);
     // }
 
-    unselectAll(): void {
-        this.selectedTiles.forEach((rackTile: RackTile) => (rackTile.isSelected = false));
-        this.selectedTiles = [];
+    cancelPlacement(): void {
+        this.tilePlacementService.resetTiles();
+        // this.selectedTiles.forEach((rackTile: RackTile) => (rackTile.isSelected = false));
+        // this.selectedTiles = [];
+    }
+
+    canCancelPlacement(): Observable<boolean> {
+        return this.tilePlacementService.tilePlacements$.pipe(map((placements) => placements.length > 0));
     }
 
     focus(): void {
@@ -106,7 +124,7 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
             this.actionService.createActionData(ActionType.EXCHANGE, this.actionService.createExchangeActionPayload(this.selectedTiles)),
         );
         this.selectedTiles.forEach((tile) => (tile.isUsed = true));
-        this.unselectAll();
+        this.cancelPlacement();
     }
 
     onScroll(event: WheelEvent): void {
@@ -114,21 +132,21 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     async shuffleTiles(): Promise<void> {
-        this.isShuffling = true;
-        await Delay.for(SHUFFLE_ANIMATION_DELAY);
+        // this.isShuffling = true;
+        // await Delay.for(SHUFFLE_ANIMATION_DELAY);
         this.tiles = Random.randomize(this.tiles);
-        await Delay.for(1);
-        this.isShuffling = false;
+        // await Delay.for(1);
+        // this.isShuffling = false;
     }
 
     protected onLoseFocusEvent(): void {
-        this.unselectAll();
+        this.cancelPlacement();
     }
 
     protected onFocusableEvent(event: KeyboardEvent): void {
         switch (event.key) {
             case ESCAPE:
-                this.unselectAll();
+                this.cancelPlacement();
                 break;
             case ARROW_LEFT:
                 this.moveSelectedTile(Direction.Left);
@@ -207,12 +225,21 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
         return { ...tile, isUsed: false, isSelected: rackTile && rackTile.isSelected };
     }
 
-    private handleUsedTiles(usedTilesPayload: PlaceActionPayload | undefined): void {
-        if (!usedTilesPayload) return;
+    // private handleUsedTiles(usedTilesPayload: PlaceActionPayload | undefined): void {
+    //     if (!usedTilesPayload) return;
 
-        const usedTiles = [...usedTilesPayload.tiles];
+    //     const usedTiles = [...usedTilesPayload.tiles];
+    //     for (const tile of this.tiles) {
+    //         const index = usedTiles.findIndex((usedTile) => usedTile.letter === tile.letter);
+    //         tile.isUsed = index >= 0;
+    //         if (index >= 0) usedTiles.splice(index, 1);
+    //     }
+    // }
+
+    private handleUsedTiles(tilePlacements: TilePlacement[]) {
+        const usedTiles = [...tilePlacements];
         for (const tile of this.tiles) {
-            const index = usedTiles.findIndex((usedTile) => usedTile.letter === tile.letter);
+            const index = usedTiles.findIndex((usedTile) => usedTile.tile.letter === tile.letter);
             tile.isUsed = index >= 0;
             if (index >= 0) usedTiles.splice(index, 1);
         }

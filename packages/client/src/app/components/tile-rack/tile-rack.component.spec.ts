@@ -347,7 +347,7 @@ describe('TileRackComponent', () => {
             for (let i = 0; i < 3; ++i) tiles.push({ isSelected: true } as RackTile);
 
             component.selectedTiles = tiles;
-            component.unselectAll();
+            component.cancelPlacement();
 
             tiles.forEach((tile) => expect(tile.isSelected).toBeFalse());
         });
@@ -357,7 +357,7 @@ describe('TileRackComponent', () => {
             for (let i = 0; i < 3; ++i) tiles.push({ isSelected: true } as RackTile);
 
             component.selectedTiles = tiles;
-            component.unselectAll();
+            component.cancelPlacement();
 
             expect(component.selectedTiles).toHaveSize(0);
         });

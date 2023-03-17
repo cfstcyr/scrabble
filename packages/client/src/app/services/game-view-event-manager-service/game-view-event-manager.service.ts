@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { PlaceActionPayload } from '@app/classes/actions/action-data';
 import { InitializeGameData } from '@app/classes/communication/game-config';
 import { Message } from '@app/classes/communication/message';
 import * as SERVICE_ERRORS from '@app/constants/services-errors';
@@ -25,7 +24,7 @@ export class GameViewEventManagerService {
         this.eventMap.set('noActiveGame', new Subject<void>());
         this.eventMap.set('reRender', new Subject<void>());
         this.eventMap.set('newMessage', new BehaviorSubject<Message | null>(null));
-        this.eventMap.set('usedTiles', new BehaviorSubject<PlaceActionPayload | undefined>(undefined));
+        // this.eventMap.set('usedTiles', new BehaviorSubject<PlaceActionPayload | undefined>(undefined));
         this.eventMap.set('resetUsedTiles', new Subject<void>());
         this.eventMap.set('gameInitialized', new BehaviorSubject<InitializeGameData | undefined>(undefined));
         this.eventMap.set('resetServices', new Subject<void>());

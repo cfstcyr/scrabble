@@ -1,6 +1,12 @@
+@import '../../style/animations.scss';
 @import '../../style/utils.scss';
 
 $selected-color: rgb(64, 218, 115);
+
+.full-size {
+    height: 100%;
+    width: 100%;
+}
 
 app-square {
     transform: scale(2, 2);
@@ -11,9 +17,13 @@ app-square {
     position: relative;
     width: 100%;
     height: 100%;
-    border-radius: 5px;
     transition: ease-in transform 0.05s;
     box-sizing: border-box;
+    padding: 1px;
+
+    .inner {
+        padding: 2px;
+    }
 
     &.no-tile {
         cursor: pointer;
@@ -24,14 +34,13 @@ app-square {
             transition: ease-in transform 0.1s;
         }
     }
+
     &.has-tile {
         cursor: default;
-
-        app-tile {
-            transform: scale(1.2);
-        }
     }
-    &.cursor {
+
+    &.cursor,
+    &--hovered {
         @keyframes blink-border {
             0% {
                 border: solid 4px $selected-color;
@@ -104,9 +113,17 @@ app-square {
         }
     }
 
+    &--hovered {
+        &:after {
+            content: '' !important;
+            display: none !important;
+        }
+    }
+
     .content {
         height: 100%;
         width: 100%;
+        border-radius: 5px;
 
         .multiplier {
             height: 100%;
@@ -142,5 +159,25 @@ app-square {
             align-items: center;
             justify-content: center;
         }
+    }
+}
+
+.tile-container {
+    &.cdk-drag-preview {
+        height: 42px !important;
+        width: 42px !important;
+        font-size: 1.1em;
+
+        & > * {
+            animation: wiggle 0.25s infinite;
+        }
+        app-tile {
+            scale: 2 !important;
+            animation: wiggle 0.25s infinite;
+        }
+    }
+
+    &.cdk-drag-placeholder {
+        opacity: 0;
     }
 }

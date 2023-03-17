@@ -93,12 +93,13 @@ export class ActionService implements IResetServiceData, OnDestroy {
     }
 
     private handleResetUsedTiles(): void {
-        const usedTiles: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
-        if (usedTiles) {
-            usedTiles.tiles.forEach((tile: Tile) => {
-                if (tile.isBlank) tile.playedLetter = undefined;
-            });
-        }
-        this.gameViewEventManagerService.emitGameViewEvent('usedTiles', undefined);
+        // TODO: Check pertinence
+        // const usedTiles: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
+        // if (usedTiles) {
+        //     usedTiles.tiles.forEach((tile: Tile) => {
+        //         if (tile.isBlank) tile.playedLetter = undefined;
+        //     });
+        // }
+        // this.gameViewEventManagerService.emitGameViewEvent('usedTiles', undefined);
     }
 }

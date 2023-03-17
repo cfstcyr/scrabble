@@ -1,6 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActionType, PlaceActionPayload } from '@app/classes/actions/action-data';
+import { ActionType } from '@app/classes/actions/action-data';
 import { BoardComponent } from '@app/components/board/board.component';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
@@ -38,9 +38,10 @@ import { FocusableComponentsService } from '@app/services/focusable-components-s
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
+import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Component({
     selector: 'app-game-page',
@@ -63,6 +64,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private playerLeavesService: PlayerLeavesService,
         private gameViewEventManagerService: GameViewEventManagerService,
         private actionService: ActionService,
+        private readonly tilePlacementService: TilePlacementService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
@@ -119,9 +121,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     placeButtonClicked(): void {
-        const placePayload: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
-        if (!placePayload) return;
-        this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PLACE, placePayload));
+        // TODO: do
+        // const placePayload: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
+        // if (!placePayload) return;
+        // this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PLACE, placePayload));
     }
 
     quitButtonClicked(): void {
@@ -156,8 +159,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
         return this.isLocalPlayerTurn() && !this.gameService.isGameOver && !this.actionService.hasActionBeenPlayed;
     }
 
-    canPlaceWord(): boolean {
-        return this.canPlay() && this.gameViewEventManagerService.getGameViewEventValue('usedTiles') !== undefined;
+    canPlaceWord(): Observable<boolean> {
+        return this.tilePlacementService.isPlacementValid$;
+        // return this.canPlay() && this.gameViewEventManagerService.getGameViewEventValue('usedTiles') !== undefined;
     }
 
     private openDialog(title: string, content: string, buttonsContent: string[]): void {

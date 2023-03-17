@@ -19,7 +19,7 @@ import { ACTIVE_PLAYER_NOT_FOUND } from '@app/constants/services-errors';
 import { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';
 import { GameService } from '@app/services';
 import { ActionService } from '@app/services/action-service/action.service';
-import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+// import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import CommandException from '@app/services/input-parser-service/command-exception';
 import { isNumber } from '@app/utils/isNumber/is-number';
 import { removeAccents } from '@app/utils/remove-accents/remove-accents';
@@ -33,7 +33,7 @@ export default class InputParserService {
     constructor(
         private controller: GamePlayController,
         private gameService: GameService,
-        private gameViewEventManagerService: GameViewEventManagerService,
+        // private gameViewEventManagerService: GameViewEventManagerService,
         private actionService: ActionService,
     ) {}
 
@@ -125,7 +125,7 @@ export default class InputParserService {
             location.orientation,
         );
 
-        this.gameViewEventManagerService.emitGameViewEvent('usedTiles', placeActionPayload);
+        // this.gameViewEventManagerService.emitGameViewEvent('usedTiles', placeActionPayload);
         return placeActionPayload;
     }
 
