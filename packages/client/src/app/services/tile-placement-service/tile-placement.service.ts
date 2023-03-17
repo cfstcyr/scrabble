@@ -4,7 +4,7 @@ import { Position } from '@app/classes/board-navigator/position';
 import { LetterValue, TilePlacement } from '@app/classes/tile';
 import { CANNOT_REMOVE_UNUSED_TILE } from '@app/constants/component-errors';
 import { BOARD_SIZE } from '@app/constants/game-constants';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import BoardService from '@app/services/board-service/board.service';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { comparePlacements, comparePositions } from '@app/utils/comparator/comparator';
@@ -14,15 +14,18 @@ import {
     ChooseBlankTileDialogComponent,
     ChooseBlankTileDialogParameters,
 } from '@app/components/choose-blank-tile-dialog/choose-blank-tile-dialog.component';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
 })
 export class TilePlacementService {
+    private blankTileModalOpened$: BehaviorSubject<boolean>;
     private tilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private isPlacementValidSubject$: BehaviorSubject<boolean>;
 
     constructor(private readonly boardService: BoardService, private readonly dialog: MatDialog) {
+        this.blankTileModalOpened$ = new BehaviorSubject<boolean>(false);
         this.tilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
         this.isPlacementValidSubject$ = new BehaviorSubject<boolean>(false);
     }
@@ -32,7 +35,9 @@ export class TilePlacementService {
     }
 
     get isPlacementValid$(): Observable<boolean> {
-        return this.isPlacementValidSubject$.asObservable();
+        return combineLatest([this.isPlacementValidSubject$, this.blankTileModalOpened$]).pipe(
+            map(([isPlacementValid, blankTileModalOpened]) => isPlacementValid && !blankTileModalOpened),
+        );
     }
 
     get tilePlacements(): TilePlacement[] {
@@ -40,7 +45,7 @@ export class TilePlacementService {
     }
 
     get isPlacementValid(): boolean {
-        return this.isPlacementValidSubject$.value;
+        return this.isPlacementValidSubject$.value && !this.blankTileModalOpened$.value;
     }
 
     placeTile(tilePlacement: TilePlacement): void {
@@ -117,9 +122,16 @@ export class TilePlacementService {
 
     private askFillBlankLetter(onComplete: (letter: string) => void): void {
         const parameters: ChooseBlankTileDialogParameters = {
-            onConfirm: onComplete,
+            onConfirm: (letter) => {
+                this.blankTileModalOpened$.next(false);
+                onComplete(letter);
+            },
+            onCancel: () => {
+                this.blankTileModalOpened$.next(false);
+            },
         };
 
+        this.blankTileModalOpened$.next(true);
         this.dialog.open(ChooseBlankTileDialogComponent, { data: parameters });
     }
 
