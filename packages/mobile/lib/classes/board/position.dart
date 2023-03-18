@@ -33,9 +33,9 @@ class Position extends Vec2 {
   int getComponentFromOrientation(Orientation orientation) {
     switch (orientation) {
       case Orientation.horizontal:
-        return y;
-      case Orientation.vertical:
         return x;
+      case Orientation.vertical:
+        return y;
     }
   }
 
