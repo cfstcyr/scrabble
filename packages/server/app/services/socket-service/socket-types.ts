@@ -6,6 +6,7 @@ import { RequestingUsers } from '@common/models/requesting-users';
 import { HighScoreWithPlayers } from '@common/models/high-score';
 import { PublicUser } from '@common/models/user';
 import { NoId } from '@common/types/id';
+import { Square } from '@app/classes/square';
 
 export type SocketEmitEvents =
     | 'joinRequest'
@@ -19,6 +20,8 @@ export type SocketEmitEvents =
     | 'groupsUpdate'
     | 'highScoresList'
     | 'newMessage'
+    | 'firstSquareSelected'
+    | 'firstSquareCancelled'
     | 'cleanup'
     | '_test_event';
 
@@ -33,4 +36,6 @@ export type StartGameEmitArgs = StartGameData;
 export type GroupsUpdateEmitArgs = Group[];
 export type HighScoresEmitArgs = NoId<HighScoreWithPlayers>[];
 export type NewMessageEmitArgs = Message;
+export type FirstSquareSelected = Square;
+export type FirstSquareCancelled = Square;
 export type CleanupEmitArgs = never;
