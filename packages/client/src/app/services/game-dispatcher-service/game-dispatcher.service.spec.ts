@@ -17,6 +17,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { UserService } from '@app/services/user-service/user.service';
 import SpyObj = jasmine.SpyObj;
 import { ROUTE_CREATE_WAITING } from '@app/constants/routes-constants';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
     template: '',
@@ -88,6 +89,7 @@ describe('GameDispatcherService', () => {
                     { path: 'join-waiting-room', component: TestComponent },
                 ]),
                 MatSnackBarModule,
+                MatDialogModule,
             ],
             providers: [
                 GameDispatcherController,

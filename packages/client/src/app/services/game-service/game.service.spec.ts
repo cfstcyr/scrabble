@@ -5,6 +5,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -159,6 +160,7 @@ describe('GameService', () => {
                     { path: 'other', component: TestComponent },
                 ]),
                 MatSnackBarModule,
+                MatDialogModule,
             ],
             providers: [
                 { provide: BoardService, useValue: boardServiceSpy },

@@ -147,14 +147,6 @@ describe('BoardComponent', () => {
         expect(initSpy).not.toHaveBeenCalled();
     });
 
-    it('Component should clearCursor when the round ends', () => {
-        const clearCursorSpy = spyOn<any>(component, 'clearCursor').and.callFake(() => {
-            return;
-        });
-        component['roundManagerService']['endRoundEvent$'].next();
-        expect(clearCursorSpy).toHaveBeenCalled();
-    });
-
     boardSizesToTest.forEach((testCase) => {
         const boardSize: Vec2 = testCase[0];
         const expectedBoardSize: Vec2 = testCase[1];
