@@ -51,7 +51,7 @@ class Placement {
 
   bool validatePlacement(Board board) {
     if (tiles.isEmpty) return false;
-
+    if (board.isFirstMove()) return true;
     var orientation = _getPlacementOrientation(tiles);
 
     // The method returns an orientation if all the tiles are in one line.

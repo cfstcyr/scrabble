@@ -77,6 +77,12 @@ class Board {
     }
   }
 
+  bool isFirstMove() {
+    return grid.expand((row) => row).every(
+          (Square square) => !square.getIsApplied(),
+        );
+  }
+
   _applyMultipliers() {
     // Center
     grid[7][7].multiplier = Multiplier(value: 2, type: MultiplierType.word);
