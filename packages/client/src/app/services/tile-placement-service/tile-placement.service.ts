@@ -145,8 +145,6 @@ export class TilePlacementService {
 
         if (orientation === undefined) return false;
 
-        if (this.placementIncludesMiddle(tilePlacements)) return true;
-
         tilePlacements = this.sortTilePlacements(tilePlacements, orientation);
 
         const navigator = this.boardService.navigator?.clone();
@@ -156,7 +154,7 @@ export class TilePlacementService {
         navigator.setPosition(tilePlacements[0].position);
         navigator.orientation = orientation;
         let index = 0;
-        let hasNeighbors = this.placementStartsOrEndsWithNeighbor(tilePlacements, navigator);
+        let hasNeighbors = this.placementIncludesMiddle(tilePlacements) || this.placementStartsOrEndsWithNeighbor(tilePlacements, navigator);
 
         // We iterate through the placement
         while (navigator.isWithinBounds()) {
