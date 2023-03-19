@@ -106,7 +106,7 @@ export class DragAndDropService {
 
         if (!elementFromPoint) return;
 
-        const tileRackElement = this.isSquareElement(elementFromPoint) ? elementFromPoint : elementFromPoint.closest(`.${TILE_RACK_CLASS}`);
+        const tileRackElement = this.isTileRackElement(elementFromPoint) ? elementFromPoint : elementFromPoint.closest(`.${TILE_RACK_CLASS}`);
 
         return tileRackElement ?? undefined;
     }
@@ -141,5 +141,9 @@ export class DragAndDropService {
 
     private isSquareElement(element: Element): boolean {
         return element.classList.contains(SQUARE_CLASS);
+    }
+
+    private isTileRackElement(element: Element): boolean {
+        return element.classList.contains(TILE_RACK_CLASS);
     }
 }
