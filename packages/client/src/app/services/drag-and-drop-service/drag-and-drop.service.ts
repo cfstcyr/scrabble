@@ -23,7 +23,12 @@ export class DragAndDropService {
     private currentHoveredTileRackElement?: Element;
     private currentHoveredSquare?: HoveredSquare;
 
-    constructor(@Inject(DOCUMENT) private readonly document: Document, private readonly tilePlacementService: TilePlacementService) {}
+    constructor(@Inject(DOCUMENT) private readonly document: Document, private readonly tilePlacementService: TilePlacementService) {
+        this.tilePlacementService.tilePlacements$.subscribe(() => {
+            this.removeCurrentHoveredSquare();
+            this.removeCurrentHoveredTileRackElement();
+        });
+    }
 
     onRackTileMove(event: CdkDragMove<HTMLElement>): void {
         this.onTileMove(event);
