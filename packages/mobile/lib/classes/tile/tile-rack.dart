@@ -1,4 +1,3 @@
-import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/actions/action-exchange.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile.dart';
@@ -38,7 +37,7 @@ class TileRack {
   }
 
   TileRack setTiles(List<Tile> tiles) {
-    _tiles.add(tiles);
+    _tiles.add([...tiles]);
     return this;
   }
 
@@ -86,7 +85,7 @@ class TileRack {
   shuffle() {
     var tiles = _tiles.value;
     tiles.shuffle();
-    _tiles.add(tiles);
+    _tiles.add([...tiles]);
   }
 
   void toggleExchangeMode() {
