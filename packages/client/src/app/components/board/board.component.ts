@@ -186,7 +186,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
     }
 
     private canPlace(squareView: SquareView | undefined): boolean {
-        return squareView !== undefined && !this.actionService.hasActionBeenPlayed && !squareView.square.tile;
+        return squareView !== undefined && !this.actionService.hasActionBeenPlayed && !squareView.square.tile && this.navigator.orientation !== undefined;
     }
 
     private handleBackspace(): void {
