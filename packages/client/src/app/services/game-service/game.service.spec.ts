@@ -73,7 +73,7 @@ const DEFAULT_PLAYER_4 = {
 @Component({
     template: '',
 })
-class TestComponent {}
+class TestComponent { }
 
 describe('GameService', () => {
     let service: GameService;
@@ -717,6 +717,27 @@ describe('GameService', () => {
             const result = service.getLocalPlayerId();
             expect(result).toBeUndefined();
         });
+    });
+
+    describe('firstSquare', () => {
+        it('should call handleFirstSquareSelected from gameController when selectFirstSquare', () => {
+            const gameControllerSpy = spyOn(service['gameController'], 'handleFirstSquareSelected').and.callFake(() => { });
+            const square: Square = {
+                tile: null,
+                position: { row: 0, column: 0 },
+                isCenter: false,
+                scoreMultiplier: null,
+                wasMultiplierUsed: false,
+            }
+            service.selectFirstSquare(square);
+            expect(gameControllerSpy).toHaveBeenCalled();
+        })
+
+        it('should call handleFirstSquareCancelled from gameController when cancelFirstSquareSelection', () => {
+            const gameControllerSpy = spyOn(service['gameController'], 'handleFirstSquareCancelled').and.callFake(() => { });
+            service.cancelFirstSquareSelection();
+            expect(gameControllerSpy).toHaveBeenCalled();
+        })
     });
 
     describe('getTotalNumberOfTilesLeft', () => {

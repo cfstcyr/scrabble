@@ -7,6 +7,7 @@ import { ActionData, ActionType } from '@app/classes/actions/action-data';
 import { GameUpdateData } from '@app/classes/communication';
 import { Message } from '@app/classes/communication/message';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
+import { Square } from '@app/classes/square';
 import { HTTP_ABORT_ERROR } from '@app/constants/controllers-errors';
 import { SYSTEM_ID } from '@app/constants/game-constants';
 import SocketService from '@app/services/socket-service/socket.service';
@@ -67,6 +68,29 @@ describe('GamePlayController', () => {
             socketHelper.peerSideEmit('newMessage', newMessage);
             expect(spy).toHaveBeenCalled();
         });
+
+        it('On firstSquareSelected, should push new square', () => {
+            const spy = spyOn(controller['firstSquareSelected$'], 'next').and.callFake(() => {
+                return;
+            });
+            const square: Square = {
+                tile: null,
+                position: { row: 0, column: 0 },
+                scoreMultiplier: null,
+                wasMultiplierUsed: false,
+                isCenter: false
+            };
+            socketHelper.peerSideEmit('firstSquareSelected', square);
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('On firstSquareCancelled, should push null', () => {
+            const spy = spyOn(controller['firstSquareSelected$'], 'next').and.callFake(() => {
+                return;
+            });
+            socketHelper.peerSideEmit('firstSquareCancelled');
+            expect(spy).toHaveBeenCalled();
+        });
     });
 
     describe('HTTP', () => {
@@ -109,6 +133,29 @@ describe('GamePlayController', () => {
             controller.sendError(DEFAULT_GAME_ID, newMessage);
             expect(httpPostSpy).toHaveBeenCalledWith(endpoint, newMessage);
         });
+
+        it('handleFirstSquareSelected should post square to endpoint', () => {
+            const httpPostSpy = spyOn(controller['http'], 'post').and.returnValue(of(true) as any);
+            const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/squares/select`;
+            const square: Square = {
+                tile: null,
+                position: { row: 0, column: 0 },
+                scoreMultiplier: null,
+                wasMultiplierUsed: false,
+                isCenter: false
+            };
+
+            controller.handleFirstSquareSelected(DEFAULT_GAME_ID, square);
+            expect(httpPostSpy).toHaveBeenCalledWith(endpoint, square);
+        });
+
+        it('handleFirstSquareCancelled should delete to endpoint', () => {
+            const httpDeleteSpy = spyOn(controller['http'], 'delete').and.returnValue(of(true) as any);
+            const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/squares/cancel`;
+
+            controller.handleFirstSquareCancelled(DEFAULT_GAME_ID);
+            expect(httpDeleteSpy).toHaveBeenCalledWith(endpoint);
+        })
     });
 
     it('HandleReconnection should post newPlayerId to reconnect endpoint', () => {
@@ -175,5 +222,10 @@ describe('GamePlayController', () => {
     it('observeActionDone should return actionDone$ as observable', () => {
         const result: Observable<void> = controller.observeActionDone();
         expect(result).toEqual(controller['actionDone$'].asObservable());
+    });
+
+    it('observeFirstSquareSelected should return firstSquareSelected$ as observable', () => {
+        const result: Observable<Square | null> = controller.observeFirstSquareSelected();
+        expect(result).toEqual(controller['firstSquareSelected$'].asObservable());
     });
 });

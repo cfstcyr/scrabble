@@ -173,13 +173,13 @@ describe('BoardComponent', () => {
         }
         it(
             'Initializing board of size ' +
-                boardSize.x +
-                ' : ' +
-                boardSize.y +
-                ' should create board of size ' +
-                expectedBoardSize.x +
-                ' : ' +
-                expectedBoardSize.y,
+            boardSize.x +
+            ' : ' +
+            boardSize.y +
+            ' should create board of size ' +
+            expectedBoardSize.x +
+            ' : ' +
+            expectedBoardSize.y,
             () => {
                 component.squareGrid = [];
                 component.gridSize = { x: 0, y: 0 };
@@ -351,6 +351,18 @@ describe('BoardComponent', () => {
     it('should call handlePlaceTiles on playingTiles', () => {
         const spy = spyOn<any>(component, 'handlePlaceTiles');
         component['gameViewEventManagerService'].emitGameViewEvent('usedTiles');
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call handleFirstSquareSelected on firstSquareSelected', () => {
+        const spy = spyOn<any>(component, 'handleFirstSquareSelected');
+        component['gameViewEventManagerService'].emitGameViewEvent('firstSquareSelected');
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call handleFirstSquareCancelled on firstSquareCancelled', () => {
+        const spy = spyOn<any>(component, 'handleFirstSquareCancelled');
+        component['gameViewEventManagerService'].emitGameViewEvent('firstSquareCancelled');
         expect(spy).toHaveBeenCalled();
     });
 

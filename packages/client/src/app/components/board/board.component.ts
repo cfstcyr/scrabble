@@ -65,6 +65,8 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
         this.boardService.subscribeToInitializeBoard(this.componentDestroyed$, (board: Square[][]) => this.initializeBoard(board));
         this.boardService.subscribeToBoardUpdate(this.componentDestroyed$, (squaresToUpdate: Square[]) => this.updateBoard(squaresToUpdate));
         this.gameViewEventManagerService.subscribeToGameViewEvent('usedTiles', this.componentDestroyed$, (payload) => this.handlePlaceTiles(payload));
+        this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareSelected', this.componentDestroyed$, (square) => this.handleFirstSquareSelected(square));
+        this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareCancelled', this.componentDestroyed$, () => this.handleFirstSquareCancelled());
         if (!this.isObserver) {
             this.roundManagerService.subscribeToEndRoundEvent(this.componentDestroyed$, () => this.clearCursor());
         }
@@ -104,6 +106,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
             this.navigator.setPosition(squareView.square.position);
         }
 
+        this.gameService.selectFirstSquare(squareView.square);
         this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
 
         return true;
@@ -224,6 +227,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
     private clearCursor(): void {
         this.selectedSquare = undefined;
         if (!this.actionService.hasActionBeenPlayed) this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
+        this.gameService.cancelFirstSquareSelection();
     }
 
     private initializeBoard(board: Square[][]): void {
@@ -298,7 +302,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
         const next = () => (payload.orientation === Orientation.Horizontal ? position.column++ : position.row++);
         this.notAppliedSquares = [];
 
-        for (let i = 0; i < payload.tiles.length; ) {
+        for (let i = 0; i < payload.tiles.length;) {
             if (!this.isInBounds(position)) return;
 
             const squareView = this.squareGrid[position.row][position.column];
@@ -314,6 +318,14 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
 
             next();
         }
+    }
+
+    private handleFirstSquareSelected(square: Square): void {
+        this.selectedSquare = new SquareView(square, SQUARE_SIZE);
+    }
+
+    private handleFirstSquareCancelled(): void {
+        this.selectedSquare = undefined;
     }
 
     private useTile(tile: Tile): void {

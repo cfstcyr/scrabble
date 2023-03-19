@@ -6,6 +6,7 @@ import { Message } from '@app/classes/communication/message';
 import { Player } from '@app/classes/player';
 import { PlayerContainer } from '@app/classes/player/player-container';
 import { Round } from '@app/classes/round/round';
+import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
 import { ROUTE_GAME, ROUTE_GAME_OBSERVER } from '@app/constants/routes-constants';
@@ -49,6 +50,11 @@ export default class GameService implements OnDestroy, IResetServiceData {
             .observeGameUpdate()
             .pipe(takeUntil(this.serviceDestroyed$))
             .subscribe((newData) => this.handleGameUpdate(newData));
+
+        this.gameController
+            .observeFirstSquareSelected()
+            .pipe(takeUntil(this.serviceDestroyed$))
+            .subscribe((square) => this.handleFirstSquareSelected(square));
 
         this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());
     }
@@ -111,6 +117,14 @@ export default class GameService implements OnDestroy, IResetServiceData {
         this.playerContainer = undefined;
         this.isObserver = undefined;
         this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
+    }
+
+    selectFirstSquare(square: Square): void {
+        this.gameController.handleFirstSquareSelected(this.gameId, square);
+    }
+
+    cancelFirstSquareSelection(): void {
+        this.gameController.handleFirstSquareCancelled(this.gameId);
     }
 
     private getPlayingPlayerId(): string {
@@ -194,6 +208,14 @@ export default class GameService implements OnDestroy, IResetServiceData {
         if (newMessage.senderId === SYSTEM_ERROR_ID) {
             this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
         }
+    }
+
+    private handleFirstSquareSelected(square: Square | null): void {
+        if (!square) {
+            this.gameViewEventManagerService.emitGameViewEvent('firstSquareCancelled');
+            return;
+        };
+        this.gameViewEventManagerService.emitGameViewEvent('firstSquareSelected', square);
     }
 
     private handleGameOver(winnerNames: string[]): void {
