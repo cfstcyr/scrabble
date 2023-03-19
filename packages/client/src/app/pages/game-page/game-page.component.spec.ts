@@ -15,7 +15,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActionData, ActionType, PlaceActionPayload } from '@app/classes/actions/action-data';
+import { ActionData, ActionType } from '@app/classes/actions/action-data';
 import { Player } from '@app/classes/player';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { IconComponent } from '@app/components/icon/icon.component';
@@ -248,38 +248,12 @@ describe('GamePageComponent', () => {
     });
 
     describe('placeButtonClicked', () => {
-        let getPayloadSpy: jasmine.Spy;
-        const fakeData = { fake: 'data' };
-        let createActionDataSpy: jasmine.Spy;
-        let sendAction: jasmine.Spy;
-
-        beforeEach(() => {
-            getPayloadSpy = spyOn(component['gameViewEventManagerService'], 'getGameViewEventValue');
-            spyOn(component['gameService'], 'getGameId').and.returnValue('gameId');
-            spyOn(component['gameService'], 'getLocalPlayerId').and.returnValue('playerId');
-
-            createActionDataSpy = spyOn(component['actionService'], 'createActionData').and.returnValue(fakeData as unknown as ActionData);
-            sendAction = spyOn(component['actionService'], 'sendAction').and.callFake(() => {
-                return;
-            });
-        });
-
         it('should sendAction through ActionService', () => {
-            const payload: PlaceActionPayload = {} as PlaceActionPayload;
-            getPayloadSpy.and.returnValue(payload);
+            const spy = spyOn(gameServiceMock, 'playTilesOnBoard');
 
             component.placeButtonClicked();
 
-            expect(createActionDataSpy).toHaveBeenCalledWith(ActionType.PLACE, payload);
-            expect(sendAction).toHaveBeenCalledOnceWith('gameId', fakeData);
-        });
-
-        it('should not call sendPlaceAction if no payload', () => {
-            getPayloadSpy.and.returnValue(undefined);
-
-            component.placeButtonClicked();
-
-            expect(sendAction).not.toHaveBeenCalled();
+            expect(spy).toHaveBeenCalled();
         });
     });
 
@@ -359,33 +333,6 @@ describe('GamePageComponent', () => {
             component['gameService'].isGameOver = false;
             component['actionService'].hasActionBeenPlayed = false;
             expect(component.canPlay()).toBeTrue();
-        });
-    });
-
-    describe('canPlaceWord', () => {
-        let getPayloadSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            getPayloadSpy = spyOn(component['gameViewEventManagerService'], 'getGameViewEventValue');
-        });
-
-        it('should not be able to place word if play conditions are not met', () => {
-            spyOn(component, 'canPlay').and.returnValue(false);
-            expect(component.canPlaceWord()).toBeFalse();
-        });
-
-        it('should not be able to place word if there are no tiles played', () => {
-            spyOn(component, 'canPlay').and.returnValue(true);
-            getPayloadSpy.and.returnValue(undefined);
-            expect(component.canPlaceWord()).toBeFalse();
-        });
-
-        it('should be able to play if the conditions are met', () => {
-            spyOn(component, 'canPlay').and.returnValue(true);
-            const payload: PlaceActionPayload = {} as PlaceActionPayload;
-            getPayloadSpy.and.returnValue(payload);
-
-            expect(component.canPlaceWord()).toBeTrue();
         });
     });
 

@@ -184,28 +184,6 @@ describe('TileRackComponent', () => {
         expect(component.tiles[0]).toBeTruthy();
     });
 
-    describe('unselectAll', () => {
-        it('should set tile.selected to false for all tiles', () => {
-            const tiles: RackTile[] = [];
-            for (let i = 0; i < 3; ++i) tiles.push({ isSelected: true } as RackTile);
-
-            component.selectedTiles = tiles;
-            component.cancelPlacement();
-
-            tiles.forEach((tile) => expect(tile.isSelected).toBeFalse());
-        });
-
-        it('should remove all tiles from selectedTiles', () => {
-            const tiles: RackTile[] = [];
-            for (let i = 0; i < 3; ++i) tiles.push({ isSelected: true } as RackTile);
-
-            component.selectedTiles = tiles;
-            component.cancelPlacement();
-
-            expect(component.selectedTiles).toHaveSize(0);
-        });
-    });
-
     describe('focus', () => {
         it('should call setActiveKeyboardComponent', () => {
             const spy = spyOn(component['focusableComponentService'], 'setActiveKeyboardComponent');

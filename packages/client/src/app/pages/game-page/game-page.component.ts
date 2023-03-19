@@ -148,7 +148,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     canPlaceWord(): Observable<boolean> {
         return this.tilePlacementService.isPlacementValid$;
-        // return this.canPlay() && this.gameViewEventManagerService.getGameViewEventValue('usedTiles') !== undefined;
     }
 
     private openDialog(title: string, content: string, buttonsContent: string[]): void {
