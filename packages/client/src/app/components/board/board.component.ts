@@ -322,6 +322,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
 
     private handleFirstSquareSelected(square: Square): void {
         this.selectedSquare = new SquareView(square, SQUARE_SIZE);
+        this.navigator.orientation = undefined;
     }
 
     private handleFirstSquareCancelled(): void {
@@ -338,7 +339,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
             });
         } else {
             this.gameViewEventManagerService.emitGameViewEvent('usedTiles', {
-                orientation: this.navigator.orientation,
+                orientation: this.navigator.orientation ? this.navigator.orientation : Orientation.Horizontal,
                 startPosition: { row: this.navigator.row, column: this.navigator.column },
                 tiles: [tile],
             });

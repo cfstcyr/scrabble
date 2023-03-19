@@ -360,6 +360,11 @@ describe('BoardComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('should set navigator orientation to undefined on firstSquareSelected', () => {
+        component['gameViewEventManagerService'].emitGameViewEvent('firstSquareSelected');
+        expect(component.navigator.orientation).toBeUndefined();
+    });
+
     it('should call handleFirstSquareCancelled on firstSquareCancelled', () => {
         const spy = spyOn<any>(component, 'handleFirstSquareCancelled');
         component['gameViewEventManagerService'].emitGameViewEvent('firstSquareCancelled');

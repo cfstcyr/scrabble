@@ -18,7 +18,7 @@ export class SquareComponent implements OnInit {
     @Input() squareView: SquareView = DEFAULT_SQUARE_VIEW;
     @Input() tileFontSize: number = SQUARE_TILE_DEFAULT_FONT_SIZE;
     @Input() isCursor: boolean = false;
-    @Input() cursorOrientation: Orientation = Orientation.Horizontal;
+    @Input() cursorOrientation: Orientation | undefined = Orientation.Horizontal;
     multiplierType: string | undefined = undefined;
     multiplierValue: string | undefined = undefined;
 
@@ -27,6 +27,7 @@ export class SquareComponent implements OnInit {
     }
 
     getOrientationClass(): string {
+        if (this.cursorOrientation === undefined) return '';
         return `cursor-${this.cursorOrientation === Orientation.Horizontal ? 'horizontal' : 'vertical'}`;
     }
 }

@@ -86,6 +86,11 @@ describe('SquareComponent', () => {
             component['cursorOrientation'] = Orientation.Vertical;
             expect(component.getOrientationClass()).toEqual('cursor-vertical');
         });
+
+        it('should return right message for undefined cursor orientation', () => {
+            component['cursorOrientation'] = undefined;
+            expect(component.getOrientationClass()).toEqual('');
+        });
     });
 });
 
