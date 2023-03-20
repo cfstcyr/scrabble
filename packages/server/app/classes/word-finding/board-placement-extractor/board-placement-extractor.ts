@@ -3,16 +3,23 @@ import Direction from '@app/classes/board/direction';
 import { LetterValue } from '@app/classes/tile';
 import { BoardPlacement, LetterPosition, LinePlacements, WithDistance } from '@app/classes/word-finding';
 import { INITIAL_POSITION, MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
+import { Random } from '@app/utils/random/random';
 
 const HAS_TILE_IN_PREVIOUS_POSITION = -1;
 const SHOULD_BE_FILLED = true;
 
+interface BoardPlacementConfig {
+    onlyNaturalPositions: boolean;
+}
+
 export default class BoardPlacementsExtractor {
     private navigator: BoardNavigator;
     private board: Board;
+    private onlyNaturalPositions: boolean;
 
-    constructor(board: Board) {
+    constructor(board: Board, { onlyNaturalPositions = false }: Partial<BoardPlacementConfig> = {}) {
         this.board = board;
+        this.onlyNaturalPositions = onlyNaturalPositions;
         this.navigator = new BoardNavigator(board, new Position(0, 0), Orientation.Horizontal);
     }
 
@@ -42,6 +49,15 @@ export default class BoardPlacementsExtractor {
         }
 
         return boardPlacements;
+    }
+
+    *[Symbol.iterator](): Generator<BoardPlacement> {
+        const boardPlacements = this.extractBoardPlacements();
+
+        let currentBoardPlacement: BoardPlacement | undefined;
+        while ((currentBoardPlacement = Random.popRandom(boardPlacements))) {
+            yield currentBoardPlacement;
+        }
     }
 
     private extractBoardPlacementsFromLine(navigator: BoardNavigator): BoardPlacement[] {
@@ -80,17 +96,18 @@ export default class BoardPlacementsExtractor {
         navigator = navigator.clone();
 
         for (const distance of this.moveThroughLine(navigator)) {
-            if (navigator.square.tile)
+            if (navigator.square.tile) {
                 linePlacements.letters.push({
                     letter: navigator.square.tile.letter,
                     distance,
                 });
-            else if (navigator.verifyPerpendicularNeighbors(SHOULD_BE_FILLED))
+            } else if (navigator.verifyPerpendicularNeighbors(SHOULD_BE_FILLED)) {
                 linePlacements.perpendicularLetters.push({
                     before: this.getPerpendicularLetters(navigator.clone().switchOrientation(), Direction.Backward).reverse(),
                     after: this.getPerpendicularLetters(navigator.clone().switchOrientation(), Direction.Forward),
                     distance,
                 });
+            }
         }
 
         return linePlacements;
@@ -151,5 +168,9 @@ export default class BoardPlacementsExtractor {
 
     private isBoardEmpty(): boolean {
         return this.board.grid.every((line) => line.every((square) => square.tile === null));
+    }
+
+    private shouldIncludePlacement(previousHasTile: boolean, nextHasTile: boolean): boolean {
+        return !this.onlyNaturalPositions || (!previousHasTile && !nextHasTile);
     }
 }

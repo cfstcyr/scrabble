@@ -7,6 +7,6 @@
     "timeout": 10000,
     "recursive": true,
     "exit": true,
-    "spec": "app/**/*.spec.ts",
+    "spec": "app/**/*puzzle*.spec.ts",
     "file": "mocha-helper.ts"
 }

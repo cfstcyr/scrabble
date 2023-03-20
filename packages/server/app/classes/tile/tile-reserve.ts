@@ -1,6 +1,5 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { LetterValue, Tile } from '@app/classes/tile';
-import { LETTER_DISTRIBUTION_RELATIVE_PATH } from '@app/constants/classes-constants';
 import {
     AMOUNT_MUST_BE_GREATER_THAN_1,
     NOT_ENOUGH_TILES,
@@ -8,11 +7,9 @@ import {
     TILE_RESERVE_MUST_BE_INITIALIZED,
 } from '@app/constants/classes-errors';
 import { BLANK_TILE_LETTER_VALUE, LETTER_VALUES } from '@app/constants/game-constants';
-import { promises } from 'fs';
+import { LETTER_DISTRIBUTION } from '@app/constants/letter-distributions';
 import { StatusCodes } from 'http-status-codes';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
-import { join } from 'path';
-import { LetterDistributionData, TileData } from './tile.types';
 
 export default class TileReserve {
     private tiles: Tile[];
@@ -23,16 +20,8 @@ export default class TileReserve {
         this.initialized = false;
     }
 
-    static async fetchLetterDistribution(): Promise<TileData[]> {
-        const filePath = join(__dirname, LETTER_DISTRIBUTION_RELATIVE_PATH);
-        const dataBuffer = await promises.readFile(filePath, 'utf-8');
-        const data: LetterDistributionData = JSON.parse(dataBuffer);
-        return data.tiles;
-    }
-
     async init(): Promise<void> {
-        const letterDistribution = await TileReserve.fetchLetterDistribution();
-        letterDistribution.forEach((tile) => {
+        LETTER_DISTRIBUTION.forEach((tile) => {
             for (let i = 0; i < tile.amount; ++i) {
                 this.tiles.push({ letter: tile.letter as LetterValue, value: tile.score, isBlank: tile.letter === BLANK_TILE_LETTER_VALUE });
             }
