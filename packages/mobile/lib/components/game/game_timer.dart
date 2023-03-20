@@ -56,6 +56,7 @@ class _GameTimerState extends State<GameTimer> {
     _timer?.cancel();
     startRoundSubscription.cancel();
     endGameSubscription.cancel();
+    getIt.get<EndGameService>().resetEndGame();
     super.dispose();
   }
 

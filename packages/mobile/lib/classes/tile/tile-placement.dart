@@ -111,8 +111,8 @@ class Placement {
     var xValues = tilePlacements.map((placement) => placement.position.x);
     var yValues = tilePlacements.map((placement) => placement.position.y);
 
-    if (xValues.every((x) => x == xValues.first)) return Orientation.horizontal;
-    if (yValues.every((y) => y == yValues.first)) return Orientation.vertical;
+    if (yValues.every((y) => y == yValues.first)) return Orientation.horizontal;
+    if (xValues.every((x) => x == xValues.first)) return Orientation.vertical;
 
     return null;
   }
