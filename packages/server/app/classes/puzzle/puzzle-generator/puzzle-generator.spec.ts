@@ -5,7 +5,7 @@ import { PuzzleGenerator } from './puzzle-generator';
 
 describe('PuzzleGenerator', () => {
     it('normal', () => {
-        const COUNT = 500;
+        const COUNT = 5000;
 
         let count = 0;
         let total = 0;
@@ -40,7 +40,7 @@ describe('PuzzleGenerator', () => {
 
         values = values.sort((a, b) => (a > b ? 1 : -1));
 
-        appendFileSync('./puzzle-benchmark.txt', values.join('\n'));
+        // appendFileSync('./puzzle-benchmark.txt', values.join('\n'));
 
         console.log('total', total, '\navg.', total / count, '\nmax', values[count - 1], '\nmed', values[Math.floor(count / 2)], '\ncount', count);
 
