@@ -1,7 +1,10 @@
-<app-page-header title="Mon profil"></app-page-header>
+<app-page-header title="Mon profil">
+    <app-header-btn link="/search" header-button><app-icon icon="search" styling="solid"></app-icon></app-header-btn>
+</app-page-header>
 
 <div class="page">
     <div class="page-content">
+
         <app-user-profile-info
             [avatar]="(avatar | async) ?? ''"
             [username]="(username | async) ?? ''"

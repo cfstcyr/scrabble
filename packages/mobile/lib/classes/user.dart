@@ -83,9 +83,18 @@ class PublicUser {
     List<PublicUser> users = [];
 
     for (int i = 1; i <= 4; i++) {
-      if(json['user$i'] != null) {
+      if (json['user$i'] != null) {
         users.add(PublicUser.fromJson(json['user$i']));
       }
+    }
+    return users;
+  }
+
+  static List<PublicUser> usersFromJsonList(List<dynamic> json) {
+    List<PublicUser> users = [];
+
+    for (int i = 0; i < json.length; i++) {
+      users.add(PublicUser.fromJson(json[i]));
     }
     return users;
   }

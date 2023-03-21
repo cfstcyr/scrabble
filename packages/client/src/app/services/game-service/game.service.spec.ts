@@ -227,12 +227,12 @@ describe('GameService', () => {
         });
 
         it('should do nothing if initializeGameData is undefined', async () => {
-            await service.handleInitializeGame(undefined);
+            await service.handleInitializeGame(undefined, false);
             expect(initializeGameSpy).not.toHaveBeenCalled();
         });
 
         it('should call initializeGame and emit gameInitialized if initializeGameData is defined', async () => {
-            await service.handleInitializeGame({} as InitializeGameData);
+            await service.handleInitializeGame({} as InitializeGameData, false);
 
             expect(initializeGameSpy).toHaveBeenCalled();
             expect(gameViewEventManagerSpy.emitGameViewEvent).toHaveBeenCalledWith('gameInitialized', {} as InitializeGameData);
@@ -267,33 +267,33 @@ describe('GameService', () => {
 
         it('should set gameId', async () => {
             expect(service.getGameId()).not.toBeDefined();
-            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(service.getGameId()).toEqual(defaultGameData.gameId);
         });
 
         it('should set player 1', async () => {
-            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(service['playerContainer']!.getPlayer(1)).toBeDefined();
         });
 
         it('should set player 2', async () => {
-            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(service['playerContainer']!.getPlayer(2)).toBeDefined();
         });
 
         it('should initialize roundManager', async () => {
-            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(roundManagerSpy.initialize).toHaveBeenCalled();
         });
 
         it('should set tileReserve', async () => {
             expect(service.tileReserve).not.toBeDefined();
-            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(service.tileReserve).toEqual(defaultGameData.tileReserve);
         });
 
         it('should call initializeBoard', async () => {
-            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(boardServiceSpy.initializeBoard).toHaveBeenCalledWith(defaultGameData.board);
         });
 
@@ -301,7 +301,7 @@ describe('GameService', () => {
             const router: Router = TestBed.inject(Router);
             router.navigateByUrl('other');
             tick();
-            service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(roundManagerSpy.startRound).toHaveBeenCalled();
         }));
 
@@ -309,7 +309,7 @@ describe('GameService', () => {
             const router: Router = TestBed.inject(Router);
             router.navigateByUrl('other');
             tick();
-            service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(roundManagerSpy.startRound).toHaveBeenCalled();
         }));
 
@@ -318,29 +318,18 @@ describe('GameService', () => {
             router.navigateByUrl('other');
             tick();
             const spy = spyOn(service['router'], 'navigateByUrl');
-            service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(spy).toHaveBeenCalledWith(ROUTE_GAME);
         }));
 
-        it('should call reconnectReinitialize', fakeAsync(() => {
-            const router: Router = TestBed.inject(Router);
-            router.navigateByUrl(ROUTE_GAME);
-            tick();
-            const spy = spyOn<any>(service, 'reconnectReinitialize').and.callFake(() => {
-                return;
-            });
-            service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
-            expect(spy).toHaveBeenCalled();
-        }));
-
         it('should call startRound', async () => {
-            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(roundManagerSpy.startRound).toHaveBeenCalled();
         });
 
         it('should call navigateByUrl', async () => {
             const spy = spyOn(service['router'], 'navigateByUrl');
-            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData);
+            await service['initializeGame'](DEFAULT_PLAYER_ID, defaultGameData, false);
             expect(spy).toHaveBeenCalledWith(ROUTE_GAME);
         });
     });
@@ -353,7 +342,7 @@ describe('GameService', () => {
         });
 
         it('should call playerContainer.updatePlayersData if it is defined', () => {
-            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id);
+            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id, false);
             const updatedData: PlayerData = { id: 'id', publicUser: UNKOWN_USER };
             // eslint-disable-next-line no-unused-vars
             const spy = spyOn(service['playerContainer'], 'updatePlayersData').and.callFake((...playerDatas: PlayerData[]) => {
@@ -365,7 +354,7 @@ describe('GameService', () => {
         });
 
         it('should NOT call playerContainer.updatePlayersData if playerContainer is NOT defined', () => {
-            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id);
+            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id, false);
             // eslint-disable-next-line no-unused-vars
             const spy = spyOn<any>(service['playerContainer'], 'updatePlayersData').and.callFake((...playerDatas: PlayerData[]) => {
                 return service['playerContainer']!;
@@ -379,7 +368,7 @@ describe('GameService', () => {
         });
 
         it('should call emitGameViewEvent with tileRackUpdate', () => {
-            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id);
+            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id, false);
             const updatedData: PlayerData = { id: 'id', publicUser: UNKOWN_USER };
 
             service['handleUpdatePlayerData'](updatedData);
@@ -398,66 +387,6 @@ describe('GameService', () => {
         expect(service['tileReserve'] === newTileReserve).toBeFalse();
     });
 
-    describe('reconnectReinitialize', () => {
-        let defaultGameData: StartGameData;
-
-        beforeEach(() => {
-            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id);
-            service['playerContainer']['players'].set(1, new Player(DEFAULT_PLAYER_1.id, USER1, DEFAULT_PLAYER_1.tiles));
-            service['playerContainer']['players'].set(2, new Player(DEFAULT_PLAYER_2.id, USER2, DEFAULT_PLAYER_2.tiles));
-            defaultGameData = {
-                player1: DEFAULT_PLAYER_1,
-                player2: DEFAULT_PLAYER_2,
-                player3: DEFAULT_PLAYER_3,
-                player4: DEFAULT_PLAYER_4,
-                maxRoundTime: 1,
-                gameId: 'game-id',
-                board: new Array(DEFAULT_GRID_SIZE).map((_, y) => {
-                    return new Array(DEFAULT_GRID_SIZE).map((__, x) => ({ ...DEFAULT_SQUARE, position: { row: y, column: x } }));
-                }),
-                tileReserve: [],
-                round: {
-                    playerData: DEFAULT_PLAYER_1,
-                    startTime: new Date(),
-                    limitTime: new Date(),
-                    completedTime: null,
-                },
-            };
-        });
-
-        it('should create player', () => {
-            const player1Spy = spyOn(service['playerContainer']!.getPlayer(1), 'updatePlayerData');
-            const player2Spy = spyOn(service['playerContainer']!.getPlayer(2), 'updatePlayerData');
-            const emitSpy = gameViewEventManagerSpy.emitGameViewEvent;
-            service['reconnectReinitialize'](defaultGameData);
-
-            expect(player1Spy).toHaveBeenCalled();
-            expect(player2Spy).toHaveBeenCalled();
-            expect(emitSpy).toHaveBeenCalledWith('reRender');
-            expect(emitSpy).toHaveBeenCalledWith('tileRackUpdate', DEFAULT_PLAYER_1.id);
-            expect(boardServiceSpy.updateBoard).toHaveBeenCalled();
-            expect(roundManagerSpy.continueRound).toHaveBeenCalled();
-        });
-
-        it('should update player if playerContainer is defined', () => {
-            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_ID);
-            const spy = spyOn<any>(service['playerContainer'], 'updatePlayersData');
-
-            service['reconnectReinitialize'](defaultGameData);
-
-            expect(spy).toHaveBeenCalled();
-        });
-
-        it('should not update player if playerContainer is undefined', () => {
-            service['playerContainer'] = undefined;
-            const spy = spyOn<any>(PlayerContainer.prototype, 'updatePlayersData');
-
-            service['reconnectReinitialize'](defaultGameData);
-
-            expect(spy).not.toHaveBeenCalled();
-        });
-    });
-
     describe('handleGameUpdate', () => {
         let player1: Player;
         let player2: Player;
@@ -469,7 +398,7 @@ describe('GameService', () => {
 
         beforeEach(() => {
             gameUpdateData = {};
-            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id);
+            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id, false);
             player1 = new Player(DEFAULT_PLAYER_1.id, USER1, DEFAULT_PLAYER_1.tiles);
             player2 = new Player(DEFAULT_PLAYER_2.id, USER2, DEFAULT_PLAYER_2.tiles);
             player3 = new Player(DEFAULT_PLAYER_3.id, USER3, DEFAULT_PLAYER_3.tiles);
@@ -624,7 +553,7 @@ describe('GameService', () => {
         it('should return true if is local player', () => {
             const expected = 'expected-id';
             roundManagerSpy.getActivePlayer.and.returnValue({ id: expected } as Player);
-            service['playerContainer'] = new PlayerContainer(expected);
+            service['playerContainer'] = new PlayerContainer(expected, false);
             const result = service.isLocalPlayerPlaying();
             expect(result).toBeTrue();
         });
@@ -632,7 +561,7 @@ describe('GameService', () => {
         it('should return false if is not local player', () => {
             const expected = 'expected-id';
             roundManagerSpy.getActivePlayer.and.returnValue({ id: expected } as Player);
-            service['playerContainer'] = new PlayerContainer('NOT-expected-id');
+            service['playerContainer'] = new PlayerContainer('NOT-expected-id', false);
             const result = service.isLocalPlayerPlaying();
             expect(result).toBeFalse();
         });
@@ -663,7 +592,7 @@ describe('GameService', () => {
 
     describe('getPlayerByNumber', () => {
         it('should return call playerContainer.getPlayer if it is defined', () => {
-            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id);
+            service['playerContainer'] = new PlayerContainer(DEFAULT_PLAYER_1.id, false);
             const spy = spyOn<any>(service['playerContainer'], 'getPlayer').and.callFake(() => {
                 return;
             });
@@ -707,7 +636,7 @@ describe('GameService', () => {
         });
 
         it('should return player 1 if is local', () => {
-            service['playerContainer'] = new PlayerContainer(player1.id);
+            service['playerContainer'] = new PlayerContainer(player1.id, false);
             service['playerContainer']['players'].set(1, player1);
             service['playerContainer']['players'].set(2, player2);
 
@@ -716,7 +645,7 @@ describe('GameService', () => {
         });
 
         it('should return player 2 if is local', () => {
-            service['playerContainer'] = new PlayerContainer(player2.id);
+            service['playerContainer'] = new PlayerContainer(player2.id, false);
             service['playerContainer']['players'].set(1, player1);
             service['playerContainer']['players'].set(2, player2);
 
@@ -725,7 +654,7 @@ describe('GameService', () => {
         });
 
         it('should return undefined if no player', () => {
-            service['playerContainer'] = new PlayerContainer(undefined as unknown as string);
+            service['playerContainer'] = new PlayerContainer(undefined as unknown as string, false);
             service['playerContainer']['players'].set(1, player1);
             service['playerContainer']['players'].set(2, player2);
 
@@ -740,7 +669,7 @@ describe('GameService', () => {
         });
 
         it('should return player 1 id if is local', () => {
-            service['playerContainer'] = new PlayerContainer(player1.id);
+            service['playerContainer'] = new PlayerContainer(player1.id, false);
             service['playerContainer']['players'].set(1, player1);
             service['playerContainer']['players'].set(2, player2);
 
@@ -749,7 +678,7 @@ describe('GameService', () => {
         });
 
         it('should return player 2 id if is local', () => {
-            service['playerContainer'] = new PlayerContainer(player2.id);
+            service['playerContainer'] = new PlayerContainer(player2.id, false);
             service['playerContainer']['players'].set(1, player1);
             service['playerContainer']['players'].set(2, player2);
 
@@ -758,7 +687,7 @@ describe('GameService', () => {
         });
 
         it('should return undefined if no player', () => {
-            service['playerContainer'] = new PlayerContainer(undefined as unknown as string);
+            service['playerContainer'] = new PlayerContainer(undefined as unknown as string, false);
             service['playerContainer']['players'].set(1, player1);
             service['playerContainer']['players'].set(2, player2);
 

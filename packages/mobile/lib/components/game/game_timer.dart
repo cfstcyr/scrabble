@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/timer.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/utils/round-utils.dart';
@@ -22,12 +23,25 @@ class _GameTimerState extends State<GameTimer> {
   bool _isStopped = false;
 
   late StreamSubscription startRoundSubscription;
+  late StreamSubscription endRoundSubscription;
+  late StreamSubscription endGameSubscription;
 
   @override
   void initState() {
     startRoundSubscription =
         _roundService.startRoundEvent.listen((Duration duration) {
       _startTimer(duration);
+    });
+
+    endRoundSubscription = _roundService.endRoundEvent.listen((_) {
+      if (_timer != null) _timer!.cancel();
+    });
+
+    endGameSubscription =
+        getIt.get<EndGameService>().endGameStream.listen((isOver) {
+      if (isOver) {
+        handleEndGame();
+      }
     });
 
     if (_timer == null) {
@@ -41,7 +55,15 @@ class _GameTimerState extends State<GameTimer> {
   void dispose() {
     _timer?.cancel();
     startRoundSubscription.cancel();
+    endGameSubscription.cancel();
+    getIt.get<EndGameService>().resetEndGame();
     super.dispose();
+  }
+
+  void handleEndGame() {
+    _timeLeft.add(0);
+    _timer?.cancel();
+    startRoundSubscription.cancel();
   }
 
   void _startTimer(Duration duration) {
@@ -54,6 +76,7 @@ class _GameTimerState extends State<GameTimer> {
       (Timer timer) {
         if (_timeLeft.value == 0) {
           timer.cancel();
+          _roundService.roundTimeout();
           _isStopped = true;
         } else {
           _timeLeft.add(--_timeLeft.value);
@@ -72,7 +95,7 @@ class _GameTimerState extends State<GameTimer> {
               builder: (context, snapshot) {
                 return TimerWidget(
                   duration: roundTimeToRoundDuration(
-                      snapshot.hasData ? snapshot.data! : 0),
+                      snapshot.hasData ? snapshot.data! : 60),
                   style: TextStyle(
                       fontSize: 32, fontWeight: FontWeight.w600, height: 1),
                   stopped: _isStopped,

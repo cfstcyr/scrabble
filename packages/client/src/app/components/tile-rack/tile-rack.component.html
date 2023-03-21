@@ -20,17 +20,29 @@
                 </app-tile>
             </div>
 
-            <button mat-raised-button color="primary" class="shuffle-button" (click)="shuffleTiles()"><app-icon icon="random"></app-icon></button>
+            <button *ngIf="!isObserver" mat-raised-button color="primary" class="shuffle-button"  (click)="shuffleTiles()"><app-icon icon="random"></app-icon></button>
         </div>
         <div id="rack-button-container" class="rack-card">
-            <div matTooltip="Assurez vous d'avoir des tuiles sélectionnées et que ce soit votre tour" matTooltipPosition="above" [matTooltipDisabled]="canExchangeTiles()">
+            <div *ngIf="isObserver" matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur" matTooltipPosition="above">
+                <button mat-raised-button class="btn-rack" color="primary" [disabled]="true">
+                    <app-icon icon="exchange"></app-icon> Échanger
+                </button>
+            </div>
+            <div *ngIf="!isObserver" matTooltip="Assurez vous d'avoir des tuiles sélectionnées et que ce soit votre tour" matTooltipPosition="above" [matTooltipDisabled]="canExchangeTiles()">
                 <button mat-raised-button class="btn-rack" color="primary" [disabled]="!canExchangeTiles()" (click)="exchangeTiles()">
                     <app-icon icon="exchange"></app-icon> Échanger
                 </button>
             </div>
-            <button mat-raised-button class="btn-rack" color="primary" [disabled]="(canCancelPlacement() | async) === false" (click)="cancelPlacement()">
-                <app-icon icon="undo"></app-icon> Annuler
-            </button>
+            <div *ngIf="isObserver" matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur" matTooltipPosition="above" >
+                <button mat-raised-button class="btn-rack" color="primary" [disabled]="true">
+                    <app-icon icon="undo"></app-icon> Annuler
+                </button>
+            </div>
+            <div *ngIf="!isObserver">
+                <button mat-raised-button class="btn-rack" color="primary" [disabled]="(canCancelPlacement() | async) === false" (click)="cancelPlacement()">
+                    <app-icon icon="undo"></app-icon> Annuler
+                </button>
+            </div>
         </div>
     </mat-card>
 </div>

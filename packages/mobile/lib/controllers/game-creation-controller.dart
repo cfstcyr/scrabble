@@ -3,9 +3,12 @@ import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
+import 'package:mobile/classes/opponent.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
+import 'package:mobile/constants/socket-events/group-events.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
+import 'package:mobile/view-methods/create-lobby-methods.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
 import '../classes/game/game-config.dart';
@@ -33,38 +36,24 @@ class GameCreationController {
 
   final String endpoint = GAME_ENDPOINT;
 
-  Future<bool> handleAcceptOpponent(PublicUser opponent, String gameId) async {
-    // TODO PAS LES BONS ENDPOINTS: accept est pour le bouton "démarrer la partie"
-    Response res = await http.post(
-        Uri.parse(
-            "$endpoint/$gameId/players/${SocketService.socket.id}/accept"),
-        body: jsonEncode(opponent));
-    // TODO: Remove hack
-    return (res.statusCode == 200);
+  Future<Response> handleAcceptOpponent(PublicUser user, String gameId) async {
+    Opponent opponent = Opponent(name: user.username);
+    return await http.post(Uri.parse("$endpoint/$gameId/players/accept"),
+        body: jsonEncode(opponent.toJson()));
   }
 
-  Future<bool> handleRejectOpponent(PublicUser opponent, String gameId) async {
-    Response res = await http.post(
-        Uri.parse(
-            "${endpoint}/${gameId}/players/${SocketService.socket.id}/reject"),
-        body: jsonEncode(opponent));
-    // TODO: Remove hack
-    return (res.statusCode == 200);
+  Future<Response> handleRejectOpponent(PublicUser user, String gameId) async {
+    Opponent opponent = Opponent(name: user.username);
+    return await http.post(Uri.parse("$endpoint/$gameId/players/reject"),
+        body: jsonEncode(opponent.toJson()));
   }
 
   Future<Response> handleStartGame(String gameId) async {
-    return await post(Uri.parse("$endpoint/$gameId/players/start"));
+    return await http.post(Uri.parse("$endpoint/$gameId/players/start"));
   }
 
-  // TODO
-  Future<bool> handleCancelGame(PublicUser opponent, String gameId) async {
-    // TODO PAS LES BONS ENDPOINTS: accept est pour le bouton "démarrer la partie"
-    Response res = await http.post(
-        Uri.parse(
-            "${endpoint}/${gameId}/players/${SocketService.socket.id}/accept"),
-        body: jsonEncode(opponent));
-    // TODO: Remove hack
-    return (res.statusCode == 200);
+  Future<Response> handleCancelGame(String gameId) async {
+    return await http.delete(Uri.parse("$endpoint/$gameId/players/cancel"));
   }
 
   Future<GroupCreationResponse> handleCreateGame(Group groupData) async {
@@ -83,5 +72,19 @@ class GameCreationController {
           localPlayerSocketId: SocketService.socket.id!,
           startGameData: startGameData));
     });
+    socketService.on(JOIN_REQUEST, (data) {
+      handleJoinRequest(PublicUser.usersFromJsonList(data));
+    });
+    socketService.on(JOIN_REQUEST_CANCELLED, (data) {
+      handleJoinRequestCancelled(PublicUser.usersFromJsonList(data));
+    });
+  }
+
+  void handleJoinRequest(List<PublicUser> data) {
+    playerWaitingList$.add(data);
+  }
+
+  void handleJoinRequestCancelled(List<PublicUser> data) {
+    playerWaitingList$.add(data);
   }
 }

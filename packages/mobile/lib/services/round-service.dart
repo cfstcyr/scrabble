@@ -1,28 +1,25 @@
-import 'package:async/async.dart';
 import 'package:mobile/classes/actions/action-data.dart';
-import 'package:mobile/classes/game/game.dart';
-import 'package:mobile/classes/rounds/round-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../constants/erros/game-errors.dart';
 import 'game.service.dart';
 
 class RoundService {
   final ActionService _actionService = getIt.get<ActionService>();
   final Subject<Duration> _startRound$ = PublishSubject();
   final Subject _endRound$ = PublishSubject();
+  final Subject _roundTimeout$ = PublishSubject();
   BehaviorSubject<Round?> currentRound$ = BehaviorSubject.seeded(null);
-  CancelableOperation? roundTimeout;
 
   RoundService._privateConstructor();
 
   Stream<Duration> get startRoundEvent => _startRound$.stream;
   Stream<void> get endRoundEvent => _endRound$.stream;
+  Stream<void> get roundTimeoutStream => _roundTimeout$.stream;
   ValueStream<Round?> get currentRoundStream => currentRound$.stream;
+
   Round get currentRound {
     if (currentRound$.value == null) throw Exception('No current round');
 
@@ -44,13 +41,13 @@ class RoundService {
   }
 
   void startRound(Round round) {
-    if (roundTimeout != null) roundTimeout!.cancel();
-
     currentRound$.add(round);
 
     Duration roundDuration = getIt.get<GameService>().game.roundDuration;
-    roundTimeout = CancelableOperation.fromFuture(
-        Future.delayed(roundDuration, () => _onTimerExpires()));
+
+    roundTimeoutStream.listen((event) {
+      _onTimerExpires();
+    });
 
     _startRound$.add(roundDuration);
   }
@@ -59,9 +56,13 @@ class RoundService {
     _endRound$.add(null);
   }
 
+  void roundTimeout() {
+    _roundTimeout$.add(null);
+  }
+
   void _onTimerExpires() {
-    if (currentRound.socketIdOfActivePlayer == getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
-      endRound();
+    if (currentRound.socketIdOfActivePlayer ==
+        getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
       _actionService.sendAction(ActionType.pass);
     }
   }

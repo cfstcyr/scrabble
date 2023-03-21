@@ -2,7 +2,7 @@
 @import '../../style/variables.scss';
 
 mat-card {
-    height: 500px;
+    height: 600px;
     justify-content: space-between;
     display: flex;
     flex-direction: column;
@@ -103,13 +103,15 @@ mat-card {
           font-size: 14px;
           color: #333;
           width: 100px;
-  
+
+          
           app-icon {
-              margin-right: 8px;
-            }
+            margin-right: 8px;
+
+          }
         }
       }
-
+      
     .button-box {
         display: flex;
         height: 50px;

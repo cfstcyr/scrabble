@@ -1,5 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActionType } from '@app/classes/actions/action-data';
 import { FocusableComponent } from '@app/classes/focusable-component/focusable-component';
 import { Tile, TilePlacement } from '@app/classes/tile';
@@ -26,6 +26,8 @@ export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
     styleUrls: ['./tile-rack.component.scss', './tile-rack-2.component.scss'],
 })
 export class TileRackComponent extends FocusableComponent<KeyboardEvent> implements OnInit, OnDestroy {
+    @Input() isObserver: boolean;
+
     tiles: RackTile[];
     others: RackTile[];
     selectedTiles: RackTile[];
@@ -64,7 +66,9 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     ngOnInit(): void {
-        this.subscribeToFocusableEvents();
+        if (!this.isObserver) {
+            this.subscribeToFocusableEvents();
+        }
         this.updateTileRack(this.gameService.getLocalPlayerId());
         this.gameViewEventManagerService.subscribeToGameViewEvent('tileRackUpdate', this.componentDestroyed$, (playerId: string) =>
             this.updateTileRack(playerId),
@@ -75,7 +79,9 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     ngOnDestroy(): void {
-        this.unsubscribeToFocusableEvents();
+        if (!this.isObserver) {
+            this.unsubscribeToFocusableEvents();
+        }
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
     }
@@ -122,6 +128,7 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     protected onFocusableEvent(event: KeyboardEvent): void {
+        if (this.isObserver) return;
         switch (event.key) {
             case ESCAPE:
                 this.cancelPlacement();

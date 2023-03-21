@@ -25,7 +25,7 @@ describe('PlayerContainer', () => {
         return map;
     };
     beforeEach(() => {
-        playerContainer = new PlayerContainer(DEFAULT_LOCAL_PLAYER_ID);
+        playerContainer = new PlayerContainer(DEFAULT_LOCAL_PLAYER_ID, false);
     });
 
     afterEach(() => {

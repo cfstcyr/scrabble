@@ -25,6 +25,7 @@ import { SocketService } from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user-service';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group, GroupData } from '@common/models/group';
+import { Observer } from '@common/models/observer';
 import { UNKOWN_USER, User } from '@common/models/user';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import * as chai from 'chai';
@@ -61,6 +62,7 @@ const DEFAULT_GAME_CONFIG_DATA: GroupData = {
     maxRoundTime: DEFAULT_MAX_ROUND_TIME,
     user1: USER1,
     password: '',
+    numberOfObservers: 0,
 };
 
 const DEFAULT_GROUP: Group = {
@@ -71,6 +73,7 @@ const DEFAULT_GROUP: Group = {
     password: '',
     user1: USER1,
     user2: USER2,
+    numberOfObservers: 0,
 };
 
 const DEFAULT_EXCEPTION = 'exception';
@@ -650,6 +653,7 @@ describe('GameDispatcherController', () => {
             waitingRoomStub.joinedPlayer3 = DEFAULT_JOINED_PLAYER2;
             waitingRoomStub.joinedPlayer4 = DEFAULT_JOINED_PLAYER3;
             waitingRoomStub.requestingPlayers = [new Player('unkownid', UNKOWN_USER)];
+            waitingRoomStub.requestingObservers = [{ id: 'unkownid', publicUser: UNKOWN_USER }];
             chai.spy.on(waitingRoomStub, 'getConfig', () => {
                 return { player1: new Player(DEFAULT_PLAYER_ID, USER1) };
             });
@@ -710,7 +714,7 @@ describe('GameDispatcherController', () => {
             });
 
             it('Player is from joinedPlayers', async () => {
-                const isPlayerFromAcceptedPlayersSpy = chai.spy.on(controller['gameDispatcherService'], 'isPlayerFromAcceptedPlayers', () => {
+                const isPlayerFromAcceptedPlayersSpy = chai.spy.on(controller['gameDispatcherService'], 'isPlayerFromAcceptedUsers', () => {
                     return true;
                 });
                 const handleGroupsUpdateSpy = chai.spy.on(controller, 'handleGroupsUpdate', () => {
@@ -727,18 +731,18 @@ describe('GameDispatcherController', () => {
 
             it('Player is from requesting players', async () => {
                 const waitingRoom = new WaitingRoom({ player1: { id: '1' } } as unknown as GameConfig, 1);
-                const isPlayerFromAcceptedPlayersSpy = chai.spy.on(controller['gameDispatcherService'], 'isPlayerFromAcceptedPlayers', () => {
+                const isPlayerFromAcceptedPlayersSpy = chai.spy.on(controller['gameDispatcherService'], 'isPlayerFromAcceptedUsers', () => {
                     return false;
                 });
-                const removeRequestingPlayerSpy = chai.spy.on(controller['gameDispatcherService'], 'removeRequestingPlayer', () => {
-                    return true;
+                const removeRequestingSpy = chai.spy.on(waitingRoom, 'removeRequesting', () => {
+                    return {} as unknown as Observer;
                 });
                 const getMultiplayerGameFromIdSpy = chai.spy.on(controller['gameDispatcherService'], 'getMultiplayerGameFromId', () => {
                     return waitingRoom;
                 });
                 await controller['handleLeave'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
                 expect(isPlayerFromAcceptedPlayersSpy).to.have.been.called();
-                expect(removeRequestingPlayerSpy).to.have.been.called();
+                expect(removeRequestingSpy).to.have.been.called();
                 expect(getMultiplayerGameFromIdSpy).to.have.been.called();
             });
         });
@@ -811,19 +815,6 @@ describe('GameDispatcherController', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
             expect(getGameSpy.calledOnce).to.be.true;
             expect(gameIsOverSpy).to.have.been.called();
-        });
-
-        it('Disconnection should set player isConnected to false if the game is not over', () => {
-            const clock = useFakeTimers();
-
-            gameIsOverSpy = chai.spy.on(gameStub, 'areGameOverConditionsMet', () => false);
-            controller['handleDisconnection'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
-            expect(playerStub.isConnected).to.be.false;
-
-            clock.tick(TIME_TO_RECONNECT * SECONDS_TO_MILLISECONDS);
-            clock.restore();
         });
 
         it('Disconnection should force player to leave if they are not reconnected after 5 seconds', () => {

@@ -2,6 +2,7 @@ import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
 import { StartGameData } from '@app/classes/game/game-config';
 import { Group } from '@common/models/group';
+import { RequestingUsers } from '@common/models/requesting-users';
 import { HighScoreWithPlayers } from '@common/models/high-score';
 import { PublicUser } from '@common/models/user';
 import { NoId } from '@common/types/id';
@@ -21,8 +22,8 @@ export type SocketEmitEvents =
     | 'cleanup'
     | '_test_event';
 
-export type JoinRequestEmitArgs = PublicUser[];
-export type JoinRequestCancelledEmitArgs = PublicUser[];
+export type JoinRequestEmitArgs = RequestingUsers;
+export type JoinRequestCancelledEmitArgs = RequestingUsers;
 export type AcceptJoinRequestEmitArgs = Group;
 export type RejectJoinRequestEmitArgs = PublicUser;
 export type CancelledGroupEmitArgs = PublicUser;

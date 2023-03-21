@@ -70,7 +70,7 @@ class HomePage extends StatelessWidget {
                     AppButton(
                       onPressed: () {
                         authService.signOut();
-                        Navigator.pushNamed(context, MAIN_PAGE);
+                        Navigator.pushNamed(context, LOGIN_ROUTE);
                       },
                       size: AppButtonSize.large,
                       child: Text(SIGNOUT_LABEL_FR,

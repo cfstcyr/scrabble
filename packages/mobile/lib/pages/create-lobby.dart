@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:mobile/classes/group.dart';
 import '../classes/virtual-player-level.dart';
 import '../components/group/group-management.dart';
 import '../components/group/parameters.dart';
@@ -7,7 +7,16 @@ import '../components/group/player-waiting-list.dart';
 import '../components/group/waiting-room.dart';
 import '../components/scaffold-persistance.dart';
 
-class CreateLobbyPage extends StatelessWidget {
+class CreateLobbyPage extends StatefulWidget {
+  CreateLobbyPage({super.key, required this.group});
+
+  final Group group;
+
+  @override
+  State<CreateLobbyPage> createState() => _CreateLobbyPageState();
+}
+
+class _CreateLobbyPageState extends State<CreateLobbyPage> {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
@@ -67,7 +76,10 @@ class CreateLobbyPage extends StatelessWidget {
                             ),
                           ),
                         ]),
-                        Parameters(),
+                        Parameters(
+                            maxRoundTime: widget.group.maxRoundTime,
+                            virtualPlayerLevel:
+                                widget.group.virtualPlayerLevel),
                         GroupManagement(),
                       ],
                     ),

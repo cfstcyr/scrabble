@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Orientation } from '@app/classes/actions/orientation';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { Vec2 } from '@app/classes/board-navigator/vec2';
@@ -7,7 +7,6 @@ import { LetterValue, TilePlacement } from '@app/classes/tile';
 import { LETTER_VALUES, MARGIN_COLUMN_SIZE, SQUARE_SIZE, UNDEFINED_SQUARE } from '@app/constants/game-constants';
 import { SQUARE_TILE_DEFAULT_FONT_SIZE } from '@app/constants/tile-font-size-constants';
 import { BoardService } from '@app/services/';
-import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -18,23 +17,20 @@ import { takeUntil } from 'rxjs/operators';
     styleUrls: ['./board.component.scss'],
 })
 export class BoardComponent implements OnInit, OnDestroy {
-    readonly marginColumnSize: number = MARGIN_COLUMN_SIZE;
+    @Input() isObserver: boolean;
     gridSize: Vec2;
     marginLetters: LetterValue[];
     squareGrid: SquareView[][];
     tileFontSize: number;
     selectedSquare: SquareView | undefined;
     navigator: BoardNavigator;
+    marginColumnSize: number;
 
     private notAppliedSquares: SquareView[];
     private newlyPlacedTiles: SquareView[];
     private componentDestroyed$: Subject<boolean>;
 
-    constructor(
-        private boardService: BoardService,
-        private roundManagerService: RoundManagerService,
-        private tilePlacementService: TilePlacementService,
-    ) {
+    constructor(private boardService: BoardService, private tilePlacementService: TilePlacementService) {
         this.marginColumnSize = MARGIN_COLUMN_SIZE;
         this.gridSize = { x: 0, y: 0 };
         this.marginLetters = LETTER_VALUES.slice(0, this.gridSize.x);
@@ -52,7 +48,6 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.tilePlacementService.tilePlacements$
             .pipe(takeUntil(this.componentDestroyed$))
             .subscribe((tilePlacements) => this.handlePlaceTiles(tilePlacements));
-        this.roundManagerService.subscribeToEndRoundEvent(this.componentDestroyed$, () => this.tilePlacementService.resetTiles());
 
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());

@@ -207,7 +207,10 @@ export class GamePlayService {
 
         if (playersStillInGame.every((playerStillInGame) => isIdVirtualPlayer(playerStillInGame.id))) {
             game.getPlayer(playerWhoLeftId).isConnected = false;
-            await this.handleGameOver(game, {});
+            const endOfGameData: GameUpdateData = {};
+            await this.handleGameOver(game, endOfGameData);
+            this.activeGameService.playerLeftEvent.emit('playerLeftFeedback', gameId, endOfGameData.winners, endOfGameData);
+
             this.activeGameService.removeGame(gameId, playerWhoLeftId);
             return;
         }

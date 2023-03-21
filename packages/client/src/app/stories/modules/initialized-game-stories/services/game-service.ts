@@ -23,7 +23,7 @@ export class InitializedGameService implements OnDestroy {
         { letter: 'F', amount: 10 },
         { letter: 'G', amount: 10 },
     ];
-    playerContainer = new PlayerContainer(LOCAL_PLAYER_ID).initializePlayers([
+    playerContainer = new PlayerContainer(LOCAL_PLAYER_ID, false).initializePlayers([
         {
             id: LOCAL_PLAYER_ID,
             score: 0,

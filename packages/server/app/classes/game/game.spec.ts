@@ -104,7 +104,7 @@ describe('Game', () => {
         let game: Game;
 
         beforeEach(async () => {
-            game = await Game.createGame(DEFAULT_GAME_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG);
+            game = await Game.createGame(DEFAULT_GAME_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG, []);
         });
 
         afterEach(() => {
@@ -142,7 +142,7 @@ describe('Game', () => {
         let tileReserveStub: SinonStubbedInstance<TileReserve>;
 
         beforeEach(async () => {
-            game = await Game.createGame(DEFAULT_GAME_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG);
+            game = await Game.createGame(DEFAULT_GAME_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG, []);
             tileReserveStub = createStubInstance(TileReserve);
             game['tileReserve'] = tileReserveStub as unknown as TileReserve;
         });

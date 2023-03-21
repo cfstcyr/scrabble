@@ -123,11 +123,6 @@ describe('ChatboxMessageComponent', () => {
     });
 
     describe('addMessage', () => {
-        it('should add message', () => {
-            component.addMessage('');
-            expect(component.messages).toHaveSize(1);
-        });
-
         it('should emit sendMessage', () => {
             spyOn(component.sendMessage, 'next');
             component.addMessage('');

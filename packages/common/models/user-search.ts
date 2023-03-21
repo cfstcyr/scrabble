@@ -7,3 +7,8 @@ export type UserSearchResult = UserSearchItem & {
     gameHistory: GameHistoryForUser[];
     statistics: PublicUserStatistics;
 };
+
+export type UserSearchQueryResult = {
+    query: string;
+    results: UserSearchItem[];
+};

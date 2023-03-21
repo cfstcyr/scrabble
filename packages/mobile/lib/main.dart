@@ -11,7 +11,9 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/initializer.service.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'controllers/account-authentification-controller.dart';
 import 'environments/environment.dart';
@@ -27,71 +29,42 @@ Future<void> main() async {
   );
   Environment().initConfig(environment);
   CustomLocator().setUpLocator();
+  getIt.get<InitializerService>().initialize();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final AccountAuthenticationController authController =
-      getIt.get<AccountAuthenticationController>();
+  final InitializerService _initializerService =
+      getIt.get<InitializerService>();
 
   MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: getEntryPage(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Return a loading indicator while the future is being fetched
-          return CircularProgressIndicator();
-        } else {
-          return ChangeNotifierProvider(
-            create: (context) => MyAppState(),
-            child: MaterialApp(
-              title: 'Namer App',
-              theme: ThemeData(
-                  useMaterial3: true,
-                  scaffoldBackgroundColor: Colors.white,
-                  colorScheme: ColorScheme.fromSeed(
-                      seedColor: Color.fromRGBO(27, 94, 32, 1),
-                      background: Color.fromRGBO(243, 243, 243, 1),
-                      onBackground: Color.fromRGBO(232, 232, 232, 1),
-                      tertiary: Color.fromRGBO(216, 216, 216, 1)),
-                  cardTheme: CardTheme(
-                      color: Colors.white, surfaceTintColor: Colors.white)),
-              navigatorKey: navigatorKey,
-              initialRoute: snapshot.data,
-              routes: ROUTES,
-              onGenerateRoute: customOnGenerateRoute,
-            ),
+    return StreamBuilder<String?>(
+        stream: _initializerService.entryPageStream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.hasError) {
+            return CircularProgressIndicator();
+          }
+
+          return MaterialApp(
+            title: 'LOG3900 - 103',
+            theme: ThemeData(
+                useMaterial3: true,
+                scaffoldBackgroundColor: Colors.white,
+                colorScheme: ColorScheme.fromSeed(
+                    seedColor: Color.fromRGBO(27, 94, 32, 1),
+                    background: Color.fromRGBO(243, 243, 243, 1),
+                    onBackground: Color.fromRGBO(232, 232, 232, 1),
+                    tertiary: Color.fromRGBO(216, 216, 216, 1)),
+                cardTheme: CardTheme(
+                    color: Colors.white, surfaceTintColor: Colors.white)),
+            navigatorKey: navigatorKey,
+            initialRoute: snapshot.data,
+            routes: ROUTES,
+            onGenerateRoute: customOnGenerateRoute,
           );
-        }
-      },
-    );
-  }
-
-  Future<String>? getEntryPage() async {
-    TokenValidation tokenValidation = await authController.validateToken();
-    switch (tokenValidation) {
-      case TokenValidation.Ok:
-      case TokenValidation.AlreadyConnected:
-        {
-          return HOME_ROUTE;
-        }
-      case TokenValidation.NoToken:
-      case TokenValidation.UnknownError:
-        {
-          return MAIN_PAGE;
-        }
-    }
-  }
-}
-
-class MyAppState extends ChangeNotifier {}
-
-class MainPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return LoginPage();
+        });
   }
 }

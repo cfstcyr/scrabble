@@ -47,9 +47,9 @@ enum GameVisibility {
 }
 
 final Map<GameVisibility, String> GAME_VISIBILITY_TO_NAME = {
-  GameVisibility.public: 'Public',
-  GameVisibility.private: 'Private',
-  GameVisibility.protected: 'Protected'
+  GameVisibility.public: 'Publique',
+  GameVisibility.private: 'Privée',
+  GameVisibility.protected: 'Protégée'
 };
 
 final Map<GameVisibility, IconData> GAME_VISIBILITY_TO_ICON = {

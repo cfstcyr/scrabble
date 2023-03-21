@@ -33,11 +33,9 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
   @override
   void initState() {
     super.initState();
-    playerList$.add(widget.currentGroup.users);
 
     groupUpdateSubscription = currentGroupUpdateStream.listen((Group group) {
       widget.currentGroup = group;
-      playerList$.add(widget.currentGroup.users);
     });
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
@@ -149,7 +147,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
       onWillPop: () => _onBack(context),
     );
   }
-  
+
   Future<bool> _onBack(BuildContext context) {
     getIt.get<GroupJoinService>().handleLeaveGroup();
     Navigator.pop(context);

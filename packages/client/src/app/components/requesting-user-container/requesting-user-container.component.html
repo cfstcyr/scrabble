@@ -5,6 +5,8 @@
     <div class="name">
       {{ requestingUser.username }}
     </div>
+    <app-icon id="observer-icon" *ngIf="isObserver" icon="eye"size="lg"></app-icon>
+
     <div class="button-container">
       <button mat-flat-button id="join-button" color="primary" [disabled]="isGroupFull" (click)="accept()" class="accept-button">
         <app-icon icon="check"size="lg" ></app-icon>

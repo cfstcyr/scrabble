@@ -4,7 +4,6 @@ import { PlayerData } from '@app/classes/communication/player-data';
 import { CreateGameRequest, GameRequest, GroupsRequest } from '@app/classes/communication/request';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { UserId } from '@app/classes/user/connected-user-types';
-import { SECONDS_TO_MILLISECONDS, TIME_TO_RECONNECT } from '@app/constants/controllers-constants';
 import { GAME_IS_OVER, MAX_ROUND_TIME_REQUIRED, PLAYER_NAME_REQUIRED } from '@app/constants/controllers-errors';
 import { SYSTEM_ID } from '@app/constants/game-constants';
 import { BaseController } from '@app/controllers/base-controller';
@@ -71,11 +70,12 @@ export class GameDispatcherController extends BaseController {
             const { gameId } = req.params;
             const userId: UserId = req.body.idUser;
             const { password }: { password: string } = req.body;
+            const { isObserver }: { isObserver: boolean } = req.body;
 
             try {
                 const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
                 const publicUser = await this.userService.getUserById(userId);
-                await this.handleJoinGame(gameId, playerId, publicUser, password);
+                await this.handleJoinGame(gameId, playerId, publicUser, password, isObserver);
 
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
@@ -85,12 +85,13 @@ export class GameDispatcherController extends BaseController {
 
         router.patch('/:gameId', async (req: GameRequest, res: Response, next) => {
             const { gameId } = req.params;
+            const { isObserver }: { isObserver: boolean } = req.body;
             const userId: UserId = req.body.idUser;
 
             try {
                 const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
                 const publicUser = await this.userService.getUserById(userId);
-                await this.handleGetGroupUpdates(gameId, playerId, publicUser);
+                await this.handleGetGroupUpdates(gameId, playerId, publicUser, isObserver);
 
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
@@ -202,30 +203,35 @@ export class GameDispatcherController extends BaseController {
         for (const requestingPlayer of waitingRoom.requestingPlayers) {
             this.socketService.emitToSocket(requestingPlayer.id, 'cancelledGroup', waitingRoom.getConfig().player1.publicUser);
         }
+        for (const requestingObserver of waitingRoom.requestingObservers) {
+            this.socketService.emitToSocket(requestingObserver.id, 'cancelledGroup', waitingRoom.getConfig().player1.publicUser);
+        }
         await this.gameDispatcherService.cancelGame(gameId, playerId);
-
         this.handleGroupsUpdate();
     }
 
-    private async handleGetGroupUpdates(gameId: string, playerId: string, publicUser: PublicUser): Promise<void> {
+    private async handleGetGroupUpdates(gameId: string, playerId: string, publicUser: PublicUser, isObserver: boolean): Promise<void> {
         const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
-        waitingRoom.requestingPlayers.push(new Player(playerId, publicUser));
+        if (isObserver) waitingRoom.requestingObservers.push({ publicUser, id: playerId });
+        else waitingRoom.requestingPlayers.push(new Player(playerId, publicUser));
         this.socketService.getSocket(playerId).leave(this.gameDispatcherService.getGroupsRoom().getId());
     }
 
     private async handleLeave(gameId: string, playerId: string): Promise<void> {
         if (this.gameDispatcherService.isGameInWaitingRooms(gameId)) {
-            if (this.gameDispatcherService.isPlayerFromAcceptedPlayers(gameId, playerId)) {
+            if (this.gameDispatcherService.isPlayerFromAcceptedUsers(gameId, playerId)) {
                 this.socketService.removeFromRoom(playerId, gameId);
 
                 const group = await this.gameDispatcherService.leaveGroupRequest(gameId, playerId);
                 this.socketService.emitToRoom(gameId, 'userLeftGroup', group);
                 this.handleGroupsUpdate();
             } else {
-                const requestingPlayers = this.gameDispatcherService.removeRequestingPlayer(gameId, playerId);
+                const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
+                waitingRoom.removeRequesting(playerId);
+
                 const config = this.gameDispatcherService.getMultiplayerGameFromId(gameId).getConfig();
                 if (config.gameVisibility === GameVisibility.Private) {
-                    this.socketService.emitToSocket(config.player1.id, 'joinRequestCancelled', requestingPlayers);
+                    this.socketService.emitToSocket(config.player1.id, 'joinRequestCancelled', waitingRoom.getRequestingUsers());
                 }
             }
             return;
@@ -251,14 +257,16 @@ export class GameDispatcherController extends BaseController {
         return group;
     }
 
-    private async handleJoinGame(gameId: string, playerId: string, publicUser: PublicUser, password: string): Promise<void> {
-        const waitingRoom = await this.gameDispatcherService.requestJoinGame(gameId, playerId, publicUser, password);
+    private async handleJoinGame(
+        gameId: string,
+        playerId: string,
+        publicUser: PublicUser,
+        password: string,
+        isObserver: boolean = false,
+    ): Promise<void> {
+        const waitingRoom = await this.gameDispatcherService.requestJoinGame(gameId, playerId, publicUser, password, isObserver);
         if (waitingRoom.getConfig().gameVisibility === GameVisibility.Private) {
-            this.socketService.emitToSocket(
-                waitingRoom.getConfig().player1.id,
-                'joinRequest',
-                waitingRoom.requestingPlayers.map((player) => player.publicUser),
-            );
+            this.socketService.emitToSocket(waitingRoom.getConfig().player1.id, 'joinRequest', waitingRoom.getRequestingUsers());
         } else {
             this.socketService.addToRoom(playerId, gameId);
             this.socketService.emitToRoom(gameId, 'acceptJoinRequest', waitingRoom.convertToGroup());
@@ -290,7 +298,9 @@ export class GameDispatcherController extends BaseController {
             this.socketService.emitToSocket(requestingPlayer.id, 'rejectJoinRequest', waitingRoom.getConfig().player1.publicUser);
         }
         const gameConfig = this.gameDispatcherService.startRequest(gameId, playerId);
-        const startGameData = await this.activeGameService.beginGame(gameId, gameConfig.idChannel, gameConfig);
+
+        const startGameData = await this.activeGameService.beginGame(gameId, gameConfig.idChannel, gameConfig, waitingRoom.joinedObservers);
+
         this.socketService.emitToRoom(gameId, 'startGame', startGameData);
         this.handleGroupsUpdate();
         if (isIdVirtualPlayer(startGameData.round.playerData.id)) {
@@ -335,13 +345,7 @@ export class GameDispatcherController extends BaseController {
         const game = this.activeGameService.getGame(gameId, playerId);
 
         if (!game.areGameOverConditionsMet()) {
-            const disconnectedPlayer = game.getPlayer(playerId);
-            disconnectedPlayer.isConnected = false;
-            setTimeout(() => {
-                if (!disconnectedPlayer.isConnected) {
-                    this.handleLeave(gameId, playerId);
-                }
-            }, TIME_TO_RECONNECT * SECONDS_TO_MILLISECONDS);
+            this.handleLeave(gameId, playerId);
         }
     }
 }

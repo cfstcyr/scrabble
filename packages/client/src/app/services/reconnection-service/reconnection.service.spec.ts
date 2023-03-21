@@ -63,7 +63,7 @@ describe('ReconnectionService', () => {
         let cookieGameSpy: jasmine.Spy;
         let gameControllerSpy: jasmine.Spy;
         beforeEach(() => {
-            service['gameService']['playerContainer'] = new PlayerContainer('p1');
+            service['gameService']['playerContainer'] = new PlayerContainer('p1', false);
             service['gameService']['playerContainer']!['players'].set(1, new Player('p1', UNKOWN_USER, []));
             service['gameService']['playerContainer']!['players'].set(2, new Player('p2', USER1, []));
             localPlayerSpy = spyOn(service['gameService'], 'getLocalPlayerId').and.callThrough();
