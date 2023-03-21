@@ -5,6 +5,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { Position } from '@app/classes/board-navigator/position';
 import { TilePlacement } from '@app/classes/tile';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
+import { GameHistoryForUser } from '@common/models/game-history';
+import { PublicServerAction } from '@common/models/server-action';
+import { PublicUser } from '@common/models/user';
+import { PublicUserStatistics } from '@common/models/user-statistics';
+import { BehaviorSubject } from 'rxjs';
+import { UserService } from '@app/services/user-service/user.service';
 import { DragAndDropService } from './drag-and-drop.service';
 
 const DEFAULT_PLACEMENT: TilePlacement = {
@@ -27,10 +33,21 @@ describe('DragAndDropService', () => {
     let service: DragAndDropService;
     let tilePlacementService: TilePlacementService;
     let document: Document;
+    const userService = jasmine.createSpyObj(UserService, ['updateStatistics', 'updateGameHistory', 'updateServerActions']);
+    userService.user = new BehaviorSubject<PublicUser>({ email: '1@2', avatar: '', username: 'John Doe' });
+    userService.statistics = new BehaviorSubject<PublicUserStatistics>({
+        gamesPlayedCount: 1,
+        gamesWonCount: 1,
+        averageTimePerGame: 1,
+        averagePointsPerGame: 1,
+    });
+    userService.gameHistory = new BehaviorSubject<GameHistoryForUser[]>([]);
+    userService.serverActions = new BehaviorSubject<PublicServerAction[]>([]);
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [MatDialogModule],
+            providers: [{ provide: UserService, useValue: userService }],
         });
         service = TestBed.inject(DragAndDropService);
         tilePlacementService = TestBed.inject(TilePlacementService);

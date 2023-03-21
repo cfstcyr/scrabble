@@ -9,6 +9,12 @@ import { SquareView } from '@app/classes/square';
 import { TilePlacement } from '@app/classes/tile';
 import { BOARD_SIZE } from '@app/constants/game-constants';
 import BoardService from '@app/services/board-service/board.service';
+import { GameHistoryForUser } from '@common/models/game-history';
+import { PublicServerAction } from '@common/models/server-action';
+import { PublicUser } from '@common/models/user';
+import { PublicUserStatistics } from '@common/models/user-statistics';
+import { BehaviorSubject } from 'rxjs';
+import { UserService } from '@app/services/user-service/user.service';
 import { TilePlacementService } from './tile-placement.service';
 
 const DEFAULT_PLACEMENT: TilePlacement = {
@@ -40,9 +46,21 @@ describe('TilePlacementService', () => {
     let service: TilePlacementService;
     let boardService: BoardService;
 
+    const userService = jasmine.createSpyObj(UserService, ['updateStatistics', 'updateGameHistory', 'updateServerActions']);
+    userService.user = new BehaviorSubject<PublicUser>({ email: '1@2', avatar: '', username: 'John Doe' });
+    userService.statistics = new BehaviorSubject<PublicUserStatistics>({
+        gamesPlayedCount: 1,
+        gamesWonCount: 1,
+        averageTimePerGame: 1,
+        averagePointsPerGame: 1,
+    });
+    userService.gameHistory = new BehaviorSubject<GameHistoryForUser[]>([]);
+    userService.serverActions = new BehaviorSubject<PublicServerAction[]>([]);
+
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [MatDialogModule],
+            providers: [{ provide: UserService, userValue: userService }],
         });
         service = TestBed.inject(TilePlacementService);
         boardService = TestBed.inject(BoardService);
