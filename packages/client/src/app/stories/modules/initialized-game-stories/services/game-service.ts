@@ -6,7 +6,7 @@ import { Square } from '@app/classes/square';
 import { MultiplierEffect } from '@app/classes/square/score-multiplier';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { BoardService } from '@app/services';
-import { of, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 const LOCAL_PLAYER_ID = '1';
 
