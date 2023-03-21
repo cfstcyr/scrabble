@@ -1,4 +1,4 @@
-import { Analysis, CriticalMoment } from '@app/classes/analysis/analysis';
+import { CriticalMoment, PlayerAnalysis } from '@app/classes/analysis/analysis';
 import Game from '@app/classes/game/game';
 import { CompletedRound } from '@app/classes/round/round';
 import Range from '@app/classes/range/range';
@@ -25,21 +25,25 @@ export class AnalysisService {
         //
     }
 
-    addAnalysis(game: Game) {
-        // eslint-disable-next-line dot-notation
+    async addAnalysis(game: Game): Promise<void> {
         const completedRounds: CompletedRound[] = game.roundManager.completedRounds;
-
+        const playerAnalyses: PlayerAnalysis[] = [];
         for (const player of game.getPlayerArray()) {
             if (player instanceof AbstractVirtualPlayer) continue;
-            // TODO: make sure this works if payed dced?
-            const analysis: Analysis = { gameId: game.getId(), userId: player.idUser, criticalMoments: [] };
+            playerAnalyses.push({ player, analysis: { gameId: game.getId(), userId: player.idUser, criticalMoments: [] } });
+        }
+
+        for (const playerAnalysis of playerAnalyses) {
             for (const round of completedRounds) {
-                if (round.player === player) {
+                if (round.player === playerAnalysis.player) {
                     const criticalMoment = this.analyseRound(round, game);
-                    if (criticalMoment) analysis.criticalMoments.push(criticalMoment);
+                    if (criticalMoment) playerAnalysis.analysis.criticalMoments.push(criticalMoment);
                 }
             }
-            this.analysisPersistenceService.addAnalysis(game.getId(), player.idUser, analysis);
+            await this.analysisPersistenceService.addAnalysis(game.getId(), playerAnalysis.analysis.userId, playerAnalysis.analysis);
+        }
+        for (const playerAnalysis of playerAnalyses) {
+            await this.analysisPersistenceService.requestAnalysis(playerAnalysis.analysis.gameId, playerAnalysis.analysis.userId);
         }
     }
 

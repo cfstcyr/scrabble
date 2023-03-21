@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { UserId } from '@app/classes/user/connected-user-types';
 import { ANALYSIS_TABLE, CRITICAL_MOMENTS_TABLE, PLACEMENT_TABLE } from '@app/constants/services-constants/database-const';
 import { Service } from 'typedi';
@@ -13,29 +14,33 @@ import { Tile } from '@app/classes/tile';
 export class AnalysisPersistenceService {
     constructor(private readonly databaseService: DatabaseService) {}
 
-    // eslint-disable-next-line no-unused-vars
     async requestAnalysis(gameId: string, userId: UserId) {
-        // const databaseRows =
-        this.analysisTable
-            .select(`${CRITICAL_MOMENTS_TABLE}.*`, `${PLACEMENT_TABLE}.*`)
-            .join(CRITICAL_MOMENTS_TABLE, `${ANALYSIS_TABLE}.analysisId`, '=', `${CRITICAL_MOMENTS_TABLE}.analysisId`)
-            .join(PLACEMENT_TABLE, `${CRITICAL_MOMENTS_TABLE}.playedPlacementId`, '=', `${PLACEMENT_TABLE}.placementId`)
-            .orWhere(`${CRITICAL_MOMENTS_TABLE}.bestPlacementId`, '=', `${PLACEMENT_TABLE}.placementId`)
-            .where({
-                'analysis.gameId': gameId,
-                'analysis.userId': userId,
-            })
-            .then((rows) => {
-                console.log(rows);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-        // const analysis: Analysis = { gameId, userId, criticalMoments: [] };
+        const analysisData = await this.analysisTable
+        .select(`${CRITICAL_MOMENTS_TABLE}.*`, 
+                'bp.score as bp_score',
+                'bp.tilesToPlace as bp_tilesToPlace',
+                'bp.isHorizontal as bp_isHorizontal',
+                'bp.row as bp_row',
+                'bp.column as bp_column',
+                'pp.score as pp_score',
+                'pp.tilesToPlace as pp_tilesToPlace',
+                'pp.isHorizontal as pp_isHorizontal',
+                'pp.row as pp_row',
+                'pp.column as pp_column',
+        )
+        .join(CRITICAL_MOMENTS_TABLE, `${ANALYSIS_TABLE}.analysisId`, '=', `${CRITICAL_MOMENTS_TABLE}.analysisId`)
+        .join(PLACEMENT_TABLE + ' as bp', `${CRITICAL_MOMENTS_TABLE}.bestPlacementId`, '=', 'bp.placementId')
+        .leftJoin(PLACEMENT_TABLE + ' as pp', `${CRITICAL_MOMENTS_TABLE}.playedPlacementId`, '=', 'pp.placementId')
+        .where({
+          'Analysis.gameId': gameId,
+          'Analysis.userId': userId,
+        });
 
-        // for (const databaseRow of databaseRows) {
+        const analysis = {}
+        for (const criticalMoment of analysisData) {
 
-        // }
+        }
+      
     }
 
     async addAnalysis(gameId: string, userId: UserId, analysis: Analysis) {
@@ -52,8 +57,8 @@ export class AnalysisPersistenceService {
 
         // return this.analysisTable.select('*').where({ gameId, userId });
 
+        const insertedValue = await this.analysisTable.insert({ gameId, userId }).returning('analysisId');
 
-        await this.analysisTable.insert({ gameId, userId });
         for (const criticalMoment of analysis.criticalMoments) {
             const bestPlacementId = await this.addPlacement(criticalMoment.bestPlacement);
             let playedPlacementId;
@@ -65,6 +70,7 @@ export class AnalysisPersistenceService {
                 board: this.convertBoardToString(criticalMoment.board),
                 playedPlacementId,
                 bestPlacementId,
+                analysisId: insertedValue[0].analysisId,
             });
         }
     }
