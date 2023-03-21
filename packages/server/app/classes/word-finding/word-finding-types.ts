@@ -57,6 +57,7 @@ export enum WordFindingUseCase {
     Expert,
     Beginner,
     Hint,
+    Puzzle,
 }
 
 export interface WordPlacement {

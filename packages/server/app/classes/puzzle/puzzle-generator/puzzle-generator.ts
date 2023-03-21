@@ -45,16 +45,18 @@ export class PuzzleGenerator {
         this.wordsVerificationService = Container.get(WordsVerificationService);
 
         this.board = this.boardService.initializeBoard();
-        this.dictionary = this.getDictionary();
+        this.dictionary = this.dictionaryService.getDefaultDictionary();
         this.parameters = { minWordCount, maxWordCount, minWordSize, maxWordSize, skipPlacementDistanceCutoff };
     }
 
     generate(): Puzzle {
         this.generateBoard();
-        const { letters } = this.getBingo();
+        const { letters, word } = this.getBingo();
+
+        console.log(word);
 
         return {
-            board: this.board.grid,
+            board: this.board,
             tiles: Random.shuffle(
                 letters.map<Tile>((letter) => {
                     const letterValue = letter.toUpperCase() as LetterValue;
@@ -197,13 +199,5 @@ export class PuzzleGenerator {
             placement.letters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff) ||
             placement.perpendicularLetters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff)
         );
-    }
-
-    private getDictionary(): Dictionary {
-        const summary = this.dictionaryService.getAllDictionarySummaries().find((dictionary) => dictionary.isDefault);
-
-        if (!summary) throw new Error('Cannot find a dictionary');
-
-        return this.dictionaryService.getDictionary(summary.id);
     }
 }
