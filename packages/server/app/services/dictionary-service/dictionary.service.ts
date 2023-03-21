@@ -30,7 +30,8 @@ export default class DictionaryService {
     private activeDictionaries: Map<string, DictionaryUsage> = new Map();
 
     constructor(private readonly dictionarySavingService: DictionarySavingService) {
-        if (env.isTest) throw new Error('DictionaryService should not be used in a test environment');
+        // eslint-disable-next-line no-console
+        if (env.isTest) console.warn('DictionaryService should not be used in a test environment');
         this.initializeDictionaries();
     }
 

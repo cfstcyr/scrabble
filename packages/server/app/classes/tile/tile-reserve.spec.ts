@@ -3,6 +3,7 @@
 import { LETTER_DISTRIBUTION_RELATIVE_PATH } from '@app/constants/classes-constants';
 import { AMOUNT_MUST_BE_GREATER_THAN_1, TILE_NOT_IN_RESERVE, TILE_RESERVE_MUST_BE_INITIALIZED } from '@app/constants/classes-errors';
 import { LETTER_VALUES } from '@app/constants/game-constants';
+import { LETTER_DISTRIBUTION } from '@app/constants/letter-distributions';
 import { expect, spy } from 'chai';
 import * as mock from 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
 import { join } from 'path';
@@ -44,7 +45,7 @@ describe('TileReserve', () => {
     describe('getTilesLeftPerLetter', () => {
         it('should have a specific amount of tiles for each letters', async () => {
             const letterMap = tileReserve.getTilesLeftPerLetter();
-            const tilesData = await TileReserve['fetchLetterDistribution']();
+            const tilesData = LETTER_DISTRIBUTION;
             tilesData.forEach((tile) => {
                 expect(letterMap.get(tile.letter as LetterValue)).to.equal(tile.amount);
             });

@@ -4,13 +4,12 @@ import BoardService from '@app/services/board-service/board.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { WordsVerificationService } from '@app/services/words-verification-service/words-verification.service';
 import { Container } from 'typedi';
-import { Puzzle } from '@app/classes/puzzle';
+import { Puzzle } from '@app/classes/puzzle/puzzle';
 import { BoardPlacement, BoardPlacementsExtractor } from '@app/classes/word-finding';
 import { WordExtraction } from '@app/classes/word-extraction/word-extraction';
 import { LetterValue, Tile } from '@app/classes/tile';
 import { StringConversion } from '@app/utils/string-conversion/string-conversion';
 import { DictionarySearcherRandom } from '@app/classes/word-finding/dictionary-searcher/dictionary-searcher-random';
-import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
 import { letterDistributionMap } from '@app/constants/letter-distributions';
 import { Random } from '@app/utils/random/random';
 import { PuzzleGeneratorParameters } from './puzzle-generator-parameters';
@@ -22,6 +21,7 @@ import {
     PUZZLE_GENERATOR_NO_PLACEMENT_POSSIBLE,
     SKIP_PLACEMENT_DISTANCE_CUTOFF,
 } from '@app/constants/puzzle-constants';
+import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
 
 type WordPlacementParams = Pick<BoardPlacement, 'maxSize' | 'minSize'>;
 
@@ -39,6 +39,7 @@ export class PuzzleGenerator {
         minWordSize = MIN_WORD_SIZE,
         maxWordSize = MAX_WORD_SIZE,
         skipPlacementDistanceCutoff = SKIP_PLACEMENT_DISTANCE_CUTOFF,
+        bingoWordSize = MAX_TILES_PER_PLAYER,
     }: Partial<PuzzleGeneratorParameters> = {}) {
         this.dictionaryService = Container.get(DictionaryService);
         this.boardService = Container.get(BoardService);
@@ -46,14 +47,12 @@ export class PuzzleGenerator {
 
         this.board = this.boardService.initializeBoard();
         this.dictionary = this.dictionaryService.getDefaultDictionary();
-        this.parameters = { minWordCount, maxWordCount, minWordSize, maxWordSize, skipPlacementDistanceCutoff };
+        this.parameters = { minWordCount, maxWordCount, minWordSize, maxWordSize, skipPlacementDistanceCutoff, bingoWordSize };
     }
 
     generate(): Puzzle {
         this.generateBoard();
-        const { letters, word } = this.getBingo();
-
-        console.log(word);
+        const { letters } = this.getBingo();
 
         return {
             board: this.board,
@@ -68,7 +67,7 @@ export class PuzzleGenerator {
 
     private getBingo(): { word: string; letters: string[] } {
         for (const placement of this.getPlacementIterator()) {
-            const wordSizeForBingo = MAX_TILES_PER_PLAYER + placement.letters.length;
+            const wordSizeForBingo = this.parameters.bingoWordSize + placement.letters.length;
 
             if (this.placementIsInvalid(placement, { minSize: wordSizeForBingo, maxSize: wordSizeForBingo })) continue;
 
@@ -79,7 +78,7 @@ export class PuzzleGenerator {
             }
         }
 
-        throw new Error(PUZZLE_GENERATOR_NO_PLACEMENT_POSSIBLE);
+        throw new Error(PUZZLE_GENERATOR_NO_PLACEMENT_POSSIBLE + ': bingo');
     }
 
     private generateBoard(): void {
@@ -100,7 +99,7 @@ export class PuzzleGenerator {
                 }
             }
 
-            if (!placedWord) throw new Error(PUZZLE_GENERATOR_NO_PLACEMENT_POSSIBLE);
+            if (!placedWord) throw new Error(PUZZLE_GENERATOR_NO_PLACEMENT_POSSIBLE + ': puzzle');
         }
     }
 

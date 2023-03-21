@@ -6,8 +6,12 @@ import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
 export default class WordFindingPuzzle extends AbstractWordFinding {
     easiestWordPlacement: ScoredWordPlacement | undefined;
 
+    getRequiredTilesToPlace() {
+        return MAX_TILES_PER_PLAYER;
+    }
+
     protected handleWordPlacement(wordPlacement: ScoredWordPlacement): void {
-        if (wordPlacement.tilesToPlace.length === MAX_TILES_PER_PLAYER) {
+        if (wordPlacement.tilesToPlace.length === this.getRequiredTilesToPlace()) {
             this.wordPlacements.push(wordPlacement);
 
             if (!this.easiestWordPlacement || this.easiestWordPlacement.score > wordPlacement.score) {

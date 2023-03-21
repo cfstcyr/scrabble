@@ -1,4 +1,4 @@
-import { Puzzle, PuzzleResult } from '@app/classes/puzzle';
+import { Puzzle, PuzzleResult } from '@app/classes/puzzle/puzzle';
 import { PuzzleGenerator } from '@app/classes/puzzle/puzzle-generator/puzzle-generator';
 import { WordFindingUseCase, WordPlacement } from '@app/classes/word-finding';
 import WordFindingPuzzle from '@app/classes/word-finding/word-finding-puzzle/word-finding-puzzle';
@@ -15,7 +15,6 @@ import { HttpException } from '@app/classes/http-exception/http-exception';
 import { StatusCodes } from 'http-status-codes';
 import { StringConversion } from '@app/utils/string-conversion/string-conversion';
 import { WordsVerificationService } from '@app/services/words-verification-service/words-verification.service';
-import { SocketService } from '@app/services/socket-service/socket.service';
 
 @Service()
 export class PuzzleService {
@@ -25,7 +24,6 @@ export class PuzzleService {
         private readonly dictionaryService: DictionaryService,
         private readonly scoreCalculatorService: ScoreCalculatorService,
         private readonly wordValidatorService: WordsVerificationService,
-        private readonly socketService: SocketService,
     ) {}
 
     startPuzzle(idUser: TypeOfId<User>): Puzzle {

@@ -20,4 +20,6 @@ export interface PuzzleGeneratorParameters {
      * A value that is smaller will be faster, but will make the generation appear less random.
      */
     skipPlacementDistanceCutoff: number;
+    /** Number of tiles to place to make a bingo */
+    bingoWordSize: number;
 }
