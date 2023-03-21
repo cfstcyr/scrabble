@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { logBoard } from '@app/utils/logger/logger';
+// import { logBoard } from '@app/utils/logger/logger';
 import { appendFileSync } from 'fs';
 import { PuzzleGenerator } from './puzzle-generator';
 
@@ -15,18 +15,13 @@ describe('PuzzleGenerator', () => {
             const puzzleGenerator = new PuzzleGenerator();
             const start = Date.now();
             try {
-                const result = puzzleGenerator.generate();
+                puzzleGenerator.generate();
 
-                const end = Date.now();
-                total += end - start;
-                values.push(end - start);
-                count++;
-
-                if (end - start > 500) {
-                    console.log(end - start);
-                    logBoard(result.board);
-                    console.log(result.tiles);
-                }
+                // if (end - start > 500) {
+                //     console.log(end - start);
+                //     logBoard(result.board);
+                //     console.log(result.tiles);
+                // }
 
                 // logBoard(result.board);
                 // console.log(result.tiles);
@@ -34,6 +29,13 @@ describe('PuzzleGenerator', () => {
                 console.log(e);
                 console.log('invalid');
             }
+
+            const end = Date.now();
+            total += end - start;
+            values.push(end - start);
+            count++;
+            // console.log('====> ', end - start);
+            // if (end - start > 200) console.log('=====================================================');
         }
 
         values = values.sort((a, b) => (a > b ? 1 : -1));

@@ -109,11 +109,19 @@ export class PuzzleGenerator {
         for (const word of dictionarySearcher) {
             try {
                 this.verifyWordForPlacement(word, placement);
+                // console.log('ok', this.convertPlacementForDictionarySearch(placement, { minSize, maxSize }), dictionarySearcher.iterations);
                 return word;
             } catch (e) {
                 // nothing to do.
             }
         }
+
+        // console.log(
+        //     'no word',
+        //     this.convertPlacementForDictionarySearch(placement, { minSize, maxSize }),
+        //     placement.perpendicularLetters,
+        //     dictionarySearcher.iterations,
+        // );
 
         return;
     }
@@ -161,10 +169,12 @@ export class PuzzleGenerator {
         { maxSize = MAX_WORD_SIZE, minSize = MIN_WORD_SIZE }: Partial<WordPlacementParams> = {},
     ): boolean {
         return (
+            placement.letters.length > 2 ||
             placement.perpendicularLetters.length > 2 ||
             (placement.letters.length > 0 && placement.letters[0].distance === 0) ||
             placement.maxSize < minSize ||
-            placement.minSize > maxSize
+            placement.minSize > maxSize ||
+            (maxSize === minSize && placement.letters.some(({ distance }) => distance === minSize))
         );
     }
 
