@@ -4,7 +4,6 @@
 import { expect } from 'chai';
 import Dictionary from './dictionary';
 import { CompleteDictionaryData } from '@app/classes/communication/dictionary-data';
-import { LetterPosition } from '@app/classes/word-finding';
 
 const TEST_WORDS = ['ab', 'abc', 'abcd', 'abcde', 'ad'];
 const DICTIONARY_DATA: CompleteDictionaryData = {
