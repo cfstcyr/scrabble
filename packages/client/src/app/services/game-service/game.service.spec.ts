@@ -5,6 +5,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -17,7 +18,6 @@ import { Round } from '@app/classes/round/round';
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { INITIAL_MESSAGE } from '@app/constants/controller-constants';
-import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
 import { ROUTE_GAME } from '@app/constants/routes-constants';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
 import { BoardService, GameService } from '@app/services';
@@ -73,7 +73,7 @@ const DEFAULT_PLAYER_4 = {
 @Component({
     template: '',
 })
-class TestComponent { }
+class TestComponent {}
 
 describe('GameService', () => {
     let service: GameService;
@@ -160,6 +160,7 @@ describe('GameService', () => {
                     { path: 'other', component: TestComponent },
                 ]),
                 MatSnackBarModule,
+                MatDialogModule,
             ],
             providers: [
                 { provide: BoardService, useValue: boardServiceSpy },
@@ -537,24 +538,6 @@ describe('GameService', () => {
             service['handleNewMessage'](message);
             expect(spy).toHaveBeenCalledWith('newMessage', message);
         });
-
-        it('should call emitGameViewEvent if sender id is system-error', () => {
-            const spy = gameViewEventManagerSpy.emitGameViewEvent;
-
-            const message: Message = { senderId: SYSTEM_ERROR_ID } as Message;
-            service['handleNewMessage'](message);
-
-            expect(spy).toHaveBeenCalledWith('resetUsedTiles');
-        });
-
-        it('should not call emitGameViewEvent if sender id is not system-error', () => {
-            const spy = gameViewEventManagerSpy.emitGameViewEvent;
-
-            const message: Message = {} as Message;
-            service['handleNewMessage'](message);
-
-            expect(spy).not.toHaveBeenCalledWith('usedTiles', undefined);
-        });
     });
 
     describe('getPlayingPlayerId', () => {
@@ -721,23 +704,23 @@ describe('GameService', () => {
 
     describe('firstSquare', () => {
         it('should call handleFirstSquareSelected from gameController when selectFirstSquare', () => {
-            const gameControllerSpy = spyOn(service['gameController'], 'handleFirstSquareSelected').and.callFake(() => { });
+            const gameControllerSpy = spyOn(service['gameController'], 'handleFirstSquareSelected').and.callFake(() => {});
             const square: Square = {
                 tile: null,
                 position: { row: 0, column: 0 },
                 isCenter: false,
                 scoreMultiplier: null,
                 wasMultiplierUsed: false,
-            }
+            };
             service.selectFirstSquare(square);
             expect(gameControllerSpy).toHaveBeenCalled();
-        })
+        });
 
         it('should call handleFirstSquareCancelled from gameController when cancelFirstSquareSelection', () => {
-            const gameControllerSpy = spyOn(service['gameController'], 'handleFirstSquareCancelled').and.callFake(() => { });
+            const gameControllerSpy = spyOn(service['gameController'], 'handleFirstSquareCancelled').and.callFake(() => {});
             service.cancelFirstSquareSelection();
             expect(gameControllerSpy).toHaveBeenCalled();
-        })
+        });
     });
 
     describe('getTotalNumberOfTilesLeft', () => {

@@ -18,6 +18,8 @@ import { SquareView } from '@app/classes/square';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { SQUARE_SIZE, UNDEFINED_SQUARE, UNDEFINED_SQUARE_SIZE } from '@app/constants/game-constants';
 import { AppMaterialModule } from '@app/modules/material.module';
+import { DragAndDropService } from '@app/services/drag-and-drop-service/drag-and-drop.service';
+import { Subject } from 'rxjs';
 import { SquareComponent } from './square.component';
 
 describe('SquareComponent', () => {
@@ -100,7 +102,10 @@ export class SquareTestWrapper {
 
     createComponent(): void {
         this.squareView = new SquareView(UNDEFINED_SQUARE, UNDEFINED_SQUARE_SIZE);
-        this.squareComponent = new SquareComponent();
+        this.squareComponent = new SquareComponent(
+            jasmine.createSpyObj(DragAndDropService, ['onBoardTileMove', 'onBoardTileDrop']),
+            jasmine.createSpyObj('TilePlacementService', [], { tilePlacements$: new Subject() }),
+        );
         this.squareComponent.squareView = this.squareView;
     }
 

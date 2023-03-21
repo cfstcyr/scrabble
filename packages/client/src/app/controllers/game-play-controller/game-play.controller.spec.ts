@@ -78,7 +78,7 @@ describe('GamePlayController', () => {
                 position: { row: 0, column: 0 },
                 scoreMultiplier: null,
                 wasMultiplierUsed: false,
-                isCenter: false
+                isCenter: false,
             };
             socketHelper.peerSideEmit('firstSquareSelected', square);
             expect(spy).toHaveBeenCalled();
@@ -142,7 +142,7 @@ describe('GamePlayController', () => {
                 position: { row: 0, column: 0 },
                 scoreMultiplier: null,
                 wasMultiplierUsed: false,
-                isCenter: false
+                isCenter: false,
             };
 
             controller.handleFirstSquareSelected(DEFAULT_GAME_ID, square);
@@ -155,7 +155,7 @@ describe('GamePlayController', () => {
 
             controller.handleFirstSquareCancelled(DEFAULT_GAME_ID);
             expect(httpDeleteSpy).toHaveBeenCalledWith(endpoint);
-        })
+        });
     });
 
     it('HandleReconnection should post newPlayerId to reconnect endpoint', () => {

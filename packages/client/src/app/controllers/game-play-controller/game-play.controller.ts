@@ -55,12 +55,12 @@ export class GamePlayController {
     handleFirstSquareSelected(gameId: string, square: Square): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/squares/select`;
         this.http.post(endpoint, square).subscribe();
-    };
+    }
 
     handleFirstSquareCancelled(gameId: string): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/squares/cancel`;
         this.http.delete(endpoint).subscribe();
-    };
+    }
 
     observeGameUpdate(): Observable<GameUpdateData> {
         return this.gameUpdate$.asObservable();

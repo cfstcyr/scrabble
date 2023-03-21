@@ -17,6 +17,9 @@ import RoundManagerService from '@app/services/round-manager-service/round-manag
 import { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-service-data';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
+import { ActionService } from '@app/services/action-service/action.service';
+import { ActionType } from '@app/classes/actions/action-data';
 
 @Injectable({
     providedIn: 'root',
@@ -38,6 +41,8 @@ export default class GameService implements OnDestroy, IResetServiceData {
         private roundManager: RoundManagerService,
         private gameController: GamePlayController,
         private gameViewEventManagerService: GameViewEventManagerService,
+        private tilePlacementService: TilePlacementService,
+        private actionService: ActionService,
     ) {
         this.serviceDestroyed$ = new Subject();
         this.gameController
@@ -116,7 +121,19 @@ export default class GameService implements OnDestroy, IResetServiceData {
         this.gameId = '';
         this.playerContainer = undefined;
         this.isObserver = undefined;
-        this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
+        this.tilePlacementService.resetTiles();
+    }
+
+    playTilesOnBoard(): void {
+        if (!this.tilePlacementService.isPlacementValid) return;
+        const payload = this.tilePlacementService.createPlaceActionPayload();
+
+        if (!payload) return;
+
+        this.actionService.sendAction(
+            this.gameId,
+            this.actionService.createActionData(ActionType.PLACE, { ...payload, playerId: this.getLocalPlayerId() }),
+        );
     }
 
     selectFirstSquare(square: Square): void {
@@ -141,7 +158,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
             startGameData.player4,
         ]);
         this.tileReserve = startGameData.tileReserve;
-        this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
+        this.tilePlacementService.resetTiles();
 
         this.roundManager.initialize(localPlayerId, startGameData);
         this.boardService.initializeBoard(startGameData.board);
@@ -206,7 +223,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     private handleNewMessage(newMessage: Message): void {
         this.gameViewEventManagerService.emitGameViewEvent('newMessage', newMessage);
         if (newMessage.senderId === SYSTEM_ERROR_ID) {
-            this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
+            this.tilePlacementService.resetTiles();
         }
     }
 
@@ -214,7 +231,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
         if (!square) {
             this.gameViewEventManagerService.emitGameViewEvent('firstSquareCancelled');
             return;
-        };
+        }
         this.gameViewEventManagerService.emitGameViewEvent('firstSquareSelected', square);
     }
 

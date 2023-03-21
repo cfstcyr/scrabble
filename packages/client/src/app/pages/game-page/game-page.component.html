@@ -38,9 +38,9 @@
                         <div
                             matTooltip="Ce n'est pas votre tour de jouer ou vous n'avez pas placé de mot encore"
                             matTooltipPosition="above"
-                            [matTooltipDisabled]="canPlaceWord()"
+                            [matTooltipDisabled]="canPlaceWord() | async"
                         >
-                            <button mat-flat-button color="primary" [disabled]="!canPlaceWord()" (click)="placeButtonClicked()">
+                            <button mat-flat-button color="primary" [disabled]="(canPlaceWord() | async) === false" (click)="placeButtonClicked()">
                                 <app-icon icon="square" styling="solid"></app-icon> Placer
                             </button>
                         </div>

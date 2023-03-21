@@ -2,6 +2,7 @@
 /* eslint-disable dot-notation */
 import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Player } from '@app/classes/player';
@@ -22,7 +23,7 @@ describe('ReconnectionService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientModule, RouterTestingModule, MatSnackBarModule],
+            imports: [HttpClientModule, RouterTestingModule, MatSnackBarModule, MatDialogModule],
             providers: [{ provide: GameDispatcherController, useValue: gameDispatcherSpy }],
         });
         service = TestBed.inject(ReconnectionService);

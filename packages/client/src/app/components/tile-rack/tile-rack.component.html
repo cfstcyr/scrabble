@@ -1,10 +1,19 @@
 <div id="rack-grid" (click)="focus()">
     <mat-card>
-        <div id="rack-card-container" [class]="'selection-' + selectionType" [ngClass]="{'is-shuffling': isShuffling}" (wheel)="onScroll($event)">
+        <div 
+            id="rack-card-container"
+            [class]="'tile-rack selection-' + selectionType"
+            [ngClass]="{'is-shuffling': isShuffling}"
+            cdkDropList
+            cdkDropListOrientation="horizontal"
+            [cdkDropListData]="tiles"
+            (cdkDropListDropped)="drop($event)"
+        >
             <div class="rack-tile-container" 
                 *ngFor="let tile of tiles" [ngClass]="{ selected: tile.isSelected, hidden: tile.isUsed }"
-                (click)="selectTileToMove(tile)"
-                (contextmenu)="selectTileToExchange(tile)"
+                (cdkDragMoved)="dragAndDropService.onRackTileMove($event)"
+                (cdkDragDropped)="dragAndDropService.onRackTileDrop(tile)"
+                cdkDrag
             >
                 <app-tile [tile]="tile" [ngStyle]="{'fontSize': tileFontSize+'em'}" class="rack-tile">
                     {{ tile.letter }}
@@ -29,8 +38,8 @@
                     <app-icon icon="undo"></app-icon> Annuler
                 </button>
             </div>
-            <div *ngIf="!isObserver" matTooltip="Aucune tuile sélectionnée" matTooltipPosition="above" matTooltipDisabled="selectedTiles.length === 0">
-                <button mat-raised-button class="btn-rack" color="primary" [disabled]="selectedTiles.length === 0" (click)="unselectAll()">
+            <div *ngIf="!isObserver">
+                <button mat-raised-button class="btn-rack" color="primary" [disabled]="(canCancelPlacement() | async) === false" (click)="cancelPlacement()">
                     <app-icon icon="undo"></app-icon> Annuler
                 </button>
             </div>

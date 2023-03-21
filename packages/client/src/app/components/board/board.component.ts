@@ -1,41 +1,31 @@
-/* eslint-disable max-lines */
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ActionType, PlaceActionPayload } from '@app/classes/actions/action-data';
 import { Orientation } from '@app/classes/actions/orientation';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
-import Direction from '@app/classes/board-navigator/direction';
-import { Position } from '@app/classes/board-navigator/position';
 import { Vec2 } from '@app/classes/board-navigator/vec2';
-import { FocusableComponent } from '@app/classes/focusable-component/focusable-component';
 import { Square, SquareView } from '@app/classes/square';
-import { LetterValue, Tile } from '@app/classes/tile';
-import { CANNOT_REMOVE_UNUSED_TILE } from '@app/constants/component-errors';
-import { BACKSPACE, ENTER, ESCAPE, KEYDOWN, NOT_FOUND } from '@app/constants/components-constants';
-import { BLANK_TILE_LETTER_VALUE, LETTER_VALUES, MARGIN_COLUMN_SIZE, SQUARE_SIZE, UNDEFINED_SQUARE } from '@app/constants/game-constants';
+import { LetterValue, TilePlacement } from '@app/classes/tile';
+import { LETTER_VALUES, MARGIN_COLUMN_SIZE, SQUARE_SIZE, UNDEFINED_SQUARE } from '@app/constants/game-constants';
 import { SQUARE_TILE_DEFAULT_FONT_SIZE } from '@app/constants/tile-font-size-constants';
-import { BoardService, GameService } from '@app/services/';
-import { ActionService } from '@app/services/action-service/action.service';
-import { FocusableComponentsService } from '@app/services/focusable-components-service/focusable-components.service';
+import { BoardService } from '@app/services/';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
-import { removeAccents } from '@app/utils/remove-accents/remove-accents';
+import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-board',
     templateUrl: './board.component.html',
     styleUrls: ['./board.component.scss'],
 })
-export class BoardComponent extends FocusableComponent<KeyboardEvent> implements OnInit, OnDestroy {
+export class BoardComponent implements OnInit, OnDestroy {
     @Input() isObserver: boolean;
-
-    readonly marginColumnSize: number;
     gridSize: Vec2;
     marginLetters: LetterValue[];
     squareGrid: SquareView[][];
     tileFontSize: number;
     selectedSquare: SquareView | undefined;
     navigator: BoardNavigator;
+    marginColumnSize: number;
 
     private notAppliedSquares: SquareView[];
     private newlyPlacedTiles: SquareView[];
@@ -43,13 +33,9 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
 
     constructor(
         private boardService: BoardService,
-        private gameService: GameService,
+        private tilePlacementService: TilePlacementService,
         private gameViewEventManagerService: GameViewEventManagerService,
-        private roundManagerService: RoundManagerService,
-        private focusableComponentService: FocusableComponentsService,
-        private actionService: ActionService,
     ) {
-        super();
         this.marginColumnSize = MARGIN_COLUMN_SIZE;
         this.gridSize = { x: 0, y: 0 };
         this.marginLetters = LETTER_VALUES.slice(0, this.gridSize.x);
@@ -64,53 +50,28 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
     ngOnInit(): void {
         this.boardService.subscribeToInitializeBoard(this.componentDestroyed$, (board: Square[][]) => this.initializeBoard(board));
         this.boardService.subscribeToBoardUpdate(this.componentDestroyed$, (squaresToUpdate: Square[]) => this.updateBoard(squaresToUpdate));
-        this.gameViewEventManagerService.subscribeToGameViewEvent('usedTiles', this.componentDestroyed$, (payload) => this.handlePlaceTiles(payload));
-        this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareSelected', this.componentDestroyed$, (square) => this.handleFirstSquareSelected(square));
-        this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareCancelled', this.componentDestroyed$, () => this.handleFirstSquareCancelled());
-        if (!this.isObserver) {
-            this.roundManagerService.subscribeToEndRoundEvent(this.componentDestroyed$, () => this.clearCursor());
-        }
+        this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareSelected', this.componentDestroyed$, (square) =>
+            this.handleFirstSquareSelected(square),
+        );
+        this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareCancelled', this.componentDestroyed$, () =>
+            this.handleFirstSquareCancelled(),
+        );
+        this.tilePlacementService.tilePlacements$
+            .pipe(takeUntil(this.componentDestroyed$))
+            .subscribe((tilePlacements) => this.handlePlaceTiles(tilePlacements));
 
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());
-        if (!this.isObserver) {
-            this.subscribeToFocusableEvents();
-        }
     }
 
     ngOnDestroy(): void {
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
-        if (!this.isObserver) {
-            this.unsubscribeToFocusableEvents();
-        }
     }
 
-    onSquareClick(squareView: SquareView): boolean {
-        if (this.isObserver) return false;
+    // this.gameService.selectFirstSquare(squareView.square);
 
-        this.focusableComponentService.setActiveKeyboardComponent(this);
-
-        if (squareView.square.tile !== null) return false;
-        if (!this.gameService.isLocalPlayerPlaying()) return false;
-        if (this.actionService.hasActionBeenPlayed) {
-            this.clearCursor();
-            return false;
-        }
-
-        if (this.selectedSquare === squareView && this.notAppliedSquares.length === 0) {
-            this.navigator.switchOrientation();
-        } else {
-            this.selectedSquare = squareView;
-            this.navigator.orientation = Orientation.Horizontal;
-            this.navigator.setPosition(squareView.square.position);
-        }
-
-        this.gameService.selectFirstSquare(squareView.square);
-        this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
-
-        return true;
-    }
+    // this.gameService.cancelFirstSquareSelection();
 
     isSamePosition(square1: SquareView | undefined, square2: SquareView | undefined): boolean {
         return (
@@ -124,110 +85,6 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
     clearNewlyPlacedTiles(): void {
         this.newlyPlacedTiles.forEach((squareView) => (squareView.newlyPlaced = false));
         this.newlyPlacedTiles = [];
-    }
-
-    protected onFocusableEvent(event: KeyboardEvent): void {
-        if (this.isObserver) return;
-
-        switch (event.key) {
-            case BACKSPACE:
-                if (event.type === KEYDOWN) this.handleBackspace();
-                break;
-            case ESCAPE:
-                if (event.type === KEYDOWN) this.clearCursor();
-                break;
-            case ENTER:
-                this.handleEnter();
-                break;
-            default:
-                this.handlePlaceLetter(event.key, event.shiftKey, this.selectedSquare);
-        }
-    }
-
-    protected onLoseFocusEvent(): void {
-        this.clearCursor();
-    }
-
-    private handlePlaceLetter(letter: string, isUppercase: boolean, squareView: SquareView | undefined): void {
-        if (this.isObserver) return;
-        if (!this.canPlace(squareView)) return;
-
-        letter = removeAccents(letter.toUpperCase());
-
-        if (!(LETTER_VALUES as string[]).includes(letter)) return;
-        if (letter === BLANK_TILE_LETTER_VALUE) return;
-
-        const availableTiles = [...(this.gameService.getLocalPlayer()?.getTiles() ?? [])];
-        const usedTiles = [...(this.gameViewEventManagerService.getGameViewEventValue('usedTiles')?.tiles ?? [])];
-
-        for (const usedTile of usedTiles) {
-            const index = availableTiles.findIndex((t) => t.letter === usedTile.letter);
-            if (index >= 0) availableTiles.splice(index, 1);
-        }
-
-        let tile: Tile | undefined;
-
-        if (isUppercase) {
-            tile = availableTiles.find((t) => t.isBlank);
-            if (tile) (tile.playedLetter as string) = letter;
-        } else {
-            tile = availableTiles.find((t) => t.letter === letter);
-        }
-
-        if (!tile) return;
-
-        this.useTile(tile);
-
-        const nextNavigator = this.navigator.clone();
-        if (nextNavigator.nextEmpty(Direction.Forward, false)) {
-            this.navigator = nextNavigator;
-            this.selectedSquare = nextNavigator.currentSquareView;
-        }
-    }
-
-    private canPlace(squareView: SquareView | undefined): boolean {
-        return squareView !== undefined && !this.actionService.hasActionBeenPlayed && !squareView.square.tile && this.navigator.orientation !== undefined;
-    }
-
-    private handleBackspace(): void {
-        if (this.isObserver) return;
-        if (!this.canBackspace()) return;
-
-        let index = this.notAppliedSquares.indexOf(this.navigator.currentSquareView);
-
-        if (index === NOT_FOUND) {
-            this.selectedSquare = this.navigator.nextEmpty(Direction.Backward, true);
-            if (this.selectedSquare) index = this.notAppliedSquares.indexOf(this.selectedSquare);
-        }
-
-        if (index !== NOT_FOUND) {
-            this.notAppliedSquares.splice(index, 1);
-        }
-        if (this.selectedSquare) {
-            const selectedTile: Tile | null = this.selectedSquare.square.tile;
-            if (selectedTile) {
-                this.removeUsedTile(selectedTile);
-            }
-            this.selectedSquare.square.tile = null;
-        }
-    }
-
-    private canBackspace(): boolean {
-        return this.selectedSquare !== undefined && this.areTilesUsed() && !this.actionService.hasActionBeenPlayed;
-    }
-
-    private handleEnter(): void {
-        if (this.isObserver) return;
-        const placePayload: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
-        if (!placePayload) return;
-        this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PLACE, placePayload));
-        this.clearCursor();
-    }
-
-    private clearCursor(): void {
-        this.selectedSquare = undefined;
-        if (!this.actionService.hasActionBeenPlayed) this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
-        this.gameService.cancelFirstSquareSelection();
     }
 
     private initializeBoard(board: Square[][]): void {
@@ -248,6 +105,8 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
         }
         this.marginLetters = LETTER_VALUES.slice(0, this.gridSize.x);
         this.navigator = new BoardNavigator(this.squareGrid, { row: 0, column: 0 }, Orientation.Horizontal);
+
+        this.boardService.navigator = this.navigator;
     }
 
     private getSquare(board: Square[][], row: number, column: number): Square {
@@ -256,7 +115,7 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
 
     private updateBoard(squaresToUpdate: Square[]): boolean {
         if (this.hasBoardBeenUpdated(squaresToUpdate)) return false;
-        this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
+        this.tilePlacementService.resetTiles();
         this.clearNewlyPlacedTiles();
 
         /* 
@@ -287,36 +146,18 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
         return !squaresToUpdate || squaresToUpdate.length <= 0 || squaresToUpdate.length > this.gridSize.x * this.gridSize.y;
     }
 
-    private isInBounds(position: Position): boolean {
-        return position.row < this.squareGrid.length && position.column < this.squareGrid[position.row].length;
-    }
-
-    private handlePlaceTiles(payload: PlaceActionPayload | undefined): void {
-        if (!payload) {
-            this.notAppliedSquares.forEach((squareView: SquareView) => (squareView.square.tile = null));
-            this.notAppliedSquares = [];
-            return;
-        }
-
-        const position = { ...payload.startPosition };
-        const next = () => (payload.orientation === Orientation.Horizontal ? position.column++ : position.row++);
+    private handlePlaceTiles(tilePlacements: TilePlacement[]): void {
+        this.notAppliedSquares.forEach((squareView: SquareView) => (squareView.square.tile = null));
         this.notAppliedSquares = [];
 
-        for (let i = 0; i < payload.tiles.length;) {
-            if (!this.isInBounds(position)) return;
-
-            const squareView = this.squareGrid[position.row][position.column];
+        for (const tilePlacement of tilePlacements) {
+            const squareView = this.squareGrid[tilePlacement.position.row][tilePlacement.position.column];
 
             if (!squareView.square.tile || !squareView.applied) {
-                squareView.square.tile = { ...payload.tiles[i] };
+                squareView.square.tile = tilePlacement.tile;
                 squareView.applied = false;
                 this.notAppliedSquares.push(squareView);
-                i++;
-            } else if (i === 0) {
-                return;
             }
-
-            next();
         }
     }
 
@@ -327,44 +168,5 @@ export class BoardComponent extends FocusableComponent<KeyboardEvent> implements
 
     private handleFirstSquareCancelled(): void {
         this.selectedSquare = undefined;
-    }
-
-    private useTile(tile: Tile): void {
-        const previousUsedTiles = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
-
-        if (previousUsedTiles) {
-            this.gameViewEventManagerService.emitGameViewEvent('usedTiles', {
-                ...previousUsedTiles,
-                tiles: [...previousUsedTiles.tiles, tile],
-            });
-        } else {
-            this.gameViewEventManagerService.emitGameViewEvent('usedTiles', {
-                orientation: this.navigator.orientation ? this.navigator.orientation : Orientation.Horizontal,
-                startPosition: { row: this.navigator.row, column: this.navigator.column },
-                tiles: [tile],
-            });
-        }
-    }
-
-    private removeUsedTile(tile: Tile): void {
-        const previousUsedTiles = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
-
-        if (!previousUsedTiles) throw new Error(CANNOT_REMOVE_UNUSED_TILE);
-        if (previousUsedTiles.tiles.length <= 1) {
-            this.gameViewEventManagerService.emitGameViewEvent('resetUsedTiles');
-            return;
-        }
-
-        const index = previousUsedTiles.tiles.map((t: Tile) => t.letter).lastIndexOf(tile.letter);
-
-        if (index === NOT_FOUND) throw new Error(CANNOT_REMOVE_UNUSED_TILE);
-
-        previousUsedTiles.tiles.splice(index, 1);
-        this.gameViewEventManagerService.emitGameViewEvent('usedTiles', { ...previousUsedTiles });
-    }
-
-    private areTilesUsed(): boolean {
-        const usedTiles: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
-        return usedTiles !== undefined && usedTiles.tiles.length > 0;
     }
 }
