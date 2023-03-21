@@ -42,10 +42,11 @@ class Placement {
     if (orientation == null) {
       throw Exception(CANNOT_CONVERT_PLACEMENT_TO_PAYLOAD_IS_INVALID);
     }
+    var sortedTiles = _sortTilePlacements(tiles, orientation);
 
     return ActionPlacePayload(
-        tiles: tiles.map((tilePlacement) => tilePlacement.tile).toList(),
-        position: tiles.first.position,
+        tiles: sortedTiles.map((tilePlacement) => tilePlacement.tile).toList(),
+        position: sortedTiles.first.position,
         orientation: orientation);
   }
 
@@ -124,6 +125,7 @@ class Placement {
             b.position.getComponentFromOrientation(orientation)
         ? 1
         : -1);
+
     return list;
   }
 
