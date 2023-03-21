@@ -3,6 +3,7 @@ import { Board, Orientation, Position } from '@app/classes/board';
 import { Dictionary, DictionaryNode } from '@app/classes/dictionary';
 import Range from '@app/classes/range/range';
 import { ScoreCalculatorService } from '@app/services/score-calculator-service/score-calculator.service';
+import { WordPlacement as WordPlacementCommon } from '@common/models/word-finding';
 
 export interface WithDistance {
     distance: number;
@@ -60,9 +61,7 @@ export enum WordFindingUseCase {
     Puzzle,
 }
 
-export interface WordPlacement {
-    tilesToPlace: Tile[];
-    orientation: Orientation;
+export interface WordPlacement extends WordPlacementCommon {
     startPosition: Position;
 }
 

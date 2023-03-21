@@ -1,5 +1,5 @@
 import { Tile, Board } from './game';
-import { WordPlacement } from './word-finding';
+import { ScoredWordPlacement } from './word-finding';
 
 export interface Puzzle {
     board: Board;
@@ -16,6 +16,6 @@ export enum PuzzleResultStatus {
 export interface PuzzleResult {
     userPoints: number;
     result: PuzzleResultStatus;
-    targetPlacement: WordPlacement;
-    allPlacements: WordPlacement[];
+    targetPlacement: ScoredWordPlacement;
+    allPlacements: ScoredWordPlacement[];
 }
