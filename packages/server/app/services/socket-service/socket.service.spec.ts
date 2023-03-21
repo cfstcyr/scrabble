@@ -55,7 +55,7 @@ describe('SocketService', () => {
         let clientSocket: Socket;
         let testingUnit: ServicesTestingUnit;
 
-        beforeEach(() => {
+        beforeEach(async () => {
             testingUnit = new ServicesTestingUnit()
                 .withStubbed(DictionaryService)
                 .withStubbed(ChatService)
@@ -67,6 +67,7 @@ describe('SocketService', () => {
                     { connectedUsers: sinon.createStubInstance(ConnectedUser) as unknown as ConnectedUser },
                 )
                 .withStubbedPrototypes(Application, { bindRoutes: undefined });
+            await testingUnit.withMockDatabaseService();
         });
 
         beforeEach(() => {
