@@ -8,18 +8,12 @@ import { Random } from '@app/utils/random/random';
 const HAS_TILE_IN_PREVIOUS_POSITION = -1;
 const SHOULD_BE_FILLED = true;
 
-interface BoardPlacementConfig {
-    onlyNaturalPositions: boolean;
-}
-
 export default class BoardPlacementsExtractor {
     private navigator: BoardNavigator;
     private board: Board;
-    private onlyNaturalPositions: boolean;
 
-    constructor(board: Board, { onlyNaturalPositions = false }: Partial<BoardPlacementConfig> = {}) {
+    constructor(board: Board) {
         this.board = board;
-        this.onlyNaturalPositions = onlyNaturalPositions;
         this.navigator = new BoardNavigator(board, new Position(0, 0), Orientation.Horizontal);
     }
 
@@ -168,9 +162,5 @@ export default class BoardPlacementsExtractor {
 
     private isBoardEmpty(): boolean {
         return this.board.grid.every((line) => line.every((square) => square.tile === null));
-    }
-
-    private shouldIncludePlacement(previousHasTile: boolean, nextHasTile: boolean): boolean {
-        return !this.onlyNaturalPositions || (!previousHasTile && !nextHasTile);
     }
 }
