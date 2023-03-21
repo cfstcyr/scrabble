@@ -12,6 +12,7 @@ import DictionaryService from '@app/services/dictionary-service/dictionary.servi
 import { PuzzleService } from './puzzle.service';
 import WordFindingPuzzle from '@app/classes/word-finding/word-finding-puzzle/word-finding-puzzle';
 import { WordPlacement } from '@app/classes/word-finding';
+import { PuzzleResultStatus } from '@common/models/puzzle';
 
 const DEFAULT_ID_USER = 1;
 
@@ -50,6 +51,7 @@ describe('PuzzleService', () => {
         await testingUnit.withMockDatabaseService();
 
         service = Container.get(PuzzleService);
+        service.tilesToPlaceForBingo = 2;
     });
 
     afterEach(() => {
@@ -77,6 +79,18 @@ describe('PuzzleService', () => {
 
             expect(result).to.exist;
             expect(result.targetPlacement).to.exist;
+            expect(result.result).to.equal(PuzzleResultStatus.Valid);
+        });
+
+        it('should return won if bingo', () => {
+            service.startPuzzle(DEFAULT_ID_USER);
+            const result = service.completePuzzle(DEFAULT_ID_USER, {
+                orientation: Orientation.Vertical,
+                startPosition: new Position(0, 0),
+                tilesToPlace: [DEFAULT_TILE_A, DEFAULT_TILE_A],
+            });
+
+            expect(result.result).to.equal(PuzzleResultStatus.Won);
         });
 
         it('should throw if no game', () => {
@@ -84,13 +98,23 @@ describe('PuzzleService', () => {
         });
 
         it('should throw if placement is invalid', () => {
-            expect(() =>
-                service.completePuzzle(DEFAULT_ID_USER, {
-                    orientation: Orientation.Horizontal,
-                    startPosition: new Position(0, 0),
-                    tilesToPlace: [DEFAULT_TILE_B],
-                }),
-            ).to.throw();
+            service.startPuzzle(DEFAULT_ID_USER);
+            const result = service.completePuzzle(DEFAULT_ID_USER, {
+                orientation: Orientation.Horizontal,
+                startPosition: new Position(0, 0),
+                tilesToPlace: [DEFAULT_TILE_B],
+            });
+
+            expect(result.result).to.equal(PuzzleResultStatus.Invalid);
+        });
+    });
+
+    describe('abandonPuzzle', () => {
+        it('should return abandoned', () => {
+            service.startPuzzle(DEFAULT_ID_USER);
+            const result = service.abandonPuzzle(DEFAULT_ID_USER);
+
+            expect(result.result).to.equal(PuzzleResultStatus.Abandoned);
         });
     });
 });

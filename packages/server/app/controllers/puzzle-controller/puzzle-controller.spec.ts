@@ -59,4 +59,17 @@ describe('PuzzleController', () => {
             });
         });
     });
+
+    describe('/api/puzzles/abandon', () => {
+        describe('POST', () => {
+            it('should return 200', async () => {
+                return supertest(expressApp).post('/api/puzzles/abandon').send({ idUser: DEFAULT_ID_USER }).expect(StatusCodes.OK);
+            });
+
+            it('should call abandonPuzzle', async () => {
+                await supertest(expressApp).post('/api/puzzles/abandon').send({ idUser: DEFAULT_ID_USER });
+                expect(puzzleServiceStub.abandonPuzzle.called).to.be.true;
+            });
+        });
+    });
 });

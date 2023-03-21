@@ -28,5 +28,13 @@ export class PuzzleController extends BaseController {
                 next(e);
             }
         });
+
+        router.post('/abandon', (req: UserRequest, res, next) => {
+            try {
+                res.status(StatusCodes.OK).send(this.puzzleService.abandonPuzzle(req.body.idUser));
+            } catch (e) {
+                next(e);
+            }
+        });
     }
 }

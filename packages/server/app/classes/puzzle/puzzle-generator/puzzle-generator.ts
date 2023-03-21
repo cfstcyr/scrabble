@@ -4,7 +4,6 @@ import BoardService from '@app/services/board-service/board.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { WordsVerificationService } from '@app/services/words-verification-service/words-verification.service';
 import { Container } from 'typedi';
-import { Puzzle } from '@app/classes/puzzle/puzzle';
 import { BoardPlacement, BoardPlacementsExtractor } from '@app/classes/word-finding';
 import { WordExtraction } from '@app/classes/word-extraction/word-extraction';
 import { LetterValue, Tile } from '@app/classes/tile';
@@ -22,6 +21,7 @@ import {
     SKIP_PLACEMENT_DISTANCE_CUTOFF,
 } from '@app/constants/puzzle-constants';
 import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
+import { Puzzle } from '@app/classes/puzzle/puzzle';
 
 type WordPlacementParams = Pick<BoardPlacement, 'maxSize' | 'minSize'>;
 

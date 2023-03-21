@@ -1,8 +1,7 @@
 import { Position } from '@app/classes/board-navigator/position';
 import { Tile } from '@app/classes/tile';
-import ScoreMultiplier from './score-multiplier';
+import { Multiplier } from '@common/models/game';
 
-export type Multiplier = ScoreMultiplier | null;
 export default interface Square {
     tile: Tile | null;
     position: Position;
