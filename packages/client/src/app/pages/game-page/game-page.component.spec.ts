@@ -15,12 +15,11 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActionData, ActionType, PlaceActionPayload } from '@app/classes/actions/action-data';
+import { ActionData, ActionType } from '@app/classes/actions/action-data';
 import { Player } from '@app/classes/player';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { TileComponent } from '@app/components/tile/tile.component';
-import { ARROW_LEFT, ARROW_RIGHT, BACKSPACE, ESCAPE } from '@app/constants/components-constants';
 import { DEFAULT_PLAYER } from '@app/constants/game-constants';
 import { DIALOG_QUIT_BUTTON_CONFIRM, DIALOG_QUIT_CONTENT, DIALOG_QUIT_STAY, DIALOG_QUIT_TITLE } from '@app/constants/pages-constants';
 import {
@@ -210,33 +209,6 @@ describe('GamePageComponent', () => {
         });
     });
 
-    describe('keypress/keydown', () => {
-        const tests: [method: keyof GamePageComponent, key: string][] = [
-            ['handleKeyboardEvent', 'a'],
-            ['handleKeyboardEventEsc', ESCAPE],
-            ['handleKeyboardEventBackspace', BACKSPACE],
-            ['handleKeyboardEventArrowLeft', ARROW_LEFT],
-            ['handleKeyboardEventArrowRight', ARROW_RIGHT],
-        ];
-        let emitKeyboardSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            emitKeyboardSpy = spyOn(component['focusableComponentService'], 'emitKeyboard');
-        });
-
-        for (const [method, key] of tests) {
-            it(`should call emitKeyboard on ${method}`, () => {
-                const event: KeyboardEvent = new KeyboardEvent('keypress', {
-                    key,
-                    cancelable: true,
-                });
-
-                (component[method] as (e: unknown) => void)(event);
-                expect(emitKeyboardSpy).toHaveBeenCalledWith(event);
-            });
-        }
-    });
-
     describe('hintButtonClicked', () => {
         const fakeData = { fake: 'data' };
         let createActionDataSpy: jasmine.Spy;
@@ -276,38 +248,12 @@ describe('GamePageComponent', () => {
     });
 
     describe('placeButtonClicked', () => {
-        let getPayloadSpy: jasmine.Spy;
-        const fakeData = { fake: 'data' };
-        let createActionDataSpy: jasmine.Spy;
-        let sendAction: jasmine.Spy;
-
-        beforeEach(() => {
-            getPayloadSpy = spyOn(component['gameViewEventManagerService'], 'getGameViewEventValue');
-            spyOn(component['gameService'], 'getGameId').and.returnValue('gameId');
-            spyOn(component['gameService'], 'getLocalPlayerId').and.returnValue('playerId');
-
-            createActionDataSpy = spyOn(component['actionService'], 'createActionData').and.returnValue(fakeData as unknown as ActionData);
-            sendAction = spyOn(component['actionService'], 'sendAction').and.callFake(() => {
-                return;
-            });
-        });
-
         it('should sendAction through ActionService', () => {
-            const payload: PlaceActionPayload = {} as PlaceActionPayload;
-            getPayloadSpy.and.returnValue(payload);
+            const spy = spyOn(gameServiceMock, 'playTilesOnBoard');
 
             component.placeButtonClicked();
 
-            expect(createActionDataSpy).toHaveBeenCalledWith(ActionType.PLACE, payload);
-            expect(sendAction).toHaveBeenCalledOnceWith('gameId', fakeData);
-        });
-
-        it('should not call sendPlaceAction if no payload', () => {
-            getPayloadSpy.and.returnValue(undefined);
-
-            component.placeButtonClicked();
-
-            expect(sendAction).not.toHaveBeenCalled();
+            expect(spy).toHaveBeenCalled();
         });
     });
 
@@ -387,33 +333,6 @@ describe('GamePageComponent', () => {
             component['gameService'].isGameOver = false;
             component['actionService'].hasActionBeenPlayed = false;
             expect(component.canPlay()).toBeTrue();
-        });
-    });
-
-    describe('canPlaceWord', () => {
-        let getPayloadSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            getPayloadSpy = spyOn(component['gameViewEventManagerService'], 'getGameViewEventValue');
-        });
-
-        it('should not be able to place word if play conditions are not met', () => {
-            spyOn(component, 'canPlay').and.returnValue(false);
-            expect(component.canPlaceWord()).toBeFalse();
-        });
-
-        it('should not be able to place word if there are no tiles played', () => {
-            spyOn(component, 'canPlay').and.returnValue(true);
-            getPayloadSpy.and.returnValue(undefined);
-            expect(component.canPlaceWord()).toBeFalse();
-        });
-
-        it('should be able to play if the conditions are met', () => {
-            spyOn(component, 'canPlay').and.returnValue(true);
-            const payload: PlaceActionPayload = {} as PlaceActionPayload;
-            getPayloadSpy.and.returnValue(payload);
-
-            expect(component.canPlaceWord()).toBeTrue();
         });
     });
 

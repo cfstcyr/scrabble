@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { Square } from '@app/classes/square';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -7,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
     providedIn: 'root',
 })
 export default class BoardService {
+    navigator: BoardNavigator | undefined;
     private initialBoard: Square[][] = [];
     private boardInitialization$: Subject<Square[][]> = new Subject();
     private boardUpdateEvent$: Subject<Square[]> = new Subject();

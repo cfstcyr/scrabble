@@ -48,13 +48,9 @@ describe('ActionService', () => {
 
     describe('subscription handling', () => {
         let resetActionSpy: jasmine.Spy;
-        let resetUsedTilesSpy: jasmine.Spy;
 
         beforeEach(() => {
             resetActionSpy = spyOn<any>(service, 'resetHasActionBeenSent').and.callFake(() => {
-                return;
-            });
-            resetUsedTilesSpy = spyOn<any>(service, 'handleResetUsedTiles').and.callFake(() => {
                 return;
             });
         });
@@ -62,11 +58,6 @@ describe('ActionService', () => {
         it('should reset hasActionBeenPlayed if service received actionDone event', () => {
             service['gamePlayController']['actionDone$'].next();
             expect(resetActionSpy).toHaveBeenCalled();
-        });
-
-        it('should call handleResetUsedTiles if service received resetUsedTiles event', () => {
-            service['gameViewEventManagerService'].emitGameViewEvent('resetUsedTiles');
-            expect(resetUsedTilesSpy).toHaveBeenCalled();
         });
     });
 
@@ -224,39 +215,5 @@ describe('ActionService', () => {
         service.hasActionBeenPlayed = true;
         service['resetHasActionBeenSent']();
         expect(service.hasActionBeenPlayed).toBeFalse();
-    });
-
-    describe('handleResetUsedTiles', () => {
-        let emitUsedTilesSpy: jasmine.Spy;
-        let getUsedTilesSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            emitUsedTilesSpy = spyOn(service['gameViewEventManagerService'], 'emitGameViewEvent').and.callFake(() => {
-                return;
-            });
-            getUsedTilesSpy = spyOn(service['gameViewEventManagerService'], 'getGameViewEventValue');
-        });
-
-        it('should reset blank tile playedLetter if there are any', () => {
-            const blankTile: Tile = new Tile('*', 0, true);
-            blankTile.playedLetter = 'M';
-            const placeActionPayload: PlaceActionPayload = {
-                tiles: [blankTile, new Tile('A', 2, false)],
-                startPosition: { row: 0, column: 0 },
-                orientation: Orientation.Horizontal,
-            };
-            getUsedTilesSpy.and.returnValue(placeActionPayload);
-
-            service['handleResetUsedTiles']();
-            expect(blankTile.playedLetter).toBeUndefined();
-            expect(emitUsedTilesSpy).toHaveBeenCalledWith('usedTiles', undefined);
-        });
-
-        it('should only emit undefined usedTiles if payload is undefined', () => {
-            getUsedTilesSpy.and.returnValue(undefined);
-
-            service['handleResetUsedTiles']();
-            expect(emitUsedTilesSpy).toHaveBeenCalledWith('usedTiles', undefined);
-        });
     });
 });
