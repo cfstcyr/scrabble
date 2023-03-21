@@ -10,8 +10,6 @@ import { ScoreCalculatorService } from '@app/services/score-calculator-service/s
 import { WordExtraction } from '@app/classes/word-extraction/word-extraction';
 import { Square } from '@app/classes/square';
 import { Tile } from '@app/classes/tile';
-import { HttpException } from '@app/classes/http-exception/http-exception';
-import { StatusCodes } from 'http-status-codes';
 import { StringConversion } from '@app/utils/string-conversion/string-conversion';
 import { WordsVerificationService } from '@app/services/words-verification-service/words-verification.service';
 import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
@@ -51,22 +49,17 @@ export class PuzzleService {
 
         if (!puzzle) throw new Error(PUZZLE_COMPLETE_NO_ACTIVE_PUZZLE);
 
-        this.activePuzzle.delete(idUser);
-
         const wordExtraction = new WordExtraction(puzzle.board);
         const createdWords = wordExtraction.extract(wordPlacement);
-        if (!this.isLegalPlacement(createdWords, wordPlacement)) throw new HttpException('', StatusCodes.FORBIDDEN);
-
-        let wordValid: boolean;
+        if (!this.isLegalPlacement(createdWords, wordPlacement)) return this.abandonPuzzle(idUser, PuzzleResultStatus.Invalid);
 
         try {
             this.wordValidatorService.verifyWords(
                 StringConversion.wordsToString(createdWords),
                 this.dictionaryService.getDefaultDictionary().summary.id,
             );
-            wordValid = true;
         } catch {
-            wordValid = false;
+            return this.abandonPuzzle(idUser, PuzzleResultStatus.Invalid);
         }
 
         const scoredPoints =
@@ -74,19 +67,17 @@ export class PuzzleService {
 
         const { targetPlacement, allPlacements } = this.getSolution(puzzle);
 
+        this.activePuzzle.delete(idUser);
+
         return {
             userPoints: scoredPoints,
-            result: wordValid
-                ? wordPlacement.tilesToPlace.length >= this.tilesToPlaceForBingo
-                    ? PuzzleResultStatus.Won
-                    : PuzzleResultStatus.Valid
-                : PuzzleResultStatus.Invalid,
+            result: wordPlacement.tilesToPlace.length >= this.tilesToPlaceForBingo ? PuzzleResultStatus.Won : PuzzleResultStatus.Valid,
             targetPlacement,
             allPlacements,
         };
     }
 
-    abandonPuzzle(idUser: TypeOfId<User>): PuzzleResult {
+    abandonPuzzle(idUser: TypeOfId<User>, result: PuzzleResultStatus = PuzzleResultStatus.Abandoned): PuzzleResult {
         const puzzle = this.activePuzzle.get(idUser);
 
         if (!puzzle) throw new Error(PUZZLE_COMPLETE_NO_ACTIVE_PUZZLE);
@@ -97,7 +88,7 @@ export class PuzzleService {
 
         return {
             userPoints: -1,
-            result: PuzzleResultStatus.Abandoned,
+            result,
             targetPlacement,
             allPlacements,
         };
