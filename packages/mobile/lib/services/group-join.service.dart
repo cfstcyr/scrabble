@@ -26,9 +26,6 @@ class GroupJoinService {
   }
 
   Future<bool> handleJoinGroup(String groupId, bool isObserver) async {
-    print(groupId);
-    print(isObserver);
-
     return await groupJoinController
         .handleJoinGroup(groupId, isObserver)
         .then((_) => true)
