@@ -1,13 +1,23 @@
-import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../classes/game/players_container.dart';
 import '../classes/tile/tile.dart';
-import '../locator.dart';
-import 'game.service.dart';
 
 class GameObserverService {
-  GameObserverService._() : _tileRack = TileRack() {}
-  final TileRack _tileRack;
+  GameObserverService._()
+      : _tiles = BehaviorSubject<List<Tile>>.seeded([]),
+        _observedPlayerIndex = BehaviorSubject<int>.seeded(1) {
+    setPlayerTileRack(_observedPlayerIndex.value);
+    playersContainer.stream.listen((_) {
+      setPlayerTileRack(_observedPlayerIndex.value);
+    });
+  }
+  late BehaviorSubject<List<Tile>> _tiles =
+      BehaviorSubject<List<Tile>>.seeded([]);
+  late BehaviorSubject<int> _observedPlayerIndex =
+      BehaviorSubject<int>.seeded(1);
+  late BehaviorSubject<PlayersContainer> playersContainer =
+      BehaviorSubject<PlayersContainer>();
 
   static final GameObserverService _instance = GameObserverService._();
 
@@ -15,9 +25,12 @@ class GameObserverService {
     return _instance;
   }
 
-  ValueStream<List<Tile>> get tilesStream => _tileRack.stream;
+  ValueStream<List<Tile>> get tilesStream => _tiles.stream;
+  ValueStream<int> get observedPlayerIndexStream => _observedPlayerIndex.stream;
 
-  TileRack getPlayerTileRack(int playerNumber) {
-    return getIt.get<GameService>().getPlayerTileRack(playerNumber);
+  void setPlayerTileRack(int playerNumber) {
+    if (!playersContainer.hasValue) return;
+    _tiles.add([...playersContainer.value.getPlayer(playerNumber).tiles]);
+    _observedPlayerIndex.add(playerNumber);
   }
 }

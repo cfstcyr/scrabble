@@ -23,12 +23,14 @@ import '../components/alert-dialog.dart';
 import '../components/app_button.dart';
 import '../constants/locale/game-constants.dart';
 import '../utils/round-utils.dart';
+import 'game-observer-service.dart';
 
 class GameService {
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
+  final GameObserverService _gameObserverService =
+      getIt.get<GameObserverService>();
   final BehaviorSubject<Game?> _game;
-  late PlayersContainer _playersContainer;
 
   static final GameService _instance = GameService._();
 
@@ -64,7 +66,7 @@ class GameService {
         .where((Player player) => player.socketId == localPlayerId)
         .map((Player player) => player.isLocalPlayer = true);
 
-    _playersContainer = playersContainer;
+    _gameObserverService.playersContainer.add(playersContainer);
 
     TileRack tileRack =
         TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
@@ -184,10 +186,6 @@ class GameService {
         closesDialog: true,
       ),
     ]);
-  }
-
-  TileRack getPlayerTileRack(int playerNumber) {
-    return TileRack().setTiles(_playersContainer.getPlayer(playerNumber).tiles);
   }
 
   bool isLocalPlayerActivePlayer() {

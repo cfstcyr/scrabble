@@ -3,7 +3,6 @@ import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/components/game/game_actions.dart';
 import 'package:mobile/components/game/game_board.dart';
 import 'package:mobile/components/game/game_info.dart';
-import 'package:mobile/components/game/game_observer_actions.dart';
 import 'package:mobile/components/game/game_timer.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
@@ -83,9 +82,6 @@ class _GamePageState extends State<GamePage> {
                             ],
                           ),
                           Expanded(child: GameMessages()),
-                          getIt.get<UserService>().isObserver
-                              ? GameObserverActions()
-                              : SizedBox(),
                           GameActions(),
                         ],
                       ),

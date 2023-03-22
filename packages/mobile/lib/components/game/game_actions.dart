@@ -13,6 +13,8 @@ import 'package:mobile/services/player-leave-service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../services/user.service.dart';
+
 class GameActions extends StatelessWidget {
   final GameService _gameService = getIt.get<GameService>();
   final ActionService _actionService = getIt.get<ActionService>();
@@ -136,7 +138,8 @@ class GameActions extends StatelessWidget {
       bool isActionBeingProcessed = values[1];
       String activePlayerSocketId = values[2];
 
-      return _roundService.isActivePlayer(
+      return !getIt.get<UserService>().isObserver &&
+          _roundService.isActivePlayer(
               activePlayerSocketId, game.players.getLocalPlayer().socketId) &&
           !game.isOver &&
           !isActionBeingProcessed;
