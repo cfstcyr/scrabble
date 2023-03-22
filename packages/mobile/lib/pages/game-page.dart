@@ -39,11 +39,13 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.paused) getIt.get<GamePlayController>().leaveGame();
     if (state == AppLifecycleState.resumed) {
-      getIt.get<InitializerService>().initialize();
-      Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, HOME_ROUTE, (route) => route.settings.name == HOME_ROUTE);
+      InitializerService initializerService = getIt.get<InitializerService>();
+      await initializerService.initialize();
+      String entryPage = initializerService.entryPageStream.value ?? LOGIN_ROUTE;
+      Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, entryPage, (route) => route.settings.name == entryPage);
     }
   }
 
