@@ -25,7 +25,6 @@ export class ActionService implements IResetServiceData, OnDestroy {
             .observeActionDone()
             .pipe(takeUntil(this.serviceDestroyed$))
             .subscribe(() => this.resetHasActionBeenSent());
-        this.gameViewEventManagerService.subscribeToGameViewEvent('resetUsedTiles', this.serviceDestroyed$, () => this.handleResetUsedTiles());
         this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());
     }
 
@@ -90,15 +89,5 @@ export class ActionService implements IResetServiceData, OnDestroy {
 
     private resetHasActionBeenSent(): void {
         this.hasActionBeenPlayed = false;
-    }
-
-    private handleResetUsedTiles(): void {
-        const usedTiles: PlaceActionPayload | undefined = this.gameViewEventManagerService.getGameViewEventValue('usedTiles');
-        if (usedTiles) {
-            usedTiles.tiles.forEach((tile: Tile) => {
-                if (tile.isBlank) tile.playedLetter = undefined;
-            });
-        }
-        this.gameViewEventManagerService.emitGameViewEvent('usedTiles', undefined);
     }
 }
