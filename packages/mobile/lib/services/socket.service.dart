@@ -40,12 +40,6 @@ class SocketService {
     });
     socket.onDisconnect((value) {
       print('disconnect');
-      GamePlayController gamePlayController = getIt.get<GamePlayController>();
-      if (gamePlayController.currentGameId != null) {
-        print(value);
-        print(socket.id);
-        getIt.get<GamePlayController>().leaveGame();
-      }
     });
   }
 

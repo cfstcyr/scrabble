@@ -8,8 +8,12 @@ import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/routes/navigator-key.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/game.service.dart';
+import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
 
 import '../components/game/game_messages.dart';
@@ -19,12 +23,28 @@ class GamePage extends StatefulWidget {
   State<GamePage> createState() => _GamePageState();
 }
 
-class _GamePageState extends State<GamePage> {
+class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
   PlayerLeaveService _playerLeaveService = getIt.get<PlayerLeaveService>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) getIt.get<GamePlayController>().leaveGame();
+    if (state == AppLifecycleState.resumed) {
+      getIt.get<InitializerService>().initialize();
+      Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, HOME_ROUTE, (route) => route.settings.name == HOME_ROUTE);
+    }
   }
 
   @override
