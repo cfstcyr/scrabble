@@ -31,6 +31,7 @@ import {
     LetterValues,
 } from '@app/classes/word-finding/helper.spec';
 import { ERROR_PLAYER_DOESNT_HAVE_TILE } from '@app/constants/classes-errors';
+import { BINGO_BONUS_POINTS } from '@app/constants/game-constants';
 import { ScoreCalculatorService } from '@app/services/score-calculator-service/score-calculator.service';
 import { Random } from '@app/utils/random/random';
 import { switchOrientation } from '@app/utils/switch-orientation/switch-orientation';
@@ -78,6 +79,7 @@ describe('AbstractWordFinding', () => {
         dictionaryStub = createStubInstance(Dictionary);
         scoreCalculatorStub = createStubInstance(ScoreCalculatorService, {
             calculatePoints: 0,
+            bonusPoints: 0,
         });
         wordFinding = new WordFindingTest(
             board,
@@ -359,13 +361,24 @@ describe('AbstractWordFinding', () => {
             expect(result.startPosition).to.equal(wordSquareTiles[m - n][0].position);
         });
 
-        it('should return score', () => {
+        it('should return score without bonus if no bingo is played', () => {
             const score = 43;
             scoreCalculatorStub.calculatePoints.returns(score);
+            scoreCalculatorStub.bonusPoints.returns(0);
 
             const result = wordFinding['getWordPlacement'](wordResult, boardPlacement);
 
             expect(result.score).to.equal(score);
+        });
+
+        it('should return score with bonus if bingo is played', () => {
+            const score = 43;
+            scoreCalculatorStub.calculatePoints.returns(score);
+            scoreCalculatorStub.bonusPoints.returns(BINGO_BONUS_POINTS);
+
+            const result = wordFinding['getWordPlacement'](wordResult, boardPlacement);
+
+            expect(result.score).to.equal(score + BINGO_BONUS_POINTS);
         });
     });
 
