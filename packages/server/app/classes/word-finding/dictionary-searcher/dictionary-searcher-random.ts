@@ -15,7 +15,7 @@ export class DictionarySearcherRandom {
 
     /**
      * This map represents the letters already placed.
-     * The entry `[2, A]` means that the word must have the letter `A` has its 3rd letter.
+     * The entry `[2, A]` means that the word must have the letter `A` as its 3rd letter.
      */
     private lettersMap: Map<number, string>;
 
