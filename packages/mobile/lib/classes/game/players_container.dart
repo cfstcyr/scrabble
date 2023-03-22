@@ -1,5 +1,4 @@
 import 'package:mobile/classes/game/player.dart';
-import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/components/error-pop-up.dart';
 import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/routes/navigator-key.dart';
@@ -12,6 +11,7 @@ class PlayersContainer {
   Player player3;
   Player player4;
   String? localPlayerId;
+  bool isObserver = false;
 
   PlayersContainer.fromPlayers(
       {required this.player1,
@@ -42,6 +42,11 @@ class PlayersContainer {
   }
 
   List<Player> get players => [player1, player2, player3, player4];
+
+  setLocalPlayer(int playerNumber) {
+    if (!isObserver) return;
+    localPlayerId = getPlayer(playerNumber).socketId;
+  }
 
   Player getLocalPlayer() {
     if (localPlayerId == null) {

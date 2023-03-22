@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/group.dart';
+
 import '../classes/virtual-player-level.dart';
 import '../components/group/group-management.dart';
 import '../components/group/parameters.dart';

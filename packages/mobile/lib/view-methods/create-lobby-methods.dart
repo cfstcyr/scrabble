@@ -16,6 +16,10 @@ BehaviorSubject<List<PublicUser>> playerList$ =
 BehaviorSubject<List<PublicUser>> playerWaitingList$ =
     BehaviorSubject<List<PublicUser>>.seeded([]);
 
+// TODO VIEW
+BehaviorSubject<List<PublicUser>> observerWaitingList$ =
+    BehaviorSubject<List<PublicUser>>.seeded([]);
+
 ButtonStyle setStyleRoomButtons() {
   return ElevatedButton.styleFrom(
     backgroundColor: Colors.white,
@@ -71,21 +75,31 @@ Widget setWaitingPlayerIcon(int index) {
 }
 
 Future<bool> addPlayerToLobby(PublicUser player) async {
+  // if (isMaximumPlayerCount() && !player.isObserver) return false;
   if (isMaximumPlayerCount()) return false;
+  // TODO AFTER MR AHMED
 
   await gameCreationService.handleAcceptOpponent(player);
 
   List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
   newPlayerWaitingList.remove(player);
   playerWaitingList$.add(newPlayerWaitingList);
+
   return true;
 }
 
 Future<void> refusePlayer(PublicUser player) async {
+  // TODO CHANGER CA APRES MR AHMED
   await gameCreationService.handleRejectOpponent(player);
+  // if (!player.isObserver) {
   List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
   newPlayerWaitingList.remove(player);
   playerWaitingList$.add(newPlayerWaitingList);
+  // } else {
+  //   List<PublicUser> newObsWaitingList = observerWaitingList$.value;
+  //   newObsWaitingList.remove(player);
+  //   observerWaitingList$.add(newObsWaitingList);
+  // }
 }
 
 Future<void> startGame() async {

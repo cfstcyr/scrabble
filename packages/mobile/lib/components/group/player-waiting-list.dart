@@ -45,7 +45,8 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                               left: 15.0, right: 0, top: 10.0, bottom: 10.0),
                           child: Avatar(
                             avatar: snapshot.data![index].avatar,
-                            initials: getUsersInitials(snapshot.data![index].username),
+                            initials: getUsersInitials(
+                                snapshot.data![index].username),
                             size: LOBBY_AVATAR_SIZE,
                             radius: LOBBY_AVATAR_RADIUS,
                           ),

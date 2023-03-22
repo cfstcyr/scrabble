@@ -28,6 +28,7 @@ class GameService {
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
   final BehaviorSubject<Game?> _game;
+  late PlayersContainer _playersContainer;
 
   static final GameService _instance = GameService._();
 
@@ -46,17 +47,24 @@ class GameService {
 
   GamePlayController gamePlayController = getIt.get<GamePlayController>();
 
+// TODO AJOUTER OBSERVABLE ICI voir game.service.ts
   void startGame(String localPlayerId, StartGameData startGameData) {
     PlayersContainer playersContainer = PlayersContainer.fromPlayers(
         player1: startGameData.player1,
         player2: startGameData.player2,
         player3: startGameData.player3,
         player4: startGameData.player4);
+
     playersContainer.localPlayerId = localPlayerId;
+    if (getIt.get<UserService>().isObserver) {
+      playersContainer.localPlayerId = playersContainer.player1.socketId;
+    }
 
     playersContainer.players
         .where((Player player) => player.socketId == localPlayerId)
         .map((Player player) => player.isLocalPlayer = true);
+
+    _playersContainer = playersContainer;
 
     TileRack tileRack =
         TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
@@ -176,6 +184,10 @@ class GameService {
         closesDialog: true,
       ),
     ]);
+  }
+
+  TileRack getPlayerTileRack(int playerNumber) {
+    return TileRack().setTiles(_playersContainer.getPlayer(playerNumber).tiles);
   }
 
   bool isLocalPlayerActivePlayer() {

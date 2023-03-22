@@ -21,13 +21,16 @@ class GroupJoinService {
         .catchError((_) => groups$.add([]));
   }
 
-  void joinGroup(String groupId) async {
-    await groupJoinController.handleJoinGroup(groupId);
+  void joinGroup(String groupId, bool isObserver) async {
+    await groupJoinController.handleJoinGroup(groupId, isObserver);
   }
 
-  Future<bool> handleJoinGroup(String groupId) async {
+  Future<bool> handleJoinGroup(String groupId, bool isObserver) async {
+    print(groupId);
+    print(isObserver);
+
     return await groupJoinController
-        .handleJoinGroup(groupId)
+        .handleJoinGroup(groupId, isObserver)
         .then((_) => true)
         .catchError((error) {
       _handleJoinError(error);

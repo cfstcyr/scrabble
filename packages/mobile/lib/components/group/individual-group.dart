@@ -9,7 +9,6 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 
-import '../../pages/groups-request-waiting-page.dart';
 import '../../utils/duration-format.dart';
 
 class IndividualGroup extends StatelessWidget {
@@ -65,8 +64,17 @@ class IndividualGroup extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Observers(),
                         SizedBox(width: 16),
+                        Icon(Icons.visibility, size: 40),
+                        SizedBox(width: 8),
+                        Text(
+                          group.numberOfObservers.toString(),
+                          style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500,
+                              height: 1),
+                        ),
+                        SizedBox(width: 8),
                         GameVisibilityView(
                           gameVisibility: group.gameVisibility,
                         ),
@@ -79,7 +87,18 @@ class IndividualGroup extends StatelessWidget {
                               width: 60,
                               height: 60,
                               child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: group.canJoin!
+                                      ? () {
+                                          joinGroupFunction(
+                                              group.groupId, true);
+                                          Navigator.pushNamed(
+                                                  context, JOIN_WAITING_ROUTE,
+                                                  arguments: group)
+                                              .then((_) => getIt
+                                                  .get<GroupJoinService>()
+                                                  .getGroups());
+                                        }
+                                      : null,
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: theme.primaryColor,
                                       foregroundColor: Colors.white,
@@ -102,7 +121,8 @@ class IndividualGroup extends StatelessWidget {
                               child: ElevatedButton(
                                   onPressed: group.canJoin!
                                       ? () {
-                                          joinGroupFunction(group.groupId);
+                                          joinGroupFunction(
+                                              group.groupId, false);
                                           Navigator.pushNamed(
                                                   context, JOIN_WAITING_ROUTE,
                                                   arguments: group)
@@ -149,32 +169,6 @@ class GameVisibilityView extends StatelessWidget {
         preferBelow: false,
         showDuration: Duration(seconds: 3),
         child: Icon(gameVisibility.icon, size: 40));
-  }
-}
-
-class Observers extends StatelessWidget {
-  const Observers({
-    super.key,
-  });
-
-  // TODO: Add dynamic number
-  final int numberOfObservers = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return numberOfObservers != 0
-        ? Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.visibility_outlined, size: 30),
-              SizedBox(width: 4),
-              Text(
-                numberOfObservers.toString(),
-                style: TextStyle(fontSize: 24),
-              )
-            ],
-          )
-        : SizedBox.shrink();
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/services/group-join.service.dart';
+import 'package:mobile/services/user.service.dart';
 
 import '../../classes/group.dart';
 import '../../constants/locale/group-selection-constants.dart';
@@ -14,8 +15,9 @@ class GroupSelection extends StatelessWidget {
 
   final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
 
-  void joinGroup(String groupId) {
-    groupJoinService.handleJoinGroup(groupId);
+  void joinGroup(String groupId, bool isObserver) {
+    groupJoinService.handleJoinGroup(groupId, isObserver);
+    getIt<UserService>().isObserver = isObserver;
   }
 
   @override
@@ -51,7 +53,8 @@ StreamBuilder<List<Group>> handleLobbyListChange(
 
       return groups.isEmpty
           ? Center(
-              child: Text(NO_GAME_AVAILABLE, style: theme.textTheme.displaySmall),
+              child:
+                  Text(NO_GAME_AVAILABLE, style: theme.textTheme.displaySmall),
             )
           : Padding(
               padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),

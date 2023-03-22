@@ -73,15 +73,16 @@ class GameCreationController {
           startGameData: startGameData));
     });
     socketService.on(JOIN_REQUEST, (data) {
-      handleJoinRequest(PublicUser.usersFromJsonList(data));
+      handleJoinRequest(RequestingUsers.fromJson(data));
     });
     socketService.on(JOIN_REQUEST_CANCELLED, (data) {
       handleJoinRequestCancelled(PublicUser.usersFromJsonList(data));
     });
   }
 
-  void handleJoinRequest(List<PublicUser> data) {
-    playerWaitingList$.add(data);
+  void handleJoinRequest(RequestingUsers data) {
+    playerWaitingList$.add(data.requestingPlayers);
+    observerWaitingList$.add(data.requestingObservers);
   }
 
   void handleJoinRequestCancelled(List<PublicUser> data) {

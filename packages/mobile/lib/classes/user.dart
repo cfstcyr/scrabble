@@ -53,6 +53,54 @@ class UserLoginCredentials {
   }
 }
 
+class UserRequest {
+  PublicUser publicUser;
+  bool isObserver;
+  UserRequest({
+    required this.publicUser,
+    this.isObserver = false,
+  });
+
+  factory UserRequest.fromJson(Map<String, dynamic> json) {
+    return UserRequest(
+      publicUser: PublicUser.fromJson(json['publicUser']),
+      isObserver: json['isObserver'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'publicUser': publicUser,
+      'isObserver': isObserver,
+    };
+  }
+}
+
+class RequestingUsers {
+  List<PublicUser> requestingPlayers;
+  List<PublicUser> requestingObservers;
+  RequestingUsers({
+    required this.requestingPlayers,
+    required this.requestingObservers,
+  });
+
+  factory RequestingUsers.fromJson(Map<String, dynamic> json) {
+    return RequestingUsers(
+      requestingPlayers:
+          PublicUser.usersFromJsonList(json['requestingPlayers']),
+      requestingObservers:
+          PublicUser.usersFromJsonList(json['requestingObservers']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'requestingPlayers': requestingPlayers,
+      'requestingObservers': requestingObservers,
+    };
+  }
+}
+
 class PublicUser {
   String email;
   String username;

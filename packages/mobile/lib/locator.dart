@@ -11,6 +11,7 @@ import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game-creation-service.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game-messages.service.dart';
+import 'package:mobile/services/game-observer-service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/services/initializer.service.dart';
@@ -51,7 +52,6 @@ class CustomLocator {
     getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
     getIt.registerLazySingleton<UserController>(() => UserController());
 
-
     getIt.registerLazySingleton<ChatManagementController>(
         () => ChatManagementController());
     getIt.registerLazySingleton<SocketService>(() => SocketService());
@@ -75,9 +75,11 @@ class CustomLocator {
   }
 
   void _registerActiveSingleton() {
-    getIt.registerSingleton<AccountAuthenticationController>(AccountAuthenticationController());
+    getIt.registerSingleton<AccountAuthenticationController>(
+        AccountAuthenticationController());
     getIt.registerSingleton<InitializerService>(InitializerService());
     getIt.registerSingleton<GameCreationService>(GameCreationService());
+    getIt.registerSingleton<GameObserverService>(GameObserverService());
     getIt.registerSingleton<GameService>(GameService());
     getIt.registerSingleton<EndGameService>(EndGameService());
     getIt.registerSingleton<GameMessagesService>(GameMessagesService());

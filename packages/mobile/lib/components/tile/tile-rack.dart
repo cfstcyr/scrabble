@@ -8,6 +8,7 @@ import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-event.service.dart';
+import 'package:mobile/services/game-observer-service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -238,5 +239,33 @@ class TileRack extends StatelessWidget {
         _currentHoveredTileIndex.add(null);
       },
     );
+  }
+}
+
+class TileRackObserver extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+        stream: getIt.get<GameObserverService>().tilesStream,
+        builder: ((context, snapshot) {
+          return snapshot.data != null
+              ? Wrap(
+                  children: [
+                    ...List.generate(
+                      snapshot.data!.length,
+                      (index) => Card(
+                        color: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        child: Tile(
+                          tile: snapshot.data![index],
+                          size: TILE_SIZE_DRAG,
+                          shouldWiggle: true,
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              : Container();
+        }));
   }
 }

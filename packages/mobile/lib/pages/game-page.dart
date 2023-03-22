@@ -3,6 +3,7 @@ import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/components/game/game_actions.dart';
 import 'package:mobile/components/game/game_board.dart';
 import 'package:mobile/components/game/game_info.dart';
+import 'package:mobile/components/game/game_observer_actions.dart';
 import 'package:mobile/components/game/game_timer.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
@@ -12,6 +13,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
 
 import '../components/game/game_messages.dart';
+import '../services/user.service.dart';
 
 class GamePage extends StatefulWidget {
   @override
@@ -51,7 +53,9 @@ class _GamePageState extends State<GamePage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(child: GameBoard()),
-                          TileRack(),
+                          getIt<UserService>().isObserver
+                              ? TileRackObserver()
+                              : TileRack(),
                         ],
                       ),
                     )),
@@ -79,6 +83,9 @@ class _GamePageState extends State<GamePage> {
                             ],
                           ),
                           Expanded(child: GameMessages()),
+                          getIt.get<UserService>().isObserver
+                              ? GameObserverActions()
+                              : SizedBox(),
                           GameActions(),
                         ],
                       ),
