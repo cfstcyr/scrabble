@@ -52,7 +52,6 @@ class Placement {
 
   bool validatePlacement(Board board) {
     if (tiles.isEmpty) return false;
-    if (board.isFirstMove()) return true;
     var orientation = _getPlacementOrientation(tiles);
 
     // The method returns an orientation if all the tiles are in one line.
@@ -65,7 +64,7 @@ class Placement {
         orientation: orientation,
         position: sortedTilePlacements.first.position);
     int index = 0;
-    bool hasNeighbors = false;
+    bool hasNeighbors = _placementIncludesMiddle();
 
     // Check if placement starts with existing tile.
     if (!navigator.clone().backward().isEmpty()) hasNeighbors = true;
@@ -127,6 +126,10 @@ class Placement {
         : -1);
 
     return list;
+  }
+
+  bool _placementIncludesMiddle() {
+    return tiles.any((TilePlacement tile) => tile.position.row == MIDDLE_ROW && tile.position.column == MIDDLE_COL);
   }
 
   Placement clone() {
