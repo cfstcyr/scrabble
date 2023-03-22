@@ -257,7 +257,6 @@ class TileRackObserver extends StatelessWidget {
               StreamBuilder(
                   stream: getIt.get<GameObserverService>().tilesStream,
                   builder: ((context, snapshot) {
-                    print(snapshot.data);
                     return snapshot.data != null
                         ? Wrap(
                             children: [

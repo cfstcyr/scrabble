@@ -111,6 +111,8 @@ class GameService {
       game.players.getPlayer(4).updatePlayerData(gameUpdate.player4!);
     }
 
+    _gameObserverService.playersContainer.add(game.players);
+
     if (gameUpdate.board != null) {
       game.board.updateBoardData(gameUpdate.board!);
     }

@@ -4,6 +4,13 @@ import '../classes/game/players_container.dart';
 import '../classes/tile/tile.dart';
 
 class GameObserverService {
+  late BehaviorSubject<List<Tile>> _tiles =
+      BehaviorSubject<List<Tile>>.seeded([]);
+  late BehaviorSubject<int> _observedPlayerIndex =
+      BehaviorSubject<int>.seeded(1);
+  late BehaviorSubject<PlayersContainer> playersContainer =
+      BehaviorSubject<PlayersContainer>();
+
   GameObserverService._()
       : _tiles = BehaviorSubject<List<Tile>>.seeded([]),
         _observedPlayerIndex = BehaviorSubject<int>.seeded(1) {
@@ -12,12 +19,6 @@ class GameObserverService {
       setPlayerTileRack(_observedPlayerIndex.value);
     });
   }
-  late BehaviorSubject<List<Tile>> _tiles =
-      BehaviorSubject<List<Tile>>.seeded([]);
-  late BehaviorSubject<int> _observedPlayerIndex =
-      BehaviorSubject<int>.seeded(1);
-  late BehaviorSubject<PlayersContainer> playersContainer =
-      BehaviorSubject<PlayersContainer>();
 
   static final GameObserverService _instance = GameObserverService._();
 

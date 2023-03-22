@@ -27,19 +27,6 @@ class Player extends AbstractPlayer {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              getIt.get<UserService>().isObserver
-                  ? Pulse(
-                      duration: Duration(milliseconds: 350),
-                      active: isObserved,
-                      child: Icon(
-                        Icons.visibility,
-                        color: getTextColor(),
-                      ),
-                    )
-                  : Container(),
-              SizedBox(
-                width: 2,
-              ),
               Expanded(child: getPlayerInfo()),
               Text(
                 '${player.score}',
@@ -50,6 +37,19 @@ class Player extends AbstractPlayer {
                   color: getTextColor(),
                 ),
               ),
+              SizedBox(
+                width: 2,
+              ),
+              getIt.get<UserService>().isObserver
+                  ? Pulse(
+                      duration: Duration(milliseconds: 350),
+                      active: isObserved,
+                      child: Icon(
+                        Icons.visibility,
+                        color: getTextColor(),
+                      ),
+                    )
+                  : Container(),
             ],
           ),
         ));
