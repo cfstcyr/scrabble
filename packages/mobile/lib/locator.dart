@@ -53,7 +53,6 @@ class CustomLocator {
     getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
     getIt.registerLazySingleton<UserController>(() => UserController());
 
-
     getIt.registerLazySingleton<ChatManagementController>(
         () => ChatManagementController());
     getIt.registerLazySingleton<SocketService>(() => SocketService());
@@ -64,8 +63,7 @@ class CustomLocator {
     getIt.registerLazySingleton<RoundService>(() => RoundService());
 
     getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());
-    getIt.registerLazySingleton<GroupJoinController>(
-        () => GroupJoinController());
+
     getIt.registerLazySingleton<GroupJoinService>(() => GroupJoinService());
 
     getIt.registerLazySingleton<GamePlayController>(() => GamePlayController());
@@ -74,17 +72,18 @@ class CustomLocator {
 
     getIt.registerLazySingleton<GameCreationController>(
         () => GameCreationController());
-    getIt.registerLazySingleton<PuzzleController>(
-            () => PuzzleController());
+    getIt.registerLazySingleton<PuzzleController>(() => PuzzleController());
   }
 
   void _registerActiveSingleton() {
-    getIt.registerSingleton<AccountAuthenticationController>(AccountAuthenticationController());
+    getIt.registerSingleton<AccountAuthenticationController>(
+        AccountAuthenticationController());
     getIt.registerSingleton<InitializerService>(InitializerService());
     getIt.registerSingleton<GameCreationService>(GameCreationService());
     getIt.registerSingleton<PuzzleService>(PuzzleService());
     getIt.registerSingleton<GameService>(GameService());
     getIt.registerSingleton<EndGameService>(EndGameService());
     getIt.registerSingleton<GameMessagesService>(GameMessagesService());
+    getIt.registerSingleton<GroupJoinController>(GroupJoinController());
   }
 }

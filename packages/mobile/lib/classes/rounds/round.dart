@@ -12,14 +12,11 @@ class Round {
     return Round(
         socketIdOfActivePlayer: Player.fromJson(json['playerData']).socketId,
         duration:
-            _parseDurationFromDates(json['startTime'], json['limitTime']));
+            _parseDurationFromDates(DateTime.parse(json['startTime']), DateTime.parse(json['limitTime'])));
   }
 
   static Duration _parseDurationFromDates(
       DateTime startTime, DateTime endTime) {
-    print(startTime);
-    print(endTime);
-    print(endTime.difference(startTime));
     return endTime.difference(startTime);
   }
 }

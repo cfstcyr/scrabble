@@ -215,7 +215,6 @@ void _handleStartPuzzle(BuildContext context) {
                         Navigator.pop(context);
                         if (isSuccess) {
                           // start puzzle and it will push
-                          print('sucess');
                           Navigator.pushReplacementNamed(context, PUZZLE_ROUTE);
                         } else {
                           errorSnackBar(context,
