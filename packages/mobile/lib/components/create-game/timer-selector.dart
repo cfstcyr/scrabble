@@ -1,17 +1,26 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/components/app_button.dart';
+import 'package:mobile/constants/create-game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/utils/duration-format.dart';
 
-class TimerSelector extends StatelessWidget {
-  ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
+class TimerSelector extends StatefulWidget {
 
   TimerSelector({super.key, this.duration = const Duration(seconds: 60)});
 
-  final Duration duration;
+  Duration duration;
+
+  @override
+  State<TimerSelector> createState() => _TimerSelectorState();
+}
+
+class _TimerSelectorState extends State<TimerSelector> {
+  ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +58,11 @@ class TimerSelector extends StatelessWidget {
                             topLeft: Radius.circular(8),
                             bottomLeft: Radius.circular(8))),
                     child: AppButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _decrementTimer();
+                        });
+                      },
                       icon: Icons.remove,
                       theme: AppButtonTheme.secondary,
                       type: AppButtonType.ghost,
@@ -67,7 +80,7 @@ class TimerSelector extends StatelessWidget {
                       children: [
                         Icon(Icons.hourglass_bottom_rounded, size: 36),
                         SizedBox(width: SPACE_1,),
-                        Text(formatTime(duration.inSeconds), style: theme.textTheme.headlineSmall,),
+                        Text(formatTime(widget.duration.inSeconds), style: theme.textTheme.headlineSmall,),
                       ],
                     ),
                   )),
@@ -81,7 +94,11 @@ class TimerSelector extends StatelessWidget {
                             topRight: Radius.circular(8),
                             bottomRight: Radius.circular(8))),
                     child: AppButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _incrementTimer();
+                        });
+                      },
                       theme: AppButtonTheme.secondary,
                       type: AppButtonType.ghost,
                       icon: Icons.add,
@@ -96,5 +113,13 @@ class TimerSelector extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void _incrementTimer() {
+    widget.duration = Duration(seconds: min<int>(widget.duration.inSeconds + INCREMENT_TIME.inSeconds, MAX_TIME.inSeconds));
+  }
+
+  void _decrementTimer() {
+    widget.duration = Duration(seconds: max<int>(widget.duration.inSeconds - INCREMENT_TIME.inSeconds, MIN_TIME.inSeconds));
   }
 }
