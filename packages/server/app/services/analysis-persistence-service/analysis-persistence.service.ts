@@ -4,19 +4,22 @@ import { ANALYSIS_TABLE, CRITICAL_MOMENTS_TABLE, PLACEMENT_TABLE } from '@app/co
 import { Service } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 // import { Board } from '@app/classes/board';
-import { Analysis, AnalysisData, CriticalMomentData, PlacementData } from '@app/classes/analysis/analysis';
+import { Analysis, AnalysisData, CriticalMomentData, CriticalMomentResponse, PlacementData } from '@app/classes/analysis/analysis';
 import { ScoredWordPlacement } from '@app/classes/word-finding';
 import { Board, Orientation } from '@app/classes/board';
-import { Tile } from '@app/classes/tile';
+import { Tile, TileReserve } from '@app/classes/tile';
+import { ActionTurnEndingType } from '@app/classes/communication/action-data';
+import BoardService from '../board-service/board.service';
 // import BoardService from '@app/services/board-service/board.service';
 
 @Service()
 export class AnalysisPersistenceService {
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(private readonly databaseService: DatabaseService, private boardService: BoardService) {}
 
     async requestAnalysis(gameId: string, userId: UserId) {
         const analysisData = await this.analysisTable
-        .select(`${CRITICAL_MOMENTS_TABLE}.*`, 
+            .select(
+                `${CRITICAL_MOMENTS_TABLE}.*`,
                 'bp.score as bp_score',
                 'bp.tilesToPlace as bp_tilesToPlace',
                 'bp.isHorizontal as bp_isHorizontal',
@@ -27,21 +30,29 @@ export class AnalysisPersistenceService {
                 'pp.isHorizontal as pp_isHorizontal',
                 'pp.row as pp_row',
                 'pp.column as pp_column',
-        )
-        .join(CRITICAL_MOMENTS_TABLE, `${ANALYSIS_TABLE}.analysisId`, '=', `${CRITICAL_MOMENTS_TABLE}.analysisId`)
-        .join(PLACEMENT_TABLE + ' as bp', `${CRITICAL_MOMENTS_TABLE}.bestPlacementId`, '=', 'bp.placementId')
-        .leftJoin(PLACEMENT_TABLE + ' as pp', `${CRITICAL_MOMENTS_TABLE}.playedPlacementId`, '=', 'pp.placementId')
-        .where({
-          'Analysis.gameId': gameId,
-          'Analysis.userId': userId,
-        });
+            )
+            .join(CRITICAL_MOMENTS_TABLE, `${ANALYSIS_TABLE}.analysisId`, '=', `${CRITICAL_MOMENTS_TABLE}.analysisId`)
+            .join(PLACEMENT_TABLE + ' as bp', `${CRITICAL_MOMENTS_TABLE}.bestPlacementId`, '=', 'bp.placementId')
+            .leftJoin(PLACEMENT_TABLE + ' as pp', `${CRITICAL_MOMENTS_TABLE}.playedPlacementId`, '=', 'pp.placementId')
+            .where({
+                'Analysis.gameId': gameId,
+                'Analysis.userId': userId,
+            });
 
-        const analysis = {}
-        for (const criticalMoment of analysisData) {
-
+        const analysis: Analysis = { gameId, userId, criticalMoments: [] };
+        for (const criticalMomentData of analysisData) {
+            const criticalMoment: CriticalMomentResponse = {tiles: criticalMomentData.tiles.map(async (tileString: string) => await TileReserve.convertStringToTile(tileString)), 
+                actionType: criticalMomentData.actionType as ActionTurnEndingType,
+                filledSquares: await this.boardService.initializeBoardSquares(criticalMomentData.board),
+                bestPlacement: this.convertDataToPlacement
+                playedPlacement: 
+            }
+            playedPlacement?: ScoredWordPlacement;
+            bestPlacement: ScoredWordPlacement;
         }
-      
     }
+
+    private convertDataToPlacement()
 
     async addAnalysis(gameId: string, userId: UserId, analysis: Analysis) {
         console.log('-------------------START-----------------------');
@@ -89,6 +100,18 @@ export class AnalysisPersistenceService {
     }
 
     private convertTileToString(tile: Tile): string {
+        if (tile.isBlank) {
+            if (tile.playedLetter) {
+                return tile.playedLetter.toLowerCase();
+            } else {
+                return tile.letter.toLowerCase();
+            }
+        } else {
+            return tile.letter;
+        }
+    }
+
+    private convertStringToTile(tile: Tile): string {
         if (tile.isBlank) {
             if (tile.playedLetter) {
                 return tile.playedLetter.toLowerCase();

@@ -3,7 +3,7 @@ import { Vec2 } from '@app/classes/board/vec2';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { Square } from '@app/classes/square';
 import { Multiplier } from '@app/classes/square/square';
-import { LetterValue, Tile } from '@app/classes/tile';
+import { LetterValue, Tile, TileReserve } from '@app/classes/tile';
 import { BOARD_CONFIG, BOARD_CONFIG_MAP } from '@app/constants/board-config';
 import { BOARD_SIZE } from '@app/constants/game-constants';
 import { BOARD_CONFIG_UNDEFINED_AT, NO_MULTIPLIER_MAPPED_TO_INPUT } from '@app/constants/services-errors';
@@ -34,22 +34,16 @@ export default class BoardService {
         return new Board(grid);
     }
 
-    initializeBoardSquares(boardString: string): Square[] {
+    async initializeBoardSquares(boardString: string): Promise<Square[]> {
         const center: Position = new Position(Math.floor(BoardService.size.x / 2), Math.floor(BoardService.size.y / 2));
-        // await TileReserve.fetchLetterDistribution();
         const filledSquares: Square[] = [];
         for (let i = 0; i < boardString.length; i++) {
             // check if this is the correct position
             const position = new Position(Math.floor(i / BoardService.size.y), i % BoardService.size.x);
             let tile: Tile;
             if (boardString[i] === ' ') continue;
-            else if (boardString[i] === boardString[i].toLowerCase()) {
-                tile =
-                    // it is a blanktile
-                    tile = { letter: '*', value: 0, isBlank: true, playedLetter: boardString[i] as LetterValue };
-            } else {
-                // TODO: Get real value
-                tile = { letter: boardString[i] as LetterValue, value: 1, isBlank: false };
+            else {
+                tile = await TileReserve.convertStringToTile(boardString[i]);
             }
             const isCenter = position.row === center.row && position.column === center.column;
             const square: Square = {

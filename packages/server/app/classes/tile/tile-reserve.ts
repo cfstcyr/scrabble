@@ -15,19 +15,48 @@ import { join } from 'path';
 import { LetterDistributionData, TileData } from './tile.types';
 
 export default class TileReserve {
+    private static letterScoreMap: Map<LetterValue, number> = new Map<LetterValue, number>();
     private tiles: Tile[];
     private initialized: boolean;
-
     constructor() {
         this.tiles = [];
         this.initialized = false;
     }
 
+    static async convertStringToTile(tileString: string): Promise<Tile> {
+        let tile: Tile;
+
+        if (tileString === tileString.toLowerCase()) {
+            // it is a blanktile
+            tile = { letter: '*', value: 0, isBlank: true, playedLetter: tileString as LetterValue };
+        } else {
+            tile = {
+                letter: tileString as LetterValue,
+                value: (await TileReserve.getLetterValueMap()).get(tileString as LetterValue) ?? 1,
+                isBlank: false,
+            };
+        }
+        return tile;
+    }
     static async fetchLetterDistribution(): Promise<TileData[]> {
         const filePath = join(__dirname, LETTER_DISTRIBUTION_RELATIVE_PATH);
         const dataBuffer = await promises.readFile(filePath, 'utf-8');
         const data: LetterDistributionData = JSON.parse(dataBuffer);
         return data.tiles;
+    }
+
+    static async getLetterValueMap(): Promise<Map<LetterValue, number>> {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        if (this.letterScoreMap.size < 26) {
+            this.setLetterValueMap(await this.fetchLetterDistribution());
+        }
+        return this.letterScoreMap;
+    }
+
+    private static async setLetterValueMap(letterDistribution: TileData[]): Promise<void> {
+        letterDistribution.forEach((tile) => {
+            this.letterScoreMap.set(tile.letter as LetterValue, tile.score);
+        });
     }
 
     async init(): Promise<void> {
