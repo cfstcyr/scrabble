@@ -57,7 +57,7 @@ class PuzzleService {
 
     Round firstRound = Round(socketIdOfActivePlayer: getIt.get<SocketService>().getSocket().id ?? '', duration: startPuzzle.roundDuration);
 
-    _roundService.startRound(firstRound);
+    _roundService.startRound(firstRound, _onTimerExpires);
     getIt.get<GameMessagesService>().resetMessages();
   }
 
@@ -71,5 +71,9 @@ class PuzzleService {
 
   void quitPuzzle() {
     _puzzleController.quitPuzzle();
+  }
+
+  void _onTimerExpires() {
+    abandonPuzzle();
   }
 }
