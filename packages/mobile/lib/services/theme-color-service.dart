@@ -20,7 +20,7 @@ class ThemeColorService {
 
   Color secondaryButton = Color.fromRGBO(216, 216, 216, 1);
 
-  Color tertiaryButton = Color.fromRGBO(222, 239, 223, 1);
+  Color menuSecondaryButton = Color.fromRGBO(222, 239, 223, 1);
 
   Color cardColor = Color.fromRGBO(255, 255, 255, 1);
 }

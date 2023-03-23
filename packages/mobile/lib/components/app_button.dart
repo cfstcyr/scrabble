@@ -79,7 +79,7 @@ class AppButton extends StatelessWidget {
       case AppButtonTheme.tomato:
         return Color.fromRGBO(248, 100, 95, 1);
       case AppButtonTheme.tertiary:
-        return _themeColorService.tertiaryButton;
+        return _themeColorService.menuSecondaryButton;
       case AppButtonTheme.secondary:
         return type == AppButtonType.ghost
             ? Colors.black
