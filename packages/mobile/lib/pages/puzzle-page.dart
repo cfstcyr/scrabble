@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/abstract-game.dart';
+import 'package:mobile/classes/puzzle/puzzle.dart';
 import 'package:mobile/components/game/game_actions.dart';
 import 'package:mobile/components/game/game_board.dart';
 import 'package:mobile/components/game/game_info.dart';
@@ -10,6 +11,7 @@ import 'package:mobile/components/tile/tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
+import 'package:mobile/services/puzzle-service.dart';
 
 import '../components/game/game_messages.dart';
 
@@ -26,69 +28,48 @@ class _PuzzlePageState extends State<PuzzlePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.shrink();
-    // GameService gameService = getIt.get<GameService>();
-    //
-    // return StreamBuilder<Game?>(
-    //     stream: gameService.gameStream,
-    //     builder: (context, snapshot) {
-    //       if (snapshot.data != null && snapshot.data!.isOver) {
-    //         WidgetsBinding.instance.addPostFrameCallback((_) {
-    //           gameService.handleEndGame(context);
-    //         });
-    //       }
-    //       return MyScaffold(
-    //         title: "Game",
-    //         body: Container(
-    //           color: Colors.grey.shade100,
-    //           padding: EdgeInsets.all(SPACE_1),
-    //           child: SafeArea(
-    //             child: Row(
-    //               mainAxisAlignment: MainAxisAlignment.center,
-    //               children: [
-    //                 Container(
-    //                     child: IntrinsicWidth(
-    //                   child: Column(
-    //                     crossAxisAlignment: CrossAxisAlignment.stretch,
-    //                     children: [
-    //                       Expanded(child: GameBoard()),
-    //                       TileRack(),
-    //                     ],
-    //                   ),
-    //                 )),
-    //                 SizedBox(
-    //                   width: 425,
-    //                   child: Column(
-    //                     crossAxisAlignment: CrossAxisAlignment.stretch,
-    //                     children: [
-    //                       PlayersContainer(),
-    //                       Row(
-    //                         children: [
-    //                           Expanded(
-    //                             child: GameInfo(
-    //                                 value: snapshot.data != null
-    //                                     ? snapshot.data!
-    //                                         .computeNumberOfTilesLeft()
-    //                                         .toString()
-    //                                     : '0',
-    //                                 name: "Tuiles restantes",
-    //                                 icon: Icons.font_download),
-    //                           ),
-    //                           Expanded(
-    //                             child: GameTimer(),
-    //                           ),
-    //                         ],
-    //                       ),
-    //                       Expanded(child: GameMessages()),
-    //                       GameActions(),
-    //                     ],
-    //                   ),
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       );
-    //     });
+    PuzzleService puzzleService = getIt.get<PuzzleService>();
+
+    return StreamBuilder<PuzzleGame?>(
+        stream: puzzleService.puzzleStream,
+        builder: (context, snapshot) {
+          return MyScaffold(
+            title: "Mode Entraînement",
+            body: Container(
+              color: Colors.grey.shade100,
+              padding: EdgeInsets.all(SPACE_1),
+              child: SafeArea(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IntrinsicWidth(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(child: GameBoard(gameStream: puzzleService.puzzleStream)),
+                      TileRack(),
+                    ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: 425,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          PlayersContainer(),
+                          Expanded(
+                            child: GameTimer(),
+                          ),
+                          Expanded(child: GameMessages()),
+                          GameActions(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

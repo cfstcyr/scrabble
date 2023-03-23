@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/abstract-game.dart';
 import 'package:mobile/classes/board/position.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/tile/square.dart';
@@ -7,13 +8,15 @@ import 'package:mobile/components/game/game_square.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../constants/game.constants.dart';
 
 class GameBoard extends StatelessWidget {
-  final GameService _gameService = getIt.get<GameService>();
 
-  GameBoard();
+  GameBoard({required this.gameStream});
+
+  final ValueStream<AbstractGame?> gameStream;
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +25,8 @@ class GameBoard extends StatelessWidget {
         padding: EdgeInsets.all(SPACE_2),
         child: AspectRatio(
           aspectRatio: 1,
-          child: StreamBuilder<MultiplayerGame?>(
-            stream: _gameService.gameStream,
+          child: StreamBuilder<AbstractGame?>(
+            stream: gameStream,
             builder: (context, snapshot) {
               return GridView.count(
                 crossAxisCount: GRID_SIZE,

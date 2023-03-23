@@ -34,6 +34,8 @@ class PuzzleService {
     return _instance;
   }
 
+  ValueStream<PuzzleGame?> get puzzleStream => _puzzle.stream;
+
   Future<bool> startPuzzle(Duration roundDuration) async {
     return await _puzzleController.startPuzzle().then((Response value) {
       _handleStartPuzzle(StartPuzzle.fromJson(jsonDecode(value.body))
@@ -53,11 +55,13 @@ class PuzzleService {
 
     _puzzle.add(PuzzleGame(board: board, tileRack: tileRack));
 
-    Round firstRound = Round(socketIdOfActivePlayer: getIt.get<SocketService>().getSocket().id ?? '');
+    Round firstRound = Round(socketIdOfActivePlayer: getIt.get<SocketService>().getSocket().id ?? '', duration: startPuzzle.roundDuration);
 
     _roundService.startRound(firstRound);
     getIt.get<GameMessagesService>().resetMessages();
-    Navigator.pushReplacementNamed(
-        navigatorKey.currentContext!, PUZZLE_ROUTE);
+  }
+
+  void quitPuzzle() {
+    _puzzleController.quitPuzzle();
   }
 }

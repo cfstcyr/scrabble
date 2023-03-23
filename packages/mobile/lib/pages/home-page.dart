@@ -172,10 +172,12 @@ void _handleStartPuzzle(BuildContext context) {
         return AlertDialog(
           title: Center(
             child: Text('Mode Entraînement',
-                style: theme.textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w500)),
+                style: theme.textTheme.displayMedium
+                    ?.copyWith(fontWeight: FontWeight.w500)),
           ),
           content: SingleChildScrollView(child: timerSelector),
-          contentPadding: EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
+          contentPadding:
+              EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
           ),
@@ -193,23 +195,31 @@ void _handleStartPuzzle(BuildContext context) {
                     theme: AppButtonTheme.secondary,
                     child: Text(
                       'Annuler',
-                      style: TextStyle(fontSize: 24, overflow: TextOverflow.ellipsis),
+                      style: TextStyle(
+                          fontSize: 24, overflow: TextOverflow.ellipsis),
                       textAlign: TextAlign.end,
                     ),
                   ),
                 ),
-                SizedBox(width: SPACE_3 * 4,),
+                SizedBox(
+                  width: SPACE_3 * 4,
+                ),
                 ConstrainedBox(
                   constraints: BoxConstraints.tightFor(width: 216, height: 60),
                   child: AppButton(
                     onPressed: () {
-                      getIt.get<PuzzleService>().startPuzzle(timerSelector.duration).then((bool isSuccess) {
+                      getIt
+                          .get<PuzzleService>()
+                          .startPuzzle(timerSelector.duration)
+                          .then((bool isSuccess) {
                         Navigator.pop(context);
                         if (isSuccess) {
                           // start puzzle and it will push
                           print('sucess');
+                          Navigator.pushReplacementNamed(context, PUZZLE_ROUTE);
                         } else {
-                          errorSnackBar(context, "Erreur lors du lancement de l'entraînement, veuillez réessayez plus tard");
+                          errorSnackBar(context,
+                              "Erreur lors du lancement de l'entraînement, veuillez réessayez plus tard");
                         }
                       });
                     },
@@ -219,7 +229,10 @@ void _handleStartPuzzle(BuildContext context) {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text('Démarrer',
-                            style: TextStyle(fontSize: 24, color: Colors.white, overflow: TextOverflow.ellipsis),
+                            style: TextStyle(
+                                fontSize: 24,
+                                color: Colors.white,
+                                overflow: TextOverflow.ellipsis),
                             textAlign: TextAlign.end),
                         Icon(
                           Icons.play_arrow_rounded,

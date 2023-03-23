@@ -37,7 +37,7 @@ class _GamePageState extends State<GamePage> {
             });
           }
           return MyScaffold(
-            title: "Game",
+            title: "Partie Multijoueur",
             body: Container(
               color: Colors.grey.shade100,
               padding: EdgeInsets.all(SPACE_1),
@@ -50,7 +50,7 @@ class _GamePageState extends State<GamePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Expanded(child: GameBoard()),
+                          Expanded(child: GameBoard(gameStream: gameService.gameStream,)),
                           TileRack(),
                         ],
                       ),

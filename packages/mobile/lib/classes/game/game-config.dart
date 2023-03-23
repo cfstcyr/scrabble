@@ -31,7 +31,7 @@ class StartGameData {
         player3: Player.fromJson(json['player3']),
         player4: Player.fromJson(json['player4']),
         gameId: json['gameId'],
-        firstRound: Round.fromJson(json['round']).withDuration(roundTimeToRoundDuration(json['maxRoundTime'])),
+        firstRound: Round.fromJson(json['round']),
         tileReserve: json['tileReserve'] != null && (json['tileReserve'] as List<dynamic>).isNotEmpty
             ? (json['tileReserve'] as List<dynamic>)
                 .map((dynamic tile) =>

@@ -32,6 +32,18 @@ class PuzzleController {
     return http.post(Uri.parse("$endpoint/start"));
   }
 
+  // Future<Response> completePuzzle() async {
+  //   return http.post(Uri.parse("$endpoint/complete"));
+  // }
+
+  Future<Response> abandonPuzzle() async {
+    return http.post(Uri.parse("$endpoint/abandon"));
+  }
+
+  void quitPuzzle() {
+    http.post(Uri.parse("$endpoint/abandon"));
+  }
+
   static final PuzzleController _instance =
       PuzzleController._privateConstructor();
 
