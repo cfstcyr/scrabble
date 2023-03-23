@@ -12,7 +12,7 @@ class StartPuzzle {
   factory StartPuzzle.fromJson(Map<String, dynamic> json) {
     return StartPuzzle(
         board: List<Square>.from(
-            (json['board'] as List).map((e) => Square.fromJson(e))),
+            (json['board']['grid'] as List<dynamic>).expand((element) => element).map((e) => Square.fromJson(e))),
         tiles: List<Tile>.from(
             (json['tiles'] as List).map((e) => Tile.fromJson(e))));
   }
