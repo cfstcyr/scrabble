@@ -6,7 +6,7 @@ import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/game/game_timer.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/components/tile/tilerack/abstract-tile-rack.dart';
+import 'package:mobile/components/tile/tile-rack/multiplayer-tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
@@ -53,31 +53,61 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     GameService gameService = getIt.get<GameService>();
 
-    return StreamBuilder<MultiplayerGame?>(
-        stream: gameService.gameStream,
-        builder: (context, snapshot) {
-          if (snapshot.data != null && snapshot.data!.isOver) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              gameService.handleEndGame(context);
-            });
-          }
-          return MyScaffold(
-            title: "Partie Multijoueur",
-            body: Container(
-              color: Colors.grey.shade100,
-              padding: EdgeInsets.all(SPACE_1),
-              child: SafeArea(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                        child: IntrinsicWidth(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(child: GameBoard(gameStream: gameService.gameStream,)),
-                          MultiplayerTileRack(),
-                        ],
+    return WillPopScope(
+      child: StreamBuilder<MultiplayerGame?>(
+          stream: gameService.gameStream,
+          builder: (context, snapshot) {
+            if (snapshot.data != null && snapshot.data!.isOver) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                gameService.handleEndGame(context);
+              });
+            }
+            return MyScaffold(
+              title: "Game",
+              body: Container(
+                color: Colors.grey.shade100,
+                padding: EdgeInsets.all(SPACE_1),
+                child: SafeArea(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                          child: IntrinsicWidth(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(child: GameBoard(gameStream: gameService.gameStream,)),
+                                MultiplayerTileRack(gameStream: gameService.gameStream),
+                              ],
+                            ),
+                          )),
+                      SizedBox(
+                        width: 425,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            PlayersContainer(),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: GameInfo(
+                                      value: snapshot.data != null
+                                          ? snapshot.data!
+                                          .computeNumberOfTilesLeft()
+                                          .toString()
+                                          : '0',
+                                      name: "Tuiles restantes",
+                                      icon: Icons.font_download),
+                                ),
+                                Expanded(
+                                  child: GameTimer(),
+                                ),
+                              ],
+                            ),
+                            Expanded(child: GameMessages()),
+                            GameActions(),
+                          ],
+                        ),
                       ),
                     ],
                   ),
