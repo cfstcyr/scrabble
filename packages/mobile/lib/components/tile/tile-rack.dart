@@ -19,7 +19,7 @@ class TileRack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Game?>(
+    return StreamBuilder<MultiplayerGame?>(
       stream: _gameService.gameStream,
       builder: (context, game) {
         return Card(

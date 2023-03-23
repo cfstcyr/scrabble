@@ -22,7 +22,7 @@ class GameBoard extends StatelessWidget {
         padding: EdgeInsets.all(SPACE_2),
         child: AspectRatio(
           aspectRatio: 1,
-          child: StreamBuilder<Game?>(
+          child: StreamBuilder<MultiplayerGame?>(
             stream: _gameService.gameStream,
             builder: (context, snapshot) {
               return GridView.count(

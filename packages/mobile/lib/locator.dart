@@ -2,7 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
-import 'package:mobile/controllers/puzzle-creation-controller.dart';
+import 'package:mobile/controllers/puzzle-controller.dart';
 import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/channel.service.dart';
@@ -16,7 +16,7 @@ import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
-import 'package:mobile/services/puzzle-creation-service.dart';
+import 'package:mobile/services/puzzle-service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/storage.handler.dart';
@@ -74,15 +74,15 @@ class CustomLocator {
 
     getIt.registerLazySingleton<GameCreationController>(
         () => GameCreationController());
-    getIt.registerLazySingleton<PuzzleCreationController>(
-            () => PuzzleCreationController());
+    getIt.registerLazySingleton<PuzzleController>(
+            () => PuzzleController());
   }
 
   void _registerActiveSingleton() {
     getIt.registerSingleton<AccountAuthenticationController>(AccountAuthenticationController());
     getIt.registerSingleton<InitializerService>(InitializerService());
     getIt.registerSingleton<GameCreationService>(GameCreationService());
-    getIt.registerSingleton<PuzzleCreationService>(PuzzleCreationService());
+    getIt.registerSingleton<PuzzleService>(PuzzleService());
     getIt.registerSingleton<GameService>(GameService());
     getIt.registerSingleton<EndGameService>(EndGameService());
     getIt.registerSingleton<GameMessagesService>(GameMessagesService());

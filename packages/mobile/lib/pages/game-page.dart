@@ -28,7 +28,7 @@ class _GamePageState extends State<GamePage> {
   Widget build(BuildContext context) {
     GameService gameService = getIt.get<GameService>();
 
-    return StreamBuilder<Game?>(
+    return StreamBuilder<MultiplayerGame?>(
         stream: gameService.gameStream,
         builder: (context, snapshot) {
           if (snapshot.data != null && snapshot.data!.isOver) {

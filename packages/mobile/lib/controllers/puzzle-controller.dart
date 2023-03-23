@@ -19,23 +19,23 @@ import '../locator.dart';
 import '../services/client.dart';
 import '../services/socket.service.dart';
 
-class PuzzleCreationController {
+class PuzzleController {
   PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
 
   InterceptedHttp get http => httpClient.http;
 
   final String endpoint = PUZZLE_ENDPOINT;
 
-  PuzzleCreationController._privateConstructor();
+  PuzzleController._privateConstructor();
 
   Future<Response> startPuzzle() async {
     return http.post(Uri.parse("$endpoint/start"));
   }
 
-  static final PuzzleCreationController _instance =
-      PuzzleCreationController._privateConstructor();
+  static final PuzzleController _instance =
+      PuzzleController._privateConstructor();
 
-  factory PuzzleCreationController() {
+  factory PuzzleController() {
     return _instance;
   }
 }

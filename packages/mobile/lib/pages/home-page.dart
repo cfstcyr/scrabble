@@ -9,7 +9,7 @@ import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/routes/routes.dart';
-import 'package:mobile/services/puzzle-creation-service.dart';
+import 'package:mobile/services/puzzle-service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/home-page.constants.dart';
@@ -203,7 +203,7 @@ void _handleStartPuzzle(BuildContext context) {
                   constraints: BoxConstraints.tightFor(width: 216, height: 60),
                   child: AppButton(
                     onPressed: () {
-                      getIt.get<PuzzleCreationService>().startPuzzle(timerSelector.duration).then((bool isSuccess) {
+                      getIt.get<PuzzleService>().startPuzzle(timerSelector.duration).then((bool isSuccess) {
                         Navigator.pop(context);
                         if (isSuccess) {
                           // start puzzle and it will push

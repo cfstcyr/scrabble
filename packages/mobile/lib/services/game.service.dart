@@ -27,7 +27,7 @@ import '../utils/round-utils.dart';
 class GameService {
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
-  final BehaviorSubject<Game?> _game;
+  final BehaviorSubject<MultiplayerGame?> _game;
 
   static final GameService _instance = GameService._();
 
@@ -61,7 +61,7 @@ class GameService {
     TileRack tileRack =
         TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
 
-    _game.add(Game(
+    _game.add(MultiplayerGame(
         board: Board(),
         tileRack: tileRack,
         players: playersContainer,
@@ -79,7 +79,7 @@ class GameService {
       throw Exception('Cannot update game: game is null');
     }
 
-    Game game = _game.value!;
+    MultiplayerGame game = _game.value!;
 
     if (gameUpdate.tileReserve != null) {
       game.tileReserve = gameUpdate.tileReserve!;
@@ -123,13 +123,13 @@ class GameService {
     _game.add(game);
   }
 
-  Game get game {
+  MultiplayerGame get game {
     if (_game.value == null) throw Exception("No game");
 
     return _game.value!;
   }
 
-  ValueStream<Game?> get gameStream {
+  ValueStream<MultiplayerGame?> get gameStream {
     return _game.stream;
   }
 
