@@ -3,11 +3,13 @@ import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/create-game/timer-selector.dart';
+import 'package:mobile/components/error-pop-up.dart';
 import 'package:mobile/components/image.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/puzzle-creation-service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/home-page.constants.dart';
@@ -18,12 +20,6 @@ import '../controllers/group-join-controller.dart';
 import '../locator.dart';
 
 class HomePage extends StatelessWidget {
-  final AccountAuthenticationController authService =
-      getIt.get<AccountAuthenticationController>();
-
-  final gameCreationController = getIt.get<GameCreationController>();
-  final gameJoinController = getIt.get<GroupJoinController>();
-
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
@@ -172,13 +168,13 @@ void _handleStartPuzzle(BuildContext context) {
       barrierDismissible: true,
       builder: (BuildContext context) {
         ThemeData theme = Theme.of(context);
-
+        final TimerSelector timerSelector = TimerSelector();
         return AlertDialog(
           title: Center(
             child: Text('Mode Entraînement',
                 style: theme.textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w500)),
           ),
-          content: SingleChildScrollView(child: TimerSelector()),
+          content: SingleChildScrollView(child: timerSelector),
           contentPadding: EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
@@ -206,7 +202,17 @@ void _handleStartPuzzle(BuildContext context) {
                 ConstrainedBox(
                   constraints: BoxConstraints.tightFor(width: 216, height: 60),
                   child: AppButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      getIt.get<PuzzleCreationService>().startPuzzle(timerSelector.duration).then((bool isSuccess) {
+                        Navigator.pop(context);
+                        if (isSuccess) {
+                          // start puzzle and it will push
+                          print('sucess');
+                        } else {
+                          errorSnackBar(context, "Erreur lors du lancement de l'entraînement, veuillez réessayez plus tard");
+                        }
+                      });
+                    },
                     theme: AppButtonTheme.primary,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
