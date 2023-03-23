@@ -1,3 +1,5 @@
+import 'package:mobile/classes/game/game.dart';
+import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/environments/environment.dart';
 import 'package:mobile/services/user-session.service.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -36,7 +38,9 @@ class SocketService {
     socket.onConnectTimeout((err) {
       print(err);
     });
-    socket.onDisconnect((_) => {print("disconnected")});
+    socket.onDisconnect((value) {
+      print('disconnect');
+    });
   }
 
   void disconnect() {

@@ -54,7 +54,9 @@ class GamePlayController {
 
   Future<void> leaveGame() async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/players/leave");
-    await http.delete(endpoint);
+    await http.delete(endpoint).then((_) {
+      currentGameId = null;
+    });
   }
 
   void configureSocket() {
