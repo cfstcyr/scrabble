@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/classes/abstract-game.dart';
 import 'package:mobile/classes/puzzle/puzzle.dart';
 import 'package:mobile/components/game/game_actions.dart';
 import 'package:mobile/components/game/game_board.dart';
-import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/game/game_timer.dart';
+import 'package:mobile/components/player/main_player.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/components/tile/tilerack/abstract-tile-rack.dart';
+import 'package:mobile/components/tile/tile-rack/puzzle-tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/puzzle-service.dart';
 
 import '../components/game/game_messages.dart';
@@ -44,11 +42,14 @@ class _PuzzlePageState extends State<PuzzlePage> {
                   children: [
                     IntrinsicWidth(
                       child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(child: GameBoard(gameStream: puzzleService.puzzleStream)),
-                      MultiplayerTileRack(),
-                    ],
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                              child: GameBoard(
+                                  gameStream: puzzleService.puzzleStream)),
+                          PuzzleTileRack(
+                              gameStream: puzzleService.puzzleStream),
+                        ],
                       ),
                     ),
                     SizedBox(
@@ -56,12 +57,11 @@ class _PuzzlePageState extends State<PuzzlePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          PlayersContainer(),
                           Expanded(
                             child: GameTimer(),
                           ),
                           Expanded(child: GameMessages()),
-                          GameActions(),
+                          // GameActions(),
                         ],
                       ),
                     ),
