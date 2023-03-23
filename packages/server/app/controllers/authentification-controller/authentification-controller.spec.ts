@@ -25,7 +25,7 @@ describe('AuthentificationController', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit();
+        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService();
         await testingUnit.withMockDatabaseService();
         testingUnit.withStubbedControllers(AuthentificationService);
         authentificationServiceStub = testingUnit.setStubbed(AuthentificationService);

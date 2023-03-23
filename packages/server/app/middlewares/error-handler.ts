@@ -11,6 +11,7 @@ export const errorHandler = (error: Error, req: express.Request, res: express.Re
     const response: ErrorResponse = {
         message: error.message,
         error: getReasonPhrase(status),
+        validationErrors: error instanceof HttpException ? error.validationErrors : [],
     };
 
     res.locals.message = error.message;

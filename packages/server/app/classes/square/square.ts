@@ -1,12 +1,9 @@
+import { Multiplier as MultiplierCommon, Square as SquareCommon } from '@common/models/game';
 import { Position } from '@app/classes/board';
-import { Tile } from '@app/classes/tile';
-import ScoreMultiplier from './score-multiplier';
 
-export type Multiplier = ScoreMultiplier | null;
-export default interface Square {
-    tile: Tile | null;
+export type Multiplier = MultiplierCommon;
+
+// type Square = SquareCommon;
+export default interface Square extends SquareCommon {
     position: Position;
-    scoreMultiplier: Multiplier;
-    wasMultiplierUsed: boolean;
-    isCenter: boolean;
 }
