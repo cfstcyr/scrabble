@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
                 scaffoldBackgroundColor: Colors.white,
                 colorScheme: ColorScheme.fromSeed(
                     seedColor: Color.fromRGBO(27, 94, 32, 1),
+                    secondary: Color.fromRGBO(27, 94, 32, 0.15),
                     background: Color.fromRGBO(243, 243, 243, 1),
                     onBackground: Color.fromRGBO(232, 232, 232, 1),
                     tertiary: Color.fromRGBO(216, 216, 216, 1)),

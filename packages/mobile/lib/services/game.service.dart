@@ -160,7 +160,7 @@ class GameService {
     bool isWinner = getIt.get<EndGameService>().winners$.value.contains(player);
 
     triggerDialogBox(DIALOG_END_OF_GAME_TITLE(isWinner),
-        DIALOG_END_OF_GAME_CONTENT(isWinner), [
+        [Text(DIALOG_END_OF_GAME_CONTENT(isWinner), style: TextStyle(fontSize: 16))], [
       DialogBoxButtonParameters(
           content: DIALOG_LEAVE_BUTTON_CONTINUE,
           theme: AppButtonTheme.secondary,

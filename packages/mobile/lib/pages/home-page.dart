@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
+import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/components/app_button.dart';
+import 'package:mobile/components/create-game/timer-selector.dart';
 import 'package:mobile/components/image.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
@@ -69,11 +71,10 @@ class HomePage extends StatelessWidget {
                     SizedBox(height: 10),
                     AppButton(
                       onPressed: () {
-                        authService.signOut();
-                        Navigator.pushNamed(context, LOGIN_ROUTE);
+                        _handleStartPuzzle(context);
                       },
                       size: AppButtonSize.large,
-                      child: Text(SIGNOUT_LABEL_FR,
+                      child: Text(START_PUZZLE_MESSAGE,
                           style: TextStyle(color: Colors.white, fontSize: 18)),
                     ),
                   ],
@@ -163,4 +164,70 @@ Widget tile(String letter, String name, String link) {
       ),
     ]),
   );
+}
+
+void _handleStartPuzzle(BuildContext context) {
+  showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        ThemeData theme = Theme.of(context);
+
+        return AlertDialog(
+          title: Center(
+            child: Text('Mode Entraînement',
+                style: theme.textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w500)),
+          ),
+          content: SingleChildScrollView(child: TimerSelector()),
+          contentPadding: EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          ),
+          surfaceTintColor: Colors.white,
+          backgroundColor: Colors.white,
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ConstrainedBox(
+                  constraints: BoxConstraints.tightFor(width: 216, height: 60),
+                  child: AppButton(
+                    onPressed: () => Navigator.pop(context),
+                    theme: AppButtonTheme.secondary,
+                    child: Text(
+                      'Annuler',
+                      style: TextStyle(fontSize: 24, overflow: TextOverflow.ellipsis),
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
+                ),
+                SizedBox(width: SPACE_3 * 4,),
+                ConstrainedBox(
+                  constraints: BoxConstraints.tightFor(width: 216, height: 60),
+                  child: AppButton(
+                    onPressed: () {},
+                    theme: AppButtonTheme.primary,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('Démarrer',
+                            style: TextStyle(fontSize: 24, color: Colors.white, overflow: TextOverflow.ellipsis),
+                            textAlign: TextAlign.end),
+                        Icon(
+                          Icons.play_arrow_rounded,
+                          color: Colors.white,
+                          size: 48,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
+        );
+      });
 }

@@ -19,10 +19,10 @@ class DialogBoxButtonParameters {
 }
 
 void triggerDialogBox(
-    String title, String message, List<DialogBoxButtonParameters> buttons) {
+    String title, List<Widget> widgets, List<DialogBoxButtonParameters> buttons, {bool dismissOnBackgroundTouch = false}) {
   showDialog<void>(
     context: navigatorKey.currentContext!,
-    barrierDismissible: false,
+    barrierDismissible: dismissOnBackgroundTouch,
     builder: (BuildContext context) {
       return AlertDialog(
           title: Text(title),
@@ -32,9 +32,7 @@ void triggerDialogBox(
           ),
           content: SingleChildScrollView(
             child: ListBody(
-              children: <Widget>[
-                Text(message, style: TextStyle(fontSize: 16)),
-              ],
+              children: widgets,
             ),
           ),
           actions: [
@@ -52,6 +50,7 @@ void triggerDialogBox(
                               : null),
                       theme: button.theme,
                       text: button.content,
+                      icon: button.icon,
                     ),
                     index < buttons.length - 1
                         ? SizedBox(
