@@ -38,6 +38,7 @@ class GameBoard extends StatelessWidget {
                 children: List.generate(GRID_SIZE * GRID_SIZE, (index) {
                   var position = Position.fromVec2(Vec2.from1D(index));
                   return GameSquare(
+                    tileRack: snapshot.hasData ? snapshot.data!.tileRack : null,
                     square: snapshot.data?.board.getSquare(position) ??
                         Square(position: Position(0, 0)),
                   );

@@ -63,7 +63,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
               });
             }
             return MyScaffold(
-              title: "Game",
+              title: "Partie Multijoueur",
               body: Container(
                 color: Colors.grey.shade100,
                 padding: EdgeInsets.all(SPACE_1),
