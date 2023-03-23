@@ -3,6 +3,7 @@ import Direction from '@app/classes/board/direction';
 import { LetterValue } from '@app/classes/tile';
 import { BoardPlacement, LetterPosition, LinePlacements, WithDistance } from '@app/classes/word-finding';
 import { INITIAL_POSITION, MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
+import { Random } from '@app/utils/random/random';
 
 const HAS_TILE_IN_PREVIOUS_POSITION = -1;
 const SHOULD_BE_FILLED = true;
@@ -44,6 +45,15 @@ export default class BoardPlacementsExtractor {
         return boardPlacements;
     }
 
+    *[Symbol.iterator](): Generator<BoardPlacement> {
+        const boardPlacements = this.extractBoardPlacements();
+
+        let currentBoardPlacement: BoardPlacement | undefined;
+        while ((currentBoardPlacement = Random.popRandom(boardPlacements))) {
+            yield currentBoardPlacement;
+        }
+    }
+
     private extractBoardPlacementsFromLine(navigator: BoardNavigator): BoardPlacement[] {
         const boardPlacements: BoardPlacement[] = [];
 
@@ -80,17 +90,18 @@ export default class BoardPlacementsExtractor {
         navigator = navigator.clone();
 
         for (const distance of this.moveThroughLine(navigator)) {
-            if (navigator.square.tile)
+            if (navigator.square.tile) {
                 linePlacements.letters.push({
                     letter: navigator.square.tile.letter,
                     distance,
                 });
-            else if (navigator.verifyPerpendicularNeighbors(SHOULD_BE_FILLED))
+            } else if (navigator.verifyPerpendicularNeighbors(SHOULD_BE_FILLED)) {
                 linePlacements.perpendicularLetters.push({
                     before: this.getPerpendicularLetters(navigator.clone().switchOrientation(), Direction.Backward).reverse(),
                     after: this.getPerpendicularLetters(navigator.clone().switchOrientation(), Direction.Forward),
                     distance,
                 });
+            }
         }
 
         return linePlacements;

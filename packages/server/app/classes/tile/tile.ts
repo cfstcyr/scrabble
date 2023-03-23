@@ -1,8 +1,5 @@
-import { LetterValue } from './tile.types';
+import { Tile as TileCommon } from '@common/models/game';
 
-export default interface Tile {
-    letter: LetterValue;
-    value: number;
-    isBlank?: boolean;
-    playedLetter?: LetterValue; // Used when letter is *
-}
+type Tile = TileCommon;
+
+export default Tile;

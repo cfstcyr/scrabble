@@ -1,5 +1,5 @@
 import { COLORS } from '@app/constants/colors-constants';
-import { MultiplierEffect } from './score-multiplier';
+import { MultiplierEffect } from '@common/models/game';
 
 const LETTER_MULTIPLIER_COLOR_MAP: Map<number, COLORS> = new Map([
     [2, COLORS.Letter2x],

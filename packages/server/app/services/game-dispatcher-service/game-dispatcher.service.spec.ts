@@ -85,8 +85,9 @@ describe('GameDispatcherService', () => {
     let testingUnit: ServicesTestingUnit;
     let virtualPlayerServiceStub: SinonStubbedInstance<VirtualPlayerService>;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(ChatService).withStubbed(VirtualPlayerFactory);
+        await testingUnit.withMockDatabaseService();
         virtualPlayerServiceStub = createStubInstance(VirtualPlayerService);
         gameDispatcherService = Container.get(GameDispatcherService);
         gameDispatcherService['virtualPlayerService'] = virtualPlayerServiceStub as unknown as VirtualPlayerService;

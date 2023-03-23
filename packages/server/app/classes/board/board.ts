@@ -5,10 +5,11 @@ import { Tile } from '@app/classes/tile';
 import { POSITION_OUT_OF_BOARD } from '@app/constants/classes-errors';
 import { StatusCodes } from 'http-status-codes';
 import { BoardNavigator, Orientation, Position } from './';
+import { Board as BoardInterface } from '@common/models/game';
 
 export const SHOULD_HAVE_A_TILE = true;
 export const SHOULD_HAVE_NO_TILE = false;
-export default class Board {
+export default class Board implements BoardInterface {
     grid: Square[][];
 
     constructor(grid: Square[][]) {

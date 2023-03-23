@@ -15,7 +15,7 @@ import {
     MAX_DICTIONARY_DESCRIPTION_LENGTH,
     MAX_DICTIONARY_TITLE_LENGTH,
 } from '@app/constants/dictionary-const';
-import { ONE_HOUR_IN_MS } from '@app/constants/services-constants/dictionary-const';
+import { NO_DEFAULT_DICTIONARY, ONE_HOUR_IN_MS } from '@app/constants/services-constants/dictionary-const';
 import { MAXIMUM_WORD_LENGTH, MINIMUM_WORD_LENGTH } from '@app/constants/services-errors';
 import DictionarySavingService from '@app/services/dictionary-saving-service/dictionary-saving.service';
 import { env } from '@app/utils/environment/environment';
@@ -30,7 +30,8 @@ export default class DictionaryService {
     private activeDictionaries: Map<string, DictionaryUsage> = new Map();
 
     constructor(private readonly dictionarySavingService: DictionarySavingService) {
-        if (env.isTest) throw new Error('DictionaryService should not be used in a test environment');
+        // eslint-disable-next-line no-console
+        if (env.isTest) console.warn('DictionaryService should not be used in a test environment');
         this.initializeDictionaries();
     }
 
@@ -48,6 +49,14 @@ export default class DictionaryService {
         const dictionaryUsage = this.activeDictionaries.get(id);
         if (dictionaryUsage) return dictionaryUsage.dictionary;
         throw new HttpException(INVALID_DICTIONARY_ID, StatusCodes.NOT_FOUND);
+    }
+
+    getDefaultDictionary(): Dictionary {
+        const summary = this.getAllDictionarySummaries().find((dictionary) => dictionary.isDefault);
+
+        if (!summary) throw new Error(NO_DEFAULT_DICTIONARY);
+
+        return this.getDictionary(summary.id);
     }
 
     stopUsingDictionary(id: string, forceDeleteIfUnused: boolean = false): void {
