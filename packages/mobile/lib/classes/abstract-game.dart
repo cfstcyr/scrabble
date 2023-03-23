@@ -6,12 +6,10 @@ import 'package:mobile/classes/tile/tile-reserve.dart';
 class AbstractGame {
   Board board;
   TileRack tileRack;
-  Duration roundDuration;
 
   AbstractGame({
     required this.board,
     required this.tileRack,
-    required this.roundDuration,
   });
 }
 

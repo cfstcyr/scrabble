@@ -65,7 +65,6 @@ class GameService {
         board: Board(),
         tileRack: tileRack,
         players: playersContainer,
-        roundDuration: roundTimeToRoundDuration(startGameData.maxRoundTime),
         tileReserve: startGameData.tileReserve));
 
     _roundService.startRound(startGameData.firstRound);

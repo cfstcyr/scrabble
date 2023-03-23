@@ -47,13 +47,11 @@ class RoundService {
   void startRound(Round round) {
     currentRound$.add(round);
 
-    Duration roundDuration = getIt.get<GameService>().game.roundDuration;
-
     roundTimeoutStream.listen((event) {
       _onTimerExpires();
     });
 
-    _startRound$.add(roundDuration);
+    _startRound$.add(round.duration);
   }
 
   void endRound() {

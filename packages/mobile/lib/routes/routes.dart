@@ -11,6 +11,7 @@ import 'package:mobile/pages/join-waiting-page.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/pages/profile-edit-page.dart';
 import 'package:mobile/pages/profile-page.dart';
+import 'package:mobile/pages/puzzle-page.dart';
 
 import '../main.dart';
 import '../pages/create-lobby.dart';
@@ -28,6 +29,7 @@ const CREATE_GAME = "/create-game";
 const GAME_PAGE_ROUTE = '/game';
 const PROFILE_ROUTE = '/profile';
 const PROFILE_EDIT_ROUTE = '/edit-profile';
+const PUZZLE_ROUTE = '/puzzle';
 
 final ROUTES = {
   BASE_ROUTE: (context) => HomePage(),
@@ -39,6 +41,7 @@ final ROUTES = {
   GAME_PAGE_ROUTE: (context) => GamePage(),
   PROFILE_ROUTE: (context) => ProfilePage(),
   PROFILE_EDIT_ROUTE: (context) => ProfileEditPage(),
+  PUZZLE_ROUTE: (context) => PuzzlePage(),
 };
 
 Route<dynamic>? customOnGenerateRoute(RouteSettings settings) {

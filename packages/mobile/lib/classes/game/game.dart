@@ -11,7 +11,6 @@ class MultiplayerGame extends AbstractGame {
     required super.board,
     required super.tileRack,
     required this.players,
-    required super.roundDuration,
     required this.tileReserve,
     this.isOver = false,
   });
