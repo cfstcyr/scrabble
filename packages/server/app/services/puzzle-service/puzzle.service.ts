@@ -13,7 +13,7 @@ import { Tile } from '@app/classes/tile';
 import { StringConversion } from '@app/utils/string-conversion/string-conversion';
 import { WordsVerificationService } from '@app/services/words-verification-service/words-verification.service';
 import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
-import { PuzzleResult, PuzzleResultStatus } from '@common/models/puzzle';
+import { PuzzleResult, PuzzleResultSolution, PuzzleResultStatus } from '@common/models/puzzle';
 import { Puzzle } from '@app/classes/puzzle/puzzle';
 
 @Service()
@@ -94,7 +94,7 @@ export class PuzzleService {
         };
     }
 
-    private getSolution(puzzle: Puzzle): Pick<PuzzleResult, 'targetPlacement' | 'allPlacements'> {
+    private getSolution(puzzle: Puzzle): PuzzleResultSolution {
         const wordFinding = new WordFindingPuzzle(
             puzzle.board,
             puzzle.tiles,

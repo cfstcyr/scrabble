@@ -19,3 +19,5 @@ export interface PuzzleResult {
     targetPlacement: ScoredWordPlacement;
     allPlacements: ScoredWordPlacement[];
 }
+
+export type PuzzleResultSolution = Pick<PuzzleResult, 'targetPlacement' | 'allPlacements'>;

@@ -6,7 +6,7 @@ export const wordPlacementValidator = (field: string | string[]) =>
         body(field).exists().bail(),
         body(`${field}.tilesToPlace`).isArray(),
         body(`${field}.orientation`).isIn([0, 1]),
-        body(`${field}.position`).exists().bail(),
-        body(`${field}.position.row`).isNumeric(),
-        body(`${field}.position.column`).isNumeric(),
+        body(`${field}.startPosition`).exists().bail(),
+        body(`${field}.startPosition.row`).isNumeric(),
+        body(`${field}.startPosition.column`).isNumeric(),
     );

@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
+import { Position } from '@app/classes/board';
+import { WordPlacement } from '@app/classes/word-finding';
 import { PuzzleService } from '@app/services/puzzle-service/puzzle.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import { Orientation } from '@common/models/position';
 import { expect } from 'chai';
 import { StatusCodes } from 'http-status-codes';
 import { SinonStubbedInstance } from 'sinon';
@@ -11,6 +14,11 @@ import { Container } from 'typedi';
 import { PuzzleController } from './puzzle-controller';
 
 const DEFAULT_ID_USER = 1;
+const DEFAULT_WORD_PLACEMENT: WordPlacement = {
+    orientation: Orientation.Horizontal,
+    startPosition: new Position(0, 1),
+    tilesToPlace: [],
+};
 
 describe('PuzzleController', () => {
     let expressApp: Express.Application;
@@ -50,11 +58,14 @@ describe('PuzzleController', () => {
     describe('/api/puzzles/complete', () => {
         describe('POST', () => {
             it('should return 200', async () => {
-                return supertest(expressApp).post('/api/puzzles/complete').send({ idUser: DEFAULT_ID_USER }).expect(StatusCodes.OK);
+                return supertest(expressApp)
+                    .post('/api/puzzles/complete')
+                    .send({ idUser: DEFAULT_ID_USER, wordPlacement: DEFAULT_WORD_PLACEMENT })
+                    .expect(StatusCodes.OK);
             });
 
             it('should call completePuzzle', async () => {
-                await supertest(expressApp).post('/api/puzzles/complete').send({ idUser: DEFAULT_ID_USER });
+                await supertest(expressApp).post('/api/puzzles/complete').send({ idUser: DEFAULT_ID_USER, wordPlacement: DEFAULT_WORD_PLACEMENT });
                 expect(puzzleServiceStub.completePuzzle.called).to.be.true;
             });
         });
