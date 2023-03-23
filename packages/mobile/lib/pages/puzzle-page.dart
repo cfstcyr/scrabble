@@ -7,7 +7,7 @@ import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/game/game_timer.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/components/tile/tile-rack.dart';
+import 'package:mobile/components/tile/tilerack/abstract-tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
@@ -47,7 +47,7 @@ class _PuzzlePageState extends State<PuzzlePage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Expanded(child: GameBoard(gameStream: puzzleService.puzzleStream)),
-                      TileRack(),
+                      MultiplayerTileRack(),
                     ],
                       ),
                     ),

@@ -6,7 +6,7 @@ import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/game/game_timer.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/components/tile/tile-rack.dart';
+import 'package:mobile/components/tile/tilerack/abstract-tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
@@ -76,7 +76,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(child: GameBoard(gameStream: gameService.gameStream,)),
-                          TileRack(),
+                          MultiplayerTileRack(),
                         ],
                       ),
                     ],
