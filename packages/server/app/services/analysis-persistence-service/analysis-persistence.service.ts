@@ -3,14 +3,12 @@ import { UserId } from '@app/classes/user/connected-user-types';
 import { ANALYSIS_TABLE, CRITICAL_MOMENTS_TABLE, PLACEMENT_TABLE } from '@app/constants/services-constants/database-const';
 import { Service } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
-// import { Board } from '@app/classes/board';
-import { Analysis, AnalysisData, CriticalMomentData, CriticalMomentResponse, PlacementData } from '@app/classes/analysis/analysis';
+import { Analysis, AnalysisData, AnalysisResponse, CriticalMomentData, CriticalMomentResponse, PlacementData } from '@app/classes/analysis/analysis';
 import { ScoredWordPlacement } from '@app/classes/word-finding';
-import { Board, Orientation } from '@app/classes/board';
+import { Board, Orientation, Position } from '@app/classes/board';
 import { Tile, TileReserve } from '@app/classes/tile';
 import { ActionTurnEndingType } from '@app/classes/communication/action-data';
-import BoardService from '../board-service/board.service';
-// import BoardService from '@app/services/board-service/board.service';
+import BoardService from '@app/services/board-service/board.service';
 
 @Service()
 export class AnalysisPersistenceService {
@@ -39,35 +37,13 @@ export class AnalysisPersistenceService {
                 'Analysis.userId': userId,
             });
 
-        const analysis: Analysis = { gameId, userId, criticalMoments: [] };
+        const analysis: AnalysisResponse = { gameId, userId, criticalMoments: [] };
         for (const criticalMomentData of analysisData) {
-            const criticalMoment: CriticalMomentResponse = {tiles: criticalMomentData.tiles.map(async (tileString: string) => await TileReserve.convertStringToTile(tileString)), 
-                actionType: criticalMomentData.actionType as ActionTurnEndingType,
-                filledSquares: await this.boardService.initializeBoardSquares(criticalMomentData.board),
-                bestPlacement: this.convertDataToPlacement
-                playedPlacement: 
-            }
-            playedPlacement?: ScoredWordPlacement;
-            bestPlacement: ScoredWordPlacement;
+            analysis.criticalMoments.push(await this.convertDataToCriticalMoment(criticalMomentData));
         }
     }
 
-    private convertDataToPlacement()
-
     async addAnalysis(gameId: string, userId: UserId, analysis: Analysis) {
-        console.log('-------------------START-----------------------');
-        console.log(`ANALYSIS OF GAME: ${gameId} FOR ${userId}`);
-        console.log(`Critical moments length: ${analysis.criticalMoments.length}`);
-        for (const criticalMoment of analysis.criticalMoments) {
-            console.log(`   actionType: ${criticalMoment.actionType}`);
-            console.log(`   tiles: ${criticalMoment.tiles.map((tile) => tile.letter).join('')}`);
-            console.log(`   boardgrid[7]: ${criticalMoment.board.grid[7].map((square) => square.tile?.letter ?? ' ').join('')}`);
-        }
-
-        console.log('------------------END------------------------');
-
-        // return this.analysisTable.select('*').where({ gameId, userId });
-
         const insertedValue = await this.analysisTable.insert({ gameId, userId }).returning('analysisId');
 
         for (const criticalMoment of analysis.criticalMoments) {
@@ -84,6 +60,43 @@ export class AnalysisPersistenceService {
                 analysisId: insertedValue[0].analysisId,
             });
         }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private async convertDataToCriticalMoment(criticalMomentData: any): Promise<CriticalMomentResponse> {
+        const tilePromises = criticalMomentData.tiles.split('').map(async (tileString: string) => TileReserve.convertStringToTile(tileString));
+        return {
+            tiles: await Promise.all(tilePromises),
+            actionType: criticalMomentData.actionType as ActionTurnEndingType,
+            filledSquares: await this.boardService.initializeBoardSquares(criticalMomentData.board),
+            bestPlacement: await this.convertDataToPlacement({
+                tilesToPlace: criticalMomentData.bp_tilesToPlace,
+                isHorizontal: criticalMomentData.bp_isHorizontal,
+                score: criticalMomentData.bp_score,
+                row: criticalMomentData.bp_row,
+                column: criticalMomentData.bp_column,
+            }),
+            playedPlacement:
+                (criticalMomentData.actionType as ActionTurnEndingType) === ActionTurnEndingType.PLACE
+                    ? await this.convertDataToPlacement({
+                          tilesToPlace: criticalMomentData.pp_tilesToPlace,
+                          isHorizontal: criticalMomentData.pp_isHorizontal,
+                          score: criticalMomentData.pp_score,
+                          row: criticalMomentData.pp_row,
+                          column: criticalMomentData.pp_column,
+                      })
+                    : undefined,
+        };
+    }
+    private async convertDataToPlacement(placementData: Omit<PlacementData, 'placementId'>): Promise<ScoredWordPlacement> {
+        const tilePromises = placementData.tilesToPlace.split('').map(async (tileString) => TileReserve.convertStringToTile(tileString));
+        const tiles = await Promise.all(tilePromises);
+        return {
+            tilesToPlace: tiles,
+            orientation: placementData.isHorizontal ? Orientation.Horizontal : Orientation.Vertical,
+            startPosition: new Position(placementData.row, placementData.column),
+            score: placementData.score,
+        };
     }
 
     private async addPlacement(placement: ScoredWordPlacement): Promise<number> {
@@ -111,18 +124,6 @@ export class AnalysisPersistenceService {
         }
     }
 
-    private convertStringToTile(tile: Tile): string {
-        if (tile.isBlank) {
-            if (tile.playedLetter) {
-                return tile.playedLetter.toLowerCase();
-            } else {
-                return tile.letter.toLowerCase();
-            }
-        } else {
-            return tile.letter;
-        }
-    }
-
     private convertBoardToString(board: Board): string {
         let outputString = '';
         for (const row of board.grid) {
@@ -137,37 +138,6 @@ export class AnalysisPersistenceService {
         return outputString;
     }
 
-    // private convertStringToSquares(boardString: string) {
-    //     this.boardService.initializeBoardSquares(boardString);
-
-    //     // for (let i = 0; i < 15; i++) {
-    //     //     for (let j = 0; j < 15; j++) {
-    //     //         bo
-    //     //     }
-    //     // }
-    // }
-
-    // const boardFromLetterValues = (letterValues: LetterValues) => {
-    //     const grid: Square[][] = [];
-
-    //     letterValues.forEach((line, row) => {
-    //         const boardRow: Square[] = [];
-
-    //         line.forEach((letter, column) => {
-    //             boardRow.push({
-    //                 tile: letter === ' ' ? null : { letter: letter as LetterValue, value: 0 },
-    //                 position: new Position(row, column),
-    //                 scoreMultiplier: null,
-    //                 wasMultiplierUsed: false,
-    //                 isCenter: false,
-    //             });
-    //         });
-
-    //         grid.push(boardRow);
-    //     });
-
-    //     return new Board(grid);
-    // };
     private get analysisTable() {
         return this.databaseService.knex<AnalysisData>(ANALYSIS_TABLE);
     }

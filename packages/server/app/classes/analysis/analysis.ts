@@ -16,6 +16,11 @@ export interface Analysis {
     criticalMoments: CriticalMoment[];
 }
 
+export interface AnalysisResponse {
+    gameId: string;
+    userId: UserId;
+    criticalMoments: CriticalMomentResponse[];
+}
 export interface AnalysisData {
     gameId: string;
     userId: UserId;
@@ -53,6 +58,6 @@ export interface CriticalMomentResponse {
     tiles: Tile[];
     actionType: ActionTurnEndingType;
     playedPlacement?: ScoredWordPlacement;
-    filledSquares: (Square | undefined)[];
+    filledSquares: Square[];
     bestPlacement: ScoredWordPlacement;
 }
