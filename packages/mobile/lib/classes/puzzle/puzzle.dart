@@ -1,25 +1,8 @@
-import 'package:mobile/classes/tile/square.dart';
-import 'package:mobile/classes/tile/tile.dart';
-import 'package:mobile/constants/create-game.constants.dart';
+import 'package:mobile/classes/abstract-game.dart';
 
-class StartPuzzle {
-  List<Square> board;
-  List<Tile> tiles;
-  late Duration roundDuration;
-
-  StartPuzzle({required this.board, required this.tiles, this.roundDuration = DEFAULT_TIME});
-
-  factory StartPuzzle.fromJson(Map<String, dynamic> json) {
-    return StartPuzzle(
-        board: List<Square>.from(
-            (json['board']['grid'] as List<dynamic>).expand((element) => element).map((e) => Square.fromJson(e))),
-        tiles: List<Tile>.from(
-            (json['tiles'] as List).map((e) => Tile.fromJson(e))));
-  }
-
-  StartPuzzle withRoundDuration(Duration roundDuration) {
-    this.roundDuration = roundDuration;
-    return this;
-  }
-
+class PuzzleGame extends AbstractGame {
+  PuzzleGame(
+      {required super.board,
+      required super.tileRack,
+      required super.roundDuration});
 }

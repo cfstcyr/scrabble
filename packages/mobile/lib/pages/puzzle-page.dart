@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/classes/game/game.dart';
+import 'package:mobile/classes/abstract-game.dart';
 import 'package:mobile/components/game/game_actions.dart';
 import 'package:mobile/components/game/game_board.dart';
 import 'package:mobile/components/game/game_info.dart';

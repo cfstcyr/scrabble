@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
+import 'package:mobile/classes/puzzle/puzzle-config.dart';
 import 'package:mobile/classes/puzzle/puzzle.dart';
 import 'package:mobile/controllers/puzzle-controller.dart';
 import 'package:mobile/services/round-service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../locator.dart';
 
@@ -11,8 +13,9 @@ class PuzzleService {
   final PuzzleController _puzzleController =
       getIt.get<PuzzleController>();
   final RoundService _roundService = getIt.get<RoundService>();
+  final BehaviorSubject<PuzzleGame?> _puzzle;
 
-  PuzzleService._privateConstructor();
+  PuzzleService._privateConstructor() : _puzzle = BehaviorSubject();
 
   static final PuzzleService _instance =
       PuzzleService._privateConstructor();

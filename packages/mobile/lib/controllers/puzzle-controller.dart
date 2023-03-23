@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/opponent.dart';
-import 'package:mobile/classes/puzzle/puzzle.dart';
+import 'package:mobile/classes/puzzle/puzzle-config.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/constants/socket-events/group-events.dart';
