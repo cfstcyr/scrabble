@@ -4,6 +4,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActionData, ActionType } from '@app/classes/actions/action-data';
+import { Position } from '@app/classes/board-navigator/position';
 import { GameUpdateData } from '@app/classes/communication';
 import { Message } from '@app/classes/communication/message';
 import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-helper.spec';
@@ -70,7 +71,7 @@ describe('GamePlayController', () => {
         });
 
         it('On firstSquareSelected, should push new square', () => {
-            const spy = spyOn(controller['firstSquareSelected$'], 'next').and.callFake(() => {
+            const spy = spyOn(controller['firstSquareSelectedPosition$'], 'next').and.callFake(() => {
                 return;
             });
             const square: Square = {
@@ -85,7 +86,7 @@ describe('GamePlayController', () => {
         });
 
         it('On firstSquareCancelled, should push null', () => {
-            const spy = spyOn(controller['firstSquareSelected$'], 'next').and.callFake(() => {
+            const spy = spyOn(controller['firstSquareSelectedPosition$'], 'next').and.callFake(() => {
                 return;
             });
             socketHelper.peerSideEmit('firstSquareCancelled');
@@ -137,16 +138,10 @@ describe('GamePlayController', () => {
         it('handleFirstSquareSelected should post square to endpoint', () => {
             const httpPostSpy = spyOn(controller['http'], 'post').and.returnValue(of(true) as any);
             const endpoint = `${environment.serverUrl}/games/${DEFAULT_GAME_ID}/squares/select`;
-            const square: Square = {
-                tile: null,
-                position: { row: 0, column: 0 },
-                scoreMultiplier: null,
-                wasMultiplierUsed: false,
-                isCenter: false,
-            };
+            const position = { row: 0, column: 0 };
 
-            controller.handleFirstSquareSelected(DEFAULT_GAME_ID, square);
-            expect(httpPostSpy).toHaveBeenCalledWith(endpoint, square);
+            controller.handleFirstSquareSelected(DEFAULT_GAME_ID, position);
+            expect(httpPostSpy).toHaveBeenCalledWith(endpoint, position);
         });
 
         it('handleFirstSquareCancelled should delete to endpoint', () => {
@@ -225,7 +220,7 @@ describe('GamePlayController', () => {
     });
 
     it('observeFirstSquareSelected should return firstSquareSelected$ as observable', () => {
-        const result: Observable<Square | null> = controller.observeFirstSquareSelected();
-        expect(result).toEqual(controller['firstSquareSelected$'].asObservable());
+        const result: Observable<Position | null> = controller.observeFirstSquareSelectedPosition();
+        expect(result).toEqual(controller['firstSquareSelectedPosition$'].asObservable());
     });
 });

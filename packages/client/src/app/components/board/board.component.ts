@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Orientation } from '@app/classes/actions/orientation';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
+import { Position } from '@app/classes/board-navigator/position';
 import { Vec2 } from '@app/classes/board-navigator/vec2';
 import { Square, SquareView } from '@app/classes/square';
 import { LetterValue, TilePlacement } from '@app/classes/tile';
@@ -50,8 +51,8 @@ export class BoardComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.boardService.subscribeToInitializeBoard(this.componentDestroyed$, (board: Square[][]) => this.initializeBoard(board));
         this.boardService.subscribeToBoardUpdate(this.componentDestroyed$, (squaresToUpdate: Square[]) => this.updateBoard(squaresToUpdate));
-        this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareSelected', this.componentDestroyed$, (square) =>
-            this.handleFirstSquareSelected(square),
+        this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareSelected', this.componentDestroyed$, (position) =>
+            this.handleFirstSquareSelectedPosition(position),
         );
         this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareCancelled', this.componentDestroyed$, () =>
             this.handleFirstSquareCancelled(),
@@ -161,8 +162,8 @@ export class BoardComponent implements OnInit, OnDestroy {
         }
     }
 
-    private handleFirstSquareSelected(square: Square): void {
-        this.selectedSquare = new SquareView(square, SQUARE_SIZE);
+    private handleFirstSquareSelectedPosition(position: Position): void {
+        this.selectedSquare = this.squareGrid[position.row][position.column];
         this.navigator.orientation = undefined;
     }
 

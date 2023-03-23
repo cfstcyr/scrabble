@@ -6,7 +6,6 @@ import { Message } from '@app/classes/communication/message';
 import { Player } from '@app/classes/player';
 import { PlayerContainer } from '@app/classes/player/player-container';
 import { Round } from '@app/classes/round/round';
-import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
 import { ROUTE_GAME, ROUTE_GAME_OBSERVER } from '@app/constants/routes-constants';
@@ -20,6 +19,7 @@ import { takeUntil } from 'rxjs/operators';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { ActionService } from '@app/services/action-service/action.service';
 import { ActionType } from '@app/classes/actions/action-data';
+import { Position } from '@app/classes/board-navigator/position';
 
 @Injectable({
     providedIn: 'root',
@@ -57,9 +57,9 @@ export default class GameService implements OnDestroy, IResetServiceData {
             .subscribe((newData) => this.handleGameUpdate(newData));
 
         this.gameController
-            .observeFirstSquareSelected()
+            .observeFirstSquareSelectedPosition()
             .pipe(takeUntil(this.serviceDestroyed$))
-            .subscribe((square) => this.handleFirstSquareSelected(square));
+            .subscribe((position) => this.handleFirstSquareSelected(position));
 
         this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());
     }
@@ -136,8 +136,8 @@ export default class GameService implements OnDestroy, IResetServiceData {
         );
     }
 
-    selectFirstSquare(square: Square): void {
-        this.gameController.handleFirstSquareSelected(this.gameId, square);
+    selectFirstSquare(position: Position): void {
+        this.gameController.handleFirstSquareSelected(this.gameId, position);
     }
 
     cancelFirstSquareSelection(): void {
@@ -227,12 +227,12 @@ export default class GameService implements OnDestroy, IResetServiceData {
         }
     }
 
-    private handleFirstSquareSelected(square: Square | null): void {
-        if (!square) {
+    private handleFirstSquareSelected(position: Position | null): void {
+        if (!position) {
             this.gameViewEventManagerService.emitGameViewEvent('firstSquareCancelled');
             return;
         }
-        this.gameViewEventManagerService.emitGameViewEvent('firstSquareSelected', square);
+        this.gameViewEventManagerService.emitGameViewEvent('firstSquareSelected', position);
     }
 
     private handleGameOver(winnerNames: string[]): void {

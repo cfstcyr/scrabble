@@ -19,7 +19,7 @@ import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { Square } from '@app/classes/square';
+import { Position } from '@app/classes/board';
 
 @Service()
 export class GamePlayController extends BaseController {
@@ -86,11 +86,11 @@ export class GamePlayController extends BaseController {
 
         router.post('/:gameId/squares/select', (req: SelectRequest, res: Response, next) => {
             const { gameId } = req.params;
-            const square: Square = req.body;
+            const position: Position = req.body;
             const userId: UserId = req.body.idUser;
             const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
             try {
-                this.handleSquareSelected(gameId, playerId, square);
+                this.handleSquareSelected(gameId, playerId, position);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
                 next(exception);
@@ -225,8 +225,8 @@ export class GamePlayController extends BaseController {
         return exception.message.includes(" n'est pas dans le dictionnaire choisi.");
     }
 
-    private handleSquareSelected(gameId: string, playerId: string, square: Square) {
-        this.socketService.emitToRoomNoSender(gameId, playerId, 'firstSquareSelected', square);
+    private handleSquareSelected(gameId: string, playerId: string, position: Position) {
+        this.socketService.emitToRoomNoSender(gameId, playerId, 'firstSquareSelected', position);
     }
 
     private handleSquareCancelled(gameId: string, playerId: string) {

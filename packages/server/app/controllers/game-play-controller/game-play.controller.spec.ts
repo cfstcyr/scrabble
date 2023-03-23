@@ -581,15 +581,9 @@ describe('GamePlayController', () => {
             });
 
             it('should call emitToRoom if square is valid and selected', () => {
-                const validSquare: Square = {
-                    tile: null,
-                    position: new Position(1, 1),
-                    scoreMultiplier: null,
-                    wasMultiplierUsed: false,
-                    isCenter: false,
-                };
+                const validPosition: Position = new Position(0, 0);
 
-                gamePlayController['handleSquareSelected'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, validSquare);
+                gamePlayController['handleSquareSelected'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, validPosition);
                 expect(emitToRoomSpy).to.have.been.called();
             });
 

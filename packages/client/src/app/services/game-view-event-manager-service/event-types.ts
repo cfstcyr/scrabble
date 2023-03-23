@@ -1,7 +1,7 @@
 import { PlaceActionPayload } from '@app/classes/actions/action-data';
+import { Position } from '@app/classes/board-navigator/position';
 import { InitializeGameData } from '@app/classes/communication/game-config';
 import { Message } from '@app/classes/communication/message';
-import { Square } from '@app/classes/square';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 export interface EventTypes {
@@ -12,7 +12,7 @@ export interface EventTypes {
     gameInitialized: InitializeGameData | undefined;
     resetServices: void;
     endOfGame: string[];
-    firstSquareSelected: Square;
+    firstSquareSelected: Position;
     firstSquareCancelled: void;
 }
 

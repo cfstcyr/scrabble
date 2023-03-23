@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActionData } from '@app/classes/actions/action-data';
+import { Position } from '@app/classes/board-navigator/position';
 import GameUpdateData from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
-import { Square } from '@app/classes/square';
 import { HTTP_ABORT_ERROR } from '@app/constants/controllers-errors';
 import SocketService from '@app/services/socket-service/socket.service';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
@@ -15,7 +15,7 @@ import { environment } from 'src/environments/environment';
 export class GamePlayController {
     private gameUpdate$ = new BehaviorSubject<GameUpdateData>({});
     private newMessage$ = new BehaviorSubject<Message | null>(null);
-    private firstSquareSelected$ = new BehaviorSubject<Square | null>(null);
+    private firstSquareSelectedPosition$ = new BehaviorSubject<Position | null>(null);
     private actionDone$ = new Subject<void>();
 
     constructor(private http: HttpClient, private readonly socketService: SocketService) {
@@ -52,9 +52,9 @@ export class GamePlayController {
         this.http.delete(endpoint, { observe: 'response' }).subscribe(this.handleDisconnectResponse, this.handleDisconnectError);
     }
 
-    handleFirstSquareSelected(gameId: string, square: Square): void {
+    handleFirstSquareSelected(gameId: string, position: Position): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/squares/select`;
-        this.http.post(endpoint, square).subscribe();
+        this.http.post(endpoint, position).subscribe();
     }
 
     handleFirstSquareCancelled(gameId: string): void {
@@ -74,8 +74,8 @@ export class GamePlayController {
         return this.actionDone$.asObservable();
     }
 
-    observeFirstSquareSelected(): Observable<Square | null> {
-        return this.firstSquareSelected$.asObservable();
+    observeFirstSquareSelectedPosition(): Observable<Position | null> {
+        return this.firstSquareSelectedPosition$.asObservable();
     }
 
     private configureSocket(): void {
@@ -85,11 +85,11 @@ export class GamePlayController {
         this.socketService.on('newMessage', (newMessage: Message) => {
             this.newMessage$.next(newMessage);
         });
-        this.socketService.on('firstSquareSelected', (square: Square) => {
-            this.firstSquareSelected$.next(square);
+        this.socketService.on('firstSquareSelected', (position: Position) => {
+            this.firstSquareSelectedPosition$.next(position);
         });
         this.socketService.on('firstSquareCancelled', () => {
-            this.firstSquareSelected$.next(null);
+            this.firstSquareSelectedPosition$.next(null);
         });
     }
 

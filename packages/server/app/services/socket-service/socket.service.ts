@@ -31,7 +31,7 @@ import {
     StartGameEmitArgs,
     UserLeftGroupEmitArgs,
 } from './socket-types';
-import { Square } from '@app/classes/square';
+import { Position } from '@app/classes/board';
 
 @Service()
 export class SocketService {
@@ -150,7 +150,7 @@ export class SocketService {
     emitToRoom(id: string, ev: 'groupsUpdate', ...args: GroupsUpdateEmitArgs[]): void;
     emitToRoom(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
     emitToRoom(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
-    emitToRoom(id: string, ev: 'firstSquareSelected', ...args: Square[]): void;
+    emitToRoom(id: string, ev: 'firstSquareSelected', ...args: Position[]): void;
     emitToRoom(id: string, ev: 'firstSquareCancelled'): void;
     emitToRoom(id: string, ev: 'cleanup', ...args: CleanupEmitArgs[]): void;
     emitToRoom(id: string, ev: '_test_event', ...args: unknown[]): void;
@@ -189,7 +189,7 @@ export class SocketService {
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'groupsUpdate', ...args: GroupsUpdateEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
-    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'firstSquareSelected', ...args: Square[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'firstSquareSelected', ...args: Position[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'firstSquareCancelled'): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'cleanup', ...args: CleanupEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: '_test_event', ...args: unknown[]): void;

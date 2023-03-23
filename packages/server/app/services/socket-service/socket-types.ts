@@ -7,6 +7,7 @@ import { HighScoreWithPlayers } from '@common/models/high-score';
 import { PublicUser } from '@common/models/user';
 import { NoId } from '@common/types/id';
 import { Square } from '@app/classes/square';
+import { Position } from '@app/classes/board';
 
 export type SocketEmitEvents =
     | 'joinRequest'
@@ -36,6 +37,6 @@ export type StartGameEmitArgs = StartGameData;
 export type GroupsUpdateEmitArgs = Group[];
 export type HighScoresEmitArgs = NoId<HighScoreWithPlayers>[];
 export type NewMessageEmitArgs = Message;
-export type FirstSquareSelected = Square;
+export type FirstSquareSelected = Position;
 export type FirstSquareCancelled = Square;
 export type CleanupEmitArgs = never;
