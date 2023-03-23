@@ -61,6 +61,14 @@ class PuzzleService {
     getIt.get<GameMessagesService>().resetMessages();
   }
 
+  void completePuzzle() {
+
+  }
+
+  void abandonPuzzle() {
+    _puzzleController.abandonPuzzle();
+  }
+
   void quitPuzzle() {
     _puzzleController.quitPuzzle();
   }

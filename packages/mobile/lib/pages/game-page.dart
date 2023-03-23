@@ -6,7 +6,7 @@ import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/game/game_timer.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/components/tile/tile-rack/multiplayer-tile-rack.dart';
+import 'package:mobile/components/game/multiplayer-tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';

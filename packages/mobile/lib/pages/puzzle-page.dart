@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/puzzle/puzzle.dart';
-import 'package:mobile/components/game/game_actions.dart';
 import 'package:mobile/components/game/game_board.dart';
 import 'package:mobile/components/game/game_timer.dart';
-import 'package:mobile/components/player/main_player.dart';
-import 'package:mobile/components/player/players_container.dart';
+import 'package:mobile/components/puzzle/puzzle_actions.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/components/tile/tile-rack/puzzle-tile-rack.dart';
+import 'package:mobile/components/puzzle/puzzle-tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/puzzle-service.dart';
@@ -57,11 +55,9 @@ class _PuzzlePageState extends State<PuzzlePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Expanded(
-                            child: GameTimer(),
-                          ),
+                          GameTimer(),
                           Expanded(child: GameMessages()),
-                          // GameActions(),
+                          PuzzleActions(),
                         ],
                       ),
                     ),
