@@ -1,5 +1,6 @@
 import { WordPlacement } from '@app/classes/word-finding';
 import { BaseController } from '@app/controllers/base-controller';
+import { wordPlacementValidator } from '@app/middlewares/validators/word-placement';
 import { PuzzleService } from '@app/services/puzzle-service/puzzle.service';
 import { UserRequest } from '@app/types/user';
 import { Router } from 'express';
@@ -21,7 +22,7 @@ export class PuzzleController extends BaseController {
             }
         });
 
-        router.post('/complete', (req: UserRequest<{ wordPlacement: WordPlacement }>, res, next) => {
+        router.post('/complete', ...wordPlacementValidator('wordPlacement'), (req: UserRequest<{ wordPlacement: WordPlacement }>, res, next) => {
             try {
                 res.status(StatusCodes.OK).send(this.puzzleService.completePuzzle(req.body.idUser, req.body.wordPlacement));
             } catch (e) {

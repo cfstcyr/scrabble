@@ -34,10 +34,11 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  final InitializerService _initializerService =
-      getIt.get<InitializerService>();
 
   MyApp({super.key});
+
+  final InitializerService _initializerService =
+      getIt.get<InitializerService>();
 
   @override
   Widget build(BuildContext context) {
