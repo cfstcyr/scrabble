@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:mobile/classes/actions/word-placement.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/puzzle/puzzle-config.dart';
 import 'package:mobile/classes/puzzle/puzzle.dart';
@@ -69,7 +70,8 @@ class PuzzleService {
 
     if (placement == null) throw Exception('Cannot play placement, placement is null');
 
-    _puzzleController.completePuzzle(placement.toActionPayload());
+    WordPlacement wordPlacement = WordPlacement(actionPlacePayload: placement.toActionPayload());
+    _puzzleController.completePuzzle(wordPlacement);
   }
 
   void abandonPuzzle() {
