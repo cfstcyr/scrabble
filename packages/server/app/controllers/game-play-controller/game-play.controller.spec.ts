@@ -573,30 +573,16 @@ describe('GamePlayController', () => {
             });
         });
 
-        describe('handleSquare', () => {
+        describe('tilePlacement', () => {
+            //TODO
             let emitToRoomSpy: any;
 
             beforeEach(() => {
                 emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToRoomNoSender', () => { });
             });
 
-            it('should call emitToRoom if square is valid and selected', () => {
-                const validSquare: Square = {
-                    tile: null,
-                    position: new Position(1, 1),
-                    scoreMultiplier: null,
-                    wasMultiplierUsed: false,
-                    isCenter: false,
-                };
-
-                gamePlayController['handleSquareSelected'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, validSquare);
-                expect(emitToRoomSpy).to.have.been.called();
-            });
-
-            it('should call emitToRoom if square is valid and deselected', () => {
-                gamePlayController['handleSquareCancelled'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID);
-                expect(emitToRoomSpy).to.have.been.called();
-            });
+            it('should call handleTilePlacement if tilePlacement is valid', () => {
+            })
         })
 
         describe('handleNewError', () => {

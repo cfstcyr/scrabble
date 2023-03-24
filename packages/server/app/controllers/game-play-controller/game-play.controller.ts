@@ -19,7 +19,7 @@ import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { Square } from '@app/classes/square';
+import { TilePlacement } from '@common/models/tile-placement';
 
 @Service()
 export class GamePlayController extends BaseController {
@@ -84,25 +84,13 @@ export class GamePlayController extends BaseController {
             }
         });
 
-        router.post('/:gameId/squares/select', (req: SelectRequest, res: Response, next) => {
+        router.post('/:gameId/squares/place', (req: SelectRequest, res: Response, next) => {
             const { gameId } = req.params;
-            const square: Square = req.body;
+            const tilePlacement: TilePlacement[] = req.body.tilePlacement;
             const userId: UserId = req.body.idUser;
             const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
             try {
-                this.handleSquareSelected(gameId, playerId, square);
-                res.status(StatusCodes.NO_CONTENT).send();
-            } catch (exception) {
-                next(exception);
-            }
-        });
-
-        router.delete('/:gameId/squares/cancel', (req: SelectRequest, res: Response, next) => {
-            const { gameId } = req.params;
-            const userId: UserId = req.body.idUser;
-            const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
-            try {
-                this.handleSquareCancelled(gameId, playerId)
+                this.handleTilePlacement(gameId, playerId, tilePlacement);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
                 next(exception);
@@ -225,11 +213,7 @@ export class GamePlayController extends BaseController {
         return exception.message.includes(" n'est pas dans le dictionnaire choisi.");
     }
 
-    private handleSquareSelected(gameId: string, playerId: string, square: Square) {
-        this.socketService.emitToRoomNoSender(gameId, playerId, 'firstSquareSelected', square);
-    }
-
-    private handleSquareCancelled(gameId: string, playerId: string) {
-        this.socketService.emitToRoomNoSender(gameId, playerId, 'firstSquareCancelled');
+    private handleTilePlacement(gameId: string, playerId: string, data: TilePlacement[]) {
+        this.socketService.emitToRoomNoSender(gameId, playerId, 'tilePlacement', data);
     }
 }
