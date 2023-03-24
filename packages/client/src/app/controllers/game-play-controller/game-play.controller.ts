@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { ActionData } from '@app/classes/actions/action-data';
 import GameUpdateData from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
-import { Square } from '@app/classes/square';
 import { HTTP_ABORT_ERROR } from '@app/constants/controllers-errors';
 import SocketService from '@app/services/socket-service/socket.service';
+import { TilePlacement } from '@common/models/tile-placement';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -15,7 +15,7 @@ import { environment } from 'src/environments/environment';
 export class GamePlayController {
     private gameUpdate$ = new BehaviorSubject<GameUpdateData>({});
     private newMessage$ = new BehaviorSubject<Message | null>(null);
-    private firstSquareSelected$ = new BehaviorSubject<Square | null>(null);
+    private tilePlacement$ = new BehaviorSubject<TilePlacement[]>([]);
     private actionDone$ = new Subject<void>();
 
     constructor(private http: HttpClient, private readonly socketService: SocketService) {
@@ -52,14 +52,9 @@ export class GamePlayController {
         this.http.delete(endpoint, { observe: 'response' }).subscribe(this.handleDisconnectResponse, this.handleDisconnectError);
     }
 
-    handleFirstSquareSelected(gameId: string, square: Square): void {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/squares/select`;
-        this.http.post(endpoint, square).subscribe();
-    }
-
-    handleFirstSquareCancelled(gameId: string): void {
-        const endpoint = `${environment.serverUrl}/games/${gameId}/squares/cancel`;
-        this.http.delete(endpoint).subscribe();
+    handleTilePlacement(gameId: string, tilePlacement: TilePlacement[]): void {
+        const endpoint = `${environment.serverUrl}/games/${gameId}/squares/place`;
+        this.http.post(endpoint, { 'tilePlacement': tilePlacement }).subscribe();
     }
 
     observeGameUpdate(): Observable<GameUpdateData> {
@@ -74,8 +69,8 @@ export class GamePlayController {
         return this.actionDone$.asObservable();
     }
 
-    observeFirstSquareSelected(): Observable<Square | null> {
-        return this.firstSquareSelected$.asObservable();
+    observeTilePlacement(): Observable<TilePlacement[]> {
+        return this.tilePlacement$.asObservable();
     }
 
     private configureSocket(): void {
@@ -85,11 +80,8 @@ export class GamePlayController {
         this.socketService.on('newMessage', (newMessage: Message) => {
             this.newMessage$.next(newMessage);
         });
-        this.socketService.on('firstSquareSelected', (square: Square) => {
-            this.firstSquareSelected$.next(square);
-        });
-        this.socketService.on('firstSquareCancelled', () => {
-            this.firstSquareSelected$.next(null);
+        this.socketService.on('tilePlacement', (tilePlacement: TilePlacement[]) => {
+            this.tilePlacement$.next(tilePlacement);
         });
     }
 

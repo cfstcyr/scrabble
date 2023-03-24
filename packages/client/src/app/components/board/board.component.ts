@@ -7,7 +7,6 @@ import { LetterValue, TilePlacement } from '@app/classes/tile';
 import { LETTER_VALUES, MARGIN_COLUMN_SIZE, SQUARE_SIZE, UNDEFINED_SQUARE } from '@app/constants/game-constants';
 import { SQUARE_TILE_DEFAULT_FONT_SIZE } from '@app/constants/tile-font-size-constants';
 import { BoardService } from '@app/services/';
-import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -34,7 +33,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     constructor(
         private boardService: BoardService,
         private tilePlacementService: TilePlacementService,
-        private gameViewEventManagerService: GameViewEventManagerService,
     ) {
         this.marginColumnSize = MARGIN_COLUMN_SIZE;
         this.gridSize = { x: 0, y: 0 };
@@ -50,16 +48,12 @@ export class BoardComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.boardService.subscribeToInitializeBoard(this.componentDestroyed$, (board: Square[][]) => this.initializeBoard(board));
         this.boardService.subscribeToBoardUpdate(this.componentDestroyed$, (squaresToUpdate: Square[]) => this.updateBoard(squaresToUpdate));
-        this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareSelected', this.componentDestroyed$, (square) =>
-            this.handleFirstSquareSelected(square),
-        );
-        this.gameViewEventManagerService.subscribeToGameViewEvent('firstSquareCancelled', this.componentDestroyed$, () =>
-            this.handleFirstSquareCancelled(),
-        );
         this.tilePlacementService.tilePlacements$
             .pipe(takeUntil(this.componentDestroyed$))
             .subscribe((tilePlacements) => this.handlePlaceTiles(tilePlacements));
-
+        this.boardService.subscribeToTemporaryTilePlacements(this.componentDestroyed$, (tilePlacements) =>
+            this.handlePlaceTiles(tilePlacements),
+        );
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());
     }
@@ -68,10 +62,6 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
     }
-
-    // this.gameService.selectFirstSquare(squareView.square);
-
-    // this.gameService.cancelFirstSquareSelection();
 
     isSamePosition(square1: SquareView | undefined, square2: SquareView | undefined): boolean {
         return (
@@ -159,14 +149,5 @@ export class BoardComponent implements OnInit, OnDestroy {
                 this.notAppliedSquares.push(squareView);
             }
         }
-    }
-
-    private handleFirstSquareSelected(square: Square): void {
-        this.selectedSquare = new SquareView(square, SQUARE_SIZE);
-        this.navigator.orientation = undefined;
-    }
-
-    private handleFirstSquareCancelled(): void {
-        this.selectedSquare = undefined;
     }
 }

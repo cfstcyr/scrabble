@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { PlaceActionPayload } from '@app/classes/actions/action-data';
 import { Orientation } from '@app/classes/actions/orientation';
+import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { Position } from '@app/classes/board-navigator/position';
 import { LetterValue, TilePlacement } from '@app/classes/tile';
-import { CANNOT_REMOVE_UNUSED_TILE } from '@app/constants/component-errors';
-import { BOARD_SIZE } from '@app/constants/game-constants';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import BoardService from '@app/services/board-service/board.service';
-import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
-import { comparePlacements, comparePositions } from '@app/utils/comparator/comparator';
-import { PlaceActionPayload } from '@app/classes/actions/action-data';
-import { MatDialog } from '@angular/material/dialog';
 import {
     ChooseBlankTileDialogComponent,
     ChooseBlankTileDialogParameters,
 } from '@app/components/choose-blank-tile-dialog/choose-blank-tile-dialog.component';
+import { CANNOT_REMOVE_UNUSED_TILE } from '@app/constants/component-errors';
+import { BOARD_SIZE } from '@app/constants/game-constants';
+import BoardService from '@app/services/board-service/board.service';
+import { comparePlacements, comparePositions } from '@app/utils/comparator/comparator';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -23,6 +23,7 @@ export class TilePlacementService {
     private blankTileModalOpened$: BehaviorSubject<boolean>;
     private tilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private isPlacementValidSubject$: BehaviorSubject<boolean>;
+    private temporaryTilePlacements$: BehaviorSubject<TilePlacement[]>;
 
     constructor(private readonly boardService: BoardService, private readonly dialog: MatDialog) {
         this.blankTileModalOpened$ = new BehaviorSubject<boolean>(false);
@@ -46,6 +47,10 @@ export class TilePlacementService {
 
     get isPlacementValid(): boolean {
         return this.isPlacementValidSubject$.value && !this.blankTileModalOpened$.value;
+    }
+
+    get temporaryTilePlacements(): Observable<TilePlacement[]> {
+        return this.temporaryTilePlacements$.asObservable();
     }
 
     placeTile(tilePlacement: TilePlacement): void {
