@@ -7,8 +7,8 @@ import { WordFindingUseCase, WordFindingRequest, ScoredWordPlacement } from '@ap
 import { Service } from 'typedi';
 import WordFindingService from '@app/services/word-finding-service/word-finding.service';
 import { ActionPass, ActionPlace } from '@app/classes/actions';
-import { ActionTurnEndingType } from '@app/classes/communication/action-data';
 import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
+import { ActionTurnEndingType } from '@common/models/analysis';
 
 const POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD = 25;
 @Service()

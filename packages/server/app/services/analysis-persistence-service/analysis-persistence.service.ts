@@ -7,11 +7,11 @@ import { Analysis, AnalysisData, AnalysisResponse, CriticalMomentData, CriticalM
 import { ScoredWordPlacement } from '@app/classes/word-finding';
 import { Board, Orientation, Position } from '@app/classes/board';
 import { Tile, TileReserve } from '@app/classes/tile';
-import { ActionTurnEndingType } from '@app/classes/communication/action-data';
 import BoardService from '@app/services/board-service/board.service';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { NO_ANALYSIS_FOUND } from '@app/constants/services-errors';
 import { StatusCodes } from 'http-status-codes';
+import { ActionTurnEndingType } from '@common/models/analysis';
 
 @Service()
 export class AnalysisPersistenceService {

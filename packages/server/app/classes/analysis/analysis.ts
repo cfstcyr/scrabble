@@ -1,10 +1,10 @@
-import { ActionTurnEndingType } from '@app/classes/communication/action-data';
 import { Tile } from '@app/classes/tile';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { ScoredWordPlacement } from '@app/classes/word-finding';
 import { Board } from '@app/classes/board';
 import Player from '@app/classes/player/player';
 import { Square } from '@app/classes/square';
+import { ActionTurnEndingType } from '@common/models/analysis';
 
 export interface PlayerAnalysis {
     player: Player;
