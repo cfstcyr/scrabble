@@ -1,7 +1,7 @@
 import { PlaceActionPayload } from '@app/classes/actions/action-data';
 import { InitializeGameData } from '@app/classes/communication/game-config';
 import { Message } from '@app/classes/communication/message';
-import { Square } from '@app/classes/square';
+import { TilePlacement } from '@common/models/tile-placement';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 export interface EventTypes {
@@ -12,8 +12,7 @@ export interface EventTypes {
     gameInitialized: InitializeGameData | undefined;
     resetServices: void;
     endOfGame: string[];
-    firstSquareSelected: Square;
-    firstSquareCancelled: void;
+    tilePlacement: TilePlacement[];
 }
 
 type GenericEventClass<T> = {
