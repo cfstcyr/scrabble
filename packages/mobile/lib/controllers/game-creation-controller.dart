@@ -81,8 +81,6 @@ class GameCreationController {
   }
 
   void handleJoinRequest(RequestingUsers data) {
-    print(data.requestingObservers.length);
-    print(data.requestingPlayers.length);
     playerWaitingList$.add(data.requestingPlayers);
     observerWaitingList$.add(data.requestingObservers);
   }
