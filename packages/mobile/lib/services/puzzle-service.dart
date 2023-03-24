@@ -13,6 +13,7 @@ import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/puzzle-constants.dart';
+import 'package:mobile/constants/socket-constants.dart';
 import 'package:mobile/controllers/puzzle-controller.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
@@ -60,16 +61,19 @@ class PuzzleService {
 
     TileRack tileRack = TileRack().setTiles(tileRackConfig);
 
-    PuzzlePlayer player = _currentPlayer ?? PuzzlePlayer(user: _userService.user.value ?? UNKNOWN_USER, streakPoints: 0, streakMaxPoints: 0);
+    PuzzlePlayer player = _getPuzzlePlayerForGame();
     _puzzle.add(PuzzleGame(board: board, tileRack: tileRack, puzzlePlayer: player));
 
-    Round firstRound = Round(socketIdOfActivePlayer: getIt.get<SocketService>().getSocket().id ?? '', duration: startPuzzle.roundDuration);
+    Round firstRound = Round(socketIdOfActivePlayer: UNDEFINED_SOCKET, duration: startPuzzle.roundDuration);
 
     _roundService.startRound(firstRound, _onTimerExpires);
   }
 
   void completePuzzle() {
-    if(!(_puzzle.value?.board.isValidPlacement ?? false)) return;
+    if(!(_puzzle.value?.board.isValidPlacement ?? false)) {
+      abandonPuzzle();
+      return;
+    }
 
     Placement? placement = _puzzle.value?.board.currentPlacement;
 
@@ -93,6 +97,10 @@ class PuzzleService {
   }
 
   void _onTimerExpires() {
-    abandonPuzzle();
+    completePuzzle();
+  }
+
+  PuzzlePlayer _getPuzzlePlayerForGame() {
+    return _currentPlayer ?? PuzzlePlayer(user: _userService.user.value ?? UNKNOWN_USER, streakPoints: 0, streakMaxPoints: 0);
   }
 }
