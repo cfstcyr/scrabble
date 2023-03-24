@@ -6,12 +6,12 @@ import DatabaseService from '@app/services/database-service/database.service';
 import { Analysis, AnalysisData, AnalysisResponse, CriticalMomentData, CriticalMomentResponse, PlacementData } from '@app/classes/analysis/analysis';
 import { ScoredWordPlacement } from '@app/classes/word-finding';
 import { Board, Orientation, Position } from '@app/classes/board';
-import { Tile, TileReserve } from '@app/classes/tile';
 import BoardService from '@app/services/board-service/board.service';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { NO_ANALYSIS_FOUND } from '@app/constants/services-errors';
 import { StatusCodes } from 'http-status-codes';
 import { ActionTurnEndingType } from '@common/models/analysis';
+import { StringConversion } from '@app/utils/string-conversion/string-conversion';
 
 @Service()
 export class AnalysisPersistenceService {
@@ -63,7 +63,7 @@ export class AnalysisPersistenceService {
 
             await this.criticalMomentTable.insert({
                 actionType: criticalMoment.actionType,
-                tiles: criticalMoment.tiles.map((tile) => this.convertTileToString(tile)).join(''),
+                tiles: criticalMoment.tiles.map((tile) => StringConversion.convertTileToStringDatabase(tile)).join(''),
                 board: this.convertBoardToString(criticalMoment.board),
                 playedPlacementId,
                 bestPlacementId,
@@ -74,9 +74,8 @@ export class AnalysisPersistenceService {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private async convertDataToCriticalMoment(criticalMomentData: any): Promise<CriticalMomentResponse> {
-        const tilePromises = criticalMomentData.tiles.split('').map(async (tileString: string) => TileReserve.convertStringToTile(tileString));
         return {
-            tiles: await Promise.all(tilePromises),
+            tiles: criticalMomentData.tiles.split('').map((tileString: string) => StringConversion.convertStringToTile(tileString)),
             actionType: criticalMomentData.actionType as ActionTurnEndingType,
             filledSquares: await this.boardService.initializeBoardSquares(criticalMomentData.board),
             bestPlacement: await this.convertDataToPlacement({
@@ -99,10 +98,8 @@ export class AnalysisPersistenceService {
         };
     }
     private async convertDataToPlacement(placementData: Omit<PlacementData, 'placementId'>): Promise<ScoredWordPlacement> {
-        const tilePromises = placementData.tilesToPlace.split('').map(async (tileString) => TileReserve.convertStringToTile(tileString));
-        const tiles = await Promise.all(tilePromises);
         return {
-            tilesToPlace: tiles,
+            tilesToPlace: placementData.tilesToPlace.split('').map((tileString) => StringConversion.convertStringToTile(tileString)),
             orientation: placementData.isHorizontal ? Orientation.Horizontal : Orientation.Vertical,
             startPosition: new Position(placementData.row, placementData.column),
             score: placementData.score,
@@ -112,7 +109,7 @@ export class AnalysisPersistenceService {
     private async addPlacement(placement: ScoredWordPlacement): Promise<number> {
         const insertedValue = await this.placementTable
             .insert({
-                tilesToPlace: placement.tilesToPlace.map((tile) => this.convertTileToString(tile)).join(''),
+                tilesToPlace: placement.tilesToPlace.map((tile) => StringConversion.convertTileToStringDatabase(tile)).join(''),
                 isHorizontal: placement.orientation === Orientation.Horizontal,
                 score: placement.score,
                 row: placement.startPosition.row,
@@ -122,18 +119,6 @@ export class AnalysisPersistenceService {
         return insertedValue[0].placementId;
     }
 
-    private convertTileToString(tile: Tile): string {
-        if (tile.isBlank) {
-            if (tile.playedLetter) {
-                return tile.playedLetter.toLowerCase();
-            } else {
-                return tile.letter.toLowerCase();
-            }
-        } else {
-            return tile.letter;
-        }
-    }
-
     private convertBoardToString(board: Board): string {
         let outputString = '';
         for (const row of board.grid) {
@@ -141,7 +126,7 @@ export class AnalysisPersistenceService {
                 if (!square.tile) {
                     outputString += ' ';
                 } else {
-                    outputString += this.convertTileToString(square.tile);
+                    outputString += StringConversion.convertTileToStringDatabase(square.tile);
                 }
             }
         }

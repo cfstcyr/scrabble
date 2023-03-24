@@ -7,7 +7,7 @@ import {
     TILE_RESERVE_MUST_BE_INITIALIZED,
 } from '@app/constants/classes-errors';
 import { BLANK_TILE_LETTER_VALUE, LETTER_VALUES } from '@app/constants/game-constants';
-import { letterDistributionMap, LETTER_DISTRIBUTION } from '@app/constants/letter-distributions';
+import { LETTER_DISTRIBUTION } from '@app/constants/letter-distributions';
 import { StatusCodes } from 'http-status-codes';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
 
@@ -17,22 +17,6 @@ export default class TileReserve {
     constructor() {
         this.tiles = [];
         this.initialized = false;
-    }
-
-    static async convertStringToTile(tileString: string): Promise<Tile> {
-        let tile: Tile;
-
-        if (tileString === tileString.toLowerCase()) {
-            // it is a blanktile
-            tile = { letter: '*', value: 0, isBlank: true, playedLetter: tileString as LetterValue };
-        } else {
-            tile = {
-                letter: tileString as LetterValue,
-                value: letterDistributionMap.get(tileString as LetterValue)?.score ?? 1,
-                isBlank: false,
-            };
-        }
-        return tile;
     }
 
     async init(): Promise<void> {

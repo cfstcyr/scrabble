@@ -3,10 +3,11 @@ import { Vec2 } from '@app/classes/board/vec2';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { Square } from '@app/classes/square';
 import { Multiplier } from '@app/classes/square/square';
-import { Tile, TileReserve } from '@app/classes/tile';
+import { Tile } from '@app/classes/tile';
 import { BOARD_CONFIG, BOARD_CONFIG_MAP } from '@app/constants/board-config';
 import { BOARD_SIZE } from '@app/constants/game-constants';
 import { BOARD_CONFIG_UNDEFINED_AT, NO_MULTIPLIER_MAPPED_TO_INPUT } from '@app/constants/services-errors';
+import { StringConversion } from '@app/utils/string-conversion/string-conversion';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 
@@ -34,7 +35,7 @@ export default class BoardService {
         return new Board(grid);
     }
 
-    async initializeBoardSquares(boardString: string): Promise<Square[]> {
+    initializeBoardSquares(boardString: string): Square[] {
         const center: Position = new Position(Math.floor(BoardService.size.x / 2), Math.floor(BoardService.size.y / 2));
         const filledSquares: Square[] = [];
         for (let i = 0; i < boardString.length; i++) {
@@ -43,7 +44,7 @@ export default class BoardService {
             let tile: Tile;
             if (boardString[i] === ' ') continue;
             else {
-                tile = await TileReserve.convertStringToTile(boardString[i]);
+                tile = StringConversion.convertStringToTile(boardString[i]);
             }
             const isCenter = position.row === center.row && position.column === center.column;
             const square: Square = {
