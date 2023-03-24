@@ -7,6 +7,7 @@ import 'package:mobile/classes/puzzle/puzzle-config.dart';
 import 'package:mobile/classes/puzzle/puzzle.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/square.dart';
+import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/controllers/puzzle-controller.dart';
@@ -62,7 +63,13 @@ class PuzzleService {
   }
 
   void completePuzzle() {
+    if(!(_puzzle.value?.board.isValidPlacement ?? false)) return;
 
+    Placement? placement = _puzzle.value?.board.currentPlacement;
+
+    if (placement == null) throw Exception('Cannot play placement, placement is null');
+
+    _puzzleController.completePuzzle(placement.toActionPayload());
   }
 
   void abandonPuzzle() {

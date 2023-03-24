@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
+import 'package:mobile/classes/actions/action-place.dart';
 import 'package:mobile/classes/opponent.dart';
 import 'package:mobile/classes/puzzle/puzzle-config.dart';
 import 'package:mobile/classes/user.dart';
@@ -32,9 +33,9 @@ class PuzzleController {
     return http.post(Uri.parse("$endpoint/start"));
   }
 
-  // Future<Response> completePuzzle() async {
-  //   return http.post(Uri.parse("$endpoint/complete"));
-  // }
+  Future<Response> completePuzzle(ActionPlacePayload placement) async {
+    return http.post(Uri.parse("$endpoint/complete"), body: jsonEncode(placement));
+  }
 
   Future<Response> abandonPuzzle() async {
     return http.post(Uri.parse("$endpoint/abandon"));

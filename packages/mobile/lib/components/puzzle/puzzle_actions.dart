@@ -79,6 +79,7 @@ class PuzzleActions extends StatelessWidget {
                 (route) =>
                     route.settings.name == HOME_ROUTE ||
                     route.settings.name == BASE_ROUTE);
+            Navigator.pushNamed(context, HOME_ROUTE);
           }),
       DialogBoxButtonParameters(
           content: DIALOG_ABANDON_BUTTON_CONTINUE,
