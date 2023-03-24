@@ -18,6 +18,8 @@ export class AnalysisPersistenceService {
     constructor(private readonly databaseService: DatabaseService, private boardService: BoardService) {}
 
     async requestAnalysis(gameId: string, userId: UserId): Promise<AnalysisResponse> {
+        if (!(await this.doesMatchingAnalysisExist(gameId, userId))) throw new HttpException(NO_ANALYSIS_FOUND, StatusCodes.NOT_FOUND);
+
         const analysisData = await this.analysisTable
             .select(
                 `${CRITICAL_MOMENTS_TABLE}.*`,
@@ -39,14 +41,16 @@ export class AnalysisPersistenceService {
                 'Analysis.gameId': gameId,
                 'Analysis.userId': userId,
             });
-        if (!analysisData) {
-            throw new HttpException(NO_ANALYSIS_FOUND, StatusCodes.NOT_FOUND);
-        }
         const analysis: AnalysisResponse = { gameId, userId, criticalMoments: [] };
         for (const criticalMomentData of analysisData) {
             analysis.criticalMoments.push(await this.convertDataToCriticalMoment(criticalMomentData));
         }
         return analysis;
+    }
+
+    async doesMatchingAnalysisExist(gameId: string, userId: UserId): Promise<boolean> {
+        const analysisData = await this.analysisTable.select('*').where({ gameId, userId }).limit(1);
+        return analysisData.length > 0;
     }
 
     async addAnalysis(gameId: string, userId: UserId, analysis: Analysis) {
