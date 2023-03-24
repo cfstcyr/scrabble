@@ -51,9 +51,6 @@ class CustomLocator {
     getIt.registerLazySingleton<UserSessionService>(() => UserSessionService());
     getIt.registerLazySingleton<UserController>(() => UserController());
 
-
-    getIt.registerLazySingleton<ChatManagementController>(
-        () => ChatManagementController());
     getIt.registerLazySingleton<SocketService>(() => SocketService());
     getIt.registerLazySingleton<GameEventService>(() => GameEventService());
     getIt.registerLazySingleton<ChatManagementService>(
@@ -75,7 +72,10 @@ class CustomLocator {
   }
 
   void _registerActiveSingleton() {
-    getIt.registerSingleton<AccountAuthenticationController>(AccountAuthenticationController());
+    getIt.registerSingleton<ChatManagementController>(
+        ChatManagementController());
+    getIt.registerSingleton<AccountAuthenticationController>(
+        AccountAuthenticationController());
     getIt.registerSingleton<InitializerService>(InitializerService());
     getIt.registerSingleton<GameCreationService>(GameCreationService());
     getIt.registerSingleton<GameService>(GameService());
