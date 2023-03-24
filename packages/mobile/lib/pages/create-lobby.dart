@@ -7,6 +7,7 @@ import '../components/group/parameters.dart';
 import '../components/group/player-waiting-list.dart';
 import '../components/group/waiting-room.dart';
 import '../components/scaffold-persistance.dart';
+import '../view-methods/create-lobby-methods.dart';
 import '../view-methods/group.methods.dart';
 
 class CreateLobbyPage extends StatefulWidget {
@@ -144,13 +145,42 @@ class _CreateLobbyPageState extends State<CreateLobbyPage> {
                           ],
                           color: Colors.grey.shade200,
                           borderRadius: BorderRadius.all(Radius.circular(1.0))),
-                      child: Column(
-                        children: [
-                          Text("Liste d'attente",
-                              style: TextStyle(fontSize: 18)),
-                          Expanded(child: PlayerWaitingList()),
-                        ],
-                      ),
+                      child: Column(children: [
+                        Text("Joueurs en attente",
+                            style: TextStyle(fontSize: 18)),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(4))),
+                              child: PlayerWaitingList(
+                                playerListStream: playerWaitingList$.stream,
+                                isObserver: false,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text("Observateurs en attente",
+                            style: TextStyle(fontSize: 18)),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(4))),
+                              child: PlayerWaitingList(
+                                playerListStream: observerWaitingList$.stream,
+                                isObserver: true,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
                     ),
                   )),
             ),

@@ -4,14 +4,17 @@ import 'package:mobile/components/error-pop-up.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/avatars-constants.dart';
 import 'package:mobile/constants/user-constants.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../constants/create-lobby-constants.dart';
 import '../../view-methods/create-lobby-methods.dart';
 
 class PlayerWaitingList extends StatefulWidget {
-  const PlayerWaitingList({
-    super.key,
-  });
+  const PlayerWaitingList(
+      {super.key, required this.playerListStream, required this.isObserver});
+
+  final ValueStream<List<PublicUser>> playerListStream;
+  final bool isObserver;
 
   @override
   State<PlayerWaitingList> createState() => _PlayerWaitingListState();
@@ -25,7 +28,7 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
       color: theme.colorScheme.onPrimary,
     );
     return StreamBuilder<List<PublicUser>>(
-        stream: playerWaitingList$.stream,
+        stream: widget.playerListStream,
         builder: (context, snapshot) {
           return Container(
             child: ListView.builder(
@@ -70,7 +73,7 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                               onPressed: () {
                                 setState(() async {
                                   bool isAccepted = await addPlayerToLobby(
-                                      snapshot.data![index]);
+                                      snapshot.data![index], widget.isObserver);
                                   if (!isAccepted) {
                                     if (context.mounted) {
                                       errorSnackBar(context, FULL_LOBBY_ERROR);
@@ -92,7 +95,8 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                           child: IconButton(
                             onPressed: () {
                               setState(() {
-                                refusePlayer(snapshot.data![index]);
+                                refusePlayer(
+                                    snapshot.data![index], widget.isObserver);
                               });
                             },
                             icon: Icon(Icons.clear_outlined),

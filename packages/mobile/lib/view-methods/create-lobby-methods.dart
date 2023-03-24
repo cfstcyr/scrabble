@@ -74,32 +74,37 @@ Widget setWaitingPlayerIcon(int index) {
   return setAvatar(playerWaitingList$.value[index].avatar);
 }
 
-Future<bool> addPlayerToLobby(PublicUser player) async {
-  // if (isMaximumPlayerCount() && !player.isObserver) return false;
-  if (isMaximumPlayerCount()) return false;
+Future<bool> addPlayerToLobby(PublicUser player, bool isObserver) async {
+  if (isMaximumPlayerCount() && !isObserver) return false;
   // TODO AFTER MR AHMED
 
   await gameCreationService.handleAcceptOpponent(player);
 
-  List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
-  newPlayerWaitingList.remove(player);
-  playerWaitingList$.add(newPlayerWaitingList);
+  if (!isObserver) {
+    List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
+    newPlayerWaitingList.remove(player);
+    playerWaitingList$.add(newPlayerWaitingList);
+  } else {
+    List<PublicUser> newPlayerWaitingList = observerWaitingList$.value;
+    newPlayerWaitingList.remove(player);
+    observerWaitingList$.add(newPlayerWaitingList);
+  }
 
   return true;
 }
 
-Future<void> refusePlayer(PublicUser player) async {
+Future<void> refusePlayer(PublicUser player, bool isObserver) async {
   // TODO CHANGER CA APRES MR AHMED
   await gameCreationService.handleRejectOpponent(player);
-  // if (!player.isObserver) {
-  List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
-  newPlayerWaitingList.remove(player);
-  playerWaitingList$.add(newPlayerWaitingList);
-  // } else {
-  //   List<PublicUser> newObsWaitingList = observerWaitingList$.value;
-  //   newObsWaitingList.remove(player);
-  //   observerWaitingList$.add(newObsWaitingList);
-  // }
+  if (!isObserver) {
+    List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
+    newPlayerWaitingList.remove(player);
+    playerWaitingList$.add(newPlayerWaitingList);
+  } else {
+    List<PublicUser> newObsWaitingList = observerWaitingList$.value;
+    newObsWaitingList.remove(player);
+    observerWaitingList$.add(newObsWaitingList);
+  }
 }
 
 Future<void> startGame() async {
@@ -119,6 +124,7 @@ bool isMinimumPlayerCount() {
 void reInitialize() {
   playerList$.add([userService.getUser()]);
   playerWaitingList$.add([]);
+  observerWaitingList$.add([]);
 }
 
 bool isMaximumPlayerCount() {
