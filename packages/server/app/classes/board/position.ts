@@ -7,6 +7,10 @@ import { Position as PositionInterface } from '@common/models/position';
 export default class Position implements PositionInterface {
     constructor(public row: number, public column: number) {}
 
+    static fromJson(json: PositionInterface): Position {
+        return new Position(json.row, json.column);
+    }
+
     forward(orientation: Orientation, distance: number = DEFAULT_DISTANCE): Position {
         this.move(orientation, Direction.Forward, distance);
         return this;
