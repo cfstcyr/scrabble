@@ -1,4 +1,6 @@
 // ignore: constant_identifier_names
+// ignore_for_file: constant_identifier_names
+
 const List<String> AVATARS = [
   'https://ucarecdn.com/e1415137-973a-43d5-9cac-6b69fdd6389b/',
   'https://ucarecdn.com/6b2a2947-589f-4f31-8c3b-fe70fc74821a/',
@@ -18,3 +20,6 @@ const List<String> AVATARS = [
   'https://ucarecdn.com/b3475da5-12a1-4fa4-b400-98ba81c783f0/',
   'https://ucarecdn.com/bed7e26e-8132-4e80-a5a5-da24f941ed0d/',
 ];
+
+const double LOBBY_AVATAR_SIZE = 40;
+const double LOBBY_AVATAR_RADIUS = 16;

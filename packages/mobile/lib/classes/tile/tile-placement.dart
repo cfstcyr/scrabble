@@ -42,16 +42,16 @@ class Placement {
     if (orientation == null) {
       throw Exception(CANNOT_CONVERT_PLACEMENT_TO_PAYLOAD_IS_INVALID);
     }
+    var sortedTiles = _sortTilePlacements(tiles, orientation);
 
     return ActionPlacePayload(
-        tiles: tiles.map((tilePlacement) => tilePlacement.tile).toList(),
-        position: tiles.first.position,
+        tiles: sortedTiles.map((tilePlacement) => tilePlacement.tile).toList(),
+        position: sortedTiles.first.position,
         orientation: orientation);
   }
 
   bool validatePlacement(Board board) {
     if (tiles.isEmpty) return false;
-
     var orientation = _getPlacementOrientation(tiles);
 
     // The method returns an orientation if all the tiles are in one line.
@@ -64,7 +64,7 @@ class Placement {
         orientation: orientation,
         position: sortedTilePlacements.first.position);
     int index = 0;
-    bool hasNeighbors = false;
+    bool hasNeighbors = _placementIncludesMiddle();
 
     // Check if placement starts with existing tile.
     if (!navigator.clone().backward().isEmpty()) hasNeighbors = true;
@@ -111,8 +111,8 @@ class Placement {
     var xValues = tilePlacements.map((placement) => placement.position.x);
     var yValues = tilePlacements.map((placement) => placement.position.y);
 
-    if (xValues.every((x) => x == xValues.first)) return Orientation.horizontal;
-    if (yValues.every((y) => y == yValues.first)) return Orientation.vertical;
+    if (yValues.every((y) => y == yValues.first)) return Orientation.horizontal;
+    if (xValues.every((x) => x == xValues.first)) return Orientation.vertical;
 
     return null;
   }
@@ -124,7 +124,12 @@ class Placement {
             b.position.getComponentFromOrientation(orientation)
         ? 1
         : -1);
+
     return list;
+  }
+
+  bool _placementIncludesMiddle() {
+    return tiles.any((TilePlacement tile) => tile.position.row == MIDDLE_ROW && tile.position.column == MIDDLE_COL);
   }
 
   Placement clone() {

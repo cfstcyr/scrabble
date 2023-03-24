@@ -29,10 +29,10 @@ class UserSessionService {
     return _userSession?.valueOrNull;
   }
 
-  void clearUserSession() {
+  Future<void> clearUserSession() async {
     assert(_userSession != null, SESSION_NOT_INITIALIZED_ASSERT);
     _userSession?.add(null);
-    storageService.clearStorage();
+    await storageService.clearStorage();
   }
 
   String? getSessionToken() {

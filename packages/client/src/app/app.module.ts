@@ -56,6 +56,7 @@ import { UserProfilePageComponent } from './pages/user-profile-page/user-profile
 import { UserProfileEditDialogComponent } from './components/user-profile/user-profile-edit-dialog/user-profile-edit-dialog.component';
 import { SearchPageComponent } from './pages/search-page/search-page.component';
 import { UserSearchResultPageComponent } from './pages/user-search-result-page/user-search-result-page.component';
+import { ChooseBlankTileDialogComponent } from './components/choose-blank-tile-dialog/choose-blank-tile-dialog.component';
 
 registerLocaleData(localeFr);
 
@@ -113,6 +114,7 @@ registerLocaleData(localeFr);
         UserProfileEditDialogComponent,
         SearchPageComponent,
         UserSearchResultPageComponent,
+        ChooseBlankTileDialogComponent,
     ],
     imports: [
         AppMaterialModule,

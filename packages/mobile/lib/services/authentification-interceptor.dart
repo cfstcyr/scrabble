@@ -11,7 +11,7 @@ class AuthentificationInterceptor implements InterceptorContract {
   @override
   Future<RequestData> interceptRequest({required RequestData data}) async {
     try {
-      token = await storageHandlerService.getToken();
+      token = await storageHandlerService.getToken() ?? '';
       data.headers["authorization"] = "Bearer $token";
       data.headers["Content-Type"] = "application/json";
     } catch (e) {

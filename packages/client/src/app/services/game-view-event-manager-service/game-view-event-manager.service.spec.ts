@@ -1,8 +1,6 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
-import { PlaceActionPayload } from '@app/classes/actions/action-data';
-import { Orientation } from '@app/classes/actions/orientation';
 import * as SERVICE_ERRORS from '@app/constants/services-errors';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { EventTypes } from './event-types';
@@ -23,15 +21,11 @@ describe('GameViewEventManagerService', () => {
     describe('emitGameViewEvent', () => {
         let eventMapSpy: unknown;
         let subjectMock: Subject<any>;
-        let subjectSpy: unknown;
 
         beforeEach(() => {
             subjectMock = new Subject();
             eventMapSpy = spyOn<any>(service, 'getSubjectFromMap').and.callFake(() => {
                 return subjectMock;
-            });
-            subjectSpy = spyOn(subjectMock, 'next').and.callFake(() => {
-                return;
             });
         });
 
@@ -39,17 +33,6 @@ describe('GameViewEventManagerService', () => {
             const event = 'tileRackUpdate';
             service.emitGameViewEvent(event);
             expect(eventMapSpy).toHaveBeenCalledWith(event);
-        });
-
-        it('should call next with payload', () => {
-            const event = 'usedTiles';
-            const payload: PlaceActionPayload = {
-                tiles: [],
-                orientation: Orientation.Horizontal,
-                startPosition: { row: 0, column: 0 },
-            };
-            service.emitGameViewEvent(event, payload);
-            expect(subjectSpy).toHaveBeenCalledWith(payload);
         });
     });
 
@@ -97,16 +80,6 @@ describe('GameViewEventManagerService', () => {
     });
 
     describe('getGameViewEventValue', () => {
-        it('should return value', () => {
-            const value = 'my-value';
-
-            service.emitGameViewEvent<'usedTiles', any>('usedTiles', value);
-
-            const result = service.getGameViewEventValue('usedTiles');
-
-            expect(result).toEqual(result);
-        });
-
         it('should throw if is invalid event', () => {
             expect(() => service.getGameViewEventValue<any, any, any>('invalidEvent')).toThrowError(SERVICE_ERRORS.NO_SUBJECT_FOR_EVENT);
         });

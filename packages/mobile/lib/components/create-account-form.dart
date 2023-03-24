@@ -7,6 +7,7 @@ import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/components/avatar-field.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -164,10 +165,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
                         children: [
                           TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MainPage()));
+                              Navigator.pushReplacementNamed(context, LOGIN_ROUTE);
                             },
                             child: const Text(
                               REDIRECT_LOGIN_LABEL_FR,

@@ -23,7 +23,8 @@ class _GameTimerState extends State<GameTimer> {
   bool _isStopped = false;
 
   late StreamSubscription startRoundSubscription;
-  late StreamSubscription endGameStream;
+  late StreamSubscription endRoundSubscription;
+  late StreamSubscription endGameSubscription;
 
   @override
   void initState() {
@@ -32,7 +33,12 @@ class _GameTimerState extends State<GameTimer> {
       _startTimer(duration);
     });
 
-    endGameStream = getIt.get<EndGameService>().endGameStream.listen((isOver) {
+    endRoundSubscription = _roundService.endRoundEvent.listen((_) {
+      if (_timer != null) _timer!.cancel();
+    });
+
+    endGameSubscription =
+        getIt.get<EndGameService>().endGameStream.listen((isOver) {
       if (isOver) {
         handleEndGame();
       }
@@ -49,7 +55,8 @@ class _GameTimerState extends State<GameTimer> {
   void dispose() {
     _timer?.cancel();
     startRoundSubscription.cancel();
-    endGameStream.cancel();
+    endGameSubscription.cancel();
+    getIt.get<EndGameService>().resetEndGame();
     super.dispose();
   }
 
@@ -69,6 +76,7 @@ class _GameTimerState extends State<GameTimer> {
       (Timer timer) {
         if (_timeLeft.value == 0) {
           timer.cancel();
+          _roundService.roundTimeout();
           _isStopped = true;
         } else {
           _timeLeft.add(--_timeLeft.value);
@@ -87,7 +95,7 @@ class _GameTimerState extends State<GameTimer> {
               builder: (context, snapshot) {
                 return TimerWidget(
                   duration: roundTimeToRoundDuration(
-                      snapshot.hasData ? snapshot.data! : 0),
+                      snapshot.hasData ? snapshot.data! : 60),
                   style: TextStyle(
                       fontSize: 32, fontWeight: FontWeight.w600, height: 1),
                   stopped: _isStopped,

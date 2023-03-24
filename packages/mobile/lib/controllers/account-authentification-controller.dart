@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/login-constants.dart';
 import 'package:mobile/environments/environment.dart';
+import 'package:mobile/routes/navigator-key.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/client.dart';
 import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/services/user-session.service.dart';
@@ -83,6 +86,7 @@ class AccountAuthenticationController {
   }
 
   Future<TokenValidation> validateToken() async {
+    socketService.disconnect();
     String token = await storageHandler.getToken() ?? "";
 
     if (token.isNotEmpty) {
@@ -90,16 +94,21 @@ class AccountAuthenticationController {
       if (res.statusCode == HttpStatus.ok) {
         userSessionHandler
             .initializeUserSession(UserSession.fromJson(jsonDecode(res.body)));
+        await socketService.initSocket(await storageHandler.getToken());
+
         return TokenValidation.Ok;
-      } else if (res.statusCode == HttpStatus.unauthorized) {
-        storageHandler.clearStorage();
-        socketService.disconnect();
-        return TokenValidation.AlreadyConnected;
       } else {
-        return TokenValidation.UnknownError;
+        await storageHandler.clearStorage();
+        socketService.disconnect();
+        if (res.statusCode == HttpStatus.unauthorized) {
+          return TokenValidation.AlreadyConnected;
+        } else {
+          return TokenValidation.UnknownError;
+        }
       }
     } else {
-      userSessionHandler.clearUserSession();
+      await userSessionHandler.clearUserSession();
+      socketService.disconnect();
       return TokenValidation.NoToken;
     }
   }

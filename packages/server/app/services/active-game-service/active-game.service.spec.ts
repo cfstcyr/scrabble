@@ -64,8 +64,9 @@ describe('ActiveGameService', () => {
     let activeGameService: ActiveGameService;
     let testingUnit: ServicesTestingUnit;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withStubbed(ChatService);
+        await testingUnit.withMockDatabaseService();
     });
 
     beforeEach(async () => {
