@@ -5,6 +5,7 @@ import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
+import { AnalysisResponse } from '@app/classes/analysis/analysis';
 
 @Service()
 export class AnalysisController extends BaseController {
@@ -18,15 +19,15 @@ export class AnalysisController extends BaseController {
             const userId: UserId = req.body.idUser;
 
             try {
-                await this.handleRequestAnalysis(gameId, userId);
-                res.status(StatusCodes.NO_CONTENT).send();
+                const analysis = await this.handleRequestAnalysis(gameId, userId);
+                res.status(StatusCodes.OK).send({ analysis });
             } catch (exception) {
                 next(exception);
             }
         });
     }
 
-    private async handleRequestAnalysis(gameId: string, userId: UserId) {
-        await this.analysisPersistenceService.requestAnalysis(gameId, userId);
+    private async handleRequestAnalysis(gameId: string, userId: UserId): Promise<AnalysisResponse> {
+        return await this.analysisPersistenceService.requestAnalysis(gameId, userId);
     }
 }

@@ -13,38 +13,21 @@ import { AnalysisPersistenceService } from '@app/services/analysis-persistence-s
 const POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD = 25;
 @Service()
 export class AnalysisService {
-    // playerLeftEvent: EventEmitter;
-    // private activeGames: Game[];
     private wordFindingRequest: WordFindingRequest = {
         pointRange: new Range(0, Number.MAX_SAFE_INTEGER),
         useCase: WordFindingUseCase.Expert,
         pointHistory: new Map<number, number>(),
     };
 
-    constructor(private wordFindingService: WordFindingService, private analysisPersistenceService: AnalysisPersistenceService) {
-        //
-    }
+    constructor(private wordFindingService: WordFindingService, private analysisPersistenceService: AnalysisPersistenceService) {}
 
     async addAnalysis(game: Game): Promise<void> {
-        const completedRounds: CompletedRound[] = game.roundManager.completedRounds;
         const playerAnalyses: PlayerAnalysis[] = [];
         for (const player of game.getPlayerArray()) {
             if (player instanceof AbstractVirtualPlayer) continue;
             playerAnalyses.push({ player, analysis: { gameId: game.getId(), userId: player.idUser, criticalMoments: [] } });
         }
-
-        for (const playerAnalysis of playerAnalyses) {
-            for (const round of completedRounds) {
-                if (round.player === playerAnalysis.player) {
-                    const criticalMoment = this.analyseRound(round, game);
-                    if (criticalMoment) playerAnalysis.analysis.criticalMoments.push(criticalMoment);
-                }
-            }
-            await this.analysisPersistenceService.addAnalysis(game.getId(), playerAnalysis.analysis.userId, playerAnalysis.analysis);
-        }
-        for (const playerAnalysis of playerAnalyses) {
-            await this.analysisPersistenceService.requestAnalysis(playerAnalysis.analysis.gameId, playerAnalysis.analysis.userId);
-        }
+        this.asynchronousAnalysis(game, playerAnalyses);
     }
 
     analyseRound(round: CompletedRound, game: Game): CriticalMoment | undefined {
@@ -77,5 +60,19 @@ export class AnalysisService {
             this.wordFindingRequest,
         ]);
         return wordFindingInstance.findWords().pop();
+    }
+
+    private async asynchronousAnalysis(game: Game, playerAnalyses: PlayerAnalysis[]): Promise<void> {
+        const completedRounds: CompletedRound[] = game.roundManager.completedRounds;
+
+        for (const playerAnalysis of playerAnalyses) {
+            for (const round of completedRounds) {
+                if (round.player === playerAnalysis.player) {
+                    const criticalMoment = this.analyseRound(round, game);
+                    if (criticalMoment) playerAnalysis.analysis.criticalMoments.push(criticalMoment);
+                }
+            }
+            await this.analysisPersistenceService.addAnalysis(game.getId(), playerAnalysis.analysis.userId, playerAnalysis.analysis);
+        }
     }
 }

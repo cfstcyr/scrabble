@@ -9,12 +9,15 @@ import { Board, Orientation, Position } from '@app/classes/board';
 import { Tile, TileReserve } from '@app/classes/tile';
 import { ActionTurnEndingType } from '@app/classes/communication/action-data';
 import BoardService from '@app/services/board-service/board.service';
+import { HttpException } from '@app/classes/http-exception/http-exception';
+import { NO_ANALYSIS_FOUND } from '@app/constants/services-errors';
+import { StatusCodes } from 'http-status-codes';
 
 @Service()
 export class AnalysisPersistenceService {
     constructor(private readonly databaseService: DatabaseService, private boardService: BoardService) {}
 
-    async requestAnalysis(gameId: string, userId: UserId) {
+    async requestAnalysis(gameId: string, userId: UserId): Promise<AnalysisResponse> {
         const analysisData = await this.analysisTable
             .select(
                 `${CRITICAL_MOMENTS_TABLE}.*`,
@@ -36,11 +39,14 @@ export class AnalysisPersistenceService {
                 'Analysis.gameId': gameId,
                 'Analysis.userId': userId,
             });
-
+        if (!analysisData) {
+            throw new HttpException(NO_ANALYSIS_FOUND, StatusCodes.NOT_FOUND);
+        }
         const analysis: AnalysisResponse = { gameId, userId, criticalMoments: [] };
         for (const criticalMomentData of analysisData) {
             analysis.criticalMoments.push(await this.convertDataToCriticalMoment(criticalMomentData));
         }
+        return analysis;
     }
 
     async addAnalysis(gameId: string, userId: UserId, analysis: Analysis) {

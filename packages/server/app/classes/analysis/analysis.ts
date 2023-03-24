@@ -4,7 +4,7 @@ import { UserId } from '@app/classes/user/connected-user-types';
 import { ScoredWordPlacement } from '@app/classes/word-finding';
 import { Board } from '@app/classes/board';
 import Player from '@app/classes/player/player';
-import { Square } from '../square';
+import { Square } from '@app/classes/square';
 
 export interface PlayerAnalysis {
     player: Player;
@@ -50,7 +50,6 @@ export interface CriticalMoment {
     actionType: ActionTurnEndingType;
     playedPlacement?: ScoredWordPlacement;
     board: Board;
-    // board: (Square | undefined)[];
     bestPlacement: ScoredWordPlacement;
 }
 
