@@ -6,7 +6,6 @@ import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BoardComponent } from '@app/components/board/board.component';
 import { SquareComponent } from '@app/components/square/square.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
 import { TileComponent } from '@app/components/tile/tile.component';
@@ -57,6 +56,9 @@ import { UserProfileEditDialogComponent } from './components/user-profile/user-p
 import { SearchPageComponent } from './pages/search-page/search-page.component';
 import { UserSearchResultPageComponent } from './pages/user-search-result-page/user-search-result-page.component';
 import { ChooseBlankTileDialogComponent } from './components/choose-blank-tile-dialog/choose-blank-tile-dialog.component';
+import { PuzzlePageComponent } from './pages/puzzle-page/puzzle-page.component';
+import { Board2Component } from './components/board2/board2.component';
+import { GameBoardWrapperComponent } from './wrappers/game-board-wrapper/game-board-wrapper.component';
 
 registerLocaleData(localeFr);
 
@@ -77,7 +79,6 @@ registerLocaleData(localeFr);
         TileComponent,
         InformationBoxComponent,
         CommunicationBoxComponent,
-        BoardComponent,
         TileRackComponent,
         GroupsPageComponent,
         GroupInfoComponent,
@@ -115,6 +116,9 @@ registerLocaleData(localeFr);
         SearchPageComponent,
         UserSearchResultPageComponent,
         ChooseBlankTileDialogComponent,
+        PuzzlePageComponent,
+        Board2Component,
+        GameBoardWrapperComponent,
     ],
     imports: [
         AppMaterialModule,

@@ -1,11 +1,9 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActionType } from '@app/classes/actions/action-data';
-import { BoardComponent } from '@app/components/board/board.component';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
 import { ENTER } from '@app/constants/components-constants';
-import { FontSizeChangeOperations } from '@app/constants/font-size-operations';
 import {
     DIALOG_ABANDON_BUTTON_CONFIRM,
     DIALOG_ABANDON_BUTTON_CONTINUE,
@@ -25,14 +23,6 @@ import {
     MIN_CONFETTI_COUNT,
 } from '@app/constants/pages-constants';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
-import {
-    RACK_FONT_SIZE_INCREMENT,
-    RACK_TILE_MAX_FONT_SIZE,
-    RACK_TILE_MIN_FONT_SIZE,
-    SQUARE_FONT_SIZE_INCREMENT,
-    SQUARE_TILE_MAX_FONT_SIZE,
-    SQUARE_TILE_MIN_FONT_SIZE,
-} from '@app/constants/tile-font-size-constants';
 import { GameService } from '@app/services';
 import { ActionService } from '@app/services/action-service/action.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
@@ -49,7 +39,6 @@ import { Observable, Subject } from 'rxjs';
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent implements OnInit, OnDestroy {
-    @ViewChild(BoardComponent, { static: false }) boardComponent: BoardComponent;
     @ViewChild(TileRackComponent, { static: false }) tileRackComponent: TileRackComponent;
 
     private mustDisconnectGameOnLeave: boolean;
@@ -130,16 +119,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
             buttonsContent[1] = DIALOG_ABANDON_BUTTON_CONTINUE;
         }
         this.openDialog(title, content, buttonsContent);
-    }
-
-    changeTileFontSize(operation: FontSizeChangeOperations): void {
-        if (operation === 'smaller') {
-            if (this.tileRackComponent.tileFontSize > RACK_TILE_MIN_FONT_SIZE) this.tileRackComponent.tileFontSize -= RACK_FONT_SIZE_INCREMENT;
-            if (this.boardComponent.tileFontSize > SQUARE_TILE_MIN_FONT_SIZE) this.boardComponent.tileFontSize -= SQUARE_FONT_SIZE_INCREMENT;
-        } else {
-            if (this.tileRackComponent.tileFontSize < RACK_TILE_MAX_FONT_SIZE) this.tileRackComponent.tileFontSize += RACK_FONT_SIZE_INCREMENT;
-            if (this.boardComponent.tileFontSize < SQUARE_TILE_MAX_FONT_SIZE) this.boardComponent.tileFontSize += SQUARE_FONT_SIZE_INCREMENT;
-        }
     }
 
     canPlay(): boolean {
