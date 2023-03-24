@@ -17,6 +17,7 @@ import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
 
 import '../components/game/game_messages.dart';
+import '../services/user.service.dart';
 
 class GamePage extends StatefulWidget {
   @override
@@ -80,7 +81,9 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Expanded(child: GameBoard()),
-                            TileRack(),
+                            getIt<UserService>().isObserver
+                                ? TileRackObserver()
+                                : TileRack(),
                           ],
                         ),
                       )),
