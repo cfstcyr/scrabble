@@ -1,24 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
-import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/components/app_button.dart';
-import 'package:mobile/components/create-game/timer-selector.dart';
-import 'package:mobile/components/error-pop-up.dart';
 import 'package:mobile/components/image.dart';
+import 'package:mobile/components/puzzle/start-puzzle-dialog.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/routes/routes.dart';
-import 'package:mobile/services/game-messages.service.dart';
-import 'package:mobile/services/puzzle-service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/home-page.constants.dart';
 import '../constants/login-constants.dart';
-import '../controllers/account-authentification-controller.dart';
-import '../controllers/game-creation-controller.dart';
-import '../controllers/group-join-controller.dart';
-import '../locator.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -164,90 +156,5 @@ Widget tile(String letter, String name, String link) {
 }
 
 void _handleStartPuzzle(BuildContext context) {
-  showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        ThemeData theme = Theme.of(context);
-        final TimerSelector timerSelector = TimerSelector();
-        return AlertDialog(
-          title: Center(
-            child: Text('Mode Entraînement',
-                style: theme.textTheme.displayMedium
-                    ?.copyWith(fontWeight: FontWeight.w500)),
-          ),
-          content: SingleChildScrollView(child: timerSelector),
-          contentPadding:
-              EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          ),
-          surfaceTintColor: Colors.white,
-          backgroundColor: Colors.white,
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints.tightFor(width: 216, height: 60),
-                  child: AppButton(
-                    onPressed: () => Navigator.pop(context),
-                    theme: AppButtonTheme.secondary,
-                    child: Text(
-                      'Annuler',
-                      style: TextStyle(
-                          fontSize: 24, overflow: TextOverflow.ellipsis),
-                      textAlign: TextAlign.end,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: SPACE_3 * 4,
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints.tightFor(width: 216, height: 60),
-                  child: AppButton(
-                    onPressed: () {
-                      getIt
-                          .get<PuzzleService>()
-                          .startPuzzle(timerSelector.duration)
-                          .then((bool isSuccess) {
-                        Navigator.pop(context);
-                        if (isSuccess) {
-                          // start puzzle and it will push
-                          getIt.get<GameMessagesService>().resetMessages();
-                          Navigator.pushReplacementNamed(context, PUZZLE_ROUTE);
-                        } else {
-                          errorSnackBar(context,
-                              "Erreur lors du lancement de l'entraînement, veuillez réessayez plus tard");
-                        }
-                      });
-                    },
-                    theme: AppButtonTheme.primary,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text('Démarrer',
-                            style: TextStyle(
-                                fontSize: 24,
-                                color: Colors.white,
-                                overflow: TextOverflow.ellipsis),
-                            textAlign: TextAlign.end),
-                        Icon(
-                          Icons.play_arrow_rounded,
-                          color: Colors.white,
-                          size: 48,
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            )
-          ],
-          actionsAlignment: MainAxisAlignment.spaceEvenly,
-        );
-      });
+  showStartPuzzleDialog(context);
 }

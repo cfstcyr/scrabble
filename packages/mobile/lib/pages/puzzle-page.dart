@@ -7,6 +7,7 @@ import 'package:mobile/components/puzzle/puzzle_actions.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/puzzle/puzzle-tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/locale/puzzle-constants.dart';
 import 'package:mobile/constants/puzzle-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/puzzle-service.dart';
@@ -32,7 +33,7 @@ class _PuzzlePageState extends State<PuzzlePage> {
         stream: puzzleService.puzzleStream,
         builder: (context, snapshot) {
           return MyScaffold(
-            title: "Mode Entraînement",
+            title: PUZZLE_PAGE_TITLE,
             body: Container(
               color: Colors.grey.shade100,
               padding: EdgeInsets.all(SPACE_1),
