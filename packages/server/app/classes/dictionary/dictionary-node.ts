@@ -30,6 +30,17 @@ export default class DictionaryNode {
         return node.getNode(rest);
     }
 
+    getRandomNode(): DictionaryNode | undefined {
+        if (this.nodes.size === 0) return;
+
+        const keys = [...this.nodes.keys()];
+        return this.nodes.get(keys[Math.floor(Math.random() * keys.length)]);
+    }
+
+    getNodes(): DictionaryNode[] {
+        return [...this.nodes.values()];
+    }
+
     protected addWord(word: string, value = '', depth = 0): void {
         const [key, rest] = this.separateWord(word);
 

@@ -2,7 +2,7 @@ import { Vec2 } from '@app/classes/board-navigator/vec2';
 import { Square } from '@app/classes/square';
 import { NO_COLOR_FOR_MULTIPLIER, NO_SQUARE_FOR_SQUARE_VIEW } from '@app/constants/classes-errors';
 import { COLORS } from '@app/constants/colors-constants';
-import { MultiplierEffect, MultiplierValue } from './score-multiplier';
+import { MultiplierEffect, MultiplierValue } from '@common/models/game';
 import { MULTIPLIER_COLOR_MAP } from './square-multiplier-to-color-map';
 
 export default class SquareView {

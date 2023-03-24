@@ -7,7 +7,8 @@ export default class DatabaseService {
     knex: Knex;
 
     constructor() {
-        if (env.isTest) throw new Error('DatabaseService should not be used in a test environment');
+        // eslint-disable-next-line no-console
+        if (env.isTest) console.warn('DatabaseService should not be used in a test environment');
     }
 
     async setup(): Promise<void> {
