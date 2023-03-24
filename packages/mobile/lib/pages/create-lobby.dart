@@ -7,6 +7,7 @@ import '../components/group/parameters.dart';
 import '../components/group/player-waiting-list.dart';
 import '../components/group/waiting-room.dart';
 import '../components/scaffold-persistance.dart';
+import '../view-methods/group.methods.dart';
 
 class CreateLobbyPage extends StatefulWidget {
   CreateLobbyPage({super.key, required this.group});
@@ -20,6 +21,8 @@ class CreateLobbyPage extends StatefulWidget {
 class _CreateLobbyPageState extends State<CreateLobbyPage> {
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     return MyScaffold(
       title: "Salle d'attente",
       body: FractionallySizedBox(
@@ -81,6 +84,38 @@ class _CreateLobbyPageState extends State<CreateLobbyPage> {
                             maxRoundTime: widget.group.maxRoundTime,
                             virtualPlayerLevel:
                                 widget.group.virtualPlayerLevel),
+                        StreamBuilder(
+                            stream: currentGroupUpdateStream,
+                            builder: (context, snapshot) {
+                              Group group = snapshot.data ?? widget.group;
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(180, 0, 180, 0),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      color: theme.colorScheme.tertiary,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.visibility),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          group.numberOfObservers.toString(),
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
                         GroupManagement(),
                       ],
                     ),
