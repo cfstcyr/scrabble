@@ -1,4 +1,6 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/constants/assets.constants.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -11,6 +13,7 @@ import '../locator.dart';
 import '../services/socket.service.dart';
 
 class ChatManagementController {
+  static final AudioPlayer _notificationPlayer = AudioPlayer();
   final String endpoint = CHAT_ENDPOINT;
 
   SocketService socketService = getIt.get<SocketService>();
@@ -113,6 +116,7 @@ class ChatManagementController {
       List<ChannelMessage> channelMessages = [...messages$.value];
       channelMessages.insert(0, parsedMessage);
       messages$.add([...channelMessages]);
+      _notificationPlayer.play(AssetSource(NOTIFICATION_PATH));
     });
 
     SocketService.socket.on(ALL_CHANNELS_EVENT, (receivedChannels) {

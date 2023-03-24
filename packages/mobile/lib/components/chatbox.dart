@@ -29,15 +29,13 @@ class _ChatPageState extends State<ChatPage> {
   UserService userService = getIt.get<UserService>();
   late PublicUser userData;
   late types.User _userView;
-  BehaviorSubject<List<ChannelMessage>> get messages$ =>
-      channelService.messages$;
 
   @override
   void initState() {
     super.initState();
     userData = userService.getUser();
     _userView = types.User(id: userData.email, firstName: userData.username);
-    messages$.add(widget.channel.messages);
+    channelService.addMessages(widget.channel.messages);
     _messages = filterToChatBoxFormat(widget.channel.messages);
   }
 
@@ -51,18 +49,18 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   StreamBuilder handleChannelChange(ThemeData theme) {
-    return StreamBuilder(
-        stream: channelService.messages$.stream,
+    return StreamBuilder<List<ChannelMessage>?>(
+        stream: channelService.messagesStream,
         builder: (context, snapshot) {
           // update the channel history
-          widget.channel.messages = messages$.value;
+          widget.channel.messages = snapshot.data ?? List.empty();
 
           return Chat(
             theme: DefaultChatTheme(
               inputBackgroundColor: theme.colorScheme.primary,
               primaryColor: theme.colorScheme.primary,
             ),
-            messages: filterToChatBoxFormat(messages$.value),
+            messages: filterToChatBoxFormat(widget.channel.messages),
             onSendPressed: _handleSendPressed,
             showUserAvatars: true,
             showUserNames: true,
