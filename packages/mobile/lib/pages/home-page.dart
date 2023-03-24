@@ -9,6 +9,7 @@ import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/puzzle-service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -215,6 +216,7 @@ void _handleStartPuzzle(BuildContext context) {
                         Navigator.pop(context);
                         if (isSuccess) {
                           // start puzzle and it will push
+                          getIt.get<GameMessagesService>().resetMessages();
                           Navigator.pushReplacementNamed(context, PUZZLE_ROUTE);
                         } else {
                           errorSnackBar(context,
