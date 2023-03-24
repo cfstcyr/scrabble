@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/player/abstract_player.dart';
+import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/classes/game/player.dart' as c;
+import 'package:mobile/classes/puzzle/puzzle-player.dart' as c;
+import 'package:mobile/constants/user-constants.dart';
 
-class Player extends AbstractPlayer {
-  Player({
-    required c.Player player,
-    bool isPlaying = false,
-  }) : super(player: player, isPlaying: isPlaying);
+class PuzzlePlayer extends StatelessWidget {
+  PuzzlePlayer({
+    required this.player,
+  });
+
+  final c.PuzzlePlayer player;
 
   @override
-  Widget getContent(BuildContext context) {
+  Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+
     return Card(
-        color: getColor(),
+        color: theme.primaryColor,
         child: Container(
           padding: EdgeInsets.symmetric(
             horizontal: SPACE_2,
@@ -22,16 +26,39 @@ class Player extends AbstractPlayer {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(child: getPlayerInfo()),
-              Text(
-                '${player.score}',
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 16,
-                  height: 1,
-                  color: getTextColor(),
-                ),
-              ),
+              Avatar(
+                  avatar: player.user.avatar,
+                  forceInitials: player.user.avatar.isEmpty,
+                  initials: getUsersInitials(player.user.username),
+                  background: theme.colorScheme.onBackground,
+                  radius: 16,
+                  size: 44),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    player.user.username,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 24,
+                        height: 1,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white),
+                  ),
+                  Opacity(
+                    opacity: 0.64,
+                    child: Text(
+                      '${player.streakPoints} / ${player.streakMaxPoints} pts',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          height: 1,
+                          color: Colors.white),
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
         ));

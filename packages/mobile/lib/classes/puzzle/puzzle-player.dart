@@ -7,6 +7,6 @@ class PuzzlePlayer {
 
   PuzzlePlayer(
       {required this.user,
-      required this.streakPoints,
-      required this.streakMaxPoints});
+      this.streakPoints = 0,
+      this.streakMaxPoints = 0});
 }
