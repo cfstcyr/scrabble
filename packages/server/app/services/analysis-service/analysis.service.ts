@@ -33,7 +33,22 @@ export class AnalysisService {
         await this.asynchronousAnalysis(game, playerAnalyses, idGameHistory);
     }
 
-    analyseRound(round: CompletedRound, game: Game): CriticalMoment | undefined {
+    private async asynchronousAnalysis(game: Game, playerAnalyses: PlayerAnalysis[], idGameHistory: TypeOfId<GameHistory>): Promise<void> {
+        const completedRounds: CompletedRound[] = game.roundManager.completedRounds;
+
+        for (const playerAnalysis of playerAnalyses) {
+            for (const round of completedRounds) {
+                if (round.player === playerAnalysis.player) {
+                    const criticalMoment = this.analyseRound(round, game);
+                    if (criticalMoment) playerAnalysis.analysis.criticalMoments.push(criticalMoment);
+                }
+            }
+
+            await this.analysisPersistenceService.addAnalysis(idGameHistory, playerAnalysis.analysis.idUser, playerAnalysis.analysis);
+        }
+    }
+
+    private analyseRound(round: CompletedRound, game: Game): CriticalMoment | undefined {
         const playedAction = round.actionPlayed;
 
         const bestPlacement = this.findBestPlacement(round, game.dictionarySummary.id);
@@ -56,27 +71,12 @@ export class AnalysisService {
             : undefined;
     }
 
-    findBestPlacement(round: CompletedRound, dictionaryId: string): ScoredWordPlacement | undefined {
+    private findBestPlacement(round: CompletedRound, dictionaryId: string): ScoredWordPlacement | undefined {
         const wordFindingInstance = this.wordFindingService.getWordFindingInstance(this.wordFindingRequest.useCase, dictionaryId, [
             round.board,
             round.player.tiles,
             this.wordFindingRequest,
         ]);
         return wordFindingInstance.findWords().pop();
-    }
-
-    private async asynchronousAnalysis(game: Game, playerAnalyses: PlayerAnalysis[], idGameHistory: TypeOfId<GameHistory>): Promise<void> {
-        const completedRounds: CompletedRound[] = game.roundManager.completedRounds;
-
-        for (const playerAnalysis of playerAnalyses) {
-            for (const round of completedRounds) {
-                if (round.player === playerAnalysis.player) {
-                    const criticalMoment = this.analyseRound(round, game);
-                    if (criticalMoment) playerAnalysis.analysis.criticalMoments.push(criticalMoment);
-                }
-            }
-
-            await this.analysisPersistenceService.addAnalysis(idGameHistory, playerAnalysis.analysis.idUser, playerAnalysis.analysis);
-        }
     }
 }

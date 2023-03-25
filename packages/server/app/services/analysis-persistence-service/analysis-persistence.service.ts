@@ -4,7 +4,7 @@ import { ANALYSIS_TABLE, CRITICAL_MOMENTS_TABLE, PLACEMENT_TABLE } from '@app/co
 import { Service } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
 import { Analysis, AnalysisData, CriticalMomentData, PlacementData } from '@app/classes/analysis/analysis';
-import { Board, Orientation, Position } from '@app/classes/board';
+import { Orientation, Position } from '@app/classes/board';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { NO_ANALYSIS_FOUND } from '@app/constants/services-errors';
 import { StatusCodes } from 'http-status-codes';
@@ -15,7 +15,7 @@ import { ScoredWordPlacement } from '@common/models/word-finding';
 import { TypeOfId } from '@common/types/id';
 import { GameHistory } from '@common/models/game-history';
 import { BOARD_SIZE } from '@app/constants/game-constants';
-import { Square, Tile } from '@common/models/game';
+import { Board, Square, Tile } from '@common/models/game';
 
 @Service()
 export class AnalysisPersistenceService {
@@ -52,11 +52,6 @@ export class AnalysisPersistenceService {
         return analysis;
     }
 
-    async doesMatchingAnalysisExist(idGame: TypeOfId<GameHistory>, idUser: UserId): Promise<boolean> {
-        const analysisData = await this.analysisTable.select('*').where({ idGame, idUser }).limit(1);
-        return analysisData.length > 0;
-    }
-
     async addAnalysis(idGame: TypeOfId<GameHistory>, idUser: UserId, analysis: Analysis) {
         const insertedValue = await this.analysisTable.insert({ idGame, idUser }).returning('idAnalysis');
 
@@ -74,6 +69,11 @@ export class AnalysisPersistenceService {
                 idAnalysis: insertedValue[0].idAnalysis,
             });
         }
+    }
+
+    private async doesMatchingAnalysisExist(idGame: TypeOfId<GameHistory>, idUser: UserId): Promise<boolean> {
+        const analysisData = await this.analysisTable.select('*').where({ idGame, idUser }).limit(1);
+        return analysisData.length > 0;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

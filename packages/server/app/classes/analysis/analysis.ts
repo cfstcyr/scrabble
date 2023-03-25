@@ -1,10 +1,10 @@
 import { UserId } from '@app/classes/user/connected-user-types';
-import { Board } from '@app/classes/board';
 import Player from '@app/classes/player/player';
 import { ActionType } from '@common/models/action';
 import { AnalysisResponse, CriticalMomentBase } from '@common/models/analysis';
 import { TypeOfId } from '@common/types/id';
 import { GameHistory } from '@common/models/game-history';
+import { Board } from '@common/models/game';
 
 export interface PlayerAnalysis {
     player: Player;

@@ -28,7 +28,7 @@ export class StringConversion {
 
         if (tileString === tileString.toLowerCase()) {
             // it is a blanktile
-            tile = { letter: '*', value: 0, isBlank: true, playedLetter: tileString as LetterValue };
+            tile = { letter: '*', value: 0, isBlank: true, playedLetter: tileString !== '*' ? (tileString.toUpperCase() as LetterValue) : undefined };
         } else {
             tile = {
                 letter: tileString as LetterValue,
