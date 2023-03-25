@@ -7,11 +7,11 @@ export interface Puzzle {
 }
 
 export enum PuzzleResultStatus {
-    Won = 'won',
-    Valid = 'valid',
-    Invalid = 'invalid',
-    Abandoned = 'abandoned',
-    Timeout = 'timeout',
+    Won = 'Gagné',
+    Valid = 'Valide',
+    Invalid = 'Invalide',
+    Abandoned = 'Abandonnée',
+    Timeout = 'Temps écoulé',
 }
 
 export interface PuzzleResult {

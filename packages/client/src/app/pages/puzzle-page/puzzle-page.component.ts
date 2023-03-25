@@ -35,6 +35,7 @@ export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
     styleUrls: ['./puzzle-page.component.scss'],
 })
 export class PuzzlePageComponent implements OnInit {
+    history: PuzzleResult[] = [];
     startGrid: SquareView[][];
     grid: BehaviorSubject<SquareView[][]> = new BehaviorSubject<SquareView[][]>([]);
     tiles: BehaviorSubject<RackTile[]> = new BehaviorSubject<RackTile[]>([]);
@@ -137,7 +138,10 @@ export class PuzzlePageComponent implements OnInit {
 
         this.stopPuzzle();
 
-        this.puzzleService.complete(placement).subscribe((result) => this.showEndOfPuzzleModal(result, placement));
+        this.puzzleService.complete(placement).subscribe((result) => {
+            this.history.push(result);
+            this.showEndOfPuzzleModal(result, placement);
+        });
 
         return true;
     }
@@ -146,7 +150,10 @@ export class PuzzlePageComponent implements OnInit {
         this.tilePlacementService.resetTiles();
         this.stopPuzzle();
 
-        this.puzzleService.abandon().subscribe((result) => this.showEndOfPuzzleModal(result, undefined));
+        this.puzzleService.abandon().subscribe((result) => {
+            this.history.push(result);
+            this.showEndOfPuzzleModal(result, undefined);
+        });
     }
 
     timeout(): void {
@@ -154,7 +161,10 @@ export class PuzzlePageComponent implements OnInit {
             this.tilePlacementService.resetTiles();
             this.stopPuzzle();
 
-            this.puzzleService.timeout().subscribe((result) => this.showEndOfPuzzleModal(result, undefined));
+            this.puzzleService.timeout().subscribe((result) => {
+                this.history.push(result);
+                this.showEndOfPuzzleModal(result, undefined);
+            });
         }
     }
 
