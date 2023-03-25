@@ -13,7 +13,7 @@ import 'package:mobile/services/group-join.service.dart';
 import '../../utils/duration-format.dart';
 
 class IndividualGroup extends StatelessWidget {
-  const IndividualGroup(
+  IndividualGroup(
       {super.key,
       required this.theme,
       required this.group,
@@ -22,6 +22,7 @@ class IndividualGroup extends StatelessWidget {
   final ThemeData theme;
   final Group group;
   final Function joinGroupFunction;
+  final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
 
   @override
   Widget build(BuildContext context) {
@@ -101,9 +102,12 @@ class IndividualGroup extends StatelessWidget {
                               height: 60,
                               child: ElevatedButton(
                                   onPressed: group.canJoin!
-                                      ? () {
+                                      ? () async {
                                           if (group.gameVisibility ==
                                               GameVisibility.protected) {
+                                            await groupJoinService
+                                                .handleGroupUpdatesRequest(
+                                                    group.groupId!, false);
                                             showGamePasswordPopup(context,
                                                 group, joinGroupFunction);
                                           } else {
