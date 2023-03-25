@@ -2,7 +2,7 @@ import { ActionData, ActionType } from '@app/classes/communication/action-data';
 import { FeedbackMessage, FeedbackMessages } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
-import { GameRequest, SelectRequest } from '@app/classes/communication/request';
+import { GameRequest, PlaceRequest } from '@app/classes/communication/request';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { CONTENT_REQUIRED, SENDER_REQUIRED } from '@app/constants/controllers-errors';
 import { INVALID_WORD_TIMEOUT, SYSTEM_ERROR_ID, SYSTEM_ID } from '@app/constants/game-constants';
@@ -83,7 +83,7 @@ export class GamePlayController extends BaseController {
             }
         });
 
-        router.post('/:gameId/squares/place', (req: SelectRequest, res: Response, next) => {
+        router.post('/:gameId/squares/place', (req: PlaceRequest, res: Response, next) => {
             const { gameId } = req.params;
             const body = { tilePlacement: req.body.tilePlacement, idUser: req.body.idUser };
             try {
