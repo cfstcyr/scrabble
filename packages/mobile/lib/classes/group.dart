@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
@@ -55,4 +53,15 @@ class GroupCreationResponse {
   String groupId;
 
   GroupCreationResponse({required this.isCreated, required this.groupId});
+}
+
+class JoinRequest {
+  String password;
+  bool isObserver;
+
+  JoinRequest({required this.password, this.isObserver = false});
+
+  Map<String, dynamic> toJson() {
+    return {'password': password, 'isObserver': isObserver};
+  }
 }
