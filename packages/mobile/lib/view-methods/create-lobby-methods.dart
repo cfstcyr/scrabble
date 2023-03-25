@@ -16,7 +16,6 @@ BehaviorSubject<List<PublicUser>> playerList$ =
 BehaviorSubject<List<PublicUser>> playerWaitingList$ =
     BehaviorSubject<List<PublicUser>>.seeded([]);
 
-// TODO VIEW
 BehaviorSubject<List<PublicUser>> observerWaitingList$ =
     BehaviorSubject<List<PublicUser>>.seeded([]);
 
@@ -41,7 +40,7 @@ CircleAvatar setAvatar(String path) {
       child: SizedBox(
           child: ClipOval(
         child: Image.asset(
-          path, //TODO IMAGES PAS POSSIBLE COTE SERVEUR BCS ON DOIT LES RAJOUTER 1 PAR 1 DANS LE pubspec.yaml
+          path,
         ),
       )));
 }
@@ -76,8 +75,6 @@ Widget setWaitingPlayerIcon(int index) {
 
 Future<bool> addPlayerToLobby(PublicUser player, bool isObserver) async {
   if (isMaximumPlayerCount() && !isObserver) return false;
-  // TODO AFTER MR AHMED
-
   await gameCreationService.handleAcceptOpponent(player);
 
   if (!isObserver) {
@@ -94,7 +91,6 @@ Future<bool> addPlayerToLobby(PublicUser player, bool isObserver) async {
 }
 
 Future<void> refusePlayer(PublicUser player, bool isObserver) async {
-  // TODO CHANGER CA APRES MR AHMED
   await gameCreationService.handleRejectOpponent(player);
   if (!isObserver) {
     List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;

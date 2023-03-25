@@ -49,7 +49,6 @@ class GameService {
 
   GamePlayController gamePlayController = getIt.get<GamePlayController>();
 
-// TODO AJOUTER OBSERVABLE ICI voir game.service.ts
   void startGame(String localPlayerId, StartGameData startGameData) {
     PlayersContainer playersContainer = PlayersContainer.fromPlayers(
         player1: startGameData.player1,
