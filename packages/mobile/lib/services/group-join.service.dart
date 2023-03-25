@@ -1,3 +1,5 @@
+import 'package:http/http.dart';
+
 import '../controllers/group-join-controller.dart';
 import '../locator.dart';
 import '../view-methods/group.methods.dart';
@@ -21,18 +23,21 @@ class GroupJoinService {
         .catchError((_) => groups$.add([]));
   }
 
-  void joinGroup(String groupId) async {
-    await groupJoinController.handleJoinGroup(groupId);
+  void joinGroup(String groupId,
+      {String password = '', bool isObserver = false}) async {
+    await groupJoinController.handleJoinGroup(groupId, password, isObserver);
   }
 
-  Future<bool> handleJoinGroup(String groupId) async {
-    return await groupJoinController
-        .handleJoinGroup(groupId)
-        .then((_) => true)
-        .catchError((error) {
-      _handleJoinError(error);
-      return false;
-    });
+  Future<bool> handleJoinGroup(
+      String groupId, String password, bool isObserver) async {
+    Response res = await groupJoinController.handleJoinGroup(
+        groupId, password, isObserver);
+    print(res.statusCode);
+    //   .then((_) => true)
+    //   .catchError((error) {
+    // _handleJoinError(error);
+    return false;
+    // });
   }
 
   Future<void> handleLeaveGroup() async {

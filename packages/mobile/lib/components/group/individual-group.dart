@@ -102,14 +102,13 @@ class IndividualGroup extends StatelessWidget {
                               child: ElevatedButton(
                                   onPressed: group.canJoin!
                                       ? () {
-                                          print(group.gameVisibility ==
-                                              GameVisibility.protected);
                                           if (group.gameVisibility ==
                                               GameVisibility.protected) {
                                             showGamePasswordPopup(context,
                                                 group, joinGroupFunction);
                                           } else {
-                                            joinGroupFunction(group.groupId);
+                                            joinGroupFunction(
+                                                group.groupId, "", false);
                                             Navigator.pushNamed(
                                                     context, JOIN_WAITING_ROUTE,
                                                     arguments: group)

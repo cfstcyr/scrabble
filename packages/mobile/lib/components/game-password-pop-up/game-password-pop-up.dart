@@ -10,10 +10,6 @@ void showGamePasswordPopup(
     BuildContext context, Group group, Function joinGroupFunction) {
   String _password = "";
   final passwordHandler = TextFieldHandler();
-  bool isValid() {
-    print("grouppp    ${group}");
-    return passwordHandler.controller.text == group.password;
-  }
 
   showDialog<String>(
     barrierDismissible: false,
@@ -42,11 +38,9 @@ void showGamePasswordPopup(
           child: const Text("Revenir à la page Join"),
         ),
         TextButton(
-          onPressed: () {
-            if (isValid()) {
-              joinGroupFunction(group.groupId);
-            }
-            print(group.password);
+          onPressed: () async {
+            await joinGroupFunction(
+                group.groupId, passwordHandler.controller.text, false);
             Navigator.pushNamed(context, JOIN_WAITING_ROUTE, arguments: group);
           },
           child: const Text("Rejoindre"),
