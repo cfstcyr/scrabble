@@ -69,8 +69,7 @@ describe('GamePlayController', () => {
             expect(spy).toHaveBeenCalled();
         });
 
-        it('on TilePlacement should push new tile placement', () => { });
-
+        it('on TilePlacement should push new tile placement', () => {});
     });
 
     describe('HTTP', () => {
@@ -114,7 +113,7 @@ describe('GamePlayController', () => {
             expect(httpPostSpy).toHaveBeenCalledWith(endpoint, newMessage);
         });
 
-        it('handleTilePlacement should post tile placement to endpoint', () => { });
+        it('handleTilePlacement should post tile placement to endpoint', () => {});
     });
 
     it('HandleReconnection should post newPlayerId to reconnect endpoint', () => {

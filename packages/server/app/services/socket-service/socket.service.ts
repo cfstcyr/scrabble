@@ -30,7 +30,7 @@ import {
     SocketEmitEvents,
     StartGameEmitArgs,
     TilePlacementEmitArgs,
-    UserLeftGroupEmitArgs
+    UserLeftGroupEmitArgs,
 } from './socket-types';
 
 @Service()

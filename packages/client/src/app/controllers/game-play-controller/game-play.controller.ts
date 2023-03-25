@@ -54,7 +54,7 @@ export class GamePlayController {
 
     handleTilePlacement(gameId: string, tilePlacement: TilePlacement[]): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/squares/place`;
-        this.http.post(endpoint, { 'tilePlacement': tilePlacement }).subscribe();
+        this.http.post(endpoint, { tilePlacement }).subscribe();
     }
 
     observeGameUpdate(): Observable<GameUpdateData> {

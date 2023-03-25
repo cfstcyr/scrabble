@@ -30,10 +30,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     private newlyPlacedTiles: SquareView[];
     private componentDestroyed$: Subject<boolean>;
 
-    constructor(
-        private boardService: BoardService,
-        private tilePlacementService: TilePlacementService,
-    ) {
+    constructor(private boardService: BoardService, private tilePlacementService: TilePlacementService) {
         this.marginColumnSize = MARGIN_COLUMN_SIZE;
         this.gridSize = { x: 0, y: 0 };
         this.marginLetters = LETTER_VALUES.slice(0, this.gridSize.x);
@@ -51,9 +48,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.tilePlacementService.tilePlacements$
             .pipe(takeUntil(this.componentDestroyed$))
             .subscribe((tilePlacements) => this.handlePlaceTiles(tilePlacements));
-        this.boardService.subscribeToTemporaryTilePlacements(this.componentDestroyed$, (tilePlacements) =>
-            this.handlePlaceTiles(tilePlacements),
-        );
+        this.boardService.subscribeToTemporaryTilePlacements(this.componentDestroyed$, (tilePlacements) => this.handlePlaceTiles(tilePlacements));
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());
     }
