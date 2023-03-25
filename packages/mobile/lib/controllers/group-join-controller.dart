@@ -46,6 +46,11 @@ class GroupJoinController {
         body: jsonEncode(joinRequestData));
   }
 
+  Future<Response> handleGroupUpdatesRequest(String groupId, bool isObserver) {
+    return http.patch(Uri.parse("$endpoint/$groupId"),
+        body: jsonEncode({"isObserver": isObserver}));
+  }
+
   Future<Response> handleCancelJoinRequest() async {
     return handleLeaveGroup();
   }
