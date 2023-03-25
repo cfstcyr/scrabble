@@ -1,22 +1,23 @@
 import { Tile, Square } from "./game";
 import { ScoredWordPlacement } from "./word-finding";
+import { ActionType } from './action';
+import { TypeOfId } from "../types/id";
+import { User } from "./user";
+import { GameHistory } from "./game-history";
 
-export interface CriticalMomentResponse {
+export interface CriticalMomentBase {
     tiles: Tile[];
-    actionType: ActionTurnEndingType;
+    actionType: ActionType;
     playedPlacement?: ScoredWordPlacement;
-    filledSquares: Square[];
     bestPlacement: ScoredWordPlacement;
 }
 
-export interface AnalysisResponse {
-    gameId: string;
-    userId: number;
-    criticalMoments: CriticalMomentResponse[];
+export interface CriticalMomentResponse extends CriticalMomentBase {
+    filledSquares: Square[];
 }
 
-export enum ActionTurnEndingType {
-    PLACE = 'placer',
-    EXCHANGE = 'échanger',
-    PASS = 'passer',
+export interface AnalysisResponse {
+    idGame: TypeOfId<GameHistory>;
+    idUser: TypeOfId<User>;
+    criticalMoments: CriticalMomentResponse[];
 }

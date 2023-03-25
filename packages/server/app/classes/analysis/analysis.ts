@@ -1,62 +1,43 @@
-import { Tile } from '@app/classes/tile';
 import { UserId } from '@app/classes/user/connected-user-types';
-import { ScoredWordPlacement } from '@app/classes/word-finding';
 import { Board } from '@app/classes/board';
 import Player from '@app/classes/player/player';
-import { Square } from '@app/classes/square';
-import { ActionTurnEndingType } from '@common/models/analysis';
+import { ActionType } from '@common/models/action';
+import { AnalysisResponse, CriticalMomentBase } from '@common/models/analysis';
+import { TypeOfId } from '@common/types/id';
+import { GameHistory } from '@common/models/game-history';
 
 export interface PlayerAnalysis {
     player: Player;
     analysis: Analysis;
 }
-export interface Analysis {
-    gameId: string;
-    userId: UserId;
+export interface Analysis extends Omit<AnalysisResponse, 'criticalMoments'> {
     criticalMoments: CriticalMoment[];
 }
 
-export interface AnalysisResponse {
-    gameId: string;
-    userId: UserId;
-    criticalMoments: CriticalMomentResponse[];
-}
 export interface AnalysisData {
-    gameId: string;
-    userId: UserId;
-    analysisId: number;
+    idGame: TypeOfId<GameHistory>;
+    idUser: UserId;
+    idAnalysis: number;
 }
 
 export interface CriticalMomentData {
-    criticalMomentId: number;
-    actionType: ActionTurnEndingType;
+    idCriticalMoment: number;
+    actionType: ActionType;
     tiles: string;
     board: string;
-    playedPlacementId?: number;
-    bestPlacementId: number;
-    analysisId: number;
+    idPlayedPlacement?: TypeOfId<PlacementData>;
+    idBestPlacement: TypeOfId<PlacementData>;
+    idAnalysis: TypeOfId<AnalysisData>;
 }
 
 export interface PlacementData {
-    placementId: number;
+    idPlacement: number;
     tilesToPlace: string;
     isHorizontal: boolean;
     score: number;
     row: number;
     column: number;
 }
-export interface CriticalMoment {
-    tiles: Tile[];
-    actionType: ActionTurnEndingType;
-    playedPlacement?: ScoredWordPlacement;
+export interface CriticalMoment extends CriticalMomentBase {
     board: Board;
-    bestPlacement: ScoredWordPlacement;
-}
-
-export interface CriticalMomentResponse {
-    tiles: Tile[];
-    actionType: ActionTurnEndingType;
-    playedPlacement?: ScoredWordPlacement;
-    filledSquares: Square[];
-    bestPlacement: ScoredWordPlacement;
 }

@@ -8,9 +8,11 @@ import { Service } from 'typedi';
 import WordFindingService from '@app/services/word-finding-service/word-finding.service';
 import { ActionPass, ActionPlace } from '@app/classes/actions';
 import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
-import { ActionTurnEndingType } from '@common/models/analysis';
+import { ActionType } from '@common/models/action';
+import { POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD } from '@app/constants/services-constants/analysis-const';
+import { GameHistory } from '@common/models/game-history';
+import { TypeOfId } from '@common/types/id';
 
-const POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD = 25;
 @Service()
 export class AnalysisService {
     private wordFindingRequest: WordFindingRequest = {
@@ -21,13 +23,14 @@ export class AnalysisService {
 
     constructor(private wordFindingService: WordFindingService, private analysisPersistenceService: AnalysisPersistenceService) {}
 
-    async addAnalysis(game: Game): Promise<void> {
+    async addAnalysis(game: Game, idGameHistory: TypeOfId<GameHistory>): Promise<void> {
         const playerAnalyses: PlayerAnalysis[] = [];
-        for (const player of game.getPlayerArray()) {
+        for (const player of game.getPlayers()) {
             if (player instanceof AbstractVirtualPlayer) continue;
-            playerAnalyses.push({ player, analysis: { gameId: game.getId(), userId: player.idUser, criticalMoments: [] } });
+            playerAnalyses.push({ player, analysis: { idGame: idGameHistory, idUser: player.idUser, criticalMoments: [] } });
         }
-        this.asynchronousAnalysis(game, playerAnalyses);
+
+        await this.asynchronousAnalysis(game, playerAnalyses, idGameHistory);
     }
 
     analyseRound(round: CompletedRound, game: Game): CriticalMoment | undefined {
@@ -38,14 +41,14 @@ export class AnalysisService {
 
         if (!(playedAction instanceof ActionPlace)) {
             if (!(bestPlacement.score > POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD)) return;
-            const actionType = playedAction instanceof ActionPass ? ActionTurnEndingType.PASS : ActionTurnEndingType.EXCHANGE;
+            const actionType = playedAction instanceof ActionPass ? ActionType.PASS : ActionType.EXCHANGE;
 
             return { tiles: round.tiles, actionType, board: round.board, bestPlacement };
         }
         return bestPlacement.score - playedAction.scoredPoints > POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD
             ? {
                   tiles: round.tiles,
-                  actionType: ActionTurnEndingType.PLACE,
+                  actionType: ActionType.PLACE,
                   playedPlacement: { ...playedAction.wordPlacement, score: playedAction.scoredPoints },
                   board: round.board,
                   bestPlacement,
@@ -62,7 +65,7 @@ export class AnalysisService {
         return wordFindingInstance.findWords().pop();
     }
 
-    private async asynchronousAnalysis(game: Game, playerAnalyses: PlayerAnalysis[]): Promise<void> {
+    private async asynchronousAnalysis(game: Game, playerAnalyses: PlayerAnalysis[], idGameHistory: TypeOfId<GameHistory>): Promise<void> {
         const completedRounds: CompletedRound[] = game.roundManager.completedRounds;
 
         for (const playerAnalysis of playerAnalyses) {
@@ -72,7 +75,8 @@ export class AnalysisService {
                     if (criticalMoment) playerAnalysis.analysis.criticalMoments.push(criticalMoment);
                 }
             }
-            await this.analysisPersistenceService.addAnalysis(game.getId(), playerAnalysis.analysis.userId, playerAnalysis.analysis);
+
+            await this.analysisPersistenceService.addAnalysis(idGameHistory, playerAnalysis.analysis.idUser, playerAnalysis.analysis);
         }
     }
 }

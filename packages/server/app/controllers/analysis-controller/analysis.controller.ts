@@ -5,7 +5,9 @@ import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
-import { AnalysisResponse } from '@app/classes/analysis/analysis';
+import { AnalysisResponse } from '@common/models/analysis';
+import { GameHistory } from '@common/models/game-history';
+import { TypeOfId } from '@common/types/id';
 
 @Service()
 export class AnalysisController extends BaseController {
@@ -14,12 +16,12 @@ export class AnalysisController extends BaseController {
     }
 
     protected configure(router: Router): void {
-        router.get('/:gameId', async (req: GameRequest, res: Response, next) => {
-            const { gameId } = req.params;
+        router.get('/:idGameHistory', async (req: GameRequest, res: Response, next) => {
+            const { idGameHistory } = req.params;
             const userId: UserId = req.body.idUser;
 
             try {
-                const analysis = await this.handleRequestAnalysis(gameId, userId);
+                const analysis = await this.handleRequestAnalysis(parseInt(idGameHistory, 10), userId);
                 res.status(StatusCodes.OK).send({ analysis });
             } catch (exception) {
                 next(exception);
@@ -27,7 +29,7 @@ export class AnalysisController extends BaseController {
         });
     }
 
-    private async handleRequestAnalysis(gameId: string, userId: UserId): Promise<AnalysisResponse> {
-        return await this.analysisPersistenceService.requestAnalysis(gameId, userId);
+    private async handleRequestAnalysis(idGameHistory: TypeOfId<GameHistory>, userId: UserId): Promise<AnalysisResponse> {
+        return await this.analysisPersistenceService.requestAnalysis(idGameHistory, userId);
     }
 }

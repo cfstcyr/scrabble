@@ -1,7 +1,7 @@
 import { Action, ActionExchange, ActionHelp, ActionPass, ActionPlace, ActionReserve } from '@app/classes/actions';
 import ActionHint from '@app/classes/actions/action-hint/action-hint';
 import { Position } from '@app/classes/board';
-import { ActionData, ActionExchangePayload, ActionPlacePayload, ActionType } from '@app/classes/communication/action-data';
+import { ActionData, ActionExchangePayload, ActionPlacePayload } from '@app/classes/communication/action-data';
 import { FeedbackMessage, FeedbackMessages } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { RoundData } from '@app/classes/communication/round-data';
@@ -26,6 +26,7 @@ import { PublicUserStatistics } from '@common/models/user-statistics';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 import { AnalysisService } from '@app/services/analysis-service/analysis.service';
+import { ActionType } from '@common/models/action';
 @Service()
 export class GamePlayService {
     constructor(
@@ -137,10 +138,11 @@ export class GamePlayService {
             for (const player of connectedRealPlayers) {
                 await this.highScoresService.addHighScore(player.publicUser.username, player.score);
             }
-            await this.analysisService.addAnalysis(game);
 
-            await this.gameHistoriesService.addGameHistory(game.gameHistory);
+            const idGameHistory = await this.gameHistoriesService.addGameHistory(game.gameHistory);
+            this.analysisService.addAnalysis(game, idGameHistory);
             game.isAddedToDatabase = true;
+            updatedData.idGameHistory = idGameHistory;
         }
 
         this.dictionaryService.stopUsingDictionary(game.dictionarySummary.id, true);
