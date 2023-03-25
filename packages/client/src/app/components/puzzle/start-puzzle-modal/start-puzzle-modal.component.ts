@@ -19,11 +19,11 @@ export interface PuzzleLevel {
 
 const PUZZLE_LEVELS: PuzzleLevel[] = [
     {
-        id: '1',
-        name: 'Expert',
-        description: '30 sec',
-        time: 30,
-        icons: ['bolt', 'bolt', 'bolt'],
+        id: '3',
+        name: 'Débutant',
+        description: '5 min',
+        time: 300,
+        icons: ['bolt'],
     },
     {
         id: '2',
@@ -33,11 +33,11 @@ const PUZZLE_LEVELS: PuzzleLevel[] = [
         icons: ['bolt', 'bolt'],
     },
     {
-        id: '3',
-        name: 'Débutant',
-        description: '5 min',
-        time: 300,
-        icons: ['bolt'],
+        id: '1',
+        name: 'Expert',
+        description: '30 sec',
+        time: 30,
+        icons: ['bolt', 'bolt', 'bolt'],
     },
 ];
 

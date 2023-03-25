@@ -135,7 +135,6 @@ export class PuzzlePageComponent implements OnInit {
             tilesToPlace: payload.tiles,
         };
 
-        this.tilePlacementService.resetTiles();
         this.stopPuzzle();
 
         this.puzzleService.complete(placement).subscribe((result) => this.showEndOfPuzzleModal(result, placement));

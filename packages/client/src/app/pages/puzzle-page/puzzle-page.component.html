@@ -65,7 +65,7 @@
     </mat-card>
 
     <mat-card class="puzzle-actions">
-        <button mat-flat-button class="button-danger" (click)="abandon()" [disabled]="(isPlaying | async) === false"><app-icon icon="flag" styling="solid"></app-icon> Suivant</button>
+        <button mat-flat-button class="button-danger" (click)="abandon()" [disabled]="(isPlaying | async) === false"><app-icon icon="flag" styling="solid"></app-icon> Abandonner</button>
         <button mat-flat-button color="primary" (click)="play()" [disabled]="(canPlay() | async) === false || (isPlaying | async) === false"><app-icon icon="square" styling="solid"></app-icon> Placer</button>
     </mat-card>
 </div>
