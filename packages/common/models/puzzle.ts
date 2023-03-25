@@ -11,6 +11,7 @@ export enum PuzzleResultStatus {
     Valid = 'valid',
     Invalid = 'invalid',
     Abandoned = 'abandoned',
+    Timeout = 'timeout',
 }
 
 export interface PuzzleResult {

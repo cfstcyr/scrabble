@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AbstractController } from '@app/controllers/abstract-controller';
 import { Observable } from 'rxjs';
-import { Puzzle, PuzzleResult } from '@common/models/puzzle';
+import { Puzzle, PuzzleResult, PuzzleResultStatus } from '@common/models/puzzle';
 import { HttpClient } from '@angular/common/http';
 import { WordPlacement } from '@common/models/word-finding';
 
@@ -21,7 +21,7 @@ export class PuzzleController extends AbstractController {
         return this.http.post<PuzzleResult>(this.url('/complete'), { wordPlacement });
     }
 
-    abandon(): Observable<PuzzleResult> {
-        return this.http.post<PuzzleResult>(this.url('/abandon'), {});
+    abandon(status: PuzzleResultStatus = PuzzleResultStatus.Abandoned): Observable<PuzzleResult> {
+        return this.http.post<PuzzleResult>(this.url('/abandon'), { status });
     }
 }

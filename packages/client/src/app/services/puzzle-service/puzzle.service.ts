@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PuzzleController } from '@app/controllers/puzzle-controller/puzzle.controller';
-import { Puzzle, PuzzleResult } from '@common/models/puzzle';
+import { Puzzle, PuzzleResult, PuzzleResultStatus } from '@common/models/puzzle';
 import { WordPlacement } from '@common/models/word-finding';
 import { Observable } from 'rxjs';
 
@@ -20,5 +20,9 @@ export class PuzzleService {
 
     abandon(): Observable<PuzzleResult> {
         return this.puzzleController.abandon();
+    }
+
+    timeout(): Observable<PuzzleResult> {
+        return this.puzzleController.abandon(PuzzleResultStatus.Timeout);
     }
 }

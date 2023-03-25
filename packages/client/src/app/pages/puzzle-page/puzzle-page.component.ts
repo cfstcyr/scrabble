@@ -14,11 +14,18 @@ import { Orientation } from '@common/models/position';
 import { BehaviorSubject, iif, Observable, of, timer } from 'rxjs';
 import { map, mergeMap, takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
-import { StartPuzzleModalComponent, StartPuzzleModalParameters } from '@app/components/start-puzzle-modal/start-puzzle-modal.component';
+import {
+    PuzzleLevel,
+    StartPuzzleModalComponent,
+    StartPuzzleModalParameters,
+} from '@app/components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
 import { puzzleSettings } from '@app/utils/settings';
 import { Router } from '@angular/router';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { ENTER } from '@app/constants/components-constants';
+import { PuzzleResultModalComponent, PuzzleResultModalParameters } from '@app/components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
+import { WordPlacement } from '@common/models/word-finding';
+import { PuzzleResult } from '@common/models/puzzle';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
@@ -28,9 +35,11 @@ export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
     styleUrls: ['./puzzle-page.component.scss'],
 })
 export class PuzzlePageComponent implements OnInit {
+    startGrid: SquareView[][];
     grid: BehaviorSubject<SquareView[][]> = new BehaviorSubject<SquareView[][]>([]);
     tiles: BehaviorSubject<RackTile[]> = new BehaviorSubject<RackTile[]>([]);
     isPlaying: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    level?: PuzzleLevel;
     timer?: Timer;
 
     private notAppliedSquares: SquareView[] = [];
@@ -71,9 +80,10 @@ export class PuzzlePageComponent implements OnInit {
         this.dialog.open<StartPuzzleModalComponent, Partial<StartPuzzleModalParameters>>(StartPuzzleModalComponent, {
             disableClose: true,
             data: {
-                onStart: (time) => {
-                    this.start(time);
-                    puzzleSettings.setTime(time);
+                onStart: (level) => {
+                    this.start(level.time);
+                    this.level = level;
+                    puzzleSettings.setTime(level.time);
                 },
                 onCancel: () => {
                     this.router.navigate([ROUTE_HOME]);
@@ -90,7 +100,8 @@ export class PuzzlePageComponent implements OnInit {
         this.clearNotAppliedSquares();
 
         this.puzzleService.start().subscribe((puzzle) => {
-            const grid = puzzle.board.grid.map((row) => row.map((square) => new SquareView(square, SQUARE_SIZE)));
+            const grid = puzzle.board.grid.map((row) => row.map((square) => new SquareView({ ...square }, SQUARE_SIZE)));
+            this.startGrid = puzzle.board.grid.map((row) => row.map((square) => new SquareView({ ...square }, SQUARE_SIZE)));
 
             this.boardService.navigator = new BoardNavigator(grid, { row: 0, column: 0 }, Orientation.Horizontal);
 
@@ -113,27 +124,39 @@ export class PuzzlePageComponent implements OnInit {
         return this.tilePlacementService.isPlacementValid$;
     }
 
-    play(): void {
+    play(): boolean {
         const payload = this.tilePlacementService.createPlaceActionPayload();
 
-        if (!payload) return;
+        if (!payload) return false;
 
+        const placement: WordPlacement = {
+            orientation: payload.orientation,
+            startPosition: payload.startPosition,
+            tilesToPlace: payload.tiles,
+        };
+
+        this.tilePlacementService.resetTiles();
         this.stopPuzzle();
 
-        this.puzzleService
-            .complete({
-                orientation: payload.orientation,
-                startPosition: payload.startPosition,
-                tilesToPlace: payload.tiles,
-            })
-            .subscribe((result) => console.log(result));
+        this.puzzleService.complete(placement).subscribe((result) => this.showEndOfPuzzleModal(result, placement));
+
+        return true;
     }
 
     abandon(): void {
         this.tilePlacementService.resetTiles();
         this.stopPuzzle();
 
-        this.puzzleService.abandon().subscribe((result) => console.log(result));
+        this.puzzleService.abandon().subscribe((result) => this.showEndOfPuzzleModal(result, undefined));
+    }
+
+    timeout(): void {
+        if (!this.play()) {
+            this.tilePlacementService.resetTiles();
+            this.stopPuzzle();
+
+            this.puzzleService.timeout().subscribe((result) => this.showEndOfPuzzleModal(result, undefined));
+        }
     }
 
     drop(event: CdkDragDrop<RackTile[]>) {
@@ -153,7 +176,6 @@ export class PuzzlePageComponent implements OnInit {
     stopPuzzle(): void {
         this.isPlaying.next(false);
         this.timer = undefined;
-        this.askStart();
     }
 
     private startTimer(time: number): void {
@@ -161,10 +183,27 @@ export class PuzzlePageComponent implements OnInit {
 
         timer(time * SECONDS_TO_MILLISECONDS)
             .pipe(takeUntil(this.stopPlaying))
-            .subscribe(() => this.stopPuzzle());
+            .subscribe(() => this.timeout());
         timer(0, SECONDS_TO_MILLISECONDS)
             .pipe(takeUntil(this.stopPlaying))
             .subscribe(() => this.timer?.decrement());
+    }
+
+    private showEndOfPuzzleModal(result: PuzzleResult, placement: WordPlacement | undefined) {
+        this.dialog.open<PuzzleResultModalComponent, PuzzleResultModalParameters>(PuzzleResultModalComponent, {
+            data: {
+                grid: this.startGrid,
+                result,
+                placement,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                level: this.level!,
+                onCancel: () => {
+                    this.router.navigate([ROUTE_HOME]);
+                },
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                onContinue: () => this.start(this.level!.time),
+            },
+        });
     }
 
     private handleUsedTiles(tilePlacements: TilePlacement[]) {

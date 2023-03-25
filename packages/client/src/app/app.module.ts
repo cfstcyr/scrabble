@@ -59,7 +59,12 @@ import { ChooseBlankTileDialogComponent } from './components/choose-blank-tile-d
 import { PuzzlePageComponent } from './pages/puzzle-page/puzzle-page.component';
 import { Board2Component } from './components/board2/board2.component';
 import { GameBoardWrapperComponent } from './wrappers/game-board-wrapper/game-board-wrapper.component';
-import { StartPuzzleModalComponent } from './components/start-puzzle-modal/start-puzzle-modal.component';
+import { StartPuzzleModalComponent } from './components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
+import { PuzzleScoreComponent } from './components/puzzle/puzzle-score/puzzle-score.component';
+import { PuzzleResultModalComponent } from './components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
+import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.component';
+import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
+import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
 
 registerLocaleData(localeFr);
 
@@ -121,6 +126,11 @@ registerLocaleData(localeFr);
         Board2Component,
         GameBoardWrapperComponent,
         StartPuzzleModalComponent,
+        PuzzleScoreComponent,
+        PuzzleResultModalComponent,
+        SwiperComponent,
+        SwiperSlideComponent,
+        SwiperNavigationComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -147,5 +157,6 @@ registerLocaleData(localeFr);
         { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
     ],
     bootstrap: [AppComponent],
+    exports: [IconComponent],
 })
 export class AppModule {}

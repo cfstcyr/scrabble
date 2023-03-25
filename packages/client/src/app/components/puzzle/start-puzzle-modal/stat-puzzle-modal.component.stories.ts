@@ -1,5 +1,5 @@
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
-import { StartPuzzleModalComponent } from '@app/components/start-puzzle-modal/start-puzzle-modal.component';
+import { StartPuzzleModalComponent } from '@app/components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';

@@ -4,12 +4,12 @@ import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { IconName } from '@app/components/icon/icon.component.type';
 
 export interface StartPuzzleModalParameters {
-    onStart: (time: number) => void;
+    onStart: (level: PuzzleLevel) => void;
     onCancel: () => void;
     defaultTime: number;
 }
 
-interface PuzzleLevel {
+export interface PuzzleLevel {
     id: string;
     name: string;
     description: string;
@@ -61,7 +61,7 @@ export class StartPuzzleModalComponent {
     onConfirm() {
         if (this.timeField.invalid) return;
         this.dialogRef.close();
-        this.parameters.onStart?.(this.timeField.value);
+        this.parameters.onStart?.(this.levels.find(({ time }) => this.timeField.value === time) ?? this.levels[0]);
     }
 
     onCancel() {
