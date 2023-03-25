@@ -4,10 +4,14 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../constants/game-events.dart';
+import 'game-event.service.dart';
 import 'game.service.dart';
 
 class RoundService {
   final ActionService _actionService = getIt.get<ActionService>();
+  final GameEventService _gameEventService = getIt.get<GameEventService>();
+
   final Subject<Duration> _startRound$ = PublishSubject();
   final Subject _endRound$ = PublishSubject();
   final Subject _roundTimeout$ = PublishSubject();
@@ -64,6 +68,7 @@ class RoundService {
     if (currentRound.socketIdOfActivePlayer ==
         getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
       _actionService.sendAction(ActionType.pass);
+      _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
     }
   }
 

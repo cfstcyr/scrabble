@@ -1,8 +1,8 @@
 import { NO_COLOR_FOR_MULTIPLIER, NO_SQUARE_FOR_SQUARE_VIEW } from '@app/constants/classes-errors';
 import { COLORS } from '@app/constants/colors-constants';
 import { SQUARE_SIZE, UNDEFINED_SQUARE } from '@app/constants/game-constants';
-import { ScoreMultiplier, Square, SquareView } from '.';
-import { MultiplierEffect, MultiplierValue } from './score-multiplier';
+import { Square, SquareView } from '.';
+import { MultiplierEffect, MultiplierValue, ScoreMultiplier } from '@common/models/game';
 import { MULTIPLIER_COLOR_MAP } from './square-multiplier-to-color-map';
 
 interface ColorTestCase {

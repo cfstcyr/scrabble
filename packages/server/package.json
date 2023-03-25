@@ -8,8 +8,8 @@
         "build": "rimraf out && tsc --project tsconfig.app.json",
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "eslint -c .eslintrc.json \"./app/**/*.ts\" --format stylish --fix",
-        "test": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .env.test mocha --config=.mocharc.json --node-env=test",
-        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' dotenv -e .env.test nyc mocha --config=.mocharc.json --node-env=test --exit",
+        "test": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' NODE_ENV=test dotenv -e .env.test mocha --config=.mocharc.json --node-env=test",
+        "coverage": "cross-env TS_NODE_PROJECT='./tsconfig.spec.json' NODE_ENV=test dotenv -e .env.test nyc mocha --config=.mocharc.json --node-env=test --exit",
         "reset-db": "knex migrate:rollback && knex migrate:latest"
     },
     "nyc": {
@@ -59,6 +59,7 @@
         "debug": "^4.3.2",
         "envalid": "^7.3.1",
         "express": "~4.17.1",
+        "express-validator": "^6.15.0",
         "http-status-codes": "^2.1.4",
         "jsonwebtoken": "^9.0.0",
         "knex": "^2.4.0",

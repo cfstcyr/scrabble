@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import Dictionary from './dictionary';
 import { CompleteDictionaryData } from '@app/classes/communication/dictionary-data';
 
-const TEST_WORDS = ['ab', 'abc', 'abcd', 'abcde'];
+const TEST_WORDS = ['ab', 'abc', 'abcd', 'abcde', 'ad'];
 const DICTIONARY_DATA: CompleteDictionaryData = {
     title: 'Test dictionary',
     description: 'Dictionary for testing',

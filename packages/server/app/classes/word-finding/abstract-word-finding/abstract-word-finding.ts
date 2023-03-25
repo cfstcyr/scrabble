@@ -69,10 +69,13 @@ export default abstract class AbstractWordFinding {
     private getWordPlacement(wordResult: DictionarySearchResult, boardPlacement: BoardPlacement): ScoredWordPlacement {
         const wordSquareTiles = this.extractWordSquareTiles(wordResult, boardPlacement);
         const perpendicularWordsSquareTiles = this.extractPerpendicularWordsSquareTiles(wordResult, boardPlacement);
-        const score = this.scoreCalculatorService.calculatePoints([wordSquareTiles, ...perpendicularWordsSquareTiles]);
 
         const squareTilesToPlace = wordSquareTiles.filter(([square]) => !square.tile);
         const tilesToPlace = squareTilesToPlace.map(([, tile]) => tile);
+
+        const score =
+            this.scoreCalculatorService.calculatePoints([wordSquareTiles, ...perpendicularWordsSquareTiles]) +
+            this.scoreCalculatorService.bonusPoints(tilesToPlace);
 
         return {
             tilesToPlace,

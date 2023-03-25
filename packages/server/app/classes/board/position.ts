@@ -2,9 +2,14 @@ import { Vec2 } from '@app/classes/board/vec2';
 import { DEFAULT_DISTANCE } from '@app/constants/position-constants';
 import { Orientation } from '.';
 import Direction from './direction';
+import { Position as PositionInterface } from '@common/models/position';
 
-export default class Position {
+export default class Position implements PositionInterface {
     constructor(public row: number, public column: number) {}
+
+    static fromJson(json: PositionInterface): Position {
+        return new Position(json.row, json.column);
+    }
 
     forward(orientation: Orientation, distance: number = DEFAULT_DISTANCE): Position {
         this.move(orientation, Direction.Forward, distance);
