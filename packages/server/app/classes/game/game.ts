@@ -315,12 +315,12 @@ export default class Game {
         return winners;
     }
 
-    getPlayerArray(): Player[] {
+    getPlayers(): Player[] {
         return [this.player1, this.player2, this.player3, this.player4];
     }
 
     private computeEndOfGameScore(playerHasWon: boolean[], playerPointsToDeduct: number[]): number[] {
-        const players = this.getPlayerArray();
+        const players = this.getPlayers();
         if (playerHasWon.length !== players.length || playerPointsToDeduct.length !== players.length)
             throw new HttpException(INVALID_LIST_LENGTH, StatusCodes.FORBIDDEN);
 

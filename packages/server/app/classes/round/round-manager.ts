@@ -125,7 +125,6 @@ export default class RoundManager {
             actionPlayed,
             board: new Board(board.grid.map((row) => row.map((square) => ({ ...square })))),
         });
-        // console.log(this.completedRounds[this.completedRounds.length - 1]);
     }
 
     private getNextPlayer(): Player {
