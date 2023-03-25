@@ -4,7 +4,7 @@ import { SquareView } from '@app/classes/square';
 import Direction from './direction';
 
 export class BoardNavigator {
-    orientation: Orientation | undefined;
+    orientation?: Orientation;
     private position: Position;
     private squareGrid: SquareView[][];
 

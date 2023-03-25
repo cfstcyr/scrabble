@@ -20,7 +20,6 @@ import { BaseController } from '@app/controllers/base-controller';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { TilePlacement } from '@common/models/tile-placement';
-
 @Service()
 export class GamePlayController extends BaseController {
     constructor(
@@ -86,11 +85,10 @@ export class GamePlayController extends BaseController {
 
         router.post('/:gameId/squares/place', (req: SelectRequest, res: Response, next) => {
             const { gameId } = req.params;
-            const tilePlacement: TilePlacement[] = req.body.tilePlacement;
-            const userId: UserId = req.body.idUser;
-            const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
+            const body = { tilePlacement: req.body.tilePlacement, idUser: req.body.idUser } = req.body;
             try {
-                this.handleTilePlacement(gameId, playerId, tilePlacement);
+                const playerId = this.authentificationService.connectedUsers.getSocketId(body.userId);
+                this.handleTilePlacement(gameId, playerId, body.tilePlacement);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
                 next(exception);
