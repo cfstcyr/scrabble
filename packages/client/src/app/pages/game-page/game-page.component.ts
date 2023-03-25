@@ -80,7 +80,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
     @HostListener('document:keydown.escape', ['$event'])
     handleKeyboardEventEsc(): void {
-        this.tilePlacementService.resetTiles();
+        this.tilePlacementService.handleCancelPlacement();
     }
 
     @HostListener('window:beforeunload')

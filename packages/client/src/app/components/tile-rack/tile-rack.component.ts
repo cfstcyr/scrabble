@@ -87,7 +87,7 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     cancelPlacement(): void {
-        this.tilePlacementService.resetTiles();
+        this.tilePlacementService.handleCancelPlacement();
     }
 
     canCancelPlacement(): Observable<boolean> {

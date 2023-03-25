@@ -99,11 +99,15 @@ export class TilePlacementService {
         this.updatePlacement();
     }
 
-    resetTiles(): void {
+    handleCancelPlacement(): void {
         this.tilePlacements.forEach(({ tile }) => (tile.playedLetter = undefined));
         this.tilePlacementsSubject$.next([]);
-        this.boardService.updateTemporaryTilePlacements([]);
         this.updatePlacement();
+    }
+
+    resetTiles(): void {
+        this.handleCancelPlacement();
+        this.boardService.updateTemporaryTilePlacements([]);
     }
 
     createPlaceActionPayload(): PlaceActionPayload | undefined {
