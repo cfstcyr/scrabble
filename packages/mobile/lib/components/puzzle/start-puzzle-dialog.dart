@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/puzzle/puzzle-level.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/create-game/timer-selector.dart';
 import 'package:mobile/components/error-pop-up.dart';
+import 'package:mobile/components/puzzle/puzzle-level-selector.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/constants/locale/puzzle-constants.dart';
 import 'package:mobile/locator.dart';
@@ -16,14 +18,15 @@ void showStartPuzzleDialog(BuildContext context) {
       barrierDismissible: true,
       builder: (BuildContext context) {
         ThemeData theme = Theme.of(context);
-        final TimerSelector timerSelector = TimerSelector();
+        final PuzzleLevelSelector puzzleLevelSelector = PuzzleLevelSelector();
+
         return AlertDialog(
           title: Center(
             child: Text(PUZZLE_PAGE_TITLE,
                 style: theme.textTheme.displayMedium
                     ?.copyWith(fontWeight: FontWeight.w500)),
           ),
-          content: SingleChildScrollView(child: timerSelector),
+          content: SingleChildScrollView(child: Center(child: puzzleLevelSelector)),
           contentPadding:
               EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
           shape: RoundedRectangleBorder(
@@ -58,7 +61,9 @@ void showStartPuzzleDialog(BuildContext context) {
                     onPressed: () {
                       getIt
                           .get<PuzzleService>()
-                          .startPuzzle(timerSelector.duration)
+                          .startPuzzle(puzzleLevelSelector
+                                  .puzzleLevel$.valueOrNull?.roundDuration ??
+                              advancedPuzzleLevel.roundDuration)
                           .then((bool isSuccess) {
                         Navigator.pop(context);
                         if (isSuccess) {
