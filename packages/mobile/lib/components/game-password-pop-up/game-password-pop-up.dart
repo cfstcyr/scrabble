@@ -41,7 +41,7 @@ void showGamePasswordPopup(
           onPressed: () async {
             await joinGroupFunction(
                 group.groupId, passwordHandler.controller.text, false);
-            Navigator.pushNamed(context, JOIN_WAITING_ROUTE, arguments: group);
+            Navigator.pushNamed(context, JOIN_LOBBY_ROUTE, arguments: group);
           },
           child: const Text("Rejoindre"),
         ),
