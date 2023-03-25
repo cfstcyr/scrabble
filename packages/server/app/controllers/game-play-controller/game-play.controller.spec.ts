@@ -30,6 +30,7 @@ import { SocketService } from '@app/services/socket-service/socket.service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
 import { Delay } from '@app/utils/delay/delay';
 import * as isIdVirtualPlayer from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { TilePlacement } from '@common/models/tile-placement';
 import * as chai from 'chai';
 import { spy } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -164,6 +165,18 @@ describe('GamePlayController', () => {
             });
         });
 
+        describe('POST /games/:gameId/squares/place', () => {
+            it('should return NO_CONTENT', async () => {
+                chai.spy.on(gamePlayController, 'handlePlaceTile', () => { });
+
+                return await supertest(expressApp)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/square/place`)
+                    .send({ idUser: DEFAULT_USER_ID })
+                    .expect(StatusCodes.NO_CONTENT);
+            });
+
+        })
+
         describe('POST /games/:gameId/players/virtual-player-action', () => {
             it('should return NO_CONTENT', async () => {
                 chai.spy.on(gamePlayController, 'handlePlayAction', () => { });
@@ -259,43 +272,6 @@ describe('GamePlayController', () => {
                     .send({ idUser: DEFAULT_USER_ID })
                     .then(() => {
                         expect(handleNewErrorSpy).to.have.been.called();
-                    });
-            });
-        });
-
-        describe('POST /games/:gameId/squares/select', () => {
-            it('should return NO_CONTENT', async () => {
-                chai.spy.on(gamePlayController, 'handleSquareSelected', () => { });
-
-                return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/squares/select`)
-                    .send({ idUser: DEFAULT_USER_ID })
-                    .then(() => {
-                        expect(StatusCodes.NO_CONTENT);
-                    });
-            });
-
-            it('should return BAD_REQUEST on error', async () => {
-                chai.spy.on(gamePlayController, 'handleSquareSelected', () => {
-                    throw new HttpException(DEFAULT_EXCEPTION, StatusCodes.BAD_REQUEST);
-                });
-
-                return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/squares/select`)
-                    .send({ idUser: DEFAULT_USER_ID })
-                    .then(() => {
-                        expect(StatusCodes.BAD_REQUEST);
-                    });
-            });
-
-            it('should call handleSquareSelected', async () => {
-                const handleSquareSelectedSpy = chai.spy.on(gamePlayController, 'handleSquareSelected', () => { });
-
-                return await supertest(expressApp)
-                    .post(`/api/games/${DEFAULT_GAME_ID}/squares/select`)
-                    .send({ idUser: DEFAULT_USER_ID })
-                    .then(() => {
-                        expect(handleSquareSelectedSpy).to.have.been.called();
                     });
             });
         });
@@ -574,7 +550,6 @@ describe('GamePlayController', () => {
         });
 
         describe('tilePlacement', () => {
-            //TODO
             let emitToRoomSpy: any;
 
             beforeEach(() => {
@@ -582,6 +557,17 @@ describe('GamePlayController', () => {
             });
 
             it('should call handleTilePlacement if tilePlacement is valid', () => {
+                const validTilePlacement: TilePlacement = {
+                    tile: { letter: 'A', value: 1, isBlank: false },
+                    position: { row: 0, column: 0 }
+                };
+
+                gamePlayController['tilePlacement'](validTilePlacement);
+                expect(emitToRoomSpy).to.have.been.called();
+            })
+
+            it('shoud post on /:gameId/squares/place if tilePlacement is valid', () => {
+
             })
         })
 

@@ -139,7 +139,9 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
 
     private makeTilePlacement(tilePlacement: TilePlacement[]): void {
-        this.gameController.handleTilePlacement(this.gameId, tilePlacement);
+        if (this.roundManager.currentRound?.player.id === this.playerContainer?.getLocalPlayerId()) {
+            this.gameController.handleTilePlacement(this.gameId, tilePlacement);
+        }
     }
 
     private getPlayingPlayerId(): string {
