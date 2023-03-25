@@ -78,8 +78,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
 
     isLocalPlayerPlaying(): boolean {
-        if (!this.playerContainer) return false;
-        return this.getPlayingPlayerId() === this.playerContainer.getLocalPlayerId();
+        return this.roundManager.currentRound?.player.id === this.playerContainer?.getLocalPlayerId()
     }
 
     getGameId(): string {
@@ -139,13 +138,9 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
 
     makeTilePlacement(tilePlacement: TilePlacement[]): void {
-        if (this.roundManager.currentRound?.player.id === this.playerContainer?.getLocalPlayerId()) {
+        if (this.isLocalPlayerPlaying()) {
             this.gameController.handleTilePlacement(this.gameId, tilePlacement);
         }
-    }
-
-    private getPlayingPlayerId(): string {
-        return this.roundManager.getActivePlayer().id;
     }
 
     private async initializeGame(localPlayerId: string, startGameData: StartGameData, isObserver: boolean): Promise<void> {
