@@ -1,5 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { Timer } from '@app/classes/round/timer';
 import { SquareView } from '@app/classes/square';
@@ -18,6 +18,7 @@ import { StartPuzzleModalComponent, StartPuzzleModalParameters } from '@app/comp
 import { puzzleSettings } from '@app/utils/settings';
 import { Router } from '@angular/router';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
+import { ENTER } from '@app/constants/components-constants';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
@@ -45,6 +46,19 @@ export class PuzzlePageComponent implements OnInit {
 
     get stopPlaying(): Observable<boolean> {
         return this.isPlaying.pipe(mergeMap((isPlaying) => iif(() => !isPlaying, of(true))));
+    }
+
+    @HostListener('document:keypress', ['$event'])
+    handleKeyboardEvent(event: KeyboardEvent): void {
+        switch (event.key) {
+            case ENTER:
+                this.play();
+                break;
+        }
+    }
+    @HostListener('document:keydown.escape', ['$event'])
+    handleKeyboardEventEsc(): void {
+        this.tilePlacementService.resetTiles();
     }
 
     ngOnInit(): void {
