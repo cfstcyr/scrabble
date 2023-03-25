@@ -68,6 +68,7 @@ class ChatService {
 
   Future<void> joinChannel(int idChannel) async {
     socketService.emitEvent(JOIN_CHANNEL_EVENT, idChannel);
+    _openedChannelId$.add(idChannel);
   }
 
   Future<void> quitChannel(int idChannel) async {
@@ -160,7 +161,6 @@ class ChatService {
 
   void _handleJoinChannel(Channel joinedChannel) {
     _myChannels$.add([...myChannels.value, joinedChannel]);
-    _openedChannelId$.add(joinedChannel.idChannel);
   }
 
   void _handleQuitChannel(Channel channel) {
