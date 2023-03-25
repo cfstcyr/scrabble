@@ -23,7 +23,7 @@ import 'package:mobile/services/user-session.service.dart';
 import 'package:mobile/services/user.service.dart';
 
 import 'controllers/account-authentification-controller.dart';
-import 'controllers/chat-management.controller.dart';
+import 'services/chat.service.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -72,8 +72,8 @@ class CustomLocator {
   }
 
   void _registerActiveSingleton() {
-    getIt.registerSingleton<ChatManagementController>(
-        ChatManagementController());
+    getIt.registerSingleton<ChatService>(
+        ChatService());
     getIt.registerSingleton<AccountAuthenticationController>(
         AccountAuthenticationController());
     getIt.registerSingleton<InitializerService>(InitializerService());

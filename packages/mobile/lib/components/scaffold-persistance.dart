@@ -4,7 +4,7 @@ import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/constants/user-constants.dart';
-import 'package:mobile/controllers/chat-management.controller.dart';
+import 'package:mobile/services/chat.service.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/profile-page.dart';
 import 'package:mobile/routes/routes.dart';
@@ -13,7 +13,7 @@ import 'package:mobile/services/user.service.dart';
 import 'chat-management.dart';
 
 class MyScaffold extends StatelessWidget {
-  final ChatManagementController _chatManagementController = getIt.get<ChatManagementController>();
+  final ChatService _chatManagementController = getIt.get<ChatService>();
   final Widget body;
   final String title;
 
