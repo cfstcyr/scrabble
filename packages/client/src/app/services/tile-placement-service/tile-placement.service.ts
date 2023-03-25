@@ -23,7 +23,6 @@ export class TilePlacementService {
     private blankTileModalOpened$: BehaviorSubject<boolean>;
     private tilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private isPlacementValidSubject$: BehaviorSubject<boolean>;
-    private temporaryTilePlacements$: BehaviorSubject<TilePlacement[]>;
 
     constructor(private readonly boardService: BoardService, private readonly dialog: MatDialog) {
         this.blankTileModalOpened$ = new BehaviorSubject<boolean>(false);
@@ -47,10 +46,6 @@ export class TilePlacementService {
 
     get isPlacementValid(): boolean {
         return this.isPlacementValidSubject$.value && !this.blankTileModalOpened$.value;
-    }
-
-    get temporaryTilePlacements(): Observable<TilePlacement[]> {
-        return this.temporaryTilePlacements$.asObservable();
     }
 
     placeTile(tilePlacement: TilePlacement): void {
@@ -107,6 +102,7 @@ export class TilePlacementService {
     resetTiles(): void {
         this.tilePlacements.forEach(({ tile }) => (tile.playedLetter = undefined));
         this.tilePlacementsSubject$.next([]);
+        this.boardService.updateTemporaryTilePlacements([]);
         this.updatePlacement();
     }
 
