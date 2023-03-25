@@ -3,7 +3,7 @@ import { PuzzleResultModalComponent } from '@app/components/puzzle/puzzle-result
 import { PuzzleScoreComponent } from '@app/components/puzzle/puzzle-score/puzzle-score.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Puzzle, PuzzleResult, PuzzleResultStatus } from '@common/models/puzzle';
 import { Orientation } from '@common/models/position';
@@ -111,6 +111,7 @@ export default {
                 TileComponent,
             ],
             imports: [MatProgressSpinnerModule, MatButtonModule, MatDialogModule, BrowserAnimationsModule, MatGridListModule, MatCardModule],
+            providers: [{ provide: MatDialogRef, useValue: { close: () => {} } }],
         }),
     ],
 } as Meta;
