@@ -30,13 +30,52 @@ describe('StringConversion', () => {
 
     describe('tileToString', () => {
         it('should return playedLetter if defined', () => {
-            const tile: Tile = { letter: '*', value: 0, playedLetter: 'B' };
+            const tile: Tile = { letter: '*', value: 0, isBlank: true, playedLetter: 'B' };
             expect(StringConversion['tileToString'](tile)).to.deep.equal('B');
         });
 
         it('should return letter if playedLetter is not defined', () => {
-            const tile: Tile = { letter: 'A', value: 0 };
+            const tile: Tile = { letter: 'A', value: 0, isBlank: false };
             expect(StringConversion['tileToString'](tile)).to.deep.equal('A');
+        });
+    });
+
+    describe('convertTileToStringDatabase', () => {
+        it('should return lowercase playedLetter if isBlank', () => {
+            const tile: Tile = { letter: '*', value: 0, isBlank: true, playedLetter: 'B' };
+            expect(StringConversion['convertTileToStringDatabase'](tile)).to.deep.equal('b');
+        });
+
+        it('should return * if not played', () => {
+            const tile: Tile = { letter: '*', isBlank: true, value: 0 };
+            expect(StringConversion['convertTileToStringDatabase'](tile)).to.deep.equal('*');
+        });
+
+        it('should return uppercase letter if normal tile', () => {
+            const tile: Tile = { letter: 'A', value: 0, isBlank: false };
+            expect(StringConversion['convertTileToStringDatabase'](tile)).to.deep.equal('A');
+        });
+    });
+
+    describe('convertStringToTile', () => {
+        it('should return played blank tile if lowercase string', () => {
+            const tile: Tile = { letter: '*', value: 0, isBlank: true, playedLetter: 'B' };
+            expect(StringConversion['convertStringToTile']('b')).to.deep.equal(tile);
+        });
+
+        it('should return Blank tile if * received', () => {
+            const tile: Tile = { letter: '*', isBlank: true, value: 0, playedLetter: undefined };
+            expect(StringConversion['convertStringToTile']('*')).to.deep.equal(tile);
+        });
+
+        it('should return normal tile if uppercase letter ', () => {
+            const tile: Tile = { letter: 'A', isBlank: false, value: 1 };
+            expect(StringConversion['convertStringToTile']('A')).to.deep.equal(tile);
+        });
+
+        it('should return uppercase letter if normal tile', () => {
+            const tile: Tile = { letter: 'Z', isBlank: false, value: 10 };
+            expect(StringConversion['convertStringToTile']('Z')).to.deep.equal(tile);
         });
     });
 });

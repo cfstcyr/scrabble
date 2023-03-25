@@ -1,282 +1,188 @@
-// /* eslint-disable @typescript-eslint/no-empty-function */
-// /* eslint-disable dot-notation */
-// /* eslint-disable no-unused-expressions */
-// /* eslint-disable @typescript-eslint/no-unused-expressions */
-// import Game from '@app/classes/game/game';
-// import { ReadyGameConfig } from '@app/classes/game/game-config';
-// import Player from '@app/classes/player/player';
-// import * as chai from 'chai';
-// import * as chaiAsPromised from 'chai-as-promised';
-// import * as spies from 'chai-spies';
-// import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
-// import { ActiveGameService } from './active-game.service';
-// import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
-// import { SinonStubbedInstance } from 'sinon';
-// import { ChatService } from '@app/services/chat-service/chat.service';
-// import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
-// import * as Sinon from 'sinon';
-// import { Container } from 'typedi';
-// import { GameVisibility } from '@common/models/game-visibility';
-// import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
-// import { DictionarySummary } from '@app/classes/communication/dictionary-data';
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable dot-notation */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import Game from '@app/classes/game/game';
+import Player from '@app/classes/player/player';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+import * as spies from 'chai-spies';
+import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import * as Sinon from 'sinon';
+import { Container } from 'typedi';
+import { AnalysisService } from './analysis.service';
+import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
+import WordFindingService from '@app/services/word-finding-service/word-finding.service';
+import { CriticalMoment } from '@app/classes/analysis/analysis';
+import { Tile } from '@app/classes/tile';
+import { Square } from '@app/classes/square';
+import { ActionExchange, ActionPass, ActionPlace } from '@app/classes/actions';
+import { WordPlacement } from '@app/classes/word-finding';
+import { CompletedRound } from '@app/classes/round/round';
 
-// const expect = chai.expect;
+const expect = chai.expect;
 
-// chai.use(spies);
-// chai.use(chaiAsPromised);
+chai.use(spies);
+chai.use(chaiAsPromised);
 
-// const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
-// const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
-// const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
-// const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
+const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
+const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
+const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
+const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
 
-// const DEFAULT_PLAYER_1 = new Player('id1', USER1);
-// const DEFAULT_PLAYER_2 = new Player('id2', USER2);
-// const DEFAULT_PLAYER_3 = new Player('id3', USER3);
-// const DEFAULT_PLAYER_4 = new Player('id4', USER4);
-// const DEFAULT_ID = 'gameId';
-// const DEFAULT_GAME_CHANNEL_ID = 1;
-// const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
-//     player1: DEFAULT_PLAYER_1,
-//     player2: DEFAULT_PLAYER_2,
-//     player3: DEFAULT_PLAYER_3,
-//     player4: DEFAULT_PLAYER_4,
-//     maxRoundTime: 1,
-//     gameVisibility: GameVisibility.Private,
-//     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
-//     dictionarySummary: {} as unknown as DictionarySummary,
-//     password: '',
-// };
-// const DEFAULT_GAME = {
-//     player1: DEFAULT_PLAYER_1,
-//     player2: DEFAULT_PLAYER_2,
-//     player3: DEFAULT_PLAYER_3,
-//     player4: DEFAULT_PLAYER_4,
-//     id: DEFAULT_ID,
-//     gameIsOver: false,
+const DEFAULT_PLAYER_1 = new Player('id1', USER1);
+const DEFAULT_PLAYER_2 = new Player('id2', USER2);
+const DEFAULT_PLAYER_3 = new Player('id3', USER3);
+const DEFAULT_PLAYER_4 = new Player('id4', USER4);
+const DEFAULT_ID = 'gameId';
+const DEFAULT_USER_ID = 69;
 
-//     getId: () => DEFAULT_ID,
-//     createStartGameData: () => undefined,
-//     areGameOverConditionsMet: () => true,
-// };
+const DEFAULT_COMPLETED_ROUNDS = [{ player: DEFAULT_PLAYER_1 }, { player: DEFAULT_PLAYER_2 }, { player: DEFAULT_PLAYER_1 }];
+const DEFAULT_GAME_MANAGER = { completedRounds: DEFAULT_COMPLETED_ROUNDS };
+const DEFAULT_GAME = {
+    player1: DEFAULT_PLAYER_1,
+    player2: DEFAULT_PLAYER_2,
+    player3: DEFAULT_PLAYER_3,
+    player4: DEFAULT_PLAYER_4,
+    id: DEFAULT_ID,
+    gameIsOver: false,
+    roundManager: DEFAULT_GAME_MANAGER,
+    dictionarySummary: { id: '' },
+    getId: () => DEFAULT_ID,
+    createStartGameData: () => undefined,
+    areGameOverConditionsMet: () => true,
+    getPlayers: () => [DEFAULT_PLAYER_1, DEFAULT_PLAYER_2, DEFAULT_PLAYER_3, DEFAULT_PLAYER_4],
+};
 
-// describe('ActiveGameService', () => {
-//     let activeGameService: ActiveGameService;
-//     let testingUnit: ServicesTestingUnit;
+const TILES_1 = [{} as unknown as Tile, {} as unknown as Tile, {} as unknown as Tile];
+const DEFAULT_BOARD = [[{} as unknown as Square], [{} as unknown as Square]];
 
-//     beforeEach(() => {
-//         testingUnit = new ServicesTestingUnit().withStubbed(ChatService);
-//     });
+const DEFAULT_PASS_ACTION = {} as unknown as ActionPass;
+const DEFAULT_EXCHANGE_ACTION = {} as unknown as ActionExchange;
+const DEFAULT_PLACE_ACTION = { scoredPoints: 1, wordPlacement: {} as unknown as WordPlacement } as unknown as ActionPlace;
 
-//     beforeEach(async () => {
-//         activeGameService = Container.get(ActiveGameService);
-//     });
+const CRITICAL_MOMENT_PASS_ROUND = {
+    tiles: TILES_1,
+    board: DEFAULT_BOARD,
+    actionPlayed: DEFAULT_PASS_ACTION,
+};
 
-//     afterEach(async () => {
-//         chai.spy.restore();
-//         Sinon.restore();
-//         testingUnit.restore();
-//     });
+const CRITICAL_MOMENT_EXCHANGE_ROUND = {
+    tiles: TILES_1,
+    board: DEFAULT_BOARD,
+    actionPlayed: DEFAULT_EXCHANGE_ACTION,
+};
 
-//     afterEach(() => {
-//         chai.spy.restore();
-//         testingUnit.restore();
-//     });
+const CRITICAL_MOMENT_PLACE_ROUND = {
+    tiles: TILES_1,
+    board: DEFAULT_BOARD,
+    actionPlayed: DEFAULT_PLACE_ACTION,
+};
 
-//     it('should create', () => {
-//         expect(activeGameService).to.exist;
-//     });
+describe('AnalysisService', () => {
+    let analysisService: AnalysisService;
+    let testingUnit: ServicesTestingUnit;
 
-//     it('should instantiate empty activeGame list', () => {
-//         expect(activeGameService['activeGames']).to.exist;
-//         expect(activeGameService['activeGames']).to.be.empty;
-//     });
+    beforeEach(() => {
+        testingUnit = new ServicesTestingUnit().withStubbed(WordFindingService).withStubbed(AnalysisPersistenceService);
+    });
 
-//     describe('beginGame', () => {
-//         let spy: unknown;
+    beforeEach(async () => {
+        analysisService = Container.get(AnalysisService);
 
-//         beforeEach(() => {
-//             spy = chai.spy.on(Game, 'createGame', async () => Promise.resolve(DEFAULT_GAME));
-//         });
+        Sinon.stub(Player.prototype, 'idUser').get(() => 'DEFAULT_USER_ID');
+    });
 
-//         afterEach(() => {
-//             chai.spy.restore(Game);
-//         });
+    afterEach(async () => {
+        chai.spy.restore();
+        Sinon.restore();
+        testingUnit.restore();
+    });
 
-//         it('should add a game to activeGame list', async () => {
-//             expect(activeGameService['activeGames']).to.be.empty;
-//             await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG, []);
-//             expect(activeGameService['activeGames']).to.have.lengthOf(1);
-//         });
+    it('should create', () => {
+        expect(analysisService).to.exist;
+    });
 
-//         it('should call Game.createGame', async () => {
-//             await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG, []);
-//             expect(spy).to.have.been.called();
-//         });
-//     });
+    describe('addAnalysis', async () => {
+        let spy: unknown;
 
-//     describe('getGame', () => {
-//         beforeEach(async () => {
-//             chai.spy.on(Game, 'createMultiplayerGame', async () => Promise.resolve(DEFAULT_GAME));
-//             await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG, []);
-//         });
+        it('should call asynchronousAnalysis with the correct parameters', async () => {
+            spy = chai.spy.on(analysisService, 'asynchronousAnalysis', async () => Promise.resolve());
+            const game = DEFAULT_GAME as unknown as Game;
+            const idGameHistory = 1;
+            await analysisService.addAnalysis(game, idGameHistory);
+            expect(spy).to.have.been.called();
+        });
+    });
 
-//         afterEach(() => {
-//             chai.spy.restore(Game);
-//         });
+    describe('asynchronousAnalysis', async () => {
+        it('should call analyseRound when it is the correct player', async () => {
+            const spyAnalyseRound = chai.spy.on(analysisService, 'analyseRound', () => ({} as unknown as CriticalMoment));
+            chai.spy.on(analysisService['analysisPersistenceService'], 'addAnalysis', async () => {});
 
-//         it('should return game with player1 ID', () => {
-//             expect(activeGameService.getGame(DEFAULT_ID, DEFAULT_PLAYER_1.id)).to.exist;
-//         });
+            const game = DEFAULT_GAME as unknown as Game;
+            const idGameHistory = 1;
+            const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGame: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
+            await analysisService['asynchronousAnalysis'](game, playerAnalyses, idGameHistory);
+            expect(spyAnalyseRound).to.have.been.called.twice;
+        });
 
-//         it('should return game with player2 ID', () => {
-//             expect(activeGameService.getGame(DEFAULT_ID, DEFAULT_PLAYER_2.id)).to.exist;
-//         });
+        it('should call addAnalysis for each player', async () => {
+            chai.spy.on(analysisService, 'analyseRound', () => ({} as unknown as CriticalMoment));
+            const spyAddAnalysis = chai.spy.on(analysisService['analysisPersistenceService'], 'addAnalysis', () => {});
 
-//         it('should throw is ID is invalid', () => {
-//             const invalidId = 'invalidId';
-//             expect(() => activeGameService.getGame(invalidId, DEFAULT_PLAYER_1.id)).to.throw(NO_GAME_FOUND_WITH_ID);
-//         });
+            const game = DEFAULT_GAME as unknown as Game;
+            const idGameHistory = 1;
+            const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGame: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
+            await analysisService['asynchronousAnalysis'](game, playerAnalyses, idGameHistory);
+            expect(spyAddAnalysis).to.have.been.called();
+        });
+    });
 
-//         it('should throw is player ID is invalid', () => {
-//             const invalidId = 'invalidId';
-//             expect(() => activeGameService.getGame(DEFAULT_ID, invalidId)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
-//         });
-//     });
+    describe('analyseRound', async () => {
+        it('should call findBestPlacement and early return if nothing found ', async () => {
+            const spyFindBestPlacement = chai.spy.on(analysisService, 'findBestPlacement', () => undefined);
+            const game = DEFAULT_GAME as unknown as Game;
 
-//     describe('removeGame', () => {
-//         beforeEach(async () => {
-//             chai.spy.on(Game, 'createMultiplayerGame', async () => Promise.resolve(DEFAULT_GAME));
-//             await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG, []);
-//         });
+            analysisService['analyseRound'](CRITICAL_MOMENT_PASS_ROUND as unknown as CompletedRound, game);
+            expect(spyFindBestPlacement).to.have.been.called();
+        });
 
-//         afterEach(() => {
-//             chai.spy.restore(Game);
-//         });
+        it('should return undefined if action place and point difference lower than POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD ', () => {
+            chai.spy.on(analysisService, 'findBestPlacement', () => {
+                return { score: 10 };
+            });
+            const game = DEFAULT_GAME as unknown as Game;
 
-//         it('should remove from list with player1 ID', () => {
-//             expect(activeGameService['activeGames']).to.have.lengthOf(1);
-//             activeGameService.removeGame(DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//             expect(activeGameService['activeGames']).to.be.empty;
-//         });
+            expect(analysisService['analyseRound'](CRITICAL_MOMENT_PLACE_ROUND as unknown as CompletedRound, game)).to.be.undefined;
+        });
 
-//         it('should remove from list with player2 ID', () => {
-//             expect(activeGameService['activeGames']).to.have.lengthOf(1);
-//             activeGameService.removeGame(DEFAULT_ID, DEFAULT_PLAYER_2.id);
-//             expect(activeGameService['activeGames']).to.be.empty;
-//         });
+        it('should return a critical moment if action place and point diff greater than POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD ', () => {
+            chai.spy.on(analysisService, 'findBestPlacement', () => {
+                return { score: 40 };
+            });
+            const game = DEFAULT_GAME as unknown as Game;
 
-//         it('should throw and return undefined ', () => {
-//             chai.spy.on(activeGameService, 'getGame', () => {
-//                 throw new Error();
-//             });
-//             activeGameService.removeGame(DEFAULT_ID, DEFAULT_PLAYER_2.id);
-//             const spy = chai.spy.on(activeGameService['activeGames'], 'indexOf');
-//             expect(spy).not.to.have.been.called();
-//         });
-//     });
+            expect(analysisService['analyseRound'](CRITICAL_MOMENT_PLACE_ROUND as unknown as CompletedRound, game)).to.be.not.undefined;
+        });
 
-//     it('isGameOver should return if the game with the game id provided is over', () => {
-//         chai.spy.on(activeGameService, 'getGame', () => DEFAULT_GAME);
-//         expect(activeGameService.isGameOver(DEFAULT_ID, DEFAULT_PLAYER_1.id)).to.be.equal(DEFAULT_GAME.gameIsOver);
-//     });
+        it('should return undefined if action pass or exchange and point difference lower than POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD ', () => {
+            chai.spy.on(analysisService, 'findBestPlacement', () => {
+                return { score: 10 };
+            });
+            const game = DEFAULT_GAME as unknown as Game;
 
-//     describe('handlePlayerLeaves', () => {
-//         let gameStub: SinonStubbedInstance<Game>;
-//         let emitToSocketSpy: unknown;
-//         let emitToRoomSpy: unknown;
-//         let removeFromRoomSpy: unknown;
-//         let doesRoomExistSpy: unknown;
-//         let isGameOverSpy: unknown;
-//         let removeGameSpy: unknown;
-//         let playerLeftEventSpy: unknown;
-//         let chatServiceStub: SinonStubbedInstance<ChatService>;
+            expect(analysisService['analyseRound'](CRITICAL_MOMENT_EXCHANGE_ROUND as unknown as CompletedRound, game)).to.be.undefined;
+        });
 
-//         beforeEach(() => {
-//             gameStub = Sinon.createStubInstance(Game);
-//             gameStub.getPlayer.returns(DEFAULT_PLAYER_1);
-//             Sinon.stub(activeGameService, 'getGame').returns(gameStub as unknown as Game);
-//             emitToSocketSpy = chai.spy.on(activeGameService['socketService'], 'emitToSocket', () => {});
-//             emitToRoomSpy = chai.spy.on(activeGameService['socketService'], 'emitToRoom', () => {});
-//             removeFromRoomSpy = chai.spy.on(activeGameService['socketService'], 'removeFromRoom', () => {});
-//             removeGameSpy = chai.spy.on(activeGameService, 'removeGame', () => {});
-//             chatServiceStub = testingUnit.getStubbedInstance(ChatService);
-//             chatServiceStub.quitChannel.callsFake(async () => {});
-//         });
+        it('should return a critical moment if action exchange and point diff greater than POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD ', () => {
+            chai.spy.on(analysisService, 'findBestPlacement', () => {
+                return { score: 40 };
+            });
+            const game = DEFAULT_GAME as unknown as Game;
 
-//         it("should disconnect user from group's channel", async () => {
-//             gameStub.getGroupChannelId.returns(DEFAULT_GAME_CHANNEL_ID);
-
-//             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//             expect(chatServiceStub.quitChannel.calledWith(gameStub.getGroupChannelId(), DEFAULT_PLAYER_1.id)).to.be.true;
-//         });
-
-//         it('should remove player who leaves from socket room', async () => {
-//             doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
-
-//             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//             expect(removeFromRoomSpy).to.have.been.called();
-//         });
-
-//         it('should emit cleanup event to socket', async () => {
-//             doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
-//             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//             expect(emitToSocketSpy).to.have.been.called();
-//         });
-
-//         it('should remove game from active game activeGameService if there is no more player in room', async () => {
-//             doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => false);
-
-//             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//             expect(doesRoomExistSpy).to.have.been.called();
-//             expect(removeGameSpy).to.have.been.called.with(DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//         });
-
-//         it('should not emit player left event if the game is over', async () => {
-//             doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
-//             isGameOverSpy = chai.spy.on(activeGameService, 'isGameOver', () => true);
-//             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
-
-//             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//             expect(isGameOverSpy).to.have.been.called();
-//             expect(playerLeftEventSpy).to.not.have.been.called();
-//         });
-
-//         it('should emit player left event if the game is still ongoing', async () => {
-//             doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
-//             isGameOverSpy = chai.spy.on(activeGameService, 'isGameOver', () => false);
-//             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
-
-//             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//             expect(playerLeftEventSpy).to.have.been.called.with('playerLeftGame', DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//         });
-
-//         it('should send message explaining the user left with new VP message if game is NOT over', async () => {
-//             doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
-//             isGameOverSpy = chai.spy.on(activeGameService, 'isGameOver', () => false);
-//             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
-
-//             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//             const expectedArg = {
-//                 content: `${DEFAULT_PLAYER_1.publicUser.username} ${PLAYER_LEFT_GAME(false)}`,
-//                 senderId: 'system',
-//                 gameId: DEFAULT_ID,
-//             };
-//             expect(emitToRoomSpy).to.have.been.called.with(DEFAULT_ID, 'newMessage', expectedArg);
-//         });
-
-//         it('should send message explaining the user left without VP message if game IS over', async () => {
-//             doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
-//             isGameOverSpy = chai.spy.on(activeGameService, 'isGameOver', () => true);
-//             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
-
-//             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-//             const expectedArg = {
-//                 content: `${DEFAULT_PLAYER_1.publicUser.username} ${PLAYER_LEFT_GAME(true)}`,
-//                 senderId: 'system',
-//                 gameId: DEFAULT_ID,
-//             };
-//             expect(emitToRoomSpy).to.have.been.called.with(DEFAULT_ID, 'newMessage', expectedArg);
-//         });
-//     });
-// });
+            expect(analysisService['analyseRound'](CRITICAL_MOMENT_EXCHANGE_ROUND as unknown as CompletedRound, game)).to.be.not.undefined;
+        });
+    });
+});

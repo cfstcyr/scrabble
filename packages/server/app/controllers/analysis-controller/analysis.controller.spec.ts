@@ -75,7 +75,7 @@ describe('AnalysisController', () => {
     describe('handleRequestAnalysis', () => {
         it('should call gameHistoriesService.requestAnalysis', async () => {
             analysisPersistenceServiceStub.requestAnalysis.resolves();
-            await controller['handleRequestAnalysis']('', 1);
+            await controller['handleRequestAnalysis'](1, 1);
             expect(analysisPersistenceServiceStub.requestAnalysis.called).to.be.true;
         });
     });
