@@ -4,13 +4,15 @@
  */
 exports.up = async function(knex) {
     await knex.schema.createTable('Analysis', function(table) {
-        table.string('gameId');
-        table.integer('userId');
-        table.increments('analysisId').primary();
+        table.increments('idAnalysis').primary();
+        table.integer('idGame');
+        table.integer('idUser');
+        table.foreign('idUser').references('idUser').inTable('User');
+        table.foreign('idGame').references('idGameHistory').inTable('GameHistory');
       });
       
       await knex.schema.createTable('Placement', function(table) {
-          table.increments('placementId').primary();
+          table.increments('idPlacement').primary();
           table.integer('score').notNullable();
           table.string('tilesToPlace').notNullable();
           table.boolean('isHorizontal').notNullable();
@@ -19,16 +21,16 @@ exports.up = async function(knex) {
         });
 
     await knex.schema.createTable('CriticalMoment', function(table) {
-        table.increments('criticalMomentId').primary();
+        table.increments('idCriticalMoment').primary();
         table.string('tiles').notNullable();
         table.enu('actionType', ['placer', 'échanger', 'passer']).notNullable();
         table.string('board').notNullable();
-        table.integer('playedPlacementId').unsigned();
-        table.integer('bestPlacementId').unsigned();
-        table.integer('analysisId').unsigned();
-        table.foreign('playedPlacementId').references('placementId').inTable('Placement');
-        table.foreign('bestPlacementId').references('placementId').inTable('Placement');
-        table.foreign('analysisId').references('analysisId').inTable('Analysis');
+        table.integer('idPlayedPlacement').unsigned();
+        table.integer('idBestPlacement').unsigned();
+        table.integer('idAnalysis').unsigned();
+        table.foreign('idPlayedPlacement').references('idPlacement').inTable('Placement');
+        table.foreign('idBestPlacement').references('idPlacement').inTable('Placement');
+        table.foreign('idAnalysis').references('idAnalysis').inTable('Analysis');
       });
 };
 
