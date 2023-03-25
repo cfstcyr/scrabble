@@ -702,27 +702,6 @@ describe('GameService', () => {
         });
     });
 
-    describe('firstSquare', () => {
-        it('should call handleFirstSquareSelected from gameController when selectFirstSquare', () => {
-            const gameControllerSpy = spyOn(service['gameController'], 'handleFirstSquareSelected').and.callFake(() => {});
-            const square: Square = {
-                tile: null,
-                position: { row: 0, column: 0 },
-                isCenter: false,
-                scoreMultiplier: null,
-                wasMultiplierUsed: false,
-            };
-            service.selectFirstSquare(square);
-            expect(gameControllerSpy).toHaveBeenCalled();
-        });
-
-        it('should call handleFirstSquareCancelled from gameController when cancelFirstSquareSelection', () => {
-            const gameControllerSpy = spyOn(service['gameController'], 'handleFirstSquareCancelled').and.callFake(() => {});
-            service.cancelFirstSquareSelection();
-            expect(gameControllerSpy).toHaveBeenCalled();
-        });
-    });
-
     describe('getTotalNumberOfTilesLeft', () => {
         const tilesLeftTestCase: Map<TileReserveData[], number> = new Map([
             [[], 0],
