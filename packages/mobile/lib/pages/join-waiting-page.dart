@@ -131,7 +131,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                                 builder: (context, snapshot) {
                                   return Padding(
                                     padding: const EdgeInsets.fromLTRB(
-                                        270, 0, 270, 0),
+                                        275, 0, 275, 0),
                                     child: Container(
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
