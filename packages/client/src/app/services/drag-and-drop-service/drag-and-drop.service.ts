@@ -76,6 +76,11 @@ export class DragAndDropService {
         }
     }
 
+    reset(): void {
+        this.removeCurrentHoveredSquare();
+        this.removeCurrentHoveredTileRackElement();
+    }
+
     private onTileMove(event: CdkDragMove<HTMLElement>): void {
         const hoveredSquare = this.getHoveredSquare(event);
 

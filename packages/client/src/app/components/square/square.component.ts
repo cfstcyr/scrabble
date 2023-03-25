@@ -5,7 +5,7 @@ import { DEFAULT_SQUARE_VIEW } from '@app/constants/game-constants';
 import { SQUARE_TILE_DEFAULT_FONT_SIZE } from '@app/constants/tile-font-size-constants';
 import { DragAndDropService } from '@app/services/drag-and-drop-service/drag-and-drop.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
-import { Observable } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export interface CssStyleProperty {
@@ -24,6 +24,7 @@ export class SquareComponent implements OnInit {
     @Input() tileFontSize: number = SQUARE_TILE_DEFAULT_FONT_SIZE;
     @Input() isCursor: boolean = false;
     @Input() cursorOrientation: Orientation = Orientation.Horizontal;
+    @Input() canInteract: Observable<boolean> = of(true);
     multiplierType: string | undefined = undefined;
     multiplierValue: string | undefined = undefined;
 
@@ -38,9 +39,10 @@ export class SquareComponent implements OnInit {
     }
 
     canMove(): Observable<boolean> {
-        return this.tilePlacementService.tilePlacements$.pipe(
+        return combineLatest([this.tilePlacementService.tilePlacements$, this.canInteract]).pipe(
             map(
-                (placements) =>
+                ([placements, canInteract]) =>
+                    canInteract &&
                     !!placements.find(
                         (placement) =>
                             placement.position.column === this.squareView.square.position.column &&

@@ -59,6 +59,7 @@ import { ChooseBlankTileDialogComponent } from './components/choose-blank-tile-d
 import { PuzzlePageComponent } from './pages/puzzle-page/puzzle-page.component';
 import { Board2Component } from './components/board2/board2.component';
 import { GameBoardWrapperComponent } from './wrappers/game-board-wrapper/game-board-wrapper.component';
+import { StartPuzzleModalComponent } from './components/start-puzzle-modal/start-puzzle-modal.component';
 
 registerLocaleData(localeFr);
 
@@ -119,6 +120,7 @@ registerLocaleData(localeFr);
         PuzzlePageComponent,
         Board2Component,
         GameBoardWrapperComponent,
+        StartPuzzleModalComponent,
     ],
     imports: [
         AppMaterialModule,

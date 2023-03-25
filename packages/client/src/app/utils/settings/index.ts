@@ -11,3 +11,7 @@ export const authenticationSettings = settings('authentication', {
 export const gameSettings = settings('game', {
     timer: num({ default: DEFAULT_TIMER_VALUE }),
 });
+
+export const puzzleSettings = settings('puzzle', {
+    time: num(),
+});
