@@ -89,7 +89,7 @@ class _ChatPageState extends State<ChatPage> {
       author: types.User(
           id: message.sender.email, firstName: message.sender.username),
       createdAt: DateTime.parse(message.date).millisecondsSinceEpoch,
-      id: const Uuid().v4(),
+      id: message.uid,
       text: message.content,
     );
   }

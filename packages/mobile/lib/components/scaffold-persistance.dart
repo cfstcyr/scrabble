@@ -4,6 +4,7 @@ import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/constants/user-constants.dart';
+import 'package:mobile/controllers/chat-management.controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/pages/profile-page.dart';
 import 'package:mobile/routes/routes.dart';
@@ -12,10 +13,12 @@ import 'package:mobile/services/user.service.dart';
 import 'chat-management.dart';
 
 class MyScaffold extends StatelessWidget {
+  final ChatManagementController _chatManagementController = getIt.get<ChatManagementController>();
   final Widget body;
   final String title;
 
   MyScaffold({required this.body, required this.title});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,10 +32,31 @@ class MyScaffold extends StatelessWidget {
         centerTitle: true,
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.chat),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+            builder: (context) => Stack(children: [
+              IconButton(
+                icon: Icon(Icons.chat),
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
+              ),
+              StreamBuilder<bool>(
+                stream: _chatManagementController.hasUnreadMessages,
+                initialData: false,
+                builder: (context, snapshot) {
+                  bool shouldShow = !snapshot.hasData || snapshot.data!;
+                  return Visibility(
+                      visible: shouldShow,
+                      child: Positioned(
+                        top: 5,
+                        right: 5,
+                        child: Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle, color: Colors.red),
+                        ),
+                      ));
+                }
+              )
+            ]),
           ),
           Builder(
               builder: (context) => InkWell(

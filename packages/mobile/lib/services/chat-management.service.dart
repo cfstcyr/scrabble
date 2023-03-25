@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/channel-message.dart';
 import 'package:mobile/controllers/chat-management.controller.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -48,5 +49,13 @@ class ChatManagementService {
 
   List<Channel> handleUnjoinedChannels() {
     return _chatManagementController.handleUnjoinedChannels();
+  }
+
+  void readChannelMessages(Channel channel) {
+    channel.messages = channel.messages.where((ChannelMessage m) => m.isNotRead).map((ChannelMessage m) {
+      print(m.message.content);
+      m.isRead = true;
+      return m;
+    }).toList();
   }
 }

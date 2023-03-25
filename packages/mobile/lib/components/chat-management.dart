@@ -131,7 +131,9 @@ class _ChatManagementState extends State<ChatManagement> {
                       borderRadius: BorderRadius.all(Radius.circular(4.0))),
                   child: InkWell(
                     onTap: () {
-                      channelToOpen$.add(myChannels$.value[index]);
+                      Channel channelToOpen = myChannels$.value[index];
+                      _chatManagerService.readChannelMessages(channelToOpen);
+                      channelToOpen$.add(channelToOpen);
                       scaffoldKey.currentState!.openEndDrawer();
                     },
                     child: Padding(

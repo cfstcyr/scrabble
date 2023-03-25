@@ -45,6 +45,10 @@ class ChatManagementController {
   BehaviorSubject<List<ChannelMessage>> messages$ =
       BehaviorSubject<List<ChannelMessage>>.seeded([]);
 
+  Stream<bool> get hasUnreadMessages =>
+      Stream.fromFuture(messages$.any((List<ChannelMessage> channelMessages) =>
+          channelMessages.any((ChannelMessage message) => message.isNotRead)));
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   factory ChatManagementController() {
@@ -113,6 +117,7 @@ class ChatManagementController {
 
     SocketService.socket.on(MESSAGE_EVENT, (channelMessage) {
       ChannelMessage parsedMessage = ChannelMessage.fromJson(channelMessage);
+      parsedMessage.isRead = false;
       List<ChannelMessage> channelMessages = [...messages$.value];
       channelMessages.insert(0, parsedMessage);
       messages$.add([...channelMessages]);
