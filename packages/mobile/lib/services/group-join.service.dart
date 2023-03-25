@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http/http.dart';
 
 import '../controllers/group-join-controller.dart';
@@ -38,6 +40,13 @@ class GroupJoinService {
     // _handleJoinError(error);
     return false;
     // });
+  }
+
+  Future<bool> handleGroupUpdatesRequest(
+      String groupId, bool isObserver) async {
+    Response res = await groupJoinController.handleGroupUpdatesRequest(
+        groupId, isObserver);
+    return res.statusCode == HttpStatus.created;
   }
 
   Future<void> handleLeaveGroup() async {
