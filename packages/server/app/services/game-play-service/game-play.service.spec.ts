@@ -8,7 +8,7 @@
 import { Action, ActionExchange, ActionHelp, ActionPass, ActionPlace, ActionReserve } from '@app/classes/actions';
 import ActionHint from '@app/classes/actions/action-hint/action-hint';
 import { Orientation } from '@app/classes/board';
-import { ActionData, ActionExchangePayload, ActionPlacePayload, ActionType } from '@app/classes/communication/action-data';
+import { ActionData, ActionExchangePayload, ActionPlacePayload } from '@app/classes/communication/action-data';
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
@@ -40,6 +40,7 @@ import { AuthentificationService } from '@app/services/authentification-service/
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 import { AnalysisService } from '@app/services/analysis-service/analysis.service';
+import { ActionType } from '@common/models/action';
 
 const expect = chai.expect;
 

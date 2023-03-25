@@ -35,6 +35,7 @@ import {
 } from '@app/constants/tile-font-size-constants';
 import { GameService } from '@app/services';
 import { ActionService } from '@app/services/action-service/action.service';
+import AnalysisService from '@app/services/analysis-service/analysis.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
@@ -64,6 +65,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private gameViewEventManagerService: GameViewEventManagerService,
         private actionService: ActionService,
         private readonly tilePlacementService: TilePlacementService,
+        private analysisService: AnalysisService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
@@ -148,6 +150,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     canPlaceWord(): Observable<boolean> {
         return this.tilePlacementService.isPlacementValid$;
+    }
+
+    async requestAnalysis(): Promise<void> {
+        await this.analysisService.requestAnalysis(this.gameService.getGameId());
     }
 
     private openDialog(title: string, content: string, buttonsContent: string[]): void {
