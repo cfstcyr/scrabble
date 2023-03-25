@@ -28,6 +28,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     private notAppliedSquares: SquareView[];
     private newlyPlacedTiles: SquareView[];
+    private opponentPlacedTiles: SquareView[];
     private componentDestroyed$: Subject<boolean>;
 
     constructor(private boardService: BoardService, private tilePlacementService: TilePlacementService) {
@@ -40,6 +41,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.selectedSquare = undefined;
         this.newlyPlacedTiles = [];
         this.componentDestroyed$ = new Subject<boolean>();
+        this.opponentPlacedTiles = [];
     }
 
     ngOnInit(): void {
@@ -48,7 +50,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.tilePlacementService.tilePlacements$
             .pipe(takeUntil(this.componentDestroyed$))
             .subscribe((tilePlacements) => this.handlePlaceTiles(tilePlacements));
-        this.boardService.subscribeToTemporaryTilePlacements(this.componentDestroyed$, (tilePlacements) => this.handlePlaceTiles(tilePlacements));
+        this.boardService.subscribeToTemporaryTilePlacements(this.componentDestroyed$, (tilePlacements) => this.handleOpponentPlaceTiles(tilePlacements));
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());
     }
@@ -142,6 +144,20 @@ export class BoardComponent implements OnInit, OnDestroy {
                 squareView.square.tile = tilePlacement.tile;
                 squareView.applied = false;
                 this.notAppliedSquares.push(squareView);
+            }
+        }
+    }
+
+    private handleOpponentPlaceTiles(tilePlacements: TilePlacement[]): void {
+        this.opponentPlacedTiles.forEach((squareView: SquareView) => (squareView.square.tile = null));
+        this.opponentPlacedTiles = [];
+
+        for (const tilePlacement of tilePlacements) {
+            const squareView = this.squareGrid[tilePlacement.position.row][tilePlacement.position.column];
+
+            if (!squareView.square.tile) {
+                squareView.square.tile = tilePlacement.tile;
+                this.opponentPlacedTiles.push(squareView);
             }
         }
     }

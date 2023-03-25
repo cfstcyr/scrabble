@@ -107,6 +107,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     passButtonClicked(): void {
+        this.gameService.makeTilePlacement([]);
         this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PASS, {}, '', true));
     }
 
@@ -130,6 +131,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             buttonsContent[1] = DIALOG_ABANDON_BUTTON_CONTINUE;
         }
         this.openDialog(title, content, buttonsContent);
+        this.gameService.makeTilePlacement([]);
     }
 
     changeTileFontSize(operation: FontSizeChangeOperations): void {

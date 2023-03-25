@@ -73,7 +73,7 @@ const DEFAULT_PLAYER_4 = {
 @Component({
     template: '',
 })
-class TestComponent {}
+class TestComponent { }
 
 describe('GameService', () => {
     let service: GameService;

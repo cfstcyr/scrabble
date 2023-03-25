@@ -85,9 +85,9 @@ export class GamePlayController extends BaseController {
 
         router.post('/:gameId/squares/place', (req: SelectRequest, res: Response, next) => {
             const { gameId } = req.params;
-            const body = ({ tilePlacement: req.body.tilePlacement, idUser: req.body.idUser } = req.body);
+            const body = { tilePlacement: req.body.tilePlacement, idUser: req.body.idUser };
             try {
-                const playerId = this.authentificationService.connectedUsers.getSocketId(body.userId);
+                const playerId = this.authentificationService.connectedUsers.getSocketId(body.idUser);
                 this.handleTilePlacement(gameId, playerId, body.tilePlacement);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
