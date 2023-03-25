@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/constants/user-constants.dart';
 import 'package:mobile/services/chat.service.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/pages/profile-page.dart';
 import 'package:mobile/routes/routes.dart';
-import 'package:mobile/services/user.service.dart';
 
 import 'chat-management.dart';
 
 class MyScaffold extends StatelessWidget {
-  final ChatService _chatManagementController = getIt.get<ChatService>();
+  final ChatService _chatService = getIt.get<ChatService>();
   final Widget body;
   final String title;
 
@@ -38,7 +33,7 @@ class MyScaffold extends StatelessWidget {
                 onPressed: () => Scaffold.of(context).openEndDrawer(),
               ),
               StreamBuilder<bool>(
-                stream: _chatManagementController.hasUnreadMessages,
+                stream: _chatService.hasUnreadMessages,
                 initialData: false,
                 builder: (context, snapshot) {
                   bool shouldShow = !snapshot.hasData || snapshot.data!;

@@ -19,36 +19,35 @@ class ChatService {
   SocketService socketService = getIt.get<SocketService>();
 
   ChatService._privateConstructor() {
-    socketService.getSocket().onDisconnect((_) {
-      _resetSubjects();
-    });
-
     socketService.getSocket().onConnect((_) {
       _configureSocket();
     });
+
+    socketService.getSocket().onDisconnect((_) {
+      _resetSubjects();
+    });
+  }
+
+  factory ChatService() {
+    return _instance;
   }
 
   static final ChatService _instance =
       ChatService._privateConstructor();
-  BehaviorSubject<List<Channel>> joinableChannels$ =
-      BehaviorSubject<List<Channel>>.seeded([]);
-  BehaviorSubject<List<Channel>> myChannels$ =
-      BehaviorSubject<List<Channel>>.seeded([]);
-  BehaviorSubject<Channel?> openedChannel$ = BehaviorSubject.seeded(null);
-  BehaviorSubject<List<Channel>> channelSearchResult$ =
+
+  BehaviorSubject<List<Channel>> _joinableChannels$ =
       BehaviorSubject<List<Channel>>.seeded([]);
 
-  ValueStream<List<Channel>> get joinableChannels => joinableChannels$.stream;
+  BehaviorSubject<List<Channel>> _myChannels$ =
+      BehaviorSubject<List<Channel>>.seeded([]);
 
-  ValueStream<List<Channel>> get myChannels => myChannels$.stream;
+  BehaviorSubject<int?> _openedChannelId$ = BehaviorSubject.seeded(null);
 
-  ValueStream<Channel?> get openedChannel => openedChannel$.stream;
+  ValueStream<List<Channel>> get joinableChannels => _joinableChannels$.stream;
 
-  ValueStream<List<Channel>> get channelSearchResult =>
-      channelSearchResult$.stream;
+  ValueStream<List<Channel>> get myChannels => _myChannels$.stream;
 
-  // BehaviorSubject<List<ChannelMessage>> messages$ =
-  //     BehaviorSubject<List<ChannelMessage>>.seeded([]);
+  ValueStream<int?> get openedChannelId => _openedChannelId$.stream;
 
   Stream<bool> get hasUnreadMessages =>
       myChannels.switchMap((List<Channel> channels) => Stream.value(
@@ -56,10 +55,6 @@ class ChatService {
               .any((ChannelMessage message) => message.isNotRead))));
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-  factory ChatService() {
-    return _instance;
-  }
 
   Future<void> sendMessage(Channel channel, ChatMessage message) async {
     socketService.emitEvent(MESSAGE_EVENT,
@@ -79,12 +74,21 @@ class ChatService {
     socketService.emitEvent(QUIT_CHANNEL_EVENT, idChannel);
   }
 
+  void openChannel(Channel channel) {
+    print('open: ${channel.name}');
+    _openedChannelId$.add(channel.idChannel);
+  }
+
+  void closeChannel() {
+    _openedChannelId$.add(null);
+  }
+
   void readChannelMessages(Channel channel) {
-    channel.messages = channel.messages.where((ChannelMessage m) => m.isNotRead).map((ChannelMessage m) {
-      print(m.message.content);
-      m.isRead = true;
-      return m;
-    }).toList();
+    // channel.messages = channel.messages.where((ChannelMessage m) => m.isNotRead).map((ChannelMessage m) {
+    //   print(m.message.content);
+    //   m.isRead = true;
+    //   return m;
+    // }).toList();
   }
 
   Future<void> _configureSocket() async {
@@ -94,6 +98,7 @@ class ChatService {
       channelMessage.isRead = false;
 
       _handleNewMessage(channelMessage);
+      _notificationPlayer.play(AssetSource(NOTIFICATION_PATH));
     });
 
     socketService.on(JOIN_CHANNEL_EVENT, (channel) {
@@ -112,7 +117,7 @@ class ChatService {
               .map((dynamic c) => Channel.fromJson(c))
               .toList();
 
-      joinableChannels$.add(joinableChannels);
+      _joinableChannels$.add(joinableChannels);
     });
 
     socketService.on(CHANNEL_HISTORY_EVENT, (receivedChannelMessages) {
@@ -132,15 +137,21 @@ class ChatService {
 
   void _handleNewMessage(ChannelMessage channelMessage) {
     try {
-      Channel channelOfMessage = myChannels$.value
+      Channel channelOfMessage = _myChannels$.value
           .firstWhere((Channel c) => c.idChannel == channelMessage.idChannel);
-      channelOfMessage.messages.insert(0, channelMessage);
 
-      myChannels$.value.remove(channelOfMessage);
-      myChannels$.value.insert(0, channelOfMessage);
-      myChannels$.add([...myChannels$.value]);
+      List<ChannelMessage> messages = [...channelOfMessage.messages];
 
-      _notificationPlayer.play(AssetSource(NOTIFICATION_PATH));
+      messages.insert(0, channelMessage);
+
+      channelOfMessage.messages = messages;
+
+      _myChannels$.value.removeWhere((Channel c) => c.idChannel == channelOfMessage.idChannel);
+
+      List<Channel> myChannels = [..._myChannels$.value];
+
+      myChannels.insert(0, channelOfMessage);
+      _myChannels$.add(myChannels);
     } on StateError catch (_) {
       throw Exception(
           'Message received from a channel that user is not a part of');
@@ -148,18 +159,21 @@ class ChatService {
   }
 
   void _handleJoinChannel(Channel joinedChannel) {
-    myChannels$.add([...myChannels.value, joinedChannel]);
-    openedChannel$.add(joinedChannel);
+    _myChannels$.add([...myChannels.value, joinedChannel]);
+    _openedChannelId$.add(joinedChannel.idChannel);
   }
 
   void _handleQuitChannel(Channel channel) {
-    myChannels$.value.remove(channel);
-    if (openedChannel$.value == channel) openedChannel$.add(null);
+    print(channel.idChannel);
+    List<Channel> myChannels = [..._myChannels$.value];
+    myChannels.remove(channel);
+    _myChannels$.add(myChannels);
+    if (_openedChannelId$.value == channel.idChannel) _openedChannelId$.add(null);
   }
 
   void _resetSubjects() {
-    joinableChannels$ = BehaviorSubject<List<Channel>>.seeded([]);
-    myChannels$ = BehaviorSubject<List<Channel>>.seeded([]);
-    channelSearchResult$ = BehaviorSubject<List<Channel>>.seeded([]);
+    _joinableChannels$ = BehaviorSubject<List<Channel>>.seeded([]);
+    _myChannels$ = BehaviorSubject<List<Channel>>.seeded([]);
+    _openedChannelId$ = BehaviorSubject.seeded(null);
   }
 }
