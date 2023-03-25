@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthenticationController } from '@app/controllers/authentication-controller/authentication.controller';
-import { authenticationSettings } from '@app/utils/settings';
+import { authenticationSettings, puzzleSettings } from '@app/utils/settings';
 import { UserLoginCredentials, UserSession, UserSignupInformation } from '@common/models/user';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -64,6 +64,11 @@ export class AuthenticationService {
         authenticationSettings.setToken(session.token);
         this.userService.user.next(session.user);
         this.socketService.connectSocket();
+
+        if (session.user.username !== authenticationSettings.getUsername()) {
+            authenticationSettings.setUsername(session.user.username);
+            puzzleSettings.reset();
+        }
     }
 
     private handleSocketError({ status }: StatusError): void {
