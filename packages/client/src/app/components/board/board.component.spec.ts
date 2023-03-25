@@ -444,7 +444,7 @@ describe('BoardComponent', () => {
         });
     });
 
-    desctibe('opponentPlacedTiles', () => {
+    describe('opponentPlacedTiles', () => {
         let tilePlacements: TilePlacement[];
 
         beforeEach(() => {
