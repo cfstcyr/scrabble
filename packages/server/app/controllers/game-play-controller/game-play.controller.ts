@@ -20,6 +20,7 @@ import { BaseController } from '@app/controllers/base-controller';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { TilePlacement } from '@common/models/tile-placement';
+import { workPlacementValidator } from '@app/middlewares/validators/tile-placement';
 @Service()
 export class GamePlayController extends BaseController {
     constructor(
@@ -83,7 +84,7 @@ export class GamePlayController extends BaseController {
             }
         });
 
-        router.post('/:gameId/squares/place', (req: PlaceRequest, res: Response, next) => {
+        router.post('/:gameId/squares/place', ...workPlacementValidator('tilePlacement'), (req: PlaceRequest, res: Response, next) => {
             const { gameId } = req.params;
             const body = { tilePlacement: req.body.tilePlacement, idUser: req.body.idUser };
             try {
