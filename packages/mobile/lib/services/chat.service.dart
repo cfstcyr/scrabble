@@ -81,12 +81,17 @@ class ChatService {
     _openedChannelId$.add(null);
   }
 
-  void readChannelMessages(Channel channel) {
-    // channel.messages = channel.messages.where((ChannelMessage m) => m.isNotRead).map((ChannelMessage m) {
-    //   print(m.message.content);
-    //   m.isRead = true;
-    //   return m;
-    // }).toList();
+  void readMessage(int idChannel, String idMessage) {
+    List<Channel> myChannels = [..._myChannels$.value];
+    Channel channelOfMessage =
+        myChannels.firstWhere((Channel c) => c.idChannel == idChannel);
+
+    channelOfMessage.messages
+        .where((ChannelMessage message) => message.message.uid == idMessage && message.isNotRead)
+        .map((ChannelMessage message) => message.isRead = true)
+        .toList();
+
+    _myChannels$.add(myChannels);
   }
 
   Future<void> _configureSocket() async {
@@ -170,8 +175,9 @@ class ChatService {
     List<Channel> myChannels = [..._myChannels$.value];
     myChannels.removeWhere((Channel c) => c.idChannel == channel.idChannel);
     _myChannels$.add(myChannels);
-    if (_openedChannelId$.value == channel.idChannel)
+    if (_openedChannelId$.value == channel.idChannel) {
       _openedChannelId$.add(null);
+    }
   }
 
   void _resetSubjects() {

@@ -52,7 +52,7 @@ class _ChatboxState extends State<Chatbox> {
         user: _userView,
         onMessageVisibilityChanged: (message, isVisible) {
           if (isVisible) {
-
+            _chatService.readMessage(widget.channel.idChannel, message.id);
           }
         },
       ),

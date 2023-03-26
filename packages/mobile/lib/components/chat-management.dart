@@ -143,7 +143,6 @@ class _ChatManagementState extends State<ChatManagement> {
                       borderRadius: BorderRadius.all(Radius.circular(4.0))),
                   child: InkWell(
                     onTap: () {
-                      _chatService.readChannelMessages(currentChannel);
                       _chatService.openChannel(currentChannel);
                     },
                     child: Padding(
