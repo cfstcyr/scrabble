@@ -180,6 +180,14 @@ $side-size: 300px;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: $spacing;
+
+        .action-container {
+            display: flex;
+        }
+
+        button {
+            flex-grow: 1;
+        }
     }
 }
 
