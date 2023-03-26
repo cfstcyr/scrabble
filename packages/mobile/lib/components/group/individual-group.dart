@@ -9,7 +9,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 
-import '../../pages/groups-request-waiting-page.dart';
+import '../../services/theme-color-service.dart';
 import '../../utils/duration-format.dart';
 
 class IndividualGroup extends StatelessWidget {
@@ -81,7 +81,10 @@ class IndividualGroup extends StatelessWidget {
                               child: ElevatedButton(
                                   onPressed: () {},
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor: theme.primaryColor,
+                                      backgroundColor: getIt
+                                          .get<ThemeColorService>()
+                                          .themeColor
+                                          .value,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(
@@ -112,7 +115,10 @@ class IndividualGroup extends StatelessWidget {
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor: theme.primaryColor,
+                                      backgroundColor: getIt
+                                          .get<ThemeColorService>()
+                                          .themeColor
+                                          .value,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(

@@ -24,7 +24,7 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
 
-  Color themeColor = getIt.get<ThemeColorService>().themeColor;
+  Color themeColor = getIt.get<ThemeColorService>().themeColor.value;
   ChannelService channelService = getIt.get<ChannelService>();
   UserService userService = getIt.get<UserService>();
   late PublicUser userData;

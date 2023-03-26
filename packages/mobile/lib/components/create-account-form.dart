@@ -13,7 +13,6 @@ import 'package:rxdart/rxdart.dart';
 
 import '../constants/create-account-constants.dart';
 import '../controllers/account-authentification-controller.dart';
-import '../main.dart';
 import '../pages/home-page.dart';
 
 class CreateAccountForm extends StatefulWidget {
@@ -26,7 +25,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   bool isPasswordShown = false;
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
-  Color themeColor = getIt.get<ThemeColorService>().themeColor;
+  Color themeColor = getIt.get<ThemeColorService>().themeColor.value;
   AccountAuthenticationController accountController =
       getIt.get<AccountAuthenticationController>();
 
@@ -165,7 +164,8 @@ class CreateAccountFormState extends State<CreateAccountForm> {
                         children: [
                           TextButton(
                             onPressed: () {
-                              Navigator.pushReplacementNamed(context, LOGIN_ROUTE);
+                              Navigator.pushReplacementNamed(
+                                  context, LOGIN_ROUTE);
                             },
                             child: const Text(
                               REDIRECT_LOGIN_LABEL_FR,

@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/avatars-constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/constants/user-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AvatarField extends StatelessWidget {
-  final Color themeColor = getIt.get<ThemeColorService>().themeColor;
+  final Color themeColor = getIt.get<ThemeColorService>().themeColor.value;
   final BehaviorSubject<String?> avatar;
   final BehaviorSubject<String?> avatarError;
 

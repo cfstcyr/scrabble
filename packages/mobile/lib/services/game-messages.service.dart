@@ -104,7 +104,7 @@ class GameMessagesService {
                         decoration: BoxDecoration(
                             color: placement is OpponentPlacementMessage
                                 ? Colors.black12
-                                : _themeColorService.themeColor,
+                                : _themeColorService.themeColor.value,
                             borderRadius: BorderRadius.all(Radius.circular(6))),
                         child: Wrap(
                           spacing: 2,

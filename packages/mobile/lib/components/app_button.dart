@@ -44,22 +44,27 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
-      onPressed: onPressed,
-      color: _getButtonColor(),
-      disabledColor: type == AppButtonType.normal
-          ? Colors.grey.shade300
-          : Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-      height: _getSize(),
-      minWidth: _getSize(),
-      padding: iconOnly ? EdgeInsets.zero : null,
-      elevation: type == AppButtonType.normal ? 1 : 0,
-      focusElevation: type == AppButtonType.normal ? 4 : 0,
-      hoverElevation: type == AppButtonType.normal ? 4 : 0,
-      highlightElevation: type == AppButtonType.normal ? 8 : 0,
-      child: _getChild(),
-    );
+    return StreamBuilder<Object>(
+        stream: getIt.get<ThemeColorService>().themeColor.stream,
+        builder: (context, _) {
+          return MaterialButton(
+            onPressed: onPressed,
+            color: _getButtonColor(),
+            disabledColor: type == AppButtonType.normal
+                ? Colors.grey.shade300
+                : Colors.transparent,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+            height: _getSize(),
+            minWidth: _getSize(),
+            padding: iconOnly ? EdgeInsets.zero : null,
+            elevation: type == AppButtonType.normal ? 1 : 0,
+            focusElevation: type == AppButtonType.normal ? 4 : 0,
+            hoverElevation: type == AppButtonType.normal ? 4 : 0,
+            highlightElevation: type == AppButtonType.normal ? 8 : 0,
+            child: _getChild(),
+          );
+        });
   }
 
   Color _getButtonColor() {
@@ -69,7 +74,7 @@ class AppButton extends StatelessWidget {
   Color _getColor() {
     switch (theme) {
       case AppButtonTheme.primary:
-        return _themeColorService.themeColor;
+        return _themeColorService.themeColor.value;
       case AppButtonTheme.danger:
         return Colors.red;
       case AppButtonTheme.tomato:

@@ -29,7 +29,7 @@ class CreateGameFormState extends State<CreateGameForm> {
   String? _playerLevel = VirtualPlayerLevel.beginner.levelName;
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
-  Color themeColor = getIt.get<ThemeColorService>().themeColor;
+  Color themeColor = getIt.get<ThemeColorService>().themeColor.value;
   GameCreationService gameCreationService = getIt.get<GameCreationService>();
   UserService userService = getIt.get<UserService>();
 

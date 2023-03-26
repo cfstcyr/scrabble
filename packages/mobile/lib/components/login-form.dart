@@ -5,16 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/routes/routes.dart';
-import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../classes/user.dart';
 import '../constants/create-account-constants.dart';
 import '../constants/login-constants.dart';
 import '../controllers/account-authentification-controller.dart';
-import '../pages/create-account-page.dart';
 import '../services/socket.service.dart';
 
 class LoginForm extends StatefulWidget {
@@ -28,7 +25,7 @@ class _LoginFormState extends State<LoginForm> {
 
   bool get isButtonEnabled => isFirstSubmit;
   SocketService socketService = getIt.get<SocketService>();
-  Color themeColor = getIt.get<ThemeColorService>().themeColor;
+  Color themeColor = getIt.get<ThemeColorService>().themeColor.value;
   AccountAuthenticationController authController =
       getIt.get<AccountAuthenticationController>();
 

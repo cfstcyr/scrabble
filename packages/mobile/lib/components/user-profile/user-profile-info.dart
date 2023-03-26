@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/app_button.dart';
-import 'package:mobile/components/image.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/controllers/account-authentification-controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/services/user.service.dart';
 
 class UserProfileInfo extends StatelessWidget {
   final UserService _userService = getIt.get<UserService>();
   final AccountAuthenticationController _authService =
       getIt.get<AccountAuthenticationController>();
+
+  // create some values
+  Color pickerColor = getIt.get<ThemeColorService>().themeColor.value;
+
+// ValueChanged<Color> callback
+  void changeColor(Color color) {
+    pickerColor = color;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +74,58 @@ class UserProfileInfo extends StatelessWidget {
                             },
                             icon: Icons.logout_rounded,
                           ),
+                          AppButton(
+                            onPressed: () => {
+                              // raise the [showDialog] widget
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Pick a theme color!'),
+                                  content: SingleChildScrollView(
+                                    child: ColorPicker(
+                                      pickerColor: pickerColor,
+                                      onColorChanged: changeColor,
+                                    ),
+                                  ),
+                                  actions: <Widget>[
+                                    ElevatedButton(
+                                      child: const Text('Default'),
+                                      onPressed: () {
+                                        getIt
+                                            .get<ThemeColorService>()
+                                            .themeColor
+                                            .add(Color.fromRGBO(27, 94, 32, 1));
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    ElevatedButton(
+                                      child: const Text('Dark Mode'),
+                                      onPressed: () {
+                                        getIt
+                                            .get<ThemeColorService>()
+                                            .themeColor
+                                            .add(Colors.black);
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    ElevatedButton(
+                                      child: const Text('Save'),
+                                      onPressed: () {
+                                        getIt
+                                            .get<ThemeColorService>()
+                                            .themeColor
+                                            .add(pickerColor);
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              )
+                            },
+                            icon: Icons.abc_sharp,
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   )
                 : Container();

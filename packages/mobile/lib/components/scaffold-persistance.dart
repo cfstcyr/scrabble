@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/constants/user-constants.dart';
-import 'package:mobile/locator.dart';
-import 'package:mobile/pages/profile-page.dart';
 import 'package:mobile/routes/routes.dart';
-import 'package:mobile/services/user.service.dart';
 
 import 'chat-management.dart';
 
