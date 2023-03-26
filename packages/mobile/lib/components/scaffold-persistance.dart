@@ -5,6 +5,7 @@ import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/services/chat.service.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'chat-management.dart';
 
@@ -28,13 +29,19 @@ class MyScaffold extends StatelessWidget {
         centerTitle: true,
         actions: [
           Builder(
-            builder: (context) => StreamBuilder<bool>(
+            builder: (context) => StreamBuilder<dynamic>(
                 stream: _chatService.hasUnreadMessages,
                 builder: (context, snapshot) {
-                  bool shouldShow = !snapshot.hasData || snapshot.data!;
+                  Color? pastilleColor;
+
+                  if (snapshot.hasData) {
+                    bool hasUnreadMessages = snapshot.data!;
+
+                    pastilleColor = _getNotificationPastilleColor(hasUnreadMessages);
+                  }
 
                   return NotificationPastille(
-                      shouldShowPastille: shouldShow,
+                      pastilleColor: pastilleColor,
                       child: IconButton(
                         icon: Icon(Icons.chat),
                         onPressed: () => Scaffold.of(context).openEndDrawer(),
@@ -64,5 +71,10 @@ class MyScaffold extends StatelessWidget {
   bool _canNavigateToProfile(BuildContext context) {
     return ModalRoute.of(context)?.settings.name != PROFILE_ROUTE &&
         ModalRoute.of(context)?.settings.name != PROFILE_EDIT_ROUTE;
+  }
+
+  Color? _getNotificationPastilleColor(bool hasUnreadMessages) {
+    if (hasUnreadMessages) return Colors.red;
+    return null;
   }
 }

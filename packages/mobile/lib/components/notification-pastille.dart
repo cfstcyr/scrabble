@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class NotificationPastille extends StatelessWidget {
-  NotificationPastille({required this.shouldShowPastille, required this.child});
+  NotificationPastille({required this.pastilleColor, required this.child});
 
-  final bool shouldShowPastille;
+  final Color? pastilleColor;
   final Widget child;
 
   @override
@@ -11,7 +11,7 @@ class NotificationPastille extends StatelessWidget {
     return Stack(children: [
       child,
       Visibility(
-          visible: shouldShowPastille,
+          visible: shouldShowPastille(),
           child: Positioned(
             top: 5,
             right: 5,
@@ -19,9 +19,13 @@ class NotificationPastille extends StatelessWidget {
               width: 12,
               height: 12,
               decoration: BoxDecoration(
-                  shape: BoxShape.circle, color: Colors.red),
+                  shape: BoxShape.circle, color: pastilleColor),
             ),
           ))
     ]);
+  }
+
+  bool shouldShowPastille() {
+    return pastilleColor != null;
   }
 }
