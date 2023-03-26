@@ -73,7 +73,9 @@ export class BoardNavigator {
 
     hasNonEmptyNeighbor(perpendicular = true): boolean {
         const navigator = perpendicular ? this.clone().switchOrientation() : this.clone();
-        return !navigator.clone().forward().isEmpty() || !navigator.clone().backward().isEmpty();
+        const next = navigator.clone().forward();
+        const previous = navigator.clone().backward();
+        return (next.isWithinBounds() && !next.isEmpty()) || (previous.isWithinBounds() && !previous.isEmpty());
     }
 
     private move(direction: Direction, distance: number = 1): BoardNavigator {
