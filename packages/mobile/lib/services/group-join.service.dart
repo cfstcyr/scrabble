@@ -35,10 +35,14 @@ class GroupJoinService {
     Response res = await groupJoinController.handleJoinGroup(
         groupId, password, isObserver);
     print(res.statusCode);
+    if (res.statusCode == HttpStatus.unauthorized) {
+      fullGroup$.add(false);
+    }
+    ;
     //   .then((_) => true)
     //   .catchError((error) {
     // _handleJoinError(error);
-    return false;
+    return res.statusCode == HttpStatus.noContent;
     // });
   }
 
