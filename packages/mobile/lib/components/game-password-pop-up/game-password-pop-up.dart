@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mobile/constants/create-game.constants.dart';
 import 'package:mobile/routes/routes.dart';
 
 import '../../classes/group.dart';
@@ -16,7 +15,8 @@ import '../app_button.dart';
 const FULL_GROUP = "Partie pleine";
 const FULL_GROUP_MESSAGE = " Veuillez choisir une autre partie";
 const INVALID_GAME_PASSWORD = "Mot de passe invalide, Veuillez Réesayer";
-const JOIN_GAME_LABEL_FR = "Rejoindre";
+const JOIN_GAME_LABEL_FR = "Joindre";
+const GO_BACK_GROUPS = "Retourner aux parties";
 
 void showGamePasswordPopup(
     BuildContext context, Group group, Function joinGroupFunction) {
@@ -29,7 +29,6 @@ void showGamePasswordPopup(
           content: 'OK',
           theme: AppButtonTheme.primary,
           onPressed: () {
-            Navigator.pop(context);
             Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
           })
     ]);
@@ -41,7 +40,6 @@ void showGamePasswordPopup(
           content: 'OK',
           theme: AppButtonTheme.primary,
           onPressed: () {
-            Navigator.pop(context);
             Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
           })
     ]);
@@ -61,6 +59,7 @@ void showGamePasswordPopup(
                 autocorrect: false,
                 enableSuggestions: false,
                 decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.lock),
                   border: OutlineInputBorder(),
                   labelText: PASSWORD_LABEL_FR,
                   errorText: passwordHandler.errorMessage.isEmpty
@@ -69,13 +68,19 @@ void showGamePasswordPopup(
                 ),
               ),
               actions: <Widget>[
-                TextButton(
+                AppButton(
                   onPressed: () {
                     Navigator.pushNamed(context, GROUPS_ROUTE);
                   },
-                  child: const Text(CANCEL_CREATION_LABEL_FR),
+                  child: Wrap(children: [
+                    Icon(Icons.arrow_back, color: Colors.white),
+                    const Text(GO_BACK_GROUPS,
+                        style: TextStyle(color: Colors.white, fontSize: 18))
+                  ]),
+                  size: AppButtonSize.large,
                 ),
-                TextButton(
+                SizedBox(width: 30),
+                AppButton(
                   onPressed: () async {
                     bool isValid = await joinGroupFunction(
                         group.groupId, passwordHandler.controller.text, false);
@@ -88,7 +93,15 @@ void showGamePasswordPopup(
                       });
                     }
                   },
-                  child: const Text(JOIN_GAME_LABEL_FR),
+                  child: Wrap(children: [
+                    const Text(JOIN_GAME_LABEL_FR,
+                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                    Icon(
+                      Icons.play_arrow_outlined,
+                      color: Colors.white,
+                    ),
+                  ]),
+                  size: AppButtonSize.large,
                 ),
               ],
               backgroundColor: Colors.white,
