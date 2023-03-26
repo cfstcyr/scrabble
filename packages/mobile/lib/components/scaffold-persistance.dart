@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/notification-pastille.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/services/chat.service.dart';
@@ -27,31 +28,18 @@ class MyScaffold extends StatelessWidget {
         centerTitle: true,
         actions: [
           Builder(
-            builder: (context) => Stack(children: [
-              IconButton(
-                icon: Icon(Icons.chat),
-                onPressed: () => Scaffold.of(context).openEndDrawer(),
-              ),
-              StreamBuilder<bool>(
+            builder: (context) => StreamBuilder<bool>(
                 stream: _chatService.hasUnreadMessages,
-                initialData: false,
                 builder: (context, snapshot) {
                   bool shouldShow = !snapshot.hasData || snapshot.data!;
-                  return Visibility(
-                      visible: shouldShow,
-                      child: Positioned(
-                        top: 5,
-                        right: 5,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle, color: Colors.red),
-                        ),
+
+                  return NotificationPastille(
+                      shouldShowPastille: shouldShow,
+                      child: IconButton(
+                        icon: Icon(Icons.chat),
+                        onPressed: () => Scaffold.of(context).openEndDrawer(),
                       ));
-                }
-              )
-            ]),
+                }),
           ),
           Builder(
               builder: (context) => InkWell(
