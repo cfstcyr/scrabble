@@ -12,7 +12,7 @@ import { TilePlacementService } from '@app/services/tile-placement-service/tile-
 import { Random } from '@app/utils/random/random';
 import { Orientation } from '@common/models/position';
 import { BehaviorSubject, iif, Observable, of, timer } from 'rxjs';
-import { map, mergeMap, takeUntil } from 'rxjs/operators';
+import { catchError, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import {
     PuzzleLevel,
@@ -33,6 +33,10 @@ import {
     ABANDON_PUZZLE_DIALOG_BUTTON_CONTINUE,
     ABANDON_PUZZLE_DIALOG_CONTENT,
     ABANDON_PUZZLE_DIALOG_TITLE,
+    PUZZLE_ERROR_DIALOG_BUTTON_CONTINUE,
+    PUZZLE_ERROR_DIALOG_BUTTON_GO_HOME,
+    PUZZLE_ERROR_DIALOG_CONTENT,
+    PUZZLE_ERROR_DIALOG_TITLE,
 } from '@app/constants/puzzle-constants';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
@@ -137,6 +141,8 @@ export class PuzzlePageComponent implements OnInit {
     }
 
     play(): boolean {
+        if (!this.isPlaying.value) return false;
+
         const payload = this.tilePlacementService.createPlaceActionPayload();
 
         if (!payload) return false;
@@ -149,10 +155,20 @@ export class PuzzlePageComponent implements OnInit {
 
         this.stopPuzzle();
 
-        this.puzzleService.complete(placement).subscribe((result) => {
-            this.history.push(result);
-            this.showEndOfPuzzleModal(result, placement);
-        });
+        this.puzzleService
+            .complete(placement)
+            .pipe(
+                catchError(() => {
+                    this.showErrorModal();
+                    return of(null);
+                }),
+            )
+            .subscribe((result) => {
+                if (result) {
+                    this.history.push(result);
+                    this.showEndOfPuzzleModal(result, placement);
+                }
+            });
 
         return true;
     }
@@ -177,10 +193,20 @@ export class PuzzlePageComponent implements OnInit {
                             this.tilePlacementService.resetTiles();
                             this.stopPuzzle();
 
-                            this.puzzleService.abandon().subscribe((result) => {
-                                this.history.push(result);
-                                this.showEndOfPuzzleModal(result, undefined);
-                            });
+                            this.puzzleService
+                                .abandon()
+                                .pipe(
+                                    catchError(() => {
+                                        this.showErrorModal();
+                                        return of(null);
+                                    }),
+                                )
+                                .subscribe((result) => {
+                                    if (result) {
+                                        this.history.push(result);
+                                        this.showEndOfPuzzleModal(result, undefined);
+                                    }
+                                });
                         },
                     },
                 ],
@@ -193,10 +219,20 @@ export class PuzzlePageComponent implements OnInit {
             this.tilePlacementService.resetTiles();
             this.stopPuzzle();
 
-            this.puzzleService.timeout().subscribe((result) => {
-                this.history.push(result);
-                this.showEndOfPuzzleModal(result, undefined);
-            });
+            this.puzzleService
+                .timeout()
+                .pipe(
+                    catchError(() => {
+                        this.showErrorModal();
+                        return of(null);
+                    }),
+                )
+                .subscribe((result) => {
+                    if (result) {
+                        this.history.push(result);
+                        this.showEndOfPuzzleModal(result, undefined);
+                    }
+                });
         }
     }
 
@@ -244,6 +280,35 @@ export class PuzzlePageComponent implements OnInit {
                 },
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 onContinue: () => this.start(this.level!.time),
+            },
+        });
+    }
+
+    private showErrorModal() {
+        this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
+            disableClose: true,
+            data: {
+                title: PUZZLE_ERROR_DIALOG_TITLE,
+                content: PUZZLE_ERROR_DIALOG_CONTENT,
+                buttons: [
+                    {
+                        content: PUZZLE_ERROR_DIALOG_BUTTON_GO_HOME,
+                        key: ESCAPE,
+                        closeDialog: true,
+                        action: () => {
+                            this.router.navigate([ROUTE_HOME]);
+                        },
+                    },
+                    {
+                        content: PUZZLE_ERROR_DIALOG_BUTTON_CONTINUE,
+                        key: ENTER,
+                        closeDialog: true,
+                        action: () => {
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            this.start(this.level!.time);
+                        },
+                    },
+                ],
             },
         });
     }

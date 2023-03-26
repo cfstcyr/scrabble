@@ -38,12 +38,14 @@ export class PuzzleResultModalComponent implements OnInit {
         switch (event.key) {
             case ENTER:
                 this.onContinue();
+                event.stopPropagation();
                 break;
         }
     }
     @HostListener('document:keydown.escape', ['$event'])
-    handleKeyboardEventEsc(): void {
+    handleKeyboardEventEsc(event: KeyboardEvent): void {
         this.onCancel();
+        event.stopPropagation();
     }
 
     ngOnInit() {
