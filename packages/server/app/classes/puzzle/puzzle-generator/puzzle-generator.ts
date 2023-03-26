@@ -197,7 +197,8 @@ export class PuzzleGenerator {
     private shouldSkipPlacement(placement: BoardPlacement): boolean {
         return (
             placement.letters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff) ||
-            placement.perpendicularLetters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff)
+            placement.perpendicularLetters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff) ||
+            placement.letters.length + placement.perpendicularLetters.length > 1
         );
     }
 }
