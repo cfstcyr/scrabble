@@ -102,6 +102,11 @@ class ChatService {
       _notificationPlayer.play(AssetSource(NOTIFICATION_PATH));
     });
 
+    socketService.on(CHANNEL_CREATED_EVENT, (receivedChannel) {
+      Channel createdChannel = Channel.fromJson(receivedChannel);
+      _openedChannelId$.add(createdChannel.idChannel);
+    });
+
     socketService.on(JOIN_CHANNEL_EVENT, (channel) {
       Channel joinedChannel = Channel.fromJson(channel);
       _handleJoinChannel(joinedChannel);
