@@ -23,7 +23,7 @@ const DEFAULT_EVENT: CdkDragMove<HTMLElement> = {
 
 const createSquare = (document: Document, position: Position = DEFAULT_PLACEMENT.position) => {
     const square = document.createElement('div');
-    square.classList.add('square');
+    square.classList.add('square', 'can-drop');
     square.setAttribute('column', `${position.column}`);
     square.setAttribute('row', `${position.row}`);
     return square;
