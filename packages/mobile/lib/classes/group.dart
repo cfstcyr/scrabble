@@ -45,6 +45,7 @@ class Group {
         'maxRoundTime': maxRoundTime,
         'virtualPlayerLevel': virtualPlayerLevel.levelName,
         'gameVisibility': gameVisibility.name,
+        'password': password
       };
 }
 
