@@ -230,6 +230,7 @@ export class PuzzlePageComponent implements OnInit {
 
     private showEndOfPuzzleModal(result: PuzzleResult, placement: WordPlacement | undefined) {
         this.dialog.open<PuzzleResultModalComponent, PuzzleResultModalParameters>(PuzzleResultModalComponent, {
+            disableClose: true,
             data: {
                 grid: this.startGrid,
                 result,
