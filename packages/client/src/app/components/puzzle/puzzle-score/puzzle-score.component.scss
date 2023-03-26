@@ -9,10 +9,6 @@
         top: 0;
         left: 0;
 
-        &--result {
-            //z-index: 1;
-        }
-
         &--background {
             ::ng-deep {
                 circle {
@@ -59,7 +55,6 @@
                 font-size: 0.75em;
             }
         }
-        //z-index: 1;
     }
 
     &.theme {

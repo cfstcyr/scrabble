@@ -60,7 +60,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     @HostListener('document:keypress', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent): void {
-        // this.focusableComponentService.emitKeyboard(event);
         switch (event.key) {
             case ENTER:
                 this.gameService.playTilesOnBoard();
@@ -214,7 +213,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     private throwConfettis(): void {
         /* We have not been able to cover this line in the tests because it is impossible to spyOn the confetti method
         from the party-js package. This method is not exported from a class or a module, so jasmine does not offer a
-        way to spy on it. Additionally, calling this method through in the tests would create some errors because the 
+        way to spy on it. Additionally, calling this method through in the tests would create some errors because the
         mat-dialog-container is not defined in the tests. */
         party.confetti(document.querySelector('.mat-dialog-container') as DynamicSourceType, {
             count: party.variation.range(MIN_CONFETTI_COUNT, MAX_CONFETTI_COUNT),
