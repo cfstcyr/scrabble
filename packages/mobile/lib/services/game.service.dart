@@ -7,12 +7,14 @@ import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
+import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/end-game.service.dart';
+import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/user.service.dart';
@@ -22,15 +24,16 @@ import 'package:rxdart/rxdart.dart';
 import '../components/alert-dialog.dart';
 import '../components/app_button.dart';
 import '../constants/locale/game-constants.dart';
-import '../utils/round-utils.dart';
 import 'game-observer-service.dart';
 
 class GameService {
+  final GamePlayController gamePlayController = getIt.get<GamePlayController>();
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
+  final GameEventService _gameEventService = getIt.get<GameEventService>();
   final GameObserverService _gameObserverService =
       getIt.get<GameObserverService>();
-  final BehaviorSubject<Game?> _game;
+  final BehaviorSubject<MultiplayerGame?> _game;
 
   static final GameService _instance = GameService._();
 
@@ -46,8 +49,6 @@ class GameService {
     gamePlayController.gameUpdateEvent
         .listen((GameUpdateData gameUpdate) => updateGame(gameUpdate));
   }
-
-  GamePlayController gamePlayController = getIt.get<GamePlayController>();
 
   void startGame(String localPlayerId, StartGameData startGameData) {
     PlayersContainer playersContainer = PlayersContainer.fromPlayers(
@@ -70,14 +71,13 @@ class GameService {
     TileRack tileRack =
         TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
 
-    _game.add(Game(
+    _game.add(MultiplayerGame(
         board: Board(),
         tileRack: tileRack,
         players: playersContainer,
-        roundDuration: roundTimeToRoundDuration(startGameData.maxRoundTime),
         tileReserve: startGameData.tileReserve));
 
-    _roundService.startRound(startGameData.firstRound);
+    _roundService.startRound(startGameData.firstRound, _onTimerExpires);
     getIt.get<GameMessagesService>().resetMessages();
     Navigator.pushReplacementNamed(
         navigatorKey.currentContext!, GAME_PAGE_ROUTE);
@@ -88,7 +88,9 @@ class GameService {
       throw Exception('Cannot update game: game is null');
     }
 
-    Game game = _game.value!;
+    MultiplayerGame game = _game.value!;
+
+    _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
 
     if (gameUpdate.tileReserve != null) {
       game.tileReserve = gameUpdate.tileReserve!;
@@ -117,7 +119,7 @@ class GameService {
     }
 
     if (gameUpdate.round != null) {
-      _roundService.updateRoundData(gameUpdate.round!);
+      _roundService.updateRoundData(gameUpdate.round!, _onTimerExpires);
     }
 
     if (gameUpdate.isGameOver != null) {
@@ -136,13 +138,13 @@ class GameService {
     _game.add(game);
   }
 
-  Game get game {
+  MultiplayerGame get game {
     if (_game.value == null) throw Exception("No game");
 
     return _game.value!;
   }
 
-  ValueStream<Game?> get gameStream {
+  ValueStream<MultiplayerGame?> get gameStream {
     return _game.stream;
   }
 
@@ -172,8 +174,9 @@ class GameService {
     String player = getIt.get<UserService>().getUser().username;
     bool isWinner = getIt.get<EndGameService>().winners$.value.contains(player);
 
-    triggerDialogBox(DIALOG_END_OF_GAME_TITLE(isWinner),
-        DIALOG_END_OF_GAME_CONTENT(isWinner), [
+    triggerDialogBox(DIALOG_END_OF_GAME_TITLE(isWinner), [
+      Text(DIALOG_END_OF_GAME_CONTENT(isWinner), style: TextStyle(fontSize: 16))
+    ], [
       DialogBoxButtonParameters(
           content: DIALOG_LEAVE_BUTTON_CONTINUE,
           theme: AppButtonTheme.secondary,
@@ -193,5 +196,14 @@ class GameService {
 
   bool isActivePlayer(String socketId) {
     return _roundService.getActivePlayerId() == socketId;
+  }
+
+  void _onTimerExpires() {
+    if (!getIt.get<UserService>().isObserver &&
+        _roundService.currentRound.socketIdOfActivePlayer ==
+            getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
+      _actionService.sendAction(ActionType.pass);
+      _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
+    }
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/image.dart';
+import 'package:mobile/components/puzzle/start-puzzle-dialog.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/layout.constants.dart';
@@ -10,18 +11,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/home-page.constants.dart';
 import '../constants/login-constants.dart';
-import '../controllers/account-authentification-controller.dart';
-import '../controllers/game-creation-controller.dart';
-import '../controllers/group-join-controller.dart';
-import '../locator.dart';
 
 class HomePage extends StatelessWidget {
-  final AccountAuthenticationController authService =
-      getIt.get<AccountAuthenticationController>();
-
-  final gameCreationController = getIt.get<GameCreationController>();
-  final gameJoinController = getIt.get<GroupJoinController>();
-
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
@@ -69,11 +60,10 @@ class HomePage extends StatelessWidget {
                     SizedBox(height: 10),
                     AppButton(
                       onPressed: () {
-                        authService.signOut();
-                        Navigator.pushNamed(context, LOGIN_ROUTE);
+                        _handleStartPuzzle(context);
                       },
                       size: AppButtonSize.large,
-                      child: Text(SIGNOUT_LABEL_FR,
+                      child: Text(START_PUZZLE_MESSAGE,
                           style: TextStyle(color: Colors.white, fontSize: 18)),
                     ),
                   ],
@@ -163,4 +153,8 @@ Widget tile(String letter, String name, String link) {
       ),
     ]),
   );
+}
+
+void _handleStartPuzzle(BuildContext context) {
+  showStartPuzzleDialog(context);
 }

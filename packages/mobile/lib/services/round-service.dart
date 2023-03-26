@@ -1,13 +1,9 @@
-import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/action-service.dart';
-import 'package:mobile/services/user.service.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../constants/game-events.dart';
 import 'game-event.service.dart';
-import 'game.service.dart';
 
 class RoundService {
   final ActionService _actionService = getIt.get<ActionService>();
@@ -45,16 +41,14 @@ class RoundService {
     return currentActivePlayerSocketId == socketId;
   }
 
-  void startRound(Round round) {
+  void startRound(Round round, Function timerExpiresCallback) {
     currentRound$.add(round);
 
-    Duration roundDuration = getIt.get<GameService>().game.roundDuration;
-
     roundTimeoutStream.listen((event) {
-      _onTimerExpires();
+      timerExpiresCallback();
     });
 
-    _startRound$.add(roundDuration);
+    _startRound$.add(round.duration);
   }
 
   void endRound() {
@@ -65,17 +59,8 @@ class RoundService {
     _roundTimeout$.add(null);
   }
 
-  void _onTimerExpires() {
-    if (!getIt.get<UserService>().isObserver &&
-        currentRound.socketIdOfActivePlayer ==
-            getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
-      _actionService.sendAction(ActionType.pass);
-      _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
-    }
-  }
-
-  void updateRoundData(Round round) {
+  void updateRoundData(Round round, Function timerExpiresCallback) {
     endRound();
-    startRound(round);
+    startRound(round, timerExpiresCallback);
   }
 }

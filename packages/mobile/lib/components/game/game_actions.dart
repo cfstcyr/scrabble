@@ -31,7 +31,7 @@ class GameActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Game?>(
+    return StreamBuilder<MultiplayerGame?>(
       stream: _gameService.gameStream,
       builder: (context, snapshot) {
         return Card(
@@ -138,7 +138,7 @@ class GameActions extends StatelessWidget {
       _actionService.isActionBeingProcessedStream,
       _roundService.getActivePlayerId()
     ], (values) {
-      Game game = values[0];
+      MultiplayerGame game = values[0];
       bool isActionBeingProcessed = values[1];
       String activePlayerSocketId = values[2];
 
@@ -154,7 +154,7 @@ class GameActions extends StatelessWidget {
     return CombineLatestStream<dynamic, bool>([
       _gameService.gameStream,
     ], (values) {
-      Game game = values[0];
+      MultiplayerGame game = values[0];
 
       return game.isOver;
     });
@@ -171,7 +171,7 @@ class GameActions extends StatelessWidget {
     });
   }
 
-  Stream<bool> _canPlaceStream(Game game) {
+  Stream<bool> _canPlaceStream(MultiplayerGame game) {
     return CombineLatestStream(
         [_canPlayStream(), game.board.isValidPlacementStream], (values) {
       bool canPlay = values[0];

@@ -14,7 +14,6 @@ import 'mock-fs'; // required when running test. Otherwise compiler cannot resol
 export default class TileReserve {
     private tiles: Tile[];
     private initialized: boolean;
-
     constructor() {
         this.tiles = [];
         this.initialized = false;

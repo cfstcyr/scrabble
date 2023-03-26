@@ -4,9 +4,9 @@ import 'package:mobile/components/game/game_actions.dart';
 import 'package:mobile/components/game/game_board.dart';
 import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/game/game_timer.dart';
+import 'package:mobile/components/game/multiplayer-tile-rack.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/components/tile/tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
@@ -17,6 +17,7 @@ import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
 
 import '../components/game/game_messages.dart';
+import '../components/game/observer_tile_rack.dart';
 import '../services/user.service.dart';
 
 class GamePage extends StatefulWidget {
@@ -58,7 +59,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
     GameService gameService = getIt.get<GameService>();
 
     return WillPopScope(
-      child: StreamBuilder<Game?>(
+      child: StreamBuilder<MultiplayerGame?>(
           stream: gameService.gameStream,
           builder: (context, snapshot) {
             if (snapshot.data != null && snapshot.data!.isOver) {
@@ -67,7 +68,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
               });
             }
             return MyScaffold(
-              title: "Game",
+              title: "Partie Multijoueur",
               body: Container(
                 color: Colors.grey.shade100,
                 padding: EdgeInsets.all(SPACE_1),
@@ -80,10 +81,14 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Expanded(child: GameBoard()),
+                            Expanded(
+                                child: GameBoard(
+                              gameStream: gameService.gameStream,
+                            )),
                             getIt<UserService>().isObserver
                                 ? TileRackObserver()
-                                : TileRack(),
+                                : MultiplayerTileRack(
+                                    gameStream: gameService.gameStream),
                           ],
                         ),
                       )),

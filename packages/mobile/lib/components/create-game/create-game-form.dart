@@ -11,6 +11,7 @@ import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/game-creation-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/services/user.service.dart';
+import 'package:mobile/utils/duration-format.dart';
 import 'package:mobile/view-methods/create-lobby-methods.dart';
 
 import '../../classes/group.dart';
@@ -137,13 +138,15 @@ class CreateGameFormState extends State<CreateGameForm> {
                             ],
                           ),
                           Visibility(
+                              visible:
+                                  _visibility == GameVisibility.protected.name,
                               child: SizedBox(
                                 height: SPACE_1,
                                 width: double.maxFinite,
-                              ),
-                              visible:
-                                  _visibility == GameVisibility.protected.name),
+                              )),
                           Visibility(
+                            visible:
+                                _visibility == GameVisibility.protected.name,
                             child: TextField(
                               controller: passwordHandler.controller,
                               focusNode: passwordHandler.focusNode,
@@ -158,8 +161,6 @@ class CreateGameFormState extends State<CreateGameForm> {
                                     : passwordHandler.errorMessage,
                               ),
                             ),
-                            visible:
-                                _visibility == GameVisibility.protected.name,
                           ),
                           SizedBox(height: 16.0),
                           Wrap(children: [
@@ -171,22 +172,22 @@ class CreateGameFormState extends State<CreateGameForm> {
                               IconButton(
                                 icon: Icon(Icons.remove),
                                 onPressed: () => setState(() {
-                                  _timePerTurn -= Duration(seconds: MIN_TIME);
+                                  _timePerTurn -= INCREMENT_TIME;
                                   if (_timePerTurn <
-                                      Duration(seconds: MIN_TIME)) {
-                                    _timePerTurn = Duration(seconds: MIN_TIME);
+                                      MIN_TIME) {
+                                    _timePerTurn = MIN_TIME;
                                   }
                                 }),
                               ),
                               Text(
-                                  '${_timePerTurn.inMinutes}:${_timePerTurn.inSeconds.remainder(DEFAULT_TIME).toString().padLeft(2, ZERO)}'),
+                                  formatTime(_timePerTurn.inSeconds)),
                               IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: () => setState(() {
-                                  _timePerTurn += Duration(seconds: MIN_TIME);
+                                  _timePerTurn += INCREMENT_TIME;
                                   if (_timePerTurn >
-                                      Duration(minutes: MAX_TIME)) {
-                                    _timePerTurn = Duration(minutes: MAX_TIME);
+                                      MAX_TIME) {
+                                    _timePerTurn = MAX_TIME;
                                   }
                                 }),
                               ),

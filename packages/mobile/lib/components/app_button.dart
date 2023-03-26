@@ -8,11 +8,13 @@ enum AppButtonTheme {
   secondary,
   danger,
   tomato,
+  tertiary,
 }
 
 enum AppButtonSize {
   normal,
   large,
+  extraLarge,
 }
 
 enum AppButtonType {
@@ -53,6 +55,8 @@ class AppButton extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
       height: _getSize(),
       minWidth: _getSize(),
+
+
       padding: iconOnly ? EdgeInsets.zero : null,
       elevation: type == AppButtonType.normal ? 1 : 0,
       focusElevation: type == AppButtonType.normal ? 4 : 0,
@@ -74,6 +78,8 @@ class AppButton extends StatelessWidget {
         return Colors.red;
       case AppButtonTheme.tomato:
         return Color.fromRGBO(248, 100, 95, 1);
+      case AppButtonTheme.tertiary:
+        return _themeColorService.menuSecondaryButton;
       case AppButtonTheme.secondary:
         return type == AppButtonType.ghost
             ? Colors.black
@@ -93,6 +99,7 @@ class AppButton extends StatelessWidget {
       case AppButtonTheme.danger:
       case AppButtonTheme.tomato:
         return Colors.white;
+      case AppButtonTheme.tertiary:
       case AppButtonTheme.secondary:
         return Colors.black;
     }
@@ -104,6 +111,8 @@ class AppButton extends StatelessWidget {
         return 15;
       case AppButtonSize.large:
         return 20;
+      case AppButtonSize.extraLarge:
+        return 25;
     }
   }
 
@@ -113,6 +122,8 @@ class AppButton extends StatelessWidget {
         return 20;
       case AppButtonSize.large:
         return 24;
+      case AppButtonSize.extraLarge:
+        return 32;
     }
   }
 
@@ -122,6 +133,8 @@ class AppButton extends StatelessWidget {
         return 36;
       case AppButtonSize.large:
         return 48;
+      case AppButtonSize.extraLarge:
+        return 72;
     }
   }
 

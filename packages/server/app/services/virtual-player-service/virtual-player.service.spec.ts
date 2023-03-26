@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { ActionPass } from '@app/classes/actions';
-import { ActionData, ActionType } from '@app/classes/communication/action-data';
+import { ActionData } from '@app/classes/communication/action-data';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import Game from '@app/classes/game/game';
 import { GameConfig, StartGameData } from '@app/classes/game/game-config';
@@ -19,6 +19,7 @@ import { StatusCodes } from 'http-status-codes';
 import * as mockttp from 'mockttp';
 import { createStubInstance } from 'sinon';
 import { VirtualPlayerService } from './virtual-player.service';
+import { ActionType } from '@common/models/action';
 
 chai.use(spies);
 const DEFAULT_PLAYER1_NAME = 'p1';

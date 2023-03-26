@@ -39,7 +39,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
       triggerDialogBox(
-          "Partie annulée", "${host.username} a annulé la partie", [
+          "Partie annulée", [Text("${host.username} a annulé la partie", style: TextStyle(fontSize: 16))], [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,

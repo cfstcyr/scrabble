@@ -1,7 +1,8 @@
 import ActionPlay from '@app/classes/actions/abstract-actions/action-play';
-import { ActionData, ActionType } from '@app/classes/communication/action-data';
+import { ActionData } from '@app/classes/communication/action-data';
 import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
+import { ActionType } from '@common/models/action';
 
 export default class ActionPass extends ActionPlay {
     static createActionData(): ActionData {
