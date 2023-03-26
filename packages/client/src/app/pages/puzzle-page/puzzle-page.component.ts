@@ -22,7 +22,7 @@ import {
 import { puzzleSettings } from '@app/utils/settings';
 import { Router } from '@angular/router';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
-import { ENTER } from '@app/constants/components-constants';
+import { ENTER, ESCAPE } from '@app/constants/components-constants';
 import { PuzzleResultModalComponent, PuzzleResultModalParameters } from '@app/components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
 import { WordPlacement } from '@common/models/word-finding';
 import { PuzzleResult } from '@common/models/puzzle';
@@ -166,11 +166,13 @@ export class PuzzlePageComponent implements OnInit {
                     {
                         content: ABANDON_PUZZLE_DIALOG_BUTTON_CONTINUE,
                         closeDialog: true,
+                        key: ESCAPE,
                     },
                     {
                         content: ABANDON_PUZZLE_DIALOG_BUTTON_ABANDON,
                         style: 'background-color: tomato; color: white;',
                         closeDialog: true,
+                        key: ENTER,
                         action: () => {
                             this.tilePlacementService.resetTiles();
                             this.stopPuzzle();
