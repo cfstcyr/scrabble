@@ -26,6 +26,14 @@ import { ENTER } from '@app/constants/components-constants';
 import { PuzzleResultModalComponent, PuzzleResultModalParameters } from '@app/components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
 import { WordPlacement } from '@common/models/word-finding';
 import { PuzzleResult } from '@common/models/puzzle';
+import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { DefaultDialogParameters } from '@app/components/default-dialog/default-dialog.component.types';
+import {
+    ABANDON_PUZZLE_DIALOG_BUTTON_ABANDON,
+    ABANDON_PUZZLE_DIALOG_BUTTON_CONTINUE,
+    ABANDON_PUZZLE_DIALOG_CONTENT,
+    ABANDON_PUZZLE_DIALOG_TITLE,
+} from '@app/constants/puzzle-constants';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
@@ -147,12 +155,31 @@ export class PuzzlePageComponent implements OnInit {
     }
 
     abandon(): void {
-        this.tilePlacementService.resetTiles();
-        this.stopPuzzle();
+        this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
+            data: {
+                title: ABANDON_PUZZLE_DIALOG_TITLE,
+                content: ABANDON_PUZZLE_DIALOG_CONTENT,
+                buttons: [
+                    {
+                        content: ABANDON_PUZZLE_DIALOG_BUTTON_CONTINUE,
+                        closeDialog: true,
+                    },
+                    {
+                        content: ABANDON_PUZZLE_DIALOG_BUTTON_ABANDON,
+                        style: 'background-color: tomato; color: white;',
+                        closeDialog: true,
+                        action: () => {
+                            this.tilePlacementService.resetTiles();
+                            this.stopPuzzle();
 
-        this.puzzleService.abandon().subscribe((result) => {
-            this.history.push(result);
-            this.showEndOfPuzzleModal(result, undefined);
+                            this.puzzleService.abandon().subscribe((result) => {
+                                this.history.push(result);
+                                this.showEndOfPuzzleModal(result, undefined);
+                            });
+                        },
+                    },
+                ],
+            },
         });
     }
 
