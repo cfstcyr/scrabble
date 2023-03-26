@@ -31,7 +31,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PuzzleHistoryComponent } from '../components/puzzle/puzzle-history/puzzle-history.component';
 import { CommonModule } from '@angular/common';
 
 const modules = [
@@ -77,8 +76,8 @@ const modules = [
  */
 @NgModule({
     imports: [...modules, CommonModule],
-    exports: [...modules, PuzzleHistoryComponent],
+    exports: [...modules],
     providers: [],
-    declarations: [PuzzleHistoryComponent],
+    declarations: [],
 })
 export class AppMaterialModule {}

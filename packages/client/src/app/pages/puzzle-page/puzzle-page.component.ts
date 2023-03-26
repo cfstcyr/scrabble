@@ -228,6 +228,7 @@ export class PuzzlePageComponent implements OnInit {
         for (const placement of tilePlacements) {
             const squareView = this.grid.value[placement.position.row][placement.position.column];
             squareView.square.tile = placement.tile;
+            squareView.applied = false;
             this.notAppliedSquares.push(squareView);
         }
         this.grid.next(this.grid.value);

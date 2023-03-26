@@ -65,6 +65,7 @@ import { PuzzleResultModalComponent } from './components/puzzle/puzzle-result-mo
 import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.component';
 import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
 import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
+import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/puzzle-history.component';
 
 registerLocaleData(localeFr);
 
@@ -128,6 +129,7 @@ registerLocaleData(localeFr);
         StartPuzzleModalComponent,
         PuzzleScoreComponent,
         PuzzleResultModalComponent,
+        PuzzleHistoryComponent,
         SwiperComponent,
         SwiperSlideComponent,
         SwiperNavigationComponent,

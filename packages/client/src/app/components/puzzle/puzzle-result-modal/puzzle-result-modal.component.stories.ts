@@ -111,6 +111,7 @@ export default {
                 TileComponent,
             ],
             imports: [MatProgressSpinnerModule, MatButtonModule, MatDialogModule, BrowserAnimationsModule, MatGridListModule, MatCardModule],
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             providers: [{ provide: MatDialogRef, useValue: { close: () => {} } }],
         }),
     ],
