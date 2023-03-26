@@ -12,7 +12,7 @@ import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.co
 import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
 import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
 import { WordPlacement } from '@common/models/word-finding';
-import { BoardComponent } from '@app/components/board2/board.component';
+import { BoardComponent } from '@app/components/board/board.component';
 import { SquareComponent } from '@app/components/square/square.component';
 import { TileComponent } from '@app/components/tile/tile.component';
 import { MatGridListModule } from '@angular/material/grid-list';

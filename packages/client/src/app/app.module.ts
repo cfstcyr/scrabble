@@ -57,7 +57,7 @@ import { SearchPageComponent } from './pages/search-page/search-page.component';
 import { UserSearchResultPageComponent } from './pages/user-search-result-page/user-search-result-page.component';
 import { ChooseBlankTileDialogComponent } from './components/choose-blank-tile-dialog/choose-blank-tile-dialog.component';
 import { PuzzlePageComponent } from './pages/puzzle-page/puzzle-page.component';
-import { BoardComponent } from './components/board2/board.component';
+import { BoardComponent } from './components/board/board.component';
 import { GameBoardWrapperComponent } from './wrappers/game-board-wrapper/game-board-wrapper.component';
 import { StartPuzzleModalComponent } from './components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
 import { PuzzleScoreComponent } from './components/puzzle/puzzle-score/puzzle-score.component';

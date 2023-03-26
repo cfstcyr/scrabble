@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject } from '@angular/core';
+import { AfterViewInit, Component, HostListener, Inject } from '@angular/core';
 import { PuzzleResult, PuzzleResultStatus } from '@common/models/puzzle';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { IconName } from '@app/components/icon/icon.component.type';
@@ -8,6 +8,7 @@ import { Observable, of } from 'rxjs';
 import { SquareView } from '@app/classes/square';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { PuzzleLevel } from '@app/components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
+import { ENTER } from '@app/constants/components-constants';
 
 export interface PuzzleResultModalParameters {
     result: PuzzleResult;
@@ -40,6 +41,19 @@ export class PuzzleResultModalComponent implements AfterViewInit {
             placement,
             grid: this.getGridForPlacement(placement),
         }));
+    }
+
+    @HostListener('document:keypress', ['$event'])
+    handleKeyboardEvent(event: KeyboardEvent): void {
+        switch (event.key) {
+            case ENTER:
+                this.onContinue();
+                break;
+        }
+    }
+    @HostListener('document:keydown.escape', ['$event'])
+    handleKeyboardEventEsc(): void {
+        this.onCancel();
     }
 
     get message(): string {
