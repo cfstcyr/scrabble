@@ -166,7 +166,7 @@ class ChatService {
   void _handleQuitChannel(Channel channel) {
     print(channel.idChannel);
     List<Channel> myChannels = [..._myChannels$.value];
-    myChannels.remove(channel);
+    myChannels.removeWhere((Channel c) => c.idChannel == channel.idChannel);
     _myChannels$.add(myChannels);
     if (_openedChannelId$.value == channel.idChannel) _openedChannelId$.add(null);
   }
