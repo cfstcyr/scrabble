@@ -8,15 +8,10 @@ import '../../classes/text-field-handler.dart';
 import '../../classes/user.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/join-game.constants.dart';
+import '../../constants/join-group.constants.dart';
 import '../../view-methods/group.methods.dart';
 import '../alert-dialog.dart';
 import '../app_button.dart';
-
-const FULL_GROUP = "Partie pleine";
-const FULL_GROUP_MESSAGE = " Veuillez choisir une autre partie";
-const INVALID_GAME_PASSWORD = "Mot de passe invalide, Veuillez Réesayer";
-const JOIN_GAME_LABEL_FR = "Joindre";
-const GO_BACK_GROUPS = "Retourner aux parties";
 
 void showGamePasswordPopup(
     BuildContext context, Group group, Function joinGroupFunction) {
@@ -36,6 +31,17 @@ void showGamePasswordPopup(
   late StreamSubscription fullGroupSubscription;
   fullGroupSubscription = fullGroupStream.listen((isFull) {
     triggerDialogBox(FULL_GROUP, FULL_GROUP_MESSAGE, [
+      DialogBoxButtonParameters(
+          content: 'OK',
+          theme: AppButtonTheme.primary,
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+          })
+    ]);
+  });
+  late StreamSubscription gameStartedSubscription;
+  gameStartedSubscription = rejectedStream.listen((PublicUser host) {
+    triggerDialogBox(GAME_STARTED, GAME_STARTED_MESSAGE, [
       DialogBoxButtonParameters(
           content: 'OK',
           theme: AppButtonTheme.primary,
