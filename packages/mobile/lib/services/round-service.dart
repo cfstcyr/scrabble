@@ -2,6 +2,7 @@ import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/action-service.dart';
+import 'package:mobile/services/user.service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../constants/game-events.dart';
@@ -65,8 +66,9 @@ class RoundService {
   }
 
   void _onTimerExpires() {
-    if (currentRound.socketIdOfActivePlayer ==
-        getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
+    if (!getIt.get<UserService>().isObserver &&
+        currentRound.socketIdOfActivePlayer ==
+            getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
       _actionService.sendAction(ActionType.pass);
       _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
     }

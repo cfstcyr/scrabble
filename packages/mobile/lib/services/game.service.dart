@@ -129,7 +129,9 @@ class GameService {
       }
     }
 
-    game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
+    if (!getIt.get<UserService>().isObserver) {
+      game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
+    }
 
     _game.add(game);
   }
@@ -187,10 +189,6 @@ class GameService {
         closesDialog: true,
       ),
     ]);
-  }
-
-  bool isLocalPlayerActivePlayer() {
-    return isActivePlayer(game.players.getLocalPlayer().socketId);
   }
 
   bool isActivePlayer(String socketId) {
