@@ -152,8 +152,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     private handleOpponentPlaceTiles(tilePlacements: TilePlacement[]): void {
-        console.log('handleOpponentPlaceTiles');
-        console.log(tilePlacements);
         this.opponentPlacedTiles.forEach((squareView: SquareView) => (squareView.square.tile = null));
         this.opponentPlacedTiles = [];
 
