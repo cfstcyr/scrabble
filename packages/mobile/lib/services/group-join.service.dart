@@ -34,7 +34,6 @@ class GroupJoinService {
       String groupId, String password, bool isObserver) async {
     Response res = await groupJoinController.handleJoinGroup(
         groupId, password, isObserver);
-    print(res.statusCode);
     if (res.statusCode == HttpStatus.unauthorized) {
       fullGroup$.add(false);
     }
