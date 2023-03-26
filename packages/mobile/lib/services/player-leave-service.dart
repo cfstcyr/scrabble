@@ -20,7 +20,7 @@ class PlayerLeaveService {
   }
 
   Future<void> abandonGame(BuildContext context) async {
-    triggerDialogBox(DIALOG_SURRENDER_TITLE, DIALOG_SURRENDER_CONTENT, [
+    triggerDialogBox(DIALOG_SURRENDER_TITLE, [Text(DIALOG_SURRENDER_CONTENT, style: TextStyle(fontSize: 16))], [
       DialogBoxButtonParameters(
           content: DIALOG_ABANDON_BUTTON_CONFIRM,
           theme: AppButtonTheme.tomato,
@@ -38,7 +38,7 @@ class PlayerLeaveService {
   }
 
   Future<void> leaveGame(BuildContext context) async {
-    triggerDialogBox(DIALOG_LEAVE_BUTTON_CONTINUE, DIALOG_SURRENDER_CONTENT, [
+    triggerDialogBox(DIALOG_LEAVE_BUTTON_CONTINUE, [Text(DIALOG_SURRENDER_CONTENT, style: TextStyle(fontSize: 16))], [
       DialogBoxButtonParameters(
           content: DIALOG_LEAVE_BUTTON_CONTINUE,
           theme: AppButtonTheme.tomato,

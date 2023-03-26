@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
+import 'package:mobile/controllers/puzzle-controller.dart';
 import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/client.dart';
@@ -13,6 +14,7 @@ import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
+import 'package:mobile/services/puzzle-service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/storage.handler.dart';
@@ -54,8 +56,7 @@ class CustomLocator {
     getIt.registerLazySingleton<RoundService>(() => RoundService());
 
     getIt.registerLazySingleton<ThemeColorService>(() => ThemeColorService());
-    getIt.registerLazySingleton<GroupJoinController>(
-        () => GroupJoinController());
+
     getIt.registerLazySingleton<GroupJoinService>(() => GroupJoinService());
 
     getIt.registerLazySingleton<GamePlayController>(() => GamePlayController());
@@ -64,6 +65,7 @@ class CustomLocator {
 
     getIt.registerLazySingleton<GameCreationController>(
         () => GameCreationController());
+    getIt.registerLazySingleton<PuzzleController>(() => PuzzleController());
   }
 
   void _registerActiveSingleton() {
@@ -73,8 +75,10 @@ class CustomLocator {
         AccountAuthenticationController());
     getIt.registerSingleton<InitializerService>(InitializerService());
     getIt.registerSingleton<GameCreationService>(GameCreationService());
+    getIt.registerSingleton<PuzzleService>(PuzzleService());
     getIt.registerSingleton<GameService>(GameService());
     getIt.registerSingleton<EndGameService>(EndGameService());
     getIt.registerSingleton<GameMessagesService>(GameMessagesService());
+    getIt.registerSingleton<GroupJoinController>(GroupJoinController());
   }
 }
