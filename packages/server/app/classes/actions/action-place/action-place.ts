@@ -1,6 +1,6 @@
 import ActionPlay from '@app/classes/actions/abstract-actions/action-play';
 import { ActionUtils } from '@app/classes/actions/action-utils/action-utils';
-import { ActionData, ActionPlacePayload, ActionType } from '@app/classes/communication/action-data';
+import { ActionData, ActionPlacePayload } from '@app/classes/communication/action-data';
 import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { PlayerData } from '@app/classes/communication/player-data';
@@ -20,13 +20,14 @@ import { StringConversion } from '@app/utils/string-conversion/string-conversion
 import { StatusCodes } from 'http-status-codes';
 import { Container } from 'typedi';
 import { IMPOSSIBLE_ACTION } from './action-errors';
+import { ActionType } from '@common/models/action';
 
 export default class ActionPlace extends ActionPlay {
     wordPlacement: WordPlacement;
+    scoredPoints: number;
     private scoreCalculator: ScoreCalculatorService;
     private wordValidator: WordsVerificationService;
     private objectivesCompletedMessages: string[];
-    private scoredPoints: number;
 
     constructor(player: Player, game: Game, wordPlacement: WordPlacement) {
         super(player, game);

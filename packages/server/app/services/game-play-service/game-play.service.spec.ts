@@ -8,7 +8,7 @@
 import { Action, ActionExchange, ActionHelp, ActionPass, ActionPlace, ActionReserve } from '@app/classes/actions';
 import ActionHint from '@app/classes/actions/action-hint/action-hint';
 import { Orientation } from '@app/classes/board';
-import { ActionData, ActionExchangePayload, ActionPlacePayload, ActionType } from '@app/classes/communication/action-data';
+import { ActionData, ActionExchangePayload, ActionPlacePayload } from '@app/classes/communication/action-data';
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
@@ -39,6 +39,8 @@ import { Container } from 'typedi';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
+import { AnalysisService } from '@app/services/analysis-service/analysis.service';
+import { ActionType } from '@common/models/action';
 
 const expect = chai.expect;
 
@@ -103,7 +105,7 @@ describe('GamePlayService', () => {
         gameStub.gameIsOver = false;
         gameStub.dictionarySummary = { id: 'id' } as unknown as DictionarySummary;
 
-        round = { player: gameStub.player1, startTime: new Date(), limitTime: new Date() };
+        round = { player: gameStub.player1, startTime: new Date(), limitTime: new Date(), tiles: [] };
         roundManagerStub.nextRound.returns(round);
         roundManagerStub.getCurrentRound.returns(round);
 
@@ -469,6 +471,7 @@ describe('GamePlayService', () => {
         let virtualPlayerFactoryStub: SinonStubbedInstance<VirtualPlayerFactory>;
         let userStatisticsService: SinonStubbedInstance<UserStatisticsService>;
         let authenticationService: SinonStubbedInstance<AuthentificationService>;
+        let analysisServiceStub: SinonStubbedInstance<AnalysisService>;
 
         beforeEach(() => {
             activeGameServiceStub = createStubInstance(ActiveGameService);
@@ -479,6 +482,7 @@ describe('GamePlayService', () => {
             virtualPlayerFactoryStub = testingUnit.getStubbedInstance(VirtualPlayerFactory);
             userStatisticsService = createStubInstance(UserStatisticsService);
             authenticationService = createStubInstance(AuthentificationService);
+            analysisServiceStub = createStubInstance(AnalysisService);
             gamePlayService = new GamePlayService(
                 activeGameServiceStub as unknown as ActiveGameService,
                 highScoresServiceStub as unknown as HighScoresService,
@@ -488,6 +492,7 @@ describe('GamePlayService', () => {
                 virtualPlayerFactoryStub as unknown as VirtualPlayerFactory,
                 userStatisticsService as unknown as UserStatisticsService,
                 authenticationService as unknown as AuthentificationService,
+                analysisServiceStub as unknown as AnalysisService,
             );
             gameStub.player1 = new Player(DEFAULT_PLAYER_ID, USER1);
             gameStub.player2 = new Player(playerWhoLeftId, USER2);
@@ -561,6 +566,10 @@ describe('GamePlayService', () => {
             Object.defineProperty(gamePlayService, 'gameHistoriesService', { value: gameHistoriesServiceStub });
 
             chai.spy.on(gamePlayService['dictionaryService'], 'stopUsingDictionary', () => {
+                return;
+            });
+
+            chai.spy.on(gamePlayService['analysisService'], 'addAnalysis', () => {
                 return;
             });
         });

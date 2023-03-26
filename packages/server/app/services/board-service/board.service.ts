@@ -32,6 +32,7 @@ export default class BoardService {
         }
         return new Board(grid);
     }
+
     private readScoreMultiplierConfig(position: Position): Multiplier {
         if (!this.isBoardConfigDefined(position)) throw new HttpException(BOARD_CONFIG_UNDEFINED_AT(position), StatusCodes.BAD_REQUEST);
         return this.parseSquareConfig(BOARD_CONFIG[position.row][position.column]);
