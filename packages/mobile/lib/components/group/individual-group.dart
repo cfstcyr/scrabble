@@ -65,15 +65,7 @@ class IndividualGroup extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         SizedBox(width: 16),
-                        Icon(Icons.visibility, size: 40),
-                        SizedBox(width: 8),
-                        Text(
-                          group.numberOfObservers.toString(),
-                          style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w500,
-                              height: 1),
-                        ),
+                        Observers(numberOfObservers: group.numberOfObservers),
                         SizedBox(width: 8),
                         GameVisibilityView(
                           gameVisibility: group.gameVisibility,
@@ -87,18 +79,15 @@ class IndividualGroup extends StatelessWidget {
                               width: 60,
                               height: 60,
                               child: ElevatedButton(
-                                  onPressed: group.canJoin!
-                                      ? () {
-                                          joinGroupFunction(
-                                              group.groupId, true);
-                                          Navigator.pushNamed(
-                                                  context, JOIN_WAITING_ROUTE,
-                                                  arguments: group)
-                                              .then((_) => getIt
-                                                  .get<GroupJoinService>()
-                                                  .getGroups());
-                                        }
-                                      : null,
+                                  onPressed: () {
+                                    joinGroupFunction(group.groupId, true);
+                                    Navigator.pushNamed(
+                                            context, JOIN_WAITING_ROUTE,
+                                            arguments: group)
+                                        .then((_) => getIt
+                                            .get<GroupJoinService>()
+                                            .getGroups());
+                                  },
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: theme.primaryColor,
                                       foregroundColor: Colors.white,
@@ -152,6 +141,28 @@ class IndividualGroup extends StatelessWidget {
           ),
         ]),
       ),
+    );
+  }
+}
+
+class Observers extends StatelessWidget {
+  const Observers({super.key, required this.numberOfObservers});
+
+  final int numberOfObservers;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(Icons.visibility, size: 40),
+        SizedBox(width: 8),
+        Text(
+          numberOfObservers.toString(),
+          style:
+              TextStyle(fontSize: 24, fontWeight: FontWeight.w500, height: 1),
+        )
+      ],
     );
   }
 }

@@ -44,83 +44,15 @@ class PlayersContainer extends StatelessWidget {
         List<c.Player> orderedPlayerList =
             generateOrderedPlayerList(game.players);
 
-        return handlePlayersContainer(getIt.get<UserService>().isObserver,
-            orderedPlayerList, activePlayerId);
+        return getIt.get<UserService>().isObserver
+            ? handleObserversContainer(orderedPlayerList, activePlayerId)
+            : handlePlayersContainer(orderedPlayerList, activePlayerId);
       },
     );
   }
 
-  Widget handlePlayersContainer(bool isObserver,
+  Widget handlePlayersContainer(
       List<c.Player> orderedPlayerList, String activePlayerId) {
-    if (isObserver) {
-      return StreamBuilder(
-          stream: _gameObserverService.observedPlayerIndexStream,
-          builder: (context, snapshot) {
-            int observedIndex = snapshot.data ?? 0;
-            return IntrinsicHeight(
-                child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          _gameObserverService.setPlayerTileRack(1);
-                        },
-                        child: Player(
-                          player: orderedPlayerList[0],
-                          isPlaying: _roundService.isActivePlayer(
-                              activePlayerId, orderedPlayerList[0].socketId),
-                          isObserved: observedIndex == 1,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          _gameObserverService.setPlayerTileRack(2);
-                        },
-                        child: Player(
-                          player: orderedPlayerList[1],
-                          isPlaying: _roundService.isActivePlayer(
-                              activePlayerId, orderedPlayerList[1].socketId),
-                          isObserved: observedIndex == 2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          _gameObserverService.setPlayerTileRack(3);
-                        },
-                        child: Player(
-                          player: orderedPlayerList[2],
-                          isPlaying: _roundService.isActivePlayer(
-                              activePlayerId, orderedPlayerList[2].socketId),
-                          isObserved: observedIndex == 3,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          _gameObserverService.setPlayerTileRack(4);
-                        },
-                        child: Player(
-                          player: orderedPlayerList[3],
-                          isPlaying: _roundService.isActivePlayer(
-                              activePlayerId, orderedPlayerList[3].socketId),
-                          isObserved: observedIndex == 4,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ));
-          });
-    }
     return IntrinsicHeight(
         child: Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -152,5 +84,55 @@ class PlayersContainer extends StatelessWidget {
         )
       ],
     ));
+  }
+
+  Widget handleObserver(
+      c.Player observer, int index, String activePlayerId, int observedIndex) {
+    return GestureDetector(
+      onTap: () {
+        _gameObserverService.setPlayerTileRack(index);
+      },
+      child: Player(
+        player: observer,
+        isPlaying:
+            _roundService.isActivePlayer(activePlayerId, observer.socketId),
+        isObserved: observedIndex == (index),
+      ),
+    );
+  }
+
+  Widget handleObserversContainer(
+      List<c.Player> orderedPlayerList, String activePlayerId) {
+    return StreamBuilder(
+        stream: _gameObserverService.observedPlayerIndexStream,
+        builder: (context, snapshot) {
+          int observedIndex = snapshot.data ?? 0;
+          return IntrinsicHeight(
+              child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    handleObserver(
+                        orderedPlayerList[0], 1, activePlayerId, observedIndex),
+                    handleObserver(
+                        orderedPlayerList[1], 2, activePlayerId, observedIndex),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    handleObserver(
+                        orderedPlayerList[2], 3, activePlayerId, observedIndex),
+                    handleObserver(
+                        orderedPlayerList[3], 4, activePlayerId, observedIndex),
+                  ],
+                ),
+              )
+            ],
+          ));
+        });
   }
 }

@@ -49,8 +49,12 @@ class GameActions extends StatelessWidget {
                         bool isOver = snapshot.hasData && snapshot.data!;
                         return AppButton(
                           onPressed: () =>
-                              isOver ? leave(context) : surrender(context),
-                          icon: isOver ? Icons.output_outlined : Icons.flag,
+                              isOver || getIt.get<UserService>().isObserver
+                                  ? leave(context)
+                                  : surrender(context),
+                          icon: isOver || getIt.get<UserService>().isObserver
+                              ? Icons.output_outlined
+                              : Icons.flag,
                           size: AppButtonSize.large,
                           theme: AppButtonTheme.danger,
                         );

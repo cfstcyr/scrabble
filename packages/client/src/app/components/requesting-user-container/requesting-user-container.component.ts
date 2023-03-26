@@ -24,6 +24,6 @@ export class RequestingUserContainerComponent {
     }
 
     reject(): void {
-        this.acceptedUser.emit({ publicUser: this.requestingUser, isObserver: this.isObserver });
+        this.rejectedUser.emit({ publicUser: this.requestingUser, isObserver: this.isObserver });
     }
 }
