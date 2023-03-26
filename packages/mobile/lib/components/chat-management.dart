@@ -27,7 +27,8 @@ class _ChatManagementState extends State<ChatManagement> {
   final channelSearchController = TextEditingController();
 
   Stream<List<Channel>> _myChannels = Stream.empty();
-  Stream<List<Channel>> _joinableChannels = Stream.empty();
+  BehaviorSubject<String?> _currentSearchQuery$ = BehaviorSubject.seeded(null);
+  Stream<String?> _currentSearchQuery = Stream.empty();
 
   StreamSubscription? openChannelSubscription;
 
@@ -45,12 +46,9 @@ class _ChatManagementState extends State<ChatManagement> {
       }
     });
 
-    _joinableChannels = _chatService.joinableChannels.switchMap(
-        (List<Channel> channels) => Stream.value(channels
-            .where((Channel channel) =>
-                channelSearchController.text == '' ||
-                channel.name != channelSearchController.text)
-            .toList()));
+    _currentSearchQuery = _currentSearchQuery$
+        .distinct()
+        .debounceTime(Duration(milliseconds: 300));
   }
 
   //hack allows for drawer open after closing but it duplicates drawer
@@ -71,18 +69,28 @@ class _ChatManagementState extends State<ChatManagement> {
 
   StreamBuilder joinableChannelsWidget() {
     return StreamBuilder(
-      stream: _joinableChannels,
+      stream: CombineLatestStream<dynamic, dynamic>(
+          [_chatService.joinableChannels, _currentSearchQuery],
+          (values) => values),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox.shrink();
 
-        List<Channel> joinableChannels = snapshot.data!;
+        List<Channel> joinableChannels = snapshot.data![0];
+        String? searchQuery = snapshot.data![1];
+
+        List<Channel> filteredChannels = searchQuery == null
+            ? joinableChannels
+            : joinableChannels
+                .where((Channel c) => c.name.startsWith(searchQuery))
+                .toList();
+
         return ListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemCount: joinableChannels.length,
+            itemCount: filteredChannels.length,
             itemBuilder: (_, int index) {
-              Channel joinableChannel = joinableChannels[index];
+              Channel joinableChannel = filteredChannels[index];
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -207,7 +215,7 @@ class _ChatManagementState extends State<ChatManagement> {
               controller: channelSearchController,
               decoration: InputDecoration(
                   hintText: ALL_CHANNELS, border: InputBorder.none),
-              // onChanged: onSearchTextChanged,
+              onChanged: _handleSearchQueryChanged,
             ),
             trailing: IconButton(
               icon: Icon(Icons.clear),
@@ -220,6 +228,10 @@ class _ChatManagementState extends State<ChatManagement> {
         ],
       ),
     );
+  }
+
+  void _handleSearchQueryChanged(String value) {
+    _currentSearchQuery$.add(value.isNotEmpty ? value : null);
   }
 
   void _handleCreateChannel(String channelName) {
