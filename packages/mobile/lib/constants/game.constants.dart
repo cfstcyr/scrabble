@@ -1,6 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 const int GRID_SIZE = 15;
+const int MIDDLE_ROW = 7, MIDDLE_COL = 7;
 
 
 const String LETTER = "Lettre";

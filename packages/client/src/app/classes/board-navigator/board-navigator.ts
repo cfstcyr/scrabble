@@ -26,8 +26,13 @@ export class BoardNavigator {
         return this.squareGrid[this.position.row][this.position.column];
     }
 
-    setPosition(position: Position): void {
+    setPosition(position: Position): this {
         this.position = { ...position };
+        return this;
+    }
+
+    getPosition(): Position {
+        return this.position;
     }
 
     nextEmpty(direction: Direction, allowNotApplied: boolean): SquareView | undefined {
@@ -41,6 +46,34 @@ export class BoardNavigator {
 
     clone(): BoardNavigator {
         return new BoardNavigator(this.squareGrid, this.position, this.orientation);
+    }
+
+    forward(): this {
+        this.move(Direction.Forward);
+        return this;
+    }
+
+    backward(): this {
+        this.move(Direction.Backward);
+        return this;
+    }
+
+    isEmpty(allowNotApplied: boolean = false): boolean {
+        return this.currentSquareView.square.tile === null || (allowNotApplied && !this.currentSquareView.applied);
+    }
+
+    isWithinBounds(): boolean {
+        return (
+            this.position.row >= 0 &&
+            this.position.column >= 0 &&
+            this.position.row < this.squareGrid.length &&
+            this.position.column < this.squareGrid[this.position.row].length
+        );
+    }
+
+    hasNonEmptyNeighbor(perpendicular = true): boolean {
+        const navigator = perpendicular ? this.clone().switchOrientation() : this.clone();
+        return !navigator.clone().forward().isEmpty() || !navigator.clone().backward().isEmpty();
     }
 
     private move(direction: Direction, distance: number = 1): BoardNavigator {
@@ -58,18 +91,5 @@ export class BoardNavigator {
         } while (this.isWithinBounds() && !predicate());
 
         return this.isWithinBounds() ? this.currentSquareView : undefined;
-    }
-
-    private isWithinBounds(): boolean {
-        return (
-            this.position.row >= 0 &&
-            this.position.column >= 0 &&
-            this.position.row < this.squareGrid.length &&
-            this.position.column < this.squareGrid[this.position.row].length
-        );
-    }
-
-    private isEmpty(allowNotApplied: boolean = false): boolean {
-        return this.currentSquareView.square.tile === null || (allowNotApplied && !this.currentSquareView.applied);
     }
 }

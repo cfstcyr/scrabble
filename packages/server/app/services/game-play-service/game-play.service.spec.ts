@@ -81,8 +81,9 @@ describe('GamePlayService', () => {
     let game: Game;
     let testingUnit: ServicesTestingUnit;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(VirtualPlayerFactory);
+        await testingUnit.withMockDatabaseService();
     });
 
     beforeEach(() => {
