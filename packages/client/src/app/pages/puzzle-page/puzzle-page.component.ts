@@ -60,7 +60,11 @@ export class PuzzlePageComponent implements OnInit {
         private readonly boardService: BoardService,
         private readonly dialog: MatDialog,
         private readonly router: Router,
-    ) {}
+    ) {
+        this.tilePlacementService.isPlacementValid$.subscribe((isValid) => {
+            console.log('is valid', isValid);
+        });
+    }
 
     get stopPlaying(): Observable<boolean> {
         return this.isPlaying.pipe(mergeMap((isPlaying) => iif(() => !isPlaying, of(true))));

@@ -219,17 +219,15 @@ export class TilePlacementService {
 
         navigator.setPosition(tilePlacements[0].position);
 
-        if (!navigator.clone().backward().isEmpty()) return true;
+        const previous = navigator.clone().backward();
 
-        if (
-            !navigator
-                .clone()
-                .setPosition(tilePlacements[tilePlacements.length - 1].position)
-                .forward()
-                .isEmpty()
-        )
-            return true;
+        if (previous.isWithinBounds() && !previous.isEmpty()) return true;
 
-        return false;
+        const next = navigator
+            .clone()
+            .setPosition(tilePlacements[tilePlacements.length - 1].position)
+            .forward();
+
+        return next.isWithinBounds() && !next.isEmpty();
     }
 }
