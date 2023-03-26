@@ -78,7 +78,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
 
     isLocalPlayerPlaying(): boolean {
-        return this.roundManager.currentRound?.player.id === this.playerContainer?.getLocalPlayerId()
+        return this.roundManager.currentRound?.player.id === this.playerContainer?.getLocalPlayerId();
     }
 
     getGameId(): string {

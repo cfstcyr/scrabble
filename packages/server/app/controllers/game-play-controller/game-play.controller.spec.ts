@@ -134,7 +134,7 @@ describe('GamePlayController', () => {
 
         describe('POST /games/:gameId/players/:playerId/action', () => {
             it('should return NO_CONTENT', async () => {
-                chai.spy.on(gamePlayController, 'handlePlayAction', () => { });
+                chai.spy.on(gamePlayController, 'handlePlayAction', () => {});
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/action`)
@@ -154,7 +154,7 @@ describe('GamePlayController', () => {
             });
 
             it('should call handlePlayAction', async () => {
-                const handlePlayActionSpy = chai.spy.on(gamePlayController, 'handlePlayAction', () => { });
+                const handlePlayActionSpy = chai.spy.on(gamePlayController, 'handlePlayAction', () => {});
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/action`)
@@ -171,7 +171,7 @@ describe('GamePlayController', () => {
                     tile: {} as Tile,
                     position: new Position(0, 0),
                 };
-                chai.spy.on(gamePlayController, 'handlePlaceTile', () => { });
+                chai.spy.on(gamePlayController, 'handlePlaceTile', () => {});
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/squares/place`)
@@ -182,7 +182,7 @@ describe('GamePlayController', () => {
 
         describe('POST /games/:gameId/players/virtual-player-action', () => {
             it('should return NO_CONTENT', async () => {
-                chai.spy.on(gamePlayController, 'handlePlayAction', () => { });
+                chai.spy.on(gamePlayController, 'handlePlayAction', () => {});
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/virtual-player-action`)
@@ -202,7 +202,7 @@ describe('GamePlayController', () => {
             });
 
             it('should call handlePlayAction', async () => {
-                const handlePlayActionSpy = chai.spy.on(gamePlayController, 'handlePlayAction', () => { });
+                const handlePlayActionSpy = chai.spy.on(gamePlayController, 'handlePlayAction', () => {});
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/virtual-player-action`)
@@ -215,7 +215,7 @@ describe('GamePlayController', () => {
 
         describe('POST /games/:gameId/players/:playerId/message', () => {
             it('should return NO_CONTENT', async () => {
-                chai.spy.on(gamePlayController, 'handleNewMessage', () => { });
+                chai.spy.on(gamePlayController, 'handleNewMessage', () => {});
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/message`)
@@ -235,7 +235,7 @@ describe('GamePlayController', () => {
             });
 
             it('should call handleNewMessage', async () => {
-                const handleNewMessageSpy = chai.spy.on(gamePlayController, 'handleNewMessage', () => { });
+                const handleNewMessageSpy = chai.spy.on(gamePlayController, 'handleNewMessage', () => {});
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/message`)
@@ -248,7 +248,7 @@ describe('GamePlayController', () => {
 
         describe('POST /games/:gameId/players/:playerId/error', () => {
             it('should return NO_CONTENT', async () => {
-                chai.spy.on(gamePlayController, 'handleNewError', () => { });
+                chai.spy.on(gamePlayController, 'handleNewError', () => {});
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/error`)
@@ -268,7 +268,7 @@ describe('GamePlayController', () => {
             });
 
             it('should call handleNewError', async () => {
-                const handleNewErrorSpy = chai.spy.on(gamePlayController, 'handleNewError', () => { });
+                const handleNewErrorSpy = chai.spy.on(gamePlayController, 'handleNewError', () => {});
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/players/error`)
@@ -300,7 +300,7 @@ describe('GamePlayController', () => {
                 gameStub['id'] = DEFAULT_GAME_ID;
                 gameStub.getPlayer.returns(gameStub.player2);
 
-                emitToSocketSpy = chai.spy.on(gamePlayController['socketService'], 'emitToSocket', () => { });
+                emitToSocketSpy = chai.spy.on(gamePlayController['socketService'], 'emitToSocket', () => {});
                 gameUpdateSpy = chai.spy.on(gamePlayController, 'gameUpdate', () => ({}));
                 getGameStub = testingUnit.getStubbedInstance(ActiveGameService).getGame.returns(gameStub as unknown as Game);
             });
@@ -489,7 +489,7 @@ describe('GamePlayController', () => {
             let emitToRoomSpy: any;
 
             beforeEach(() => {
-                emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToRoom', () => { });
+                emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToRoom', () => {});
             });
 
             it('should throw if message.senderId is undefined', () => {
@@ -519,7 +519,7 @@ describe('GamePlayController', () => {
             let emitToRoomSpy: any;
 
             beforeEach(() => {
-                emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToRoomNoSender', () => { });
+                emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToRoomNoSender', () => {});
             });
 
             it('should call handleTilePlacement if tilePlacement is valid', () => {
@@ -537,7 +537,7 @@ describe('GamePlayController', () => {
             let emitToRoomSpy: any;
 
             beforeEach(() => {
-                emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToSocket', () => { });
+                emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToSocket', () => {});
             });
 
             it('should throw if message.senderId is undefined', () => {

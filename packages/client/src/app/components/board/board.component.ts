@@ -50,7 +50,9 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.tilePlacementService.tilePlacements$
             .pipe(takeUntil(this.componentDestroyed$))
             .subscribe((tilePlacements) => this.handlePlaceTiles(tilePlacements));
-        this.boardService.subscribeToTemporaryTilePlacements(this.componentDestroyed$, (tilePlacements) => this.handleOpponentPlaceTiles(tilePlacements));
+        this.boardService.subscribeToTemporaryTilePlacements(this.componentDestroyed$, (tilePlacements) =>
+            this.handleOpponentPlaceTiles(tilePlacements),
+        );
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());
     }
