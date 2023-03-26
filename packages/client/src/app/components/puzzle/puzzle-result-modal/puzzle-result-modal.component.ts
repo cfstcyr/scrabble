@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, HostListener, Inject } from '@angular/core';
+import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { PuzzleResult, PuzzleResultStatus } from '@common/models/puzzle';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { IconName } from '@app/components/icon/icon.component.type';
@@ -24,7 +24,7 @@ export interface PuzzleResultModalParameters {
     templateUrl: './puzzle-result-modal.component.html',
     styleUrls: ['./puzzle-result-modal.component.scss'],
 })
-export class PuzzleResultModalComponent implements AfterViewInit {
+export class PuzzleResultModalComponent implements OnInit {
     userPlacementGrid: Observable<SquareView[][]> | undefined = undefined;
     resultPlacements: { placement: ScoredWordPlacement; grid: Observable<SquareView[][]> }[] = [];
 
@@ -33,7 +33,7 @@ export class PuzzleResultModalComponent implements AfterViewInit {
         public dialogRef: MatDialogRef<PuzzleResultModalComponent>,
     ) {}
 
-    ngAfterViewInit() {
+    ngOnInit() {
         if (this.parameters.placement) {
             this.userPlacementGrid = this.getGridForPlacement(this.parameters.placement);
         }
