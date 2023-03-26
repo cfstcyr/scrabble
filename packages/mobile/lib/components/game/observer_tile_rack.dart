@@ -6,7 +6,7 @@ import '../../locator.dart';
 import '../../services/game-observer-service.dart';
 import '../tile/tile.dart';
 
-class TileRackObserver extends StatelessWidget {
+class ObserverTiles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(

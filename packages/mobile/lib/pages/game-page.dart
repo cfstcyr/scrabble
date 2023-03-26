@@ -86,7 +86,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
                               gameStream: gameService.gameStream,
                             )),
                             getIt<UserService>().isObserver
-                                ? TileRackObserver()
+                                ? ObserverTiles()
                                 : MultiplayerTileRack(
                                     gameStream: gameService.gameStream),
                           ],
