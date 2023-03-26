@@ -10,7 +10,7 @@ export enum PuzzleResultStatus {
     Won = 'Gagné',
     Valid = 'Valide',
     Invalid = 'Invalide',
-    Abandoned = 'Abandonnée',
+    Abandoned = 'Abandonné',
     Timeout = 'Temps écoulé',
 }
 
