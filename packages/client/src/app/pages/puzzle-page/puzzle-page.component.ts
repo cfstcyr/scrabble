@@ -80,6 +80,9 @@ export class PuzzlePageComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.tilePlacementService.resetTiles();
+        this.dragAndDropService.reset();
+
         this.tilePlacementService.tilePlacements$.subscribe((tilePlacements) => this.handleUsedTiles(tilePlacements));
 
         this.askStart();
