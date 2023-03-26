@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/group.dart';
@@ -10,9 +12,13 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 
+import '../../constants/join-group.constants.dart';
 import '../../utils/duration-format.dart';
+import '../../view-methods/group.methods.dart';
+import '../alert-dialog.dart';
+import '../app_button.dart';
 
-class IndividualGroup extends StatelessWidget {
+class IndividualGroup extends StatefulWidget {
   IndividualGroup(
       {super.key,
       required this.theme,
@@ -22,14 +28,43 @@ class IndividualGroup extends StatelessWidget {
   final ThemeData theme;
   final Group group;
   final Function joinGroupFunction;
+
+  @override
+  State<IndividualGroup> createState() => _IndividualGroupState();
+}
+
+class _IndividualGroupState extends State<IndividualGroup> {
   final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
+
+  late StreamSubscription canceledSubscription;
+  late StreamSubscription fullGroupSubscription;
+  late StreamSubscription gameStartedSubscription;
+  void initState() {
+    super.initState();
+
+    fullGroupSubscription = fullGroupStream.listen((isFull) {
+      handleFullGroup(isFull);
+    });
+    canceledSubscription = canceledStream.listen((PublicUser host) {
+      handleCanceledGame(host);
+    });
+    gameStartedSubscription = rejectedStream.listen((PublicUser host) {
+      handleGameStarted(host);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    canceledSubscription.cancel();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-          color: theme.colorScheme.background,
+          color: widget.theme.colorScheme.background,
           borderRadius: BorderRadius.all(Radius.circular(8))),
       child: IntrinsicHeight(
         child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -37,9 +72,9 @@ class IndividualGroup extends StatelessWidget {
               children: List.generate(
             MAX_PLAYER_COUNT,
             (index) {
-              PublicUser userToShow = group.users.length > index
-                  ? group.users[index]
-                  : generateVirtualPlayerUser(group.virtualPlayerLevel);
+              PublicUser userToShow = widget.group.users.length > index
+                  ? widget.group.users[index]
+                  : generateVirtualPlayerUser(widget.group.virtualPlayerLevel);
               return PlayerInGroup(user: userToShow);
             },
           )),
@@ -48,9 +83,9 @@ class IndividualGroup extends StatelessWidget {
             thickness: 2,
             indent: 8,
             endIndent: 8,
-            color: theme.colorScheme.tertiary,
+            color: widget.theme.colorScheme.tertiary,
           ),
-          GroupParameters(theme: theme, group: group),
+          GroupParameters(theme: widget.theme, group: widget.group),
           SizedBox(
             width: 32,
           ),
@@ -69,7 +104,7 @@ class IndividualGroup extends StatelessWidget {
                         Observers(),
                         SizedBox(width: 16),
                         GameVisibilityView(
-                          gameVisibility: group.gameVisibility,
+                          gameVisibility: widget.group.gameVisibility,
                         ),
                         SizedBox(width: 24),
                         Column(
@@ -82,7 +117,8 @@ class IndividualGroup extends StatelessWidget {
                               child: ElevatedButton(
                                   onPressed: () {},
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor: theme.primaryColor,
+                                      backgroundColor:
+                                          widget.theme.primaryColor,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(
@@ -101,21 +137,26 @@ class IndividualGroup extends StatelessWidget {
                               width: 90,
                               height: 60,
                               child: ElevatedButton(
-                                  onPressed: group.canJoin!
+                                  onPressed: widget.group.canJoin!
                                       ? () async {
-                                          if (group.gameVisibility ==
+                                          if (widget.group.gameVisibility ==
                                               GameVisibility.protected) {
                                             await groupJoinService
                                                 .handleGroupUpdatesRequest(
-                                                    group.groupId!, false);
-                                            showGamePasswordPopup(context,
-                                                group, joinGroupFunction);
+                                                    widget.group.groupId!,
+                                                    false);
+                                            showGamePasswordPopup(
+                                                context,
+                                                widget.group,
+                                                widget.joinGroupFunction);
                                           } else {
-                                            joinGroupFunction(
-                                                group.groupId, "", false);
+                                            widget.joinGroupFunction(
+                                                widget.group.groupId,
+                                                "",
+                                                false);
                                             Navigator.pushNamed(
                                                     context, JOIN_WAITING_ROUTE,
-                                                    arguments: group)
+                                                    arguments: widget.group)
                                                 .then((_) => getIt
                                                     .get<GroupJoinService>()
                                                     .getGroups());
@@ -123,7 +164,8 @@ class IndividualGroup extends StatelessWidget {
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor: theme.primaryColor,
+                                      backgroundColor:
+                                          widget.theme.primaryColor,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(
@@ -144,6 +186,39 @@ class IndividualGroup extends StatelessWidget {
         ]),
       ),
     );
+  }
+
+  void handleCanceledGame(PublicUser host) {
+    triggerDialogBox("Partie annulée", "${host.username} a annulé la partie", [
+      DialogBoxButtonParameters(
+          content: 'OK',
+          theme: AppButtonTheme.primary,
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+          })
+    ]);
+  }
+
+  void handleFullGroup(bool isFull) {
+    triggerDialogBox(FULL_GROUP, FULL_GROUP_MESSAGE, [
+      DialogBoxButtonParameters(
+          content: 'OK',
+          theme: AppButtonTheme.primary,
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+          })
+    ]);
+  }
+
+  void handleGameStarted(PublicUser host) {
+    triggerDialogBox(GAME_STARTED, GAME_STARTED_MESSAGE, [
+      DialogBoxButtonParameters(
+          content: 'OK',
+          theme: AppButtonTheme.primary,
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+          })
+    ]);
   }
 }
 
