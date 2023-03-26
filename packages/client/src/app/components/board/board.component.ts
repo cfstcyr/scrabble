@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SquareView } from '@app/classes/square';
 import { LETTER_VALUES } from '@app/constants/game-constants';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-board',
@@ -11,7 +11,7 @@ import { Observable, of } from 'rxjs';
 export class BoardComponent {
     @Input() isObserver: boolean = false;
     @Input() grid: Observable<SquareView[][]>;
-    @Input() canInteract: Observable<boolean> = of(true);
+    @Input() canInteract: boolean = true;
     @Output() clearNewlyPlacedTiles: EventEmitter<void> = new EventEmitter();
     letters = LETTER_VALUES;
 

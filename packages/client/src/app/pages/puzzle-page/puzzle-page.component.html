@@ -2,7 +2,7 @@
     <mat-card>
         <app-board
             [grid]="grid"
-            [canInteract]="isPlaying"
+            [canInteract]="(isPlaying | async) ?? false"
         ></app-board>
     </mat-card>
 

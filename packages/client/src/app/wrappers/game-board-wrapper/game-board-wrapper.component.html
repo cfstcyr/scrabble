@@ -2,6 +2,7 @@
     <app-board
         [isObserver]="isObserver"
         [grid]="grid"
-        (clearNewlyPlacedTiles)="clearNewlyPlacedTiles"
+        [canInteract]='!gameService.isGameOver'
+        (clearNewlyPlacedTiles)="clearNewlyPlacedTiles()"
     ></app-board>
 </mat-card>

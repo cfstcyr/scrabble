@@ -7,6 +7,7 @@ import { TilePlacementService } from '@app/services/tile-placement-service/tile-
 
 const SQUARE_CLASS = 'square';
 const HAS_TILE_CLASS = 'has-tile';
+const SQUARE_CAN_DROP = 'can-drop';
 const HOVERED_SQUARE_CLASS = 'square--hovered';
 const TILE_RACK_CLASS = 'tile-rack';
 const HOVERED_TILE_RACK_CLASS = 'tile-rack--hovered';
@@ -101,7 +102,7 @@ export class DragAndDropService {
 
         if (!squareElement) return;
 
-        if (squareElement.classList.contains(HAS_TILE_CLASS)) return;
+        if (squareElement.classList.contains(HAS_TILE_CLASS) || !squareElement.classList.contains(SQUARE_CAN_DROP)) return;
 
         const columnAttr = squareElement.attributes.getNamedItem('column');
         const rowAttr = squareElement.attributes.getNamedItem('row');

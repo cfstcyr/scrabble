@@ -3,7 +3,7 @@ import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { Square, SquareView } from '@app/classes/square';
 import { TilePlacement } from '@app/classes/tile';
 import { SQUARE_SIZE, UNDEFINED_SQUARE } from '@app/constants/game-constants';
-import { BoardService } from '@app/services';
+import { BoardService, GameService } from '@app/services';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Orientation } from '@common/models/position';
 import { BehaviorSubject, of } from 'rxjs';
@@ -20,7 +20,7 @@ export class GameBoardWrapperComponent implements OnInit {
     private notAppliedSquares: SquareView[] = [];
     private newlyPlacedTiles: SquareView[] = [];
 
-    constructor(readonly boardService: BoardService, readonly tilePlacementService: TilePlacementService) {}
+    constructor(readonly boardService: BoardService, readonly tilePlacementService: TilePlacementService, readonly gameService: GameService) {}
 
     ngOnInit(): void {
         this.boardService.subscribeToInitializeBoard(of(), this.initializeBoard.bind(this));

@@ -20,7 +20,7 @@
             </div>
 
             <div class='board-container'>
-                <app-board [grid]='userPlacementGrid' [canInteract]='canInteract' class='board'></app-board>
+                <app-board [grid]='userPlacementGrid' [canInteract]='false' class='board'></app-board>
             </div>
         </app-swiper-slide>
 
@@ -31,7 +31,7 @@
             </div>
 
             <div class='board-container'>
-                <app-board [grid]='placement.grid' [canInteract]='canInteract' class='board'></app-board>
+                <app-board [grid]='placement.grid' [canInteract]='false' class='board'></app-board>
             </div>
         </app-swiper-slide>
     </app-swiper>

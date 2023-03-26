@@ -101,10 +101,6 @@ export class PuzzleResultModalComponent implements OnInit {
         return this.parameters.result.userPoints;
     }
 
-    get canInteract(): Observable<boolean> {
-        return of(false);
-    }
-
     onContinue() {
         this.dialogRef.close();
         this.parameters.onContinue();
