@@ -540,15 +540,6 @@ describe('GameService', () => {
         });
     });
 
-    describe('getPlayingPlayerId', () => {
-        it('should return id or round manager active player', () => {
-            const expected = 'expected-id';
-            roundManagerSpy.getActivePlayer.and.returnValue({ id: expected } as Player);
-            const result = service['getPlayingPlayerId']();
-            expect(result).toEqual(expected);
-        });
-    });
-
     describe('isLocalPlayerPlaying', () => {
         it('should return true if is local player', () => {
             const expected = 'expected-id';

@@ -167,11 +167,15 @@ describe('GamePlayController', () => {
 
         describe('POST /games/:gameId/squares/place', () => {
             it('should return NO_CONTENT', async () => {
+                const tilePlacement: TilePlacement = {
+                    tile: {} as Tile,
+                    position: new Position(0, 0),
+                };
                 chai.spy.on(gamePlayController, 'handlePlaceTile', () => { });
 
                 return await supertest(expressApp)
                     .post(`/api/games/${DEFAULT_GAME_ID}/squares/place`)
-                    .send({ idUser: DEFAULT_USER_ID })
+                    .send({ idUser: DEFAULT_USER_ID, tilePlacement: [tilePlacement] })
                     .expect(StatusCodes.NO_CONTENT);
             });
         });
