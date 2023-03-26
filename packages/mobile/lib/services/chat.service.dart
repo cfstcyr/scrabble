@@ -32,8 +32,7 @@ class ChatService {
     return _instance;
   }
 
-  static final ChatService _instance =
-      ChatService._privateConstructor();
+  static final ChatService _instance = ChatService._privateConstructor();
 
   BehaviorSubject<List<Channel>> _joinableChannels$ =
       BehaviorSubject<List<Channel>>.seeded([]);
@@ -51,8 +50,7 @@ class ChatService {
 
   Stream<bool> get hasUnreadMessages =>
       myChannels.switchMap((List<Channel> channels) => Stream.value(
-          channels.any((Channel channel) => channel.messages
-              .any((ChannelMessage message) => message.isNotRead))));
+          channels.any((Channel channel) => channel.hasUnreadMessages)));
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -76,7 +74,6 @@ class ChatService {
   }
 
   void openChannel(Channel channel) {
-    print('open: ${channel.name}');
     _openedChannelId$.add(channel.idChannel);
   }
 
@@ -133,7 +130,7 @@ class ChatService {
                   ChannelMessage.fromJson(channelMessage))
               .toList();
 
-      for(ChannelMessage channelMessage in channelMessageHistory) {
+      for (ChannelMessage channelMessage in channelMessageHistory) {
         _handleNewMessage(channelMessage);
       }
     });
@@ -152,7 +149,8 @@ class ChatService {
 
       channelOfMessage.messages = messages;
 
-      _myChannels$.value.removeWhere((Channel c) => c.idChannel == channelOfMessage.idChannel);
+      _myChannels$.value.removeWhere(
+          (Channel c) => c.idChannel == channelOfMessage.idChannel);
 
       List<Channel> myChannels = [..._myChannels$.value];
 
@@ -169,11 +167,11 @@ class ChatService {
   }
 
   void _handleQuitChannel(Channel channel) {
-    print(channel.idChannel);
     List<Channel> myChannels = [..._myChannels$.value];
     myChannels.removeWhere((Channel c) => c.idChannel == channel.idChannel);
     _myChannels$.add(myChannels);
-    if (_openedChannelId$.value == channel.idChannel) _openedChannelId$.add(null);
+    if (_openedChannelId$.value == channel.idChannel)
+      _openedChannelId$.add(null);
   }
 
   void _resetSubjects() {

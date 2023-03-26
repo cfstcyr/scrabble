@@ -7,6 +7,8 @@ class Channel {
   final bool isPrivate;
   List<ChannelMessage> messages = List.empty();
 
+  bool get hasUnreadMessages => messages.any((ChannelMessage m) => m.isRead == false);
+
   Channel({
     required this.idChannel,
     required this.name,

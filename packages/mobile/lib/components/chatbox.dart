@@ -50,6 +50,11 @@ class _ChatboxState extends State<Chatbox> {
         showUserAvatars: true,
         showUserNames: true,
         user: _userView,
+        onMessageVisibilityChanged: (message, isVisible) {
+          if (isVisible) {
+
+          }
+        },
       ),
     );
   }

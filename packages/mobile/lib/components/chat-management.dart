@@ -61,7 +61,6 @@ class _ChatManagementState extends State<ChatManagement> {
 
   @override
   void dispose() {
-    print('dispose chat management');
     super.dispose();
     _chatService.closeChannel();
     openChannelSubscription?.cancel();
@@ -102,7 +101,7 @@ class _ChatManagementState extends State<ChatManagement> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        setName(joinableChannel.name),
+                        setName(joinableChannel),
                         IconButton(
                           onPressed: () {
                             setState(() {
@@ -146,7 +145,6 @@ class _ChatManagementState extends State<ChatManagement> {
                     onTap: () {
                       _chatService.readChannelMessages(currentChannel);
                       _chatService.openChannel(currentChannel);
-                      // _chatService.scaffoldKey.currentState!.openEndDrawer();
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -154,7 +152,7 @@ class _ChatManagementState extends State<ChatManagement> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          setName(currentChannel.name),
+                          setName(currentChannel),
                           IconButton(
                             onPressed: currentChannel.canQuit
                                 ? () {
@@ -221,6 +219,7 @@ class _ChatManagementState extends State<ChatManagement> {
               icon: Icon(Icons.clear),
               onPressed: () {
                 channelSearchController.clear();
+                _handleSearchQueryChanged(channelSearchController.text);
               },
             ),
           ),
