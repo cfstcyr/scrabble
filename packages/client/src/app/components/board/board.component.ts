@@ -121,7 +121,7 @@ export class BoardComponent implements OnInit, OnDestroy {
                     squareView.square = sameSquare;
                     squareView.applied = true;
                     squareView.newlyPlaced = true;
-
+                    squareView.halfOppacity = false;
                     this.newlyPlacedTiles.push(squareView);
                 });
         });
@@ -144,11 +144,14 @@ export class BoardComponent implements OnInit, OnDestroy {
                 squareView.square.tile = tilePlacement.tile;
                 squareView.applied = false;
                 this.notAppliedSquares.push(squareView);
+                squareView.halfOppacity = false;
             }
         }
     }
 
     private handleOpponentPlaceTiles(tilePlacements: TilePlacement[]): void {
+        console.log('handleOpponentPlaceTiles');
+        console.log(tilePlacements);
         this.opponentPlacedTiles.forEach((squareView: SquareView) => (squareView.square.tile = null));
         this.opponentPlacedTiles = [];
 
@@ -158,6 +161,7 @@ export class BoardComponent implements OnInit, OnDestroy {
             if (!squareView.square.tile) {
                 squareView.square.tile = tilePlacement.tile;
                 this.opponentPlacedTiles.push(squareView);
+                squareView.halfOppacity = true;
             }
         }
     }
