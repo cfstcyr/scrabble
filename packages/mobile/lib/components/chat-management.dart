@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mobile/components/chatbox-wrapper.dart';
 import 'package:mobile/components/chatbox.dart';
 import 'package:mobile/services/chat.service.dart';
 import 'package:rxdart/rxdart.dart';
@@ -24,37 +25,19 @@ class _ChatManagementState extends State<ChatManagement> {
 
   final channelCreationNameController = TextEditingController();
   final channelSearchController = TextEditingController();
-  Timer? _debounce;
 
   Stream<List<Channel>> _myChannels = Stream.empty();
-  Stream<Channel?> _openedChannel = Stream.empty();
   Stream<List<Channel>> _joinableChannels = Stream.empty();
 
-  late StreamSubscription openChannelSubscription;
+  StreamSubscription? openChannelSubscription;
 
   @override
   void initState() {
     super.initState();
 
     _myChannels = _chatService.myChannels;
-    _openedChannel = CombineLatestStream<dynamic, Channel?>(
-        [_chatService.myChannels, _chatService.openedChannelId], (values) {
-      List<Channel> myChannels = values[0];
-      int? openedChannelId = values[1];
-
-      if (openedChannelId == null) return null;
-
-      try {
-        return myChannels.firstWhere(
-            (Channel channel) => channel.idChannel == openedChannelId);
-      } on StateError catch (_) {
-        return null;
-      }
-    });
 
     openChannelSubscription = _chatService.openedChannelId.listen((int? id) {
-      print('do on channel: $id');
-
       if (id != null) {
         _chatService.scaffoldKey.currentState!.openEndDrawer();
       } else {
@@ -80,28 +63,11 @@ class _ChatManagementState extends State<ChatManagement> {
 
   @override
   void dispose() {
+    print('dispose chat management');
     super.dispose();
-    // _debounce?.cancel();
     _chatService.closeChannel();
-    openChannelSubscription.cancel();
+    openChannelSubscription?.cancel();
   }
-
-  // onSearchTextChanged(String text) async {
-  //   if (_debounce?.isActive ?? false) _debounce!.cancel();
-  //   _debounce = Timer(const Duration(milliseconds: 200), () {
-  //     var unjoinedChannels = [..._chatManagerService.handleUnjoinedChannels()];
-  //     if (text.isEmpty) {
-  //       _channelSearchResult$.add([...unjoinedChannels]);
-  //       _channelSearchResult$.value.forEach((channel) {});
-  //       return;
-  //     }
-  //     var channelSearchResult = [];
-  //     unjoinedChannels.forEach((channel) {
-  //       if (channel.name.contains(text)) channelSearchResult.add(channel);
-  //     });
-  //     _channelSearchResult$.add([...channelSearchResult]);
-  //   });
-  // }
 
   StreamBuilder joinableChannelsWidget() {
     return StreamBuilder(
@@ -172,6 +138,7 @@ class _ChatManagementState extends State<ChatManagement> {
                     onTap: () {
                       _chatService.readChannelMessages(currentChannel);
                       _chatService.openChannel(currentChannel);
+                      // _chatService.scaffoldKey.currentState!.openEndDrawer();
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -200,23 +167,12 @@ class _ChatManagementState extends State<ChatManagement> {
     );
   }
 
-  StreamBuilder channelToOpenWidget() {
-    return StreamBuilder(
-      stream: _openedChannel,
-      builder: (context, snapshot) {
-        return snapshot.hasData
-            ? ChatPage(channel: snapshot.data!)
-            : SizedBox.shrink();
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _chatService.scaffoldKey,
       endDrawerEnableOpenDragGesture: false,
-      endDrawer: Drawer(child: channelToOpenWidget()),
+      endDrawer: Drawer(child: ChatboxWrapper()),
       body: ListView(
         shrinkWrap: true,
         padding: EdgeInsets.zero,

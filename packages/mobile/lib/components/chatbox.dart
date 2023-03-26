@@ -11,16 +11,16 @@ import '../classes/chat-message.dart';
 import '../locator.dart';
 import '../services/user.service.dart';
 
-class ChatPage extends StatefulWidget {
+class Chatbox extends StatefulWidget {
   final Channel channel;
 
-  const ChatPage({super.key, required this.channel});
+  const Chatbox({super.key, required this.channel});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<Chatbox> createState() => _ChatboxState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatboxState extends State<Chatbox> {
   final ChatService _chatService = getIt.get<ChatService>();
   final UserService userService = getIt.get<UserService>();
 
