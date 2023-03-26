@@ -33,16 +33,6 @@ export class PuzzleResultModalComponent implements OnInit {
         public dialogRef: MatDialogRef<PuzzleResultModalComponent>,
     ) {}
 
-    ngOnInit() {
-        if (this.parameters.placement) {
-            this.userPlacementGrid = this.getGridForPlacement(this.parameters.placement);
-        }
-        this.resultPlacements = this.parameters.result.allPlacements.map((placement) => ({
-            placement,
-            grid: this.getGridForPlacement(placement),
-        }));
-    }
-
     @HostListener('document:keypress', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent): void {
         switch (event.key) {
@@ -54,6 +44,16 @@ export class PuzzleResultModalComponent implements OnInit {
     @HostListener('document:keydown.escape', ['$event'])
     handleKeyboardEventEsc(): void {
         this.onCancel();
+    }
+
+    ngOnInit() {
+        if (this.parameters.placement) {
+            this.userPlacementGrid = this.getGridForPlacement(this.parameters.placement);
+        }
+        this.resultPlacements = this.parameters.result.allPlacements.map((placement) => ({
+            placement,
+            grid: this.getGridForPlacement(placement),
+        }));
     }
 
     get message(): string {
