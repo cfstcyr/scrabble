@@ -177,6 +177,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
 
     private handleGameUpdate(gameUpdateData: GameUpdateData): void {
+        this.tilePlacementService.resetTiles();
         if (gameUpdateData.isGameOver) {
             this.handleGameOver(gameUpdateData.winners ?? []);
         }
