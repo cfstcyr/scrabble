@@ -38,12 +38,7 @@ class GroupJoinService {
     if (res.statusCode == HttpStatus.unauthorized) {
       fullGroup$.add(false);
     }
-    ;
-    //   .then((_) => true)
-    //   .catchError((error) {
-    // _handleJoinError(error);
     return res.statusCode == HttpStatus.noContent;
-    // });
   }
 
   Future<bool> handleGroupUpdatesRequest(
