@@ -34,6 +34,8 @@ export class PuzzleService {
             try {
                 const generator = new PuzzleGenerator();
                 puzzle = generator.generate();
+
+                if (puzzle.tiles.length !== this.tilesToPlaceForBingo) throw new Error();
             } catch {
                 // nothing to do.
             }
