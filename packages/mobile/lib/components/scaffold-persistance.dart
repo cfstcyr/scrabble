@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:mobile/classes/user.dart';
+import 'package:mobile/components/notification-pastille.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/constants/user-constants.dart';
+import 'package:mobile/services/chat.service.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/pages/profile-page.dart';
 import 'package:mobile/routes/routes.dart';
-import 'package:mobile/services/user.service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'chat-management.dart';
 
 class MyScaffold extends StatelessWidget {
+  final ChatService _chatService = getIt.get<ChatService>();
   final Widget body;
   final String title;
 
   MyScaffold({required this.body, required this.title});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,10 +29,24 @@ class MyScaffold extends StatelessWidget {
         centerTitle: true,
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.chat),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
+            builder: (context) => StreamBuilder<dynamic>(
+                stream: _chatService.hasUnreadMessages,
+                builder: (context, snapshot) {
+                  Color? pastilleColor;
+
+                  if (snapshot.hasData) {
+                    bool hasUnreadMessages = snapshot.data!;
+
+                    pastilleColor = _getNotificationPastilleColor(hasUnreadMessages);
+                  }
+
+                  return NotificationPastille(
+                      pastilleColor: pastilleColor,
+                      child: IconButton(
+                        icon: Icon(Icons.chat),
+                        onPressed: () => Scaffold.of(context).openEndDrawer(),
+                      ));
+                }),
           ),
           Builder(
               builder: (context) => InkWell(
@@ -57,5 +71,10 @@ class MyScaffold extends StatelessWidget {
   bool _canNavigateToProfile(BuildContext context) {
     return ModalRoute.of(context)?.settings.name != PROFILE_ROUTE &&
         ModalRoute.of(context)?.settings.name != PROFILE_EDIT_ROUTE;
+  }
+
+  Color? _getNotificationPastilleColor(bool hasUnreadMessages) {
+    if (hasUnreadMessages) return Colors.red;
+    return null;
   }
 }

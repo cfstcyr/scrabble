@@ -3,42 +3,36 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:mobile/classes/channel.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/services/chat.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:uuid/uuid.dart';
 
 import '../classes/channel-message.dart';
 import '../classes/chat-message.dart';
 import '../locator.dart';
-import '../services/channel.service.dart';
 import '../services/user.service.dart';
 
-class ChatPage extends StatefulWidget {
+class Chatbox extends StatefulWidget {
   final Channel channel;
-  const ChatPage({super.key, required this.channel});
+
+  const Chatbox({super.key, required this.channel});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<Chatbox> createState() => _ChatboxState();
 }
 
-class _ChatPageState extends State<ChatPage> {
-  List<types.Message> _messages = [];
+class _ChatboxState extends State<Chatbox> {
+  final ChatService _chatService = getIt.get<ChatService>();
+  final UserService userService = getIt.get<UserService>();
 
-  Color themeColor = getIt.get<ThemeColorService>().themeColor;
-  ChannelService channelService = getIt.get<ChannelService>();
-  UserService userService = getIt.get<UserService>();
   late PublicUser userData;
   late types.User _userView;
-  BehaviorSubject<List<ChannelMessage>> get messages$ =>
-      channelService.messages$;
+  final Color themeColor = getIt.get<ThemeColorService>().themeColor;
 
   @override
   void initState() {
     super.initState();
     userData = userService.getUser();
     _userView = types.User(id: userData.email, firstName: userData.username);
-    messages$.add(widget.channel.messages);
-    _messages = filterToChatBoxFormat(widget.channel.messages);
   }
 
   @override
@@ -46,29 +40,18 @@ class _ChatPageState extends State<ChatPage> {
     var theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(widget.channel.name)),
-      body: handleChannelChange(theme),
+      body: Chat(
+        theme: DefaultChatTheme(
+          inputBackgroundColor: theme.colorScheme.primary,
+          primaryColor: theme.colorScheme.primary,
+        ),
+        messages: _filterToChatBoxFormat(widget.channel.messages),
+        onSendPressed: _handleSendPressed,
+        showUserAvatars: true,
+        showUserNames: true,
+        user: _userView,
+      ),
     );
-  }
-
-  StreamBuilder handleChannelChange(ThemeData theme) {
-    return StreamBuilder(
-        stream: channelService.messages$.stream,
-        builder: (context, snapshot) {
-          // update the channel history
-          widget.channel.messages = messages$.value;
-
-          return Chat(
-            theme: DefaultChatTheme(
-              inputBackgroundColor: theme.colorScheme.primary,
-              primaryColor: theme.colorScheme.primary,
-            ),
-            messages: filterToChatBoxFormat(messages$.value),
-            onSendPressed: _handleSendPressed,
-            showUserAvatars: true,
-            showUserNames: true,
-            user: _userView,
-          );
-        });
   }
 
   void _handleSendPressed(types.PartialText message) {
@@ -79,25 +62,22 @@ class _ChatPageState extends State<ChatPage> {
         date: DateTime.now().toString(),
       );
 
-      final channelMessage = ChannelMessage(
-          message: messageData, idChannel: widget.channel.idChannel);
-
-      channelService.sendMessage(widget.channel, messageData);
+      _chatService.sendMessage(widget.channel, messageData);
     }
   }
 
-  types.TextMessage toChatBoxFormat(ChatMessage message) {
+  List<types.TextMessage> _filterToChatBoxFormat(List<ChannelMessage> messages) {
+    return List<types.TextMessage>.from(
+        messages.map((message) => _toChatBoxFormat(message.message)));
+  }
+
+  types.TextMessage _toChatBoxFormat(ChatMessage message) {
     return types.TextMessage(
       author: types.User(
           id: message.sender.email, firstName: message.sender.username),
       createdAt: DateTime.parse(message.date).millisecondsSinceEpoch,
-      id: const Uuid().v4(),
+      id: message.uid,
       text: message.content,
     );
-  }
-
-  List<types.TextMessage> filterToChatBoxFormat(List<ChannelMessage> messages) {
-    return List<types.TextMessage>.from(
-        messages.map((message) => toChatBoxFormat(message.message)));
   }
 }
