@@ -7,7 +7,6 @@ import { TileReserveData } from '@app/classes/tile/tile.types';
 import { BoardService } from '@app/services';
 import { MultiplierEffect } from '@common/models/game';
 import { Subject } from 'rxjs';
-import { MultiplierEffect } from '@common/models/game';
 
 const LOCAL_PLAYER_ID = '1';
 
