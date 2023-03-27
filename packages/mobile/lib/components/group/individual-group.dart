@@ -57,6 +57,8 @@ class _IndividualGroupState extends State<IndividualGroup> {
   void dispose() {
     super.dispose();
     canceledSubscription.cancel();
+    gameStartedSubscription.cancel();
+    fullGroupSubscription.cancel();
   }
 
   @override
@@ -194,6 +196,7 @@ class _IndividualGroupState extends State<IndividualGroup> {
           content: 'OK',
           theme: AppButtonTheme.primary,
           onPressed: () {
+            Navigator.pop(context);
             Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
           })
     ]);
@@ -205,6 +208,7 @@ class _IndividualGroupState extends State<IndividualGroup> {
           content: 'OK',
           theme: AppButtonTheme.primary,
           onPressed: () {
+            Navigator.pop(context);
             Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
           })
     ]);
@@ -216,6 +220,7 @@ class _IndividualGroupState extends State<IndividualGroup> {
           content: 'OK',
           theme: AppButtonTheme.primary,
           onPressed: () {
+            Navigator.pop(context);
             Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
           })
     ]);
