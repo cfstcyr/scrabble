@@ -38,9 +38,16 @@ class GroupJoinController {
     await http.get(Uri.parse(endpoint));
   }
 
-  Future<Response> handleJoinGroup(String groupId, bool isObserver) async {
+  Future<Response> handleJoinGroup(
+      String groupId, String password, bool isObserver) async {
     joinedGroupedId = groupId;
+    JoinRequest joinRequestData = JoinRequest(password: password);
     return http.post(Uri.parse("$endpoint/$groupId/players/join"),
+        body: jsonEncode(joinRequestData));
+  }
+
+  Future<Response> handleGroupUpdatesRequest(String groupId, bool isObserver) {
+    return http.patch(Uri.parse("$endpoint/$groupId"),
         body: jsonEncode({"isObserver": isObserver}));
   }
 

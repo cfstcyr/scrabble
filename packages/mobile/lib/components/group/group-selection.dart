@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/services/group-join.service.dart';
-import 'package:mobile/services/user.service.dart';
 
 import '../../classes/group.dart';
 import '../../constants/locale/group-selection-constants.dart';
@@ -14,10 +13,10 @@ class GroupSelection extends StatelessWidget {
   });
 
   final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
-
-  void joinGroup(String groupId, bool isObserver) {
-    groupJoinService.handleJoinGroup(groupId, isObserver);
-    getIt<UserService>().isObserver = isObserver;
+  Future<bool> joinGroup(
+      String groupId, String password, bool isObserver) async {
+    return await groupJoinService.handleJoinGroup(
+        groupId, password, isObserver);
   }
 
   @override

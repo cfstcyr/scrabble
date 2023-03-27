@@ -251,7 +251,9 @@ class CreateGameFormState extends State<CreateGameForm> {
       maxRoundTime: _timePerTurn.inSeconds,
       virtualPlayerLevel: VirtualPlayerLevel.fromString(_playerLevel!),
       gameVisibility: GameVisibility.fromString(_visibility!),
-      password: _visibility == GameVisibility.protected.name ? _password : '',
+      password: _visibility == GameVisibility.protected.name
+          ? passwordHandler.controller.text
+          : '',
     );
     bool isCreated = await gameCreationService.handleCreateGame(groupData);
     if (context.mounted) {

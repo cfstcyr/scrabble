@@ -83,8 +83,8 @@ class _CreateLobbyPageState extends State<CreateLobbyPage> {
                         ]),
                         Parameters(
                             maxRoundTime: widget.group.maxRoundTime,
-                            virtualPlayerLevel:
-                                widget.group.virtualPlayerLevel),
+                            virtualPlayerLevel: widget.group.virtualPlayerLevel,
+                            visibility: widget.group.gameVisibility),
                         StreamBuilder(
                             stream: currentGroupUpdateStream,
                             builder: (context, snapshot) {

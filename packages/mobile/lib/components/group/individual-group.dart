@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/components/game-password-pop-up/game-password-pop-up.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/constants/user-constants.dart';
@@ -11,8 +12,8 @@ import 'package:mobile/services/group-join.service.dart';
 
 import '../../utils/duration-format.dart';
 
-class IndividualGroup extends StatelessWidget {
-  const IndividualGroup(
+class IndividualGroup extends StatefulWidget {
+  IndividualGroup(
       {super.key,
       required this.theme,
       required this.group,
@@ -23,11 +24,27 @@ class IndividualGroup extends StatelessWidget {
   final Function joinGroupFunction;
 
   @override
+  State<IndividualGroup> createState() => _IndividualGroupState();
+}
+
+class _IndividualGroupState extends State<IndividualGroup> {
+  final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
+
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-          color: theme.colorScheme.background,
+          color: widget.theme.colorScheme.background,
           borderRadius: BorderRadius.all(Radius.circular(8))),
       child: IntrinsicHeight(
         child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -35,9 +52,9 @@ class IndividualGroup extends StatelessWidget {
               children: List.generate(
             MAX_PLAYER_COUNT,
             (index) {
-              PublicUser userToShow = group.users.length > index
-                  ? group.users[index]
-                  : generateVirtualPlayerUser(group.virtualPlayerLevel);
+              PublicUser userToShow = widget.group.users.length > index
+                  ? widget.group.users[index]
+                  : generateVirtualPlayerUser(widget.group.virtualPlayerLevel);
               return PlayerInGroup(user: userToShow);
             },
           )),
@@ -46,9 +63,9 @@ class IndividualGroup extends StatelessWidget {
             thickness: 2,
             indent: 8,
             endIndent: 8,
-            color: theme.colorScheme.tertiary,
+            color: widget.theme.colorScheme.tertiary,
           ),
-          GroupParameters(theme: theme, group: group),
+          GroupParameters(theme: widget.theme, group: widget.group),
           SizedBox(
             width: 32,
           ),
@@ -65,10 +82,11 @@ class IndividualGroup extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         SizedBox(width: 16),
-                        Observers(numberOfObservers: group.numberOfObservers),
+                        Observers(
+                            numberOfObservers: widget.group.numberOfObservers),
                         SizedBox(width: 8),
                         GameVisibilityView(
-                          gameVisibility: group.gameVisibility,
+                          gameVisibility: widget.group.gameVisibility,
                         ),
                         SizedBox(width: 24),
                         Column(
@@ -79,17 +97,31 @@ class IndividualGroup extends StatelessWidget {
                               width: 60,
                               height: 60,
                               child: ElevatedButton(
-                                  onPressed: () {
-                                    joinGroupFunction(group.groupId, true);
-                                    Navigator.pushNamed(
-                                            context, JOIN_WAITING_ROUTE,
-                                            arguments: group)
-                                        .then((_) => getIt
-                                            .get<GroupJoinService>()
-                                            .getGroups());
+                                  onPressed: () async {
+                                    if (widget.group.gameVisibility ==
+                                        GameVisibility.protected) {
+                                      await groupJoinService
+                                          .handleGroupUpdatesRequest(
+                                              widget.group.groupId!, true);
+                                      // ignore: use_build_context_synchronously
+                                      showGamePasswordPopup(
+                                          context,
+                                          widget.group,
+                                          widget.joinGroupFunction);
+                                    } else {
+                                      widget.joinGroupFunction(
+                                          widget.group.groupId, true);
+                                      Navigator.pushNamed(
+                                              context, JOIN_WAITING_ROUTE,
+                                              arguments: widget.group)
+                                          .then((_) => getIt
+                                              .get<GroupJoinService>()
+                                              .getGroups());
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor: theme.primaryColor,
+                                      backgroundColor:
+                                          widget.theme.primaryColor,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(
@@ -108,20 +140,36 @@ class IndividualGroup extends StatelessWidget {
                               width: 90,
                               height: 60,
                               child: ElevatedButton(
-                                  onPressed: group.canJoin!
-                                      ? () {
-                                          joinGroupFunction(
-                                              group.groupId, false);
-                                          Navigator.pushNamed(
-                                                  context, JOIN_WAITING_ROUTE,
-                                                  arguments: group)
-                                              .then((_) => getIt
-                                                  .get<GroupJoinService>()
-                                                  .getGroups());
+                                  onPressed: widget.group.canJoin!
+                                      ? () async {
+                                          if (widget.group.gameVisibility ==
+                                              GameVisibility.protected) {
+                                            await groupJoinService
+                                                .handleGroupUpdatesRequest(
+                                                    widget.group.groupId!,
+                                                    false);
+                                            // ignore: use_build_context_synchronously
+                                            showGamePasswordPopup(
+                                                context,
+                                                widget.group,
+                                                widget.joinGroupFunction);
+                                          } else {
+                                            widget.joinGroupFunction(
+                                                widget.group.groupId,
+                                                "",
+                                                false);
+                                            Navigator.pushNamed(
+                                                    context, JOIN_WAITING_ROUTE,
+                                                    arguments: widget.group)
+                                                .then((_) => getIt
+                                                    .get<GroupJoinService>()
+                                                    .getGroups());
+                                          }
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor: theme.primaryColor,
+                                      backgroundColor:
+                                          widget.theme.primaryColor,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(

@@ -49,6 +49,7 @@ class Group {
         'maxRoundTime': maxRoundTime,
         'virtualPlayerLevel': virtualPlayerLevel.levelName,
         'gameVisibility': gameVisibility.name,
+        'password': password
       };
 }
 
@@ -57,4 +58,15 @@ class GroupCreationResponse {
   String groupId;
 
   GroupCreationResponse({required this.isCreated, required this.groupId});
+}
+
+class JoinRequest {
+  String password;
+  bool isObserver;
+
+  JoinRequest({required this.password, this.isObserver = false});
+
+  Map<String, dynamic> toJson() {
+    return {'password': password, 'isObserver': isObserver};
+  }
 }

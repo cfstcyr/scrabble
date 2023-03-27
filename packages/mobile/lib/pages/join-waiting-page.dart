@@ -38,8 +38,10 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
     });
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
-      triggerDialogBox(
-          "Partie annulée", [Text("${host.username} a annulé la partie", style: TextStyle(fontSize: 16))], [
+      triggerDialogBox("Partie annulée", [
+        Text("${host.username} a annulé la partie",
+            style: TextStyle(fontSize: 16))
+      ], [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,
@@ -123,6 +125,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                               ),
                             ]),
                             Parameters(
+                                visibility: widget.currentGroup.gameVisibility,
                                 maxRoundTime: widget.currentGroup.maxRoundTime,
                                 virtualPlayerLevel:
                                     widget.currentGroup.virtualPlayerLevel),
@@ -159,6 +162,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                                     ),
                                   );
                                 }),
+                            SizedBox(height: 15),
                             AppButton(
                               onPressed: () {
                                 _onBack(context);

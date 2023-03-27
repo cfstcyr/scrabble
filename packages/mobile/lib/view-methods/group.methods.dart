@@ -34,3 +34,6 @@ Stream<PublicUser> get canceledStream => canceledGroup$.stream;
 
 Stream<InitializeGameData> get startGameEvent => startGame$.stream;
 Subject<InitializeGameData> startGame$ = PublishSubject();
+
+Subject<bool> fullGroup$ = PublishSubject();
+Stream<bool> get fullGroupStream => fullGroup$.stream;
