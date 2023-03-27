@@ -100,7 +100,9 @@ void showGamePasswordPopup(
 
 void handleCanceledGame(PublicUser host, context) {
   Navigator.pop(context);
-  triggerDialogBox(GAME_CANCELED, "${host.username} a annulé la partie", [
+  triggerDialogBox(GAME_CANCELED, [
+    Text("${host.username} a annulé la partie")
+  ], [
     DialogBoxButtonParameters(
         content: 'OK',
         closesDialog: true,
@@ -113,7 +115,9 @@ void handleCanceledGame(PublicUser host, context) {
 
 void handleFullGroup(bool isFull, context) {
   Navigator.pop(context);
-  triggerDialogBox(GAME_STARTED, GAME_STARTED_MESSAGE, [
+  triggerDialogBox(GAME_STARTED, [
+    Text(GAME_STARTED_MESSAGE)
+  ], [
     DialogBoxButtonParameters(
         closesDialog: true,
         content: 'OK',
@@ -127,7 +131,9 @@ void handleFullGroup(bool isFull, context) {
 
 void handleGameStarted(PublicUser host, context) {
   Navigator.pop(context);
-  triggerDialogBox(GAME_STARTED, GAME_STARTED_MESSAGE, [
+  triggerDialogBox(GAME_STARTED, [
+    Text(GAME_STARTED_MESSAGE)
+  ], [
     DialogBoxButtonParameters(
         content: 'OK',
         closesDialog: true,
