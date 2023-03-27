@@ -1,56 +1,17 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mobile/routes/routes.dart';
 
 import '../../classes/group.dart';
 import '../../classes/text-field-handler.dart';
-import '../../classes/user.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/join-game.constants.dart';
 import '../../constants/join-group.constants.dart';
-import '../../view-methods/group.methods.dart';
-import '../alert-dialog.dart';
 import '../app_button.dart';
 
 void showGamePasswordPopup(
     BuildContext context, Group group, Function joinGroupFunction) {
   String _password = "";
   final passwordHandler = TextFieldHandler();
-  late StreamSubscription canceledSubscription;
-  canceledSubscription = canceledStream.listen((PublicUser host) {
-    triggerDialogBox("Partie annulée", "${host.username} a annulé la partie", [
-      DialogBoxButtonParameters(
-          content: 'OK',
-          theme: AppButtonTheme.primary,
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
-          })
-    ]);
-  });
-  late StreamSubscription fullGroupSubscription;
-  fullGroupSubscription = fullGroupStream.listen((isFull) {
-    triggerDialogBox(FULL_GROUP, FULL_GROUP_MESSAGE, [
-      DialogBoxButtonParameters(
-          content: 'OK',
-          theme: AppButtonTheme.primary,
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
-          })
-    ]);
-  });
-  late StreamSubscription gameStartedSubscription;
-  gameStartedSubscription = rejectedStream.listen((PublicUser host) {
-    triggerDialogBox(GAME_STARTED, GAME_STARTED_MESSAGE, [
-      DialogBoxButtonParameters(
-          content: 'OK',
-          theme: AppButtonTheme.primary,
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
-          })
-    ]);
-  });
-
   showDialog<String>(
       barrierDismissible: false,
       context: context,
@@ -73,17 +34,21 @@ void showGamePasswordPopup(
                       : passwordHandler.errorMessage,
                 ),
               ),
+              surfaceTintColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               actions: <Widget>[
                 AppButton(
                   onPressed: () {
                     Navigator.pushNamed(context, GROUPS_ROUTE);
                   },
                   child: Wrap(children: [
-                    Icon(Icons.arrow_back, color: Colors.white),
-                    const Text(GO_BACK_GROUPS,
-                        style: TextStyle(color: Colors.white, fontSize: 18))
+                    Icon(Icons.arrow_back),
+                    const Text(GO_BACK_GROUPS, style: TextStyle(fontSize: 18))
                   ]),
                   size: AppButtonSize.large,
+                  theme: AppButtonTheme.secondary,
                 ),
                 SizedBox(width: 30),
                 AppButton(
