@@ -18,10 +18,11 @@ export default class GameHistoriesService {
         return this.databaseService.knex<GameHistoryPlayer>(GAME_HISTORY_PLAYER_TABLE);
     }
 
-    async addGameHistory({ gameHistory, players }: GameHistoryCreation): Promise<void> {
+    async addGameHistory({ gameHistory, players }: GameHistoryCreation): Promise<TypeOfId<GameHistory>> {
         const [{ idGameHistory }] = await this.table.insert(gameHistory, ['idGameHistory']);
 
         await Promise.all(players.map((player) => this.tableHistoryPlayer.insert({ ...player, idGameHistory })));
+        return idGameHistory;
     }
 
     async getGameHistory(idUser: TypeOfId<User>): Promise<GameHistoryForUser[]> {

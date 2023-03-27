@@ -10,16 +10,17 @@ import { StatusCodes } from 'http-status-codes';
 import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { CompletedRound, Round } from './round';
 import { NUMBER_OF_PASSING_ROUNDS_TO_END_GAME, NUMBER_OF_PLAYERS_IN_GAME } from '@app/constants/classes-constants';
+import { Board } from '@app/classes/board';
 
 const SECONDS_TO_MILLISECONDS = 1000;
 
 export default class RoundManager {
+    completedRounds: CompletedRound[];
     private player1: Player;
     private player2: Player;
     private player3: Player;
     private player4: Player;
     private currentRound: Round;
-    private completedRounds: CompletedRound[];
     private maxRoundTime: number;
 
     constructor(maxRoundTime: number, player1: Player, player2: Player, player3: Player, player4: Player) {
@@ -45,9 +46,9 @@ export default class RoundManager {
         };
     }
 
-    nextRound(actionPlayed: Action): Round {
+    nextRound(actionPlayed: Action, board: Board): Round {
         if (this.currentRound !== undefined) {
-            this.saveCompletedRound(this.currentRound, actionPlayed);
+            this.saveCompletedRound(this.currentRound, actionPlayed, board);
         }
         return this.beginRound();
     }
@@ -58,6 +59,7 @@ export default class RoundManager {
         const limit = new Date(Date.now() + this.maxRoundTime * SECONDS_TO_MILLISECONDS);
         this.currentRound = {
             player,
+            tiles: player.tiles.map((tile) => ({ ...tile })),
             startTime: now,
             limitTime: limit,
         };
@@ -115,9 +117,14 @@ export default class RoundManager {
         return true;
     }
 
-    private saveCompletedRound(round: Round, actionPlayed: Action): void {
+    private saveCompletedRound(round: Round, actionPlayed: Action, board: Board): void {
         const now = new Date();
-        this.completedRounds.push({ ...round, completedTime: now, actionPlayed });
+        this.completedRounds.push({
+            ...round,
+            completedTime: now,
+            actionPlayed,
+            board: new Board(board.grid.map((row) => row.map((square) => ({ ...square })))),
+        });
     }
 
     private getNextPlayer(): Player {

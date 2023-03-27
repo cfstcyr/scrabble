@@ -1,5 +1,7 @@
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
+import { GameHistory } from '@common/models/game-history';
+import { TypeOfId } from '@common/types/id';
 import { PlayerData } from './';
 import { RoundData } from './round-data';
 
@@ -9,6 +11,7 @@ export default interface GameUpdateData {
     player3?: PlayerData;
     player4?: PlayerData;
     isGameOver?: boolean;
+    idGameHistory?: TypeOfId<GameHistory>;
     winners?: string[];
     board?: Square[];
     round?: RoundData;
