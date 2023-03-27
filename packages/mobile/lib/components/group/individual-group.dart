@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/group.dart';
@@ -12,11 +10,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 
-import '../../constants/join-group.constants.dart';
 import '../../utils/duration-format.dart';
-import '../../view-methods/group.methods.dart';
-import '../alert-dialog.dart';
-import '../app_button.dart';
 
 class IndividualGroup extends StatefulWidget {
   IndividualGroup(
@@ -36,29 +30,13 @@ class IndividualGroup extends StatefulWidget {
 class _IndividualGroupState extends State<IndividualGroup> {
   final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
 
-  late StreamSubscription canceledSubscription;
-  late StreamSubscription fullGroupSubscription;
-  late StreamSubscription gameStartedSubscription;
   void initState() {
     super.initState();
-
-    fullGroupSubscription = fullGroupStream.listen((isFull) {
-      handleFullGroup(isFull);
-    });
-    canceledSubscription = canceledStream.listen((PublicUser host) {
-      handleCanceledGame(host);
-    });
-    gameStartedSubscription = rejectedStream.listen((PublicUser host) {
-      handleGameStarted(host);
-    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    canceledSubscription.cancel();
-    gameStartedSubscription.cancel();
-    fullGroupSubscription.cancel();
   }
 
   @override
@@ -188,43 +166,6 @@ class _IndividualGroupState extends State<IndividualGroup> {
         ]),
       ),
     );
-  }
-
-  void handleCanceledGame(PublicUser host) {
-    triggerDialogBox("Partie annulée", "${host.username} a annulé la partie", [
-      DialogBoxButtonParameters(
-          content: 'OK',
-          closesDialog: true,
-          theme: AppButtonTheme.primary,
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
-          })
-    ]);
-  }
-
-  void handleFullGroup(bool isFull) {
-    triggerDialogBox(FULL_GROUP, FULL_GROUP_MESSAGE, [
-      DialogBoxButtonParameters(
-          closesDialog: true,
-          content: 'OK',
-          theme: AppButtonTheme.primary,
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
-          })
-    ]);
-  }
-
-  void handleGameStarted(PublicUser host) {
-    triggerDialogBox(GAME_STARTED, GAME_STARTED_MESSAGE, [
-      DialogBoxButtonParameters(
-          content: 'OK',
-          closesDialog: true,
-          theme: AppButtonTheme.primary,
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
-          }),
-    ]);
   }
 }
 
