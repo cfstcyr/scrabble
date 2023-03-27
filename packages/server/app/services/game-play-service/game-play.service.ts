@@ -1,7 +1,7 @@
 import { Action, ActionExchange, ActionHelp, ActionPass, ActionPlace, ActionReserve } from '@app/classes/actions';
 import ActionHint from '@app/classes/actions/action-hint/action-hint';
 import { Position } from '@app/classes/board';
-import { ActionData, ActionExchangePayload, ActionPlacePayload, ActionType } from '@app/classes/communication/action-data';
+import { ActionData, ActionExchangePayload, ActionPlacePayload } from '@app/classes/communication/action-data';
 import { FeedbackMessage, FeedbackMessages } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { RoundData } from '@app/classes/communication/round-data';
@@ -25,6 +25,8 @@ import { UserStatisticsService } from '@app/services/user-statistics-service/use
 import { PublicUserStatistics } from '@common/models/user-statistics';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
+import { AnalysisService } from '@app/services/analysis-service/analysis.service';
+import { ActionType } from '@common/models/action';
 @Service()
 export class GamePlayService {
     constructor(
@@ -36,6 +38,7 @@ export class GamePlayService {
         private readonly virtualPlayerFactory: VirtualPlayerFactory,
         private readonly userStatisticsService: UserStatisticsService,
         private readonly authenticationService: AuthentificationService,
+        private readonly analysisService: AnalysisService,
     ) {
         this.activeGameService.playerLeftEvent.on('playerLeftGame', async (gameId, playerWhoLeftId) => {
             await this.handlePlayerLeftEvent(gameId, playerWhoLeftId);
@@ -48,6 +51,7 @@ export class GamePlayService {
         if (player.id !== playerId) throw new HttpException(NOT_PLAYER_TURN, StatusCodes.FORBIDDEN);
         if (game.gameIsOver) return [undefined, undefined];
 
+        const board = game.board;
         const action: Action = this.getAction(player, game, actionData);
 
         let updatedData: void | GameUpdateData = action.execute();
@@ -62,7 +66,7 @@ export class GamePlayService {
         }
 
         if (action.willEndTurn()) {
-            const nextRound = game.roundManager.nextRound(action);
+            const nextRound = game.roundManager.nextRound(action, board);
             const nextRoundData: RoundData = game.roundManager.convertRoundToRoundData(nextRound);
             if (updatedData) updatedData.round = nextRoundData;
             else updatedData = { round: nextRoundData };
@@ -134,8 +138,11 @@ export class GamePlayService {
             for (const player of connectedRealPlayers) {
                 await this.highScoresService.addHighScore(player.publicUser.username, player.score);
             }
-            await this.gameHistoriesService.addGameHistory(game.gameHistory);
+
+            const idGameHistory = await this.gameHistoriesService.addGameHistory(game.gameHistory);
+            this.analysisService.addAnalysis(game, idGameHistory);
             game.isAddedToDatabase = true;
+            updatedData.idGameHistory = idGameHistory;
         }
 
         this.dictionaryService.stopUsingDictionary(game.dictionarySummary.id, true);

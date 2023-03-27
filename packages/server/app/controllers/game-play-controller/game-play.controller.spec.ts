@@ -7,7 +7,7 @@
 import { Application } from '@app/app';
 import { Position } from '@app/classes/board';
 import Board from '@app/classes/board/board';
-import { ActionData, ActionType } from '@app/classes/communication/action-data';
+import { ActionData } from '@app/classes/communication/action-data';
 import { FeedbackMessage, FeedbackMessages } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
@@ -16,7 +16,7 @@ import Game from '@app/classes/game/game';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
 import { Square } from '@app/classes/square';
-import { TileReserve } from '@app/classes/tile';
+import { Tile, TileReserve } from '@app/classes/tile';
 import { ConnectedUser } from '@app/classes/user/connected-user';
 import { CONTENT_REQUIRED, SENDER_REQUIRED } from '@app/constants/controllers-errors';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
@@ -30,6 +30,7 @@ import { SocketService } from '@app/services/socket-service/socket.service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
 import { Delay } from '@app/utils/delay/delay';
 import * as isIdVirtualPlayer from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { TilePlacement } from '@common/models/tile-placement';
 import * as chai from 'chai';
 import { spy } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -40,6 +41,7 @@ import { createStubInstance, SinonStub, SinonStubbedInstance, stub } from 'sinon
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
 import { GamePlayController } from './game-play.controller';
+import { ActionType } from '@common/models/action';
 
 const expect = chai.expect;
 
@@ -164,6 +166,21 @@ describe('GamePlayController', () => {
             });
         });
 
+        describe('POST /games/:gameId/squares/place', () => {
+            it('should return NO_CONTENT', async () => {
+                const tilePlacement: TilePlacement = {
+                    tile: {} as Tile,
+                    position: new Position(0, 0),
+                };
+                chai.spy.on(gamePlayController, 'handlePlaceTile', () => {});
+
+                return await supertest(expressApp)
+                    .post(`/api/games/${DEFAULT_GAME_ID}/squares/place`)
+                    .send({ idUser: DEFAULT_USER_ID, tilePlacement: [tilePlacement] })
+                    .expect(StatusCodes.NO_CONTENT);
+            });
+        });
+
         describe('POST /games/:gameId/players/virtual-player-action', () => {
             it('should return NO_CONTENT', async () => {
                 chai.spy.on(gamePlayController, 'handlePlayAction', () => {});
@@ -262,313 +279,332 @@ describe('GamePlayController', () => {
                     });
             });
         });
-    });
 
-    describe('handlePlayAction', () => {
-        let emitToSocketSpy: any;
-        let gameUpdateSpy: any;
-        let getGameStub: any;
-        let gameStub: SinonStubbedInstance<Game>;
-        let tileReserveStub: SinonStubbedInstance<TileReserve>;
-        let boardStub: SinonStubbedInstance<Board>;
+        describe('handlePlayAction', () => {
+            let emitToSocketSpy: any;
+            let gameUpdateSpy: any;
+            let getGameStub: any;
+            let gameStub: SinonStubbedInstance<Game>;
+            let tileReserveStub: SinonStubbedInstance<TileReserve>;
+            let boardStub: SinonStubbedInstance<Board>;
 
-        beforeEach(() => {
-            gameStub = createStubInstance(Game);
-            tileReserveStub = createStubInstance(TileReserve);
-            boardStub = createStubInstance(Board);
-
-            gameStub.player1 = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_1.publicUser);
-            gameStub.player2 = new Player(DEFAULT_PLAYER_ID + '2', DEFAULT_PLAYER_2.publicUser);
-            boardStub.grid = DEFAULT_BOARD.map((row) => row.map((s) => ({ ...s })));
-            gameStub['tileReserve'] = tileReserveStub as unknown as TileReserve;
-            gameStub.board = boardStub as unknown as Board;
-            gameStub['id'] = DEFAULT_GAME_ID;
-            gameStub.getPlayer.returns(gameStub.player2);
-
-            emitToSocketSpy = chai.spy.on(gamePlayController['socketService'], 'emitToSocket', () => {});
-            gameUpdateSpy = chai.spy.on(gamePlayController, 'gameUpdate', () => ({}));
-            getGameStub = testingUnit.getStubbedInstance(ActiveGameService).getGame.returns(gameStub as unknown as Game);
-        });
-
-        afterEach(() => {
-            getGameStub.restore();
-        });
-
-        it('should call playAction', async () => {
-            const playActionSpy = chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [undefined, undefined]);
-            await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
-            expect(playActionSpy).to.have.been.called();
-        });
-
-        it('should call emitToSocket if data.input is not empty', async () => {
-            chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [undefined, undefined, undefined]);
-            await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
-                type: ActionType.PASS,
-                payload: {},
-                input: '!passer',
-            });
-            expect(emitToSocketSpy).to.have.been.called();
-        });
-
-        it('should NOT call emitToSocket if data.input is empty', async () => {
-            chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [undefined, undefined, undefined]);
-            await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
-                type: ActionType.PASS,
-                payload: {},
-                input: '',
-            });
-            expect(emitToSocketSpy).to.not.have.been.called();
-        });
-
-        it('should call gameUpdate if updateData exists', async () => {
-            chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [{}, undefined, undefined]);
-            await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
-            expect(gameUpdateSpy).to.have.been.called();
-        });
-
-        it("should not call gameUpdate if updateData doesn't exist", async () => {
-            chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [undefined, undefined, undefined]);
-            await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
-            expect(gameUpdateSpy).to.not.have.been.called();
-        });
-
-        it("should not call emitToSocket if feedback doesn't exist", async () => {
-            chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [{}, undefined, undefined]);
-            await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
-            expect(emitToSocketSpy).to.not.have.been.called();
-        });
-
-        it('should call handleFeedback  if feedback exists', async () => {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [
-                {},
-                { localPlayerFeedback: DEFAULT_FEEDBACK, opponentFeedback: DEFAULT_FEEDBACK, endGameFeedback: [] },
-            ]);
-            const handleFeedbackSpy = chai.spy.on(gamePlayController, 'handleFeedback');
-            await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
-            expect(handleFeedbackSpy).to.have.been.called();
-        });
-
-        it('should throw if data.type is undefined', async () => {
-            await expect(gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, { payload: DEFAULT_DATA.payload } as ActionData))
-                .to.eventually.rejected;
-        });
-
-        it('should throw if data.payload is undefined', async () => {
-            await expect(gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, { type: DEFAULT_DATA.type } as ActionData)).to
-                .eventually.rejected;
-        });
-
-        it('should call emitToSocket in catch if error is generated in treatment', async () => {
-            chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => {
-                throw new Error(DEFAULT_ERROR_MESSAGE);
-            });
-            await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
-            expect(emitToSocketSpy).to.have.been.called.with(DEFAULT_PLAYER_ID, 'newMessage', {
-                content: COMMAND_IS_INVALID(DEFAULT_DATA.input) + DEFAULT_ERROR_MESSAGE,
-                senderId: SYSTEM_ERROR_ID,
-                gameId: DEFAULT_GAME_ID,
-            });
-        });
-
-        it('should throw Exception again if it was generated by Virtual Player action', async () => {
-            chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => {
-                throw new Error(DEFAULT_ERROR_MESSAGE);
-            });
-            chai.spy.on(isIdVirtualPlayer, 'isIdVirtualPlayer', () => true);
-
-            await expect(gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA)).to.eventually.rejected;
-        });
-
-        describe('Word not in dictionnary error', () => {
-            let handlePlayActionStub: SinonStub;
             beforeEach(() => {
-                gamePlayServiceStub.playAction.throws('error');
+                gameStub = createStubInstance(Game);
+                tileReserveStub = createStubInstance(TileReserve);
+                boardStub = createStubInstance(Board);
 
-                const handleErrorStub = stub<GamePlayController, any>(gamePlayController, 'handleError');
-                handleErrorStub.callsFake(async () => Promise.resolve());
+                gameStub.player1 = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_1.publicUser);
+                gameStub.player2 = new Player(DEFAULT_PLAYER_ID + '2', DEFAULT_PLAYER_2.publicUser);
+                boardStub.grid = DEFAULT_BOARD.map((row) => row.map((s) => ({ ...s })));
+                gameStub['tileReserve'] = tileReserveStub as unknown as TileReserve;
+                gameStub.board = boardStub as unknown as Board;
+                gameStub['id'] = DEFAULT_GAME_ID;
+                gameStub.getPlayer.returns(gameStub.player2);
 
-                const isWordNotInDictionaryErrorStub = stub<GamePlayController, any>(gamePlayController, 'isWordNotInDictionaryError');
-                isWordNotInDictionaryErrorStub.onFirstCall().returns(true).returns(false);
-
-                handlePlayActionStub = stub<GamePlayController, any>(gamePlayController, 'handlePlayAction').callThrough();
+                emitToSocketSpy = chai.spy.on(gamePlayController['socketService'], 'emitToSocket', () => {});
+                gameUpdateSpy = chai.spy.on(gamePlayController, 'gameUpdate', () => ({}));
+                getGameStub = testingUnit.getStubbedInstance(ActiveGameService).getGame.returns(gameStub as unknown as Game);
             });
-            it('should call PASS when playAction throw word not in dictionary', async () => {
+
+            afterEach(() => {
+                getGameStub.restore();
+            });
+
+            it('should call playAction', async () => {
+                const playActionSpy = chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [undefined, undefined]);
+                await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
+                expect(playActionSpy).to.have.been.called();
+            });
+
+            it('should call emitToSocket if data.input is not empty', async () => {
+                chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [undefined, undefined, undefined]);
+                await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
+                    type: ActionType.PASS,
+                    payload: {},
+                    input: '!passer',
+                });
+                expect(emitToSocketSpy).to.have.been.called();
+            });
+
+            it('should NOT call emitToSocket if data.input is empty', async () => {
+                chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [undefined, undefined, undefined]);
+                await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
+                    type: ActionType.PASS,
+                    payload: {},
+                    input: '',
+                });
+                expect(emitToSocketSpy).to.not.have.been.called();
+            });
+
+            it('should call gameUpdate if updateData exists', async () => {
+                chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [{}, undefined, undefined]);
+                await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
+                expect(gameUpdateSpy).to.have.been.called();
+            });
+
+            it("should not call gameUpdate if updateData doesn't exist", async () => {
+                chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [undefined, undefined, undefined]);
+                await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
+                expect(gameUpdateSpy).to.not.have.been.called();
+            });
+
+            it("should not call emitToSocket if feedback doesn't exist", async () => {
+                chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [{}, undefined, undefined]);
+                await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
+                expect(emitToSocketSpy).to.not.have.been.called();
+            });
+
+            it('should call handleFeedback  if feedback exists', async () => {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => [
+                    {},
+                    { localPlayerFeedback: DEFAULT_FEEDBACK, opponentFeedback: DEFAULT_FEEDBACK, endGameFeedback: [] },
+                ]);
+                const handleFeedbackSpy = chai.spy.on(gamePlayController, 'handleFeedback');
+                await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
+                expect(handleFeedbackSpy).to.have.been.called();
+            });
+
+            it('should throw if data.type is undefined', async () => {
+                await expect(
+                    gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, { payload: DEFAULT_DATA.payload } as ActionData),
+                ).to.eventually.rejected;
+            });
+
+            it('should throw if data.payload is undefined', async () => {
+                await expect(gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, { type: DEFAULT_DATA.type } as ActionData)).to
+                    .eventually.rejected;
+            });
+
+            it('should call emitToSocket in catch if error is generated in treatment', async () => {
+                chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => {
+                    throw new Error(DEFAULT_ERROR_MESSAGE);
+                });
+                await gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA);
+                expect(emitToSocketSpy).to.have.been.called.with(DEFAULT_PLAYER_ID, 'newMessage', {
+                    content: COMMAND_IS_INVALID(DEFAULT_DATA.input) + DEFAULT_ERROR_MESSAGE,
+                    senderId: SYSTEM_ERROR_ID,
+                    gameId: DEFAULT_GAME_ID,
+                });
+            });
+
+            it('should throw Exception again if it was generated by Virtual Player action', async () => {
+                chai.spy.on(gamePlayController['gamePlayService'], 'playAction', () => {
+                    throw new Error(DEFAULT_ERROR_MESSAGE);
+                });
+                chai.spy.on(isIdVirtualPlayer, 'isIdVirtualPlayer', () => true);
+
+                await expect(gamePlayController['handlePlayAction'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, DEFAULT_DATA)).to.eventually.rejected;
+            });
+
+            describe('Word not in dictionnary error', () => {
+                let handlePlayActionStub: SinonStub;
+                beforeEach(() => {
+                    gamePlayServiceStub.playAction.throws('error');
+
+                    const handleErrorStub = stub<GamePlayController, any>(gamePlayController, 'handleError');
+                    handleErrorStub.callsFake(async () => Promise.resolve());
+
+                    const isWordNotInDictionaryErrorStub = stub<GamePlayController, any>(gamePlayController, 'isWordNotInDictionaryError');
+                    isWordNotInDictionaryErrorStub.onFirstCall().returns(true).returns(false);
+
+                    handlePlayActionStub = stub<GamePlayController, any>(gamePlayController, 'handlePlayAction').callThrough();
+                });
+                it('should call PASS when playAction throw word not in dictionary', async () => {
+                    chai.spy.on(gamePlayController['gamePlayService'], 'isGameOver', () => false);
+
+                    await gamePlayController['handlePlayAction']('', '', { type: ActionType.PLACE, payload: { tiles: [] }, input: '' });
+
+                    expect(handlePlayActionStub.calledWith('', '', { type: ActionType.PASS, payload: {}, input: '' })).to.be.true;
+                });
+
+                it('should NOT call PASS if game is OVER', async () => {
+                    chai.spy.on(gamePlayController['gamePlayService'], 'isGameOver', () => true);
+
+                    await gamePlayController['handlePlayAction']('', '', { type: ActionType.PLACE, payload: { tiles: [] }, input: '' });
+
+                    expect(handlePlayActionStub.calledWith('', '', { type: ActionType.PASS, payload: {}, input: '' })).to.be.false;
+                });
+            });
+        });
+
+        describe('gameUpdate', () => {
+            it('should call emitToRoom with gameId', () => {
+                gamePlayController['gameUpdate'](DEFAULT_GAME_ID, {} as GameUpdateData);
+                expect(socketServiceStub.emitToRoom.calledWith(DEFAULT_GAME_ID, 'gameUpdate' as '_test_event')).to.be.true;
+            });
+
+            it('should call triggerVirtualPlayerTurn if next turn is a virtual player turn', () => {
+                (gamePlayController['socketService'] as unknown) = Container.get(SocketService);
+                spy.on(gamePlayController['socketService'], 'emitToRoom', () => {
+                    return;
+                });
+                spy.on(gamePlayController['activeGameService'], 'getGame', () => {
+                    return;
+                });
+                const triggerVirtualPlayerSpy = spy.on(gamePlayController['virtualPlayerService'], 'triggerVirtualPlayerTurn', () => {
+                    return;
+                });
+                gamePlayController['gameUpdate'](DEFAULT_GAME_ID, DEFAULT_VIRTUAL_PLAYER_TURN_DATA);
+                expect(triggerVirtualPlayerSpy).to.have.been.called();
+            });
+        });
+
+        describe('handleFeedback', () => {
+            let gameStub: SinonStubbedInstance<Game>;
+            beforeEach(() => {
+                gameStub = createStubInstance(Game);
+                gameStub.getPlayer.returns({ id: '' } as unknown as Player);
+            });
+
+            it('should emit a new message if there is one to the playerId', () => {
+                gamePlayController['handleFeedback'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
+                    localPlayerFeedback: { message: 'mess', isClickable: true },
+                    opponentFeedback: {} as unknown as FeedbackMessage,
+                    endGameFeedback: [],
+                } as FeedbackMessages);
+                expect(socketServiceStub.emitToSocket.calledOnce).to.be.true;
+            });
+
+            it('should emit a new message if there is one to the opponent', () => {
+                activeGameServiceStub.getGame.returns(gameStub as unknown as Game);
+                gamePlayController['handleFeedback'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
+                    localPlayerFeedback: {} as unknown as FeedbackMessage,
+                    opponentFeedback: { message: 'mess', isClickable: true },
+                    endGameFeedback: [],
+                } as FeedbackMessages);
+                expect(socketServiceStub.emitToRoomNoSender.calledOnce).to.be.true;
+            });
+
+            it('should emit a new message if there is one for the room', () => {
+                gamePlayController['handleFeedback'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
+                    localPlayerFeedback: {} as unknown as FeedbackMessage,
+                    opponentFeedback: {} as unknown as FeedbackMessage,
+                    endGameFeedback: [{ message: 'mess', isClickable: true }, { isClickable: true }],
+                } as FeedbackMessages);
+                expect(socketServiceStub.emitToRoom.calledOnce).to.be.true;
+            });
+        });
+
+        describe('handleNewMessage', () => {
+            let emitToRoomSpy: any;
+
+            beforeEach(() => {
+                emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToRoom', () => {});
+            });
+
+            it('should throw if message.senderId is undefined', () => {
+                expect(() => gamePlayController['handleNewMessage'](DEFAULT_GAME_ID, { content: DEFAULT_MESSAGE_CONTENT } as Message)).to.throw(
+                    SENDER_REQUIRED,
+                );
+            });
+
+            it('should throw if message.content is undefined', () => {
+                expect(() => gamePlayController['handleNewMessage'](DEFAULT_GAME_ID, { senderId: DEFAULT_PLAYER_ID } as Message)).to.throw(
+                    CONTENT_REQUIRED,
+                );
+            });
+
+            it('should call emitToRoom if message is valid', () => {
+                const validMessage: Message = {
+                    content: DEFAULT_MESSAGE_CONTENT,
+                    senderId: DEFAULT_PLAYER_ID,
+                    gameId: DEFAULT_GAME_ID,
+                };
+                gamePlayController['handleNewMessage'](DEFAULT_GAME_ID, validMessage);
+                expect(emitToRoomSpy).to.have.been.called();
+            });
+        });
+
+        describe('tilePlacement', () => {
+            let emitToRoomSpy: any;
+
+            beforeEach(() => {
+                emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToRoomNoSender', () => {});
+            });
+
+            it('should call handleTilePlacement if tilePlacement is valid', () => {
+                const validTilePlacement: TilePlacement = {
+                    tile: {} as Tile,
+                    position: { row: 0, column: 0 },
+                };
+
+                gamePlayController['handleTilePlacement'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, [validTilePlacement]);
+                expect(emitToRoomSpy).to.have.been.called();
+            });
+        });
+
+        describe('handleNewError', () => {
+            let emitToRoomSpy: any;
+
+            beforeEach(() => {
+                emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToSocket', () => {});
+            });
+
+            it('should throw if message.senderId is undefined', () => {
+                expect(() =>
+                    gamePlayController['handleNewError'](DEFAULT_PLAYER_ID, DEFAULT_GAME_ID, { content: DEFAULT_MESSAGE_CONTENT } as Message),
+                ).to.throw(SENDER_REQUIRED);
+            });
+
+            it('should throw if message.content is undefined', () => {
+                expect(() =>
+                    gamePlayController['handleNewError'](DEFAULT_PLAYER_ID, DEFAULT_GAME_ID, { senderId: DEFAULT_PLAYER_ID } as Message),
+                ).to.throw(CONTENT_REQUIRED);
+            });
+
+            it('should call emitToRoom if message is valid', () => {
+                const validMessage: Message = {
+                    content: DEFAULT_MESSAGE_CONTENT,
+                    senderId: DEFAULT_PLAYER_ID,
+                    gameId: DEFAULT_GAME_ID,
+                };
+                gamePlayController['handleNewError'](DEFAULT_PLAYER_ID, DEFAULT_GAME_ID, validMessage);
+                expect(emitToRoomSpy).to.have.been.called();
+            });
+        });
+
+        describe('handleError', () => {
+            let gameStub: SinonStubbedInstance<Game>;
+            let delayStub: SinonStub;
+
+            beforeEach(() => {
+                socketServiceStub = createStubInstance(SocketService);
+                (gamePlayController['socketService'] as unknown) = socketServiceStub;
+
+                gameStub = createStubInstance(Game);
+                gameStub.getPlayer.returns(new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.publicUser));
+
+                activeGameServiceStub = createStubInstance(ActiveGameService);
+                activeGameServiceStub.getGame.returns(gameStub as unknown as Game);
+
+                (gamePlayController['activeGameService'] as unknown) = activeGameServiceStub;
+
+                delayStub = stub(Delay, 'for');
+            });
+
+            afterEach(() => {
+                delayStub.restore();
+            });
+
+            it('should call delay', async () => {
                 chai.spy.on(gamePlayController['gamePlayService'], 'isGameOver', () => false);
-
-                await gamePlayController['handlePlayAction']('', '', { type: ActionType.PLACE, payload: { tiles: [] }, input: '' });
-
-                expect(handlePlayActionStub.calledWith('', '', { type: ActionType.PASS, payload: {}, input: '' })).to.be.true;
+                await gamePlayController['handleError'](new Error(INVALID_WORD('word')), '', '', '');
+                expect(delayStub.called).to.be.true;
             });
 
-            it('should NOT call PASS if game is OVER', async () => {
-                chai.spy.on(gamePlayController['gamePlayService'], 'isGameOver', () => true);
-
-                await gamePlayController['handlePlayAction']('', '', { type: ActionType.PLACE, payload: { tiles: [] }, input: '' });
-
-                expect(handlePlayActionStub.calledWith('', '', { type: ActionType.PASS, payload: {}, input: '' })).to.be.false;
+            it('should NOT call emitToSocket if game is over', async () => {
+                spy.on(gamePlayController['gamePlayService'], 'isGameOver', () => true);
+                const getGameSpy = spy.on(gamePlayController['activeGameService'], 'getGame');
+                await gamePlayController['handleError'](new Error(INVALID_WORD('word')), '', '', '');
+                expect(getGameSpy.called).to.be.not.ok;
             });
-        });
-    });
 
-    describe('gameUpdate', () => {
-        it('should call emitToRoom with gameId', () => {
-            gamePlayController['gameUpdate'](DEFAULT_GAME_ID, {} as GameUpdateData);
-            expect(socketServiceStub.emitToRoom.calledWith(DEFAULT_GAME_ID, 'gameUpdate' as '_test_event')).to.be.true;
-        });
-
-        it('should call triggerVirtualPlayerTurn if next turn is a virtual player turn', () => {
-            (gamePlayController['socketService'] as unknown) = Container.get(SocketService);
-            spy.on(gamePlayController['socketService'], 'emitToRoom', () => {
-                return;
+            it('should call emitToSocket if game is not over', async () => {
+                spy.on(gamePlayController['gamePlayService'], 'isGameOver', () => false);
+                await gamePlayController['handleError'](new Error(), '', '', '');
+                expect(socketServiceStub.emitToSocket.called).to.be.true;
             });
-            spy.on(gamePlayController['activeGameService'], 'getGame', () => {
-                return;
-            });
-            const triggerVirtualPlayerSpy = spy.on(gamePlayController['virtualPlayerService'], 'triggerVirtualPlayerTurn', () => {
-                return;
-            });
-            gamePlayController['gameUpdate'](DEFAULT_GAME_ID, DEFAULT_VIRTUAL_PLAYER_TURN_DATA);
-            expect(triggerVirtualPlayerSpy).to.have.been.called();
-        });
-    });
-
-    describe('handleFeedback', () => {
-        let gameStub: SinonStubbedInstance<Game>;
-        beforeEach(() => {
-            gameStub = createStubInstance(Game);
-            gameStub.getPlayer.returns({ id: '' } as unknown as Player);
-        });
-
-        it('should emit a new message if there is one to the playerId', () => {
-            gamePlayController['handleFeedback'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
-                localPlayerFeedback: { message: 'mess', isClickable: true },
-                opponentFeedback: {} as unknown as FeedbackMessage,
-                endGameFeedback: [],
-            } as FeedbackMessages);
-            expect(socketServiceStub.emitToSocket.calledOnce).to.be.true;
-        });
-
-        it('should emit a new message if there is one to the opponent', () => {
-            activeGameServiceStub.getGame.returns(gameStub as unknown as Game);
-            gamePlayController['handleFeedback'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
-                localPlayerFeedback: {} as unknown as FeedbackMessage,
-                opponentFeedback: { message: 'mess', isClickable: true },
-                endGameFeedback: [],
-            } as FeedbackMessages);
-            expect(socketServiceStub.emitToRoomNoSender.calledOnce).to.be.true;
-        });
-
-        it('should emit a new message if there is one for the room', () => {
-            gamePlayController['handleFeedback'](DEFAULT_GAME_ID, DEFAULT_PLAYER_ID, {
-                localPlayerFeedback: {} as unknown as FeedbackMessage,
-                opponentFeedback: {} as unknown as FeedbackMessage,
-                endGameFeedback: [{ message: 'mess', isClickable: true }, { isClickable: true }],
-            } as FeedbackMessages);
-            expect(socketServiceStub.emitToRoom.calledOnce).to.be.true;
-        });
-    });
-
-    describe('handleNewMessage', () => {
-        let emitToRoomSpy: any;
-
-        beforeEach(() => {
-            emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToRoom', () => {});
-        });
-
-        it('should throw if message.senderId is undefined', () => {
-            expect(() => gamePlayController['handleNewMessage'](DEFAULT_GAME_ID, { content: DEFAULT_MESSAGE_CONTENT } as Message)).to.throw(
-                SENDER_REQUIRED,
-            );
-        });
-
-        it('should throw if message.content is undefined', () => {
-            expect(() => gamePlayController['handleNewMessage'](DEFAULT_GAME_ID, { senderId: DEFAULT_PLAYER_ID } as Message)).to.throw(
-                CONTENT_REQUIRED,
-            );
-        });
-
-        it('should call emitToRoom if message is valid', () => {
-            const validMessage: Message = {
-                content: DEFAULT_MESSAGE_CONTENT,
-                senderId: DEFAULT_PLAYER_ID,
-                gameId: DEFAULT_GAME_ID,
-            };
-            gamePlayController['handleNewMessage'](DEFAULT_GAME_ID, validMessage);
-            expect(emitToRoomSpy).to.have.been.called();
-        });
-    });
-
-    describe('handleNewError', () => {
-        let emitToRoomSpy: any;
-
-        beforeEach(() => {
-            emitToRoomSpy = chai.spy.on(gamePlayController['socketService'], 'emitToSocket', () => {});
-        });
-
-        it('should throw if message.senderId is undefined', () => {
-            expect(() =>
-                gamePlayController['handleNewError'](DEFAULT_PLAYER_ID, DEFAULT_GAME_ID, { content: DEFAULT_MESSAGE_CONTENT } as Message),
-            ).to.throw(SENDER_REQUIRED);
-        });
-
-        it('should throw if message.content is undefined', () => {
-            expect(() =>
-                gamePlayController['handleNewError'](DEFAULT_PLAYER_ID, DEFAULT_GAME_ID, { senderId: DEFAULT_PLAYER_ID } as Message),
-            ).to.throw(CONTENT_REQUIRED);
-        });
-
-        it('should call emitToRoom if message is valid', () => {
-            const validMessage: Message = {
-                content: DEFAULT_MESSAGE_CONTENT,
-                senderId: DEFAULT_PLAYER_ID,
-                gameId: DEFAULT_GAME_ID,
-            };
-            gamePlayController['handleNewError'](DEFAULT_PLAYER_ID, DEFAULT_GAME_ID, validMessage);
-            expect(emitToRoomSpy).to.have.been.called();
-        });
-    });
-
-    describe('handleError', () => {
-        let gameStub: SinonStubbedInstance<Game>;
-        let delayStub: SinonStub;
-
-        beforeEach(() => {
-            socketServiceStub = createStubInstance(SocketService);
-            (gamePlayController['socketService'] as unknown) = socketServiceStub;
-
-            gameStub = createStubInstance(Game);
-            gameStub.getPlayer.returns(new Player(DEFAULT_PLAYER_1.id, DEFAULT_PLAYER_1.publicUser));
-
-            activeGameServiceStub = createStubInstance(ActiveGameService);
-            activeGameServiceStub.getGame.returns(gameStub as unknown as Game);
-
-            (gamePlayController['activeGameService'] as unknown) = activeGameServiceStub;
-
-            delayStub = stub(Delay, 'for');
-        });
-
-        afterEach(() => {
-            delayStub.restore();
-        });
-
-        it('should call delay', async () => {
-            chai.spy.on(gamePlayController['gamePlayService'], 'isGameOver', () => false);
-            await gamePlayController['handleError'](new Error(INVALID_WORD('word')), '', '', '');
-            expect(delayStub.called).to.be.true;
-        });
-
-        it('should NOT call emitToSocket if game is over', async () => {
-            spy.on(gamePlayController['gamePlayService'], 'isGameOver', () => true);
-            const getGameSpy = spy.on(gamePlayController['activeGameService'], 'getGame');
-            await gamePlayController['handleError'](new Error(INVALID_WORD('word')), '', '', '');
-            expect(getGameSpy.called).to.be.not.ok;
-        });
-
-        it('should call emitToSocket if game is not over', async () => {
-            spy.on(gamePlayController['gamePlayService'], 'isGameOver', () => false);
-            await gamePlayController['handleError'](new Error(), '', '', '');
-            expect(socketServiceStub.emitToSocket.called).to.be.true;
         });
     });
 });

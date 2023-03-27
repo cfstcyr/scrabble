@@ -4,6 +4,7 @@ import { Inject, Injectable } from '@angular/core';
 import { Position } from '@app/classes/board-navigator/position';
 import { Tile } from '@app/classes/tile';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
+import { GameService } from '@app/services';
 
 const SQUARE_CLASS = 'square';
 const HAS_TILE_CLASS = 'has-tile';
@@ -24,7 +25,11 @@ export class DragAndDropService {
     private currentHoveredTileRackElement?: Element;
     private currentHoveredSquare?: HoveredSquare;
 
-    constructor(@Inject(DOCUMENT) private readonly document: Document, private readonly tilePlacementService: TilePlacementService) {
+    constructor(
+        @Inject(DOCUMENT) private readonly document: Document,
+        private readonly tilePlacementService: TilePlacementService,
+        private readonly gameService: GameService,
+    ) {
         this.tilePlacementService.tilePlacements$.subscribe(() => {
             this.removeCurrentHoveredSquare();
             this.removeCurrentHoveredTileRackElement();
@@ -83,6 +88,9 @@ export class DragAndDropService {
     }
 
     private onTileMove(event: CdkDragMove<HTMLElement>): void {
+        // if (!this.roundManagerService.isActivePlayerLocalPlayer()) return;
+        if (this.gameService.cannotPlay()) return;
+
         const hoveredSquare = this.getHoveredSquare(event);
 
         if (!hoveredSquare) {

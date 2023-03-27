@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InitializeGameData } from '@app/classes/communication/game-config';
 import { Message } from '@app/classes/communication/message';
+import { TilePlacement } from '@app/classes/tile';
 import * as SERVICE_ERRORS from '@app/constants/services-errors';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -27,6 +28,7 @@ export class GameViewEventManagerService {
         this.eventMap.set('gameInitialized', new BehaviorSubject<InitializeGameData | undefined>(undefined));
         this.eventMap.set('resetServices', new Subject<void>());
         this.eventMap.set('endOfGame', new Subject<string[]>());
+        this.eventMap.set('tilePlacement', new Subject<TilePlacement[]>());
     }
 
     emitGameViewEvent<T extends keyof EventTypes, S extends EventTypes[T]>(eventType: T, payload?: S): void {

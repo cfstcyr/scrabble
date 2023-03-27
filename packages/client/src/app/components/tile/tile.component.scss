@@ -69,4 +69,8 @@ $text-color: rgb(80, 55, 10);
         animation-name: flash;
         animation-duration: 0.5s;
     }
+
+    &.opacity {
+        opacity: 0.5;
+    }
 }

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation */
-import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -19,6 +18,7 @@ import SpyObj = jasmine.SpyObj;
 import { ROUTE_CREATE_WAITING } from '@app/constants/routes-constants';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RequestingUsers } from '@common/models/requesting-users';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 @Component({
     template: '',
@@ -90,7 +90,7 @@ describe('GameDispatcherService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [
-                HttpClientModule,
+                HttpClientTestingModule,
                 RouterTestingModule.withRoutes([
                     { path: 'create-waiting-room', component: TestComponent },
                     { path: 'join-waiting-room', component: TestComponent },

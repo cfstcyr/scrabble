@@ -5,6 +5,7 @@ import GameUpdateData from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
 import { HTTP_ABORT_ERROR } from '@app/constants/controllers-errors';
 import SocketService from '@app/services/socket-service/socket.service';
+import { TilePlacement } from '@common/models/tile-placement';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -14,6 +15,7 @@ import { environment } from 'src/environments/environment';
 export class GamePlayController {
     private gameUpdate$ = new BehaviorSubject<GameUpdateData>({});
     private newMessage$ = new BehaviorSubject<Message | null>(null);
+    private tilePlacement$ = new BehaviorSubject<TilePlacement[]>([]);
     private actionDone$ = new Subject<void>();
 
     constructor(private http: HttpClient, private readonly socketService: SocketService) {
@@ -50,6 +52,11 @@ export class GamePlayController {
         this.http.delete(endpoint, { observe: 'response' }).subscribe(this.handleDisconnectResponse, this.handleDisconnectError);
     }
 
+    handleTilePlacement(gameId: string, tilePlacement: TilePlacement[]): void {
+        const endpoint = `${environment.serverUrl}/games/${gameId}/squares/place`;
+        this.http.post(endpoint, { tilePlacement }).subscribe();
+    }
+
     observeGameUpdate(): Observable<GameUpdateData> {
         return this.gameUpdate$.asObservable();
     }
@@ -62,12 +69,19 @@ export class GamePlayController {
         return this.actionDone$.asObservable();
     }
 
+    observeTilePlacement(): Observable<TilePlacement[]> {
+        return this.tilePlacement$.asObservable();
+    }
+
     private configureSocket(): void {
         this.socketService.on('gameUpdate', (newData: GameUpdateData) => {
             this.gameUpdate$.next(newData);
         });
         this.socketService.on('newMessage', (newMessage: Message) => {
             this.newMessage$.next(newMessage);
+        });
+        this.socketService.on('tilePlacement', (tilePlacement: TilePlacement[]) => {
+            this.tilePlacement$.next(tilePlacement);
         });
     }
 

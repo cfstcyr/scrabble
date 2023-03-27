@@ -19,6 +19,7 @@ export class GameBoardWrapperComponent implements OnInit {
 
     private notAppliedSquares: SquareView[] = [];
     private newlyPlacedTiles: SquareView[] = [];
+    private opponentPlacedTiles: SquareView[] = [];
 
     constructor(readonly boardService: BoardService, readonly tilePlacementService: TilePlacementService, readonly gameService: GameService) {}
 
@@ -26,6 +27,7 @@ export class GameBoardWrapperComponent implements OnInit {
         this.boardService.subscribeToInitializeBoard(of(), this.initializeBoard.bind(this));
         this.boardService.subscribeToBoardUpdate(of(), this.handleUpdateBoard.bind(this));
         this.tilePlacementService.tilePlacements$.subscribe(this.handlePlaceTiles.bind(this));
+        this.boardService.subscribeToTemporaryTilePlacements(this.handleOpponentPlaceTiles.bind(this));
 
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());
@@ -48,8 +50,7 @@ export class GameBoardWrapperComponent implements OnInit {
 
             for (let j = 0; j < board[i].length; j++) {
                 const square: Square = this.getSquare(board, i, j);
-                const squareView: SquareView = new SquareView(square, SQUARE_SIZE);
-                grid[i][j] = squareView;
+                grid[i][j] = new SquareView(square, SQUARE_SIZE);
             }
         }
 
@@ -88,6 +89,28 @@ export class GameBoardWrapperComponent implements OnInit {
                 squareView.square.tile = tilePlacement.tile;
                 squareView.applied = false;
                 this.notAppliedSquares.push(squareView);
+            }
+        }
+
+        this.grid.next(grid);
+    }
+
+    private handleOpponentPlaceTiles(tilePlacements: TilePlacement[]): void {
+        this.opponentPlacedTiles.forEach((squareView: SquareView) => {
+            squareView.square.tile = null;
+            squareView.halfOppacity = false;
+        });
+        this.opponentPlacedTiles = [];
+
+        const grid = this.grid.value;
+
+        for (const tilePlacement of tilePlacements) {
+            const squareView = grid[tilePlacement.position.row][tilePlacement.position.column];
+
+            if (!squareView.square.tile) {
+                squareView.square.tile = tilePlacement.tile;
+                squareView.halfOppacity = true;
+                this.opponentPlacedTiles.push(squareView);
             }
         }
 

@@ -44,16 +44,14 @@ class RoundService {
     return currentActivePlayerSocketId == socketId;
   }
 
-  void startRound(Round round) {
+  void startRound(Round round, Function timerExpiresCallback) {
     currentRound$.add(round);
 
-    Duration roundDuration = getIt.get<GameService>().game.roundDuration;
-
     roundTimeoutStream.listen((event) {
-      _onTimerExpires();
+      timerExpiresCallback();
     });
 
-    _startRound$.add(roundDuration);
+    _startRound$.add(round.duration);
   }
 
   void endRound() {
@@ -64,16 +62,8 @@ class RoundService {
     _roundTimeout$.add(null);
   }
 
-  void _onTimerExpires() {
-    if (currentRound.socketIdOfActivePlayer ==
-        getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
-      _actionService.sendAction(ActionType.pass);
-      _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
-    }
-  }
-
-  void updateRoundData(Round round) {
+  void updateRoundData(Round round, Function timerExpiresCallback) {
     endRound();
-    startRound(round);
+    startRound(round, timerExpiresCallback);
   }
 }

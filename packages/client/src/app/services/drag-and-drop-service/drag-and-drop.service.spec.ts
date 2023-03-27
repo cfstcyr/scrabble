@@ -1,7 +1,9 @@
+/* eslint-disable max-classes-per-file */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { CdkDragMove } from '@angular/cdk/drag-drop';
 import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Position } from '@app/classes/board-navigator/position';
 import { TilePlacement } from '@app/classes/tile';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
@@ -12,6 +14,10 @@ import { PublicUserStatistics } from '@common/models/user-statistics';
 import { BehaviorSubject } from 'rxjs';
 import { UserService } from '@app/services/user-service/user.service';
 import { DragAndDropService } from './drag-and-drop.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import BoardService from '@app/services/board-service/board.service';
+import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 
 const DEFAULT_PLACEMENT: TilePlacement = {
     position: { row: 0, column: 0 },
@@ -29,9 +35,23 @@ const createSquare = (document: Document, position: Position = DEFAULT_PLACEMENT
     return square;
 };
 
+class MockBoardService {
+    isLocalPlayer(): boolean {
+        return false;
+    }
+}
+
+class MockRoundManager {
+    isActivePlayerLocalPlayer(): boolean {
+        return true;
+    }
+}
+
 describe('DragAndDropService', () => {
     let service: DragAndDropService;
-    let tilePlacementService: TilePlacementService;
+    let mockBoardService;
+    let mockRoundManager;
+    let tilePlacementServiceSpy: TilePlacementService;
     let document: Document;
     const userService = jasmine.createSpyObj(UserService, ['updateStatistics', 'updateGameHistory', 'updateServerActions']);
     userService.user = new BehaviorSubject<PublicUser>({ email: '1@2', avatar: '', username: 'John Doe' });
@@ -45,12 +65,25 @@ describe('DragAndDropService', () => {
     userService.serverActions = new BehaviorSubject<PublicServerAction[]>([]);
 
     beforeEach(() => {
+        mockBoardService = new MockBoardService();
+        mockRoundManager = new MockRoundManager();
+        tilePlacementServiceSpy = new TilePlacementService(
+            mockBoardService as unknown as BoardService,
+            {} as unknown as MatDialog,
+            mockRoundManager as unknown as RoundManagerService,
+        );
+    });
+
+    beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [MatDialogModule],
-            providers: [{ provide: UserService, useValue: userService }],
+            imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule],
+            providers: [
+                { provide: UserService, useValue: userService },
+                { provide: TilePlacementService, useValue: tilePlacementServiceSpy },
+            ],
         });
         service = TestBed.inject(DragAndDropService);
-        tilePlacementService = TestBed.inject(TilePlacementService);
+        // tilePlacementServiceSpy = TestBed.inject(TilePlacementService);
         document = TestBed.inject(DOCUMENT);
     });
 
@@ -66,7 +99,7 @@ describe('DragAndDropService', () => {
             service.onRackTileMove(DEFAULT_EVENT);
             service.onRackTileDrop(DEFAULT_PLACEMENT.tile);
 
-            expect(tilePlacementService.tilePlacements).toHaveSize(1);
+            expect(tilePlacementServiceSpy.tilePlacements).toHaveSize(1);
         });
 
         it('should not add tile to tilePlacements if is not square', () => {
@@ -76,7 +109,7 @@ describe('DragAndDropService', () => {
             service.onRackTileMove(DEFAULT_EVENT);
             service.onRackTileDrop(DEFAULT_PLACEMENT.tile);
 
-            expect(tilePlacementService.tilePlacements).toHaveSize(0);
+            expect(tilePlacementServiceSpy.tilePlacements).toHaveSize(0);
         });
     });
 
@@ -91,19 +124,19 @@ describe('DragAndDropService', () => {
             const square = createSquare(document, newPosition);
             spyOn(document, 'elementFromPoint').and.returnValue(square);
 
-            tilePlacementService.placeTile(DEFAULT_PLACEMENT);
+            tilePlacementServiceSpy.placeTile(DEFAULT_PLACEMENT);
 
             service.onBoardTileMove(DEFAULT_EVENT);
             service.onBoardTileDrop(DEFAULT_PLACEMENT.tile, DEFAULT_PLACEMENT.position);
 
             expect(
-                tilePlacementService.tilePlacements.find(
-                    (placement) => placement.position.column === newPosition.column && placement.position.row === newPosition.row,
+                tilePlacementServiceSpy.tilePlacements.find(
+                    (placement: TilePlacement) => placement.position.column === newPosition.column && placement.position.row === newPosition.row,
                 ),
             ).toBeTruthy();
             expect(
-                tilePlacementService.tilePlacements.find(
-                    (placement) =>
+                tilePlacementServiceSpy.tilePlacements.find(
+                    (placement: TilePlacement) =>
                         placement.position.column === DEFAULT_PLACEMENT.position.column && placement.position.row === DEFAULT_PLACEMENT.position.row,
                 ),
             ).toBeFalsy();
@@ -113,19 +146,19 @@ describe('DragAndDropService', () => {
             const square = document.createElement('div');
             spyOn(document, 'elementFromPoint').and.returnValue(square);
 
-            tilePlacementService.placeTile(DEFAULT_PLACEMENT);
+            tilePlacementServiceSpy.placeTile(DEFAULT_PLACEMENT);
 
             service.onBoardTileMove(DEFAULT_EVENT);
             service.onBoardTileDrop(DEFAULT_PLACEMENT.tile, DEFAULT_PLACEMENT.position);
 
             expect(
-                tilePlacementService.tilePlacements.find(
-                    (placement) => placement.position.column === newPosition.column && placement.position.row === newPosition.row,
+                tilePlacementServiceSpy.tilePlacements.find(
+                    (placement: TilePlacement) => placement.position.column === newPosition.column && placement.position.row === newPosition.row,
                 ),
             ).toBeFalsy();
             expect(
-                tilePlacementService.tilePlacements.find(
-                    (placement) =>
+                tilePlacementServiceSpy.tilePlacements.find(
+                    (placement: TilePlacement) =>
                         placement.position.column === DEFAULT_PLACEMENT.position.column && placement.position.row === DEFAULT_PLACEMENT.position.row,
                 ),
             ).toBeTruthy();
@@ -136,12 +169,12 @@ describe('DragAndDropService', () => {
             tileRack.classList.add('tile-rack');
             spyOn(document, 'elementFromPoint').and.returnValue(tileRack);
 
-            tilePlacementService.placeTile(DEFAULT_PLACEMENT);
+            tilePlacementServiceSpy.placeTile(DEFAULT_PLACEMENT);
 
             service.onBoardTileMove(DEFAULT_EVENT);
             service.onBoardTileDrop(DEFAULT_PLACEMENT.tile, DEFAULT_PLACEMENT.position);
 
-            expect(tilePlacementService.tilePlacements).toHaveSize(0);
+            expect(tilePlacementServiceSpy.tilePlacements).toHaveSize(0);
         });
     });
 });

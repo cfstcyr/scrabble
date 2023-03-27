@@ -5,6 +5,7 @@ import { PlayerContainer } from '@app/classes/player/player-container';
 import { Square } from '@app/classes/square';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { BoardService } from '@app/services';
+import { MultiplierEffect } from '@common/models/game';
 import { Subject } from 'rxjs';
 import { MultiplierEffect } from '@common/models/game';
 

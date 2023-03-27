@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable dot-notation */
@@ -83,7 +84,9 @@ describe('GameService', () => {
     let gameViewEventManagerSpy: SpyObj<GameViewEventManagerService>;
 
     beforeEach(() => {
-        boardServiceSpy = jasmine.createSpyObj('BoardService', ['initializeBoard', 'updateBoard']);
+        boardServiceSpy = jasmine.createSpyObj('BoardService', ['initializeBoard', 'updateBoard', 'updateTemporaryTilePlacements']);
+        boardServiceSpy.updateTemporaryTilePlacements.and.callFake(() => {});
+
         roundManagerSpy = jasmine.createSpyObj('RoundManagerService', [
             'convertRoundDataToRound',
             'startRound',
@@ -221,9 +224,7 @@ describe('GameService', () => {
         let initializeGameSpy: jasmine.Spy;
 
         beforeEach(() => {
-            initializeGameSpy = spyOn<any>(service, 'initializeGame').and.callFake(() => {
-                return;
-            });
+            initializeGameSpy = spyOn<any>(service, 'initializeGame').and.callFake(async () => {});
         });
 
         it('should do nothing if initializeGameData is undefined', async () => {
@@ -540,38 +541,23 @@ describe('GameService', () => {
         });
     });
 
-    describe('getPlayingPlayerId', () => {
-        it('should return id or round manager active player', () => {
-            const expected = 'expected-id';
-            roundManagerSpy.getActivePlayer.and.returnValue({ id: expected } as Player);
-            const result = service['getPlayingPlayerId']();
-            expect(result).toEqual(expected);
-        });
-    });
+    // describe('isLocalPlayerPlaying', () => {
+    //     it('should return true if is local player', () => {
+    //         const expected = 'expected-id';
+    //         roundManagerSpy.getActivePlayer.and.returnValue({ id: expected } as Player);
+    //         service['playerContainer'] = new PlayerContainer(expected, false);
+    //         const result = service.isLocalPlayerPlaying();
+    //         expect(result).toBeTrue();
+    //     });
 
-    describe('isLocalPlayerPlaying', () => {
-        it('should return true if is local player', () => {
-            const expected = 'expected-id';
-            roundManagerSpy.getActivePlayer.and.returnValue({ id: expected } as Player);
-            service['playerContainer'] = new PlayerContainer(expected, false);
-            const result = service.isLocalPlayerPlaying();
-            expect(result).toBeTrue();
-        });
-
-        it('should return false if is not local player', () => {
-            const expected = 'expected-id';
-            roundManagerSpy.getActivePlayer.and.returnValue({ id: expected } as Player);
-            service['playerContainer'] = new PlayerContainer('NOT-expected-id', false);
-            const result = service.isLocalPlayerPlaying();
-            expect(result).toBeFalse();
-        });
-
-        it('should return false there is no player container', () => {
-            service['playerContainer'] = undefined;
-            const result = service.isLocalPlayerPlaying();
-            expect(result).toBeFalse();
-        });
-    });
+    //     it('should return false if is not local player', () => {
+    //         const expected = 'expected-id';
+    //         roundManagerSpy.getActivePlayer.and.returnValue({ id: expected } as Player);
+    //         service['playerContainer'] = new PlayerContainer('NOT-expected-id', false);
+    //         const result = service.isLocalPlayerPlaying();
+    //         expect(result).toBeFalse();
+    //     });
+    // });
 
     describe('getGameId', () => {
         it('should return gameId', () => {

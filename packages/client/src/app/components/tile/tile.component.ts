@@ -15,6 +15,7 @@ export class TileComponent implements OnInit {
     @Input() hideValue: boolean;
     @Input() applied: boolean;
     @Input() newlyPlaced: boolean;
+    @Input() halfOppacity?: boolean;
     backgroundPath: string;
 
     constructor() {
@@ -23,6 +24,7 @@ export class TileComponent implements OnInit {
         this.hideValue = false;
         this.applied = true;
         this.newlyPlaced = false;
+        this.halfOppacity = false;
         this.backgroundPath = this.getBackgroundPath();
     }
 

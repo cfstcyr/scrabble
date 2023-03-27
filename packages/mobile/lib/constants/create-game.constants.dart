@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 const String VP_LEVEL_FIELD_TITLE_FR =
     "Choisissez le niveau des joueurs virtuels qui vont compléter les joueurs manquants  ";
 const String VISIBILITY_FIELD_TITLE_FR =
@@ -5,8 +7,8 @@ const String VISIBILITY_FIELD_TITLE_FR =
 const String ROUND_TIME_FIELD_TITLE_FR = "Choisissez le temps par tour: ";
 const String CREATE_GAME_LABEL_FR = "Créer la partie";
 const String CANCEL_CREATION_LABEL_FR = "Annuler";
-const int DEFAULT_TIME = 60;
-const int MAX_TIME = 5;
-const int MIN_TIME = 30;
-const int _TIME = 60;
+const Duration DEFAULT_TIME = Duration(seconds: 60);
+const Duration MAX_TIME = Duration(minutes: 5);
+const Duration MIN_TIME = Duration(seconds: 30);
+const Duration INCREMENT_TIME = Duration(seconds: 30);
 const String ZERO = '0';

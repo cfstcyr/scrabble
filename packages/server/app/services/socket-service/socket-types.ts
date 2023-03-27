@@ -6,6 +6,7 @@ import { RequestingUsers } from '@common/models/requesting-users';
 import { HighScoreWithPlayers } from '@common/models/high-score';
 import { PublicUser } from '@common/models/user';
 import { NoId } from '@common/types/id';
+import { TilePlacement } from '@common/models/tile-placement';
 
 export type SocketEmitEvents =
     | 'joinRequest'
@@ -19,6 +20,7 @@ export type SocketEmitEvents =
     | 'groupsUpdate'
     | 'highScoresList'
     | 'newMessage'
+    | 'tilePlacement'
     | 'cleanup'
     | '_test_event';
 
@@ -33,4 +35,5 @@ export type StartGameEmitArgs = StartGameData;
 export type GroupsUpdateEmitArgs = Group[];
 export type HighScoresEmitArgs = NoId<HighScoreWithPlayers>[];
 export type NewMessageEmitArgs = Message;
+export type TilePlacementEmitArgs = TilePlacement[];
 export type CleanupEmitArgs = never;

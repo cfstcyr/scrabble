@@ -2,7 +2,6 @@
 // /* eslint-disable dot-notation */
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -68,7 +67,6 @@ describe('GroupPasswordDialogComponent', () => {
             declarations: [GroupPasswordDialogComponent, IconComponent, PageHeaderComponent],
             imports: [
                 AppMaterialModule,
-                HttpClientModule,
                 MatFormFieldModule,
                 ReactiveFormsModule,
                 MatSelectModule,
@@ -79,7 +77,6 @@ describe('GroupPasswordDialogComponent', () => {
                 BrowserAnimationsModule,
                 MatCardModule,
                 MatTabsModule,
-                HttpClientModule,
                 HttpClientTestingModule,
                 FormsModule,
                 CommonModule,

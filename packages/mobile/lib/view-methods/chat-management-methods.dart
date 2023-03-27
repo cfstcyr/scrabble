@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/channel.dart';
 
 import '../constants/chat-management.constants.dart';
 
@@ -25,11 +26,14 @@ SizedBox setDrawerTitle() {
   );
 }
 
-setName(String name) {
+setName(Channel channel) {
   return Text(
-    name,
+    channel.name,
     overflow: TextOverflow.ellipsis,
-    style: TextStyle(fontSize: 17),
+    style: TextStyle(
+        fontSize: 17,
+        fontWeight:
+            channel.hasUnreadMessages ? FontWeight.w500 : FontWeight.normal),
   );
 }
 

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable dot-notation */
-import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -9,6 +8,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { PlayerLeavesController } from '@app/controllers/player-leave-controller/player-leave.controller';
 import { SocketService } from '..';
 import { PlayerLeavesService } from './player-leave.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('PlayerLeavesService', () => {
     let service: PlayerLeavesService;
@@ -16,7 +16,7 @@ describe('PlayerLeavesService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientModule, RouterTestingModule, MatSnackBarModule, MatDialogModule],
+            imports: [HttpClientTestingModule, RouterTestingModule, MatSnackBarModule, MatDialogModule],
             providers: [PlayerLeavesController, SocketService],
         });
         service = TestBed.inject(PlayerLeavesService);

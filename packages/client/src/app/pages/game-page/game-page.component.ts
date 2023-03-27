@@ -68,7 +68,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
     @HostListener('document:keydown.escape', ['$event'])
     handleKeyboardEventEsc(): void {
-        this.tilePlacementService.resetTiles();
+        this.tilePlacementService.handleCancelPlacement();
     }
 
     @HostListener('window:beforeunload')
@@ -95,6 +95,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     passButtonClicked(): void {
+        this.gameService.makeTilePlacement([]);
         this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PASS, {}, '', true));
     }
 
@@ -118,6 +119,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
             buttonsContent[1] = DIALOG_ABANDON_BUTTON_CONTINUE;
         }
         this.openDialog(title, content, buttonsContent);
+        this.gameService.makeTilePlacement([]);
     }
 
     canPlay(): boolean {

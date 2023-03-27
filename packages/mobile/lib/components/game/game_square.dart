@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
+import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/components/tile/wildcard-dialog.dart';
@@ -14,13 +15,14 @@ import 'package:mobile/services/game.service.dart';
 const Color NOT_APPLIED_COLOR = Color.fromARGB(255, 66, 135, 69);
 
 class GameSquare extends StatelessWidget {
-  final GameService _gameService = getIt.get<GameService>();
+  final TileRack? tileRack;
   final GameEventService _gameEventService = getIt.get<GameEventService>();
 
   final Square square;
   final Color color;
 
   GameSquare({
+    required this.tileRack,
     required this.square,
   }) : color =
             square.multiplier != null ? square.getColor() : Color(0xFFEEEEEE) {
@@ -164,7 +166,7 @@ class GameSquare extends StatelessWidget {
     var tile = square.getTile();
 
     if (!square.getIsApplied() && tile != null) {
-      _gameService.getTileRack().placeTile(tile);
+      tileRack?.placeTile(tile);
       removeTile();
     }
   }

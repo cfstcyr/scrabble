@@ -1,6 +1,6 @@
 import ActionPlay from '@app/classes/actions/abstract-actions/action-play';
 import { ActionUtils } from '@app/classes/actions/action-utils/action-utils';
-import { ActionData, ActionExchangePayload, ActionType } from '@app/classes/communication/action-data';
+import { ActionData, ActionExchangePayload } from '@app/classes/communication/action-data';
 import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { PlayerData } from '@app/classes/communication/player-data';
@@ -8,6 +8,7 @@ import Game from '@app/classes/game/game';
 import Player from '@app/classes/player/player';
 import { Tile } from '@app/classes/tile';
 import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
+import { ActionType } from '@common/models/action';
 
 export default class ActionExchange extends ActionPlay {
     private tilesToExchange: Tile[];
