@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable dot-notation */
-import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
@@ -24,6 +23,7 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 import { Observable, Subject, Subscription } from 'rxjs';
 import SpyObj = jasmine.SpyObj;
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 class RoundManagerServiceWrapper {
     roundManagerService: RoundManagerService;
@@ -92,7 +92,7 @@ describe('RoundManagerService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [
-                HttpClientModule,
+                HttpClientTestingModule,
                 RouterTestingModule.withRoutes([
                     { path: 'game', component: TestComponent },
                     { path: 'home', component: TestComponent },

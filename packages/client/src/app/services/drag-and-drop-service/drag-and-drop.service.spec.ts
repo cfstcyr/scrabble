@@ -14,7 +14,6 @@ import { PublicUserStatistics } from '@common/models/user-statistics';
 import { BehaviorSubject } from 'rxjs';
 import { UserService } from '@app/services/user-service/user.service';
 import { DragAndDropService } from './drag-and-drop.service';
-import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import BoardService from '@app/services/board-service/board.service';
@@ -77,7 +76,7 @@ describe('DragAndDropService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [MatDialogModule, HttpClientModule, HttpClientTestingModule, RouterTestingModule],
+            imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule],
             providers: [
                 { provide: UserService, useValue: userService },
                 { provide: TilePlacementService, useValue: tilePlacementServiceSpy },

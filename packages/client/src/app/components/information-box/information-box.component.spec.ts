@@ -1,7 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -18,6 +17,7 @@ import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs'
 import { takeUntil } from 'rxjs/operators';
 import { InformationBoxComponent } from './information-box.component';
 import SpyObj = jasmine.SpyObj;
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
@@ -92,7 +92,7 @@ describe('InformationBoxComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [HttpClientModule, MatCardModule, MatTooltipModule],
+            imports: [HttpClientTestingModule, MatCardModule, MatTooltipModule],
             declarations: [InformationBoxComponent, IconComponent],
             providers: [
                 { provide: GameService, useValue: gameServiceSpy },
