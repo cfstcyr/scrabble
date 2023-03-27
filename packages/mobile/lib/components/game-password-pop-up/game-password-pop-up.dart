@@ -108,7 +108,7 @@ void handleCanceledGame(PublicUser host, context) {
         closesDialog: true,
         theme: AppButtonTheme.primary,
         onPressed: () {
-          Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+          Navigator.pop(context);
         })
   ]);
 }
@@ -124,7 +124,6 @@ void handleFullGroup(bool isFull, context) {
         theme: AppButtonTheme.primary,
         onPressed: () {
           Navigator.pop(context);
-          Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
         })
   ]);
 }
@@ -139,7 +138,7 @@ void handleGameStarted(PublicUser host, context) {
         closesDialog: true,
         theme: AppButtonTheme.primary,
         onPressed: () {
-          Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+          Navigator.pop(context);
         }),
   ]);
 }
