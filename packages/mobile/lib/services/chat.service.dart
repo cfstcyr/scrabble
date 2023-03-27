@@ -23,6 +23,7 @@ class ChatService {
 
     socketService.getSocket().onConnect((_) {
       _resetSubjects();
+      SocketService.socket.emit(INIT_EVENT);
     });
 
     socketService.getSocket().onDisconnect((_) {
@@ -153,8 +154,6 @@ class ChatService {
         _handleNewMessage(channelMessage);
       }
     });
-
-    SocketService.socket.emit(INIT_EVENT);
   }
 
   void _handleNewMessage(ChannelMessage channelMessage) {
