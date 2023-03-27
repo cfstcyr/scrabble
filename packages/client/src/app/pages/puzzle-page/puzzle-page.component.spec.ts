@@ -10,6 +10,7 @@ import { PuzzleService } from '@app/services/puzzle-service/puzzle.service';
 import { Subject } from 'rxjs';
 import { Puzzle } from '@common/models/puzzle';
 import { Square } from '@common/models/game';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const DEFAULT_TIME = 300;
 
@@ -27,7 +28,15 @@ describe('PuzzlePageComponent', () => {
         puzzleService = jasmine.createSpyObj(PuzzleService, { start: new Subject(), complete: new Subject(), abandon: new Subject() });
 
         await TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, MatDialogModule, AppRoutingModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
+            imports: [
+                HttpClientTestingModule,
+                MatDialogModule,
+                AppRoutingModule,
+                BrowserAnimationsModule,
+                FormsModule,
+                ReactiveFormsModule,
+                MatSnackBarModule,
+            ],
             declarations: [PuzzlePageComponent],
             providers: [{ provide: PuzzleService, useValue: puzzleService }],
         }).compileComponents();
