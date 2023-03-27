@@ -16,7 +16,8 @@ class DialogBoxButtonParameters {
       required this.theme,
       this.onPressed,
       this.closesDialog,
-      this.icon});
+      this.icon})
+      : assert(onPressed != null ? closesDialog == false : true);
 }
 
 void triggerDialogBox(
@@ -27,7 +28,8 @@ void triggerDialogBox(
     barrierDismissible: dismissOnBackgroundTouch,
     builder: (BuildContext context) {
       return AlertDialog(
-        actionsPadding: EdgeInsets.symmetric(horizontal: SPACE_4, vertical: SPACE_2),
+          actionsPadding:
+              EdgeInsets.symmetric(horizontal: SPACE_4, vertical: SPACE_2),
           title: Center(child: Text(title)),
           surfaceTintColor: Colors.white,
           shape: RoundedRectangleBorder(
