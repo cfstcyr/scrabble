@@ -41,6 +41,7 @@ class _ChatManagementState extends State<ChatManagement> {
     openChannelSubscription = _chatService.openedChannelId.listen((int? id) {
       if (id != null) {
         _chatService.scaffoldKey.currentState!.openEndDrawer();
+        _chatService.readChannelMessages(id);
       } else {
         _chatService.scaffoldKey.currentState?.closeEndDrawer();
       }

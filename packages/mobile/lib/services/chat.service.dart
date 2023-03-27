@@ -19,8 +19,10 @@ class ChatService {
   SocketService socketService = getIt.get<SocketService>();
 
   ChatService._privateConstructor() {
+    _configureSocket();
+
     socketService.getSocket().onConnect((_) {
-      _configureSocket();
+      _resetSubjects();
     });
 
     socketService.getSocket().onDisconnect((_) {
@@ -81,18 +83,30 @@ class ChatService {
     _openedChannelId$.add(null);
   }
 
-  void readMessage(int idChannel, String idMessage) {
+  void readChannelMessages(int idChannel) {
     List<Channel> myChannels = [..._myChannels$.value];
-    Channel channelOfMessage =
-        myChannels.firstWhere((Channel c) => c.idChannel == idChannel);
+    Channel channel =
+      myChannels.firstWhere((Channel c) => c.idChannel == idChannel);
 
-    channelOfMessage.messages
-        .where((ChannelMessage message) => message.message.uid == idMessage && message.isNotRead)
+    channel.messages
         .map((ChannelMessage message) => message.isRead = true)
         .toList();
 
     _myChannels$.add(myChannels);
   }
+
+  // void readMessage(int idChannel, String idMessage) {
+  //   List<Channel> myChannels = [..._myChannels$.value];
+  //   Channel channelOfMessage =
+  //       myChannels.firstWhere((Channel c) => c.idChannel == idChannel);
+  //
+  //   channelOfMessage.messages
+  //       .where((ChannelMessage message) => message.message.uid == idMessage && message.isNotRead)
+  //       .map((ChannelMessage message) => message.isRead = true)
+  //       .toList();
+  //
+  //   _myChannels$.add(myChannels);
+  // }
 
   Future<void> _configureSocket() async {
     socketService.on(MESSAGE_EVENT, (receivedChannelMessage) {
