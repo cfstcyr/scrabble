@@ -41,7 +41,7 @@ void showGamePasswordPopup(
               actions: <Widget>[
                 AppButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, GROUPS_ROUTE);
+                    Navigator.pop(context);
                   },
                   child: Wrap(children: [
                     Icon(Icons.arrow_back),
@@ -56,6 +56,7 @@ void showGamePasswordPopup(
                     bool isValid = await joinGroupFunction(
                         group.groupId, passwordHandler.controller.text, false);
                     if (isValid) {
+                      Navigator.pop(context);
                       Navigator.pushNamed(context, JOIN_LOBBY_ROUTE,
                           arguments: group);
                     } else {
