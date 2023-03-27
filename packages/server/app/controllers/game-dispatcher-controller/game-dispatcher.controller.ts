@@ -71,9 +71,6 @@ export class GameDispatcherController extends BaseController {
             const userId: UserId = req.body.idUser;
             const { password }: { password: string } = req.body;
             const { isObserver }: { isObserver: boolean } = req.body;
-            console.log(password);
-            console.log(isObserver);
-
             try {
                 const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
                 const publicUser = await this.userService.getUserById(userId);
