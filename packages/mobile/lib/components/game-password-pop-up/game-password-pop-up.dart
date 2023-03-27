@@ -105,12 +105,10 @@ void handleCanceledGame(PublicUser host, context) {
     Text("${host.username} a annulé la partie")
   ], [
     DialogBoxButtonParameters(
-        content: 'OK',
-        closesDialog: true,
-        theme: AppButtonTheme.primary,
-        onPressed: () {
-          Navigator.pop(context);
-        })
+      content: 'OK',
+      closesDialog: true,
+      theme: AppButtonTheme.primary,
+    )
   ]);
 }
 
@@ -120,12 +118,10 @@ void handleFullGroup(bool isFull, context) {
     Text(GAME_STARTED_MESSAGE)
   ], [
     DialogBoxButtonParameters(
-        closesDialog: true,
-        content: 'OK',
-        theme: AppButtonTheme.primary,
-        onPressed: () {
-          Navigator.pop(context);
-        })
+      closesDialog: true,
+      content: 'OK',
+      theme: AppButtonTheme.primary,
+    )
   ]);
 }
 
@@ -135,11 +131,9 @@ void handleGameStarted(PublicUser host, context) {
     Text(GAME_STARTED_MESSAGE)
   ], [
     DialogBoxButtonParameters(
-        content: 'OK',
-        closesDialog: true,
-        theme: AppButtonTheme.primary,
-        onPressed: () {
-          Navigator.pop(context);
-        }),
+      content: 'OK',
+      closesDialog: true,
+      theme: AppButtonTheme.primary,
+    ),
   ]);
 }
