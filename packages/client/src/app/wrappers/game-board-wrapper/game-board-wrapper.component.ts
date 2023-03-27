@@ -118,7 +118,10 @@ export class GameBoardWrapperComponent implements OnInit {
     }
 
     private clearNotAppliedSquares(): void {
-        this.notAppliedSquares.forEach((squareView) => (squareView.square.tile = null));
+        this.notAppliedSquares.forEach((squareView) => {
+            squareView.applied = false;
+            squareView.square.tile = null;
+        });
         this.notAppliedSquares = [];
     }
 

@@ -119,7 +119,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
             buttonsContent[1] = DIALOG_ABANDON_BUTTON_CONTINUE;
         }
         this.openDialog(title, content, buttonsContent);
-        this.gameService.makeTilePlacement([]);
     }
 
     canPlay(): boolean {
@@ -143,7 +142,10 @@ export class GamePageComponent implements OnInit, OnDestroy {
                         // We haven't been able to test that the right function is called because this
                         // arrow function creates a new instance of the function. We cannot spy on it.
                         // It totally works tho, try it!
-                        action: () => this.handlePlayerLeaves(),
+                        action: () => {
+                            this.handlePlayerLeaves();
+                            this.gameService.makeTilePlacement([]);
+                        },
                     },
                     {
                         content: buttonsContent[1],
