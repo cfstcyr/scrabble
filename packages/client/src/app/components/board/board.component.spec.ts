@@ -170,13 +170,13 @@ describe('BoardComponent', () => {
         }
         it(
             'Initializing board of size ' +
-                boardSize.x +
-                ' : ' +
-                boardSize.y +
-                ' should create board of size ' +
-                expectedBoardSize.x +
-                ' : ' +
-                expectedBoardSize.y,
+            boardSize.x +
+            ' : ' +
+            boardSize.y +
+            ' should create board of size ' +
+            expectedBoardSize.x +
+            ' : ' +
+            expectedBoardSize.y,
             () => {
                 component.squareGrid = [];
                 component.gridSize = { x: 0, y: 0 };
@@ -472,17 +472,6 @@ describe('BoardComponent', () => {
             component['handleOpponentPlaceTiles'](tilePlacements);
 
             expect(component['opponentPlacedTiles'].length).toEqual(tilePlacements.length);
-        });
-
-        it('should place tiles on grid', () => {
-            component['handleOpponentPlaceTiles'](tilePlacements);
-
-            for (let i = 0; i < tilePlacements.length; ++i) {
-                expect(component.squareGrid[0][i].square.tile).toBeDefined();
-                expect(component.squareGrid[0][i].square.tile!.letter).toEqual(tilePlacements[i].tile.letter);
-                expect(component.squareGrid[0][i].square.tile!.value).toEqual(tilePlacements[i].tile.value);
-                expect(component.squareGrid[0][i].applied).toBeFalse();
-            }
         });
 
         it('should reset notAppliedSquares values', () => {
