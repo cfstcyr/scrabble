@@ -107,10 +107,11 @@ class _IndividualGroupState extends State<IndividualGroup> {
                                       showGamePasswordPopup(
                                           context,
                                           widget.group,
-                                          widget.joinGroupFunction);
+                                          widget.joinGroupFunction,
+                                          true);
                                     } else {
                                       widget.joinGroupFunction(
-                                          widget.group.groupId, true);
+                                          widget.group.groupId, "", true);
                                       Navigator.pushNamed(
                                               context, JOIN_WAITING_ROUTE,
                                               arguments: widget.group)
@@ -152,7 +153,8 @@ class _IndividualGroupState extends State<IndividualGroup> {
                                             showGamePasswordPopup(
                                                 context,
                                                 widget.group,
-                                                widget.joinGroupFunction);
+                                                widget.joinGroupFunction,
+                                                false);
                                           } else {
                                             widget.joinGroupFunction(
                                                 widget.group.groupId,

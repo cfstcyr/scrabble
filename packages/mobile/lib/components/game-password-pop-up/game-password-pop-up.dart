@@ -13,8 +13,8 @@ import '../../view-methods/group.methods.dart';
 import '../alert-dialog.dart';
 import '../app_button.dart';
 
-void showGamePasswordPopup(
-    BuildContext context, Group group, Function joinGroupFunction) {
+void showGamePasswordPopup(BuildContext context, Group group,
+    Function joinGroupFunction, bool isObserver) {
   StreamSubscription canceledSubscription;
   StreamSubscription fullGroupSubscription;
   StreamSubscription gameStartedSubscription;
@@ -60,21 +60,22 @@ void showGamePasswordPopup(
                   onPressed: () {
                     Navigator.pop(context);
                   },
+                  size: AppButtonSize.large,
+                  theme: AppButtonTheme.secondary,
                   child: Wrap(children: [
                     Icon(Icons.arrow_back),
                     const Text(GO_BACK_GROUPS, style: TextStyle(fontSize: 18))
                   ]),
-                  size: AppButtonSize.large,
-                  theme: AppButtonTheme.secondary,
                 ),
                 SizedBox(width: 30),
                 AppButton(
                   onPressed: () async {
-                    bool isValid = await joinGroupFunction(
-                        group.groupId, passwordHandler.controller.text, false);
+                    bool isValid = await joinGroupFunction(group.groupId,
+                        passwordHandler.controller.text, isObserver);
                     if (isValid) {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, JOIN_LOBBY_ROUTE,
+                      if (isObserver) group.numberOfObservers++;
+                      // ignore: use_build_context_synchronously
+                      Navigator.popAndPushNamed(context, JOIN_LOBBY_ROUTE,
                           arguments: group);
                     } else {
                       setState(() {
@@ -82,6 +83,7 @@ void showGamePasswordPopup(
                       });
                     }
                   },
+                  size: AppButtonSize.large,
                   child: Wrap(children: [
                     const Text(JOIN_GAME_LABEL_FR,
                         style: TextStyle(color: Colors.white, fontSize: 18)),
@@ -90,7 +92,6 @@ void showGamePasswordPopup(
                       color: Colors.white,
                     ),
                   ]),
-                  size: AppButtonSize.large,
                 ),
               ],
               backgroundColor: Colors.white,

@@ -9,7 +9,7 @@ class Group {
   final VirtualPlayerLevel virtualPlayerLevel;
   final GameVisibility gameVisibility;
   final String? password;
-  final int numberOfObservers;
+  int numberOfObservers;
   bool? canJoin;
 
   Group(

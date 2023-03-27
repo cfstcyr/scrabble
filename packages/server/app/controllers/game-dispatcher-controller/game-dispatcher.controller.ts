@@ -3,25 +3,25 @@ import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { PlayerData } from '@app/classes/communication/player-data';
 import { CreateGameRequest, GameRequest, GroupsRequest } from '@app/classes/communication/request';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import Player from '@app/classes/player/player';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { GAME_IS_OVER, MAX_ROUND_TIME_REQUIRED, PLAYER_NAME_REQUIRED } from '@app/constants/controllers-errors';
 import { SYSTEM_ID } from '@app/constants/game-constants';
+import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatcher-const';
 import { BaseController } from '@app/controllers/base-controller';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { GameDispatcherService } from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
-import { Response, Router } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import { Service } from 'typedi';
-import Player from '@app/classes/player/player';
-import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatcher-const';
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { UserService } from '@app/services/user-service/user-service';
 import { fillPlayerData } from '@app/utils/fill-player-data/fill-player-data';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group, GroupData } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
+import { Response, Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { Service } from 'typedi';
 @Service()
 export class GameDispatcherController extends BaseController {
     constructor(
@@ -71,6 +71,8 @@ export class GameDispatcherController extends BaseController {
             const userId: UserId = req.body.idUser;
             const { password }: { password: string } = req.body;
             const { isObserver }: { isObserver: boolean } = req.body;
+            console.log(password);
+            console.log(isObserver);
 
             try {
                 const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
