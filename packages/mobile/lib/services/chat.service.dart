@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/constants/assets.constants.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
+import 'package:mobile/services/user.service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -96,19 +97,6 @@ class ChatService {
     _myChannels$.add(myChannels);
   }
 
-  // void readMessage(int idChannel, String idMessage) {
-  //   List<Channel> myChannels = [..._myChannels$.value];
-  //   Channel channelOfMessage =
-  //       myChannels.firstWhere((Channel c) => c.idChannel == idChannel);
-  //
-  //   channelOfMessage.messages
-  //       .where((ChannelMessage message) => message.message.uid == idMessage && message.isNotRead)
-  //       .map((ChannelMessage message) => message.isRead = true)
-  //       .toList();
-  //
-  //   _myChannels$.add(myChannels);
-  // }
-
   Future<void> _configureSocket() async {
     socketService.on(MESSAGE_EVENT, (receivedChannelMessage) {
       ChannelMessage channelMessage =
@@ -116,7 +104,7 @@ class ChatService {
       channelMessage.isRead = false;
 
       _handleNewMessage(channelMessage);
-      _notificationPlayer.play(AssetSource(NOTIFICATION_PATH));
+      _handlePlayNotificationSound(channelMessage.message.sender.username, channelMessage.idChannel);
     });
 
     socketService.on(CHANNEL_CREATED_EVENT, (receivedChannel) {
@@ -191,6 +179,13 @@ class ChatService {
     if (_openedChannelId$.value == channel.idChannel) {
       _openedChannelId$.add(null);
     }
+  }
+
+  void _handlePlayNotificationSound(String senderUsername, int idChannel) {
+    String? currentUsername = getIt.get<UserService>().user.valueOrNull?.username;
+    if (currentUsername == null || currentUsername == senderUsername || openedChannelId.value == idChannel) return;
+
+    _notificationPlayer.play(AssetSource(NOTIFICATION_PATH));
   }
 
   void _resetSubjects() {
