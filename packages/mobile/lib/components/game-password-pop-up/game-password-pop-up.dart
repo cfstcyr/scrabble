@@ -1,15 +1,32 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/routes/routes.dart';
 
 import '../../classes/group.dart';
 import '../../classes/text-field-handler.dart';
+import '../../classes/user.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/join-game.constants.dart';
 import '../../constants/join-group.constants.dart';
+import '../../view-methods/group.methods.dart';
+import '../alert-dialog.dart';
 import '../app_button.dart';
 
 void showGamePasswordPopup(
     BuildContext context, Group group, Function joinGroupFunction) {
+  StreamSubscription canceledSubscription;
+  StreamSubscription fullGroupSubscription;
+  StreamSubscription gameStartedSubscription;
+  canceledSubscription = canceledStream.listen((PublicUser host) {
+    handleCanceledGame(host, context);
+  });
+  fullGroupSubscription = fullGroupStream.listen((isFull) {
+    handleFullGroup(isFull, context);
+  });
+  gameStartedSubscription = rejectedStream.listen((PublicUser host) {
+    handleGameStarted(host, context);
+  });
   String _password = "";
   final passwordHandler = TextFieldHandler();
   showDialog<String>(
@@ -79,4 +96,44 @@ void showGamePasswordPopup(
               backgroundColor: Colors.white,
             );
           }));
+}
+
+void handleCanceledGame(PublicUser host, context) {
+  Navigator.pop(context);
+  triggerDialogBox(GAME_CANCELED, "${host.username} a annulé la partie", [
+    DialogBoxButtonParameters(
+        content: 'OK',
+        closesDialog: true,
+        theme: AppButtonTheme.primary,
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+        })
+  ]);
+}
+
+void handleFullGroup(bool isFull, context) {
+  Navigator.pop(context);
+  triggerDialogBox(GAME_STARTED, GAME_STARTED_MESSAGE, [
+    DialogBoxButtonParameters(
+        closesDialog: true,
+        content: 'OK',
+        theme: AppButtonTheme.primary,
+        onPressed: () {
+          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+        })
+  ]);
+}
+
+void handleGameStarted(PublicUser host, context) {
+  Navigator.pop(context);
+  triggerDialogBox(GAME_STARTED, GAME_STARTED_MESSAGE, [
+    DialogBoxButtonParameters(
+        content: 'OK',
+        closesDialog: true,
+        theme: AppButtonTheme.primary,
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+        }),
+  ]);
 }
