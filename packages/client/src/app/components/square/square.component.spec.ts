@@ -22,7 +22,7 @@ import { BoardService } from '@app/services';
 import { DragAndDropService } from '@app/services/drag-and-drop-service/drag-and-drop.service';
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
-import {  Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SquareComponent } from './square.component';
 
 class MockBoardService {

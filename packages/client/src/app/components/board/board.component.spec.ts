@@ -170,13 +170,13 @@ describe('BoardComponent', () => {
         }
         it(
             'Initializing board of size ' +
-            boardSize.x +
-            ' : ' +
-            boardSize.y +
-            ' should create board of size ' +
-            expectedBoardSize.x +
-            ' : ' +
-            expectedBoardSize.y,
+                boardSize.x +
+                ' : ' +
+                boardSize.y +
+                ' should create board of size ' +
+                expectedBoardSize.x +
+                ' : ' +
+                expectedBoardSize.y,
             () => {
                 component.squareGrid = [];
                 component.gridSize = { x: 0, y: 0 };

@@ -73,7 +73,7 @@ export class InitializedGameService implements OnDestroy {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    ngOnDestroy(): void { }
+    ngOnDestroy(): void {}
 
     isLocalPlayerPlaying(): boolean {
         return true;
@@ -82,7 +82,7 @@ export class InitializedGameService implements OnDestroy {
         return 'game-id';
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    resetGameId(): void { }
+    resetGameId(): void {}
 
     getPlayerByNumber(playerNumber: number): Player | undefined {
         return this.playerContainer.getPlayer(playerNumber);
@@ -102,5 +102,5 @@ export class InitializedGameService implements OnDestroy {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    resetServiceData(): void { }
+    resetServiceData(): void {}
 }

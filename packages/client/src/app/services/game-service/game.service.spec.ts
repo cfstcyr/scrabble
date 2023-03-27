@@ -74,7 +74,7 @@ const DEFAULT_PLAYER_4 = {
 @Component({
     template: '',
 })
-class TestComponent { }
+class TestComponent {}
 
 describe('GameService', () => {
     let service: GameService;
@@ -85,7 +85,7 @@ describe('GameService', () => {
 
     beforeEach(() => {
         boardServiceSpy = jasmine.createSpyObj('BoardService', ['initializeBoard', 'updateBoard', 'updateTemporaryTilePlacements']);
-        boardServiceSpy.updateTemporaryTilePlacements.and.callFake(() => { });
+        boardServiceSpy.updateTemporaryTilePlacements.and.callFake(() => {});
 
         roundManagerSpy = jasmine.createSpyObj('RoundManagerService', [
             'convertRoundDataToRound',
@@ -224,7 +224,7 @@ describe('GameService', () => {
         let initializeGameSpy: jasmine.Spy;
 
         beforeEach(() => {
-            initializeGameSpy = spyOn<any>(service, 'initializeGame').and.callFake(async () => { });
+            initializeGameSpy = spyOn<any>(service, 'initializeGame').and.callFake(async () => {});
         });
 
         it('should do nothing if initializeGameData is undefined', async () => {
