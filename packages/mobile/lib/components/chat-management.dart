@@ -81,7 +81,7 @@ class _ChatManagementState extends State<ChatManagement> {
         List<Channel> filteredChannels = searchQuery == null
             ? joinableChannels
             : joinableChannels
-                .where((Channel c) => c.name.startsWith(searchQuery))
+                .where((Channel c) => c.name.contains(searchQuery))
                 .toList();
 
         return ListView.builder(
