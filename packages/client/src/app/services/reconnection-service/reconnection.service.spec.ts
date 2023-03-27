@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable dot-notation */
-import { HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -11,6 +10,7 @@ import { GameDispatcherController } from '@app/controllers/game-dispatcher-contr
 import { UNKOWN_USER } from '@common/models/user';
 import { ReconnectionService } from './reconnection.service';
 import SpyObj = jasmine.SpyObj;
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 describe('ReconnectionService', () => {
@@ -23,7 +23,7 @@ describe('ReconnectionService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientModule, RouterTestingModule, MatSnackBarModule, MatDialogModule],
+            imports: [HttpClientTestingModule, RouterTestingModule, MatSnackBarModule, MatDialogModule],
             providers: [{ provide: GameDispatcherController, useValue: gameDispatcherSpy }],
         });
         service = TestBed.inject(ReconnectionService);

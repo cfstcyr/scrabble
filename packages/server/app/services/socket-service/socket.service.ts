@@ -4,6 +4,7 @@ import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { INVALID_ID_FOR_SOCKET, NO_TOKEN, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { ServerActionService } from '@app/services/server-action-service/server-action.service';
 import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { ClientEvents, ServerEvents } from '@common/events/events';
@@ -15,7 +16,6 @@ import * as http from 'http';
 import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import * as io from 'socket.io';
 import { Service } from 'typedi';
-import { ServerActionService } from '@app/services/server-action-service/server-action.service';
 import {
     AcceptJoinRequestEmitArgs,
     CancelledGroupEmitArgs,
@@ -29,6 +29,7 @@ import {
     RejectJoinRequestEmitArgs,
     SocketEmitEvents,
     StartGameEmitArgs,
+    TilePlacementEmitArgs,
     UserLeftGroupEmitArgs,
 } from './socket-types';
 
@@ -149,6 +150,7 @@ export class SocketService {
     emitToRoom(id: string, ev: 'groupsUpdate', ...args: GroupsUpdateEmitArgs[]): void;
     emitToRoom(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
     emitToRoom(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
+    emitToRoom(id: string, ev: 'tilePlacement', ...args: TilePlacementEmitArgs[]): void;
     emitToRoom(id: string, ev: 'cleanup', ...args: CleanupEmitArgs[]): void;
     emitToRoom(id: string, ev: '_test_event', ...args: unknown[]): void;
     emitToRoom<T>(room: string, ev: SocketEmitEvents, ...args: T[]): void {
@@ -186,6 +188,7 @@ export class SocketService {
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'groupsUpdate', ...args: GroupsUpdateEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
+    emitToRoomNoSender(id: string, socketSenderId: string, ev: 'tilePlacement', ...args: TilePlacementEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'cleanup', ...args: CleanupEmitArgs[]): void;
     emitToRoomNoSender(id: string, socketSenderId: string, ev: '_test_event', ...args: unknown[]): void;
     emitToRoomNoSender<T>(room: string, socketSenderId: string, ev: SocketEmitEvents, ...args: T[]): void {

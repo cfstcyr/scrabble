@@ -1,20 +1,21 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { PlaceActionPayload } from '@app/classes/actions/action-data';
 import { Orientation } from '@app/classes/actions/orientation';
+import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { Position } from '@app/classes/board-navigator/position';
 import { LetterValue, TilePlacement } from '@app/classes/tile';
-import { CANNOT_REMOVE_UNUSED_TILE } from '@app/constants/component-errors';
-import { BOARD_SIZE } from '@app/constants/game-constants';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import BoardService from '@app/services/board-service/board.service';
-import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
-import { comparePlacements, comparePositions } from '@app/utils/comparator/comparator';
-import { PlaceActionPayload } from '@app/classes/actions/action-data';
-import { MatDialog } from '@angular/material/dialog';
 import {
     ChooseBlankTileDialogComponent,
     ChooseBlankTileDialogParameters,
 } from '@app/components/choose-blank-tile-dialog/choose-blank-tile-dialog.component';
+import { CANNOT_REMOVE_UNUSED_TILE } from '@app/constants/component-errors';
+import { BOARD_SIZE } from '@app/constants/game-constants';
+import BoardService from '@app/services/board-service/board.service';
+import { comparePlacements, comparePositions } from '@app/utils/comparator/comparator';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 
 @Injectable({
     providedIn: 'root',
@@ -24,7 +25,7 @@ export class TilePlacementService {
     private tilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private isPlacementValidSubject$: BehaviorSubject<boolean>;
 
-    constructor(private readonly boardService: BoardService, private readonly dialog: MatDialog) {
+    constructor(private readonly boardService: BoardService, private readonly dialog: MatDialog, private readonly roundManager: RoundManagerService) {
         this.blankTileModalOpened$ = new BehaviorSubject<boolean>(false);
         this.tilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
         this.isPlacementValidSubject$ = new BehaviorSubject<boolean>(false);
@@ -49,6 +50,7 @@ export class TilePlacementService {
     }
 
     placeTile(tilePlacement: TilePlacement): void {
+        if (!this.roundManager.isActivePlayerLocalPlayer()) return;
         if (tilePlacement.tile.isBlank || tilePlacement.tile.letter === '*') {
             this.askFillBlankLetter((letter) => {
                 tilePlacement.tile.playedLetter = letter as LetterValue;
@@ -99,10 +101,15 @@ export class TilePlacementService {
         this.updatePlacement();
     }
 
-    resetTiles(): void {
+    handleCancelPlacement(): void {
         this.tilePlacements.forEach(({ tile }) => (tile.playedLetter = undefined));
         this.tilePlacementsSubject$.next([]);
         this.updatePlacement();
+    }
+
+    resetTiles(): void {
+        this.handleCancelPlacement();
+        this.boardService.updateTemporaryTilePlacements([]);
     }
 
     createPlaceActionPayload(): PlaceActionPayload | undefined {

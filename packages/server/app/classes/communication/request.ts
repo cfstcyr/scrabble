@@ -1,3 +1,5 @@
+import { UserRequest } from '@app/types/user';
+import { TilePlacement } from '@common/models/tile-placement';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { Request } from 'express';
 
@@ -19,3 +21,5 @@ export type VirtualPlayerProfilesRequest = Request & { params: { level?: Virtual
 export type GameHistoriesRequest = Request & { params: { playerId: string } };
 
 export type GroupsRequest = Request & { params: { playerId: string } };
+
+export type PlaceRequest = UserRequest<{ tilePlacement: TilePlacement[] }> & { params: { gameId: string } };

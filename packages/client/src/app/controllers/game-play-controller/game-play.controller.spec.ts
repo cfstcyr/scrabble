@@ -10,6 +10,7 @@ import { SocketTestHelper } from '@app/classes/socket-test-helper/socket-test-he
 import { HTTP_ABORT_ERROR } from '@app/constants/controllers-errors';
 import { SYSTEM_ID } from '@app/constants/game-constants';
 import SocketService from '@app/services/socket-service/socket.service';
+import { TilePlacement } from '@common/models/tile-placement';
 import { Observable, of, Subscription } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
@@ -65,6 +66,20 @@ describe('GamePlayController', () => {
                 gameId: DEFAULT_GAME_ID,
             };
             socketHelper.peerSideEmit('newMessage', newMessage);
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('on TilePlacement should push new tile placement', () => {
+            const spy = spyOn(controller['tilePlacement$'], 'next').and.callFake(() => {
+                return;
+            });
+
+            const tilePlacement: TilePlacement = {
+                tile: { letter: 'A', value: 1 },
+                position: { row: 0, column: 0 },
+            };
+
+            socketHelper.peerSideEmit('tilePlacement', tilePlacement);
             expect(spy).toHaveBeenCalled();
         });
     });
@@ -175,5 +190,10 @@ describe('GamePlayController', () => {
     it('observeActionDone should return actionDone$ as observable', () => {
         const result: Observable<void> = controller.observeActionDone();
         expect(result).toEqual(controller['actionDone$'].asObservable());
+    });
+
+    it('observetilePlacement should return tilePlacement$ as observable', () => {
+        const result: Observable<TilePlacement[]> = controller.observeTilePlacement();
+        expect(result).toEqual(controller['tilePlacement$'].asObservable());
     });
 });

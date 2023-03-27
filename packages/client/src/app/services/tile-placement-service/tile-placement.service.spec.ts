@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
@@ -16,6 +17,7 @@ import { PublicUserStatistics } from '@common/models/user-statistics';
 import { BehaviorSubject } from 'rxjs';
 import { UserService } from '@app/services/user-service/user.service';
 import { TilePlacementService } from './tile-placement.service';
+import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 
 const DEFAULT_PLACEMENT: TilePlacement = {
     position: { row: 0, column: 0 },
@@ -57,10 +59,18 @@ describe('TilePlacementService', () => {
     userService.gameHistory = new BehaviorSubject<GameHistoryForUser[]>([]);
     userService.serverActions = new BehaviorSubject<PublicServerAction[]>([]);
 
+    const spyRoundManagerService = jasmine.createSpyObj(RoundManagerService, ['isActivePlayerLocalPlayer']);
+    spyRoundManagerService.isActivePlayerLocalPlayer.and.callFake(() => {
+        return true;
+    });
+
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [MatDialogModule],
-            providers: [{ provide: UserService, userValue: userService }],
+            providers: [
+                { provide: UserService, useValue: userService },
+                { provide: RoundManagerService, useValue: spyRoundManagerService },
+            ],
         });
         service = TestBed.inject(TilePlacementService);
         boardService = TestBed.inject(BoardService);

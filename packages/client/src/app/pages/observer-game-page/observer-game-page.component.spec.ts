@@ -15,8 +15,10 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BoardComponent } from '@app/components/board/board.component';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { IconComponent } from '@app/components/icon/icon.component';
+import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
 import { TileComponent } from '@app/components/tile/tile.component';
 import { DEFAULT_PLAYER } from '@app/constants/game-constants';
 import { DIALOG_QUIT_BUTTON_CONFIRM, DIALOG_QUIT_CONTENT, DIALOG_QUIT_STAY, DIALOG_QUIT_TITLE } from '@app/constants/pages-constants';
@@ -106,6 +108,14 @@ describe('ObserverGamePageComponent', () => {
                 {
                     provide: RoundManagerService,
                     useClass: RoundManagerServiceMock,
+                },
+                {
+                    provide: BoardComponent,
+                    useClass: MockBoardComponent,
+                },
+                {
+                    provide: TileRackComponent,
+                    useClass: MockTileRackComponent,
                 },
             ],
         }).compileComponents();

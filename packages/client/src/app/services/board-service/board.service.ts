@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { Square } from '@app/classes/square';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { TilePlacement } from '@app/classes/tile';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Injectable({
@@ -12,6 +13,11 @@ export default class BoardService {
     private initialBoard: Square[][] = [];
     private boardInitialization$: Subject<Square[][]> = new Subject();
     private boardUpdateEvent$: Subject<Square[]> = new Subject();
+    private temporaryTilePlacements$: BehaviorSubject<TilePlacement[]>;
+
+    constructor() {
+        this.temporaryTilePlacements$ = new BehaviorSubject<TilePlacement[]>([]);
+    }
 
     initializeBoard(board: Square[][]): void {
         this.initialBoard = [...board];
@@ -32,5 +38,13 @@ export default class BoardService {
 
     readInitialBoard(): Square[][] {
         return [...this.initialBoard];
+    }
+
+    updateTemporaryTilePlacements(tilePlacements: TilePlacement[]): void {
+        this.temporaryTilePlacements$.next(tilePlacements);
+    }
+
+    subscribeToTemporaryTilePlacements(destroy$: Observable<boolean>, next: (tilePlacements: TilePlacement[]) => void): Subscription {
+        return this.temporaryTilePlacements$.pipe(takeUntil(destroy$)).subscribe(next);
     }
 }

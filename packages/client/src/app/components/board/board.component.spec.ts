@@ -76,17 +76,31 @@ describe('BoardComponent', () => {
     beforeEach(() => {
         boardServiceSpy = jasmine.createSpyObj(
             'BoardService',
-            ['initializeBoard', 'subscribeToInitializeBoard', 'subscribeToBoardUpdate', 'updateBoard', 'readInitialBoard'],
+            [
+                'initializeBoard',
+                'subscribeToInitializeBoard',
+                'subscribeToBoardUpdate',
+                'updateBoard',
+                'readInitialBoard',
+                'subscribeToTemporaryTilePlacements',
+                'updateTemporaryTilePlacements',
+            ],
             ['boardInitialization$', 'boardUpdateEvent$', 'initialBoard'],
         );
 
         const updateObs = new Subject<Square[]>();
         const initObs = new Subject<Square[][]>();
+        const tilePlacementObs = new Subject<TilePlacement[]>();
 
         boardServiceSpy.readInitialBoard.and.returnValue(createGrid(BOARD_SERVICE_GRID_SIZE));
         boardServiceSpy.subscribeToInitializeBoard.and.callFake((destroy$: Observable<boolean>, next: (board: Square[][]) => void) => {
             return initObs.pipe(takeUntil(destroy$)).subscribe(next);
         });
+        boardServiceSpy.subscribeToTemporaryTilePlacements.and.callFake(
+            (destroy$: Observable<boolean>, next: (tilePlacement: TilePlacement[]) => void) => {
+                return tilePlacementObs.pipe(takeUntil(destroy$)).subscribe(next);
+            },
+        );
         boardServiceSpy.subscribeToBoardUpdate.and.callFake((destroy$: Observable<boolean>, next: (squaresToUpdate: Square[]) => void) => {
             return updateObs.pipe(takeUntil(destroy$)).subscribe(next);
         });
@@ -441,6 +455,32 @@ describe('BoardComponent', () => {
             component.clearNewlyPlacedTiles();
 
             expect(component['newlyPlacedTiles']).toHaveSize(0);
+        });
+    });
+
+    describe('opponentPlacedTiles', () => {
+        let tilePlacements: TilePlacement[];
+
+        beforeEach(() => {
+            tilePlacements = [
+                { tile: { letter: 'A', value: 0 }, position: { row: 0, column: 0 } },
+                { tile: { letter: 'B', value: 0 }, position: { row: 0, column: 1 } },
+            ];
+        });
+
+        it('should add squareView to opponentPlacedTiles', () => {
+            component['handleOpponentPlaceTiles'](tilePlacements);
+
+            expect(component['opponentPlacedTiles'].length).toEqual(tilePlacements.length);
+        });
+
+        it('should reset notAppliedSquares values', () => {
+            const squareView: SquareView = new SquareView(UNDEFINED_SQUARE, SQUARE_SIZE);
+            squareView.square.tile = new Tile('A', 0);
+            component['opponentPlacedTiles'] = [squareView];
+            component['handleOpponentPlaceTiles']([]);
+
+            expect(squareView.square.tile).toBeNull();
         });
     });
 });

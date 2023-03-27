@@ -1,5 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { ActionType } from '@app/classes/actions/action-data';
 import { GameUpdateData, PlayerData } from '@app/classes/communication/';
 import { InitializeGameData, StartGameData } from '@app/classes/communication/game-config';
 import { Message } from '@app/classes/communication/message';
@@ -10,15 +11,15 @@ import { TileReserveData } from '@app/classes/tile/tile.types';
 import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
 import { ROUTE_GAME, ROUTE_GAME_OBSERVER } from '@app/constants/routes-constants';
 import { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';
+import { ActionService } from '@app/services/action-service/action.service';
 import BoardService from '@app/services/board-service/board.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
+import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-service-data';
+import { TilePlacement } from '@common/models/tile-placement';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
-import { ActionService } from '@app/services/action-service/action.service';
-import { ActionType } from '@app/classes/actions/action-data';
 
 @Injectable({
     providedIn: 'root',
@@ -55,6 +56,13 @@ export default class GameService implements OnDestroy, IResetServiceData {
             .pipe(takeUntil(this.serviceDestroyed$))
             .subscribe((newData) => this.handleGameUpdate(newData));
 
+        this.tilePlacementService.tilePlacements$.subscribe((tilePlacements) => this.makeTilePlacement(tilePlacements));
+
+        this.gameController
+            .observeTilePlacement()
+            .pipe(takeUntil(this.serviceDestroyed$))
+            .subscribe((tilePlacement) => this.handleTilePlacement(tilePlacement));
+
         this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());
     }
 
@@ -70,8 +78,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
 
     isLocalPlayerPlaying(): boolean {
-        if (!this.playerContainer) return false;
-        return this.getPlayingPlayerId() === this.playerContainer.getLocalPlayerId();
+        return this.roundManager.currentRound?.player.id === this.playerContainer?.getLocalPlayerId();
     }
 
     getGameId(): string {
@@ -130,8 +137,10 @@ export default class GameService implements OnDestroy, IResetServiceData {
         );
     }
 
-    private getPlayingPlayerId(): string {
-        return this.roundManager.getActivePlayer().id;
+    makeTilePlacement(tilePlacement: TilePlacement[]): void {
+        if (this.isLocalPlayerPlaying()) {
+            this.gameController.handleTilePlacement(this.gameId, tilePlacement);
+        }
     }
 
     private async initializeGame(localPlayerId: string, startGameData: StartGameData, isObserver: boolean): Promise<void> {
@@ -168,6 +177,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
 
     private handleGameUpdate(gameUpdateData: GameUpdateData): void {
+        this.tilePlacementService.resetTiles();
         if (gameUpdateData.isGameOver) {
             this.handleGameOver(gameUpdateData.winners ?? []);
         }
@@ -211,6 +221,10 @@ export default class GameService implements OnDestroy, IResetServiceData {
         if (newMessage.senderId === SYSTEM_ERROR_ID) {
             this.tilePlacementService.resetTiles();
         }
+    }
+
+    private handleTilePlacement(tilePlacement: TilePlacement[]): void {
+        this.boardService.updateTemporaryTilePlacements(tilePlacement);
     }
 
     private handleGameOver(winnerNames: string[]): void {
