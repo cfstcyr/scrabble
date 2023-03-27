@@ -194,9 +194,9 @@ class _IndividualGroupState extends State<IndividualGroup> {
     triggerDialogBox("Partie annulée", "${host.username} a annulé la partie", [
       DialogBoxButtonParameters(
           content: 'OK',
+          closesDialog: true,
           theme: AppButtonTheme.primary,
           onPressed: () {
-            Navigator.pop(context);
             Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
           })
     ]);
@@ -205,6 +205,7 @@ class _IndividualGroupState extends State<IndividualGroup> {
   void handleFullGroup(bool isFull) {
     triggerDialogBox(FULL_GROUP, FULL_GROUP_MESSAGE, [
       DialogBoxButtonParameters(
+          closesDialog: true,
           content: 'OK',
           theme: AppButtonTheme.primary,
           onPressed: () {
@@ -218,11 +219,11 @@ class _IndividualGroupState extends State<IndividualGroup> {
     triggerDialogBox(GAME_STARTED, GAME_STARTED_MESSAGE, [
       DialogBoxButtonParameters(
           content: 'OK',
+          closesDialog: true,
           theme: AppButtonTheme.primary,
           onPressed: () {
-            Navigator.pop(context);
             Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
-          })
+          }),
     ]);
   }
 }
