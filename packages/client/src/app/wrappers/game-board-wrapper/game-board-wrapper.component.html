@@ -1,0 +1,8 @@
+<mat-card>
+    <app-board
+        [isObserver]="isObserver"
+        [grid]="grid"
+        [canInteract]='!gameService.isGameOver'
+        (clearNewlyPlacedTiles)="clearNewlyPlacedTiles()"
+    ></app-board>
+</mat-card>

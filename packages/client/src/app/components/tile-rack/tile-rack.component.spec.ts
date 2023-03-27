@@ -27,7 +27,6 @@ import { TileRackSelectType } from '@app/constants/tile-rack-select-type';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { BoardService, GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Random } from '@app/utils/random/random';
 import { Observable, Subject, Subscription } from 'rxjs';
@@ -45,12 +44,6 @@ class MockBoardService {
     }
 }
 
-class MockRoundManager {
-    isActivePlayerLocalPlayer(): boolean {
-        return true;
-    }
-}
-
 describe('TileRackComponent', () => {
     const EMPTY_TILE_RACK: RackTile[] = [];
     let gameServiceSpy: SpyObj<GameService>;
@@ -59,17 +52,11 @@ describe('TileRackComponent', () => {
     let fixture: ComponentFixture<TileRackComponent>;
     let handleUsedTileSpy: jasmine.Spy;
     let mockBoardService;
-    let mockRoundManager;
     let tilePlacementServiceSpy: TilePlacementService;
 
     beforeEach(() => {
         mockBoardService = new MockBoardService();
-        mockRoundManager = new MockRoundManager();
-        tilePlacementServiceSpy = new TilePlacementService(
-            mockBoardService as unknown as BoardService,
-            {} as unknown as MatDialog,
-            mockRoundManager as unknown as RoundManagerService,
-        );
+        tilePlacementServiceSpy = new TilePlacementService(mockBoardService as unknown as BoardService, {} as unknown as MatDialog);
     });
 
     beforeEach(() => {

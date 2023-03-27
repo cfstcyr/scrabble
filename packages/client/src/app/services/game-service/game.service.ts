@@ -143,6 +143,10 @@ export default class GameService implements OnDestroy, IResetServiceData {
         }
     }
 
+    cannotPlay(): boolean {
+        return this.isGameSetUp && !this.isLocalPlayerPlaying();
+    }
+
     private async initializeGame(localPlayerId: string, startGameData: StartGameData, isObserver: boolean): Promise<void> {
         this.isObserver = isObserver;
         this.gameId = startGameData.gameId;
@@ -229,6 +233,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
 
     private handleGameOver(winnerNames: string[]): void {
         this.isGameOver = true;
+        this.isGameSetUp = false;
         this.roundManager.resetTimerData();
         this.gameViewEventManagerService.emitGameViewEvent('endOfGame', winnerNames);
     }

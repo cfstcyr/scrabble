@@ -25,7 +25,7 @@ export default class BoardService {
     }
 
     subscribeToInitializeBoard(destroy$: Observable<boolean>, next: (board: Square[][]) => void): Subscription {
-        return this.boardInitialization$.pipe(takeUntil(destroy$)).subscribe(next);
+        return this.boardInitialization$.pipe().subscribe(next);
     }
 
     updateBoard(squaresUpdated: Square[]): void {
@@ -44,7 +44,7 @@ export default class BoardService {
         this.temporaryTilePlacements$.next(tilePlacements);
     }
 
-    subscribeToTemporaryTilePlacements(destroy$: Observable<boolean>, next: (tilePlacements: TilePlacement[]) => void): Subscription {
-        return this.temporaryTilePlacements$.pipe(takeUntil(destroy$)).subscribe(next);
+    subscribeToTemporaryTilePlacements(next: (tilePlacements: TilePlacement[]) => void): Subscription {
+        return this.temporaryTilePlacements$.subscribe(next);
     }
 }

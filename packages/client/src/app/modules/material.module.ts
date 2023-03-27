@@ -31,6 +31,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { CommonModule } from '@angular/common';
 
 const modules = [
     // MatAutocompleteModule,
@@ -74,8 +75,9 @@ const modules = [
  * IMPORTANT : IMPORT ONLY USED MODULES !!!!!!
  */
 @NgModule({
-    imports: [...modules],
+    imports: [...modules, CommonModule],
     exports: [...modules],
     providers: [],
+    declarations: [],
 })
 export class AppMaterialModule {}

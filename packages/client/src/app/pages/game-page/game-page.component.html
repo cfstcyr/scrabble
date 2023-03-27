@@ -6,7 +6,7 @@
         <div class="horizontal-grid">
             <div class="vertical-grid">
                 <div class="grid-item-container">
-                    <app-board [isObserver]="false" #boardComponent></app-board>
+                    <app-game-board-wrapper [isObserver]="false" #boardComponent></app-game-board-wrapper>
                 </div>
                 <div class="grid-item-container">
                     <app-tile-rack [isObserver]="false" #tileRackComponent></app-tile-rack>
@@ -50,19 +50,6 @@
             <div class="sidebar-section">
                 <div class="communication-box-container">
                     <app-communication-box></app-communication-box>
-                    <div class="text-button-container">
-                        <mat-card>
-                            <span><app-icon icon="text-size"></app-icon> Taille de la police</span>
-                            <div class="text-buttons">
-                                <button mat-flat-button id="minus-button" color="primary" (click)="changeTileFontSize('smaller')">
-                                    <app-icon icon="minus"></app-icon>
-                                </button>
-                                <button mat-flat-button id="plus-button" color="primary" (click)="changeTileFontSize('larger')">
-                                    <app-icon icon="plus"></app-icon>
-                                </button>
-                            </div>
-                        </mat-card>
-                    </div>
                 </div>
             </div>
         </div>

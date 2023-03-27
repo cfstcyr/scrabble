@@ -24,6 +24,7 @@ export class SquareComponent implements OnInit {
     @Input() tileFontSize: number = SQUARE_TILE_DEFAULT_FONT_SIZE;
     @Input() isCursor: boolean = false;
     @Input() cursorOrientation: Orientation | undefined = Orientation.Horizontal;
+    @Input() canInteract: boolean = true;
     multiplierType: string | undefined = undefined;
     multiplierValue: string | undefined = undefined;
 

@@ -7,6 +7,7 @@ import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { Position } from '@app/classes/board';
+import { PuzzleResultStatus } from '@common/models/puzzle';
 
 @Service()
 export class PuzzleController extends BaseController {
@@ -36,9 +37,9 @@ export class PuzzleController extends BaseController {
             }
         });
 
-        router.post('/abandon', (req: UserRequest, res, next) => {
+        router.post('/abandon', (req: UserRequest<{ status?: PuzzleResultStatus }>, res, next) => {
             try {
-                res.status(StatusCodes.OK).send(this.puzzleService.abandonPuzzle(req.body.idUser));
+                res.status(StatusCodes.OK).send(this.puzzleService.abandonPuzzle(req.body.idUser, req.body.status));
             } catch (e) {
                 next(e);
             }

@@ -15,7 +15,6 @@ import BoardService from '@app/services/board-service/board.service';
 import { comparePlacements, comparePositions } from '@app/utils/comparator/comparator';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 
 @Injectable({
     providedIn: 'root',
@@ -25,7 +24,7 @@ export class TilePlacementService {
     private tilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private isPlacementValidSubject$: BehaviorSubject<boolean>;
 
-    constructor(private readonly boardService: BoardService, private readonly dialog: MatDialog, private readonly roundManager: RoundManagerService) {
+    constructor(private readonly boardService: BoardService, private readonly dialog: MatDialog) {
         this.blankTileModalOpened$ = new BehaviorSubject<boolean>(false);
         this.tilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
         this.isPlacementValidSubject$ = new BehaviorSubject<boolean>(false);
@@ -50,7 +49,6 @@ export class TilePlacementService {
     }
 
     placeTile(tilePlacement: TilePlacement): void {
-        if (!this.roundManager.isActivePlayerLocalPlayer()) return;
         if (tilePlacement.tile.isBlank || tilePlacement.tile.letter === '*') {
             this.askFillBlankLetter((letter) => {
                 tilePlacement.tile.playedLetter = letter as LetterValue;
@@ -226,17 +224,15 @@ export class TilePlacementService {
 
         navigator.setPosition(tilePlacements[0].position);
 
-        if (!navigator.clone().backward().isEmpty()) return true;
+        const previous = navigator.clone().backward();
 
-        if (
-            !navigator
-                .clone()
-                .setPosition(tilePlacements[tilePlacements.length - 1].position)
-                .forward()
-                .isEmpty()
-        )
-            return true;
+        if (previous.isWithinBounds() && !previous.isEmpty()) return true;
 
-        return false;
+        const next = navigator
+            .clone()
+            .setPosition(tilePlacements[tilePlacements.length - 1].position)
+            .forward();
+
+        return next.isWithinBounds() && !next.isEmpty();
     }
 }

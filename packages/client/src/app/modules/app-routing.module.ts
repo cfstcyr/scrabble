@@ -24,9 +24,11 @@ import {
     ROUTE_PROFILE,
     ROUTE_SIGNUP,
     ROUTE_SEARCH,
+    ROUTE_PUZZLE,
 } from '@app/constants/routes-constants';
 import { SearchPageComponent } from '@app/pages/search-page/search-page.component';
 import { UserSearchResultPageComponent } from '@app/pages/user-search-result-page/user-search-result-page.component';
+import { PuzzlePageComponent } from '@app/pages/puzzle-page/puzzle-page.component';
 
 const privateRoute: Route = {
     canActivate: [PrivateRouteGuard],
@@ -59,6 +61,7 @@ const routes: Routes = [
             { path: ':username', component: UserSearchResultPageComponent, ...privateRoute },
         ],
     },
+    { path: ROUTE_PUZZLE, component: PuzzlePageComponent, ...privateRoute },
     { path: '**', redirectTo: ROUTE_HOME },
 ].map((route) => ({ ...route, path: removeStartSlash(route.path) }));
 
