@@ -7,7 +7,7 @@
 import { Application } from '@app/app';
 import { Position } from '@app/classes/board';
 import Board from '@app/classes/board/board';
-import { ActionData, ActionType } from '@app/classes/communication/action-data';
+import { ActionData } from '@app/classes/communication/action-data';
 import { FeedbackMessage, FeedbackMessages } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
@@ -41,6 +41,7 @@ import { createStubInstance, SinonStub, SinonStubbedInstance, stub } from 'sinon
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
 import { GamePlayController } from './game-play.controller';
+import { ActionType } from '@common/models/action';
 
 const expect = chai.expect;
 

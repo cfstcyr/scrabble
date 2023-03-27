@@ -45,7 +45,7 @@ class _GameTimerState extends State<GameTimer> {
     });
 
     if (_timer == null) {
-      _startTimer(getIt.get<GameService>().game.roundDuration);
+      _startTimer(_roundService.currentRound.duration);
     }
 
     super.initState();

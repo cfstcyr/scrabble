@@ -1,4 +1,4 @@
-import { ActionData, ActionType } from '@app/classes/communication/action-data';
+import { ActionData } from '@app/classes/communication/action-data';
 import { FeedbackMessage, FeedbackMessages } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
@@ -21,6 +21,8 @@ import { UserId } from '@app/classes/user/connected-user-types';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { TilePlacement } from '@common/models/tile-placement';
 import { wordPlacementValidator } from '@app/middlewares/validators/tile-placement';
+import { ActionType } from '@common/models/action';
+
 @Service()
 export class GamePlayController extends BaseController {
     constructor(

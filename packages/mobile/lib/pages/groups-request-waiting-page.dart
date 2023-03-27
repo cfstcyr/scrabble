@@ -44,7 +44,7 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
 
     rejectedSubscription = rejectedStream.listen((PublicUser host) {
       triggerDialogBox(
-          "Demande rejetée", "${host.username} a rejeté votre demande", [
+          "Demande rejetée", [Text("${host.username} a rejeté votre demande", style: TextStyle(fontSize: 16))], [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,
@@ -55,7 +55,7 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
       triggerDialogBox(
-          "Partie annulée", "${host.username} a annulé la partie", [
+          "Partie annulée", [Text("${host.username} a annulé la partie", style: TextStyle(fontSize: 16))], [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,

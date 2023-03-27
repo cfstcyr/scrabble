@@ -50,6 +50,7 @@ export const ALREADY_IN_CHANNEL = 'Vous appartenez déjà à ce canal';
 export const NOT_IN_CHANNEL = "Vous n'êtes pas dans ce canal";
 export const UNKNOWN_ERROR_JOINING_CHANNEL = 'Il y a eu une erreur en rejoignant le canal de discussion';
 export const CANNOT_SEND_MESSAGE = "Erreur lors de l'envoi du message";
+export const NO_ANALYSIS_FOUND = 'Aucune analyse trouvée pour cette partie et ce joueur';
 
 export const NO_TOKEN = 'Vous devez être connecté pour faire cette action';
 export const TOKEN_INVALID = 'Votre session est expirée. Veuillez vous reconnecter';
