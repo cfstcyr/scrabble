@@ -13,9 +13,10 @@ class GroupSelection extends StatelessWidget {
   });
 
   final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
-
-  void joinGroup(String groupId) {
-    groupJoinService.handleJoinGroup(groupId);
+  Future<bool> joinGroup(
+      String groupId, String password, bool isObserver) async {
+    return await groupJoinService.handleJoinGroup(
+        groupId, password, isObserver);
   }
 
   @override
@@ -51,7 +52,8 @@ StreamBuilder<List<Group>> handleLobbyListChange(
 
       return groups.isEmpty
           ? Center(
-              child: Text(NO_GAME_AVAILABLE, style: theme.textTheme.displaySmall),
+              child:
+                  Text(NO_GAME_AVAILABLE, style: theme.textTheme.displaySmall),
             )
           : Padding(
               padding: const EdgeInsets.fromLTRB(16, 32, 16, 32),
