@@ -76,17 +76,31 @@ describe('BoardComponent', () => {
     beforeEach(() => {
         boardServiceSpy = jasmine.createSpyObj(
             'BoardService',
-            ['initializeBoard', 'subscribeToInitializeBoard', 'subscribeToBoardUpdate', 'updateBoard', 'readInitialBoard'],
+            [
+                'initializeBoard',
+                'subscribeToInitializeBoard',
+                'subscribeToBoardUpdate',
+                'updateBoard',
+                'readInitialBoard',
+                'subscribeToTemporaryTilePlacements',
+                'updateTemporaryTilePlacements',
+            ],
             ['boardInitialization$', 'boardUpdateEvent$', 'initialBoard'],
         );
 
         const updateObs = new Subject<Square[]>();
         const initObs = new Subject<Square[][]>();
+        const tilePlacementObs = new Subject<TilePlacement[]>();
 
         boardServiceSpy.readInitialBoard.and.returnValue(createGrid(BOARD_SERVICE_GRID_SIZE));
         boardServiceSpy.subscribeToInitializeBoard.and.callFake((destroy$: Observable<boolean>, next: (board: Square[][]) => void) => {
             return initObs.pipe(takeUntil(destroy$)).subscribe(next);
         });
+        boardServiceSpy.subscribeToTemporaryTilePlacements.and.callFake(
+            (destroy$: Observable<boolean>, next: (tilePlacement: TilePlacement[]) => void) => {
+                return tilePlacementObs.pipe(takeUntil(destroy$)).subscribe(next);
+            },
+        );
         boardServiceSpy.subscribeToBoardUpdate.and.callFake((destroy$: Observable<boolean>, next: (squaresToUpdate: Square[]) => void) => {
             return updateObs.pipe(takeUntil(destroy$)).subscribe(next);
         });
