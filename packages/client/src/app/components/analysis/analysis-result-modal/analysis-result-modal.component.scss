@@ -122,6 +122,11 @@ $side-size: 300px;
         }
     }
 
+    #left {
+        background-color: $primary;
+        color: white;
+    }
+
     .placement-slide {
         display: grid;
         grid-template-rows: auto minmax(0, 1fr);

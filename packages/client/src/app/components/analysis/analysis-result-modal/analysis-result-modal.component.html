@@ -101,7 +101,7 @@
 
     <div class='buttons'>
         <ng-container *ngIf="leftButton">
-            <button class="dialog-button" [style]="leftButton.style" mat-button mat-dialog-close *ngIf="leftButton.closeDialog" (click)="handleButtonClick(leftButton)">
+            <button id="left" class="dialog-button" [style]="leftButton.style" mat-button mat-dialog-close *ngIf="leftButton.closeDialog" (click)="handleButtonClick(leftButton)">
                 <app-icon *ngIf="leftButton.icon" [icon]="leftButton.icon"></app-icon>
                 {{ leftButton.content }}
             </button>
@@ -111,7 +111,7 @@
             </button>
         </ng-container>
         <ng-container *ngIf="rightButton">
-            <button class="dialog-button" [style]="rightButton.style" mat-button mat-dialog-close *ngIf="rightButton.closeDialog" (click)="handleButtonClick(rightButton)">
+            <button id="right"  class="dialog-button" [style]="rightButton.style" mat-button mat-dialog-close *ngIf="rightButton.closeDialog" (click)="handleButtonClick(rightButton)">
                 <app-icon *ngIf="rightButton.icon" [icon]="rightButton.icon"></app-icon>
                 {{ rightButton.content }}
             </button>

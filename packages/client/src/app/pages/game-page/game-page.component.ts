@@ -5,7 +5,10 @@ import {
     AnalysisResultModalComponent,
     AnalysisResultModalParameters,
 } from '@app/components/analysis/analysis-result-modal/analysis-result-modal.component';
-import { AnalysisWaitingDialogComponent } from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
+import {
+    AnalysisWaitingDialogComponent,
+    AnalysisWaitingDialogParameter,
+} from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
 import { ENTER } from '@app/constants/components-constants';
@@ -14,6 +17,7 @@ import {
     DIALOG_ABANDON_BUTTON_CONTINUE,
     DIALOG_ABANDON_CONTENT,
     DIALOG_ABANDON_TITLE,
+    DIALOG_ANALYSIS_BUTTON_CONFIRM,
     DIALOG_END_OF_GAME_CLOSE_BUTTON,
     DIALOG_END_OF_GAME_CONTENT,
     DIALOG_END_OF_GAME_TITLE,
@@ -34,7 +38,7 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
-import { Analysis } from '@common/models/analysis';
+import { Analysis, AnalysisRequestInfoType } from '@common/models/analysis';
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
 import { Observable, Subject } from 'rxjs';
@@ -140,9 +144,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
         if (this.analysis) {
             this.showAnalysisModal(this.analysis);
         } else {
-            const dialogRef = this.dialog.open<AnalysisWaitingDialogComponent, number>(AnalysisWaitingDialogComponent, {
+            const dialogRef = this.dialog.open<AnalysisWaitingDialogComponent, AnalysisWaitingDialogParameter>(AnalysisWaitingDialogComponent, {
                 disableClose: false,
-                data: this.gameService.idGameHistory ?? -1,
+                data: { id: this.gameService.idGameHistory ?? -1, type: AnalysisRequestInfoType.ID_GAME },
             });
             dialogRef.afterClosed().subscribe((analysis) => {
                 if (analysis) {
@@ -235,6 +239,13 @@ export class GamePageComponent implements OnInit, OnDestroy {
                         // It totally works tho, try it!
                         action: () => this.handlePlayerLeaves(),
                     },
+                    {
+                        closeDialog: true,
+                        content: DIALOG_ANALYSIS_BUTTON_CONFIRM,
+                        style: 'background-color: rgb(231, 231, 231)',
+                        action: () => this.requestAnalysis(),
+                    },
+
                     {
                         content: DIALOG_END_OF_GAME_CLOSE_BUTTON,
                         closeDialog: true,

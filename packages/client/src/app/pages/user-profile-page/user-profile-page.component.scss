@@ -44,6 +44,19 @@
         }
     }
 
+    .analysis-status {
+        $size: 40px;
+        height: $size;
+        width: $size;
+        border-radius: $size;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 1em;
+        min-width: unset;
+    }
+
     .table {
         width: 100%;
     }

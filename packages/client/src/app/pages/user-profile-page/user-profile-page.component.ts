@@ -6,7 +6,10 @@ import {
     AnalysisResultModalComponent,
     AnalysisResultModalParameters,
 } from '@app/components/analysis/analysis-result-modal/analysis-result-modal.component';
-import AnalysisService from '@app/services/analysis-service/analysis.service';
+import {
+    AnalysisWaitingDialogComponent,
+    AnalysisWaitingDialogParameter,
+} from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 import { UserService } from '@app/services/user-service/user.service';
 import { Analysis, AnalysisData, AnalysisRequestInfoType } from '@common/models/analysis';
 import { GameHistoryForUser } from '@common/models/game-history';
@@ -36,8 +39,9 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     averageTimePerGame: Observable<number | undefined>;
     gameHistory: MatTableDataSource<GameHistoryForUser>;
     serverActions: MatTableDataSource<PublicServerAction>;
-
-    constructor(private readonly userService: UserService, private readonly dialog: MatDialog, private analysisService: AnalysisService) {
+    analysis: Analysis;
+    idAnalysis: TypeOfId<Analysis>;
+    constructor(private readonly userService: UserService, private readonly dialog: MatDialog) {
         this.avatar = this.userService.user.pipe(map((user) => user?.avatar));
         this.username = this.userService.user.pipe(map((user) => user?.username));
         this.email = this.userService.user.pipe(map((user) => user?.email));
@@ -70,16 +74,28 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     }
 
     requestAnalysis(idAnalysis: TypeOfId<AnalysisData>): void {
-        this.analysisService.requestAnalysis(idAnalysis, AnalysisRequestInfoType.ID_ANALYSIS).subscribe((analysis) => {
-            this.showAnalysisModal(analysis);
-        });
+        if (this.analysis && this.idAnalysis === idAnalysis) {
+            this.showAnalysisModal(this.analysis);
+        } else {
+            const dialogRef = this.dialog.open<AnalysisWaitingDialogComponent, AnalysisWaitingDialogParameter>(AnalysisWaitingDialogComponent, {
+                disableClose: false,
+                data: { id: idAnalysis, type: AnalysisRequestInfoType.ID_ANALYSIS },
+            });
+            dialogRef.afterClosed().subscribe((analysis) => {
+                if (analysis) {
+                    this.analysis = analysis;
+                    this.idAnalysis = idAnalysis;
+                    this.showAnalysisModal(analysis);
+                }
+            });
+        }
     }
 
     private showAnalysisModal(analysis: Analysis) {
         this.dialog.open<AnalysisResultModalComponent, AnalysisResultModalParameters>(AnalysisResultModalComponent, {
             disableClose: false,
             data: {
-                rightButton: {
+                leftButton: {
                     content: 'Retourner au profil',
                     closeDialog: true,
                 },
