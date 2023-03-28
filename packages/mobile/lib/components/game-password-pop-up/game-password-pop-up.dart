@@ -9,6 +9,8 @@ import '../../classes/user.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/join-game.constants.dart';
 import '../../constants/join-group.constants.dart';
+import '../../locator.dart';
+import '../../services/group-join.service.dart';
 import '../../view-methods/group.methods.dart';
 import '../alert-dialog.dart';
 import '../app_button.dart';
@@ -58,6 +60,7 @@ void showGamePasswordPopup(
               actions: <Widget>[
                 AppButton(
                   onPressed: () {
+                    handleLeave(group.groupId!);
                     Navigator.pop(context);
                   },
                   child: Wrap(children: [
@@ -141,4 +144,8 @@ void handleGameStarted(PublicUser host, context) {
           Navigator.pop(context);
         }),
   ]);
+}
+
+void handleLeave(String groupId) {
+  getIt.get<GroupJoinService>().handleLeaveGroup(groupId);
 }
