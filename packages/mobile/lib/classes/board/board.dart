@@ -150,4 +150,12 @@ class Board {
     grid[7][14].multiplier = Multiplier(value: 3, type: MultiplierType.word);
     grid[14][7].multiplier = Multiplier(value: 3, type: MultiplierType.word);
   }
+
+  static List<List<Square>> gridFromJson(List<dynamic> grid) {
+    return grid
+        .map<List<Square>>((dynamic row) => row
+            .map<List<Square>>((dynamic square) => Square.fromJson(square))
+            .toList())
+        .toList();
+  }
 }
