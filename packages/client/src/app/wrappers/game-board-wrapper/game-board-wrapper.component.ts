@@ -83,6 +83,7 @@ export class GameBoardWrapperComponent implements OnInit {
 
     private handleUpdateBoard(squaresToUpdate: Square[]): void {
         this.clearNewlyPlacedTiles();
+        this.boardCursorService.isDisabled = false;
         this.boardCursorService.clear();
         this.tilePlacementService.resetTiles();
 

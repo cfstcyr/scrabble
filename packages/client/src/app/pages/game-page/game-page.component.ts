@@ -64,6 +64,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
     handleKeyboardEvent(event: KeyboardEvent): void {
         switch (event.key) {
             case ENTER:
+                this.boardCursorService.isDisabled = true;
+                this.boardCursorService.clearCurrentCursor();
                 this.gameService.playTilesOnBoard();
                 break;
         }
@@ -97,6 +99,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     passButtonClicked(): void {
+        this.boardCursorService.isDisabled = true;
         this.gameService.makeTilePlacement([]);
         this.boardCursorService.clear();
         this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PASS, {}, '', true));

@@ -13,7 +13,7 @@
                 [colspan]="square.squareSize.x"
                 [rowspan]="square.squareSize.y"
                 class="square-background"
-                (click)='squareClickHandler(square)'
+                (click)='square.square.tile === null ? squareClickHandler(square) : undefined'
             >
                 <app-square
                     class="full-size"

@@ -18,6 +18,7 @@ export class BoardCursorService {
     private getUserTiles: (() => Tile[]) | undefined;
     private notAppliedSquares: SquareView[] | undefined;
     private cursor: BoardNavigator | undefined;
+    isDisabled: boolean = false;
 
     constructor(private readonly tilePlacementService: TilePlacementService) {}
 
@@ -25,6 +26,7 @@ export class BoardCursorService {
         this.grid = grid;
         this.updateTiles(getUserTiles);
         this.notAppliedSquares = [];
+        this.isDisabled = false;
     }
 
     updateTiles(getUserTiles: (() => Tile[]) | undefined): void {
@@ -32,20 +34,27 @@ export class BoardCursorService {
     }
 
     handleSquareClick(squareView: SquareView): void {
+        if (this.isDisabled) return;
+
         this.tilePlacementService.resetTiles();
         this.setCursor(squareView.square.position);
     }
 
     clear(): void {
-        this.clearCurrentSquare();
+        this.clearCurrentCursor();
         this.cursor = undefined;
         this.tilePlacementService.resetTiles();
+    }
+
+    clearCurrentCursor(): void {
+        this.clearCursor(this.getCursorSquare());
     }
 
     handleLetter(letter: string, isHoldingShift: boolean): void {
         if (!this.notAppliedSquares) throw new Error(BOARD_CURSOR_NOT_INITIALIZED);
         if (!this.getUserTiles) throw new Error(BOARD_CURSOR_NOT_INITIALIZED);
 
+        if (this.isDisabled) return;
         if (!this.cursor) return;
 
         const square = this.cursor.currentSquareView;
@@ -71,7 +80,7 @@ export class BoardCursorService {
         );
         this.notAppliedSquares.push(square);
 
-        this.clearCurrentSquare();
+        this.clearCurrentCursor();
         do {
             this.cursor.forward();
         } while (this.cursor.currentSquareView.square.tile);
@@ -84,7 +93,7 @@ export class BoardCursorService {
 
         if (!this.cursor.clone().backward().isWithinBounds()) return;
 
-        this.clearCurrentSquare();
+        this.clearCurrentCursor();
         do {
             this.cursor.backward();
         } while (this.cursor.currentSquareView.applied && this.cursor.currentSquareView.square.tile && this.cursor.isWithinBounds());
@@ -109,7 +118,7 @@ export class BoardCursorService {
             this.cursor.switchOrientation();
         } else {
             this.clear();
-            this.clearCurrentSquare();
+            this.clearCurrentCursor();
             this.cursor = new BoardNavigator(this.grid.value, position, Orientation.Horizontal);
         }
 
@@ -135,7 +144,7 @@ export class BoardCursorService {
         });
     }
 
-    private clearSquare(square: SquareView | undefined): void {
+    private clearCursor(square: SquareView | undefined): void {
         if (square) {
             square.isCursor = false;
             square.cursorOrientation = undefined;
@@ -147,10 +156,6 @@ export class BoardCursorService {
             square.isCursor = true;
             square.cursorOrientation = this.cursor?.orientation;
         }
-    }
-
-    private clearCurrentSquare(): void {
-        this.clearSquare(this.getCursorSquare());
     }
 
     private setCurrentCursorSquare(): void {

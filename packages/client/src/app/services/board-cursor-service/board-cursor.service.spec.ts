@@ -82,6 +82,13 @@ describe('BoardCursorService', () => {
             service.handleSquareClick(grid.value[0][0]);
             expect(service['cursor']).toBeDefined();
         });
+
+        it('should do nothing is isDisabled is true', () => {
+            service.initialize(grid, () => tiles);
+            service.isDisabled = true;
+            service.handleSquareClick(grid.value[0][0]);
+            expect(service['cursor']).toBeUndefined();
+        });
     });
 
     describe('clear', () => {
@@ -160,6 +167,18 @@ describe('BoardCursorService', () => {
                     (placement) => placement.tile.letter === 'B' && comparePositions(placement.position, { row: 1, column: 0 }),
                 ),
             ).toBeTruthy();
+        });
+
+        it('should not add letter if isDisabled', () => {
+            service.initialize(grid, () => tiles);
+            service.isDisabled = true;
+            service.handleSquareClick(grid.value[0][0]);
+            service.handleLetter('A', false);
+            expect(
+                tilePlacementService.tilePlacements.find(
+                    (placement) => placement.tile.letter === 'A' && comparePositions(placement.position, { row: 0, column: 0 }),
+                ),
+            ).toBeFalsy();
         });
     });
 
