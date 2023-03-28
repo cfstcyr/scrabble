@@ -95,9 +95,6 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
 
     canCancelPlacement(): boolean {
         return this.tilePlacementService.tilePlacements.length > 0 || this.selectedTiles.length > 0;
-        // return combineLatest([this.tilePlacementService.tilePlacements$.pipe(map((placements) => placements.length > 0)), this.mode]).pipe(
-        //     map(([canCancel, mode]) => canCancel || mode === TileRackMode.Exchange),
-        // );
     }
 
     focus(): void {
