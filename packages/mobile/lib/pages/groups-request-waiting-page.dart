@@ -7,8 +7,6 @@ import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/group/individual-group.dart';
 import 'package:mobile/components/group/parameters.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/pages/join-waiting-page.dart';
-import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
@@ -43,8 +41,10 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
     });
 
     rejectedSubscription = rejectedStream.listen((PublicUser host) {
-      triggerDialogBox(
-          "Demande rejetée", [Text("${host.username} a rejeté votre demande", style: TextStyle(fontSize: 16))], [
+      triggerDialogBox("Demande rejetée", [
+        Text("${host.username} a rejeté votre demande",
+            style: TextStyle(fontSize: 16))
+      ], [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,
@@ -54,8 +54,10 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
     });
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
-      triggerDialogBox(
-          "Partie annulée", [Text("${host.username} a annulé la partie", style: TextStyle(fontSize: 16))], [
+      triggerDialogBox("Partie annulée", [
+        Text("${host.username} a annulé la partie",
+            style: TextStyle(fontSize: 16))
+      ], [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,
@@ -136,7 +138,9 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
   }
 
   Future<bool> _onBack(BuildContext context) {
-    getIt.get<GroupJoinService>().handleCancelJoinRequest();
+    getIt
+        .get<GroupJoinService>()
+        .handleCancelJoinRequest(widget.group.groupId!);
     Navigator.pop(context);
     return Future.value(true);
   }
