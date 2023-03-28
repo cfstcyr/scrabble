@@ -5,6 +5,8 @@ import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/actions/action-place.dart';
 import 'package:mobile/classes/actions/word-placement.dart';
+import 'package:mobile/classes/analysis/analysis-request.dart';
+import 'package:mobile/classes/analysis/analysis.dart';
 import 'package:mobile/classes/opponent.dart';
 import 'package:mobile/classes/puzzle/puzzle-config.dart';
 import 'package:mobile/classes/user.dart';
@@ -21,21 +23,32 @@ import '../locator.dart';
 import '../services/client.dart';
 import '../services/socket.service.dart';
 
-class PuzzleController {
+class AnalysisController {
   PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
 
   InterceptedHttp get http => httpClient.http;
 
-  final String endpoint = PUZZLE_ENDPOINT;
+  final String endpoint = ANALYSIS_ENDPOINT;
 
-  PuzzleController._privateConstructor();
+  AnalysisController._privateConstructor();
 
-  Future<Response> startPuzzle() async {
-    return http.post(Uri.parse("$endpoint/start"));
+  Future<AnalysisCompleted> requestAnalysis(
+      int idAnalysis, AnalysisRequestInfoType requestType) async {
+    return http
+        .get(Uri.parse("$endpoint/$idAnalysis"),
+            params: requestTypeParams(requestType))
+        .then((Response value) =>
+            AnalysisCompleted.fromJson(jsonDecode(value.body)))
+        .timeout(Duration(seconds: 5), onTimeout: () {
+      print('timeout');
+      return AnalysisCompleted(
+          idGameHistory: 1, idUser: 1, criticalMoments: []);
+    });
   }
 
   Future<Response> completePuzzle(WordPlacement placement) async {
-    return http.post(Uri.parse("$endpoint/complete"), body: jsonEncode(placement));
+    return http.post(Uri.parse("$endpoint/complete"),
+        body: jsonEncode(placement));
   }
 
   Future<Response> abandonPuzzle() async {
@@ -46,10 +59,10 @@ class PuzzleController {
     http.post(Uri.parse("$endpoint/abandon"));
   }
 
-  static final PuzzleController _instance =
-      PuzzleController._privateConstructor();
+  static final AnalysisController _instance =
+      AnalysisController._privateConstructor();
 
-  factory PuzzleController() {
+  factory AnalysisController() {
     return _instance;
   }
 }

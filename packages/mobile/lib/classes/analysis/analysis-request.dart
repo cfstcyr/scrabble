@@ -1,4 +1,3 @@
-class AnalysisRequest
 enum AnalysisRequestInfoType {
   idGame,
   idAnalysis;
