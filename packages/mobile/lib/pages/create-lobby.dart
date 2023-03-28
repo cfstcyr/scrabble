@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/group.dart';
+
 import '../classes/virtual-player-level.dart';
 import '../components/group/group-management.dart';
 import '../components/group/parameters.dart';
 import '../components/group/player-waiting-list.dart';
 import '../components/group/waiting-room.dart';
 import '../components/scaffold-persistance.dart';
-import '../locator.dart';
-import '../services/group-join.service.dart';
 
 class CreateLobbyPage extends StatefulWidget {
   CreateLobbyPage({super.key, required this.group});
@@ -124,9 +123,5 @@ class _CreateLobbyPageState extends State<CreateLobbyPage> {
         ),
       ),
     );
-  }
-
-  void handleLeave() {
-    getIt.get<GroupJoinService>().handleLeaveGroup(widget.group.groupId);
   }
 }
