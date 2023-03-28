@@ -36,6 +36,7 @@
                             </button>
                         </div>
                         <div
+                            *ngIf="!gameService.isGameOver"    
                             matTooltip="Ce n'est pas votre tour de jouer ou vous n'avez pas placé de mot encore"
                             matTooltipPosition="above"
                             [matTooltipDisabled]="canPlaceWord() | async"

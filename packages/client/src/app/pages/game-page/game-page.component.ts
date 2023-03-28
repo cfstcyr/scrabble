@@ -1,7 +1,10 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActionType } from '@app/classes/actions/action-data';
-import { AnalysisResultModalComponent, AnalysisResultModalParameters } from '@app/components/analysis/analysis-result-modal/analysis-result-modal.component';
+import {
+    AnalysisResultModalComponent,
+    AnalysisResultModalParameters,
+} from '@app/components/analysis/analysis-result-modal/analysis-result-modal.component';
 import { AnalysisWaitingDialogComponent } from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
@@ -167,7 +170,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
             },
         });
     }
-
 
     private openDialog(title: string, content: string, buttonsContent: string[]): void {
         this.dialog.open(DefaultDialogComponent, {
