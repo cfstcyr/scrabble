@@ -97,7 +97,7 @@ export class BoardCursorService {
 
         if (!currentSquareView) return;
 
-        if (currentSquareView.square.tile) {
+        if (currentSquareView.square.tile && !currentSquareView.applied) {
             this.tilePlacementService.removeTile({
                 tile: currentSquareView.square.tile,
                 position: { ...this.cursor.getPosition() },
