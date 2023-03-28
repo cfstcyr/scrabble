@@ -63,14 +63,12 @@ class GameCreationService {
     });
   }
 
-  Future<bool> handleCreateGame(Group groupData) async {
+  Future<GroupCreationResponse> handleCreateGame(Group groupData) async {
     GroupCreationResponse response = await gameCreationController
         .handleCreateGame(groupData)
         .catchError((error) {
       errorSnackBar(navigatorKey.currentContext!, GAME_CREATE_FAILED);
-      return GroupCreationResponse(isCreated: false, groupId: '');
     });
-    groupId = response.groupId;
-    return response.isCreated;
+    return response;
   }
 }
