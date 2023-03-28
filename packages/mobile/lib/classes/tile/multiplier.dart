@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/constants/game.constants.dart';
 
+final Map<MultiplierType, String> MULTIPLIER_NAMES = {
+  MultiplierType.letter: 'Lettre',
+  MultiplierType.word: 'Mot',
+};
+
 enum MultiplierType {
   letter,
-  word,
+  word;
+
+  String get name => MULTIPLIER_NAMES[this] ?? 'Inconnu';
+
+  static MultiplierType fromJson(String value) => MultiplierType.values
+      .firstWhere((MultiplierType type) => type.name == value);
 }
 
 class Multiplier {
@@ -49,8 +59,8 @@ class Multiplier {
 
   factory Multiplier.fromJson(Map<String, dynamic> json) {
     return Multiplier(
-      value: json['value'] as int,
-      type: json['type'] as MultiplierType,
+      value: json['multiplier'] as int,
+      type: MultiplierType.fromJson(json['multiplierEffect']),
     );
   }
 }

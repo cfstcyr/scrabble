@@ -1,14 +1,7 @@
 import { Orientation } from '@app/classes/board';
 import { Tile } from '@app/classes/tile';
+import { ActionType } from '@common/models/action';
 
-export enum ActionType {
-    PLACE = 'placer',
-    EXCHANGE = 'échanger',
-    PASS = 'passer',
-    RESERVE = 'réserve',
-    HELP = 'aide',
-    HINT = 'indice',
-}
 export interface ActionPlacePayload {
     startPosition: { column: number; row: number };
     orientation: Orientation;

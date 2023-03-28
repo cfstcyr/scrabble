@@ -1,5 +1,5 @@
 import { Orientation, Position } from '@app/classes/board';
-import { ActionType } from '@app/classes/communication/action-data';
+import { ActionType } from '@common/models/action';
 import { Tile } from '@app/classes/tile';
 import { WordPlacement } from '@app/classes/word-finding';
 import { ORIENTATION_HORIZONTAL_LETTER, ORIENTATION_VERTICAL_LETTER } from '@app/constants/classes-constants';

@@ -3,9 +3,9 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Player } from '@app/classes/player';
 import { PlayerContainer } from '@app/classes/player/player-container';
 import { Square } from '@app/classes/square';
-import { MultiplierEffect } from '@app/classes/square/score-multiplier';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { BoardService } from '@app/services';
+import { MultiplierEffect } from '@common/models/game';
 import { Subject } from 'rxjs';
 
 const LOCAL_PLAYER_ID = '1';

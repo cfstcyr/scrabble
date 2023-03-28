@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/group.dart';
@@ -36,9 +38,17 @@ class GroupJoinController {
     await http.get(Uri.parse(endpoint));
   }
 
-  Future<Response> handleJoinGroup(String groupId) async {
+  Future<Response> handleJoinGroup(
+      String groupId, String password, bool isObserver) async {
     joinedGroupedId = groupId;
-    return http.post(Uri.parse("$endpoint/$groupId/players/join"));
+    JoinRequest joinRequestData = JoinRequest(password: password);
+    return http.post(Uri.parse("$endpoint/$groupId/players/join"),
+        body: jsonEncode(joinRequestData));
+  }
+
+  Future<Response> handleGroupUpdatesRequest(String groupId, bool isObserver) {
+    return http.patch(Uri.parse("$endpoint/$groupId"),
+        body: jsonEncode({"isObserver": isObserver}));
   }
 
   Future<Response> handleCancelJoinRequest() async {

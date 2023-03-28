@@ -8,11 +8,13 @@ enum AppButtonTheme {
   secondary,
   danger,
   tomato,
+  tertiary,
 }
 
 enum AppButtonSize {
   normal,
   large,
+  extraLarge,
 }
 
 enum AppButtonType {
@@ -44,9 +46,9 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Object>(
+    return StreamBuilder(
         stream: getIt.get<ThemeColorService>().themeColor.stream,
-        builder: (context, _) {
+        builder: (context, snapshot) {
           return MaterialButton(
             onPressed: onPressed,
             color: _getButtonColor(),
@@ -79,6 +81,8 @@ class AppButton extends StatelessWidget {
         return Colors.red;
       case AppButtonTheme.tomato:
         return Color.fromRGBO(248, 100, 95, 1);
+      case AppButtonTheme.tertiary:
+        return _themeColorService.menuSecondaryButton;
       case AppButtonTheme.secondary:
         return type == AppButtonType.ghost
             ? Colors.black
@@ -98,6 +102,7 @@ class AppButton extends StatelessWidget {
       case AppButtonTheme.danger:
       case AppButtonTheme.tomato:
         return Colors.white;
+      case AppButtonTheme.tertiary:
       case AppButtonTheme.secondary:
         return Colors.black;
     }
@@ -109,6 +114,8 @@ class AppButton extends StatelessWidget {
         return 15;
       case AppButtonSize.large:
         return 20;
+      case AppButtonSize.extraLarge:
+        return 25;
     }
   }
 
@@ -118,6 +125,8 @@ class AppButton extends StatelessWidget {
         return 20;
       case AppButtonSize.large:
         return 24;
+      case AppButtonSize.extraLarge:
+        return 32;
     }
   }
 
@@ -127,6 +136,8 @@ class AppButton extends StatelessWidget {
         return 36;
       case AppButtonSize.large:
         return 48;
+      case AppButtonSize.extraLarge:
+        return 72;
     }
   }
 

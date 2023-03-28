@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable no-unused-vars */
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
@@ -14,6 +15,7 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import { CompletedRound, Round } from './round';
 import RoundManager from './round-manager';
+import { Board } from '@app/classes/board';
 
 const expect = chai.expect;
 
@@ -76,6 +78,7 @@ describe('RoundManager', () => {
                 player: DEFAULT_PLAYER_1,
                 startTime: new Date(),
                 limitTime: new Date(),
+                tiles: [],
             };
 
             const player = roundManager['getNextPlayer']();
@@ -88,6 +91,7 @@ describe('RoundManager', () => {
                 player: DEFAULT_PLAYER_2,
                 startTime: new Date(),
                 limitTime: new Date(),
+                tiles: [],
             };
 
             const player = roundManager['getNextPlayer']();
@@ -100,6 +104,7 @@ describe('RoundManager', () => {
                 player: DEFAULT_PLAYER_3,
                 startTime: new Date(),
                 limitTime: new Date(),
+                tiles: [],
             };
 
             const player = roundManager['getNextPlayer']();
@@ -112,6 +117,7 @@ describe('RoundManager', () => {
                 player: DEFAULT_PLAYER_4,
                 startTime: new Date(),
                 limitTime: new Date(),
+                tiles: [],
             };
 
             const player = roundManager['getNextPlayer']();
@@ -123,7 +129,7 @@ describe('RoundManager', () => {
     describe('nextRound', () => {
         it('should call getNextPlayer', () => {
             const spy = chai.spy.on(roundManager, 'getNextPlayer', () => DEFAULT_PLAYER_1);
-            roundManager.nextRound(action);
+            roundManager.nextRound(action, { grid: [[]] } as unknown as Board);
             expect(spy).to.have.been.called();
         });
 
@@ -132,9 +138,10 @@ describe('RoundManager', () => {
                 player: DEFAULT_PLAYER_1,
                 startTime: new Date(),
                 limitTime: new Date(),
+                tiles: [],
             };
             const spy = chai.spy.on(roundManager['completedRounds'], 'push');
-            roundManager.nextRound(action);
+            roundManager.nextRound(action, { grid: [[]] } as unknown as Board);
 
             expect(spy).to.have.been.called();
         });
@@ -181,9 +188,9 @@ describe('RoundManager', () => {
     describe('saveCompletedRound', () => {
         it('should increment counter when action played is ActionPass', () => {
             expect(roundManager['completedRounds'].length).to.equal(0);
-            const round: Round = { player: DEFAULT_PLAYER_1, startTime: new Date(), limitTime: new Date() };
+            const round: Round = { player: DEFAULT_PLAYER_1, startTime: new Date(), limitTime: new Date(), tiles: [] };
             const actionPlayed: Action = new ActionPass(round.player, gameStub as unknown as Game);
-            roundManager['saveCompletedRound'](round, actionPlayed);
+            roundManager['saveCompletedRound'](round, actionPlayed, { grid: [[]] } as unknown as Board);
             expect(roundManager['completedRounds'].length).to.equal(1);
         });
     });
@@ -197,6 +204,7 @@ describe('RoundManager', () => {
                 player,
                 startTime: new Date(),
                 limitTime: new Date(),
+                tiles: [],
             };
             const roundData = roundManager.convertRoundToRoundData(round);
 
@@ -215,6 +223,7 @@ describe('RoundManager', () => {
             startTime: new Date(),
             limitTime: new Date(),
             completedTime: null,
+            tiles: [],
         };
         roundManager['currentRound'] = CURRENT_ROUND;
         roundManager.getCurrentRound();
@@ -238,6 +247,7 @@ describe('RoundManager', () => {
                 player: player1,
                 startTime: new Date(),
                 limitTime: new Date(),
+                tiles: [],
             };
             roundManager['currentRound'] = round;
             roundManager['player1'] = player1;

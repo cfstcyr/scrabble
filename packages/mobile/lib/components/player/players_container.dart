@@ -5,7 +5,6 @@ import 'package:mobile/components/player/player.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/round-service.dart';
-import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/classes/game/player.dart' as c;
 import 'package:mobile/classes/game/players_container.dart' as p;
 import 'package:rxdart/rxdart.dart';
@@ -35,7 +34,7 @@ class PlayersContainer extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.data == null) return Container();
 
-        Game game = snapshot.data![0];
+        MultiplayerGame game = snapshot.data![0];
         String activePlayerId = snapshot.data![1];
 
         List<c.Player> orderedPlayerList =

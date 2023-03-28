@@ -99,7 +99,6 @@ Future<void> backOut() async {
 }
 
 bool isMinimumPlayerCount() {
-  print(playerList$.value);
   return playerList$.value.length < MINIMUM_PLAYER_COUNT;
 }
 
