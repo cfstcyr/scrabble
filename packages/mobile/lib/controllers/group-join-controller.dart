@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
@@ -22,6 +23,8 @@ class GroupJoinController {
   PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
 
   InterceptedHttp get http => httpClient.http;
+  late StreamSubscription leaveGroupSubscription =
+      leaveGroupStream.listen((hasLeft) => {handleLeaveGroup()});
 
   GroupJoinController._privateConstructor() {
     _configureSocket();
