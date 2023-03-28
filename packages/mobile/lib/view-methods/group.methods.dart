@@ -38,5 +38,5 @@ Subject<InitializeGameData> startGame$ = PublishSubject();
 Subject<bool> fullGroup$ = PublishSubject();
 Stream<bool> get fullGroupStream => fullGroup$.stream;
 
-Subject<bool> leaveGroup$ = PublishSubject();
-Stream<bool> get leaveGroupStream => leaveGroup$.stream;
+Subject<bool> leftGroup$ = PublishSubject();
+Stream<bool> get leftGroupStream => leftGroup$.stream;
