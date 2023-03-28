@@ -25,12 +25,12 @@
                                 </ng-container>
                             </button>
                         </div>
-                        <div matTooltip="Ce n'est pas votre tour de jouer" matTooltipPosition="above" [matTooltipDisabled]="canPlay()">
+                        <div *ngIf="!gameService.isGameOver" matTooltip="Ce n'est pas votre tour de jouer" matTooltipPosition="above" [matTooltipDisabled]="canPlay()">
                             <button mat-flat-button color="primary" [disabled]="!canPlay()" (click)="hintButtonClicked()">
                                 <app-icon icon="lightbulb" styling="solid"></app-icon> Indice
                             </button>
                         </div>
-                        <div matTooltip="Ce n'est pas votre tour de jouer" matTooltipPosition="above" [matTooltipDisabled]="canPlay()">
+                        <div *ngIf="!gameService.isGameOver" matTooltip="Ce n'est pas votre tour de jouer" matTooltipPosition="above" [matTooltipDisabled]="canPlay()">
                             <button mat-flat-button color="primary" [disabled]="!canPlay()" (click)="passButtonClicked()">
                                 <app-icon icon="redo"></app-icon> Passer
                             </button>
@@ -42,6 +42,11 @@
                         >
                             <button mat-flat-button color="primary" [disabled]="(canPlaceWord() | async) === false" (click)="placeButtonClicked()">
                                 <app-icon icon="square" styling="solid"></app-icon> Placer
+                            </button>
+                        </div>
+                        <div *ngIf="gameService.isGameOver" matTooltip="Consulter l'analyse de votre partie" matTooltipPosition="above">
+                            <button mat-flat-button color="primary" (click)="requestAnalysis()">
+                                <app-icon icon="flask"></app-icon> Analyse
                             </button>
                         </div>
                     </mat-card>

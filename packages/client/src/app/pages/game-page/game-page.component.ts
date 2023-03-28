@@ -1,6 +1,8 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActionType } from '@app/classes/actions/action-data';
+import { AnalysisResultModalComponent, AnalysisResultModalParameters } from '@app/components/analysis/analysis-result-modal/analysis-result-modal.component';
+import { AnalysisWaitingDialogComponent } from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
 import { ENTER } from '@app/constants/components-constants';
@@ -29,6 +31,7 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
+import { Analysis } from '@common/models/analysis';
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
 import { Observable, Subject } from 'rxjs';
@@ -43,6 +46,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     private mustDisconnectGameOnLeave: boolean;
     private componentDestroyed$: Subject<boolean>;
+    private analysis: Analysis;
 
     constructor(
         public dialog: MatDialog,
@@ -128,6 +132,42 @@ export class GamePageComponent implements OnInit, OnDestroy {
     canPlaceWord(): Observable<boolean> {
         return this.tilePlacementService.isPlacementValid$;
     }
+
+    requestAnalysis(): void {
+        if (this.analysis) {
+            this.showAnalysisModal(this.analysis);
+        } else {
+            const dialogRef = this.dialog.open<AnalysisWaitingDialogComponent, number>(AnalysisWaitingDialogComponent, {
+                disableClose: false,
+                data: this.gameService.idGameHistory ?? -1,
+            });
+            dialogRef.afterClosed().subscribe((analysis) => {
+                if (analysis) {
+                    this.analysis = analysis;
+                    this.showAnalysisModal(analysis);
+                }
+            });
+        }
+    }
+
+    private showAnalysisModal(analysis: Analysis) {
+        this.dialog.open<AnalysisResultModalComponent, AnalysisResultModalParameters>(AnalysisResultModalComponent, {
+            disableClose: false,
+            data: {
+                leftButton: {
+                    content: 'Quitter la partie',
+                    redirect: ROUTE_HOME,
+                    action: () => this.handlePlayerLeaves(),
+                },
+                rightButton: {
+                    content: 'Rester dans la partie',
+                    closeDialog: true,
+                },
+                analysis,
+            },
+        });
+    }
+
 
     private openDialog(title: string, content: string, buttonsContent: string[]): void {
         this.dialog.open(DefaultDialogComponent, {
