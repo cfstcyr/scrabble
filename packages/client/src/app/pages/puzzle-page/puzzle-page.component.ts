@@ -14,11 +14,7 @@ import { Orientation } from '@common/models/position';
 import { BehaviorSubject, iif, Observable, of, timer } from 'rxjs';
 import { catchError, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
-import {
-    PuzzleLevel,
-    StartPuzzleModalComponent,
-    StartPuzzleModalParameters,
-} from '@app/components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
+import { PuzzleLevel } from '@app/components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
 import { puzzleSettings } from '@app/utils/settings';
 import { Router } from '@angular/router';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
@@ -29,10 +25,6 @@ import { PuzzleResult } from '@common/models/puzzle';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { DefaultDialogParameters } from '@app/components/default-dialog/default-dialog.component.types';
 import {
-    ABANDON_PUZZLE_DIALOG_BUTTON_ABANDON,
-    ABANDON_PUZZLE_DIALOG_BUTTON_CONTINUE,
-    ABANDON_PUZZLE_DIALOG_CONTENT,
-    ABANDON_PUZZLE_DIALOG_TITLE,
     PUZZLE_ERROR_DIALOG_BUTTON_CONTINUE,
     PUZZLE_ERROR_DIALOG_BUTTON_GO_HOME,
     PUZZLE_ERROR_DIALOG_CONTENT,
@@ -104,20 +96,17 @@ export class PuzzlePageComponent implements OnInit {
     }
 
     askStart(): void {
-        this.dialog.open<StartPuzzleModalComponent, Partial<StartPuzzleModalParameters>>(StartPuzzleModalComponent, {
-            disableClose: true,
-            data: {
-                onStart: (level) => {
-                    this.start(level.time);
-                    this.level = level;
-                    puzzleSettings.setTime(level.time);
-                },
-                onCancel: () => {
-                    this.router.navigate([ROUTE_HOME]);
-                },
-                defaultTime: puzzleSettings.getTime(),
+        this.puzzleService.askToStart(
+            (level) => {
+                this.start(level.time);
+                this.level = level;
+                puzzleSettings.setTime(level.time);
             },
-        });
+            () => {
+                this.router.navigate([ROUTE_HOME]);
+            },
+            puzzleSettings.getTime(),
+        );
     }
 
     start(time: number): void {
@@ -188,43 +177,23 @@ export class PuzzlePageComponent implements OnInit {
     }
 
     abandon(): void {
-        this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
-            data: {
-                title: ABANDON_PUZZLE_DIALOG_TITLE,
-                content: ABANDON_PUZZLE_DIALOG_CONTENT,
-                buttons: [
-                    {
-                        content: ABANDON_PUZZLE_DIALOG_BUTTON_CONTINUE,
-                        closeDialog: true,
-                        key: ESCAPE,
-                    },
-                    {
-                        content: ABANDON_PUZZLE_DIALOG_BUTTON_ABANDON,
-                        style: 'background-color: tomato; color: white;',
-                        closeDialog: true,
-                        key: ENTER,
-                        action: () => {
-                            this.tilePlacementService.resetTiles();
-                            this.stopPuzzle();
+        this.puzzleService.askToAbandon(() => {
+            this.stopPuzzle();
 
-                            this.puzzleService
-                                .abandon()
-                                .pipe(
-                                    catchError(() => {
-                                        this.showErrorModal();
-                                        return of(null);
-                                    }),
-                                )
-                                .subscribe((result) => {
-                                    if (result) {
-                                        this.history.push(result);
-                                        this.showEndOfPuzzleModal(result, undefined);
-                                    }
-                                });
-                        },
-                    },
-                ],
-            },
+            this.puzzleService
+                .abandon()
+                .pipe(
+                    catchError(() => {
+                        this.showErrorModal();
+                        return of(null);
+                    }),
+                )
+                .subscribe((result) => {
+                    if (result) {
+                        this.history.push(result);
+                        this.showEndOfPuzzleModal(result, undefined);
+                    }
+                });
         });
     }
 

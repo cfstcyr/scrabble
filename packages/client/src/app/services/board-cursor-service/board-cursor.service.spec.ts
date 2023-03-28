@@ -149,6 +149,7 @@ describe('BoardCursorService', () => {
                     (placement) => placement.tile.letter === 'B' && comparePositions(placement.position, { row: 0, column: 1 }),
                 ),
             ).toBeTruthy();
+            console.log(...tilePlacementService.tilePlacements);
         });
 
         it('should add multiple letters [vertical]', () => {

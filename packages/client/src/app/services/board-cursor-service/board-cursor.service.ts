@@ -14,11 +14,11 @@ const BOARD_CURSOR_NOT_INITIALIZED = 'Board cursor service not initialized';
     providedIn: 'root',
 })
 export class BoardCursorService {
+    isDisabled: boolean = false;
     private grid: BehaviorSubject<SquareView[][]> | undefined;
     private getUserTiles: (() => Tile[]) | undefined;
     private notAppliedSquares: SquareView[] | undefined;
     private cursor: BoardNavigator | undefined;
-    isDisabled: boolean = false;
 
     constructor(private readonly tilePlacementService: TilePlacementService) {}
 
@@ -83,7 +83,7 @@ export class BoardCursorService {
         this.notAppliedSquares.push(square);
 
         this.clearCurrentCursor();
-        while (this.cursor.isWithinBounds() && this.cursor.currentSquareView.square.tile && this.cursor.clone().forward().isWithinBounds()) {
+        while (this.cursor.isWithinBounds() && this.cursor.clone().forward().isWithinBounds() && this.cursorHasTile()) {
             this.cursor.forward();
         }
         this.setCurrentCursorSquare();
@@ -140,6 +140,18 @@ export class BoardCursorService {
 
     private getCursorSquare(): SquareView | undefined {
         return this.cursor?.currentSquareView;
+    }
+
+    private hasTile(square: SquareView): boolean {
+        return (
+            !!square.square.tile ||
+            !!this.tilePlacementService.tilePlacements.find(({ position }) => comparePositions(position, square.square.position))
+        );
+    }
+
+    private cursorHasTile(): boolean {
+        const square = this.getCursorSquare();
+        return square ? this.hasTile(square) : false;
     }
 
     private getAvailableTiles(): Tile[] {
