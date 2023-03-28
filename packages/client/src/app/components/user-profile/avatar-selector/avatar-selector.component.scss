@@ -9,10 +9,26 @@
         border-radius: 100px;
     }
 
-    &__content {
-        display: grid;
-        grid-template-rows: auto 1fr;
-        gap: 18px;
+    &__upload-button {
+        height: 50px;
+        width: 50px;
+        border-radius: 100px;
+        border: none;
+        background-color: $primary;
+        color: white;
+        font-size: 1.25em;
+        cursor: pointer;
+        transition: ease-in scale 0.1s, ease-in opacity 0.1s;
+
+        &:not(:disabled) {
+            &:hover {
+                opacity: 0.85;
+            }
+
+            &:active {
+                scale: 0.95;
+            }
+        }
     }
 
     &__uploadcare {
@@ -21,44 +37,6 @@
         position: absolute;
         top: -1000px;
         left: -100px;
-        ::ng-deep {
-            .uploadcare--widget {
-                display: flex;
-                gap: 12px;
-            }
-
-            .uploadcare--widget__button {
-                background-color: $primary;
-                box-sizing: border-box;
-                position: relative;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
-                cursor: pointer;
-                outline: none;
-                border: none;
-                -webkit-tap-highlight-color: transparent;
-                white-space: nowrap;
-                text-decoration: none;
-                vertical-align: baseline;
-                text-align: center;
-                margin: 0;
-                min-width: 64px;
-                line-height: 36px;
-                padding: 0 16px;
-                border-radius: 4px;
-                overflow: visible;
-            }
-
-            .uploadcare--widget__button_type_open {
-                display: block;
-            }
-
-            .uploadcare--widget__text {
-                display: none;
-            }
-        }
     }
 
     &__preset-container {

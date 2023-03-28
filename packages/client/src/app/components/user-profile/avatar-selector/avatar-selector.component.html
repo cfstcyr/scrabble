@@ -12,17 +12,20 @@
 <div class='avatar-selector'>
     <img class='avatar-selector__preview' [appSrc]='control.value' [square]='150' />
 
-    <div class='avatar-selector__content'>
-        <div class='avatar-selector__buttons'>
-            <button *ngIf='(widgetState |async) === "ready"' class='avatar-selector__upload-button avatar-selector__upload-button--ready' mat-flat-button color='primary' (click)='openDialog()' type='button'>Téléverser un image</button>
-            <button *ngIf='(widgetState |async) !== "ready"' class='avatar-selector__upload-button avatar-selector__upload-button--uploading' mat-flat-button color='primary' [disabled]='true' type='button'>Chargement...</button>
-        </div>
+    <div class='avatar-selector__preset-container'>
+        <button
 
-        <div class='avatar-selector__preset-container'>
-            <label *ngFor="let avatar of avatars">
-                <input type="radio" name="avatar" [value]="avatar" class="avatar-selector__preset__input" [formControl]='control' />
-                <img [appSrc]="avatar" class='avatar-selector__preset__image' [square]="50" />
-            </label>
-        </div>
+            class='avatar-selector__upload-button avatar-selector__upload-button--uploading'
+            (click)='openDialog()'
+            [disabled]='(widgetState |async) !== "ready"'
+            type='button'
+        >
+            <app-icon icon='file-upload' styling='solid'></app-icon>
+        </button>
+
+        <label *ngFor="let avatar of avatars">
+            <input type="radio" name="avatar" [value]="avatar" class="avatar-selector__preset__input" [formControl]='control' />
+            <img [appSrc]="avatar" class='avatar-selector__preset__image' [square]="50" />
+        </label>
     </div>
 </div>
