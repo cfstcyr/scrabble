@@ -8,6 +8,9 @@ import { LetterValue, Tile } from '@app/classes/tile';
 import { BehaviorSubject } from 'rxjs';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { comparePositions } from '@app/utils/comparator/comparator';
+import { AppRoutingModule } from '@app/modules/app-routing.module';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const SIZE = 5;
 
@@ -40,7 +43,7 @@ describe('BoardCursorService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [MatDialogModule],
+            imports: [MatDialogModule, AppRoutingModule, HttpClientTestingModule, MatSnackBarModule],
         });
         service = TestBed.inject(BoardCursorService);
         grid = new BehaviorSubject(getGrid());
@@ -149,7 +152,6 @@ describe('BoardCursorService', () => {
                     (placement) => placement.tile.letter === 'B' && comparePositions(placement.position, { row: 0, column: 1 }),
                 ),
             ).toBeTruthy();
-            console.log(...tilePlacementService.tilePlacements);
         });
 
         it('should add multiple letters [vertical]', () => {
