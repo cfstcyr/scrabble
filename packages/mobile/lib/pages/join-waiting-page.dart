@@ -15,7 +15,6 @@ import '../components/group/parameters.dart';
 import '../components/group/waiting-room.dart';
 import '../constants/locale/group-selection-constants.dart';
 import '../constants/locale/groups-constants.dart';
-import '../view-methods/create-lobby-methods.dart';
 
 class JoinWaitingPage extends StatefulWidget {
   JoinWaitingPage({super.key, required this.currentGroup});
@@ -39,8 +38,10 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
     });
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
-      triggerDialogBox(
-          "Partie annulée", [Text("${host.username} a annulé la partie", style: TextStyle(fontSize: 16))], [
+      triggerDialogBox("Partie annulée", [
+        Text("${host.username} a annulé la partie",
+            style: TextStyle(fontSize: 16))
+      ], [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,
@@ -129,7 +130,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                                     widget.currentGroup.virtualPlayerLevel),
                             AppButton(
                               onPressed: () {
-                                _onBack(context);
+                                _onBack(context, widget.currentGroup.groupId!);
                               },
                               icon: Icons.keyboard_arrow_left_sharp,
                               text: QUIT_GROUP,
@@ -144,12 +145,12 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
               ],
             ),
           )),
-      onWillPop: () => _onBack(context),
+      onWillPop: () => _onBack(context, widget.currentGroup.groupId!),
     );
   }
 
-  Future<bool> _onBack(BuildContext context) {
-    getIt.get<GroupJoinService>().handleLeaveGroup();
+  Future<bool> _onBack(BuildContext context, String groupId) {
+    getIt.get<GroupJoinService>().handleLeaveGroup(groupId);
     Navigator.pop(context);
     return Future.value(true);
   }
