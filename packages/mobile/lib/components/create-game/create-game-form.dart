@@ -255,7 +255,6 @@ class CreateGameFormState extends State<CreateGameForm> {
     GroupCreationResponse res =
         await gameCreationService.handleCreateGame(groupData);
     if (context.mounted) {
-      print(res);
       res.isCreated
           ? {
               reInitialize(),
