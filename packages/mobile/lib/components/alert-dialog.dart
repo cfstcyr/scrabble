@@ -16,8 +16,7 @@ class DialogBoxButtonParameters {
       required this.theme,
       this.onPressed,
       this.closesDialog,
-      this.icon})
-      : assert(onPressed != null ? closesDialog == false : true);
+      this.icon});
 }
 
 void triggerDialogBox(
