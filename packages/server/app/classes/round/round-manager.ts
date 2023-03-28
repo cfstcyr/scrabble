@@ -48,12 +48,12 @@ export default class RoundManager {
 
     nextRound(actionPlayed: Action, board: Board): Round {
         if (this.currentRound !== undefined) {
-            this.saveCompletedRound(this.currentRound, actionPlayed, board);
+            this.saveCompletedRound(this.currentRound, actionPlayed);
         }
-        return this.beginRound();
+        return this.beginRound(board);
     }
 
-    beginRound(): Round {
+    beginRound(board: Board): Round {
         const player = this.getNextPlayer();
         const now = new Date();
         const limit = new Date(Date.now() + this.maxRoundTime * SECONDS_TO_MILLISECONDS);
@@ -62,6 +62,7 @@ export default class RoundManager {
             tiles: player.tiles.map((tile) => ({ ...tile })),
             startTime: now,
             limitTime: limit,
+            board: new Board(board.grid.map((row) => row.map((square) => ({ ...square })))),
         };
         return this.currentRound;
     }
@@ -117,13 +118,12 @@ export default class RoundManager {
         return true;
     }
 
-    private saveCompletedRound(round: Round, actionPlayed: Action, board: Board): void {
+    private saveCompletedRound(round: Round, actionPlayed: Action): void {
         const now = new Date();
         this.completedRounds.push({
             ...round,
             completedTime: now,
             actionPlayed,
-            board: new Board(board.grid.map((row) => row.map((square) => ({ ...square })))),
         });
     }
 

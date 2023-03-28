@@ -1,4 +1,4 @@
-import { Tile, Square } from "./game";
+import { Tile, Board } from "./game";
 import { ScoredWordPlacement } from "./word-finding";
 import { ActionType } from './action';
 import { TypeOfId } from "../types/id";
@@ -12,12 +12,42 @@ export interface CriticalMomentBase {
     bestPlacement: ScoredWordPlacement;
 }
 
-export interface CriticalMomentResponse extends CriticalMomentBase {
-    filledSquares: Square[];
+export interface CriticalMoment extends CriticalMomentBase {
+    board: Board;
 }
 
-export interface AnalysisResponse {
+export interface Analysis {
     idGame: TypeOfId<GameHistory>;
     idUser: TypeOfId<User>;
-    criticalMoments: CriticalMomentResponse[];
+    criticalMoments: CriticalMoment[];
+}
+
+export interface AnalysisData {
+    idGame: TypeOfId<GameHistory>;
+    idUser: TypeOfId<User>;
+    idAnalysis: number;
+}
+
+export interface CriticalMomentData {
+    idCriticalMoment: number;
+    actionType: ActionType;
+    tiles: string;
+    board: string;
+    idPlayedPlacement?: TypeOfId<PlacementData>;
+    idBestPlacement: TypeOfId<PlacementData>;
+    idAnalysis: TypeOfId<AnalysisData>;
+}
+
+export interface PlacementData {
+    idPlacement: number;
+    tilesToPlace: string;
+    isHorizontal: boolean;
+    score: number;
+    row: number;
+    column: number;
+}
+
+export enum AnalysisRequestInfoType {
+    ID_GAME = 'idGame',
+    ID_ANALYSIS = 'idAnalysis',
 }

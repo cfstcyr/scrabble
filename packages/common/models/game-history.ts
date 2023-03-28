@@ -1,4 +1,5 @@
 import { IdOf, NoId, TypeOfId } from '../types/id';
+import { AnalysisData } from './analysis';
 import { User } from './user';
 
 export interface GameHistoryPlayer {
@@ -20,4 +21,4 @@ export type GameHistoryPlayerCreation = Omit<GameHistoryPlayer, IdOf<GameHistory
 
 export type GameHistoryCreation = { gameHistory: NoId<GameHistory>; players: GameHistoryPlayerCreation[] };
 
-export type GameHistoryForUser = NoId<GameHistory> & Pick<GameHistoryPlayer, 'score' | 'isWinner'>;
+export type GameHistoryForUser = NoId<GameHistory> & Pick<GameHistoryPlayer, 'score' | 'isWinner'> & Pick<AnalysisData, 'idAnalysis'>;

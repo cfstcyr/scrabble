@@ -3,25 +3,25 @@ import { UserId } from '@app/classes/user/connected-user-types';
 import { ANALYSIS_TABLE, CRITICAL_MOMENTS_TABLE, PLACEMENT_TABLE } from '@app/constants/services-constants/database-const';
 import { Service } from 'typedi';
 import DatabaseService from '@app/services/database-service/database.service';
-import { Analysis, AnalysisData, CriticalMomentData, PlacementData } from '@app/classes/analysis/analysis';
 import { Orientation, Position } from '@app/classes/board';
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { NO_ANALYSIS_FOUND } from '@app/constants/services-errors';
+import { NO_ANALYSIS_FOUND, NO_ANALYSIS_FOUND_ID } from '@app/constants/services-errors';
 import { StatusCodes } from 'http-status-codes';
 import { ActionType } from '@common/models/action';
 import { StringConversion } from '@app/utils/string-conversion/string-conversion';
-import { AnalysisResponse, CriticalMomentResponse } from '@common/models/analysis';
+import { Analysis, AnalysisData, CriticalMoment, CriticalMomentData, PlacementData } from '@common/models/analysis';
 import { ScoredWordPlacement } from '@common/models/word-finding';
 import { TypeOfId } from '@common/types/id';
 import { GameHistory } from '@common/models/game-history';
 import { BOARD_SIZE } from '@app/constants/game-constants';
-import { Board, Square, Tile } from '@common/models/game';
+import { Board, Tile } from '@common/models/game';
+import BoardService from '@app/services/board-service/board.service';
 
 @Service()
 export class AnalysisPersistenceService {
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(private readonly databaseService: DatabaseService, private boardService: BoardService) {}
 
-    async requestAnalysis(idGame: TypeOfId<GameHistory>, idUser: UserId): Promise<AnalysisResponse> {
+    async requestAnalysis(idGame: TypeOfId<GameHistory>, idUser: UserId): Promise<Analysis> {
         if (!(await this.doesMatchingAnalysisExist(idGame, idUser))) throw new HttpException(NO_ANALYSIS_FOUND, StatusCodes.NOT_FOUND);
 
         const analysisData = await this.analysisTable
@@ -45,11 +45,20 @@ export class AnalysisPersistenceService {
                 'Analysis.idGame': idGame,
                 'Analysis.idUser': idUser,
             });
-        const analysis: AnalysisResponse = { idGame, idUser, criticalMoments: [] };
+        const analysis: Analysis = { idGame, idUser, criticalMoments: [] };
         for (const criticalMomentData of analysisData) {
             analysis.criticalMoments.push(await this.convertDataToCriticalMoment(criticalMomentData));
         }
         return analysis;
+    }
+
+    async getIdGame(idAnalysis: TypeOfId<Analysis>, idUser: UserId): Promise<TypeOfId<GameHistory>> {
+        const analysisData = await this.analysisTable.select('*').where({ idAnalysis, idUser }).limit(1);
+        if (analysisData.length <= 0) {
+            throw new HttpException(NO_ANALYSIS_FOUND_ID, StatusCodes.BAD_REQUEST);
+        }
+
+        return analysisData[0].idGame;
     }
 
     async addAnalysis(idGame: TypeOfId<GameHistory>, idUser: UserId, analysis: Analysis) {
@@ -77,11 +86,11 @@ export class AnalysisPersistenceService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private async convertDataToCriticalMoment(criticalMomentData: any): Promise<CriticalMomentResponse> {
+    private async convertDataToCriticalMoment(criticalMomentData: any): Promise<CriticalMoment> {
         return {
             tiles: criticalMomentData.tiles.split('').map((tileString: string) => StringConversion.convertStringToTile(tileString)),
             actionType: criticalMomentData.actionType as ActionType,
-            filledSquares: this.convertStringToFilledSquares(criticalMomentData.board),
+            board: this.convertStringToBoard(criticalMomentData.board),
             bestPlacement: await this.convertDataToPlacement({
                 tilesToPlace: criticalMomentData.bp_tilesToPlace,
                 isHorizontal: criticalMomentData.bp_isHorizontal,
@@ -137,9 +146,8 @@ export class AnalysisPersistenceService {
         return outputString;
     }
 
-    private convertStringToFilledSquares(boardString: string): Square[] {
-        const center: Position = new Position(Math.floor(BOARD_SIZE.x / 2), Math.floor(BOARD_SIZE.y / 2));
-        const filledSquares: Square[] = [];
+    private convertStringToBoard(boardString: string): Board {
+        const board = this.boardService.initializeBoard();
         for (let i = 0; i < boardString.length; i++) {
             // check if this is the correct position
             const position = new Position(Math.floor(i / BOARD_SIZE.y), i % BOARD_SIZE.x);
@@ -148,17 +156,9 @@ export class AnalysisPersistenceService {
             else {
                 tile = StringConversion.convertStringToTile(boardString[i]);
             }
-            const isCenter = position.row === center.row && position.column === center.column;
-            const square: Square = {
-                tile,
-                position,
-                scoreMultiplier: null,
-                wasMultiplierUsed: true,
-                isCenter,
-            };
-            filledSquares.push(square);
+            board.getSquare(position).tile = tile;
         }
-        return filledSquares;
+        return board;
     }
 
     private get analysisTable() {

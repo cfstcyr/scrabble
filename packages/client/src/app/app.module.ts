@@ -66,6 +66,9 @@ import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.co
 import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
 import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
 import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/puzzle-history.component';
+import { AnalysisOverviewComponent } from './components/analysis/analysis-overview/analysis-overview.component';
+import { AnalysisResultModalComponent } from './components/analysis/analysis-result-modal/analysis-result-modal.component';
+import { AnalysisWaitingDialogComponent } from './components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 
 registerLocaleData(localeFr);
 
@@ -133,6 +136,9 @@ registerLocaleData(localeFr);
         SwiperComponent,
         SwiperSlideComponent,
         SwiperNavigationComponent,
+        AnalysisOverviewComponent,
+        AnalysisResultModalComponent,
+        AnalysisWaitingDialogComponent,
     ],
     imports: [
         AppMaterialModule,
