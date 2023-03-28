@@ -22,7 +22,7 @@ import {
 import { puzzleSettings } from '@app/utils/settings';
 import { Router } from '@angular/router';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
-import { ENTER, ESCAPE } from '@app/constants/components-constants';
+import { BACKSPACE, ENTER, ESCAPE } from '@app/constants/components-constants';
 import { PuzzleResultModalComponent, PuzzleResultModalParameters } from '@app/components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
 import { WordPlacement } from '@common/models/word-finding';
 import { PuzzleResult } from '@common/models/puzzle';
@@ -38,6 +38,7 @@ import {
     PUZZLE_ERROR_DIALOG_CONTENT,
     PUZZLE_ERROR_DIALOG_TITLE,
 } from '@app/constants/puzzle-constants';
+import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
@@ -64,6 +65,7 @@ export class PuzzlePageComponent implements OnInit {
         private readonly boardService: BoardService,
         private readonly dialog: MatDialog,
         private readonly router: Router,
+        private readonly boardCursorService: BoardCursorService,
     ) {}
 
     get stopPlaying(): Observable<boolean> {
@@ -72,14 +74,23 @@ export class PuzzlePageComponent implements OnInit {
 
     @HostListener('document:keypress', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent): void {
-        switch (event.key) {
-            case ENTER:
-                this.play();
-                break;
+        if (event.key.length === 1 && event.key.toLowerCase() >= 'a' && event.key.toLowerCase() <= 'z') {
+            this.boardCursorService.handleLetter(event.key, event.shiftKey);
+        } else {
+            switch (event.key) {
+                case BACKSPACE:
+                    this.boardCursorService.handleBackspace();
+                    break;
+                case ENTER:
+                    this.play();
+                    break;
+            }
         }
     }
+
     @HostListener('document:keydown.escape', ['$event'])
     handleKeyboardEventEsc(): void {
+        this.boardCursorService.clear();
         this.tilePlacementService.resetTiles();
     }
 
@@ -123,6 +134,8 @@ export class PuzzlePageComponent implements OnInit {
 
             this.grid.next(grid);
             this.tiles.next(puzzle.tiles.map((tile) => ({ ...tile, isUsed: false, isSelected: false })));
+
+            this.boardCursorService.initialize(this.grid, () => this.tiles.value);
         });
 
         this.startTimer(time);
@@ -130,6 +143,7 @@ export class PuzzlePageComponent implements OnInit {
 
     cancelPlacement(): void {
         this.tilePlacementService.resetTiles();
+        this.boardCursorService.clear();
     }
 
     canCancelPlacement(): Observable<boolean> {
@@ -253,6 +267,10 @@ export class PuzzlePageComponent implements OnInit {
     stopPuzzle(): void {
         this.isPlaying.next(false);
         this.timer = undefined;
+    }
+
+    handleSquareClick(square: SquareView): void {
+        this.boardCursorService.handleSquareClick(square);
     }
 
     private startTimer(time: number): void {

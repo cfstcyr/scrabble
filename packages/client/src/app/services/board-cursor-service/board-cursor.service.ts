@@ -61,8 +61,10 @@ export class BoardCursorService {
         if (!square) return;
 
         if (square.square.tile) {
-            this.cursor.forward();
-            this.handleLetter(letter, isHoldingShift);
+            if (this.cursor.clone().forward().isWithinBounds()) {
+                this.cursor.forward();
+                this.handleLetter(letter, isHoldingShift);
+            }
             return;
         }
 
@@ -81,9 +83,9 @@ export class BoardCursorService {
         this.notAppliedSquares.push(square);
 
         this.clearCurrentCursor();
-        do {
+        while (this.cursor.isWithinBounds() && this.cursor.currentSquareView.square.tile && this.cursor.clone().forward().isWithinBounds()) {
             this.cursor.forward();
-        } while (this.cursor.currentSquareView.square.tile);
+        }
         this.setCurrentCursorSquare();
     }
 
@@ -91,23 +93,34 @@ export class BoardCursorService {
         if (!this.notAppliedSquares) throw new Error(BOARD_CURSOR_NOT_INITIALIZED);
         if (!this.cursor) return;
 
-        if (!this.cursor.clone().backward().isWithinBounds()) return;
+        const currentSquareView = this.cursor.currentSquareView;
 
-        this.clearCurrentCursor();
-        do {
-            this.cursor.backward();
-        } while (this.cursor.currentSquareView.applied && this.cursor.currentSquareView.square.tile && this.cursor.isWithinBounds());
-        this.setCurrentCursorSquare();
+        if (!currentSquareView) return;
 
-        const square = this.cursor.currentSquareView;
-        if (!square) return;
-
-        if (square.square.tile) {
+        if (currentSquareView.square.tile) {
             this.tilePlacementService.removeTile({
-                tile: square.square.tile,
+                tile: currentSquareView.square.tile,
                 position: { ...this.cursor.getPosition() },
             });
             this.notAppliedSquares.pop();
+        } else {
+            if (!this.cursor.clone().backward().isWithinBounds()) return;
+
+            this.clearCurrentCursor();
+            do {
+                this.cursor.backward();
+            } while (this.cursor.currentSquareView.applied && this.cursor.currentSquareView.square.tile && this.cursor.isWithinBounds());
+            this.setCurrentCursorSquare();
+
+            const square = this.cursor.currentSquareView;
+
+            if (square.square.tile) {
+                this.tilePlacementService.removeTile({
+                    tile: square.square.tile,
+                    position: { ...this.cursor.getPosition() },
+                });
+                this.notAppliedSquares.pop();
+            }
         }
     }
 
