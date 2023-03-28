@@ -8,11 +8,19 @@
             <mat-grid-tile [colspan]="1" [rowspan]="1">
                 <p class="letter-number-grid">{{ letters[i] }}</p>
             </mat-grid-tile>
-            <mat-grid-tile *ngFor="let square of squareRow" [colspan]="square.squareSize.x" [rowspan]="square.squareSize.y" class="square-background">
+            <mat-grid-tile
+                *ngFor="let square of squareRow"
+                [colspan]="square.squareSize.x"
+                [rowspan]="square.squareSize.y"
+                class="square-background"
+                (click)='squareClickHandler(square)'
+            >
                 <app-square
                     class="full-size"
                     [squareView]="square"
                     [canInteract]="canInteract"
+                    [isCursor]='square.isCursor || false'
+                    [cursorOrientation]='square.cursorOrientation'
                 ></app-square>
             </mat-grid-tile>
         </div>

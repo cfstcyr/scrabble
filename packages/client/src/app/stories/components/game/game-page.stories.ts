@@ -18,6 +18,8 @@ import { TileComponent } from '@app/components/tile/tile.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { InitializedGameStoriesModule } from '@app/stories/modules/initialized-game-stories/initialized-game-stories.module';
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
+import { GameBoardWrapperComponent } from '@app/wrappers/game-board-wrapper/game-board-wrapper.component';
+import { BoardComponent } from '@app/components/board/board.component';
 
 export default {
     title: 'Game/Page',
@@ -32,6 +34,8 @@ export default {
                 TileComponent,
                 SquareComponent,
                 ChooseBlankTileDialogComponent,
+                GameBoardWrapperComponent,
+                BoardComponent,
             ],
             imports: [
                 InitializedGameStoriesModule,

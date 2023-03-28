@@ -32,6 +32,7 @@ import { TilePlacementService } from '@app/services/tile-placement-service/tile-
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
 import { Observable, Subject } from 'rxjs';
+import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
 
 @Component({
     selector: 'app-game-page',
@@ -53,6 +54,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private gameViewEventManagerService: GameViewEventManagerService,
         private actionService: ActionService,
         private readonly tilePlacementService: TilePlacementService,
+        private readonly boardCursorService: BoardCursorService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
@@ -96,6 +98,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     passButtonClicked(): void {
         this.gameService.makeTilePlacement([]);
+        this.boardCursorService.clear();
         this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PASS, {}, '', true));
     }
 

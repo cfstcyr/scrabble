@@ -34,7 +34,6 @@ export class InitializedGameService implements OnDestroy {
                 { letter: 'D', value: 1 },
                 { letter: 'E', value: 1 },
                 { letter: '*', value: 0, isBlank: true },
-                { letter: '*', value: 0 },
             ],
             publicUser: { username: '1', avatar: '1', email: '1' },
         },
@@ -63,9 +62,9 @@ export class InitializedGameService implements OnDestroy {
             })),
         );
 
-        // board[7][7].tile = { letter: 'A', value: 1 };
-        // board[7][8].tile = { letter: 'B', value: 1 };
-        // board[7][9].tile = { letter: 'C', value: 1 };
+        board[7][7].tile = { letter: 'A', value: 1 };
+        board[7][8].tile = { letter: 'B', value: 1 };
+        board[7][9].tile = { letter: 'C', value: 1 };
 
         board[2][2].scoreMultiplier = { multiplier: 2, multiplierEffect: MultiplierEffect.LETTER };
 

@@ -17,6 +17,7 @@ import { preserveArrayOrder } from '@app/utils/preserve-array-order/preserve-arr
 import { Random } from '@app/utils/random/random';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
+import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
@@ -44,6 +45,7 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
         private readonly actionService: ActionService,
         private readonly tilePlacementService: TilePlacementService,
         readonly dragAndDropService: DragAndDropService,
+        private readonly boardCusorService: BoardCursorService,
     ) {
         super();
         this.tiles = [];
@@ -88,6 +90,7 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
 
     cancelPlacement(): void {
         this.tilePlacementService.handleCancelPlacement();
+        this.boardCusorService.clear();
     }
 
     canCancelPlacement(): Observable<boolean> {

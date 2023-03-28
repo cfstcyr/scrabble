@@ -88,7 +88,6 @@ export class DragAndDropService {
     }
 
     private onTileMove(event: CdkDragMove<HTMLElement>): void {
-        // if (!this.roundManagerService.isActivePlayerLocalPlayer()) return;
         if (this.gameService.cannotPlay()) return;
 
         const hoveredSquare = this.getHoveredSquare(event);

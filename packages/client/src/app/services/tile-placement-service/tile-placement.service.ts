@@ -48,13 +48,19 @@ export class TilePlacementService {
         return this.isPlacementValidSubject$.value && !this.blankTileModalOpened$.value;
     }
 
-    placeTile(tilePlacement: TilePlacement): void {
+    placeTile(tilePlacement: TilePlacement, skipAskBlank: boolean = false): void {
         if (tilePlacement.tile.isBlank || tilePlacement.tile.letter === '*') {
-            this.askFillBlankLetter((letter) => {
-                tilePlacement.tile.playedLetter = letter as LetterValue;
+            if (skipAskBlank) {
+                if (tilePlacement.tile.playedLetter === undefined) throw new Error('Blank tile must have a letter');
                 this.tilePlacementsSubject$.next([...this.tilePlacementsSubject$.value, tilePlacement]);
                 this.updatePlacement();
-            });
+            } else {
+                this.askFillBlankLetter((letter) => {
+                    tilePlacement.tile.playedLetter = letter as LetterValue;
+                    this.tilePlacementsSubject$.next([...this.tilePlacementsSubject$.value, tilePlacement]);
+                    this.updatePlacement();
+                });
+            }
         } else {
             this.tilePlacementsSubject$.next([...this.tilePlacementsSubject$.value, tilePlacement]);
             this.updatePlacement();

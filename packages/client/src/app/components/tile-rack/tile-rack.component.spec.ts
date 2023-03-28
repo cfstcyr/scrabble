@@ -9,7 +9,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,7 +25,7 @@ import { TileComponent } from '@app/components/tile/tile.component';
 import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
 import { TileRackSelectType } from '@app/constants/tile-rack-select-type';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { BoardService, GameService } from '@app/services';
+import { GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Random } from '@app/utils/random/random';
@@ -38,12 +38,6 @@ const DEFAULT_GAME_ID = 'gameId';
 const DEFAULT_PLAYER_ID = 'playerId';
 const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 
-class MockBoardService {
-    isLocalPlayer(): boolean {
-        return false;
-    }
-}
-
 describe('TileRackComponent', () => {
     const EMPTY_TILE_RACK: RackTile[] = [];
     let gameServiceSpy: SpyObj<GameService>;
@@ -51,13 +45,6 @@ describe('TileRackComponent', () => {
     let component: TileRackComponent;
     let fixture: ComponentFixture<TileRackComponent>;
     let handleUsedTileSpy: jasmine.Spy;
-    let mockBoardService;
-    let tilePlacementServiceSpy: TilePlacementService;
-
-    beforeEach(() => {
-        mockBoardService = new MockBoardService();
-        tilePlacementServiceSpy = new TilePlacementService(mockBoardService as unknown as BoardService, {} as unknown as MatDialog);
-    });
 
     beforeEach(() => {
         gameServiceSpy = jasmine.createSpyObj(
@@ -141,7 +128,12 @@ describe('TileRackComponent', () => {
             providers: [
                 { provide: GameService, useValue: gameServiceSpy },
                 { provide: GameViewEventManagerService, useValue: gameViewEventManagerSpy },
-                { provide: TilePlacementService, useValue: tilePlacementServiceSpy },
+                {
+                    provide: TilePlacementService,
+                    useValue: jasmine.createSpyObj('TilePlacementService', ['placeTile', 'handleCancelPlacement', 'resetTiles'], {
+                        tilePlacements$: new Subject(),
+                    }),
+                },
             ],
         }).compileComponents();
     });
