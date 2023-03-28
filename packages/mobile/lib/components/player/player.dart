@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/game/player.dart' as c;
 import 'package:mobile/components/player/abstract_player.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/classes/game/player.dart' as c;
+
+import '../../locator.dart';
+import '../../services/user.service.dart';
+import '../animation/pulse.dart';
 
 class Player extends AbstractPlayer {
   Player({
     required c.Player player,
     bool isPlaying = false,
-  }) : super(player: player, isPlaying: isPlaying);
+    bool isObserved = false,
+  }) : super(player: player, isPlaying: isPlaying, isObserved: isObserved);
 
   @override
   Widget getContent(BuildContext context) {
@@ -32,6 +37,19 @@ class Player extends AbstractPlayer {
                   color: getTextColor(),
                 ),
               ),
+              SizedBox(
+                width: 2,
+              ),
+              getIt.get<UserService>().isObserver
+                  ? Pulse(
+                      duration: Duration(milliseconds: 350),
+                      active: isObserved,
+                      child: Icon(
+                        Icons.visibility,
+                        color: getTextColor(),
+                      ),
+                    )
+                  : Container(),
             ],
           ),
         ));
