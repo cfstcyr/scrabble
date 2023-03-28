@@ -173,20 +173,17 @@ class CreateGameFormState extends State<CreateGameForm> {
                                 icon: Icon(Icons.remove),
                                 onPressed: () => setState(() {
                                   _timePerTurn -= INCREMENT_TIME;
-                                  if (_timePerTurn <
-                                      MIN_TIME) {
+                                  if (_timePerTurn < MIN_TIME) {
                                     _timePerTurn = MIN_TIME;
                                   }
                                 }),
                               ),
-                              Text(
-                                  formatTime(_timePerTurn.inSeconds)),
+                              Text(formatTime(_timePerTurn.inSeconds)),
                               IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: () => setState(() {
                                   _timePerTurn += INCREMENT_TIME;
-                                  if (_timePerTurn >
-                                      MAX_TIME) {
+                                  if (_timePerTurn > MAX_TIME) {
                                     _timePerTurn = MAX_TIME;
                                   }
                                 }),
@@ -255,13 +252,15 @@ class CreateGameFormState extends State<CreateGameForm> {
           ? passwordHandler.controller.text
           : '',
     );
-    bool isCreated = await gameCreationService.handleCreateGame(groupData);
+    GroupCreationResponse res =
+        await gameCreationService.handleCreateGame(groupData);
     if (context.mounted) {
-      isCreated
+      print(res);
+      res.isCreated
           ? {
               reInitialize(),
               Navigator.pushNamed(context, CREATE_LOBBY_ROUTE,
-                  arguments: groupData)
+                  arguments: res.group)
             }
           : {};
     }
