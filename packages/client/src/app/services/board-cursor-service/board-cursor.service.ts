@@ -7,6 +7,7 @@ import { comparePositions } from '@app/utils/comparator/comparator';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { LetterValue, Tile } from '@app/classes/tile';
 import { BehaviorSubject } from 'rxjs';
+import { DragAndDropService } from '@app/services/drag-and-drop-service/drag-and-drop.service';
 
 const BOARD_CURSOR_NOT_INITIALIZED = 'Board cursor service not initialized';
 
@@ -20,7 +21,11 @@ export class BoardCursorService {
     private notAppliedSquares: SquareView[] | undefined;
     private cursor: BoardNavigator | undefined;
 
-    constructor(private readonly tilePlacementService: TilePlacementService) {}
+    constructor(private readonly tilePlacementService: TilePlacementService, private readonly dragAndDropService: DragAndDropService) {
+        this.dragAndDropService.drop$.subscribe(() => {
+            this.clearCurrentCursor();
+        });
+    }
 
     initialize(grid: BehaviorSubject<SquareView[][]>, getUserTiles: (() => Tile[]) | undefined): void {
         this.grid = grid;
