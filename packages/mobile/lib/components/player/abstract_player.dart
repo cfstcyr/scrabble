@@ -13,10 +13,12 @@ abstract class AbstractPlayer extends StatelessWidget {
 
   final bool isPlaying;
   final c.Player player;
+  final bool isObserved;
 
   AbstractPlayer({
     required this.player,
     this.isPlaying = false,
+    this.isObserved = false,
   });
 
   @override

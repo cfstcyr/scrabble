@@ -157,7 +157,8 @@ export class PuzzleGenerator {
     private placeWord(board: Board, word: string, placement: BoardPlacement): void {
         const navigator = new BoardNavigator(board, placement.position, placement.orientation);
         for (const c of word.split('')) {
-            navigator.square.tile = { letter: c.toUpperCase() as LetterValue, value: 1 };
+            const letter = c.toUpperCase() as LetterValue;
+            navigator.square.tile = { letter, value: letterDistributionMap.get(letter)?.score ?? 0 };
             navigator.forward();
         }
     }
@@ -196,7 +197,8 @@ export class PuzzleGenerator {
     private shouldSkipPlacement(placement: BoardPlacement): boolean {
         return (
             placement.letters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff) ||
-            placement.perpendicularLetters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff)
+            placement.perpendicularLetters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff) ||
+            placement.letters.length + placement.perpendicularLetters.length > 1
         );
     }
 }

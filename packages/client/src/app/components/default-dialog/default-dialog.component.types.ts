@@ -13,6 +13,7 @@ export interface DefaultDialogButtonParameters {
     redirect?: string;
     style?: string;
     icon?: IconName;
+    key?: string;
 }
 export interface DefaultDialogParameters {
     title: string;

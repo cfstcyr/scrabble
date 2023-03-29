@@ -257,6 +257,7 @@ class CreateGameFormState extends State<CreateGameForm> {
     if (context.mounted) {
       isCreated
           ? {
+              userService.isObserver = false,
               reInitialize(),
               Navigator.pushNamed(context, CREATE_LOBBY_ROUTE,
                   arguments: groupData)

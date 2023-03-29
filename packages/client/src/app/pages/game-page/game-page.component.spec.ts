@@ -22,16 +22,6 @@ import { IconComponent } from '@app/components/icon/icon.component';
 import { TileComponent } from '@app/components/tile/tile.component';
 import { DEFAULT_PLAYER } from '@app/constants/game-constants';
 import { DIALOG_QUIT_BUTTON_CONFIRM, DIALOG_QUIT_CONTENT, DIALOG_QUIT_STAY, DIALOG_QUIT_TITLE } from '@app/constants/pages-constants';
-import {
-    RACK_FONT_SIZE_INCREMENT,
-    RACK_TILE_DEFAULT_FONT_SIZE,
-    RACK_TILE_MAX_FONT_SIZE,
-    RACK_TILE_MIN_FONT_SIZE,
-    SQUARE_FONT_SIZE_INCREMENT,
-    SQUARE_TILE_DEFAULT_FONT_SIZE,
-    SQUARE_TILE_MAX_FONT_SIZE,
-    SQUARE_TILE_MIN_FONT_SIZE,
-} from '@app/constants/tile-font-size-constants';
 import { GameService } from '@app/services';
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 import { of } from 'rxjs';
@@ -41,17 +31,13 @@ import { GamePageComponent } from './game-page.component';
     template: '',
     selector: 'app-board',
 })
-export class MockBoardComponent {
-    tileFontSize = SQUARE_TILE_DEFAULT_FONT_SIZE;
-}
+export class MockBoardComponent {}
 
 @Component({
     template: '',
     selector: 'app-tile-rack',
 })
-export class MockTileRackComponent {
-    tileFontSize = RACK_TILE_DEFAULT_FONT_SIZE;
-}
+export class MockTileRackComponent {}
 
 @Component({
     template: '',
@@ -254,59 +240,6 @@ describe('GamePageComponent', () => {
             component.placeButtonClicked();
 
             expect(spy).toHaveBeenCalled();
-        });
-    });
-
-    describe('changeTileFontSize', () => {
-        beforeEach(() => {
-            component.tileRackComponent = jasmine.createSpyObj('MockTileRackComponent', ['tileFontSize']);
-            component.boardComponent = jasmine.createSpyObj('MockBoardComponent', ['tileFontSize']);
-        });
-
-        it('should call changeTileFontSize with smaller when - button is clicked ', () => {
-            const spy = spyOn(component, 'changeTileFontSize');
-            const minusButton = fixture.debugElement.nativeElement.querySelector('#minus-button');
-            minusButton.click();
-            expect(spy).toHaveBeenCalledWith('smaller');
-        });
-
-        it('should call changeTileFontSize with larger when + button is clicked ', () => {
-            const spy = spyOn(component, 'changeTileFontSize');
-            const minusButton = fixture.debugElement.nativeElement.querySelector('#plus-button');
-            minusButton.click();
-            expect(spy).toHaveBeenCalledWith('larger');
-        });
-
-        it('should increment tileFontSize of tilerack and board components if max size not reached', () => {
-            component.tileRackComponent.tileFontSize = RACK_TILE_DEFAULT_FONT_SIZE;
-            component.boardComponent.tileFontSize = SQUARE_TILE_DEFAULT_FONT_SIZE;
-            component.changeTileFontSize('larger');
-            expect(component.tileRackComponent.tileFontSize).toEqual(RACK_TILE_DEFAULT_FONT_SIZE + RACK_FONT_SIZE_INCREMENT);
-            expect(component.boardComponent.tileFontSize).toEqual(SQUARE_TILE_DEFAULT_FONT_SIZE + SQUARE_FONT_SIZE_INCREMENT);
-        });
-
-        it('should NOT increment tileFontSize of tilerack and board components if max size already reached', () => {
-            component.tileRackComponent.tileFontSize = RACK_TILE_MAX_FONT_SIZE;
-            component.boardComponent.tileFontSize = SQUARE_TILE_MAX_FONT_SIZE;
-            component.changeTileFontSize('larger');
-            expect(component.tileRackComponent.tileFontSize).toEqual(RACK_TILE_MAX_FONT_SIZE);
-            expect(component.boardComponent.tileFontSize).toEqual(SQUARE_TILE_MAX_FONT_SIZE);
-        });
-
-        it('should decrement tileFontSize of tilerack and board components if min size not reached', () => {
-            component.tileRackComponent.tileFontSize = RACK_TILE_DEFAULT_FONT_SIZE;
-            component.boardComponent.tileFontSize = SQUARE_TILE_DEFAULT_FONT_SIZE;
-            component.changeTileFontSize('smaller');
-            expect(component.tileRackComponent.tileFontSize).toEqual(RACK_TILE_DEFAULT_FONT_SIZE - RACK_FONT_SIZE_INCREMENT);
-            expect(component.boardComponent.tileFontSize).toEqual(SQUARE_TILE_DEFAULT_FONT_SIZE - SQUARE_FONT_SIZE_INCREMENT);
-        });
-
-        it('should NOT decrement tileFontSize of tilerack and board components if min size already reached', () => {
-            component.tileRackComponent.tileFontSize = RACK_TILE_MIN_FONT_SIZE;
-            component.boardComponent.tileFontSize = SQUARE_TILE_MIN_FONT_SIZE;
-            component.changeTileFontSize('smaller');
-            expect(component.tileRackComponent.tileFontSize).toEqual(RACK_TILE_MIN_FONT_SIZE);
-            expect(component.boardComponent.tileFontSize).toEqual(SQUARE_TILE_MIN_FONT_SIZE);
         });
     });
 

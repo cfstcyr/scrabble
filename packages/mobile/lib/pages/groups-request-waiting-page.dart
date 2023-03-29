@@ -92,7 +92,7 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
                 width: 400,
                 height: 400,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 32, 32, 16),
+                  padding: const EdgeInsets.fromLTRB(0, 32, 0, 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
@@ -105,6 +105,7 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
                       Parameters(
                         maxRoundTime: widget.group.maxRoundTime,
                         virtualPlayerLevel: widget.group.virtualPlayerLevel,
+                        visibility: widget.group.gameVisibility,
                         backgroundColor: theme.colorScheme.background,
                       ),
                       Spacer(),

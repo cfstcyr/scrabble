@@ -2,7 +2,7 @@ import { ActionData } from '@app/classes/communication/action-data';
 import { FeedbackMessage, FeedbackMessages } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
-import { GameRequest } from '@app/classes/communication/request';
+import { GameRequest, PlaceRequest } from '@app/classes/communication/request';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { CONTENT_REQUIRED, SENDER_REQUIRED } from '@app/constants/controllers-errors';
 import { INVALID_WORD_TIMEOUT, SYSTEM_ERROR_ID, SYSTEM_ID } from '@app/constants/game-constants';
@@ -19,6 +19,8 @@ import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { TilePlacement } from '@common/models/tile-placement';
+import { wordPlacementValidator } from '@app/middlewares/validators/tile-placement';
 import { ActionType } from '@common/models/action';
 
 @Service()
@@ -78,6 +80,18 @@ export class GamePlayController extends BaseController {
             const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
             try {
                 this.handleNewError(playerId, gameId, message);
+                res.status(StatusCodes.NO_CONTENT).send();
+            } catch (exception) {
+                next(exception);
+            }
+        });
+
+        router.post('/:gameId/squares/place', ...wordPlacementValidator('tilePlacement'), (req: PlaceRequest, res: Response, next) => {
+            const { gameId } = req.params;
+            const body = { tilePlacement: req.body.tilePlacement, idUser: req.body.idUser };
+            try {
+                const playerId = this.authentificationService.connectedUsers.getSocketId(body.idUser);
+                this.handleTilePlacement(gameId, playerId, body.tilePlacement);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
                 next(exception);
@@ -197,5 +211,9 @@ export class GamePlayController extends BaseController {
 
     private isWordNotInDictionaryError(exception: Error): boolean {
         return exception.message.includes(" n'est pas dans le dictionnaire choisi.");
+    }
+
+    private handleTilePlacement(gameId: string, playerId: string, data: TilePlacement[]) {
+        this.socketService.emitToRoomNoSender(gameId, playerId, 'tilePlacement', data);
     }
 }

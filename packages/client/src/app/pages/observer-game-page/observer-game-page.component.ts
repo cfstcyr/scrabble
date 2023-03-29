@@ -1,6 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BoardComponent } from '@app/components/board/board.component';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
 import {
@@ -28,7 +27,6 @@ import { Subject } from 'rxjs';
     styleUrls: ['./observer-game-page.component.scss'],
 })
 export class ObserverGamePageComponent implements OnInit, OnDestroy {
-    @ViewChild(BoardComponent, { static: false }) boardComponent: BoardComponent;
     @ViewChild(TileRackComponent, { static: false }) tileRackComponent: TileRackComponent;
 
     private mustDisconnectGameOnLeave: boolean;

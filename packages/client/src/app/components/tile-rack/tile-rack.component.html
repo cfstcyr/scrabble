@@ -1,6 +1,6 @@
 <div id="rack-grid" (click)="focus()">
     <mat-card>
-        <div 
+        <div
             id="rack-card-container"
             [class]="'tile-rack selection-' + selectionType"
             [ngClass]="{'is-shuffling': isShuffling}"
@@ -9,10 +9,11 @@
             [cdkDropListData]="tiles"
             (cdkDropListDropped)="drop($event)"
         >
-            <div class="rack-tile-container" 
+            <div class="rack-tile-container"
                 *ngFor="let tile of tiles" [ngClass]="{ selected: tile.isSelected, hidden: tile.isUsed }"
                 (cdkDragMoved)="dragAndDropService.onRackTileMove($event)"
                 (cdkDragDropped)="dragAndDropService.onRackTileDrop(tile)"
+                 (contextmenu)='onTileRightClick(tile)'
                 cdkDrag
             >
                 <app-tile [tile]="tile" [ngStyle]="{'fontSize': tileFontSize+'em'}" class="rack-tile">
@@ -39,7 +40,7 @@
                 </button>
             </div>
             <div *ngIf="!isObserver">
-                <button mat-raised-button class="btn-rack" color="primary" [disabled]="(canCancelPlacement() | async) === false" (click)="cancelPlacement()">
+                <button mat-raised-button class="btn-rack" color="primary" [disabled]="!canCancelPlacement()" (click)="cancelPlacement()">
                     <app-icon icon="undo"></app-icon> Annuler
                 </button>
             </div>

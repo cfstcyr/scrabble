@@ -1,3 +1,5 @@
+/* eslint-disable max-classes-per-file */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { CdkDragMove } from '@angular/cdk/drag-drop';
 import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
@@ -12,6 +14,9 @@ import { PublicUserStatistics } from '@common/models/user-statistics';
 import { BehaviorSubject } from 'rxjs';
 import { UserService } from '@app/services/user-service/user.service';
 import { DragAndDropService } from './drag-and-drop.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const DEFAULT_PLACEMENT: TilePlacement = {
     position: { row: 0, column: 0 },
@@ -23,7 +28,7 @@ const DEFAULT_EVENT: CdkDragMove<HTMLElement> = {
 
 const createSquare = (document: Document, position: Position = DEFAULT_PLACEMENT.position) => {
     const square = document.createElement('div');
-    square.classList.add('square');
+    square.classList.add('square', 'can-drop');
     square.setAttribute('column', `${position.column}`);
     square.setAttribute('row', `${position.row}`);
     return square;
@@ -31,8 +36,8 @@ const createSquare = (document: Document, position: Position = DEFAULT_PLACEMENT
 
 describe('DragAndDropService', () => {
     let service: DragAndDropService;
-    let tilePlacementService: TilePlacementService;
     let document: Document;
+    let tilePlacementService: TilePlacementService;
     const userService = jasmine.createSpyObj(UserService, ['updateStatistics', 'updateGameHistory', 'updateServerActions']);
     userService.user = new BehaviorSubject<PublicUser>({ email: '1@2', avatar: '', username: 'John Doe' });
     userService.statistics = new BehaviorSubject<PublicUserStatistics>({
@@ -46,12 +51,13 @@ describe('DragAndDropService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [MatDialogModule],
+            imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule, MatSnackBarModule],
             providers: [{ provide: UserService, useValue: userService }],
         });
         service = TestBed.inject(DragAndDropService);
-        tilePlacementService = TestBed.inject(TilePlacementService);
+        // tilePlacementService = TestBed.inject(TilePlacementService);
         document = TestBed.inject(DOCUMENT);
+        tilePlacementService = TestBed.inject(TilePlacementService);
     });
 
     it('should be created', () => {
@@ -98,12 +104,12 @@ describe('DragAndDropService', () => {
 
             expect(
                 tilePlacementService.tilePlacements.find(
-                    (placement) => placement.position.column === newPosition.column && placement.position.row === newPosition.row,
+                    (placement: TilePlacement) => placement.position.column === newPosition.column && placement.position.row === newPosition.row,
                 ),
             ).toBeTruthy();
             expect(
                 tilePlacementService.tilePlacements.find(
-                    (placement) =>
+                    (placement: TilePlacement) =>
                         placement.position.column === DEFAULT_PLACEMENT.position.column && placement.position.row === DEFAULT_PLACEMENT.position.row,
                 ),
             ).toBeFalsy();
@@ -120,12 +126,12 @@ describe('DragAndDropService', () => {
 
             expect(
                 tilePlacementService.tilePlacements.find(
-                    (placement) => placement.position.column === newPosition.column && placement.position.row === newPosition.row,
+                    (placement: TilePlacement) => placement.position.column === newPosition.column && placement.position.row === newPosition.row,
                 ),
             ).toBeFalsy();
             expect(
                 tilePlacementService.tilePlacements.find(
-                    (placement) =>
+                    (placement: TilePlacement) =>
                         placement.position.column === DEFAULT_PLACEMENT.position.column && placement.position.row === DEFAULT_PLACEMENT.position.row,
                 ),
             ).toBeTruthy();

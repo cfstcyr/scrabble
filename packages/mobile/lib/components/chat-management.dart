@@ -3,25 +3,53 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mobile/components/chatbox-wrapper.dart';
 import 'package:mobile/components/chatbox.dart';
+import 'package:mobile/services/chat.service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/channel.dart';
 import '../constants/chat-management.constants.dart';
 import '../locator.dart';
-import '../services/chat-management.service.dart';
 import '../view-methods/chat-management-methods.dart';
 
 class ChatManagement extends StatefulWidget {
   const ChatManagement({super.key});
+
   @override
   State<ChatManagement> createState() => _ChatManagementState();
 }
 
 class _ChatManagementState extends State<ChatManagement> {
+  final ChatService _chatService = getIt.get<ChatService>();
+
+  final channelCreationNameController = TextEditingController();
+  final channelSearchController = TextEditingController();
+
+  Stream<List<Channel>> _myChannels = Stream.empty();
+  BehaviorSubject<String?> _currentSearchQuery$ = BehaviorSubject.seeded(null);
+  Stream<String?> _currentSearchQuery = Stream.empty();
+
+  StreamSubscription? openChannelSubscription;
+
   @override
   void initState() {
     super.initState();
+
+    _myChannels = _chatService.myChannels;
+
+    openChannelSubscription = _chatService.openedChannelId.listen((int? id) {
+      if (id != null) {
+        _chatService.scaffoldKey.currentState!.openEndDrawer();
+        _chatService.readChannelMessages(id);
+      } else {
+        _chatService.scaffoldKey.currentState?.closeEndDrawer();
+      }
+    });
+
+    _currentSearchQuery = _currentSearchQuery$
+        .distinct()
+        .debounceTime(Duration(milliseconds: 300));
   }
 
   //hack allows for drawer open after closing but it duplicates drawer
@@ -35,54 +63,35 @@ class _ChatManagementState extends State<ChatManagement> {
   @override
   void dispose() {
     super.dispose();
-    _debounce?.cancel();
+    _chatService.closeChannel();
+    openChannelSubscription?.cancel();
   }
 
-  final ChatManagementService _chatManagerService =
-      getIt.get<ChatManagementService>();
-  final inputController = TextEditingController();
-  final searchController = TextEditingController();
-  Timer? _debounce;
-
-  List<Channel> get channels => _chatManagerService.channels;
-  List<Channel> get myChannels => _chatManagerService.myChannels;
-  BehaviorSubject<List<Channel>> get channels$ => _chatManagerService.channels$;
-  BehaviorSubject<List<Channel>> get myChannels$ =>
-      _chatManagerService.myChannels$;
-  BehaviorSubject<Channel> get channelToOpen$ =>
-      _chatManagerService.channelToOpen$;
-  BehaviorSubject<List<Channel>> get channelSearchResult$ =>
-      _chatManagerService.channelSearchResult$;
-  GlobalKey<ScaffoldState> get scaffoldKey => _chatManagerService.scaffoldKey;
-
-  onSearchTextChanged(String text) async {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 200), () {
-      var unjoinedChannels = [..._chatManagerService.handleUnjoinedChannels()];
-      if (text.isEmpty) {
-        channelSearchResult$.add([...unjoinedChannels]);
-        channelSearchResult$.value.forEach((channel) {});
-        return;
-      }
-      var channelSearchResult = [];
-      unjoinedChannels.forEach((channel) {
-        if (channel.name.contains(text)) channelSearchResult.add(channel);
-      });
-      channelSearchResult$.add([...channelSearchResult]);
-    });
-  }
-
-  StreamBuilder handleChannelsChange() {
+  StreamBuilder joinableChannelsWidget() {
     return StreamBuilder(
-      stream: CombineLatestStream.list(
-          [channels$.stream, channelSearchResult$.stream]),
+      stream: CombineLatestStream<dynamic, dynamic>(
+          [_chatService.joinableChannels, _currentSearchQuery],
+          (values) => values),
       builder: (context, snapshot) {
+        if (!snapshot.hasData) return SizedBox.shrink();
+
+        List<Channel> joinableChannels = snapshot.data![0];
+        String? searchQuery = snapshot.data![1];
+
+        List<Channel> filteredChannels = searchQuery == null
+            ? joinableChannels
+            : joinableChannels
+                .where((Channel c) => c.name.contains(searchQuery))
+                .toList();
+
         return ListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemCount: channelSearchResult$.value.length,
+            itemCount: filteredChannels.length,
             itemBuilder: (_, int index) {
+              Channel joinableChannel = filteredChannels[index];
+
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -93,12 +102,12 @@ class _ChatManagementState extends State<ChatManagement> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        setName(channelSearchResult$.value[index].name),
+                        setName(joinableChannel),
                         IconButton(
                           onPressed: () {
                             setState(() {
-                              _chatManagerService.joinChannel(
-                                  channelSearchResult$.value[index].idChannel);
+                              _chatService
+                                  .joinChannel(joinableChannel.idChannel);
                             });
                           },
                           icon: Icon(Icons.add),
@@ -113,17 +122,21 @@ class _ChatManagementState extends State<ChatManagement> {
     );
   }
 
-  StreamBuilder handleMyChannelsChange() {
+  StreamBuilder myChannelsWidget() {
     return StreamBuilder(
-      stream:
-          CombineLatestStream.list([myChannels$.stream, channelToOpen$.stream]),
+      stream: _myChannels,
       builder: (context, snapshot) {
+        if (!snapshot.hasData) return SizedBox.shrink();
+
+        List<Channel> myChannels = snapshot.data!;
+
         return ListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemCount: myChannels$.value.length,
+            itemCount: myChannels.length,
             itemBuilder: (_, int index) {
+              Channel currentChannel = myChannels[index];
               return Padding(
                 padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
                 child: Container(
@@ -131,8 +144,7 @@ class _ChatManagementState extends State<ChatManagement> {
                       borderRadius: BorderRadius.all(Radius.circular(4.0))),
                   child: InkWell(
                     onTap: () {
-                      channelToOpen$.add(myChannels$.value[index]);
-                      scaffoldKey.currentState!.openEndDrawer();
+                      _chatService.openChannel(currentChannel);
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -140,12 +152,12 @@ class _ChatManagementState extends State<ChatManagement> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          setName(myChannels$.value[index].name),
+                          setName(currentChannel),
                           IconButton(
-                            onPressed: myChannels$.value[index].canQuit
+                            onPressed: currentChannel.canQuit
                                 ? () {
-                                    _chatManagerService.quitChannel(
-                                        myChannels$.value[index].idChannel);
+                                    _chatService
+                                        .quitChannel(currentChannel.idChannel);
                                   }
                                 : null,
                             icon: Icon(Icons.output_rounded),
@@ -161,21 +173,12 @@ class _ChatManagementState extends State<ChatManagement> {
     );
   }
 
-  StreamBuilder handleDrawerChannelChange() {
-    return StreamBuilder(
-      stream: channelToOpen$.stream,
-      builder: (context, snapshot) {
-        return ChatPage(channel: channelToOpen$.value);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
+      key: _chatService.scaffoldKey,
       endDrawerEnableOpenDragGesture: false,
-      endDrawer: Drawer(child: handleDrawerChannelChange()),
+      endDrawer: Drawer(child: ChatboxWrapper()),
       body: ListView(
         shrinkWrap: true,
         padding: EdgeInsets.zero,
@@ -185,17 +188,15 @@ class _ChatManagementState extends State<ChatManagement> {
             padding: EdgeInsets.only(left: 10.0, right: 10.0),
             child: TextField(
               onSubmitted: (field) {
-                _chatManagerService.createChannel(field);
-                inputController.clear();
+                _handleCreateChannel(channelCreationNameController.text);
               },
-              controller: inputController,
+              controller: channelCreationNameController,
               decoration: InputDecoration(
                 hintText: CREATE_CHANNEL,
                 border: setCreateChannelBorder(),
                 suffixIcon: IconButton(
                     onPressed: () {
-                      _chatManagerService.createChannel(inputController.text);
-                      inputController.clear();
+                      _handleCreateChannel(channelCreationNameController.text);
                     },
                     icon: Icon(Icons.add)),
               ),
@@ -204,27 +205,36 @@ class _ChatManagementState extends State<ChatManagement> {
           ListTile(
             title: const Text(MY_CHANNELS),
           ),
-          handleMyChannelsChange(),
+          myChannelsWidget(),
           setDivider(),
           ListTile(
             leading: Icon(Icons.search),
             title: TextField(
-              controller: searchController,
+              controller: channelSearchController,
               decoration: InputDecoration(
                   hintText: ALL_CHANNELS, border: InputBorder.none),
-              onChanged: onSearchTextChanged,
+              onChanged: _handleSearchQueryChanged,
             ),
             trailing: IconButton(
               icon: Icon(Icons.clear),
               onPressed: () {
-                searchController.clear();
-                onSearchTextChanged('');
+                channelSearchController.clear();
+                _handleSearchQueryChanged(channelSearchController.text);
               },
             ),
           ),
-          handleChannelsChange(),
+          joinableChannelsWidget(),
         ],
       ),
     );
+  }
+
+  void _handleSearchQueryChanged(String value) {
+    _currentSearchQuery$.add(value.isNotEmpty ? value : null);
+  }
+
+  void _handleCreateChannel(String channelName) {
+    _chatService.createChannel(channelName);
+    channelCreationNameController.clear();
   }
 }

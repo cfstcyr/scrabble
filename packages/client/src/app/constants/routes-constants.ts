@@ -9,3 +9,4 @@ export const ROUTE_JOIN_WAITING = '/join-waiting-room';
 export const ROUTE_SIGNUP = '/signup';
 export const ROUTE_PROFILE = '/profile';
 export const ROUTE_SEARCH = '/search';
+export const ROUTE_PUZZLE = '/puzzle';

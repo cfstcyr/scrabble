@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +27,9 @@ Future<void> main() async {
   Environment().initConfig(environment);
   CustomLocator().setUpLocator();
   getIt.get<InitializerService>().initialize();
-  runApp(MyApp());
+  SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
+      .then((_) => runApp(MyApp()));
 }
 
 class MyApp extends StatelessWidget {

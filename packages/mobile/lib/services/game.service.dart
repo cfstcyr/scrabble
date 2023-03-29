@@ -24,13 +24,15 @@ import 'package:rxdart/rxdart.dart';
 import '../components/alert-dialog.dart';
 import '../components/app_button.dart';
 import '../constants/locale/game-constants.dart';
-import '../utils/round-utils.dart';
+import 'game-observer-service.dart';
 
 class GameService {
   final GamePlayController gamePlayController = getIt.get<GamePlayController>();
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
   final GameEventService _gameEventService = getIt.get<GameEventService>();
+  final GameObserverService _gameObserverService =
+      getIt.get<GameObserverService>();
   final BehaviorSubject<MultiplayerGame?> _game;
 
   static final GameService _instance = GameService._();
@@ -54,11 +56,17 @@ class GameService {
         player2: startGameData.player2,
         player3: startGameData.player3,
         player4: startGameData.player4);
+
     playersContainer.localPlayerId = localPlayerId;
+    if (getIt.get<UserService>().isObserver) {
+      playersContainer.localPlayerId = playersContainer.player1.socketId;
+    }
 
     playersContainer.players
         .where((Player player) => player.socketId == localPlayerId)
         .map((Player player) => player.isLocalPlayer = true);
+
+    _gameObserverService.playersContainer.add(playersContainer);
 
     TileRack tileRack =
         TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
@@ -104,6 +112,8 @@ class GameService {
       game.players.getPlayer(4).updatePlayerData(gameUpdate.player4!);
     }
 
+    _gameObserverService.playersContainer.add(game.players);
+
     if (gameUpdate.board != null) {
       game.board.updateBoardData(gameUpdate.board!);
     }
@@ -121,7 +131,9 @@ class GameService {
       }
     }
 
-    game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
+    if (!getIt.get<UserService>().isObserver) {
+      game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
+    }
 
     _game.add(game);
   }
@@ -182,17 +194,14 @@ class GameService {
     ]);
   }
 
-  bool isLocalPlayerActivePlayer() {
-    return isActivePlayer(game.players.getLocalPlayer().socketId);
-  }
-
   bool isActivePlayer(String socketId) {
     return _roundService.getActivePlayerId() == socketId;
   }
 
   void _onTimerExpires() {
-    if (_roundService.currentRound.socketIdOfActivePlayer ==
-        game.players.getLocalPlayer().socketId) {
+    if (!getIt.get<UserService>().isObserver &&
+        _roundService.currentRound.socketIdOfActivePlayer ==
+            getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
       _actionService.sendAction(ActionType.pass);
       _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
     }

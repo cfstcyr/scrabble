@@ -117,6 +117,10 @@ export default class RoundManagerService implements IResetServiceData, OnDestroy
         this.startTimer(roundTime);
     }
 
+    isActivePlayerLocalPlayer(): boolean {
+        return this.getActivePlayer().id === this.localPlayerId;
+    }
+
     private resetRoundData(): void {
         this.currentRound = null as unknown as Round;
         this.completedRounds = [];
@@ -136,9 +140,5 @@ export default class RoundManagerService implements IResetServiceData, OnDestroy
             this.endRoundEvent$.next();
             this.actionService.sendAction(this.gameId, this.actionService.createActionData(ActionType.PASS, {}));
         }
-    }
-
-    private isActivePlayerLocalPlayer(): boolean {
-        return this.getActivePlayer().id === this.localPlayerId;
     }
 }

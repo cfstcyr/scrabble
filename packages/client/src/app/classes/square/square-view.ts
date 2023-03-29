@@ -10,12 +10,14 @@ export default class SquareView {
     squareSize: Vec2;
     applied: boolean;
     newlyPlaced: boolean;
+    halfOppacity?: boolean;
 
     constructor(square: Square, squareSize: Vec2) {
         this.square = square;
         this.squareSize = squareSize;
         this.applied = true;
         this.newlyPlaced = false;
+        this.halfOppacity = false;
     }
 
     getColor(): COLORS {

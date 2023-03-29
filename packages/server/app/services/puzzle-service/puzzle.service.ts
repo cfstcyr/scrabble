@@ -1,7 +1,7 @@
 import { PuzzleGenerator } from '@app/classes/puzzle/puzzle-generator/puzzle-generator';
 import { WordFindingUseCase, WordPlacement } from '@app/classes/word-finding';
 import WordFindingPuzzle from '@app/classes/word-finding/word-finding-puzzle/word-finding-puzzle';
-import { PUZZLE_COMPLETE_NO_ACTIVE_PUZZLE, PUZZLE_HAS_NO_SOLUTION } from '@app/constants/puzzle-constants';
+import { MAX_PLACEMENTS_IN_RESULT, PUZZLE_COMPLETE_NO_ACTIVE_PUZZLE, PUZZLE_HAS_NO_SOLUTION } from '@app/constants/puzzle-constants';
 import { User } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
 import { Service } from 'typedi';
@@ -34,6 +34,8 @@ export class PuzzleService {
             try {
                 const generator = new PuzzleGenerator();
                 puzzle = generator.generate();
+
+                if (puzzle.tiles.length !== this.tilesToPlaceForBingo) throw new Error();
             } catch {
                 // nothing to do.
             }
@@ -107,7 +109,24 @@ export class PuzzleService {
 
         if (!wordFinding.easiestWordPlacement) throw new Error(PUZZLE_HAS_NO_SOLUTION);
 
-        return { targetPlacement: wordFinding.easiestWordPlacement, allPlacements: wordFinding.wordPlacements };
+        let allPlacements = wordFinding.wordPlacements;
+
+        if (allPlacements.length > MAX_PLACEMENTS_IN_RESULT) {
+            const allPlacementsWords = new Set<string>();
+            allPlacements = wordFinding.wordPlacements
+                .sort((a, b) => (a.score < b.score ? 1 : -1))
+                .filter((placement) => {
+                    const word = placement.tilesToPlace.reduce((w, tile) => w + tile.letter, '');
+                    const alreadyExists = allPlacementsWords.has(word);
+
+                    allPlacementsWords.add(word);
+
+                    return !alreadyExists;
+                });
+            allPlacements = allPlacements.slice(0, MAX_PLACEMENTS_IN_RESULT);
+        }
+
+        return { targetPlacement: wordFinding.easiestWordPlacement, allPlacements };
     }
 
     private isLegalPlacement(words: [Square, Tile][][], wordPlacement: WordPlacement): boolean {

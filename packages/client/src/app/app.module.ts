@@ -6,7 +6,6 @@ import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BoardComponent } from '@app/components/board/board.component';
 import { SquareComponent } from '@app/components/square/square.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
 import { TileComponent } from '@app/components/tile/tile.component';
@@ -57,6 +56,18 @@ import { UserProfileEditDialogComponent } from './components/user-profile/user-p
 import { SearchPageComponent } from './pages/search-page/search-page.component';
 import { UserSearchResultPageComponent } from './pages/user-search-result-page/user-search-result-page.component';
 import { ChooseBlankTileDialogComponent } from './components/choose-blank-tile-dialog/choose-blank-tile-dialog.component';
+import { PuzzlePageComponent } from './pages/puzzle-page/puzzle-page.component';
+import { BoardComponent } from './components/board/board.component';
+import { GameBoardWrapperComponent } from './wrappers/game-board-wrapper/game-board-wrapper.component';
+import { StartPuzzleModalComponent } from './components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
+import { PuzzleScoreComponent } from './components/puzzle/puzzle-score/puzzle-score.component';
+import { PuzzleResultModalComponent } from './components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
+import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.component';
+import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
+import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
+import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/puzzle-history.component';
+import { UcWidgetModule } from 'ngx-uploadcare-widget';
+import { AvatarSelectorComponent } from './components/user-profile/avatar-selector/avatar-selector.component';
 
 registerLocaleData(localeFr);
 
@@ -77,7 +88,6 @@ registerLocaleData(localeFr);
         TileComponent,
         InformationBoxComponent,
         CommunicationBoxComponent,
-        BoardComponent,
         TileRackComponent,
         GroupsPageComponent,
         GroupInfoComponent,
@@ -115,6 +125,17 @@ registerLocaleData(localeFr);
         SearchPageComponent,
         UserSearchResultPageComponent,
         ChooseBlankTileDialogComponent,
+        PuzzlePageComponent,
+        BoardComponent,
+        GameBoardWrapperComponent,
+        StartPuzzleModalComponent,
+        PuzzleScoreComponent,
+        PuzzleResultModalComponent,
+        PuzzleHistoryComponent,
+        SwiperComponent,
+        SwiperSlideComponent,
+        SwiperNavigationComponent,
+        AvatarSelectorComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -125,6 +146,7 @@ registerLocaleData(localeFr);
         ReactiveFormsModule,
         HttpClientModule,
         ScrollingModule,
+        UcWidgetModule,
     ],
     providers: [
         InitializerService,
@@ -141,5 +163,6 @@ registerLocaleData(localeFr);
         { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
     ],
     bootstrap: [AppComponent],
+    exports: [IconComponent],
 })
 export class AppModule {}

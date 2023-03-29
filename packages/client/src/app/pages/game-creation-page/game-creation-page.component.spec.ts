@@ -3,7 +3,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CommonModule } from '@angular/common';
-import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -30,6 +30,7 @@ import { GameDispatcherService } from '@app/services/';
 import { Subject } from 'rxjs';
 import { GameCreationPageComponent } from './game-creation-page.component';
 import SpyObj = jasmine.SpyObj;
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 @Component({
     template: '',
@@ -66,7 +67,7 @@ describe('GameCreationPageComponent', () => {
             ],
             imports: [
                 AppMaterialModule,
-                HttpClientModule,
+                HttpClientTestingModule,
                 BrowserAnimationsModule,
                 FormsModule,
                 ReactiveFormsModule,
