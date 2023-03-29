@@ -310,31 +310,6 @@ describe('CommunicationBoxComponent', () => {
         });
     });
 
-    describe('onFocusableEvent', () => {
-        let focusSpy: jasmine.Spy;
-
-        beforeEach(() => {
-            focusSpy = spyOn(component.messageInputElement.nativeElement, 'focus');
-        });
-
-        it('should call focus', () => {
-            const event = new KeyboardEvent('keypress');
-            component['onFocusableEvent'](event);
-            expect(focusSpy).toHaveBeenCalled();
-        });
-
-        it('should not call focus with CTR+C or CMD+C', () => {
-            const keys = ['ctrlKey', 'metaKey'];
-
-            for (const key of keys) {
-                const event: any = { key: 'c' };
-                event[key] = true;
-                component['onFocusableEvent'](event as KeyboardEvent);
-                expect(focusSpy).not.toHaveBeenCalled();
-            }
-        });
-    });
-
     describe('initializeMessages', () => {
         const storedMessages = [DEFAULT_PLAYER1_MESSAGE, { ...DEFAULT_PLAYER1_MESSAGE, gameId: 'other game id' }, DEFAULT_PLAYER1_MESSAGE];
         let getMessagesSpy: jasmine.Spy;

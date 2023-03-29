@@ -21,10 +21,10 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
     @Input() observedPlayerId: string | undefined;
 
     readonly maxTilesPerPlayer = MAX_TILES_PER_PLAYER;
-    player1: GamePlayer;
-    player2: GamePlayer;
-    player3: GamePlayer;
-    player4: GamePlayer;
+    player1: GamePlayer = { isActive: false, player: new Player('', { username: 'Player1', email: '', avatar: '' }, []) };
+    player2: GamePlayer = { isActive: false, player: new Player('', { username: 'Player2', email: '', avatar: '' }, []) };
+    player3: GamePlayer = { isActive: false, player: new Player('', { username: 'Player3', email: '', avatar: '' }, []) };
+    player4: GamePlayer = { isActive: false, player: new Player('', { username: 'Player4', email: '', avatar: '' }, []) };
     private componentDestroyed$: Subject<boolean>;
 
     constructor(

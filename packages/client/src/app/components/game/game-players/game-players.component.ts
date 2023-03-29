@@ -19,7 +19,7 @@ interface GamePlayer {
 })
 export class GamePlayersComponent implements OnInit, OnDestroy {
     readonly maxTilesPerPlayer = MAX_TILES_PER_PLAYER;
-    localPlayer: GamePlayer;
+    localPlayer: GamePlayer = { isActive: false, player: new Player('', { username: 'Player1', email: '', avatar: '' }, []) };
     adversaryPlayers: GamePlayer[] = [];
     private componentDestroyed$: Subject<boolean>;
 
