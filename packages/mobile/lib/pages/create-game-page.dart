@@ -8,8 +8,10 @@ import '../components/scaffold-persistance.dart';
 class CreateGamePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return MyScaffold(
       title: "Création de partie",
+      hasBackButton: true,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -22,6 +24,7 @@ class CreateGamePage extends StatelessWidget {
           ],
         ),
       ),
+      backgroundColor: theme.colorScheme.background,
     );
   }
 }
