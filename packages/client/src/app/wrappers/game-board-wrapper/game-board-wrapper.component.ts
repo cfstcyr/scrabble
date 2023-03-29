@@ -15,6 +15,7 @@ import { BehaviorSubject, of } from 'rxjs';
 })
 export class GameBoardWrapperComponent implements OnInit {
     @Input() isObserver: boolean;
+    @Input() canInteract: boolean = true;
     grid: BehaviorSubject<SquareView[][]> = new BehaviorSubject<SquareView[][]>([]);
 
     private notAppliedSquares: SquareView[] = [];

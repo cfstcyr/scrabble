@@ -20,7 +20,6 @@ import { CommunicationBoxComponent } from './components/communication-box/commun
 import { DefaultDialogComponent } from './components/default-dialog/default-dialog.component';
 import { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';
 import { IconComponent } from './components/icon/icon.component';
-import { InformationBoxComponent } from './components/information-box/information-box.component';
 import { GroupInfoComponent } from './components/group-info/group-info.component';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';
@@ -69,6 +68,7 @@ import { GamePageV2Component } from './pages/game-page-v2/game-page-v2.component
 import { GamePlayersComponent } from './components/game/game-players/game-players.component';
 import { GameTilesLeftComponent } from './components/game/game-tiles-left/game-tiles-left.component';
 import { GameTimerComponent } from './components/game/game-timer/game-timer.component';
+import { GameObserversPlayersComponent } from './components/game/game-observers-players/game-observers-players.component';
 
 registerLocaleData(localeFr);
 
@@ -86,7 +86,6 @@ registerLocaleData(localeFr);
         LoginPageComponent,
         SquareComponent,
         TileComponent,
-        InformationBoxComponent,
         CommunicationBoxComponent,
         TileRackComponent,
         GroupsPageComponent,
@@ -139,6 +138,7 @@ registerLocaleData(localeFr);
         GamePlayersComponent,
         GameTilesLeftComponent,
         GameTimerComponent,
+        GameObserversPlayersComponent,
     ],
     imports: [
         AppMaterialModule,

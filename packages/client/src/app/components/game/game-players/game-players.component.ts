@@ -5,7 +5,6 @@ import { GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { Subject } from 'rxjs';
 import { Player } from '@app/classes/player';
-import { TileReserveData } from '@app/classes/tile/tile.types';
 import { takeUntil } from 'rxjs/operators';
 
 interface GamePlayer {
@@ -35,12 +34,13 @@ export class GamePlayersComponent implements OnInit, OnDestroy {
         this.gameViewEventManagerService.subscribeToGameViewEvent('reRender', this.componentDestroyed$, () => {
             this.ngOnDestroy();
             this.ngOnInit();
-            this.updateActivePlayerBorder(this.roundManager.getActivePlayer());
+            this.updatePlayers(this.roundManager.getActivePlayer());
         });
 
         if (!this.gameService.isGameSetUp) return;
         this.setupGame();
     }
+
     ngOnDestroy(): void {
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
@@ -66,23 +66,15 @@ export class GamePlayersComponent implements OnInit, OnDestroy {
         return this.adversaryPlayers[2] ?? { isActive: false, player: new Player('', { username: 'Player4', email: '', avatar: '' }, []) };
     }
 
-    getLettersLeft(): TileReserveData[] {
-        return this.gameService.tileReserve;
-    }
-
-    getNumberOfTilesLeft(): number {
-        return this.gameService.getTotalNumberOfTilesLeft();
-    }
-
     private setupGame(): void {
         if (this.roundManager.timer) {
             this.roundManager.timer.pipe(takeUntil(this.componentDestroyed$)).subscribe(([, activePlayer]) => {
-                this.updateActivePlayerBorder(activePlayer);
+                this.updatePlayers(activePlayer);
             });
         }
     }
 
-    private updateActivePlayerBorder(activePlayer: Player | undefined): void {
+    private updatePlayers(activePlayer: Player | undefined): void {
         const localPlayer = this.gameService.getLocalPlayer();
 
         this.localPlayer = {
