@@ -11,13 +11,13 @@ $tiles-padding: 4px;
 
     mat-card {
         display: grid;
-        grid-template-columns: 1fr auto;
+        grid-template-columns: auto 1fr auto;
         height: 100%;
         box-sizing: border-box;
         gap: 12px;
         padding: ($tiles-padding * 2) 16px;
 
-        #rack-card-container {
+        .rack-card-container {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -133,8 +133,7 @@ $tiles-padding: 4px;
 }
 
 .tile-rack-actions {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
     gap: 6px;
     padding: (16px - $tiles-padding * 2) 0;
 
