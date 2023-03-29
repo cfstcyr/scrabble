@@ -19,6 +19,9 @@
             </app-user-profile-info>
 
             <mat-card class="user-stats">
+                <app-user-profile-stats-item title="Classement Elo" [value]="user.statistics.rating">
+                    <app-icon icon="trophy" styling="solid" stats-icon></app-icon>
+                </app-user-profile-stats-item>
                 <app-user-profile-stats-item title="Parties jouées" [value]="user.statistics.gamesPlayedCount">
                     <app-icon icon="gamepad" styling="solid" stats-icon></app-icon>
                 </app-user-profile-stats-item>

@@ -1,0 +1,19 @@
+<app-page-header title="Recherche d'utilisateur">
+    <app-header-btn link="/search" header-button><app-icon icon="search" styling="solid"></app-icon></app-header-btn>
+</app-page-header>
+
+<div class="page">
+    <div class="page-content">
+        <mat-card>
+            <h4>Classement des meilleurs joueur.e.s</h4>
+
+            <div *ngFor="let result of ((results | async) ?? [])" class="search-results">
+                <button class="search-result-item" [routerLink]="result.username">
+                    <img [appSrc]="result.avatar" [square]="42">
+                    <span>{{result.username}}</span>
+                    <span>{{result.rating}}</span>
+                </button>
+            </div>
+        </mat-card>
+    </div>
+</div>

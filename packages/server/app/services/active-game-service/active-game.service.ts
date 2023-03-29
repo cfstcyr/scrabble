@@ -11,8 +11,7 @@ import { ChatService } from '@app/services/chat-service/chat.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
 import { Observer } from '@common/models/observer';
-import { EloService } from '../rating-service/rating.service';
-import { UserStatisticsService } from '../user-statistics-service/user-statistics-service';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import Player from '@app/classes/player/player';
@@ -37,7 +36,7 @@ export class ActiveGameService {
     async beginGame(id: string, groupChannelId: TypeOfId<Channel>, config: ReadyGameConfig, joinedObservers: Observer[]): Promise<StartGameData> {
         const game = await Game.createGame(id, groupChannelId, config, joinedObservers);
         this.activeGames.push(game);
-        game.getPlayers().map(async (player) => await this.setPlayerElo(player));
+        game.getPlayers().forEach(async (player) => await this.setPlayerElo(player));
         return game.createStartGameData();
     }
 

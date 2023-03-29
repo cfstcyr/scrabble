@@ -1,11 +1,13 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { USER_STATISTICS_TABLE } from '@app/constants/services-constants/database-const';
+import { USER_STATISTICS_TABLE, USER_TABLE } from '@app/constants/services-constants/database-const';
 import { CANNOT_GET_STATISTICS_FOR_USER } from '@app/constants/services-errors';
 import DatabaseService from '@app/services/database-service/database.service';
-import { User } from '@common/models/user';
+import { RatedUser, User } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
 import { Service } from 'typedi';
 import { PublicUserStatistics, UserGameStatisticInfo, UserStatistics } from '@common/models/user-statistics';
+
+export const NUMBER_OF_USERS_IN_LEADERBOARD = 25;
 
 @Service()
 export class UserStatisticsService {
@@ -22,6 +24,16 @@ export class UserStatisticsService {
         if (!statistics) throw new HttpException(CANNOT_GET_STATISTICS_FOR_USER);
 
         return statistics;
+    }
+
+    async getTopRatings(): Promise<RatedUser[]> {
+        const topUsers = await this.table
+            .select('u.username as username', 'u.avatar as avatar', 'u.email as email', 'us.rating as rating')
+            .join(`${USER_TABLE} as u`, 'u.idUser', `${USER_STATISTICS_TABLE}.idUser`)
+            .orderBy('us.rating', 'desc')
+            .limit(NUMBER_OF_USERS_IN_LEADERBOARD);
+
+        return topUsers;
     }
 
     async addGameToStatistics(idUser: TypeOfId<User>, game: UserGameStatisticInfo): Promise<PublicUserStatistics> {
@@ -44,6 +56,7 @@ export class UserStatisticsService {
             averageTimePerGame: 0,
             gamesPlayedCount: 0,
             gamesWonCount: 0,
+            rating: 1000,
         });
     }
 

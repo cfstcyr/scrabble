@@ -66,8 +66,9 @@ import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.co
 import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
 import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
 import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/puzzle-history.component';
-import { UcWidgetModule } from 'ngx-uploadcare-widget';
 import { AvatarSelectorComponent } from './components/user-profile/avatar-selector/avatar-selector.component';
+import { UcWidgetModule } from 'ngx-uploadcare-widget';
+import { RatingLeaderboardPageComponent } from './pages/rating-leaderboard-page/rating-leaderboard-page.component';
 
 registerLocaleData(localeFr);
 
@@ -136,6 +137,7 @@ registerLocaleData(localeFr);
         SwiperSlideComponent,
         SwiperNavigationComponent,
         AvatarSelectorComponent,
+        RatingLeaderboardPageComponent,
     ],
     imports: [
         AppMaterialModule,
