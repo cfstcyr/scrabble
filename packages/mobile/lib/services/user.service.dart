@@ -11,6 +11,7 @@ const USER_NOT_INITIALIZED = "User not initialized";
 class UserService {
   UserService._privateConstructor();
   BehaviorSubject<PublicUser?> _user = BehaviorSubject<PublicUser?>();
+  late bool isObserver = false;
   static final UserService _instance = UserService._privateConstructor();
   factory UserService() {
     return _instance;

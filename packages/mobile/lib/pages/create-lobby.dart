@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/group.dart';
+
 import '../classes/virtual-player-level.dart';
 import '../components/group/group-management.dart';
 import '../components/group/parameters.dart';
 import '../components/group/player-waiting-list.dart';
 import '../components/group/waiting-room.dart';
 import '../components/scaffold-persistance.dart';
+import '../view-methods/create-lobby-methods.dart';
+import '../view-methods/group.methods.dart';
 
 class CreateLobbyPage extends StatefulWidget {
   CreateLobbyPage({super.key, required this.group});
@@ -19,6 +22,8 @@ class CreateLobbyPage extends StatefulWidget {
 class _CreateLobbyPageState extends State<CreateLobbyPage> {
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     return MyScaffold(
       title: "Salle d'attente",
       body: FractionallySizedBox(
@@ -78,8 +83,40 @@ class _CreateLobbyPageState extends State<CreateLobbyPage> {
                         ]),
                         Parameters(
                             maxRoundTime: widget.group.maxRoundTime,
-                            virtualPlayerLevel:
-                                widget.group.virtualPlayerLevel),
+                            virtualPlayerLevel: widget.group.virtualPlayerLevel,
+                            visibility: widget.group.gameVisibility),
+                        StreamBuilder(
+                            stream: currentGroupUpdateStream,
+                            builder: (context, snapshot) {
+                              Group group = snapshot.data ?? widget.group;
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(180, 0, 180, 0),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      color: theme.colorScheme.tertiary,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.visibility),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          group.numberOfObservers.toString(),
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
                         GroupManagement(),
                       ],
                     ),
@@ -108,13 +145,42 @@ class _CreateLobbyPageState extends State<CreateLobbyPage> {
                           ],
                           color: Colors.grey.shade200,
                           borderRadius: BorderRadius.all(Radius.circular(1.0))),
-                      child: Column(
-                        children: [
-                          Text("Liste d'attente",
-                              style: TextStyle(fontSize: 18)),
-                          Expanded(child: PlayerWaitingList()),
-                        ],
-                      ),
+                      child: Column(children: [
+                        Text("Joueurs en attente",
+                            style: TextStyle(fontSize: 18)),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(4))),
+                              child: PlayerWaitingList(
+                                playerListStream: playerWaitingList$.stream,
+                                isObserver: false,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text("Observateurs en attente",
+                            style: TextStyle(fontSize: 18)),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(4))),
+                              child: PlayerWaitingList(
+                                playerListStream: observerWaitingList$.stream,
+                                isObserver: true,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
                     ),
                   )),
             ),

@@ -4,9 +4,9 @@ import 'package:mobile/components/game/game_actions.dart';
 import 'package:mobile/components/game/game_board.dart';
 import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/game/game_timer.dart';
+import 'package:mobile/components/game/multiplayer-tile-rack.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/components/game/multiplayer-tile-rack.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
@@ -17,6 +17,8 @@ import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
 
 import '../components/game/game_messages.dart';
+import '../components/game/observer_tile_rack.dart';
+import '../services/user.service.dart';
 
 class GamePage extends StatefulWidget {
   @override
@@ -40,12 +42,15 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.paused) getIt.get<GamePlayController>().leaveGame();
+    if (state == AppLifecycleState.paused)
+      getIt.get<GamePlayController>().leaveGame();
     if (state == AppLifecycleState.resumed) {
       InitializerService initializerService = getIt.get<InitializerService>();
       await initializerService.initialize();
-      String entryPage = initializerService.entryPageStream.value ?? LOGIN_ROUTE;
-      Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, entryPage, (route) => route.settings.name == entryPage);
+      String entryPage =
+          initializerService.entryPageStream.value ?? LOGIN_ROUTE;
+      Navigator.pushNamedAndRemoveUntil(navigatorKey.currentContext!, entryPage,
+          (route) => route.settings.name == entryPage);
     }
   }
 
@@ -73,14 +78,20 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
                     children: [
                       Container(
                           child: IntrinsicWidth(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Expanded(child: GameBoard(gameStream: gameService.gameStream,)),
-                                MultiplayerTileRack(gameStream: gameService.gameStream),
-                              ],
-                            ),
-                          )),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                                child: GameBoard(
+                              gameStream: gameService.gameStream,
+                            )),
+                            getIt<UserService>().isObserver
+                                ? ObserverTiles()
+                                : MultiplayerTileRack(
+                                    gameStream: gameService.gameStream),
+                          ],
+                        ),
+                      )),
                       SizedBox(
                         width: 425,
                         child: Column(
@@ -93,8 +104,8 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
                                   child: GameInfo(
                                       value: snapshot.data != null
                                           ? snapshot.data!
-                                          .computeNumberOfTilesLeft()
-                                          .toString()
+                                              .computeNumberOfTilesLeft()
+                                              .toString()
                                           : '0',
                                       name: "Tuiles restantes",
                                       icon: Icons.font_download),

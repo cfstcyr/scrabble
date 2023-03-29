@@ -60,15 +60,11 @@
                 />
             </mat-form-field>
 
-            <div class="avatar__container">
-                <label *ngFor="let avatar of avatars">
-                    <input type="radio" name="avatar" [value]="avatar" class="avatar__input" formControlName="avatar" />
-                    <img [appSrc]="avatar" [square]="50" />
-                </label>
-            </div>
+            <app-avatar-selector [control]='avatarControl'></app-avatar-selector>
+
             <p
                 class="field-error margin-bottom"
-                *ngIf="signupForm.controls.avatar?.invalid && (signupForm.controls.avatar?.dirty || signupForm.controls.avatar?.touched)"
+                *ngIf="avatarControl.invalid && (avatarControl.dirty || avatarControl.touched)"
             >
                 Vous devez choisir un avatar!
             </p>

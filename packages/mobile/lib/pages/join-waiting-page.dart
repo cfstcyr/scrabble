@@ -15,7 +15,6 @@ import '../components/group/parameters.dart';
 import '../components/group/waiting-room.dart';
 import '../constants/locale/group-selection-constants.dart';
 import '../constants/locale/groups-constants.dart';
-import '../view-methods/create-lobby-methods.dart';
 
 class JoinWaitingPage extends StatefulWidget {
   JoinWaitingPage({super.key, required this.currentGroup});
@@ -39,8 +38,10 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
     });
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
-      triggerDialogBox(
-          "Partie annulée", [Text("${host.username} a annulé la partie", style: TextStyle(fontSize: 16))], [
+      triggerDialogBox("Partie annulée", [
+        Text("${host.username} a annulé la partie",
+            style: TextStyle(fontSize: 16))
+      ], [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,
@@ -124,9 +125,44 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                               ),
                             ]),
                             Parameters(
+                                visibility: widget.currentGroup.gameVisibility,
                                 maxRoundTime: widget.currentGroup.maxRoundTime,
                                 virtualPlayerLevel:
                                     widget.currentGroup.virtualPlayerLevel),
+                            StreamBuilder(
+                                stream: currentGroupUpdateStream,
+                                builder: (context, snapshot) {
+                                  return Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        275, 0, 275, 0),
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                          color: theme.colorScheme.tertiary,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(8))),
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            16, 8, 16, 8),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.visibility),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              widget.currentGroup
+                                                  .numberOfObservers
+                                                  .toString(),
+                                              style: TextStyle(fontSize: 15),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                            SizedBox(height: 15),
                             AppButton(
                               onPressed: () {
                                 _onBack(context);

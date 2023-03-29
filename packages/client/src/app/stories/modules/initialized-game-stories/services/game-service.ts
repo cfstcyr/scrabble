@@ -102,4 +102,8 @@ export class InitializedGameService implements OnDestroy {
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     resetServiceData(): void {}
+
+    cannotPlay(): boolean {
+        return false;
+    }
 }

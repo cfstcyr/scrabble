@@ -23,7 +23,6 @@ import { LetterValue, Tile, TilePlacement } from '@app/classes/tile';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { TileComponent } from '@app/components/tile/tile.component';
 import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
-import { TileRackSelectType } from '@app/constants/tile-rack-select-type';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
@@ -207,7 +206,6 @@ describe('TileRackComponent', () => {
         let isLocalPlayerPlayingSpy: jasmine.Spy;
 
         beforeEach(() => {
-            component.selectionType = TileRackSelectType.Exchange;
             component.selectedTiles = [{}, {}] as RackTile[];
             isLocalPlayerPlayingSpy = gameServiceSpy.isLocalPlayerPlaying.and.returnValue(true);
             component['actionService'].hasActionBeenPlayed = false;
@@ -215,11 +213,6 @@ describe('TileRackComponent', () => {
 
         it('should be true if can exchange', () => {
             expect(component.canExchangeTiles()).toBeTrue();
-        });
-
-        it('should be false if selectionType is not exchange', () => {
-            component.selectionType = TileRackSelectType.Move;
-            expect(component.canExchangeTiles()).toBeFalse();
         });
 
         it('should be false if selectedTiles is empty', () => {
@@ -265,8 +258,9 @@ describe('TileRackComponent', () => {
         });
 
         it('should send exchange action', () => {
+            const tiles = [...component.selectedTiles];
             component.exchangeTiles();
-            expect(createPayloadSpy).toHaveBeenCalledWith(component.selectedTiles);
+            expect(createPayloadSpy).toHaveBeenCalledWith(tiles);
             expect(createActionDataSpy).toHaveBeenCalledWith(ActionType.EXCHANGE, fakePayload);
             expect(sendAction).toHaveBeenCalledOnceWith(DEFAULT_GAME_ID, fakeData);
         });
