@@ -17,13 +17,13 @@ export interface CriticalMoment extends CriticalMomentBase {
 }
 
 export interface Analysis {
-    idGame: TypeOfId<GameHistory>;
+    idGameHistory: TypeOfId<GameHistory>;
     idUser: TypeOfId<User>;
     criticalMoments: CriticalMoment[];
 }
 
 export interface AnalysisData {
-    idGame: TypeOfId<GameHistory>;
+    idGameHistory: TypeOfId<GameHistory>;
     idUser: TypeOfId<User>;
     idAnalysis: number;
 }
@@ -48,6 +48,6 @@ export interface PlacementData {
 }
 
 export enum AnalysisRequestInfoType {
-    ID_GAME = 'idGame',
+    ID_GAME = 'idGameHistory',
     ID_ANALYSIS = 'idAnalysis',
 }

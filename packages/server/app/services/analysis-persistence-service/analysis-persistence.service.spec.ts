@@ -104,25 +104,25 @@ const CRITICAL_MOMENT_DATA_2: CriticalMomentData = {
 };
 
 const ANALYSIS_1: AnalysisData = {
-    idGame: 1,
+    idGameHistory: 1,
     idUser: 1,
     idAnalysis: 1,
 };
 
 const ANALYSIS_2: AnalysisData = {
-    idGame: 1,
+    idGameHistory: 1,
     idUser: 2,
     idAnalysis: 2,
 };
 
 const ANALYSIS_3: AnalysisData = {
-    idGame: 2,
+    idGameHistory: 2,
     idUser: 1,
     idAnalysis: 3,
 };
 
 const ANALYSIS_4: AnalysisData = {
-    idGame: 2,
+    idGameHistory: 2,
     idUser: 2,
     idAnalysis: 4,
 };
@@ -208,7 +208,7 @@ const REAL_CRITICAL_MOMENT_2: CriticalMoment = {
 };
 
 const REAL_ANALYSIS: Analysis = {
-    idGame: 1,
+    idGameHistory: 1,
     idUser: 1,
     criticalMoments: [REAL_CRITICAL_MOMENT_1, REAL_CRITICAL_MOMENT_2],
 };
@@ -269,7 +269,7 @@ describe('AnalysisPersistenceService', () => {
         it('should return the correct analysis', async () => {
             const analysis = await service.requestAnalysis(1, 1);
             expect(analysis.idUser).to.equal(1);
-            expect(analysis.idGame).to.equal(1);
+            expect(analysis.idGameHistory).to.equal(1);
             expect(analysis.criticalMoments.length).to.equal(2);
         });
 

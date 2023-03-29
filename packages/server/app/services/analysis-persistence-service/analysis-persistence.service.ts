@@ -21,8 +21,8 @@ import BoardService from '@app/services/board-service/board.service';
 export class AnalysisPersistenceService {
     constructor(private readonly databaseService: DatabaseService, private boardService: BoardService) {}
 
-    async requestAnalysis(idGame: TypeOfId<GameHistory>, idUser: UserId): Promise<Analysis> {
-        if (!(await this.doesMatchingAnalysisExist(idGame, idUser))) throw new HttpException(NO_ANALYSIS_FOUND, StatusCodes.NOT_FOUND);
+    async requestAnalysis(idGameHistory: TypeOfId<GameHistory>, idUser: UserId): Promise<Analysis> {
+        if (!(await this.doesMatchingAnalysisExist(idGameHistory, idUser))) throw new HttpException(NO_ANALYSIS_FOUND, StatusCodes.NOT_FOUND);
 
         const analysisData = await this.analysisTable
             .select(
@@ -42,10 +42,10 @@ export class AnalysisPersistenceService {
             .join(PLACEMENT_TABLE + ' as bp', `${CRITICAL_MOMENTS_TABLE}.idBestPlacement`, '=', 'bp.idPlacement')
             .leftJoin(PLACEMENT_TABLE + ' as pp', `${CRITICAL_MOMENTS_TABLE}.idPlayedPlacement`, '=', 'pp.idPlacement')
             .where({
-                'Analysis.idGame': idGame,
+                'Analysis.idGameHistory': idGameHistory,
                 'Analysis.idUser': idUser,
             });
-        const analysis: Analysis = { idGame, idUser, criticalMoments: [] };
+        const analysis: Analysis = { idGameHistory, idUser, criticalMoments: [] };
         for (const criticalMomentData of analysisData) {
             analysis.criticalMoments.push(await this.convertDataToCriticalMoment(criticalMomentData));
         }
@@ -58,11 +58,11 @@ export class AnalysisPersistenceService {
             throw new HttpException(NO_ANALYSIS_FOUND_ID, StatusCodes.BAD_REQUEST);
         }
 
-        return analysisData[0].idGame;
+        return analysisData[0].idGameHistory;
     }
 
-    async addAnalysis(idGame: TypeOfId<GameHistory>, idUser: UserId, analysis: Analysis) {
-        const insertedValue = await this.analysisTable.insert({ idGame, idUser }).returning('idAnalysis');
+    async addAnalysis(idGameHistory: TypeOfId<GameHistory>, idUser: UserId, analysis: Analysis) {
+        const insertedValue = await this.analysisTable.insert({ idGameHistory, idUser }).returning('idAnalysis');
 
         for (const criticalMoment of analysis.criticalMoments) {
             const idBestPlacement = await this.addPlacement(criticalMoment.bestPlacement);
@@ -80,8 +80,8 @@ export class AnalysisPersistenceService {
         }
     }
 
-    private async doesMatchingAnalysisExist(idGame: TypeOfId<GameHistory>, idUser: UserId): Promise<boolean> {
-        const analysisData = await this.analysisTable.select('*').where({ idGame, idUser }).limit(1);
+    private async doesMatchingAnalysisExist(idGameHistory: TypeOfId<GameHistory>, idUser: UserId): Promise<boolean> {
+        const analysisData = await this.analysisTable.select('*').where({ idGameHistory, idUser }).limit(1);
         return analysisData.length > 0;
     }
 

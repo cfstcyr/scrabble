@@ -31,7 +31,7 @@ describe('AnalysisResultModalComponent', () => {
                     provide: MAT_DIALOG_DATA,
                     useValue: {
                         analysis: {
-                            idGame: 1,
+                            idGameHistory: 1,
                             idUser: 2,
                             criticalMoments: [],
                         },

@@ -37,7 +37,7 @@ export default class GameHistoriesService {
             )
             .leftJoin<AnalysisData>(ANALYSIS_TABLE, (builder) => {
                 builder
-                    .on(`${GAME_HISTORY_TABLE}.idGameHistory`, '=', `${ANALYSIS_TABLE}.idGame`)
+                    .on(`${GAME_HISTORY_TABLE}.idGameHistory`, '=', `${ANALYSIS_TABLE}.idGameHistory`)
                     .andOn(`${ANALYSIS_TABLE}.idUser`, '=', `${GAME_HISTORY_PLAYER_TABLE}.idUser`);
             })
             .where(`${GAME_HISTORY_PLAYER_TABLE}.idUser`, idUser)

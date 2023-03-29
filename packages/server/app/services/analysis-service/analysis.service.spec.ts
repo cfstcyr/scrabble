@@ -123,7 +123,7 @@ describe('AnalysisService', () => {
 
             const game = DEFAULT_GAME as unknown as Game;
             const idGameHistory = 1;
-            const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGame: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
+            const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGameHistory: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
             await analysisService['asynchronousAnalysis'](game, playerAnalyses, idGameHistory);
             expect(spyAnalyseRound).to.have.been.called.twice;
         });
@@ -134,7 +134,7 @@ describe('AnalysisService', () => {
 
             const game = DEFAULT_GAME as unknown as Game;
             const idGameHistory = 1;
-            const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGame: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
+            const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGameHistory: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
             await analysisService['asynchronousAnalysis'](game, playerAnalyses, idGameHistory);
             expect(spyAddAnalysis).to.have.been.called();
         });
