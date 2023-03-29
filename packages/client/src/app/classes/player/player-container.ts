@@ -65,6 +65,10 @@ export class PlayerContainer {
         return this;
     }
 
+    getAdversaries(): Player[] {
+        return [...this.players.values()].filter((player: Player) => player.id !== this.getLocalPlayerId());
+    }
+
     private setPlayer(playerNumber: number, player: Player): this {
         this.players.set(playerNumber, player);
         return this;

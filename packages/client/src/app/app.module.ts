@@ -13,7 +13,6 @@ import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';
-import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { HomePageComponent } from '@app/pages/home-page/home-page.component';
 import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';
 import { ChatBoxComponent } from './components/chatbox/chatbox.component';
@@ -66,6 +65,10 @@ import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.co
 import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
 import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
 import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/puzzle-history.component';
+import { GamePageV2Component } from './pages/game-page-v2/game-page-v2.component';
+import { GamePlayersComponent } from './components/game/game-players/game-players.component';
+import { GameTilesLeftComponent } from './components/game/game-tiles-left/game-tiles-left.component';
+import { GameTimerComponent } from './components/game/game-timer/game-timer.component';
 
 registerLocaleData(localeFr);
 
@@ -78,7 +81,6 @@ registerLocaleData(localeFr);
 @NgModule({
     declarations: [
         AppComponent,
-        GamePageComponent,
         HomePageComponent,
         SignUpPageComponent,
         LoginPageComponent,
@@ -133,6 +135,10 @@ registerLocaleData(localeFr);
         SwiperComponent,
         SwiperSlideComponent,
         SwiperNavigationComponent,
+        GamePageV2Component,
+        GamePlayersComponent,
+        GameTilesLeftComponent,
+        GameTimerComponent,
     ],
     imports: [
         AppMaterialModule,
