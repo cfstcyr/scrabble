@@ -26,7 +26,7 @@ export class InitializedGameService implements OnDestroy {
     playerContainer = new PlayerContainer(LOCAL_PLAYER_ID, false).initializePlayers([
         {
             id: LOCAL_PLAYER_ID,
-            score: 0,
+            score: 14,
             tiles: [
                 { letter: 'A', value: 1 },
                 { letter: 'B', value: 1 },
@@ -35,11 +35,11 @@ export class InitializedGameService implements OnDestroy {
                 { letter: 'E', value: 1 },
                 { letter: '*', value: 0, isBlank: true },
             ],
-            publicUser: { username: '1', avatar: '1', email: '1' },
+            publicUser: { username: 'John', avatar: '1', email: '1' },
         },
-        { id: '2', score: 0, tiles: [], publicUser: { username: '2', avatar: '2', email: '2' } },
-        { id: '3', score: 0, tiles: [], publicUser: { username: '3', avatar: '3', email: '3' } },
-        { id: '4', score: 0, tiles: [], publicUser: { username: '4', avatar: '4', email: '4' } },
+        { id: '2', score: 254, tiles: [], publicUser: { username: 'Mary', avatar: '2', email: '2' } },
+        { id: '3', score: 234, tiles: [], publicUser: { username: 'ihaveaverylongnamefsadfadsgfdgfds', avatar: '3', email: '3' } },
+        { id: '4', score: 163, tiles: [], publicUser: { username: 'xxx', avatar: '4', email: '4' } },
     ]);
     isGameSetUp = true;
     isGameOver = false;

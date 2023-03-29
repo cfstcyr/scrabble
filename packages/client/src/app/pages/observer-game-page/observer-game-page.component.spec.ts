@@ -151,13 +151,6 @@ describe('ObserverGamePageComponent', () => {
         component['mustDisconnectGameOnLeave'] = false;
     });
 
-    it('should open the Surrender dialog when surrender-dialog-button is clicked ', () => {
-        const spy = spyOn(component['dialog'], 'open');
-        const surrenderButton = fixture.debugElement.nativeElement.querySelector('#surrender-dialog-button');
-        surrenderButton.click();
-        expect(spy).toHaveBeenCalled();
-    });
-
     describe('endOfGame dialog', () => {
         it('should open the EndOfGame dialog on endOfGame event', () => {
             const spy = spyOn(component['dialog'], 'open');
@@ -173,7 +166,7 @@ describe('ObserverGamePageComponent', () => {
         });
         const buttonsContent = [DIALOG_QUIT_BUTTON_CONFIRM, DIALOG_QUIT_STAY];
 
-        component.quitButtonClicked();
+        component.handleQuitButtonClick();
         expect(spy).toHaveBeenCalledOnceWith(DIALOG_QUIT_TITLE, DIALOG_QUIT_CONTENT, buttonsContent);
     });
 
