@@ -59,21 +59,17 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
     }
 
     private updatePlayers(activePlayer: Player | undefined): void {
-        this.player1 = {
-            isActive: !!activePlayer && activePlayer.id === this.gameService.getPlayerByNumber(1)?.id,
-            player: this.gameService.getPlayerByNumber(1) ?? new Player('', { username: 'Player1', email: '', avatar: '' }, []),
-        };
-        this.player2 = {
-            isActive: !!activePlayer && activePlayer.id === this.gameService.getPlayerByNumber(2)?.id,
-            player: this.gameService.getPlayerByNumber(2) ?? new Player('', { username: 'Player2', email: '', avatar: '' }, []),
-        };
-        this.player3 = {
-            isActive: !!activePlayer && activePlayer.id === this.gameService.getPlayerByNumber(3)?.id,
-            player: this.gameService.getPlayerByNumber(3) ?? new Player('', { username: 'Player3', email: '', avatar: '' }, []),
-        };
-        this.player4 = {
-            isActive: !!activePlayer && activePlayer.id === this.gameService.getPlayerByNumber(4)?.id,
-            player: this.gameService.getPlayerByNumber(4) ?? new Player('', { username: 'Player4', email: '', avatar: '' }, []),
+        this.player1 = this.buildGamePlayer(1, activePlayer);
+        this.player2 = this.buildGamePlayer(2, activePlayer);
+        this.player3 = this.buildGamePlayer(3, activePlayer);
+        this.player4 = this.buildGamePlayer(4, activePlayer);
+    }
+
+    private buildGamePlayer(playerNumber: number, activePlayer: Player | undefined): GamePlayer {
+        return {
+            isActive: !!activePlayer && activePlayer.id === this.gameService.getPlayerByNumber(playerNumber)?.id,
+            player:
+                this.gameService.getPlayerByNumber(playerNumber) ?? new Player('', { username: 'Player' + playerNumber, email: '', avatar: '' }, []),
         };
     }
 }
