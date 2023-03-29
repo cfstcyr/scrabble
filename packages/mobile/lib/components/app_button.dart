@@ -46,27 +46,22 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: getIt.get<ThemeColorService>().themeDetails.stream,
-        builder: (context, snapshot) {
-          return MaterialButton(
-            onPressed: onPressed,
-            color: _getButtonColor(),
-            disabledColor: type == AppButtonType.normal
-                ? Colors.grey.shade300
-                : Colors.transparent,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-            height: _getSize(),
-            minWidth: _getSize(),
-            padding: iconOnly ? EdgeInsets.zero : null,
-            elevation: type == AppButtonType.normal ? 1 : 0,
-            focusElevation: type == AppButtonType.normal ? 4 : 0,
-            hoverElevation: type == AppButtonType.normal ? 4 : 0,
-            highlightElevation: type == AppButtonType.normal ? 8 : 0,
-            child: _getChild(),
-          );
-        });
+    return MaterialButton(
+      onPressed: onPressed,
+      color: _getButtonColor(),
+      disabledColor: type == AppButtonType.normal
+          ? Colors.grey.shade300
+          : Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+      height: _getSize(),
+      minWidth: _getSize(),
+      padding: iconOnly ? EdgeInsets.zero : null,
+      elevation: type == AppButtonType.normal ? 1 : 0,
+      focusElevation: type == AppButtonType.normal ? 4 : 0,
+      hoverElevation: type == AppButtonType.normal ? 4 : 0,
+      highlightElevation: type == AppButtonType.normal ? 8 : 0,
+      child: _getChild(),
+    );
   }
 
   Color _getButtonColor() {
