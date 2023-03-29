@@ -1,70 +1,74 @@
-<div id="page-container">
-    <div class="top-level-grid">
-        <div class="grid-item-container">
-            <app-information-box></app-information-box>
+<div class='game-page'>
+    <app-game-board-wrapper
+        class='game-page__board'
+        [isObserver]="true"
+        [canInteract]="false"
+    ></app-game-board-wrapper>
+    <div class='game-page__info'>
+        <app-game-observers-players (playerClick)='changeObservingPlayer($event)' [observedPlayerId]='getObservingPlayerId()'></app-game-observers-players>
+
+        <div class='game-page__info__stats'>
+            <app-game-tiles-left></app-game-tiles-left>
+            <app-game-timer></app-game-timer>
         </div>
-        <div class="horizontal-grid">
-            <div class="vertical-grid">
-                <div class="grid-item-container">
-                    <app-game-board-wrapper [isObserver]="true"></app-game-board-wrapper>
-                </div>
-                <div class="grid-item-container">
-                    <app-tile-rack [isObserver]="true" #tileRackComponent></app-tile-rack>
-                </div>
-                <div class="grid-item-container" id="button-group">
-                    <mat-card>
-                        <div>
-                            <button mat-flat-button id="surrender-dialog-button" (click)="quitButtonClicked()" color="primary">
-                                <ng-container>
-                                    <app-icon icon="door-open" styling="solid"></app-icon>
-                                    <span> Quitter</span>
-                                </ng-container>
-                            </button>
-                        </div>
-                        <div matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur" matTooltipPosition="above">
-                            <button mat-flat-button color="primary" [disabled]="true">
-                                <app-icon icon="lightbulb" styling="solid"></app-icon> Indice
-                            </button>
-                        </div>
-                        <div matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur" matTooltipPosition="above">
-                            <button mat-flat-button color="primary" [disabled]="true">
-                                <app-icon icon="redo"></app-icon> Passer
-                            </button>
-                        </div>
-                        <div
-                            matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur"
-                            matTooltipPosition="above"
-                        >
-                            <button mat-flat-button color="primary" [disabled]="true">
-                                <app-icon icon="square" styling="solid"></app-icon> Placer
-                            </button>
-                        </div>
-                    </mat-card>
-                </div>
-            </div>
-            <div class="sidebar-section">
-                <div class="communication-box-container">
-                    <app-communication-box></app-communication-box>
-                    <div class="text-button-container">
-                        <mat-card>
-                            <div class="text-buttons">
-                                <button mat-flat-button id="minus-button" color="primary" (click)="changeObservingPlayer(1)">
-                                    <app-icon icon="eye"></app-icon> 1
-                                </button>
-                                <button mat-flat-button id="minus-button" color="primary" (click)="changeObservingPlayer(2)">
-                                    <app-icon icon="eye"></app-icon> 2
-                                </button>
-                                <button mat-flat-button id="minus-button" color="primary" (click)="changeObservingPlayer(3)">
-                                    <app-icon icon="eye"></app-icon> 3
-                                </button>
-                                <button mat-flat-button id="minus-button" color="primary" (click)="changeObservingPlayer(4)">
-                                    <app-icon icon="eye"></app-icon> 4
-                                </button>
-                            </div>
-                        </mat-card>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+        <app-communication-box></app-communication-box>
     </div>
+    <app-tile-rack
+        class='game-page__tile-rack'
+        [isObserver]="true"
+    ></app-tile-rack>
+    <mat-card class='game-page__actions'>
+        <button
+            class='game-page__actions__button game-page__actions__button--quit'
+            mat-flat-button
+            (click)="handleQuitButtonClick()"
+            color="warn"
+            matTooltip="Quitter"
+            matTooltipPosition='above'
+        >
+            <app-icon icon='door-open' styling="solid"></app-icon>
+        </button>
+
+        <div
+            matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur"
+            matTooltipPosition="above"
+        >
+            <button
+                class='game-page__actions__button game-page__actions__button--hint'
+                mat-flat-button
+                color="primary"
+                [disabled]="true"
+            >
+                <app-icon icon="lightbulb" styling="solid"></app-icon>
+            </button>
+        </div>
+
+        <div
+            matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur"
+            matTooltipPosition="above"
+        >
+            <button
+                class='game-page__actions__button game-page__actions__button--pass'
+                mat-flat-button color="primary"
+                [disabled]="true"
+            >
+                <app-icon icon="redo"></app-icon>
+            </button>
+        </div>
+
+        <div
+            matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur"
+            matTooltipPosition="above"
+        >
+            <button
+                class='game-page__actions__button game-page__actions__button--place'
+                mat-flat-button
+                color="primary"
+                [disabled]="true"
+            >
+                <app-icon icon="square" styling="solid"></app-icon>
+            </button>
+        </div>
+    </mat-card>
 </div>
