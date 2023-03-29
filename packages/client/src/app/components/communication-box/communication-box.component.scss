@@ -8,44 +8,6 @@ $b: #e4e4e4;
     grid-template-rows: 1fr auto;
 }
 
-//
-//#outer-container {
-//    height: 100%;
-//    display: grid;
-//    grid-template-rows: auto 1fr auto;
-//    box-sizing: border-box;
-//
-//    & > section:not(:last-child) {
-//        margin-bottom: $s;
-//    }
-//
-//    section#objectives-container {
-//        #tile-map {
-//            .tile-map-content {
-//                display: flex;
-//                width: 100%;
-//                flex-wrap: wrap;
-//
-//                p {
-//                    flex: 1 1 0;
-//                    display: flex;
-//                    margin: 0 8px 8px 8px;
-//
-//                    app-tile {
-//                        height: 20px;
-//                        width: 20px;
-//                        font-size: 0.7em;
-//                    }
-//
-//                    .separator {
-//                        margin: 0 4px;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-
 form {
     display: flex;
     align-items: stretch;
