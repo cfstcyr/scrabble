@@ -73,7 +73,7 @@ class UserProfileInfo extends StatelessWidget {
                                 EditTheme()
                               ], [
                                 DialogBoxButtonParameters(
-                                    content: 'Ok',
+                                    content: 'Confirmer',
                                     theme: AppButtonTheme.primary,
                                     closesDialog: true)
                               ])
