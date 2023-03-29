@@ -58,7 +58,7 @@ describe('GameHistoriesController', () => {
                     return;
                 });
 
-                return supertest(expressApp).get('/api/gameHistories').expect(StatusCodes.NO_CONTENT);
+                return supertest(expressApp).get('/api/gameHistories').expect(StatusCodes.OK);
             });
 
             it('should return INTERNAL_SERVER_ERROR on throw httpException', async () => {
