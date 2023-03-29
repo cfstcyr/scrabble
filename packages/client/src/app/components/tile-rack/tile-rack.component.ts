@@ -15,8 +15,8 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { preserveArrayOrder } from '@app/utils/preserve-array-order/preserve-array-order';
 import { Random } from '@app/utils/random/random';
-import { Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
