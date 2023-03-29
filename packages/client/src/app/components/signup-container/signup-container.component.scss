@@ -7,8 +7,7 @@ $border-radius: 6px;
 }
 
 .signup-container {
-    max-width: 625px;
-    width: 100%;
+    width: 625px;
     margin: 0 auto;
 
     & > mat-card {
@@ -25,7 +24,7 @@ $border-radius: 6px;
     }
 
     form {
-        
+
         mat-form-field {
             width: 100%;
         }
