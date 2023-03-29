@@ -1,5 +1,5 @@
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
-import { GamePageV2Component } from '@app/pages/game-page-v2/game-page-v2.component';
+import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MatCardModule } from '@angular/material/card';
 import { GameBoardWrapperComponent } from '@app/wrappers/game-board-wrapper/game-board-wrapper.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -25,7 +25,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 
 export default {
     title: 'Game/Page V2',
-    component: GamePageV2Component,
+    component: GamePageComponent,
     decorators: [
         moduleMetadata({
             declarations: [
@@ -59,4 +59,4 @@ export default {
     ],
 } as Meta;
 
-export const primary: Story<GamePageV2Component> = (props: GamePageV2Component) => ({ props });
+export const primary: Story<GamePageComponent> = (props: GamePageComponent) => ({ props });

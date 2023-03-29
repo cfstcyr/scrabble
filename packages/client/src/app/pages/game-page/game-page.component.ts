@@ -33,22 +33,22 @@ import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
 
 @Component({
-    selector: 'app-game-page-v2',
-    templateUrl: './game-page-v2.component.html',
-    styleUrls: ['./game-page-v2.component.scss'],
+    selector: 'app-game-page',
+    templateUrl: './game-page.component.html',
+    styleUrls: ['./game-page.component.scss'],
 })
-export class GamePageV2Component implements OnInit, OnDestroy {
+export class GamePageComponent implements OnInit, OnDestroy {
     private mustDisconnectGameOnLeave: boolean;
     private readonly componentDestroyed$: Subject<boolean>;
 
     constructor(
-        readonly dialog: MatDialog,
-        readonly gameService: GameService,
-        readonly reconnectionService: ReconnectionService,
-        readonly playerLeavesService: PlayerLeavesService,
-        readonly gameViewEventManagerService: GameViewEventManagerService,
-        readonly actionService: ActionService,
-        readonly tilePlacementService: TilePlacementService,
+        private readonly dialog: MatDialog,
+        private readonly gameService: GameService,
+        private readonly reconnectionService: ReconnectionService,
+        private readonly playerLeavesService: PlayerLeavesService,
+        private readonly gameViewEventManagerService: GameViewEventManagerService,
+        private readonly actionService: ActionService,
+        private readonly tilePlacementService: TilePlacementService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
@@ -109,6 +109,10 @@ export class GamePageV2Component implements OnInit, OnDestroy {
 
     canPlaceWord(): Observable<boolean> {
         return this.tilePlacementService.isPlacementValid$;
+    }
+
+    get isGameOver(): boolean {
+        return this.gameService.isGameOver;
     }
 
     private openNoActiveGameDialog() {

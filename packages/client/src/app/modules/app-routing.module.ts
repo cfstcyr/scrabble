@@ -28,7 +28,7 @@ import {
 import { SearchPageComponent } from '@app/pages/search-page/search-page.component';
 import { UserSearchResultPageComponent } from '@app/pages/user-search-result-page/user-search-result-page.component';
 import { PuzzlePageComponent } from '@app/pages/puzzle-page/puzzle-page.component';
-import { GamePageV2Component } from '@app/pages/game-page-v2/game-page-v2.component';
+import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 
 const privateRoute: Route = {
     canActivate: [PrivateRouteGuard],
@@ -47,7 +47,7 @@ const routes: Routes = [
     { path: ROUTE_SIGNUP, component: SignUpPageComponent, ...publicRoute },
     { path: ROUTE_LOGIN, component: LoginPageComponent, ...publicRoute },
     { path: ROUTE_HOME, component: HomePageComponent, ...privateRoute },
-    { path: ROUTE_GAME, component: GamePageV2Component, ...privateRoute },
+    { path: ROUTE_GAME, component: GamePageComponent, ...privateRoute },
     { path: ROUTE_GAME_OBSERVER, component: ObserverGamePageComponent, ...privateRoute },
     { path: ROUTE_GAME_CREATION, component: GameCreationPageComponent, ...privateRoute },
     { path: ROUTE_GROUPS, component: GroupsPageComponent, ...privateRoute },

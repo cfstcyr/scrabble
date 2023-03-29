@@ -23,10 +23,10 @@
             mat-flat-button
             (click)="handleQuitButtonClick()"
             color="warn"
-            [matTooltip]="gameService.isGameOver ? 'Quitter' : 'Abandonner'"
+            [matTooltip]="isGameOver ? 'Quitter' : 'Abandonner'"
             matTooltipPosition='above'
         >
-            <app-icon [icon]="gameService.isGameOver ? 'door-open' : 'flag-alt'" styling="solid"></app-icon>
+            <app-icon [icon]="isGameOver ? 'door-open' : 'flag-alt'" styling="solid"></app-icon>
         </button>
 
         <div
