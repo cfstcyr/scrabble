@@ -10,6 +10,7 @@ import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game-creation-service.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game-messages.service.dart';
+import 'package:mobile/services/game-observer-service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/services/initializer.service.dart';
@@ -75,6 +76,7 @@ class CustomLocator {
         AccountAuthenticationController());
     getIt.registerSingleton<InitializerService>(InitializerService());
     getIt.registerSingleton<GameCreationService>(GameCreationService());
+    getIt.registerSingleton<GameObserverService>(GameObserverService());
     getIt.registerSingleton<PuzzleService>(PuzzleService());
     getIt.registerSingleton<GameService>(GameService());
     getIt.registerSingleton<EndGameService>(EndGameService());

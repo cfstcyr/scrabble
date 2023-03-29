@@ -16,6 +16,9 @@ BehaviorSubject<List<PublicUser>> playerList$ =
 BehaviorSubject<List<PublicUser>> playerWaitingList$ =
     BehaviorSubject<List<PublicUser>>.seeded([]);
 
+BehaviorSubject<List<PublicUser>> observerWaitingList$ =
+    BehaviorSubject<List<PublicUser>>.seeded([]);
+
 ButtonStyle setStyleRoomButtons() {
   return ElevatedButton.styleFrom(
     backgroundColor: Colors.white,
@@ -37,7 +40,7 @@ CircleAvatar setAvatar(String path) {
       child: SizedBox(
           child: ClipOval(
         child: Image.asset(
-          path, //TODO IMAGES PAS POSSIBLE COTE SERVEUR BCS ON DOIT LES RAJOUTER 1 PAR 1 DANS LE pubspec.yaml
+          path,
         ),
       )));
 }
@@ -70,22 +73,34 @@ Widget setWaitingPlayerIcon(int index) {
   return setAvatar(playerWaitingList$.value[index].avatar);
 }
 
-Future<bool> addPlayerToLobby(PublicUser player) async {
-  if (isMaximumPlayerCount()) return false;
-
+Future<bool> addPlayerToLobby(PublicUser player, bool isObserver) async {
+  if (isMaximumPlayerCount() && !isObserver) return false;
   await gameCreationService.handleAcceptOpponent(player);
 
-  List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
-  newPlayerWaitingList.remove(player);
-  playerWaitingList$.add(newPlayerWaitingList);
+  if (!isObserver) {
+    List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
+    newPlayerWaitingList.remove(player);
+    playerWaitingList$.add(newPlayerWaitingList);
+  } else {
+    List<PublicUser> newPlayerWaitingList = observerWaitingList$.value;
+    newPlayerWaitingList.remove(player);
+    observerWaitingList$.add(newPlayerWaitingList);
+  }
+
   return true;
 }
 
-Future<void> refusePlayer(PublicUser player) async {
+Future<void> refusePlayer(PublicUser player, bool isObserver) async {
   await gameCreationService.handleRejectOpponent(player);
-  List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
-  newPlayerWaitingList.remove(player);
-  playerWaitingList$.add(newPlayerWaitingList);
+  if (!isObserver) {
+    List<PublicUser> newPlayerWaitingList = playerWaitingList$.value;
+    newPlayerWaitingList.remove(player);
+    playerWaitingList$.add(newPlayerWaitingList);
+  } else {
+    List<PublicUser> newObsWaitingList = observerWaitingList$.value;
+    newObsWaitingList.remove(player);
+    observerWaitingList$.add(newObsWaitingList);
+  }
 }
 
 Future<void> startGame() async {
@@ -105,6 +120,7 @@ bool isMinimumPlayerCount() {
 void reInitialize() {
   playerList$.add([userService.getUser()]);
   playerWaitingList$.add([]);
+  observerWaitingList$.add([]);
 }
 
 bool isMaximumPlayerCount() {

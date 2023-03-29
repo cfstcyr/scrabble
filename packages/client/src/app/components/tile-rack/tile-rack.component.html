@@ -25,6 +25,7 @@
                 *ngFor="let tile of tiles" [ngClass]="{ selected: tile.isSelected, hidden: tile.isUsed }"
                 (cdkDragMoved)="dragAndDropService.onRackTileMove($event)"
                 (cdkDragDropped)="dragAndDropService.onRackTileDrop(tile)"
+                 (contextmenu)='onTileRightClick(tile)'
                 cdkDrag
             >
                 <app-tile [tile]="tile" [ngStyle]="{'fontSize': tileFontSize+'em'}" class="rack-tile">
@@ -72,7 +73,7 @@
                     mat-flat-button
                     color='primary'
                     class='tile-rack-actions__button tile-rack-actions__button--cancel'
-                    [disabled]='isObserver || (canCancelPlacement() | async) === false'
+                    [disabled]='isObserver || canCancelPlacement() === false'
                     (click)='cancelPlacement()'
                 ><app-icon icon="undo"></app-icon></button>
             </div>

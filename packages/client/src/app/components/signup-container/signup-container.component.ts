@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { matchValidator, PASSWORD_REGEX } from '@app/constants/authentification-constants';
-import { AVATARS } from '@app/constants/avatar-constants';
+import { AVATARS, UPLOADCARE_PUBLIC_KEY } from '@app/constants/avatar-constants';
 import { NAME_VALIDATION } from '@app/constants/name-validation';
 import { UserSignupInformation } from '@common/models/user';
 
@@ -20,6 +20,7 @@ export class SignupContainerComponent implements OnChanges {
 
     signupForm: FormGroup;
     arePasswordsShown: boolean = false;
+    apiKey = UPLOADCARE_PUBLIC_KEY;
 
     private hasBeenSubmitted: boolean = false;
 
@@ -40,6 +41,11 @@ export class SignupContainerComponent implements OnChanges {
             },
             [matchValidator('password', 'confirmPassword')],
         );
+    }
+
+    get avatarControl(): FormControl {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.signupForm.controls.avatar! as FormControl;
     }
 
     ngOnChanges(): void {

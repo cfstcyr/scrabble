@@ -64,6 +64,8 @@ import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.co
 import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
 import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
 import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/puzzle-history.component';
+import { UcWidgetModule } from 'ngx-uploadcare-widget';
+import { AvatarSelectorComponent } from './components/user-profile/avatar-selector/avatar-selector.component';
 import { GamePageComponent } from './pages/game-page/game-page.component';
 import { GamePlayersComponent } from './components/game/game-players/game-players.component';
 import { GameTilesLeftComponent } from './components/game/game-tiles-left/game-tiles-left.component';
@@ -134,6 +136,7 @@ registerLocaleData(localeFr);
         SwiperComponent,
         SwiperSlideComponent,
         SwiperNavigationComponent,
+        AvatarSelectorComponent,
         GamePageComponent,
         GamePlayersComponent,
         GameTilesLeftComponent,
@@ -149,6 +152,7 @@ registerLocaleData(localeFr);
         ReactiveFormsModule,
         HttpClientModule,
         ScrollingModule,
+        UcWidgetModule,
     ],
     providers: [
         InitializerService,
