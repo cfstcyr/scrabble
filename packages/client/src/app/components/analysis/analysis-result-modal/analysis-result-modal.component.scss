@@ -6,14 +6,16 @@ $margin: 24px;
 $animation-duration: 0.25s;
 $rack-padding: 12px;
 $rack-border: 2px;
-$tile-size: 46px;
+$tile-size: 34px;
 $rack-size: $tile-size + $rack-padding * 4 + $rack-border * 2;
 $side-size: 300px;
 
+::ng-deep mat-dialog-container {
+    max-height: calc(100% - 24px);
+}
 #content {
     display: grid;
     grid-template-rows: minmax(0, 1fr) auto;
-    gap: 24px;
 
     .analysis-overview {
         display: flex;
@@ -67,7 +69,6 @@ $side-size: 300px;
     }
 
     #tile-rack {
-        height: $tile-size + $rack-padding * 4;
         padding: $rack-padding;
         box-sizing: border-box;
         display: grid;
@@ -80,9 +81,6 @@ $side-size: 300px;
             justify-content: center;
             display: flex;
             gap: $spacing;
-            padding: $rack-padding;
-            border: solid $rack-border rgb(207, 207, 207);
-            border-radius: 4px;
 
             .rack-tile-container {
                 position: relative;
@@ -92,7 +90,7 @@ $side-size: 300px;
                     display: block;
                     height: $tile-size;
                     width: $tile-size;
-                    font-size: 1.2em;
+                    font-size: 1.1em;
                 }
 
                 &:not(.cdk-drag-placeholder):hover {
@@ -194,7 +192,7 @@ $side-size: 300px;
 
     mat-button-toggle-group {
         width: 250px;
-        mat-button-toggle {
+         mat-button-toggle {
             width: 50%;
         }
     }

@@ -26,6 +26,7 @@ export interface CriticalMomentView {
     actionType: ActionType;
     bestPlacement: PlacementView;
     playedPlacement: PlacementView;
+    actionToShow: ActionToShow;
 }
 
 export interface AnalysisOverview {
@@ -52,7 +53,7 @@ export enum ActionToShow {
 export class AnalysisResultModalComponent implements OnInit {
     criticalMoments: CriticalMomentView[] = [];
     overview: AnalysisOverview = { minorMistakeCount: 0, mediumMistakeCount: 0, majorMistakeCount: 0 };
-    actionShown: string = ActionToShow.PLAYED;
+    // actionShown: string = ActionToShow.PLAYED;
     actionTypes: typeof ActionType = ActionType;
     colors: typeof COLORS = COLORS;
     actionToShow: typeof ActionToShow = ActionToShow;
@@ -165,6 +166,7 @@ export class AnalysisResultModalComponent implements OnInit {
                 grid: criticalMoment.playedPlacement ? this.getGridForPlacement(criticalMoment.playedPlacement, criticalMoment.board) : undefined,
                 tileRack: this.transformToTileView(criticalMoment.tiles, criticalMoment.playedPlacement),
             },
+            actionToShow: ActionToShow.PLAYED,
         };
     }
 

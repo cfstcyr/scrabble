@@ -37,12 +37,12 @@
         </app-swiper-slide>
 
         <app-swiper-slide class='placement-slide result-placement' *ngFor='let criticalMoment of criticalMoments; let index = index'>
-            <mat-button-toggle-group name="actionShown" [(ngModel)]="actionShown">
-                <mat-button-toggle value="playedAction">Action faite</mat-button-toggle>
-                <mat-button-toggle value="bestAction">Action optimale</mat-button-toggle>
+            <mat-button-toggle-group name="actionShown" [(ngModel)]="criticalMoment.actionToShow">
+                <mat-button-toggle value="playedAction" id="toggle">Action faite</mat-button-toggle>
+                <mat-button-toggle value="bestAction" id="toggle">Action optimale</mat-button-toggle>
               </mat-button-toggle-group>
 
-            <div *ngIf="actionShown=== actionToShow.PLAYED">
+            <div *ngIf="criticalMoment.actionToShow=== actionToShow.PLAYED">
                 <div class='slide-info'>
                     <p class='slide-points'>{{criticalMoment.playedPlacement.placement?.score ?? 0}} pts</p>
                 </div>
@@ -72,7 +72,7 @@
                     </ng-container>
                 </mat-card>  
             </div>
-            <div *ngIf="actionShown=== actionToShow.BEST">
+            <div *ngIf="criticalMoment.actionToShow=== actionToShow.BEST">
                 <div class='slide-info'>
                     <p class='slide-points'>{{criticalMoment.bestPlacement.placement?.score ?? 0}} pts</p>
                 </div>

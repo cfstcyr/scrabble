@@ -6,6 +6,7 @@ $spacing: 8px;
 
 ::ng-deep mat-dialog-container {
     min-width: 350px;
+    max-height: calc(100vh - 24px) !important;
 }
 
 #page-container {

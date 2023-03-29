@@ -1,3 +1,8 @@
+::ng-deep mat-dialog-container.mat-dialog-container {
+    max-height: calc(100vh -24px) !important;
+}
+  
+
 .page {
     padding-top: 60px;
 
@@ -9,6 +14,8 @@
         flex-direction: column;
         gap: 16px;
     }
+
+
 
     .user-stats {
         display: grid;
