@@ -27,6 +27,7 @@ import { AuthentificationService } from '@app/services/authentification-service/
 import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 import { AnalysisService } from '@app/services/analysis-service/analysis.service';
 import { ActionType } from '@common/models/action';
+import { RatingService } from '@app/services/rating-service/rating.service';
 @Service()
 export class GamePlayService {
     constructor(
@@ -39,6 +40,7 @@ export class GamePlayService {
         private readonly userStatisticsService: UserStatisticsService,
         private readonly authenticationService: AuthentificationService,
         private readonly analysisService: AnalysisService,
+        private readonly ratingService: RatingService,
     ) {
         this.activeGameService.playerLeftEvent.on('playerLeftGame', async (gameId, playerWhoLeftId) => {
             await this.handlePlayerLeftEvent(gameId, playerWhoLeftId);
@@ -159,6 +161,7 @@ export class GamePlayService {
         updatedData.isGameOver = true;
         updatedData.winners = game.computeWinners();
 
+        this.ratingService.adjustRatings(game.getPlayers());
         await this.updateUserStatistics(game, updatedData);
 
         return game.endGameMessage();
@@ -175,6 +178,7 @@ export class GamePlayService {
                     hasWon: updatedData.winners?.includes(game.player1.publicUser.username) ?? false,
                     points: updatedData.player1?.score ?? 0,
                     time,
+                    ratingDifference: game.player1.adjustedRating - game.player1.initialRating,
                 }),
             );
 
@@ -184,6 +188,7 @@ export class GamePlayService {
                     hasWon: updatedData.winners?.includes(game.player2.publicUser.username) ?? false,
                     points: updatedData.player2?.score ?? 0,
                     time,
+                    ratingDifference: game.player2.adjustedRating - game.player2.initialRating,
                 }),
             );
 
@@ -193,6 +198,7 @@ export class GamePlayService {
                     hasWon: updatedData.winners?.includes(game.player3.publicUser.username) ?? false,
                     points: updatedData.player3?.score ?? 0,
                     time,
+                    ratingDifference: game.player3.adjustedRating - game.player3.initialRating,
                 }),
             );
 
@@ -202,6 +208,7 @@ export class GamePlayService {
                     hasWon: updatedData.winners?.includes(game.player4.publicUser.username) ?? false,
                     points: updatedData.player4?.score ?? 0,
                     time,
+                    ratingDifference: game.player4.adjustedRating - game.player4.initialRating,
                 }),
             );
 

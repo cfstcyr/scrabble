@@ -30,6 +30,7 @@ export class UserStatisticsService {
         statistics.averagePointsPerGame = this.calculateNewAveragePointsPerGame(statistics, game);
         statistics.averageTimePerGame = this.calculateNewAverageTimePerGame(statistics, game);
         statistics.gamesPlayedCount++;
+        statistics.rating += game.ratingDifference;
         if (game.hasWon) statistics.gamesWonCount++;
 
         await this.table.where({ idUser }).update(statistics);
@@ -51,7 +52,10 @@ export class UserStatisticsService {
     }
 
     private async tryGetStatistics(idUser: TypeOfId<User>): Promise<PublicUserStatistics | undefined> {
-        return this.table.select('averagePointsPerGame', 'averageTimePerGame', 'gamesPlayedCount', 'gamesWonCount').where({ idUser }).first();
+        return this.table
+            .select('averagePointsPerGame', 'averageTimePerGame', 'gamesPlayedCount', 'gamesWonCount', 'rating')
+            .where({ idUser })
+            .first();
     }
 
     private calculateNewAveragePointsPerGame(statistics: PublicUserStatistics, game: UserGameStatisticInfo): number {
