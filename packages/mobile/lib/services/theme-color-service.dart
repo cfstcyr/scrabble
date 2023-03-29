@@ -34,6 +34,8 @@ ThemeDetails setTheme(ThemeColor color) {
       return ThemeDetails(color: color, logoPath: LOGO_PATH_PURPLE);
     case ThemeColor.black:
       return ThemeDetails(color: color, logoPath: LOGO_PATH_BLACK);
+    case ThemeColor.red:
+      return ThemeDetails(color: color, logoPath: LOGO_PATH_RED);
   }
 }
 
@@ -42,6 +44,7 @@ enum ThemeColor {
   blue,
   purple,
   pink,
+  red,
   black;
 
   Color get colorValue {
@@ -49,13 +52,15 @@ enum ThemeColor {
       case green:
         return Color.fromRGBO(27, 94, 32, 1);
       case blue:
-        return Color.fromRGBO(27, 94, 32, 1);
+        return Color.fromRGBO(10, 59, 72, 1);
       case purple:
-        return Color.fromRGBO(27, 94, 32, 1);
+        return Color.fromRGBO(168, 1, 255, 1);
       case pink:
-        return Color.fromRGBO(27, 94, 32, 1);
+        return Color.fromRGBO(255, 1, 162, 1);
+      case red:
+        return Color.fromRGBO(185, 0, 76, 1);
       case black:
-        return Color.fromRGBO(27, 94, 32, 1);
+        return Colors.black;
     }
   }
 }

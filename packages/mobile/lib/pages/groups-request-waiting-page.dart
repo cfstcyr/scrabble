@@ -7,8 +7,6 @@ import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/group/individual-group.dart';
 import 'package:mobile/components/group/parameters.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/pages/join-waiting-page.dart';
-import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
@@ -16,7 +14,6 @@ import 'package:mobile/view-methods/group.methods.dart';
 import '../classes/group.dart';
 import '../constants/locale/group-selection-constants.dart';
 import '../locator.dart';
-import '../view-methods/create-lobby-methods.dart';
 
 class GroupRequestWaitingPage extends StatefulWidget {
   const GroupRequestWaitingPage({super.key, required this.group});
@@ -43,8 +40,10 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
     });
 
     rejectedSubscription = rejectedStream.listen((PublicUser host) {
-      triggerDialogBox(
-          "Demande rejetée", [Text("${host.username} a rejeté votre demande", style: TextStyle(fontSize: 16))], [
+      triggerDialogBox("Demande rejetée", [
+        Text("${host.username} a rejeté votre demande",
+            style: TextStyle(fontSize: 16))
+      ], [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,
@@ -54,8 +53,10 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
     });
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
-      triggerDialogBox(
-          "Partie annulée", [Text("${host.username} a annulé la partie", style: TextStyle(fontSize: 16))], [
+      triggerDialogBox("Partie annulée", [
+        Text("${host.username} a annulé la partie",
+            style: TextStyle(fontSize: 16))
+      ], [
         DialogBoxButtonParameters(
             content: 'OK',
             theme: AppButtonTheme.primary,
@@ -109,22 +110,13 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
                       Spacer(),
                       CircularProgressIndicator(),
                       Spacer(flex: 2),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                            onPressed: () {
-                              _onBack(context);
-                            },
-                            style: setStyleMainActionButtons(),
-                            icon: Icon(
-                              Icons.keyboard_arrow_left_sharp,
-                              size: 20,
-                            ),
-                            label: Text(
-                              CANCEL_REQUEST,
-                              style: TextStyle(fontSize: 15),
-                            )),
-                      ),
+                      AppButton(
+                        onPressed: () {
+                          _onBack(context);
+                        },
+                        icon: Icons.keyboard_arrow_left_sharp,
+                        text: CANCEL_REQUEST,
+                      )
                     ],
                   ),
                 ),

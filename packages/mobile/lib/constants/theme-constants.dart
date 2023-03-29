@@ -8,3 +8,5 @@ const String LOGO_PATH_PURPLE =
     "https://ucarecdn.com/8177dbde-343a-48c0-a72c-affb1583e64d/";
 const String LOGO_PATH_BLACK =
     "https://ucarecdn.com/d4b11830-844e-42c3-9d6f-3cd29ed00024/";
+const String LOGO_PATH_RED =
+    "https://ucarecdn.com/3f0e76f5-a689-4bb4-93a4-b37040430cf4/";

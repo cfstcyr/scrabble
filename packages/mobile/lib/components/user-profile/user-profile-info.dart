@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/user-avatar.dart';
@@ -9,6 +8,8 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/services/user.service.dart';
+
+import '../alert-dialog.dart';
 
 class UserProfileInfo extends StatelessWidget {
   final UserService _userService = getIt.get<UserService>();
@@ -77,51 +78,76 @@ class UserProfileInfo extends StatelessWidget {
                           ),
                           AppButton(
                             onPressed: () => {
-                              // raise the [showDialog] widget
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Pick a theme color!'),
-                                  content: SingleChildScrollView(
-                                    child: ColorPicker(
-                                      pickerColor: pickerColor,
-                                      onColorChanged: changeColor,
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    ElevatedButton(
-                                      child: const Text('Default'),
-                                      onPressed: () {
-                                        getIt
+                              triggerDialogBox('Pick a theme', [
+                                SingleChildScrollView(
+                                    child: StreamBuilder(
+                                        stream: getIt
                                             .get<ThemeColorService>()
                                             .themeDetails
-                                            .add(setTheme(ThemeColor.green));
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    ElevatedButton(
-                                      child: const Text('Dark Mode'),
-                                      onPressed: () {
-                                        getIt
-                                            .get<ThemeColorService>()
-                                            .themeDetails
-                                            .add(setTheme(ThemeColor.green));
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    ElevatedButton(
-                                      child: const Text('Save TODO REMV'),
-                                      onPressed: () {
-                                        getIt
-                                            .get<ThemeColorService>()
-                                            .themeDetails
-                                            .add(setTheme(ThemeColor.green));
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              )
+                                            .stream,
+                                        builder: (context, snapshot) {
+                                          ThemeColor themeColor =
+                                              snapshot.data?.color ??
+                                                  ThemeColor.green;
+                                          return Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                children: [
+                                                  ColorOption(
+                                                    themeColor: themeColor,
+                                                    optionColor:
+                                                        ThemeColor.green,
+                                                  ),
+                                                  SizedBox(width: 20),
+                                                  ColorOption(
+                                                    themeColor: themeColor,
+                                                    optionColor:
+                                                        ThemeColor.blue,
+                                                  ),
+                                                  SizedBox(width: 20),
+                                                  ColorOption(
+                                                    themeColor: themeColor,
+                                                    optionColor:
+                                                        ThemeColor.purple,
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 20),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                children: [
+                                                  ColorOption(
+                                                    themeColor: themeColor,
+                                                    optionColor:
+                                                        ThemeColor.pink,
+                                                  ),
+                                                  SizedBox(width: 20),
+                                                  ColorOption(
+                                                    themeColor: themeColor,
+                                                    optionColor: ThemeColor.red,
+                                                  ),
+                                                  SizedBox(width: 20),
+                                                  ColorOption(
+                                                    themeColor: themeColor,
+                                                    optionColor:
+                                                        ThemeColor.black,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          );
+                                        }))
+                              ], [
+                                DialogBoxButtonParameters(
+                                    content: 'Ok',
+                                    theme: AppButtonTheme.primary,
+                                    closesDialog: true)
+                              ])
                             },
                             icon: Icons.abc_sharp,
                           ),
@@ -131,6 +157,52 @@ class UserProfileInfo extends StatelessWidget {
                   )
                 : Container();
           },
+        ),
+      ),
+    );
+  }
+}
+
+class ColorOption extends StatelessWidget {
+  const ColorOption({
+    super.key,
+    required this.themeColor,
+    required this.optionColor,
+  });
+
+  final ThemeColor themeColor;
+  final ThemeColor optionColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.scale(
+      scale: themeColor == optionColor ? 1.1 : 1,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+              color: themeColor == optionColor
+                  ? Colors.blueGrey.shade600
+                  : Colors.transparent,
+              width: 2),
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            getIt
+                .get<ThemeColorService>()
+                .themeDetails
+                .add(setTheme(optionColor));
+          },
+          splashColor: Colors.transparent,
+          child: Opacity(
+            opacity: themeColor == optionColor ? 1 : 0.8,
+            child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle, color: optionColor.colorValue)),
+          ),
         ),
       ),
     );
