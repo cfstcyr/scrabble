@@ -7,7 +7,8 @@ import 'package:mobile/services/theme-color-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AvatarField extends StatelessWidget {
-  final Color themeColor = getIt.get<ThemeColorService>().themeColor.value;
+  final Color themeColor =
+      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
   final BehaviorSubject<String?> avatar;
   final BehaviorSubject<String?> avatarError;
 

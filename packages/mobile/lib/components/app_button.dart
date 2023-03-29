@@ -47,7 +47,7 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: getIt.get<ThemeColorService>().themeColor.stream,
+        stream: getIt.get<ThemeColorService>().themeDetails.stream,
         builder: (context, snapshot) {
           return MaterialButton(
             onPressed: onPressed,
@@ -76,7 +76,7 @@ class AppButton extends StatelessWidget {
   Color _getColor() {
     switch (theme) {
       case AppButtonTheme.primary:
-        return _themeColorService.themeColor.value;
+        return _themeColorService.themeDetails.value.color.colorValue;
       case AppButtonTheme.danger:
         return Colors.red;
       case AppButtonTheme.tomato:

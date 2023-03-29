@@ -45,29 +45,28 @@ class MyApp extends StatelessWidget {
           }
 
           return StreamBuilder(
-            stream:  getIt.get<ThemeColorService>().themeColor.stream,,
-            builder: (context, color) {
-              return MaterialApp(
-                title: 'LOG3900 - 103',
-                theme: ThemeData(
-                    useMaterial3: true,
-                    scaffoldBackgroundColor: Colors.white,
-                    colorScheme: ColorScheme.fromSeed(
-                        seedColor:
-                              color.data ?? Color.fromRGBO(27, 94, 32, 1),
-                        secondary: Color.fromRGBO(27, 94, 32, 0.15),
-                        background: Color.fromRGBO(243, 243, 243, 1),
-                        onBackground: Color.fromRGBO(232, 232, 232, 1),
-                        tertiary: Color.fromRGBO(216, 216, 216, 1)),
-                    cardTheme: CardTheme(
-                        color: Colors.white, surfaceTintColor: Colors.white)),
-                navigatorKey: navigatorKey,
-                initialRoute: snapshot.data,
-                routes: ROUTES,
-                onGenerateRoute: customOnGenerateRoute,
-              );
-            }
-          );
+              stream: getIt.get<ThemeColorService>().themeDetails.stream,
+              builder: (context, color) {
+                return MaterialApp(
+                  title: 'LOG3900 - 103',
+                  theme: ThemeData(
+                      useMaterial3: true,
+                      scaffoldBackgroundColor: Colors.white,
+                      colorScheme: ColorScheme.fromSeed(
+                          seedColor: color.data?.color.colorValue ??
+                              Color.fromRGBO(27, 94, 32, 1),
+                          secondary: Color.fromRGBO(27, 94, 32, 0.15),
+                          background: Color.fromRGBO(243, 243, 243, 1),
+                          onBackground: Color.fromRGBO(232, 232, 232, 1),
+                          tertiary: Color.fromRGBO(216, 216, 216, 1)),
+                      cardTheme: CardTheme(
+                          color: Colors.white, surfaceTintColor: Colors.white)),
+                  navigatorKey: navigatorKey,
+                  initialRoute: snapshot.data,
+                  routes: ROUTES,
+                  onGenerateRoute: customOnGenerateRoute,
+                );
+              });
         });
   }
 }

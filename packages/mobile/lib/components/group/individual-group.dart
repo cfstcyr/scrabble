@@ -100,8 +100,10 @@ class _IndividualGroupState extends State<IndividualGroup> {
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: getIt
                                           .get<ThemeColorService>()
-                                          .themeColor
-                                          .value,
+                                          .themeDetails
+                                          .value
+                                          .color
+                                          .colorValue,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(
@@ -149,8 +151,10 @@ class _IndividualGroupState extends State<IndividualGroup> {
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: getIt
                                           .get<ThemeColorService>()
-                                          .themeColor
-                                          .value,
+                                          .themeDetails
+                                          .value
+                                          .color
+                                          .colorValue,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(

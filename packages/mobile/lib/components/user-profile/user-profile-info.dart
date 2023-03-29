@@ -16,7 +16,8 @@ class UserProfileInfo extends StatelessWidget {
       getIt.get<AccountAuthenticationController>();
 
   // create some values
-  Color pickerColor = getIt.get<ThemeColorService>().themeColor.value;
+  Color pickerColor =
+      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
 
 // ValueChanged<Color> callback
   void changeColor(Color color) {
@@ -93,8 +94,8 @@ class UserProfileInfo extends StatelessWidget {
                                       onPressed: () {
                                         getIt
                                             .get<ThemeColorService>()
-                                            .themeColor
-                                            .add(Color.fromRGBO(27, 94, 32, 1));
+                                            .themeDetails
+                                            .add(setTheme(ThemeColor.green));
                                         Navigator.of(context).pop();
                                       },
                                     ),
@@ -103,18 +104,18 @@ class UserProfileInfo extends StatelessWidget {
                                       onPressed: () {
                                         getIt
                                             .get<ThemeColorService>()
-                                            .themeColor
-                                            .add(Colors.black);
+                                            .themeDetails
+                                            .add(setTheme(ThemeColor.green));
                                         Navigator.of(context).pop();
                                       },
                                     ),
                                     ElevatedButton(
-                                      child: const Text('Save'),
+                                      child: const Text('Save TODO REMV'),
                                       onPressed: () {
                                         getIt
                                             .get<ThemeColorService>()
-                                            .themeColor
-                                            .add(pickerColor);
+                                            .themeDetails
+                                            .add(setTheme(ThemeColor.green));
                                         Navigator.of(context).pop();
                                       },
                                     ),

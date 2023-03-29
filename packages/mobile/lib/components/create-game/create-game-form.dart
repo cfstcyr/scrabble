@@ -30,7 +30,8 @@ class CreateGameFormState extends State<CreateGameForm> {
   String? _playerLevel = VirtualPlayerLevel.beginner.levelName;
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
-  Color themeColor = getIt.get<ThemeColorService>().themeColor.value;
+  Color themeColor =
+      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
   GameCreationService gameCreationService = getIt.get<GameCreationService>();
   UserService userService = getIt.get<UserService>();
 
@@ -173,20 +174,17 @@ class CreateGameFormState extends State<CreateGameForm> {
                                 icon: Icon(Icons.remove),
                                 onPressed: () => setState(() {
                                   _timePerTurn -= INCREMENT_TIME;
-                                  if (_timePerTurn <
-                                      MIN_TIME) {
+                                  if (_timePerTurn < MIN_TIME) {
                                     _timePerTurn = MIN_TIME;
                                   }
                                 }),
                               ),
-                              Text(
-                                  formatTime(_timePerTurn.inSeconds)),
+                              Text(formatTime(_timePerTurn.inSeconds)),
                               IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: () => setState(() {
                                   _timePerTurn += INCREMENT_TIME;
-                                  if (_timePerTurn >
-                                      MAX_TIME) {
+                                  if (_timePerTurn > MAX_TIME) {
                                     _timePerTurn = MAX_TIME;
                                   }
                                 }),

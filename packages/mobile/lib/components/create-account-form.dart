@@ -25,7 +25,8 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   bool isPasswordShown = false;
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
-  Color themeColor = getIt.get<ThemeColorService>().themeColor.value;
+  Color themeColor =
+      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
   AccountAuthenticationController accountController =
       getIt.get<AccountAuthenticationController>();
 

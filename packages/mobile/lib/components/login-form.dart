@@ -25,7 +25,8 @@ class _LoginFormState extends State<LoginForm> {
 
   bool get isButtonEnabled => isFirstSubmit;
   SocketService socketService = getIt.get<SocketService>();
-  Color themeColor = getIt.get<ThemeColorService>().themeColor.value;
+  Color themeColor =
+      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
   AccountAuthenticationController authController =
       getIt.get<AccountAuthenticationController>();
 
