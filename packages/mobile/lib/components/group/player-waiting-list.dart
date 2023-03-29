@@ -39,7 +39,7 @@ class _PlayerWaitingListState extends State<PlayerWaitingList> {
                       left: 15.0, right: 15.0, top: 5.0, bottom: 5.0),
                   child: Container(
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: theme.colorScheme.primaryContainer,
                         borderRadius: BorderRadius.all(Radius.circular(10.0))),
                     child: Row(
                       children: <Widget>[
