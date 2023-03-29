@@ -69,7 +69,7 @@ class UserProfileInfo extends StatelessWidget {
                           ),
                           AppButton(
                             onPressed: () => {
-                              triggerDialogBox('Pick a theme', [
+                              triggerDialogBox('Veuillez choisir un thème', [
                                 EditTheme()
                               ], [
                                 DialogBoxButtonParameters(
