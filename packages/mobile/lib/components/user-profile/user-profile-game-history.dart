@@ -31,33 +31,33 @@ class UserProfileGameHistory extends StatelessWidget {
             FutureBuilder(
               future: _userService.getGameHistory(),
               builder: (context, snapshot) => snapshot.hasData
-                  ? AppTable(
-                      data: snapshot.data!,
-                      columns: [
-                          AppTableColumn(
-                              title: 'Début',
-                              builder: (context, row) => Text(
-                                  DateFormat('d MMMM yyyy, h:mm:ss', 'fr')
-                                      .format(row.data.startTime))),
-                          AppTableColumn(
-                            title: 'Durée',
-                            builder: (context, row) => Text(
-                                "${minutes(row.data.endTime.difference(row.data.startTime))} m ${seconds(row.data.endTime.difference(row.data.startTime))} s"),
-                          ),
-                          AppTableColumn(
-                              title: 'Résultat',
-                              builder: (context, row) =>
-                                  _getGameStatus(row.data)),
-                          AppTableColumn(
-                              title: 'Score',
-                              builder: (context, row) => Text(
-                                    '${row.data.score} pts',
-                                  )),
-                          AppTableColumn(
-                              title: 'Analyse',
-                              builder: (context, row) {
-                                int? idAnalysis = row.data.idAnalysis;
-                                return ElevatedButton(
+                  ? AppTable(data: snapshot.data!, columns: [
+                      AppTableColumn(
+                          title: 'Début',
+                          builder: (context, row) => Text(
+                              DateFormat('d MMMM yyyy, h:mm:ss', 'fr')
+                                  .format(row.data.startTime))),
+                      AppTableColumn(
+                        title: 'Durée',
+                        builder: (context, row) => Text(
+                            "${minutes(row.data.endTime.difference(row.data.startTime))} m ${seconds(row.data.endTime.difference(row.data.startTime))} s"),
+                      ),
+                      AppTableColumn(
+                          title: 'Résultat',
+                          builder: (context, row) => _getGameStatus(row.data)),
+                      AppTableColumn(
+                          title: 'Score',
+                          builder: (context, row) => Text(
+                                '${row.data.score} pts',
+                              )),
+                      AppTableColumn(
+                          title: 'Analyse',
+                          builder: (context, row) {
+                            int? idAnalysis = row.data.idAnalysis;
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                ElevatedButton(
                                   onPressed: idAnalysis != null
                                       ? () {
                                           _analysisService
@@ -69,10 +69,15 @@ class UserProfileGameHistory extends StatelessWidget {
                                                   print(value.idGameHistory));
                                         }
                                       : null,
+                                  style: ElevatedButton.styleFrom(
+                                    shape: CircleBorder(),
+                                  ),
                                   child: Icon(Icons.science_rounded),
-                                );
-                              })
-                        ])
+                                ),
+                              ],
+                            );
+                          })
+                    ])
                   : snapshot.hasError
                       ? Text(
                           'Impossible de charger l\'historique de partie ${snapshot.error}')
