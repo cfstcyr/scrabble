@@ -31,6 +31,7 @@ class _GroupPageState extends State<GroupPage> {
 
     return MyScaffold(
         title: JOIN_GAME,
+        hasBackButton: true,
         body: Center(child: GroupSelection()));
   }
 }

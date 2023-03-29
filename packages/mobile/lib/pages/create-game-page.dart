@@ -10,6 +10,7 @@ class CreateGamePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MyScaffold(
       title: "Création de partie",
+      hasBackButton: true,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
