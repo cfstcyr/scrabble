@@ -28,12 +28,12 @@ class UserProfileGameHistory extends StatelessWidget {
               'Historique de partie',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
             ),
-            FutureBuilder<List<GameHistory>>(
+            FutureBuilder(
               future: _userService.getGameHistory(),
               builder: (context, snapshot) => snapshot.hasData
-                  ? AppTable<GameHistory>(
+                  ? AppTable(
                       data: snapshot.data!,
-                      columns: <AppTableColumn<GameHistory>>[
+                      columns: [
                           AppTableColumn(
                               title: 'Début',
                               builder: (context, row) => Text(
@@ -55,18 +55,23 @@ class UserProfileGameHistory extends StatelessWidget {
                                   )),
                           AppTableColumn(
                               title: 'Analyse',
-                              builder: (context, row) => ElevatedButton(
-                                    onPressed: () {
-                                      _analysisService
-                                          .requestAnalysis(
-                                              row.data.idAnalysis,
-                                              AnalysisRequestInfoType
-                                                  .idAnalysis)
-                                          .then((value) =>
-                                              print(value.idGameHistory));
-                                    },
-                                    child: Icon(Icons.science_rounded),
-                                  ))
+                              builder: (context, row) {
+                                int? idAnalysis = row.data.idAnalysis;
+                                return ElevatedButton(
+                                  onPressed: idAnalysis != null
+                                      ? () {
+                                          _analysisService
+                                              .requestAnalysis(
+                                                  idAnalysis,
+                                                  AnalysisRequestInfoType
+                                                      .idAnalysis)
+                                              .then((value) =>
+                                                  print(value.idGameHistory));
+                                        }
+                                      : null,
+                                  child: Icon(Icons.science_rounded),
+                                );
+                              })
                         ])
                   : snapshot.hasError
                       ? Text(

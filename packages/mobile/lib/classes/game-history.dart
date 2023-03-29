@@ -4,7 +4,7 @@ class GameHistory {
   int score;
   bool hasBeenAbandoned;
   bool isWinner;
-  int idAnalysis;
+  int? idAnalysis;
 
   GameHistory({
     required this.startTime,
