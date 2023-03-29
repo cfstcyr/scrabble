@@ -54,7 +54,7 @@ describe('GameHistoriesController', () => {
 
         describe('GET /gameHistories', () => {
             it('should return NO_CONTENT', async () => {
-                chai.spy.on(controller, 'getGameHistory', () => {
+                chai.spy.on(controller['gameHistoriesService'], 'getGameHistory', () => {
                     return;
                 });
 
@@ -62,7 +62,7 @@ describe('GameHistoriesController', () => {
             });
 
             it('should return INTERNAL_SERVER_ERROR on throw httpException', async () => {
-                chai.spy.on(controller, 'getGameHistory', () => {
+                chai.spy.on(controller['gameHistoriesService'], 'getGameHistory', () => {
                     throw new HttpException(DEFAULT_EXCEPTION, StatusCodes.INTERNAL_SERVER_ERROR);
                 });
 
