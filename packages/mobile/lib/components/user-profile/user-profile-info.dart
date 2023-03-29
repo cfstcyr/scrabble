@@ -16,15 +16,6 @@ class UserProfileInfo extends StatelessWidget {
   final AccountAuthenticationController _authService =
       getIt.get<AccountAuthenticationController>();
 
-  // create some values
-  Color pickerColor =
-      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
-
-// ValueChanged<Color> callback
-  void changeColor(Color color) {
-    pickerColor = color;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -79,69 +70,7 @@ class UserProfileInfo extends StatelessWidget {
                           AppButton(
                             onPressed: () => {
                               triggerDialogBox('Pick a theme', [
-                                SingleChildScrollView(
-                                    child: StreamBuilder(
-                                        stream: getIt
-                                            .get<ThemeColorService>()
-                                            .themeDetails
-                                            .stream,
-                                        builder: (context, snapshot) {
-                                          ThemeColor themeColor =
-                                              snapshot.data?.color ??
-                                                  ThemeColor.green;
-                                          return Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                children: [
-                                                  ColorOption(
-                                                    themeColor: themeColor,
-                                                    optionColor:
-                                                        ThemeColor.green,
-                                                  ),
-                                                  SizedBox(width: 20),
-                                                  ColorOption(
-                                                    themeColor: themeColor,
-                                                    optionColor:
-                                                        ThemeColor.blue,
-                                                  ),
-                                                  SizedBox(width: 20),
-                                                  ColorOption(
-                                                    themeColor: themeColor,
-                                                    optionColor:
-                                                        ThemeColor.purple,
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(height: 20),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                children: [
-                                                  ColorOption(
-                                                    themeColor: themeColor,
-                                                    optionColor:
-                                                        ThemeColor.pink,
-                                                  ),
-                                                  SizedBox(width: 20),
-                                                  ColorOption(
-                                                    themeColor: themeColor,
-                                                    optionColor: ThemeColor.red,
-                                                  ),
-                                                  SizedBox(width: 20),
-                                                  ColorOption(
-                                                    themeColor: themeColor,
-                                                    optionColor:
-                                                        ThemeColor.black,
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          );
-                                        }))
+                                EditTheme()
                               ], [
                                 DialogBoxButtonParameters(
                                     content: 'Ok',
@@ -149,7 +78,7 @@ class UserProfileInfo extends StatelessWidget {
                                     closesDialog: true)
                               ])
                             },
-                            icon: Icons.abc_sharp,
+                            icon: Icons.color_lens,
                           ),
                         ],
                       ),
@@ -160,6 +89,65 @@ class UserProfileInfo extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class EditTheme extends StatelessWidget {
+  const EditTheme({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+        child: StreamBuilder(
+            stream: getIt.get<ThemeColorService>().themeDetails.stream,
+            builder: (context, snapshot) {
+              ThemeColor themeColor = snapshot.data?.color ?? ThemeColor.green;
+              return Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ColorOption(
+                        themeColor: themeColor,
+                        optionColor: ThemeColor.green,
+                      ),
+                      SizedBox(width: 20),
+                      ColorOption(
+                        themeColor: themeColor,
+                        optionColor: ThemeColor.blue,
+                      ),
+                      SizedBox(width: 20),
+                      ColorOption(
+                        themeColor: themeColor,
+                        optionColor: ThemeColor.purple,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ColorOption(
+                        themeColor: themeColor,
+                        optionColor: ThemeColor.pink,
+                      ),
+                      SizedBox(width: 20),
+                      ColorOption(
+                        themeColor: themeColor,
+                        optionColor: ThemeColor.red,
+                      ),
+                      SizedBox(width: 20),
+                      ColorOption(
+                        themeColor: themeColor,
+                        optionColor: ThemeColor.black,
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            }));
   }
 }
 
