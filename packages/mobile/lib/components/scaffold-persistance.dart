@@ -34,6 +34,7 @@ class MyScaffold extends StatelessWidget {
                 onPressed: () => Navigator.of(context).pop(),
               )
             : null,
+        automaticallyImplyLeading: false,
         title: Text(title),
         shadowColor: Colors.black,
         backgroundColor: Colors.white,
