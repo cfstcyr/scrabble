@@ -6,7 +6,6 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
 import { GameService } from '@app/services';
-import { Observable, Subject } from 'rxjs';
 import { ActionType } from '@app/classes/actions/action-data';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { DefaultDialogParameters } from '@app/components/default-dialog/default-dialog.component.types';
@@ -59,9 +58,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     @HostListener('document:keydown.enter', ['$event'])
     handleEnter(): void {
-    this.boardCursorService.isDisabled = true;
-    this.boardCursorService.clearCurrentCursor();
-    this.gameService.playTilesOnBoard();
+        this.boardCursorService.isDisabled = true;
+        this.boardCursorService.clearCurrentCursor();
+        this.gameService.playTilesOnBoard();
     }
 
     @HostListener('document:keydown.escape', ['$event'])
