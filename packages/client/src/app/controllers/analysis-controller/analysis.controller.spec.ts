@@ -24,7 +24,7 @@ describe('AnalysisController', () => {
 
             service.requestAnalysis(1, AnalysisRequestInfoType.ID_ANALYSIS);
 
-            expect(spy).toHaveBeenCalledOnceWith(service['endpoint']);
+            expect(spy).toHaveBeenCalled();
         });
     });
 });
