@@ -69,6 +69,8 @@ import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/pu
 import { AnalysisOverviewComponent } from './components/analysis/analysis-overview/analysis-overview.component';
 import { AnalysisResultModalComponent } from './components/analysis/analysis-result-modal/analysis-result-modal.component';
 import { AnalysisWaitingDialogComponent } from './components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
+import { UcWidgetModule } from 'ngx-uploadcare-widget';
+import { AvatarSelectorComponent } from './components/user-profile/avatar-selector/avatar-selector.component';
 
 registerLocaleData(localeFr);
 
@@ -139,6 +141,7 @@ registerLocaleData(localeFr);
         AnalysisOverviewComponent,
         AnalysisResultModalComponent,
         AnalysisWaitingDialogComponent,
+        AvatarSelectorComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -149,6 +152,7 @@ registerLocaleData(localeFr);
         ReactiveFormsModule,
         HttpClientModule,
         ScrollingModule,
+        UcWidgetModule,
     ],
     providers: [
         InitializerService,

@@ -17,3 +17,5 @@ export const AVATARS: string[] = [
     'https://ucarecdn.com/b3475da5-12a1-4fa4-b400-98ba81c783f0/',
     'https://ucarecdn.com/bed7e26e-8132-4e80-a5a5-da24f941ed0d/',
 ];
+
+export const UPLOADCARE_PUBLIC_KEY = '18e381be1851edb422d0';

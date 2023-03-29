@@ -49,7 +49,7 @@ export class UserProfileEditDialogComponent implements OnInit {
         return this.form.get('username')! as FormControl;
     }
 
-    get avatar(): FormControl {
+    get avatarField(): FormControl {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.form.get('avatar')! as FormControl;
     }
@@ -76,7 +76,7 @@ export class UserProfileEditDialogComponent implements OnInit {
 
         const edits: EditableUserFields = {
             username: this.username.value,
-            avatar: this.avatar.value,
+            avatar: this.avatarField.value,
         };
         this.dialogRef.close(edits);
     }

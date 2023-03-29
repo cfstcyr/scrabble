@@ -92,7 +92,7 @@ export class CreateWaitingPageComponent implements OnInit, OnDestroy {
     }
 
     acceptUser(userRequest: UserRequest): void {
-        if (this.isGroupFull && userRequest.isObserver) return;
+        if (this.isGroupFull && !userRequest.isObserver) return;
 
         if (!this.removeRequestingUser(userRequest)) return;
 

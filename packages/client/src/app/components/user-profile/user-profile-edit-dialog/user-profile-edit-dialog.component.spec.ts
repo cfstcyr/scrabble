@@ -48,7 +48,7 @@ describe('UserProfileEditDialogComponent', () => {
     describe('onSubmit', () => {
         it('should call close', () => {
             component.username.setValue('username');
-            component.avatar.setValue('avatar');
+            component.avatarField.setValue('avatar');
 
             component.onSubmit();
 
@@ -59,7 +59,7 @@ describe('UserProfileEditDialogComponent', () => {
     describe('getUsernameError', () => {
         it('should return undefined if on error', () => {
             component.username.setValue('username');
-            component.avatar.setValue('avatar');
+            component.avatarField.setValue('avatar');
 
             expect(component.getUsernameError()).toBeUndefined();
         });
