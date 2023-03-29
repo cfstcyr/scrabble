@@ -27,7 +27,6 @@ class MyScaffold extends StatelessWidget {
     ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      body: body,
       appBar: AppBar(
         leading: hasBackButton
             ? IconButton(
@@ -37,8 +36,8 @@ class MyScaffold extends StatelessWidget {
             : null,
         title: Text(title),
         shadowColor: Colors.black,
-        backgroundColor: backgroundColor,
-        surfaceTintColor: backgroundColor,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         elevation: 1,
         centerTitle: true,
         actions: [
@@ -79,6 +78,8 @@ class MyScaffold extends StatelessWidget {
                   )),
         ],
       ),
+      body: body,
+      backgroundColor: backgroundColor,
       endDrawer: Container(width: 325, child: const ChatManagement()),
     );
   }

@@ -133,7 +133,8 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
                 ),
               ),
             ),
-          )),
+          ),
+      backgroundColor: theme.colorScheme.background,),
       onWillPop: () => _onBack(context),
     );
   }

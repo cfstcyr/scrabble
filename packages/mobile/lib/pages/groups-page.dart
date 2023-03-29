@@ -27,11 +27,13 @@ class _GroupPageState extends State<GroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
+    ThemeData theme = Theme.of(context);
 
     return MyScaffold(
-        title: JOIN_GAME,
-        hasBackButton: true,
-        body: Center(child: GroupSelection()));
+      title: JOIN_GAME,
+      hasBackButton: true,
+      body: Center(child: GroupSelection()),
+      backgroundColor: theme.colorScheme.background,
+    );
   }
 }
