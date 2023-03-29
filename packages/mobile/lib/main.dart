@@ -58,6 +58,9 @@ class MyApp extends StatelessWidget {
                       colorScheme: ColorScheme.fromSeed(
                           seedColor: color.data?.color.colorValue ??
                               Color.fromRGBO(27, 94, 32, 1),
+                          primary:
+                              color.data?.color.colorValue.withAlpha(200) ??
+                                  Color.fromRGBO(27, 94, 32, 1),
                           secondary: Color.fromRGBO(27, 94, 32, 0.15),
                           background: Color.fromRGBO(243, 243, 243, 1),
                           onBackground: Color.fromRGBO(232, 232, 232, 1),
