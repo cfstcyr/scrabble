@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/classes/analysis/analysis-request.dart';
+import 'package:mobile/classes/analysis/analysis.dart';
 import 'package:mobile/classes/game-history.dart';
+import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/table.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/services/analysis-service.dart';
 import 'package:mobile/services/user.service.dart';
 
 import '../../utils/duration.dart';
 
 class UserProfileGameHistory extends StatelessWidget {
   final UserService _userService = getIt.get<UserService>();
+  final AnalysisService _analysisService = getIt.get<AnalysisService>();
 
   @override
   Widget build(BuildContext context) {
@@ -23,29 +28,46 @@ class UserProfileGameHistory extends StatelessWidget {
               'Historique de partie',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
             ),
-            FutureBuilder(
+            FutureBuilder<List<GameHistory>>(
               future: _userService.getGameHistory(),
               builder: (context, snapshot) => snapshot.hasData
-                  ? AppTable<GameHistory>(data: snapshot.data!, columns: [
-                      AppTableColumn(
-                          title: 'Début',
-                          builder: (context, row) => Text(
-                              DateFormat('d MMMM yyyy, h:mm:ss', 'fr')
-                                  .format(row.data.startTime))),
-                      AppTableColumn(
-                        title: 'Durée',
-                        builder: (context, row) => Text(
-                            "${minutes(row.data.endTime.difference(row.data.startTime))} m ${seconds(row.data.endTime.difference(row.data.startTime))} s"),
-                      ),
-                      AppTableColumn(
-                          title: 'Résultat',
-                          builder: (context, row) => _getGameStatus(row.data)),
-                      AppTableColumn(
-                          title: 'Score',
-                          builder: (context, row) => Text(
-                                '${row.data.score} pts',
-                              ))
-                    ])
+                  ? AppTable<GameHistory>(
+                      data: snapshot.data!,
+                      columns: <AppTableColumn<GameHistory>>[
+                          AppTableColumn(
+                              title: 'Début',
+                              builder: (context, row) => Text(
+                                  DateFormat('d MMMM yyyy, h:mm:ss', 'fr')
+                                      .format(row.data.startTime))),
+                          AppTableColumn(
+                            title: 'Durée',
+                            builder: (context, row) => Text(
+                                "${minutes(row.data.endTime.difference(row.data.startTime))} m ${seconds(row.data.endTime.difference(row.data.startTime))} s"),
+                          ),
+                          AppTableColumn(
+                              title: 'Résultat',
+                              builder: (context, row) =>
+                                  _getGameStatus(row.data)),
+                          AppTableColumn(
+                              title: 'Score',
+                              builder: (context, row) => Text(
+                                    '${row.data.score} pts',
+                                  )),
+                          AppTableColumn(
+                              title: 'Analyse',
+                              builder: (context, row) => ElevatedButton(
+                                    onPressed: () {
+                                      _analysisService
+                                          .requestAnalysis(
+                                              row.data.idAnalysis,
+                                              AnalysisRequestInfoType
+                                                  .idAnalysis)
+                                          .then((value) =>
+                                              print(value.idGameHistory));
+                                    },
+                                    child: Icon(Icons.science_rounded),
+                                  ))
+                        ])
                   : snapshot.hasError
                       ? Text(
                           'Impossible de charger l\'historique de partie ${snapshot.error}')

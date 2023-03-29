@@ -15,6 +15,7 @@ import 'package:mobile/constants/socket-events/group-events.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/view-methods/create-lobby-methods.dart';
 import 'package:mobile/view-methods/group.methods.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../classes/game/game-config.dart';
 import '../classes/group.dart';
