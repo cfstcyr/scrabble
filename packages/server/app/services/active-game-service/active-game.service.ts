@@ -12,9 +12,8 @@ import { SocketService } from '@app/services/socket-service/socket.service';
 import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
 import { Observer } from '@common/models/observer';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
-import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
-import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import Player from '@app/classes/player/player';
+import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 
 export const EXPERT_PLAYER_RATING = 1400;
 export const BEGINNER_PLAYER_RATING = 1100;
@@ -41,19 +40,14 @@ export class ActiveGameService {
     }
 
     async setPlayerElo(player: Player) {
-        if (player instanceof ExpertVirtualPlayer) {
-            player.initialRating = EXPERT_PLAYER_RATING;
-            player.adjustedRating = EXPERT_PLAYER_RATING;
+        console.log('setPlayerElo: ', player.publicUser.username);
+        if (player instanceof AbstractVirtualPlayer) {
             return;
-        } else if (player instanceof BeginnerVirtualPlayer) {
-            player.initialRating = BEGINNER_PLAYER_RATING;
-            player.adjustedRating = BEGINNER_PLAYER_RATING;
-            return;
-        } else {
-            const rating = (await this.userStatisticService.getStatistics(player.idUser)).rating;
-            player.initialRating = rating;
-            player.adjustedRating = rating;
         }
+        const rating = (await this.userStatisticService.getStatistics(player.idUser)).rating;
+        player.initialRating = rating;
+        player.adjustedRating = rating;
+        console.log('setPlayerElo of real Player, rating fetched ', rating);
     }
 
     getGame(id: string, playerId: string): Game {
