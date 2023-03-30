@@ -2,28 +2,34 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/components/app-toggle-button.dart';
 
 enum PuzzleLevelName {
   beginner,
   advanced,
   expert;
-
-  String get name => PUZZLE_LEVEL_NAMES[this] ?? 'Inconnu';
 }
 
-class PuzzleLevel {
+class PuzzleLevel extends AppToggleOption {
   final String id;
-  final String name;
+  final PuzzleLevelName nameEnum;
   final String description;
   final Duration roundDuration;
   final List<IconData> icons;
 
   PuzzleLevel(
       {required this.id,
-      required this.name,
+      required this.nameEnum,
       required this.description,
       required this.roundDuration,
       required this.icons});
+
+  String get name => PUZZLE_LEVEL_NAMES[nameEnum] ?? 'Inconnu';
+
+  @override
+  String getName() {
+    return nameEnum.name;
+  }
 }
 
 final Map<PuzzleLevelName, String> PUZZLE_LEVEL_NAMES = {
@@ -34,21 +40,21 @@ final Map<PuzzleLevelName, String> PUZZLE_LEVEL_NAMES = {
 
 final PuzzleLevel beginnerPuzzleLevel = PuzzleLevel(
     id: '1',
-    name: PuzzleLevelName.beginner.name,
+    nameEnum: PuzzleLevelName.beginner,
     description: '5 min',
     roundDuration: Duration(minutes: 5),
     icons: [Icons.bolt]);
 
 final PuzzleLevel advancedPuzzleLevel = PuzzleLevel(
     id: '2',
-    name: PuzzleLevelName.advanced.name,
+    nameEnum: PuzzleLevelName.advanced,
     description: '2 min',
     roundDuration: Duration(minutes: 2),
     icons: [Icons.bolt, Icons.bolt]);
 
 final PuzzleLevel expertPuzzleLevel = PuzzleLevel(
     id: '3',
-    name: PuzzleLevelName.expert.name,
+    nameEnum: PuzzleLevelName.expert,
     description: '30 sec',
     roundDuration: Duration(seconds: 30),
     icons: [Icons.bolt, Icons.bolt, Icons.bolt]);

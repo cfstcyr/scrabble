@@ -4,7 +4,8 @@ import 'package:mobile/classes/puzzle/puzzle-level.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/create-game/timer-selector.dart';
 import 'package:mobile/components/error-pop-up.dart';
-import 'package:mobile/components/puzzle/puzzle-level-selector.dart';
+import 'package:mobile/components/app-toggle-button.dart';
+import 'package:mobile/components/puzzle/puzzle-level-widget.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/constants/locale/puzzle-constants.dart';
 import 'package:mobile/locator.dart';
@@ -18,7 +19,11 @@ void showStartPuzzleDialog(BuildContext context) {
       barrierDismissible: true,
       builder: (BuildContext context) {
         ThemeData theme = Theme.of(context);
-        final PuzzleLevelSelector puzzleLevelSelector = PuzzleLevelSelector();
+        final AppToggleButton<PuzzleLevel, PuzzleLevelName>
+            puzzleLevelSelector = AppToggleButton<PuzzleLevel, PuzzleLevelName>(
+                defaultValue: advancedPuzzleLevel,
+                optionsToValue: PUZZLE_LEVELS,
+                toggleOptionWidget: generatePuzzleLevelWidget);
 
         return AlertDialog(
           title: Center(
@@ -26,7 +31,8 @@ void showStartPuzzleDialog(BuildContext context) {
                 style: theme.textTheme.displayMedium
                     ?.copyWith(fontWeight: FontWeight.w500)),
           ),
-          content: SingleChildScrollView(child: Center(child: puzzleLevelSelector)),
+          content:
+              SingleChildScrollView(child: Center(child: puzzleLevelSelector)),
           contentPadding:
               EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
           shape: RoundedRectangleBorder(
@@ -61,9 +67,9 @@ void showStartPuzzleDialog(BuildContext context) {
                     onPressed: () {
                       getIt
                           .get<PuzzleService>()
-                          .startPuzzle(puzzleLevelSelector
-                                  .puzzleLevel$.valueOrNull?.roundDuration ??
-                              advancedPuzzleLevel.roundDuration)
+                          .startPuzzle(
+                              puzzleLevelSelector.toggledValue?.roundDuration ??
+                                  advancedPuzzleLevel.roundDuration)
                           .then((bool isSuccess) {
                         Navigator.pop(context);
                         if (isSuccess) {

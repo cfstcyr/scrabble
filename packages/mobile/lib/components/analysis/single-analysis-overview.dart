@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/AppCircularSpinner.dart';
+import 'package:mobile/components/app-circular-spinner.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
 class SingleAnalysisOverview extends StatefulWidget {
