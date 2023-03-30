@@ -17,7 +17,7 @@
         class='game-page__tile-rack'
         [isObserver]="false"
     ></app-tile-rack>
-    <mat-card class='game-page__actions'>
+    <mat-card *ngIf="!isGameOver" class='game-page__actions'>
         <button
             class='game-page__actions__button game-page__actions__button--quit'
             mat-flat-button
@@ -39,7 +39,6 @@
                 color="primary"
                 [disabled]="!canPlay()"
                 (click)="handleHintButtonClick()"
-                *ngIf="!isGameOver"
             >
                 <app-icon icon="lightbulb" styling="solid"></app-icon>
             </button>
@@ -48,7 +47,6 @@
         <div
             [matTooltip]="canPlay() ? 'Passer' : 'Ce n\'est pas votre tour de jouer'"
             matTooltipPosition="above"
-            *ngIf="!isGameOver"
         >
             <button
                 class='game-page__actions__button game-page__actions__button--pass'
@@ -63,7 +61,6 @@
         <div
             [matTooltip]="canPlay() ? ((canPlaceWord() | async) ? 'Placer' : 'Le placement est invalide') : 'Ce n\'est pas votre tour de jouer'"
             matTooltipPosition="above"
-            *ngIf="!isGameOver"
         >
             <button
                 class='game-page__actions__button game-page__actions__button--place'
@@ -75,8 +72,20 @@
                 <app-icon icon="square" styling="solid"></app-icon>
             </button>
         </div>
-        <div *ngIf="isGameOver" matTooltip="Consulter l'analyse de votre partie" matTooltipPosition="above">
-            <button mat-flat-button color="primary" (click)="requestAnalysis()">
+    </mat-card>
+    <mat-card *ngIf="isGameOver" class='game-page__actions__over' >
+        <button
+            class='game-page__actions__button game-page__actions__button--quit'
+            mat-flat-button
+            (click)="handleQuitButtonClick()"
+            color="warn"
+            [matTooltip]="isGameOver ? 'Quitter' : 'Abandonner'"
+            matTooltipPosition='above'
+        >
+            <app-icon [icon]="isGameOver ? 'door-open' : 'flag-alt'" styling="solid"></app-icon> Quitter
+        </button>
+        <div matTooltip="Consulter l'analyse de votre partie" matTooltipPosition="above">
+            <button class='game-page__actions__button game-page__actions__button--place' mat-flat-button color="primary" (click)="requestAnalysis()">
                 <app-icon icon="flask"></app-icon> Analyse
             </button>
         </div>
