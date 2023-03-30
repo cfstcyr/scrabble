@@ -22,23 +22,15 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { PageHeaderComponent } from '@app/components/page-header/page-header.component';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.component';
-import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';
-import { GameVisibility } from '@common/models/game-visibility';
-import { Group } from '@common/models/group';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
+import { HomePageComponent } from '@app/pages/home-page/home-page.component';
 import { Subject } from 'rxjs';
-import { GroupPasswordDialogComponent } from './end-game-dialog';
+import { EndGameDialogComponent } from './end-game-dialog';
+import { EndGameDialogParameters } from './end-game-dialog.types';
 
-const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
-const TEST_GROUP: Group = {
-    maxRoundTime: 1,
-    groupId: 'idgroup',
-    user1: USER1,
-    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
-    gameVisibility: GameVisibility.Private,
-    password: '',
-    numberOfObservers: 0,
+const TEST_INFO: EndGameDialogParameters = {
+    hasWon: true,
+    adjustedRating: 0,
+    ratingVariation: 0,
 };
 
 @Component({
@@ -53,18 +45,17 @@ export class MatDialogMock {
             close: () => ({}),
         };
     }
-    // confirmationSpy = spyOn(service['gameDispatcherController'], 'handleStartGame').and.returnValue(confirmationObservable);
     backdropClick() {
         return this.confirmationObservable.asObservable();
     }
 }
 
-describe('GroupPasswordDialogComponent', () => {
-    let component: GroupPasswordDialogComponent;
-    let fixture: ComponentFixture<GroupPasswordDialogComponent>;
+describe('EndGameDialogComponent', () => {
+    let component: EndGameDialogComponent;
+    let fixture: ComponentFixture<EndGameDialogComponent>;
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GroupPasswordDialogComponent, IconComponent, PageHeaderComponent],
+            declarations: [EndGameDialogComponent, IconComponent, PageHeaderComponent],
             imports: [
                 AppMaterialModule,
                 MatFormFieldModule,
@@ -85,8 +76,7 @@ describe('GroupPasswordDialogComponent', () => {
                 MatInputModule,
                 RouterTestingModule.withRoutes([
                     { path: 'game-creation', component: TestComponent },
-                    { path: 'groups', component: GroupsPageComponent },
-                    { path: 'join-waiting-room', component: JoinWaitingPageComponent },
+                    { path: 'home', component: HomePageComponent },
                 ]),
             ],
             providers: [
@@ -95,13 +85,13 @@ describe('GroupPasswordDialogComponent', () => {
                     provide: MatDialogRef,
                     useClass: MatDialogMock,
                 },
-                { provide: MAT_DIALOG_DATA, useValue: { group: TEST_GROUP } },
+                { provide: MAT_DIALOG_DATA, useValue: TEST_INFO },
             ],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(GroupPasswordDialogComponent);
+        fixture = TestBed.createComponent(EndGameDialogComponent);
 
         component = fixture.componentInstance;
         fixture.detectChanges();
