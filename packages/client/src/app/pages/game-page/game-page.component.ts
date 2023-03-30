@@ -226,9 +226,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
                         content: buttons[0],
                         redirect: ROUTE_HOME,
                         style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
-                        // We haven't been able to test that the right function is called because this
-                        // arrow function creates a new instance of the function. We cannot spy on it.
-                        // It totally works tho, try it!
                         action: () => {
                             this.handlePlayerLeaves();
                             this.gameService.makeTilePlacement([]);
