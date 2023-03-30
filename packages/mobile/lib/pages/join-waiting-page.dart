@@ -38,17 +38,13 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
     });
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
+      Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
       triggerDialogBox("Partie annulée", [
         Text("${host.username} a annulé la partie",
             style: TextStyle(fontSize: 16))
       ], [
         DialogBoxButtonParameters(
-            content: 'OK',
-            theme: AppButtonTheme.primary,
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
-            })
+            content: 'OK', theme: AppButtonTheme.primary, closesDialog: true)
       ]);
     });
   }
