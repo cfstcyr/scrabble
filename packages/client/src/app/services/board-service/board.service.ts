@@ -44,7 +44,7 @@ export default class BoardService {
         this.temporaryTilePlacements$.next(tilePlacements);
     }
 
-    subscribeToTemporaryTilePlacements(next: (tilePlacements: TilePlacement[]) => void): Subscription {
-        return this.temporaryTilePlacements$.subscribe(next);
+    subscribeToTemporaryTilePlacements(destroy$: Observable<boolean>, next: (tilePlacements: TilePlacement[]) => void): Subscription {
+        return this.temporaryTilePlacements$.pipe(takeUntil(destroy$)).subscribe(next);
     }
 }

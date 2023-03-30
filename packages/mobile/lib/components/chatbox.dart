@@ -39,11 +39,16 @@ class _ChatboxState extends State<Chatbox> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.channel.name)),
+      appBar: AppBar(
+          title: Text(widget.channel.name),
+          shadowColor: Colors.black,
+          backgroundColor: Colors.white,
+          elevation: 1,
+          surfaceTintColor: theme.colorScheme.primary),
       body: Chat(
         theme: DefaultChatTheme(
-          inputBackgroundColor: theme.colorScheme.primary,
-          primaryColor: theme.colorScheme.primary,
+          inputBackgroundColor: themeColor,
+          primaryColor: themeColor,
         ),
         messages: _filterToChatBoxFormat(widget.channel.messages),
         onSendPressed: _handleSendPressed,

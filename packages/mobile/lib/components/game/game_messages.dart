@@ -8,6 +8,7 @@ import '../../classes/game/game-message.dart';
 class GameMessages extends StatelessWidget {
   final GameMessagesService gameMessagesService =
       getIt.get<GameMessagesService>();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +16,12 @@ class GameMessages extends StatelessWidget {
         stream: gameMessagesService.messageEvent,
         builder: (context, snapshot) {
           final children = gameMessagesService.messages;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
           return Card(
             child: SingleChildScrollView(
               reverse: false,
+              controller: _scrollController,
               padding: EdgeInsets.symmetric(
                 vertical: SPACE_2,
                 horizontal: SPACE_3,
@@ -28,5 +32,10 @@ class GameMessages extends StatelessWidget {
             ),
           );
         });
+  }
+
+  _scrollToEnd() async {
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
   }
 }

@@ -82,48 +82,50 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
 
     return WillPopScope(
       child: MyScaffold(
-          title: JOIN_GAME,
-          body: Center(
-            child: Card(
-              surfaceTintColor: Colors.white,
-              color: Colors.white,
-              borderOnForeground: true,
-              child: SizedBox(
-                width: 400,
-                height: 400,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 32, 0, 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Text("En attente de la réponse de l'hôte",
-                          style: theme.textTheme.titleLarge),
-                      Spacer(),
-                      PlayerInGroup(user: widget.group.users[0]),
-                      Spacer(),
-                      Parameters(
-                        maxRoundTime: widget.group.maxRoundTime,
-                        virtualPlayerLevel: widget.group.virtualPlayerLevel,
-                        visibility: widget.group.gameVisibility,
-                        backgroundColor: theme.colorScheme.background,
-                      ),
-                      Spacer(),
-                      CircularProgressIndicator(),
-                      Spacer(flex: 2),
-                      AppButton(
-                        onPressed: () {
-                          _onBack(context);
-                        },
-                        icon: Icons.keyboard_arrow_left_sharp,
-                        text: CANCEL_REQUEST,
-                      )
-                    ],
-                  ),
+        title: JOIN_GAME,
+        body: Center(
+          child: Card(
+            surfaceTintColor: Colors.white,
+            color: Colors.white,
+            borderOnForeground: true,
+            child: SizedBox(
+              width: 400,
+              height: 400,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 32, 0, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Text("En attente de la réponse de l'hôte",
+                        style: theme.textTheme.titleLarge),
+                    Spacer(),
+                    PlayerInGroup(user: widget.group.users[0]),
+                    Spacer(),
+                    Parameters(
+                      maxRoundTime: widget.group.maxRoundTime,
+                      virtualPlayerLevel: widget.group.virtualPlayerLevel,
+                      visibility: widget.group.gameVisibility,
+                      backgroundColor: theme.colorScheme.background,
+                    ),
+                    Spacer(),
+                    CircularProgressIndicator(),
+                    Spacer(flex: 2),
+                    AppButton(
+                      onPressed: () {
+                        _onBack(context);
+                      },
+                      icon: Icons.keyboard_arrow_left_sharp,
+                      text: CANCEL_REQUEST,
+                    )
+                  ],
                 ),
               ),
             ),
-          )),
+          ),
+        ),
+        backgroundColor: theme.colorScheme.background,
+      ),
       onWillPop: () => _onBack(context),
     );
   }

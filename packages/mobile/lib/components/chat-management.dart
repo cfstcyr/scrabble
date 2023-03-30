@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mobile/components/chatbox-wrapper.dart';
-import 'package:mobile/components/chatbox.dart';
 import 'package:mobile/services/chat.service.dart';
 import 'package:rxdart/rxdart.dart';
 
