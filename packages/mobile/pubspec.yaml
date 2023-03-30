@@ -57,6 +57,7 @@ dependencies:
     url_launcher: ^6.1.7
     intl: ^0.17.0
     audioplayers: ^3.0.1
+    carousel_slider: ^4.2.1
 
 
 dev_dependencies:
