@@ -70,6 +70,7 @@ import { AvatarSelectorComponent } from './components/user-profile/avatar-select
 import { UcWidgetModule } from 'ngx-uploadcare-widget';
 import { RatingLeaderboardPageComponent } from './pages/rating-leaderboard-page/rating-leaderboard-page.component';
 import { LocatorService } from './services/locator-service/locator.service';
+import { EndGameDialogComponent } from './components/end-game-dialog/end-game-dialog';
 
 registerLocaleData(localeFr);
 
@@ -139,6 +140,7 @@ registerLocaleData(localeFr);
         SwiperNavigationComponent,
         AvatarSelectorComponent,
         RatingLeaderboardPageComponent,
+        EndGameDialogComponent,
     ],
     imports: [
         AppMaterialModule,

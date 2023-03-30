@@ -259,9 +259,9 @@ export class GamePlayService {
                 endTime: new Date(),
                 hasBeenAbandoned: true,
             },
-            players: [this.createGameHistoryPlayer(playerWhoLeft)],
+            players: [this.createGameHistoryPlayerAbandon(playerWhoLeft)],
         });
-game.completeGameHistory
+// game.completeGameHistory
         if (this.isVirtualPlayerTurn(game)) {
             this.virtualPlayerService.triggerVirtualPlayerTurn(
                 { round: game.roundManager.convertRoundToRoundData(game.roundManager.getCurrentRound()) },
@@ -271,13 +271,14 @@ game.completeGameHistory
         this.activeGameService.playerLeftEvent.emit('playerLeftFeedback', gameId, [], updatedData);
     }
 
-    private createGameHistoryPlayer(player: Player): GameHistoryPlayerCreation {
+    private createGameHistoryPlayerAbandon(player: Player): GameHistoryPlayerCreation {
         return {
             idUser: isIdVirtualPlayer(player.id) ? undefined : player.idUser,
             score: player.score,
             isVirtualPlayer: isIdVirtualPlayer(player.id),
             isWinner: false,
             ratingVariation: player.adjustedRating - player.initialRating,
+            hasAbandoned: true,
         };
     }
 

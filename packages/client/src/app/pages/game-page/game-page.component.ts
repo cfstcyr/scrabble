@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/
 import { MatDialog } from '@angular/material/dialog';
 import { ActionType } from '@app/classes/actions/action-data';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { EndGameDialogComponent } from '@app/components/end-game-dialog/end-game-dialog';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
 import { ENTER } from '@app/constants/components-constants';
 import {
@@ -9,8 +10,6 @@ import {
     DIALOG_ABANDON_BUTTON_CONTINUE,
     DIALOG_ABANDON_CONTENT,
     DIALOG_ABANDON_TITLE,
-    DIALOG_END_OF_GAME_CLOSE_BUTTON,
-    DIALOG_END_OF_GAME_TITLE,
     DIALOG_NO_ACTIVE_GAME_BUTTON,
     DIALOG_NO_ACTIVE_GAME_CONTENT,
     DIALOG_NO_ACTIVE_GAME_TITLE,
@@ -177,37 +176,16 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
     }
 
-    private endOfGameMessage(isLocalPlayerWinner: boolean) {
-        const localPlayer = this.gameService.getLocalPlayer();
-        const message = isLocalPlayerWinner ? 'Bravo pour votre victoire!' : 'Meilleure chance la prochaine fois!';
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        const eloMessage = `Votre nouveau classement Elo est de ${Math.round(localPlayer?.adjustedRating ?? 1000)} (${
-            Math.round(localPlayer?.ratingVariation ?? 0) >= 0 ? '+' : ''
-        }${Math.round(localPlayer?.ratingVariation ?? 0)}).`;
-        return `${message} ${eloMessage}`;
-    }
-
     private endOfGameDialog(winnerNames: string[]): void {
-        this.dialog.open(DefaultDialogComponent, {
+        const localPlayer = this.gameService.getLocalPlayer();
+
+        this.dialog.open(EndGameDialogComponent, {
             data: {
-                title: DIALOG_END_OF_GAME_TITLE(this.isLocalPlayerWinner(winnerNames)),
-                content: this.endOfGameMessage(this.isLocalPlayerWinner(winnerNames)),
-                buttons: [
-                    {
-                        content: DIALOG_QUIT_BUTTON_CONFIRM,
-                        redirect: ROUTE_HOME,
-                        style: 'background-color: rgb(231, 231, 231)',
-                        // We haven't been able to test that the right function is called because this
-                        // arrow function creates a new instance of the function. We cannot spy on it.
-                        // It totally works tho, try it!
-                        action: () => this.handlePlayerLeaves(),
-                    },
-                    {
-                        content: DIALOG_END_OF_GAME_CLOSE_BUTTON,
-                        closeDialog: true,
-                        style: 'background-color: rgb(231, 231, 231)',
-                    },
-                ],
+                hasWon: this.isLocalPlayerWinner(winnerNames),
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                adjustedRating: localPlayer?.adjustedRating ?? 1000,
+                ratingVariation: localPlayer?.ratingVariation ?? 0,
+                action: () => this.handlePlayerLeaves(),
             },
         });
 

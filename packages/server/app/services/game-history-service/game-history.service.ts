@@ -24,15 +24,17 @@ export default class GameHistoriesService {
         let idGameHistory = existingIdGameHistory;
         if (!idGameHistory) {
             [{ idGameHistory }] = await this.table.insert(gameHistory, ['idGameHistory']);
+        } else {
+            await this.table.where({ idGameHistory }).update(gameHistory);
         }
 
         await Promise.all(players.map((player) => this.tableHistoryPlayer.insert({ ...player, idGameHistory })));
-        return idGameHistory;
+        return idGameHistory ?? -1;
     }
 
     async getGameHistory(idUser: TypeOfId<User>): Promise<GameHistoryForUser[]> {
         return await this.table
-            .select('startTime', 'endTime', 'hasBeenAbandoned', 'score', 'isWinner', 'ratingVariation')
+            .select('startTime', 'endTime', 'hasAbandoned', 'score', 'isWinner', 'ratingVariation')
             .leftJoin<GameHistoryPlayer>(
                 GAME_HISTORY_PLAYER_TABLE,
                 `${GAME_HISTORY_TABLE}.idGameHistory`,

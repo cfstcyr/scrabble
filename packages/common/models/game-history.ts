@@ -8,13 +8,13 @@ export interface GameHistoryPlayer {
     isVirtualPlayer: boolean;
     isWinner: boolean;
     ratingVariation: number;
+    hasAbandoned: boolean;
 }
 
 export interface GameHistory {
     idGameHistory: number;
     startTime: Date;
     endTime: Date;
-    hasBeenAbandoned: boolean;
 }
 
 export type GameHistoryPlayerCreation = Omit<GameHistoryPlayer, IdOf<GameHistory>>;
