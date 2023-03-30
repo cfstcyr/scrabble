@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { ROUTE_SEARCH } from '@app/constants/routes-constants';
 import { UserService } from '@app/services/user-service/user.service';
 import { RatedUser } from '@common/models/user';
 import { Observable } from 'rxjs';
@@ -11,7 +13,12 @@ import { Observable } from 'rxjs';
 export class RatingLeaderboardPageComponent {
     results: Observable<RatedUser[]>;
 
-    constructor(private readonly userService: UserService) {
+    constructor(private readonly userService: UserService, private router: Router) {
         this.results = this.userService.requestRatingLeaderboard();
+    }
+
+    async reRoute(username: string) {
+        const route = ROUTE_SEARCH + '/' + username;
+        await this.router.navigateByUrl(route);
     }
 }

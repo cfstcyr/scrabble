@@ -1,17 +1,30 @@
-<app-page-header title="Recherche d'utilisateur">
-    <app-header-btn link="/search" header-button><app-icon icon="search" styling="solid"></app-icon></app-header-btn>
+<app-page-header title="Classement Elo">
+    <app-header-btn link="/home" header-button><app-icon icon="search" styling="solid"></app-icon></app-header-btn>
 </app-page-header>
 
 <div class="page">
     <div class="page-content">
         <mat-card>
-            <h4>Classement des meilleurs joueur.e.s</h4>
+            <h3>Classement des meilleurs utilisateurs</h3>
+            <div class="search-results-header">
+                <div class="search-results-header-item">Rang</div>
+                <div class="search-results-header-item">Utilisateur</div>
+                <div class="search-results-header-item">Classement Elo</div>
+            </div>
+            <mat-divider></mat-divider>
 
-            <div *ngFor="let result of ((results | async) ?? [])" class="search-results">
-                <button class="search-result-item" [routerLink]="result.username">
-                    <img [appSrc]="result.avatar" [square]="42">
-                    <span>{{result.username}}</span>
-                    <span>{{result.rating}}</span>
+            <div *ngFor="let result of ((results | async) ?? []); let i=index" class="search-results">
+                <button class="search-result-item" (click)="reRoute(result.username)">
+                    <div class="left-info">
+                        <div id="ranking" [ngClass]="{'first-place': i===0, 'second-place': i===1, 'third-place': i===2}">
+                            {{i+1}}
+                        </div>
+                        <img [appSrc]="result.avatar" [square]="42">
+                    </div>
+                    <div class="player-info">
+                        <div class="info">{{result.username}}</div>
+                        <div class="info">{{result.rating | number:'1.0-0'}}</div>
+                    </div>
                 </button>
             </div>
         </mat-card>

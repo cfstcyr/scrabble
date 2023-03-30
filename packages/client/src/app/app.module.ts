@@ -69,6 +69,7 @@ import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/pu
 import { AvatarSelectorComponent } from './components/user-profile/avatar-selector/avatar-selector.component';
 import { UcWidgetModule } from 'ngx-uploadcare-widget';
 import { RatingLeaderboardPageComponent } from './pages/rating-leaderboard-page/rating-leaderboard-page.component';
+import { LocatorService } from './services/locator-service/locator.service';
 
 registerLocaleData(localeFr);
 
@@ -155,7 +156,7 @@ registerLocaleData(localeFr);
         {
             provide: APP_INITIALIZER,
             useFactory: (initializer: InitializerService) => () => initializer.initialize(),
-            deps: [InitializerService],
+            deps: [InitializerService, LocatorService],
             multi: true,
         },
         {
@@ -163,6 +164,7 @@ registerLocaleData(localeFr);
             useValue: 'fr-CA',
         },
         { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
+        LocatorService,
     ],
     bootstrap: [AppComponent],
     exports: [IconComponent],
