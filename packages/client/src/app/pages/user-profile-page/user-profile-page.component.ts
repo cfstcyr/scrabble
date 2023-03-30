@@ -16,7 +16,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     @ViewChild('gameHistoryPaginator') gameHistoryPaginator: MatPaginator;
     @ViewChild('serverActionsPaginator') serverActionsPaginator: MatPaginator;
 
-    gameHistoryColumns: string[] = ['startTime', 'endTime', 'gameResult', 'score'];
+    gameHistoryColumns: string[] = ['startTime', 'endTime', 'gameResult', 'ratingVariation', 'score'];
     serverActionsColumns: string[] = ['timestamp', 'actionType'];
 
     avatar: Observable<string | undefined>;
