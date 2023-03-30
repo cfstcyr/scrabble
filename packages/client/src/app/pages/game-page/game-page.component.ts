@@ -192,9 +192,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
                         content: DIALOG_QUIT_BUTTON_CONFIRM,
                         redirect: ROUTE_HOME,
                         style: 'background-color: rgb(231, 231, 231)',
-                        // We haven't been able to test that the right function is called because this
-                        // arrow function creates a new instance of the function. We cannot spy on it.
-                        // It totally works tho, try it!
                         action: () => this.handlePlayerLeaves(),
                     },
                     {
