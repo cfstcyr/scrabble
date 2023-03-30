@@ -20,41 +20,43 @@ class _AnalysisOverviewWidgetState extends State<AnalysisOverviewWidget> {
     ThemeData theme = Theme.of(context);
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SingleAnalysisOverview(
-              title: 'Opportunités manquées',
-              color: MINOR_MISTAKES_SPINNER_COLOR,
-              value: widget.overview.minorMistakeCount.toDouble(),
-              maximum: widget.overview.totalMistakes.toDouble(),
-            ),
-            SingleAnalysisOverview(
-              title: 'Imprécisions',
-              color: MEDIUM_MISTAKES_SPINNER_COLOR,
-              value: widget.overview.mediumMistakeCount.toDouble(),
-              maximum: widget.overview.totalMistakes.toDouble(),
-            ),
-            SingleAnalysisOverview(
-              title: 'Erreurs',
-              color: MAJOR_MISTAKES_SPINNER_COLOR,
-              value: widget.overview.majorMistakeCount.toDouble(),
-              maximum: widget.overview.totalMistakes.toDouble(),
-            )
-          ],
+        Transform.translate(
+          offset: Offset(-16, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SingleAnalysisOverview(
+                title: 'Opportunités manquées',
+                color: MINOR_MISTAKES_SPINNER_COLOR,
+                value: widget.overview.minorMistakeCount.toDouble(),
+                maximum: widget.overview.totalMistakes.toDouble(),
+              ),
+              SingleAnalysisOverview(
+                title: 'Imprécisions',
+                color: MEDIUM_MISTAKES_SPINNER_COLOR,
+                value: widget.overview.mediumMistakeCount.toDouble(),
+                maximum: widget.overview.totalMistakes.toDouble(),
+              ),
+              SingleAnalysisOverview(
+                title: 'Erreurs',
+                color: MAJOR_MISTAKES_SPINNER_COLOR,
+                value: widget.overview.majorMistakeCount.toDouble(),
+                maximum: widget.overview.totalMistakes.toDouble(),
+              )
+            ],
+          ),
         ),
-        SizedBox(
-          height: SPACE_4,
-        ),
+        SizedBox(height: SPACE_4,),
         Text(
           _resultMessage(),
           style: theme.textTheme.headlineMedium!
               .copyWith(fontWeight: FontWeight.w600),
         ),
+        SizedBox(height: SPACE_2,),
         Opacity(
             opacity: 0.6,
             child: Text(

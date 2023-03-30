@@ -78,8 +78,7 @@ class AppCircularSpinner extends StatelessWidget {
       width: size.size,
       height: size.size,
       child: CircularProgressIndicator(
-          strokeWidth: _getStrokeWidth(),
-          color: _themeColorService.themeDetails.value.color.colorValue),
+          strokeWidth: _getStrokeWidth(), color: color),
     );
   }
 
@@ -88,8 +87,7 @@ class AppCircularSpinner extends StatelessWidget {
         angle: _computeRotation(),
         child: Stack(children: [
           _valueSpinner(SPINNER_OPENING_PERCENT, theme.colorScheme.tertiary),
-          _valueSpinner(_computeValue(),
-              _themeColorService.themeDetails.value.color.colorValue),
+          _valueSpinner(_computeValue(), color),
         ]));
   }
 
