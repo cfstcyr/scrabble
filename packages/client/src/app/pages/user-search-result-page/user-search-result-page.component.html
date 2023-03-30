@@ -60,13 +60,13 @@
                     <ng-container matColumnDef="gameResult">
                         <th mat-header-cell *matHeaderCellDef>Résultat</th>
                         <td mat-cell *matCellDef="let element">
-                            <div *ngIf="element.hasBeenAbandoned" class="game-result game-result--abandoned" matTooltip="Abandonnée">
+                            <div *ngIf="element.hasAbandoned" class="game-result game-result--abandoned" matTooltip="Abandonnée">
                                 <app-icon icon="pennant" styling="solid"></app-icon>
                             </div>
-                            <div *ngIf="!element.hasBeenAbandoned && element.isWinner" class="game-result game-result--winner" matTooltip="Gagnée">
+                            <div *ngIf="!element.hasAbandoned && element.isWinner" class="game-result game-result--winner" matTooltip="Gagnée">
                                 <app-icon icon="crown" styling="solid"></app-icon>
                             </div>
-                            <div *ngIf="!element.hasBeenAbandoned && !element.isWinner" class="game-result game-result--lost"  matTooltip="Perdue">
+                            <div *ngIf="!element.hasAbandoned && !element.isWinner" class="game-result game-result--lost"  matTooltip="Perdue">
                                 <app-icon icon="times" styling="solid"></app-icon>
                             </div>
                         </td>

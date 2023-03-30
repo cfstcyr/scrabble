@@ -594,23 +594,6 @@ describe('Game', () => {
             player4Stub.getTileRackPoints.returns(PLAYER_4_TILE_SCORE);
         });
 
-        it('should set hasBeenAbandonned to false if no player is disconnected', () => {
-            game.completeGameHistory();
-            expect(game.gameHistory.gameHistory.hasBeenAbandoned).to.be.false;
-        });
-
-        it('should set hasBeenAbandonned to true if player1 is disconnected', () => {
-            game.player1.isConnected = false;
-            game.completeGameHistory();
-            expect(game.gameHistory.gameHistory.hasBeenAbandoned).to.be.true;
-        });
-
-        it('should set hasBeenAbandonned to true if player2 is disconnected', () => {
-            game.player2.isConnected = false;
-            game.completeGameHistory();
-            expect(game.gameHistory.gameHistory.hasBeenAbandoned).to.be.true;
-        });
-
         describe('isPlayerWinner', () => {
             it('should set player1Data.isWinner to true if winnerName is not player 1 but player1 has highest score', () => {
                 game.player1.score = 200;
