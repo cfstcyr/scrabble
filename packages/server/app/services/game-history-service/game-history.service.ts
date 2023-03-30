@@ -18,8 +18,13 @@ export default class GameHistoriesService {
         return this.databaseService.knex<GameHistoryPlayer>(GAME_HISTORY_PLAYER_TABLE);
     }
 
-    async addGameHistory({ gameHistory, players }: GameHistoryCreation): Promise<TypeOfId<GameHistory>> {
-        const [{ idGameHistory }] = await this.table.insert(gameHistory, ['idGameHistory']);
+    async addGameHistory({ gameHistory, players }: GameHistoryCreation, existingIdGameHistory?: number): Promise<TypeOfId<GameHistory>> {
+        console.log('addGameHistory gameHistory:', gameHistory);
+        console.log('addGameHistory players:', players);
+        let idGameHistory = existingIdGameHistory;
+        if (!idGameHistory) {
+            [{ idGameHistory }] = await this.table.insert(gameHistory, ['idGameHistory']);
+        }
 
         await Promise.all(players.map((player) => this.tableHistoryPlayer.insert({ ...player, idGameHistory })));
         return idGameHistory;
@@ -27,7 +32,7 @@ export default class GameHistoriesService {
 
     async getGameHistory(idUser: TypeOfId<User>): Promise<GameHistoryForUser[]> {
         return await this.table
-            .select('startTime', 'endTime', 'hasBeenAbandoned', 'score', 'isWinner')
+            .select('startTime', 'endTime', 'hasBeenAbandoned', 'score', 'isWinner', 'ratingVariation')
             .leftJoin<GameHistoryPlayer>(
                 GAME_HISTORY_PLAYER_TABLE,
                 `${GAME_HISTORY_TABLE}.idGameHistory`,

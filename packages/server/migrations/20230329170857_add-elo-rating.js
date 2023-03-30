@@ -4,7 +4,11 @@
  */
 exports.up = async function(knex) {
     await knex.schema.alterTable('UserStatistics', (table) => {
-        table.integer('rating').notNullable().defaultTo(1000);
+        table.double('rating', 5, 1).notNullable().defaultTo(1000);
+    });
+
+    await knex.schema.alterTable('GameHistoryPlayer', (table) => {
+        table.double('ratingVariation', 5, 1).notNullable();
     });
 };
 
@@ -12,8 +16,11 @@ exports.up = async function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
-    return knex.schema.alterTable("UserStatistics", (table) => {
+exports.down = async function(knex) {
+    await knex.schema.alterTable("UserStatistics", (table) => {
+        table.dropColumn("rating");
+    });
+    await knex.schema.alterTable("GameHistoryPlayer", (table) => {
         table.dropColumn("rating");
     });
 };

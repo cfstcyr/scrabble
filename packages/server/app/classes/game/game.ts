@@ -41,9 +41,9 @@ export default class Game {
     player3: Player;
     player4: Player;
     observers: Observer[];
-    isAddedToDatabase: boolean;
     gameIsOver: boolean;
     gameHistory: GameHistoryCreation;
+    idGameHistory: number;
     virtualPlayerLevel: VirtualPlayerLevel;
     private tileReserve: TileReserve;
     private id: string;
@@ -75,7 +75,6 @@ export default class Game {
         game.dictionarySummary = config.dictionarySummary;
         game.tileReserve = new TileReserve();
         game.board = this.boardService.initializeBoard();
-        game.isAddedToDatabase = false;
         game.gameIsOver = false;
         game.virtualPlayerLevel = config.virtualPlayerLevel;
         await game.tileReserve.init();
@@ -103,24 +102,28 @@ export default class Game {
                     score: this.player1.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player1.id),
                     isWinner: this.isPlayerWinner(this.player1),
+                    ratingVariation: this.player1.adjustedRating - this.player1.initialRating,
                 },
                 {
                     idUser: isIdVirtualPlayer(this.player2.id) ? undefined : this.player2.idUser,
                     score: this.player2.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player2.id),
                     isWinner: this.isPlayerWinner(this.player2),
+                    ratingVariation: this.player2.adjustedRating - this.player2.initialRating,
                 },
                 {
                     idUser: isIdVirtualPlayer(this.player3.id) ? undefined : this.player3.idUser,
                     score: this.player3.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player3.id),
                     isWinner: this.isPlayerWinner(this.player3),
+                    ratingVariation: this.player3.adjustedRating - this.player3.initialRating,
                 },
                 {
                     idUser: isIdVirtualPlayer(this.player4.id) ? undefined : this.player4.idUser,
                     score: this.player4.score,
                     isVirtualPlayer: isIdVirtualPlayer(this.player4.id),
                     isWinner: this.isPlayerWinner(this.player4),
+                    ratingVariation: this.player4.adjustedRating - this.player4.initialRating,
                 },
             ],
         };
@@ -262,8 +265,6 @@ export default class Game {
         this.gameIsOver = true;
 
         const finalScores = this.getEndOfGameScores();
-
-        this.completeGameHistory();
         return finalScores;
     }
 

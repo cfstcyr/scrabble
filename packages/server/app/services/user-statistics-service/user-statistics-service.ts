@@ -28,11 +28,21 @@ export class UserStatisticsService {
 
     async getTopRatings(): Promise<RatedUser[]> {
         const topUsers = await this.table
-            .select('u.username as username', 'u.avatar as avatar', 'u.email as email', 'us.rating as rating')
+            .select('u.username as username', 'u.avatar as avatar', 'u.email as email', `${USER_STATISTICS_TABLE}.rating`)
             .join(`${USER_TABLE} as u`, 'u.idUser', `${USER_STATISTICS_TABLE}.idUser`)
-            .orderBy('us.rating', 'desc')
+            .orderBy(`${USER_STATISTICS_TABLE}.rating`, 'desc')
             .limit(NUMBER_OF_USERS_IN_LEADERBOARD);
 
+        console.log('leaderboardarray', topUsers);
+
+        const topUsers2 = await this.table
+            .select('u.username as username', 'u.avatar as avatar', 'u.email as email', `${USER_STATISTICS_TABLE}.rating`)
+            .from(USER_STATISTICS_TABLE)
+            .join(`${USER_TABLE} as u`, 'u.idUser', `${USER_STATISTICS_TABLE}.idUser`)
+            .orderBy(`${USER_STATISTICS_TABLE}.rating`, 'desc')
+            .limit(NUMBER_OF_USERS_IN_LEADERBOARD);
+
+        console.log('leaderboardarray2', topUsers2);
         return topUsers;
     }
 
@@ -60,7 +70,7 @@ export class UserStatisticsService {
         });
     }
 
-    private async createStatistics(idUser: TypeOfId<User>): Promise<void> {
+    async createStatistics(idUser: TypeOfId<User>): Promise<void> {
         await this.table.insert({ idUser });
     }
 

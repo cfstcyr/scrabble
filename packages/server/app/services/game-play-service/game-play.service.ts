@@ -15,7 +15,6 @@ import { MINIMUM_TILES_LEFT_FOR_EXCHANGE } from '@app/constants/virtual-player-c
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import GameHistoriesService from '@app/services/game-history-service/game-history.service';
-import HighScoresService from '@app/services/high-score-service/high-score.service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { StatusCodes } from 'http-status-codes';
@@ -28,11 +27,12 @@ import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 import { AnalysisService } from '@app/services/analysis-service/analysis.service';
 import { ActionType } from '@common/models/action';
 import { RatingService } from '@app/services/rating-service/rating.service';
+import { PlayerData } from '@common/models/player';
+import { GameHistoryPlayerCreation } from '@common/models/game-history';
 @Service()
 export class GamePlayService {
     constructor(
         private readonly activeGameService: ActiveGameService,
-        private readonly highScoresService: HighScoresService,
         private readonly dictionaryService: DictionaryService,
         private readonly gameHistoriesService: GameHistoriesService,
         private readonly virtualPlayerService: VirtualPlayerService,
@@ -40,7 +40,6 @@ export class GamePlayService {
         private readonly userStatisticsService: UserStatisticsService,
         private readonly authenticationService: AuthentificationService,
         private readonly analysisService: AnalysisService,
-        private readonly ratingService: RatingService,
     ) {
         this.activeGameService.playerLeftEvent.on('playerLeftGame', async (gameId, playerWhoLeftId) => {
             await this.handlePlayerLeftEvent(gameId, playerWhoLeftId);
@@ -135,36 +134,53 @@ export class GamePlayService {
 
     private async handleGameOver(game: Game, updatedData: GameUpdateData): Promise<FeedbackMessage[]> {
         const [updatedScorePlayer1, updatedScorePlayer2, updatedScorePlayer3, updatedScorePlayer4] = game.endOfGame();
-        if (!game.isAddedToDatabase) {
-            const connectedRealPlayers = game.getConnectedRealPlayers();
-            for (const player of connectedRealPlayers) {
-                await this.highScoresService.addHighScore(player.publicUser.username, player.score);
-            }
-
-            const idGameHistory = await this.gameHistoriesService.addGameHistory(game.gameHistory);
-            this.analysisService.addAnalysis(game, idGameHistory);
-            game.isAddedToDatabase = true;
-            updatedData.idGameHistory = idGameHistory;
-        }
+        RatingService.adjustRatings(game.getPlayers());
+        game.completeGameHistory();
+        const idGameHistory = await this.gameHistoriesService.addGameHistory(game.gameHistory, game.idGameHistory);
+        game.idGameHistory = idGameHistory;
+        this.analysisService.addAnalysis(game, idGameHistory);
+        updatedData.idGameHistory = idGameHistory;
 
         this.dictionaryService.stopUsingDictionary(game.dictionarySummary.id, true);
-
-        if (updatedData.player1) updatedData.player1.score = updatedScorePlayer1;
-        else updatedData.player1 = { id: game.player1.id, score: updatedScorePlayer1 };
-        if (updatedData.player2) updatedData.player2.score = updatedScorePlayer2;
-        else updatedData.player2 = { id: game.player2.id, score: updatedScorePlayer2 };
-        if (updatedData.player3) updatedData.player3.score = updatedScorePlayer3;
-        else updatedData.player3 = { id: game.player3.id, score: updatedScorePlayer3 };
-        if (updatedData.player4) updatedData.player4.score = updatedScorePlayer4;
-        else updatedData.player4 = { id: game.player4.id, score: updatedScorePlayer4 };
 
         updatedData.isGameOver = true;
         updatedData.winners = game.computeWinners();
 
-        this.ratingService.adjustRatings(game.getPlayers());
+        updatedData.player1 = this.fillGameUpdateData(game.player1, updatedScorePlayer1, updatedData.player1);
+        updatedData.player2 = this.fillGameUpdateData(game.player2, updatedScorePlayer2, updatedData.player2);
+        updatedData.player3 = this.fillGameUpdateData(game.player3, updatedScorePlayer3, updatedData.player3);
+        updatedData.player4 = this.fillGameUpdateData(game.player4, updatedScorePlayer4, updatedData.player4);
+        console.log('updateData EndOf Game:', updatedData);
         await this.updateUserStatistics(game, updatedData);
 
         return game.endGameMessage();
+    }
+
+    private fillGameUpdateData(player: Player, updatedScore: number, playerData?: PlayerData) {
+        if (playerData) {
+            playerData.score = updatedScore;
+            playerData.adjustedRating = player.adjustedRating;
+            playerData.ratingVariation = player.adjustedRating - player.initialRating;
+            return playerData;
+        } else
+            return {
+                id: player.id,
+                score: updatedScore,
+                ratingVariation: player.adjustedRating - player.initialRating,
+                adjustedRating: player.adjustedRating,
+            };
+    }
+
+    private async updateLeaverStatistics(game: Game, player: Player) {
+        const time = (Date.now() - game.roundManager.getGameStartTime().getTime()) / SECONDS_TO_MILLISECONDS;
+
+        if (!isIdVirtualPlayer(player.id))
+            await this.userStatisticsService.addGameToStatistics(player.idUser, {
+                hasWon: false,
+                points: player.score,
+                time,
+                ratingDifference: player.adjustedRating - player.initialRating,
+            });
     }
 
     private async updateUserStatistics(game: Game, updatedData: GameUpdateData): Promise<void> {
@@ -218,6 +234,7 @@ export class GamePlayService {
     private async handlePlayerLeftEvent(gameId: string, playerWhoLeftId: string): Promise<void> {
         const game = this.activeGameService.getGame(gameId, playerWhoLeftId);
         const playersStillInGame = game.getOpponentPlayers(playerWhoLeftId);
+        const playerWhoLeft = game.getPlayer(playerWhoLeftId);
 
         if (playersStillInGame.every((playerStillInGame) => isIdVirtualPlayer(playerStillInGame.id))) {
             game.getPlayer(playerWhoLeftId).isConnected = false;
@@ -234,6 +251,17 @@ export class GamePlayService {
             this.virtualPlayerFactory.generateVirtualPlayer(gameId, game.virtualPlayerLevel, playersStillInGame),
         );
 
+        RatingService.adjustAbandoningUserRating(playerWhoLeft, playersStillInGame);
+        this.updateLeaverStatistics(game, playerWhoLeft);
+        game.idGameHistory = await this.gameHistoriesService.addGameHistory({
+            gameHistory: {
+                startTime: game.roundManager.getGameStartTime(),
+                endTime: new Date(),
+                hasBeenAbandoned: true,
+            },
+            players: [this.createGameHistoryPlayer(playerWhoLeft)],
+        });
+game.completeGameHistory
         if (this.isVirtualPlayerTurn(game)) {
             this.virtualPlayerService.triggerVirtualPlayerTurn(
                 { round: game.roundManager.convertRoundToRoundData(game.roundManager.getCurrentRound()) },
@@ -241,6 +269,16 @@ export class GamePlayService {
             );
         }
         this.activeGameService.playerLeftEvent.emit('playerLeftFeedback', gameId, [], updatedData);
+    }
+
+    private createGameHistoryPlayer(player: Player): GameHistoryPlayerCreation {
+        return {
+            idUser: isIdVirtualPlayer(player.id) ? undefined : player.idUser,
+            score: player.score,
+            isVirtualPlayer: isIdVirtualPlayer(player.id),
+            isWinner: false,
+            ratingVariation: player.adjustedRating - player.initialRating,
+        };
     }
 
     private addMissingPlayerId(gameId: string, playerId: string, gameUpdateData: GameUpdateData): GameUpdateData {
