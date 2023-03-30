@@ -15,17 +15,22 @@
         gap: 16px;
     }
 
-    .first-place {
-        color: gold;
-      }
-      
-      .second-place {
-        color: silver;
-      }
-      
-      .third-place {
-        color: #cd7f32;
-      }
+    app-icon{
+        font-size: 2em;
+        width: 30px;
+
+    }
+    .gold {
+        color: #FFD700; /* Set the color for gold */
+    }
+    
+    .silver {
+        color: #C0C0C0; /* Set the color for silver */
+    }
+    
+    .bronze {
+        color: #CD7F32; /* Set the color for bronze */
+    }
 
     .search-field {
         width: 100%;
@@ -64,14 +69,15 @@
     #ranking {
         font-size: 2em;
         font-weight: 600;
-        margin-right: 14px;
+        width: 30px;
+        text-align: center;
     }
 
     .search-result-item {
         display: grid;
         grid-template-columns: auto 1fr;
         gap: 16px;
-        padding: 12px;
+        padding: 12px 12px 12px 5px;
         align-items: center;
         color: inherit;
         text-decoration: inherit;
@@ -114,6 +120,10 @@
             text-align: left;
             align-items: center;
             display: flex;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
 

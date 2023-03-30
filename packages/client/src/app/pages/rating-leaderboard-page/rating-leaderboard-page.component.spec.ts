@@ -2,22 +2,22 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterTestingModule } from '@angular/router/testing';
+import { RatingLeaderboardPageComponent } from './rating-leaderboard-page.component';
 
-import { SearchPageComponent } from './search-page.component';
-
-describe('SearchPageComponent', () => {
-    let component: SearchPageComponent;
-    let fixture: ComponentFixture<SearchPageComponent>;
+describe('RatingLeaderboardPageComponent', () => {
+    let component: RatingLeaderboardPageComponent;
+    let fixture: ComponentFixture<RatingLeaderboardPageComponent>;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [SearchPageComponent],
-            imports: [HttpClientTestingModule, MatSnackBarModule, MatDialogModule],
+            declarations: [RatingLeaderboardPageComponent],
+            imports: [HttpClientTestingModule, MatSnackBarModule, MatDialogModule, RouterTestingModule.withRoutes([])],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SearchPageComponent);
+        fixture = TestBed.createComponent(RatingLeaderboardPageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

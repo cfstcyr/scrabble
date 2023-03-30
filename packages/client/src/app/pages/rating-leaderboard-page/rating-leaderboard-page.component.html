@@ -16,7 +16,10 @@
             <div *ngFor="let result of ((results | async) ?? []); let i=index" class="search-results">
                 <button class="search-result-item" (click)="reRoute(result.username)">
                     <div class="left-info">
-                        <div id="ranking" [ngClass]="{'first-place': i===0, 'second-place': i===1, 'third-place': i===2}">
+                        <app-icon  *ngIf="i === 0" icon="medal" styling="solid" class="gold"></app-icon>
+                        <app-icon  *ngIf="i === 1" icon="medal" styling="solid" class="silver"></app-icon>
+                        <app-icon  *ngIf="i === 2" icon="medal" styling="solid" class="bronze"></app-icon>
+                        <div *ngIf="i >= 3" id="ranking">
                             {{i+1}}
                         </div>
                         <img [appSrc]="result.avatar" [square]="42">
