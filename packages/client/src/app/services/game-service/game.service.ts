@@ -108,6 +108,11 @@ export default class GameService implements OnDestroy, IResetServiceData {
         return this.playerContainer.getLocalPlayerId();
     }
 
+    getAdversaries(): Player[] {
+        if (!this.playerContainer) return [];
+        return this.playerContainer.getAdversaries();
+    }
+
     setLocalPlayer(playerNumber: number): void {
         if (!this.playerContainer) return;
         this.playerContainer.setLocalPlayer(playerNumber);

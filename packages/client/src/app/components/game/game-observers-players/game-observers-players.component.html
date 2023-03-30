@@ -1,0 +1,61 @@
+<div class='game-observers-players'>
+    <mat-card
+        class='game-observers-players__player'
+        [ngClass]='{"game-observers-players__player--active": player1.isActive, "game-observers-players__player--observed": observedPlayerId === player1.player.id}'
+        (click)='playerClick.emit(1)'
+    >
+        <div class='game-observers-players__player__user'>
+            <img class='game-observers-players__player__user__avatar' [appSrc]='player1.player.publicUser.avatar' [square]='24'>
+            <app-icon *ngIf='observedPlayerId === player1.player.id' icon='eye'></app-icon>
+            <span class='game-observers-players__player__user__name'>{{player1.player.publicUser.username}}</span>
+        </div>
+        <div class='game-observers-players__player__points'>
+            <span class='game-observers-players__player__points__value'>{{player1.player.score}}</span>
+        </div>
+    </mat-card>
+
+    <mat-card
+        class='game-observers-players__player'
+        [ngClass]='{"game-observers-players__player--active": player2.isActive, "game-observers-players__player--observed": observedPlayerId === player2.player.id}'
+        (click)='playerClick.emit(2)'
+    >
+        <div class='game-observers-players__player__user'>
+            <img class='game-observers-players__player__user__avatar' [appSrc]='player2.player.publicUser.avatar' [square]='24'>
+            <app-icon *ngIf='observedPlayerId === player2.player.id' icon='eye'></app-icon>
+            <span class='game-observers-players__player__user__name'>{{player2.player.publicUser.username}}</span>
+        </div>
+        <div class='game-observers-players__player__points'>
+            <span class='game-observers-players__player__points__value'>{{player2.player.score}}</span>
+        </div>
+    </mat-card>
+
+    <mat-card
+        class='game-observers-players__player'
+        [ngClass]='{"game-observers-players__player--active": player3.isActive, "game-observers-players__player--observed": observedPlayerId === player3.player.id}'
+        (click)='playerClick.emit(3)'
+    >
+        <div class='game-observers-players__player__user'>
+            <img class='game-observers-players__player__user__avatar' [appSrc]='player3.player.publicUser.avatar' [square]='24'>
+            <app-icon *ngIf='observedPlayerId === player3.player.id' icon='eye'></app-icon>
+            <span class='game-observers-players__player__user__name'>{{player3.player.publicUser.username}}</span>
+        </div>
+        <div class='game-observers-players__player__points'>
+            <span class='game-observers-players__player__points__value'>{{player3.player.score}}</span>
+        </div>
+    </mat-card>
+
+    <mat-card
+        class='game-observers-players__player'
+        [ngClass]='{"game-observers-players__player--active": player4.isActive, "game-observers-players__player--observed": observedPlayerId === player4.player.id}'
+        (click)='playerClick.emit(4)'
+    >
+        <div class='game-observers-players__player__user'>
+            <img class='game-observers-players__player__user__avatar' [appSrc]='player4.player.publicUser.avatar' [square]='24'>
+            <app-icon *ngIf='observedPlayerId === player4.player.id' icon='eye'></app-icon>
+            <span class='game-observers-players__player__user__name'>{{player4.player.publicUser.username}}</span>
+        </div>
+        <div class='game-observers-players__player__points'>
+            <span class='game-observers-players__player__points__value'>{{player4.player.score}}</span>
+        </div>
+    </mat-card>
+</div>

@@ -1,5 +1,6 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Observable, Subject } from 'rxjs';
 import { ActionType } from '@app/classes/actions/action-data';
 import {
     AnalysisResultModalComponent,
@@ -10,8 +11,7 @@ import {
     AnalysisWaitingDialogParameter,
 } from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
-import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
-import { ENTER } from '@app/constants/components-constants';
+import { DefaultDialogParameters } from '@app/components/default-dialog/default-dialog.component.types';
 import {
     DIALOG_ABANDON_BUTTON_CONFIRM,
     DIALOG_ABANDON_BUTTON_CONTINUE,
@@ -41,7 +41,6 @@ import { TilePlacementService } from '@app/services/tile-placement-service/tile-
 import { Analysis, AnalysisRequestInfoType } from '@common/models/analysis';
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
-import { Observable, Subject } from 'rxjs';
 
 @Component({
     selector: 'app-game-page',
@@ -49,36 +48,30 @@ import { Observable, Subject } from 'rxjs';
     styleUrls: ['./game-page.component.scss'],
 })
 export class GamePageComponent implements OnInit, OnDestroy {
-    @ViewChild(TileRackComponent, { static: false }) tileRackComponent: TileRackComponent;
-
     private mustDisconnectGameOnLeave: boolean;
-    private componentDestroyed$: Subject<boolean>;
     private analysis: Analysis;
+    private readonly componentDestroyed$: Subject<boolean>;
 
     constructor(
-        public dialog: MatDialog,
-        public gameService: GameService,
+        private readonly dialog: MatDialog,
+        private readonly gameService: GameService,
         private readonly reconnectionService: ReconnectionService,
-        public surrenderDialog: MatDialog,
-        private playerLeavesService: PlayerLeavesService,
-        private gameViewEventManagerService: GameViewEventManagerService,
-        private actionService: ActionService,
+        private readonly playerLeavesService: PlayerLeavesService,
+        private readonly gameViewEventManagerService: GameViewEventManagerService,
+        private readonly actionService: ActionService,
         private readonly tilePlacementService: TilePlacementService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
     }
 
-    @HostListener('document:keypress', ['$event'])
-    handleKeyboardEvent(event: KeyboardEvent): void {
-        switch (event.key) {
-            case ENTER:
-                this.gameService.playTilesOnBoard();
-                break;
-        }
+    @HostListener('document:keydown.enter', ['$event'])
+    handleEnter(): void {
+        this.gameService.playTilesOnBoard();
     }
+
     @HostListener('document:keydown.escape', ['$event'])
-    handleKeyboardEventEsc(): void {
+    handleEscape(): void {
         this.tilePlacementService.handleCancelPlacement();
     }
 
@@ -91,45 +84,34 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.complete();
     }
 
-    ngOnInit(): void {
-        this.gameViewEventManagerService.subscribeToGameViewEvent('noActiveGame', this.componentDestroyed$, () => this.noActiveGameDialog());
-        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, (winnerNames: string[]) =>
-            this.endOfGameDialog(winnerNames),
-        );
-        if (!this.gameService.getGameId()) {
-            this.reconnectionService.reconnectGame();
-        }
+    ngOnInit() {
+        this.gameViewEventManagerService.subscribeToGameViewEvent('noActiveGame', this.componentDestroyed$, this.openNoActiveGameDialog.bind(this));
+        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, this.openEngOfGameDialog.bind(this));
     }
 
-    hintButtonClicked(): void {
+    handleHintButtonClick(): void {
         this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.HINT, {}, '', true));
     }
 
-    passButtonClicked(): void {
+    handlePassButtonClick(): void {
         this.gameService.makeTilePlacement([]);
         this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PASS, {}, '', true));
     }
 
-    placeButtonClicked(): void {
+    handlePlaceButtonClick(): void {
         this.gameService.playTilesOnBoard();
     }
 
-    quitButtonClicked(): void {
-        let title = '';
-        let content = '';
-        const buttonsContent = ['', ''];
-        if (this.gameService.isGameOver) {
-            title = DIALOG_QUIT_TITLE;
-            content = DIALOG_QUIT_CONTENT;
-            buttonsContent[0] = DIALOG_QUIT_BUTTON_CONFIRM;
-            buttonsContent[1] = DIALOG_QUIT_STAY;
-        } else {
-            title = DIALOG_ABANDON_TITLE;
-            content = DIALOG_ABANDON_CONTENT;
-            buttonsContent[0] = DIALOG_ABANDON_BUTTON_CONFIRM;
-            buttonsContent[1] = DIALOG_ABANDON_BUTTON_CONTINUE;
-        }
-        this.openDialog(title, content, buttonsContent);
+    handleQuitButtonClick(): void {
+        this.openDialog(
+            this.gameService.isGameOver ? DIALOG_QUIT_TITLE : DIALOG_ABANDON_TITLE,
+            this.gameService.isGameOver ? DIALOG_QUIT_CONTENT : DIALOG_ABANDON_CONTENT,
+            [
+                this.gameService.isGameOver ? DIALOG_QUIT_BUTTON_CONFIRM : DIALOG_ABANDON_BUTTON_CONFIRM,
+
+                this.gameService.isGameOver ? DIALOG_QUIT_STAY : DIALOG_ABANDON_BUTTON_CONTINUE,
+            ],
+        );
     }
 
     canPlay(): boolean {
@@ -175,36 +157,12 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
     }
 
-    private openDialog(title: string, content: string, buttonsContent: string[]): void {
-        this.dialog.open(DefaultDialogComponent, {
-            data: {
-                title,
-                content,
-                buttons: [
-                    {
-                        content: buttonsContent[0],
-                        redirect: ROUTE_HOME,
-                        style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
-                        // We haven't been able to test that the right function is called because this
-                        // arrow function creates a new instance of the function. We cannot spy on it.
-                        // It totally works tho, try it!
-                        action: () => {
-                            this.handlePlayerLeaves();
-                            this.gameService.makeTilePlacement([]);
-                        },
-                    },
-                    {
-                        content: buttonsContent[1],
-                        closeDialog: true,
-                        style: 'background-color: rgb(231, 231, 231)',
-                    },
-                ],
-            },
-        });
+    get isGameOver(): boolean {
+        return this.gameService.isGameOver;
     }
 
-    private noActiveGameDialog(): void {
-        this.dialog.open(DefaultDialogComponent, {
+    private openNoActiveGameDialog() {
+        this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
             data: {
                 title: DIALOG_NO_ACTIVE_GAME_TITLE,
                 content: DIALOG_NO_ACTIVE_GAME_CONTENT,
@@ -224,8 +182,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
     }
 
-    private endOfGameDialog(winnerNames: string[]): void {
-        this.dialog.open(DefaultDialogComponent, {
+    private openEngOfGameDialog(winnerNames: string[]) {
+        this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
             data: {
                 title: DIALOG_END_OF_GAME_TITLE(this.isLocalPlayerWinner(winnerNames)),
                 content: DIALOG_END_OF_GAME_CONTENT(this.isLocalPlayerWinner(winnerNames)),
@@ -256,6 +214,34 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
 
         if (this.isLocalPlayerWinner(winnerNames)) this.throwConfettis();
+    }
+
+    private openDialog(title: string, content: string, buttons: string[]): MatDialogRef<DefaultDialogComponent> {
+        return this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
+            data: {
+                title,
+                content,
+                buttons: [
+                    {
+                        content: buttons[0],
+                        redirect: ROUTE_HOME,
+                        style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
+                        // We haven't been able to test that the right function is called because this
+                        // arrow function creates a new instance of the function. We cannot spy on it.
+                        // It totally works tho, try it!
+                        action: () => {
+                            this.handlePlayerLeaves();
+                            this.gameService.makeTilePlacement([]);
+                        },
+                    },
+                    {
+                        content: buttons[1],
+                        closeDialog: true,
+                        style: 'background-color: rgb(231, 231, 231)',
+                    },
+                ],
+            },
+        });
     }
 
     private isLocalPlayerTurn(): boolean {

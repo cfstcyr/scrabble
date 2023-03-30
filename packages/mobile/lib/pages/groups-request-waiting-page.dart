@@ -7,6 +7,7 @@ import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/group/individual-group.dart';
 import 'package:mobile/components/group/parameters.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
+import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
@@ -112,28 +113,32 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
                       Spacer(),
                       CircularProgressIndicator(),
                       Spacer(flex: 2),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                            onPressed: () {
-                              _onBack(context);
-                            },
-                            style: setStyleMainActionButtons(),
-                            icon: Icon(
-                              Icons.keyboard_arrow_left_sharp,
-                              size: 20,
-                            ),
-                            label: Text(
-                              CANCEL_REQUEST,
-                              style: TextStyle(fontSize: 15),
-                            )),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: SPACE_2),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                              onPressed: () {
+                                _onBack(context);
+                              },
+                              style: setStyleMainActionButtons(),
+                              icon: Icon(
+                                Icons.keyboard_arrow_left_sharp,
+                                size: 20,
+                              ),
+                              label: Text(
+                                CANCEL_REQUEST,
+                                style: TextStyle(fontSize: 15),
+                              )),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-          )),
+          ),
+      backgroundColor: theme.colorScheme.background,),
       onWillPop: () => _onBack(context),
     );
   }

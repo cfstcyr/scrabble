@@ -1,63 +1,84 @@
-<div id="page-container">
-    <div class="top-level-grid">
-        <div class="grid-item-container">
-            <app-information-box></app-information-box>
+<div class='game-page'>
+    <app-game-board-wrapper
+        class='game-page__board'
+        [isObserver]="false"
+    ></app-game-board-wrapper>
+    <div class='game-page__info'>
+        <app-game-players></app-game-players>
+
+        <div class='game-page__info__stats'>
+            <app-game-tiles-left></app-game-tiles-left>
+            <app-game-timer></app-game-timer>
         </div>
-        <div class="horizontal-grid">
-            <div class="vertical-grid">
-                <div class="grid-item-container">
-                    <app-game-board-wrapper [isObserver]="false" #boardComponent></app-game-board-wrapper>
-                </div>
-                <div class="grid-item-container">
-                    <app-tile-rack [isObserver]="false" #tileRackComponent></app-tile-rack>
-                </div>
-                <div class="grid-item-container" id="button-group">
-                    <mat-card>
-                        <div>
-                            <button mat-flat-button id="surrender-dialog-button" (click)="quitButtonClicked()" color="primary">
-                                <ng-container *ngIf="!gameService.isGameOver">
-                                    <app-icon icon="flag-alt" styling="solid"></app-icon>
-                                    <span> Abandonner</span>
-                                </ng-container>
-                                <ng-container *ngIf="gameService.isGameOver">
-                                    <app-icon icon="door-open" styling="solid"></app-icon>
-                                    <span *ngIf="gameService.isGameOver"> Quitter</span>
-                                </ng-container>
-                            </button>
-                        </div>
-                        <div *ngIf="!gameService.isGameOver" matTooltip="Ce n'est pas votre tour de jouer" matTooltipPosition="above" [matTooltipDisabled]="canPlay()">
-                            <button mat-flat-button color="primary" [disabled]="!canPlay()" (click)="hintButtonClicked()">
-                                <app-icon icon="lightbulb" styling="solid"></app-icon> Indice
-                            </button>
-                        </div>
-                        <div *ngIf="!gameService.isGameOver" matTooltip="Ce n'est pas votre tour de jouer" matTooltipPosition="above" [matTooltipDisabled]="canPlay()">
-                            <button mat-flat-button color="primary" [disabled]="!canPlay()" (click)="passButtonClicked()">
-                                <app-icon icon="redo"></app-icon> Passer
-                            </button>
-                        </div>
-                        <div
-                            *ngIf="!gameService.isGameOver"    
-                            matTooltip="Ce n'est pas votre tour de jouer ou vous n'avez pas placé de mot encore"
-                            matTooltipPosition="above"
-                            [matTooltipDisabled]="canPlaceWord() | async"
-                        >
-                            <button mat-flat-button color="primary" [disabled]="(canPlaceWord() | async) === false" (click)="placeButtonClicked()">
-                                <app-icon icon="square" styling="solid"></app-icon> Placer
-                            </button>
-                        </div>
-                        <div *ngIf="gameService.isGameOver" matTooltip="Consulter l'analyse de votre partie" matTooltipPosition="above">
-                            <button mat-flat-button color="primary" (click)="requestAnalysis()">
-                                <app-icon icon="flask"></app-icon> Analyse
-                            </button>
-                        </div>
-                    </mat-card>
-                </div>
-            </div>
-            <div class="sidebar-section">
-                <div class="communication-box-container">
-                    <app-communication-box></app-communication-box>
-                </div>
-            </div>
-        </div>
+
+        <app-communication-box></app-communication-box>
     </div>
+    <app-tile-rack
+        class='game-page__tile-rack'
+        [isObserver]="false"
+    ></app-tile-rack>
+    <mat-card class='game-page__actions'>
+        <button
+            class='game-page__actions__button game-page__actions__button--quit'
+            mat-flat-button
+            (click)="handleQuitButtonClick()"
+            color="warn"
+            [matTooltip]="isGameOver ? 'Quitter' : 'Abandonner'"
+            matTooltipPosition='above'
+        >
+            <app-icon [icon]="isGameOver ? 'door-open' : 'flag-alt'" styling="solid"></app-icon>
+        </button>
+
+        <div
+            [matTooltip]="canPlay() ? 'Indice' : 'Ce n\'est pas votre tour de jouer'"
+            matTooltipPosition="above"
+        >
+            <button
+                class='game-page__actions__button game-page__actions__button--hint'
+                mat-flat-button
+                color="primary"
+                [disabled]="!canPlay()"
+                (click)="handleHintButtonClick()"
+                *ngIf="!isGameOver"
+            >
+                <app-icon icon="lightbulb" styling="solid"></app-icon>
+            </button>
+        </div>
+
+        <div
+            [matTooltip]="canPlay() ? 'Passer' : 'Ce n\'est pas votre tour de jouer'"
+            matTooltipPosition="above"
+            *ngIf="!isGameOver"
+        >
+            <button
+                class='game-page__actions__button game-page__actions__button--pass'
+                mat-flat-button color="primary"
+                [disabled]="!canPlay()"
+                (click)="handlePassButtonClick()"
+            >
+                <app-icon icon="redo"></app-icon>
+            </button>
+        </div>
+
+        <div
+            [matTooltip]="canPlay() ? ((canPlaceWord() | async) ? 'Placer' : 'Le placement est invalide') : 'Ce n\'est pas votre tour de jouer'"
+            matTooltipPosition="above"
+            *ngIf="!isGameOver"
+        >
+            <button
+                class='game-page__actions__button game-page__actions__button--place'
+                mat-flat-button
+                color="primary"
+                [disabled]="(canPlaceWord() | async) === false"
+                (click)="handlePlaceButtonClick()"
+            >
+                <app-icon icon="square" styling="solid"></app-icon>
+            </button>
+        </div>
+        <div *ngIf="isGameOver" matTooltip="Consulter l'analyse de votre partie" matTooltipPosition="above">
+            <button mat-flat-button color="primary" (click)="requestAnalysis()">
+                <app-icon icon="flask"></app-icon> Analyse
+            </button>
+        </div>
+    </mat-card>
 </div>
