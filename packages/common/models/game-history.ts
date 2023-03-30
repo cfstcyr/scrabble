@@ -7,6 +7,7 @@ export interface GameHistoryPlayer {
     score: number;
     isVirtualPlayer: boolean;
     isWinner: boolean;
+    ratingVariation: number;
 }
 
 export interface GameHistory {
@@ -20,4 +21,4 @@ export type GameHistoryPlayerCreation = Omit<GameHistoryPlayer, IdOf<GameHistory
 
 export type GameHistoryCreation = { gameHistory: NoId<GameHistory>; players: GameHistoryPlayerCreation[] };
 
-export type GameHistoryForUser = NoId<GameHistory> & Pick<GameHistoryPlayer, 'score' | 'isWinner'>;
+export type GameHistoryForUser = NoId<GameHistory> & Pick<GameHistoryPlayer, 'score' | 'isWinner' | 'ratingVariation'>;

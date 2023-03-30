@@ -10,7 +10,6 @@ import {
     DIALOG_ABANDON_CONTENT,
     DIALOG_ABANDON_TITLE,
     DIALOG_END_OF_GAME_CLOSE_BUTTON,
-    DIALOG_END_OF_GAME_CONTENT,
     DIALOG_END_OF_GAME_TITLE,
     DIALOG_NO_ACTIVE_GAME_BUTTON,
     DIALOG_NO_ACTIVE_GAME_CONTENT,
@@ -178,11 +177,21 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
     }
 
+    private endOfGameMessage(isLocalPlayerWinner: boolean) {
+        const localPlayer = this.gameService.getLocalPlayer();
+        const message = isLocalPlayerWinner ? 'Bravo pour votre victoire!' : 'Meilleure chance la prochaine fois!';
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        const eloMessage = `Votre nouveau classement Elo est de ${Math.round(localPlayer?.adjustedRating ?? 1000)} (${
+            Math.round(localPlayer?.ratingVariation ?? 0) >= 0 ? '+' : ''
+        }${Math.round(localPlayer?.ratingVariation ?? 0)}).`;
+        return `${message} ${eloMessage}`;
+    }
+
     private endOfGameDialog(winnerNames: string[]): void {
         this.dialog.open(DefaultDialogComponent, {
             data: {
                 title: DIALOG_END_OF_GAME_TITLE(this.isLocalPlayerWinner(winnerNames)),
-                content: DIALOG_END_OF_GAME_CONTENT(this.isLocalPlayerWinner(winnerNames)),
+                content: this.endOfGameMessage(this.isLocalPlayerWinner(winnerNames)),
                 buttons: [
                     {
                         content: DIALOG_QUIT_BUTTON_CONFIRM,

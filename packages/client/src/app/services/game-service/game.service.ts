@@ -30,6 +30,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     isGameSetUp: boolean;
     isGameOver: boolean;
     isObserver: boolean | undefined;
+    // ratingVariation
 
     private gameId: string;
     private playerContainer?: PlayerContainer;
@@ -182,9 +183,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
 
     private handleGameUpdate(gameUpdateData: GameUpdateData): void {
         this.tilePlacementService.resetTiles();
-        if (gameUpdateData.isGameOver) {
-            this.handleGameOver(gameUpdateData.winners ?? []);
-        }
+
         if (gameUpdateData.player1) {
             this.handleUpdatePlayerData(gameUpdateData.player1);
         }
@@ -197,6 +196,13 @@ export default class GameService implements OnDestroy, IResetServiceData {
         if (gameUpdateData.player4) {
             this.handleUpdatePlayerData(gameUpdateData.player4);
         }
+        if (gameUpdateData.isGameOver) {
+            console.log('handleGameUpdate: gameUpdateData ===:', gameUpdateData);
+            console.log('adjustedRating before applied', this.playerContainer?.getLocalPlayer()?.adjustedRating);
+            console.log('ratingVariation  before applied', this.playerContainer?.getLocalPlayer()?.ratingVariation);
+
+            this.handleGameOver(gameUpdateData.winners ?? []);
+        }
         if (gameUpdateData.board) {
             this.boardService.updateBoard(gameUpdateData.board);
         }
@@ -207,6 +213,8 @@ export default class GameService implements OnDestroy, IResetServiceData {
         if (gameUpdateData.tileReserve) {
             this.handleTileReserveUpdate(gameUpdateData.tileReserve);
         }
+        console.log('adjustedRating after changes', this.playerContainer?.getLocalPlayer()?.adjustedRating);
+        console.log('ratingVariation after changes', this.playerContainer?.getLocalPlayer()?.ratingVariation);
     }
 
     private handleUpdatePlayerData(playerData: PlayerData): void {

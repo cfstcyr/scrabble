@@ -28,9 +28,9 @@ import {
     ROUTE_RATING_LEADERBOARD,
 } from '@app/constants/routes-constants';
 import { SearchPageComponent } from '@app/pages/search-page/search-page.component';
-import { UserSearchResultPageComponent } from '@app/pages/user-search-result-page/user-search-result-page.component';
 import { PuzzlePageComponent } from '@app/pages/puzzle-page/puzzle-page.component';
 import { RatingLeaderboardPageComponent } from '@app/pages/rating-leaderboard-page/rating-leaderboard-page.component';
+import { UserSearchResultPageComponent } from '@app/pages/user-search-result-page/user-search-result-page.component';
 
 const privateRoute: Route = {
     canActivate: [PrivateRouteGuard],

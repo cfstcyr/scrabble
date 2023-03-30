@@ -5,12 +5,16 @@ export default class Player {
     id: string;
     publicUser: PublicUser;
     score: number;
+    adjustedRating: number;
+    ratingVariation: number;
     private tiles: Tile[];
 
     constructor(id: string, publicUser: PublicUser, tiles: Tile[]) {
         this.id = id;
         this.publicUser = publicUser;
         this.score = 0;
+        this.adjustedRating = 1000;
+        this.ratingVariation = 0;
         this.tiles = [...tiles];
     }
 
@@ -22,6 +26,8 @@ export default class Player {
         this.id = playerData.newId ? playerData.newId : this.id;
         this.publicUser = playerData.publicUser ? playerData.publicUser : this.publicUser;
         this.score = playerData.score ? playerData.score : this.score;
+        this.adjustedRating = playerData.adjustedRating ? playerData.adjustedRating : this.adjustedRating;
+        this.ratingVariation = playerData.ratingVariation ? playerData.ratingVariation : this.ratingVariation;
         this.tiles = playerData.tiles ? [...playerData.tiles] : this.tiles;
     }
 }
