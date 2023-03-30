@@ -21,7 +21,7 @@ void showStartPuzzleDialog(BuildContext context) {
         ThemeData theme = Theme.of(context);
         final AppToggleButton<PuzzleLevel, PuzzleLevelName>
             puzzleLevelSelector = AppToggleButton<PuzzleLevel, PuzzleLevelName>(
-                defaultValue: advancedPuzzleLevel,
+                defaultValue: PuzzleLevelName.advanced,
                 optionsToValue: PUZZLE_LEVELS,
                 toggleOptionWidget: generatePuzzleLevelWidget);
 

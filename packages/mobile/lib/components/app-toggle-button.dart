@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class AppToggleOption {
-  String getName();
+  String getEnumName();
 }
 
 class AppToggleButton<T extends AppToggleOption, V extends Enum>
@@ -11,9 +11,9 @@ class AppToggleButton<T extends AppToggleOption, V extends Enum>
       {required this.defaultValue,
       required this.optionsToValue,
       required this.toggleOptionWidget})
-      : _selected$ = BehaviorSubject.seeded(defaultValue);
+      : _selected$ = BehaviorSubject.seeded(optionsToValue[defaultValue]!);
 
-  final T defaultValue;
+  final V defaultValue;
   final Map<V, T> optionsToValue;
   final Widget Function(T value) toggleOptionWidget;
 
@@ -42,7 +42,7 @@ class _AppToggleButtonState<T extends AppToggleOption, V extends Enum>
     _selectedOption =
         widget.selectedStream.switchMap<List<bool>>((T currentSelection) {
       return Stream.value(widget.toggleOptions
-          .map<bool>((V option) => option.name == currentSelection.getName())
+          .map<bool>((V option) => option.name == currentSelection.getEnumName())
           .toList());
     });
   }

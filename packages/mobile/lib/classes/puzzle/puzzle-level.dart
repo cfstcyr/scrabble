@@ -27,7 +27,7 @@ class PuzzleLevel extends AppToggleOption {
   String get name => PUZZLE_LEVEL_NAMES[nameEnum] ?? 'Inconnu';
 
   @override
-  String getName() {
+  String getEnumName() {
     return nameEnum.name;
   }
 }
