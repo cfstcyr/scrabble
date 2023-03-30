@@ -3,6 +3,8 @@ import 'package:mobile/components/AppCircularSpinner.dart';
 import 'package:mobile/components/LoadingDots.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/services/theme-color-service.dart';
 
 class AnalysisRequestDialog {
   final String title;
@@ -13,6 +15,7 @@ class AnalysisRequestDialog {
       {required this.title, required this.message, this.minimumDelay});
 
   void openAnalysisRequestDialog(BuildContext context) {
+    ThemeColorService themeColorService = getIt.get<ThemeColorService>();
     ThemeData theme = Theme.of(context);
 
     showDialog(
@@ -39,6 +42,7 @@ class AnalysisRequestDialog {
               children: [
                 AppCircularSpinner(
                   isLoading: true,
+                  color: themeColorService.themeDetails.value.color.colorValue,
                   size: AppCircularSpinnerSize.large,
                 ),
                 SizedBox(

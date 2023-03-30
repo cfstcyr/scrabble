@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/AppCircularSpinner.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
-class AnalysisOverview extends StatefulWidget {
-  AnalysisOverview({required this.value, required this.maximum, this.title});
+class SingleAnalysisOverview extends StatefulWidget {
+  SingleAnalysisOverview({this.title, required this.value, required this.maximum, required this.color});
 
   final String? title;
   final double value;
   final double maximum;
+  final Color color;
 
   @override
-  State<AnalysisOverview> createState() => _AnalysisOverviewState();
+  State<SingleAnalysisOverview> createState() => _SingleAnalysisOverviewState();
 }
 
-class _AnalysisOverviewState extends State<AnalysisOverview> {
+class _SingleAnalysisOverviewState extends State<SingleAnalysisOverview> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -36,6 +37,7 @@ class _AnalysisOverviewState extends State<AnalysisOverview> {
           children: [
             AppCircularSpinner(
               isLoading: false,
+              color: widget.color,
               value: widget.value,
               maximumValue: widget.maximum,
               size: AppCircularSpinnerSize.large,

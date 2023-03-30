@@ -39,6 +39,7 @@ enum AppCircularSpinnerSize {
 class AppCircularSpinner extends StatelessWidget {
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
   final bool isLoading;
+  final Color color;
 
   final double? value;
   final double? maximumValue;
@@ -48,6 +49,7 @@ class AppCircularSpinner extends StatelessWidget {
 
   AppCircularSpinner(
       {required this.isLoading,
+      required this.color,
       this.value,
       this.maximumValue,
       this.size = AppCircularSpinnerSize.medium,
@@ -76,7 +78,8 @@ class AppCircularSpinner extends StatelessWidget {
       width: size.size,
       height: size.size,
       child: CircularProgressIndicator(
-          strokeWidth: _getStrokeWidth(), color: _themeColorService.themeColor),
+          strokeWidth: _getStrokeWidth(),
+          color: _themeColorService.themeDetails.value.color.colorValue),
     );
   }
 
@@ -85,7 +88,8 @@ class AppCircularSpinner extends StatelessWidget {
         angle: _computeRotation(),
         child: Stack(children: [
           _valueSpinner(SPINNER_OPENING_PERCENT, theme.colorScheme.tertiary),
-          _valueSpinner(_computeValue(), _themeColorService.themeColor),
+          _valueSpinner(_computeValue(),
+              _themeColorService.themeDetails.value.color.colorValue),
         ]));
   }
 
