@@ -7,10 +7,12 @@ import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/theme-color-service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/home-page.constants.dart';
 import '../constants/login-constants.dart';
+import '../locator.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -31,7 +33,11 @@ class HomePage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 100, bottom: 80),
                 child: AppImage(
-                  src: LOGO_PATH,
+                  src: getIt
+                      .get<ThemeColorService>()
+                      .themeDetails
+                      .value
+                      .logoPath,
                   height: 100,
                 ),
               ),
