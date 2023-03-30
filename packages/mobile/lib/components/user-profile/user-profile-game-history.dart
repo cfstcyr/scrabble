@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/classes/analysis/analysis-request.dart';
-import 'package:mobile/classes/analysis/analysis.dart';
 import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/components/analysis/analysis-request-dialog.dart';
-import 'package:mobile/components/analysis/analysis-result-dialog.dart';
-import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/table.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';

@@ -22,7 +22,7 @@ class AnalysisService {
 
       AnalysisResultDialog().openAnalysisResultDialog(
           navigatorKey.currentContext!, analysisCompleted.criticalMoments);
-    }).catchError((_) {
+    }).catchError((error) {
       Navigator.pop(navigatorKey.currentContext!);
 
       AnalysisRequestDialog(

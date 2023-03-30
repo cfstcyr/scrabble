@@ -13,7 +13,7 @@ class AnalysisPending {
 
   factory AnalysisPending.fromJson(Map<String, dynamic> json) {
     return AnalysisPending(
-        idGameHistory: json['idGame'], idUser: json['idUser']);
+        idGameHistory: json['idGameHistory'], idUser: json['idUser']);
   }
 }
 
@@ -70,10 +70,10 @@ class CriticalMoment {
 
   factory CriticalMoment.fromJson(Map<String, dynamic> json) {
     return CriticalMoment(
-        grid: Board.gridFromJson(json['board']),
+        grid: Board.gridFromJson(json['board']['grid']),
         tiles: TilesParser().parseTiles(json['tiles'] as List<dynamic>),
         actionType: ActionType.parse(json['actionType']),
-        playedPlacement: json['playedPlacement']
+        playedPlacement: json['playedPlacement'] != null
             ? ScoredWordPlacement.fromJson(json['playedPlacement'])
             : null,
         bestPlacement: ScoredWordPlacement.fromJson(json['bestPlacement']));

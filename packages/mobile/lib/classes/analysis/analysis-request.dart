@@ -5,6 +5,6 @@ enum AnalysisRequestInfoType {
 
 Map<String, dynamic> requestTypeParams(AnalysisRequestInfoType requestInfoType) {
   return {
-    'requestType': requestInfoType,
+    'requestType': requestInfoType.name,
   };
 }

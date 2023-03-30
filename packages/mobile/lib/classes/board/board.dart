@@ -154,7 +154,7 @@ class Board {
   static List<List<Square>> gridFromJson(List<dynamic> grid) {
     return grid
         .map<List<Square>>((dynamic row) => row
-            .map<List<Square>>((dynamic square) => Square.fromJson(square))
+            .map<Square>((dynamic square) => Square.fromJson(square))
             .toList())
         .toList();
   }
