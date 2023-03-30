@@ -52,6 +52,24 @@ describe('GameHistoriesController', () => {
             expressApp = app.app;
         });
 
+        describe('GET /gameHistories', () => {
+            it('should return NO_CONTENT', async () => {
+                chai.spy.on(controller['gameHistoriesService'], 'getGameHistory', () => {
+                    return;
+                });
+
+                return supertest(expressApp).get('/api/gameHistories').expect(StatusCodes.OK);
+            });
+
+            it('should return INTERNAL_SERVER_ERROR on throw httpException', async () => {
+                chai.spy.on(controller['gameHistoriesService'], 'getGameHistory', () => {
+                    throw new HttpException(DEFAULT_EXCEPTION, StatusCodes.INTERNAL_SERVER_ERROR);
+                });
+
+                return supertest(expressApp).get('/api/gameHistories').expect(StatusCodes.INTERNAL_SERVER_ERROR);
+            });
+        });
+
         describe('DELETE /gameHistories', () => {
             it('should return NO_CONTENT', async () => {
                 chai.spy.on(controller, 'handleGameHistoriesReset', () => {

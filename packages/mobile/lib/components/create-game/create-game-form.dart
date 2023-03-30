@@ -5,6 +5,7 @@ import 'package:mobile/classes/game-visibility.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
+import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
@@ -30,7 +31,8 @@ class CreateGameFormState extends State<CreateGameForm> {
   String? _playerLevel = VirtualPlayerLevel.beginner.levelName;
   bool isFirstSubmit = true;
   bool get isButtonEnabled => isFirstSubmit || isFormValid();
-  Color themeColor = getIt.get<ThemeColorService>().themeColor;
+  Color themeColor =
+      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
   GameCreationService gameCreationService = getIt.get<GameCreationService>();
   UserService userService = getIt.get<UserService>();
 
@@ -173,20 +175,17 @@ class CreateGameFormState extends State<CreateGameForm> {
                                 icon: Icon(Icons.remove),
                                 onPressed: () => setState(() {
                                   _timePerTurn -= INCREMENT_TIME;
-                                  if (_timePerTurn <
-                                      MIN_TIME) {
+                                  if (_timePerTurn < MIN_TIME) {
                                     _timePerTurn = MIN_TIME;
                                   }
                                 }),
                               ),
-                              Text(
-                                  formatTime(_timePerTurn.inSeconds)),
+                              Text(formatTime(_timePerTurn.inSeconds)),
                               IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: () => setState(() {
                                   _timePerTurn += INCREMENT_TIME;
-                                  if (_timePerTurn >
-                                      MAX_TIME) {
+                                  if (_timePerTurn > MAX_TIME) {
                                     _timePerTurn = MAX_TIME;
                                   }
                                 }),
@@ -198,39 +197,20 @@ class CreateGameFormState extends State<CreateGameForm> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomePage()));
-                            },
-                            child: const Text(
-                              CANCEL_CREATION_LABEL_FR,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 15),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: isButtonEnabled
-                                ? () async => await createGame()
-                                : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: themeColor,
-                              shadowColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(3.0),
-                              ),
-                            ),
-                            child: Text(
-                              CREATE_GAME_LABEL_FR,
-                              style: isButtonEnabled
-                                  ? TextStyle(color: Colors.white, fontSize: 15)
-                                  : TextStyle(
-                                      color: Color.fromARGB(255, 87, 87, 87),
-                                      fontSize: 15),
-                            ),
-                          ),
+                          AppButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => HomePage()));
+                              },
+                              theme: AppButtonTheme.secondary,
+                              text: CANCEL_CREATION_LABEL_FR),
+                          AppButton(
+                              onPressed: isButtonEnabled
+                                  ? () async => await createGame()
+                                  : null,
+                              text: CREATE_GAME_LABEL_FR)
                         ],
                       ),
                     ],

@@ -17,7 +17,7 @@
         class='game-page__tile-rack'
         [isObserver]="false"
     ></app-tile-rack>
-    <mat-card class='game-page__actions'>
+    <mat-card *ngIf="!isGameOver" class='game-page__actions'>
         <button
             class='game-page__actions__button game-page__actions__button--quit'
             mat-flat-button
@@ -70,6 +70,23 @@
                 (click)="handlePlaceButtonClick()"
             >
                 <app-icon icon="square" styling="solid"></app-icon>
+            </button>
+        </div>
+    </mat-card>
+    <mat-card *ngIf="isGameOver" class='game-page__actions__over' >
+        <button
+            class='game-page__actions__button game-page__actions__button--quit'
+            mat-flat-button
+            (click)="handleQuitButtonClick()"
+            color="warn"
+            [matTooltip]="isGameOver ? 'Quitter' : 'Abandonner'"
+            matTooltipPosition='above'
+        >
+            <app-icon [icon]="isGameOver ? 'door-open' : 'flag-alt'" styling="solid"></app-icon> Quitter
+        </button>
+        <div matTooltip="Consulter l'analyse de votre partie" matTooltipPosition="above">
+            <button class='game-page__actions__button game-page__actions__button--place' mat-flat-button color="primary" (click)="requestAnalysis()">
+                <app-icon icon="flask"></app-icon> Analyse
             </button>
         </div>
     </mat-card>

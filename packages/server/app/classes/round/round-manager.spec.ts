@@ -79,6 +79,7 @@ describe('RoundManager', () => {
                 startTime: new Date(),
                 limitTime: new Date(),
                 tiles: [],
+                board: {} as unknown as Board,
             };
 
             const player = roundManager['getNextPlayer']();
@@ -92,6 +93,7 @@ describe('RoundManager', () => {
                 startTime: new Date(),
                 limitTime: new Date(),
                 tiles: [],
+                board: {} as unknown as Board,
             };
 
             const player = roundManager['getNextPlayer']();
@@ -105,6 +107,7 @@ describe('RoundManager', () => {
                 startTime: new Date(),
                 limitTime: new Date(),
                 tiles: [],
+                board: {} as unknown as Board,
             };
 
             const player = roundManager['getNextPlayer']();
@@ -118,6 +121,7 @@ describe('RoundManager', () => {
                 startTime: new Date(),
                 limitTime: new Date(),
                 tiles: [],
+                board: {} as unknown as Board,
             };
 
             const player = roundManager['getNextPlayer']();
@@ -139,6 +143,7 @@ describe('RoundManager', () => {
                 startTime: new Date(),
                 limitTime: new Date(),
                 tiles: [],
+                board: {} as unknown as Board,
             };
             const spy = chai.spy.on(roundManager['completedRounds'], 'push');
             roundManager.nextRound(action, { grid: [[]] } as unknown as Board);
@@ -188,9 +193,9 @@ describe('RoundManager', () => {
     describe('saveCompletedRound', () => {
         it('should increment counter when action played is ActionPass', () => {
             expect(roundManager['completedRounds'].length).to.equal(0);
-            const round: Round = { player: DEFAULT_PLAYER_1, startTime: new Date(), limitTime: new Date(), tiles: [] };
+            const round: Round = { player: DEFAULT_PLAYER_1, startTime: new Date(), limitTime: new Date(), tiles: [], board: {} as unknown as Board };
             const actionPlayed: Action = new ActionPass(round.player, gameStub as unknown as Game);
-            roundManager['saveCompletedRound'](round, actionPlayed, { grid: [[]] } as unknown as Board);
+            roundManager['saveCompletedRound'](round, actionPlayed);
             expect(roundManager['completedRounds'].length).to.equal(1);
         });
     });
@@ -205,6 +210,7 @@ describe('RoundManager', () => {
                 startTime: new Date(),
                 limitTime: new Date(),
                 tiles: [],
+                board: {} as unknown as Board,
             };
             const roundData = roundManager.convertRoundToRoundData(round);
 
@@ -224,6 +230,7 @@ describe('RoundManager', () => {
             limitTime: new Date(),
             completedTime: null,
             tiles: [],
+            board: {} as unknown as Board,
         };
         roundManager['currentRound'] = CURRENT_ROUND;
         roundManager.getCurrentRound();
@@ -248,6 +255,7 @@ describe('RoundManager', () => {
                 startTime: new Date(),
                 limitTime: new Date(),
                 tiles: [],
+                board: {} as unknown as Board,
             };
             roundManager['currentRound'] = round;
             roundManager['player1'] = player1;

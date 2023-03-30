@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/notification-pastille.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/services/chat.service.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:mobile/services/chat.service.dart';
 
 import 'chat-management.dart';
 
@@ -25,7 +24,6 @@ class MyScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         leading: hasBackButton
@@ -38,7 +36,7 @@ class MyScaffold extends StatelessWidget {
         title: Text(title),
         shadowColor: Colors.black,
         backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        surfaceTintColor: theme.colorScheme.primary,
         elevation: 1,
         centerTitle: true,
         actions: [

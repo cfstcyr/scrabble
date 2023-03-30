@@ -10,6 +10,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 
+import '../../services/theme-color-service.dart';
 import '../../utils/duration-format.dart';
 
 class IndividualGroup extends StatefulWidget {
@@ -41,6 +42,8 @@ class _IndividualGroupState extends State<IndividualGroup> {
 
   @override
   Widget build(BuildContext context) {
+    Color themeColor =
+        getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -121,8 +124,7 @@ class _IndividualGroupState extends State<IndividualGroup> {
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          widget.theme.primaryColor,
+                                      backgroundColor: themeColor,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(
@@ -170,8 +172,7 @@ class _IndividualGroupState extends State<IndividualGroup> {
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          widget.theme.primaryColor,
+                                      backgroundColor: themeColor,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(

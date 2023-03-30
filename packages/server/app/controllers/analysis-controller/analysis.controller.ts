@@ -5,7 +5,7 @@ import { Service } from 'typedi';
 import { BaseController } from '@app/controllers/base-controller';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
-import { AnalysisResponse } from '@common/models/analysis';
+import { Analysis, AnalysisData, AnalysisRequestInfoType } from '@common/models/analysis';
 import { GameHistory } from '@common/models/game-history';
 import { TypeOfId } from '@common/types/id';
 
@@ -16,20 +16,28 @@ export class AnalysisController extends BaseController {
     }
 
     protected configure(router: Router): void {
-        router.get('/:idGameHistory', async (req: GameRequest, res: Response, next) => {
-            const { idGameHistory } = req.params;
+        router.get('/:id', async (req: GameRequest, res: Response, next) => {
+            const { id } = req.params;
+            const requestType = req.query.requestType;
             const userId: UserId = req.body.idUser;
 
             try {
-                const analysis = await this.handleRequestAnalysis(parseInt(idGameHistory, 10), userId);
-                res.status(StatusCodes.OK).send({ analysis });
+                const analysis = await this.handleRequestAnalysis(parseInt(id, 10), userId, requestType as AnalysisRequestInfoType);
+                res.status(StatusCodes.OK).send(analysis);
             } catch (exception) {
                 next(exception);
             }
         });
     }
 
-    private async handleRequestAnalysis(idGameHistory: TypeOfId<GameHistory>, userId: UserId): Promise<AnalysisResponse> {
-        return await this.analysisPersistenceService.requestAnalysis(idGameHistory, userId);
+    private async handleRequestAnalysis(
+        id: TypeOfId<GameHistory> | TypeOfId<AnalysisData>,
+        userId: UserId,
+        requestType: AnalysisRequestInfoType,
+    ): Promise<Analysis> {
+        if (requestType === AnalysisRequestInfoType.ID_ANALYSIS) {
+            return await this.analysisPersistenceService.requestAnalysis(await this.analysisPersistenceService.getIdGame(id, userId), userId);
+        }
+        return await this.analysisPersistenceService.requestAnalysis(id, userId);
     }
 }
