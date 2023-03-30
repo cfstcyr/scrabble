@@ -197,10 +197,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
             this.handleUpdatePlayerData(gameUpdateData.player4);
         }
         if (gameUpdateData.isGameOver) {
-            console.log('handleGameUpdate: gameUpdateData ===:', gameUpdateData);
-            console.log('adjustedRating before applied', this.playerContainer?.getLocalPlayer()?.adjustedRating);
-            console.log('ratingVariation  before applied', this.playerContainer?.getLocalPlayer()?.ratingVariation);
-
             this.handleGameOver(gameUpdateData.winners ?? []);
         }
         if (gameUpdateData.board) {
@@ -213,8 +209,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
         if (gameUpdateData.tileReserve) {
             this.handleTileReserveUpdate(gameUpdateData.tileReserve);
         }
-        console.log('adjustedRating after changes', this.playerContainer?.getLocalPlayer()?.adjustedRating);
-        console.log('ratingVariation after changes', this.playerContainer?.getLocalPlayer()?.ratingVariation);
     }
 
     private handleUpdatePlayerData(playerData: PlayerData): void {

@@ -150,7 +150,6 @@ export class GamePlayService {
         updatedData.player2 = this.fillGameUpdateData(game.player2, updatedScorePlayer2, updatedData.player2);
         updatedData.player3 = this.fillGameUpdateData(game.player3, updatedScorePlayer3, updatedData.player3);
         updatedData.player4 = this.fillGameUpdateData(game.player4, updatedScorePlayer4, updatedData.player4);
-        console.log('updateData EndOf Game:', updatedData);
         await this.updateUserStatistics(game, updatedData);
 
         return game.endGameMessage();
@@ -236,6 +235,15 @@ export class GamePlayService {
         const playersStillInGame = game.getOpponentPlayers(playerWhoLeftId);
         const playerWhoLeft = game.getPlayer(playerWhoLeftId);
 
+        RatingService.adjustAbandoningUserRating(playerWhoLeft, playersStillInGame);
+        this.updateLeaverStatistics(game, playerWhoLeft);
+        game.idGameHistory = await this.gameHistoriesService.addGameHistory({
+            gameHistory: {
+                startTime: game.roundManager.getGameStartTime(),
+                endTime: new Date(),
+            },
+            players: [this.createGameHistoryPlayerAbandon(playerWhoLeft)],
+        });
         if (playersStillInGame.every((playerStillInGame) => isIdVirtualPlayer(playerStillInGame.id))) {
             game.getPlayer(playerWhoLeftId).isConnected = false;
             const endOfGameData: GameUpdateData = {};
@@ -251,17 +259,16 @@ export class GamePlayService {
             this.virtualPlayerFactory.generateVirtualPlayer(gameId, game.virtualPlayerLevel, playersStillInGame),
         );
 
-        RatingService.adjustAbandoningUserRating(playerWhoLeft, playersStillInGame);
-        this.updateLeaverStatistics(game, playerWhoLeft);
-        game.idGameHistory = await this.gameHistoriesService.addGameHistory({
-            gameHistory: {
-                startTime: game.roundManager.getGameStartTime(),
-                endTime: new Date(),
-                hasBeenAbandoned: true,
-            },
-            players: [this.createGameHistoryPlayerAbandon(playerWhoLeft)],
-        });
-// game.completeGameHistory
+        // RatingService.adjustAbandoningUserRating(playerWhoLeft, playersStillInGame);
+        // this.updateLeaverStatistics(game, playerWhoLeft);
+        // game.idGameHistory = await this.gameHistoriesService.addGameHistory({
+        //     gameHistory: {
+        //         startTime: game.roundManager.getGameStartTime(),
+        //         endTime: new Date(),
+        //     },
+        //     players: [this.createGameHistoryPlayerAbandon(playerWhoLeft)],
+        // });
+
         if (this.isVirtualPlayerTurn(game)) {
             this.virtualPlayerService.triggerVirtualPlayerTurn(
                 { round: game.roundManager.convertRoundToRoundData(game.roundManager.getCurrentRound()) },

@@ -21,4 +21,4 @@ export type GameHistoryPlayerCreation = Omit<GameHistoryPlayer, IdOf<GameHistory
 
 export type GameHistoryCreation = { gameHistory: NoId<GameHistory>; players: GameHistoryPlayerCreation[] };
 
-export type GameHistoryForUser = NoId<GameHistory> & Pick<GameHistoryPlayer, 'score' | 'isWinner' | 'ratingVariation'>;
+export type GameHistoryForUser = NoId<GameHistory> & Pick<GameHistoryPlayer, 'score' | 'isWinner' | 'ratingVariation' | 'hasAbandoned'>;

@@ -19,8 +19,6 @@ export default class GameHistoriesService {
     }
 
     async addGameHistory({ gameHistory, players }: GameHistoryCreation, existingIdGameHistory?: number): Promise<TypeOfId<GameHistory>> {
-        console.log('addGameHistory gameHistory:', gameHistory);
-        console.log('addGameHistory players:', players);
         let idGameHistory = existingIdGameHistory;
         if (!idGameHistory) {
             [{ idGameHistory }] = await this.table.insert(gameHistory, ['idGameHistory']);

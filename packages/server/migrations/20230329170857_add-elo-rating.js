@@ -9,6 +9,11 @@ exports.up = async function(knex) {
 
     await knex.schema.alterTable('GameHistoryPlayer', (table) => {
         table.double('ratingVariation', 5, 1).notNullable();
+        table.boolean('hasAbandoned').notNullable();
+    });
+
+    await knex.schema.alterTable('GameHistory', (table) => {
+        table.dropColumn("hasBeenAbandoned");
     });
 };
 
@@ -21,6 +26,11 @@ exports.down = async function(knex) {
         table.dropColumn("rating");
     });
     await knex.schema.alterTable("GameHistoryPlayer", (table) => {
-        table.dropColumn("rating");
+        table.dropColumn("ratingVariation");
+        table.dropColumn("hasAbandoned");
+    });
+
+    await knex.schema.alterTable('GameHistory', (table) => {
+        table.boolean('hasBeenAbandoned').notNullable();
     });
 };

@@ -40,14 +40,12 @@ export class ActiveGameService {
     }
 
     async setPlayerElo(player: Player) {
-        console.log('setPlayerElo: ', player.publicUser.username);
         if (player instanceof AbstractVirtualPlayer) {
             return;
         }
         const rating = (await this.userStatisticService.getStatistics(player.idUser)).rating;
         player.initialRating = rating;
         player.adjustedRating = rating;
-        console.log('setPlayerElo of real Player, rating fetched ', rating);
     }
 
     getGame(id: string, playerId: string): Game {
