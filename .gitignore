@@ -26,3 +26,9 @@ packages/mobile/linux/flutter/generated_plugins.cmake
 packages/mobile/pubspec.lock
 
 .idea
+
+packages/mobile/macos/Flutter/GeneratedPluginRegistrant.swift
+
+packages/mobile/windows/flutter/generated_plugin_registrant.cc
+
+packages/mobile/windows/flutter/generated_plugins.cmake
