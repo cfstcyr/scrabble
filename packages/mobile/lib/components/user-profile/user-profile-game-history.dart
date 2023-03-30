@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:mobile/classes/analysis/analysis-request.dart';
 import 'package:mobile/classes/analysis/analysis.dart';
 import 'package:mobile/classes/game-history.dart';
+import 'package:mobile/components/analysis/analysis-request-dialog.dart';
+import 'package:mobile/components/analysis/analysis-result-dialog.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/table.dart';
 import 'package:mobile/constants/layout.constants.dart';
@@ -59,14 +61,21 @@ class UserProfileGameHistory extends StatelessWidget {
                               children: [
                                 ElevatedButton(
                                   onPressed: idAnalysis != null
-                                      ? () {
-                                          _analysisService
-                                              .requestAnalysis(
-                                                  idAnalysis,
-                                                  AnalysisRequestInfoType
-                                                      .idAnalysis)
-                                              .then((value) =>
-                                                  print(value.idGameHistory));
+                                      ? () async {
+                                          AnalysisRequestDialog(
+                                                  title:
+                                                      "En attente de l'analyse",
+                                                  message:
+                                                      "Chargement de l'analyse")
+                                              .openAnalysisRequestDialog(
+                                                  context);
+
+                                          await Future.delayed(Duration(milliseconds: 500));
+
+                                          _analysisService.requestAnalysis(
+                                              idAnalysis,
+                                              AnalysisRequestInfoType
+                                                  .idAnalysis);
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(

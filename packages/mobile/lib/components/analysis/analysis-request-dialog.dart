@@ -9,10 +9,10 @@ import 'package:mobile/services/theme-color-service.dart';
 class AnalysisRequestDialog {
   final String title;
   String message;
-  Duration? minimumDelay;
+  final bool isLoading;
 
   AnalysisRequestDialog(
-      {required this.title, required this.message, this.minimumDelay});
+      {required this.title, required this.message, this.isLoading = true});
 
   void openAnalysisRequestDialog(BuildContext context) {
     ThemeColorService themeColorService = getIt.get<ThemeColorService>();
@@ -40,11 +40,14 @@ class AnalysisRequestDialog {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                AppCircularSpinner(
-                  isLoading: true,
-                  color: themeColorService.themeDetails.value.color.colorValue,
-                  size: AppCircularSpinnerSize.large,
-                ),
+                isLoading
+                    ? AppCircularSpinner(
+                        isLoading: true,
+                        color: themeColorService
+                            .themeDetails.value.color.colorValue,
+                        size: AppCircularSpinnerSize.large,
+                      )
+                    : Icon(Icons.error, color: theme.colorScheme.error, size: 96,),
                 SizedBox(
                   height: SPACE_4,
                 ),
@@ -56,7 +59,7 @@ class AnalysisRequestDialog {
                       message,
                       style: theme.textTheme.titleMedium,
                     ),
-                    LoadingDots(style: theme.textTheme.titleMedium!),
+                    LoadingDots(style: theme.textTheme.titleMedium!, isPlaying: isLoading,),
                   ],
                 )
               ],
@@ -64,7 +67,7 @@ class AnalysisRequestDialog {
             actions: [
               AppButton(
                 onPressed: () => _cancelAnalysisRequest(context),
-                text: 'Annuler',
+                text: isLoading ? 'Annuler' : 'Fermer',
                 theme: AppButtonTheme.secondary,
                 size: AppButtonSize.normal,
               )

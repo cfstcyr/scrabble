@@ -6,10 +6,12 @@ import 'package:rxdart/rxdart.dart';
 const DEFAULT_DELAY = Duration(seconds: 1);
 
 class LoadingDots extends StatefulWidget {
-  LoadingDots({required this.style, this.delay = DEFAULT_DELAY});
+  LoadingDots(
+      {required this.style, this.delay = DEFAULT_DELAY, this.isPlaying = true});
 
   final Duration delay;
   final TextStyle style;
+  final bool isPlaying;
 
   @override
   State<LoadingDots> createState() => _LoadingDotsState();
@@ -35,16 +37,18 @@ class _LoadingDotsState extends State<LoadingDots> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<String>(
-        stream: _dots.state,
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          return snapshot.hasData
-              ? Text(snapshot.data!, style: widget.style)
-              : Text(
-                  '',
-                  style: widget.style,
-                );
-        });
+    return widget.isPlaying
+        ? StreamBuilder<String>(
+            stream: _dots.state,
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              return snapshot.hasData
+                  ? Text(snapshot.data!, style: widget.style)
+                  : Text(
+                      '',
+                      style: widget.style,
+                    );
+            })
+        : Text('');
   }
 }
 
