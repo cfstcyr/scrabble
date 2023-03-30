@@ -1,21 +1,23 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
-import { ActionService } from '@app/services/action-service/action.service';
-import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
-import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
-import { GameService } from '@app/services';
 import { Observable, Subject } from 'rxjs';
 import { ActionType } from '@app/classes/actions/action-data';
+import {
+    AnalysisResultModalComponent,
+    AnalysisResultModalParameters,
+} from '@app/components/analysis/analysis-result-modal/analysis-result-modal.component';
+import {
+    AnalysisWaitingDialogComponent,
+    AnalysisWaitingDialogParameter,
+} from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { DefaultDialogParameters } from '@app/components/default-dialog/default-dialog.component.types';
-import { ROUTE_HOME } from '@app/constants/routes-constants';
 import {
     DIALOG_ABANDON_BUTTON_CONFIRM,
     DIALOG_ABANDON_BUTTON_CONTINUE,
     DIALOG_ABANDON_CONTENT,
     DIALOG_ABANDON_TITLE,
+    DIALOG_ANALYSIS_BUTTON_CONFIRM,
     DIALOG_END_OF_GAME_CLOSE_BUTTON,
     DIALOG_END_OF_GAME_CONTENT,
     DIALOG_END_OF_GAME_TITLE,
@@ -29,6 +31,14 @@ import {
     MAX_CONFETTI_COUNT,
     MIN_CONFETTI_COUNT,
 } from '@app/constants/pages-constants';
+import { ROUTE_HOME } from '@app/constants/routes-constants';
+import { GameService } from '@app/services';
+import { ActionService } from '@app/services/action-service/action.service';
+import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
+import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
+import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
+import { Analysis, AnalysisRequestInfoType } from '@common/models/analysis';
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
 
@@ -39,6 +49,7 @@ import { DynamicSourceType } from 'party-js/lib/systems/sources';
 })
 export class GamePageComponent implements OnInit, OnDestroy {
     private mustDisconnectGameOnLeave: boolean;
+    private analysis: Analysis;
     private readonly componentDestroyed$: Subject<boolean>;
 
     constructor(
@@ -111,6 +122,41 @@ export class GamePageComponent implements OnInit, OnDestroy {
         return this.tilePlacementService.isPlacementValid$;
     }
 
+    requestAnalysis(): void {
+        if (this.analysis) {
+            this.showAnalysisModal(this.analysis);
+        } else {
+            const dialogRef = this.dialog.open<AnalysisWaitingDialogComponent, AnalysisWaitingDialogParameter>(AnalysisWaitingDialogComponent, {
+                disableClose: false,
+                data: { id: this.gameService.idGameHistory ?? -1, type: AnalysisRequestInfoType.ID_GAME },
+            });
+            dialogRef.afterClosed().subscribe((analysis) => {
+                if (analysis) {
+                    this.analysis = analysis;
+                    this.showAnalysisModal(analysis);
+                }
+            });
+        }
+    }
+
+    private showAnalysisModal(analysis: Analysis) {
+        this.dialog.open<AnalysisResultModalComponent, AnalysisResultModalParameters>(AnalysisResultModalComponent, {
+            disableClose: false,
+            data: {
+                leftButton: {
+                    content: 'Quitter la partie',
+                    redirect: ROUTE_HOME,
+                    action: () => this.handlePlayerLeaves(),
+                },
+                rightButton: {
+                    content: 'Rester dans la partie',
+                    closeDialog: true,
+                },
+                analysis,
+            },
+        });
+    }
+
     get isGameOver(): boolean {
         return this.gameService.isGameOver;
     }
@@ -146,11 +192,15 @@ export class GamePageComponent implements OnInit, OnDestroy {
                         content: DIALOG_QUIT_BUTTON_CONFIRM,
                         redirect: ROUTE_HOME,
                         style: 'background-color: rgb(231, 231, 231)',
-                        // We haven't been able to test that the right function is called because this
-                        // arrow function creates a new instance of the function. We cannot spy on it.
-                        // It totally works tho, try it!
                         action: () => this.handlePlayerLeaves(),
                     },
+                    {
+                        closeDialog: true,
+                        content: DIALOG_ANALYSIS_BUTTON_CONFIRM,
+                        style: 'background-color: rgb(231, 231, 231)',
+                        action: () => this.requestAnalysis(),
+                    },
+
                     {
                         content: DIALOG_END_OF_GAME_CLOSE_BUTTON,
                         closeDialog: true,
@@ -173,9 +223,6 @@ export class GamePageComponent implements OnInit, OnDestroy {
                         content: buttons[0],
                         redirect: ROUTE_HOME,
                         style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
-                        // We haven't been able to test that the right function is called because this
-                        // arrow function creates a new instance of the function. We cannot spy on it.
-                        // It totally works tho, try it!
                         action: () => {
                             this.handlePlayerLeaves();
                             this.gameService.makeTilePlacement([]);

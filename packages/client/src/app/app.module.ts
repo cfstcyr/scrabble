@@ -64,6 +64,9 @@ import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.co
 import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
 import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
 import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/puzzle-history.component';
+import { AnalysisOverviewComponent } from './components/analysis/analysis-overview/analysis-overview.component';
+import { AnalysisResultModalComponent } from './components/analysis/analysis-result-modal/analysis-result-modal.component';
+import { AnalysisWaitingDialogComponent } from './components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 import { UcWidgetModule } from 'ngx-uploadcare-widget';
 import { AvatarSelectorComponent } from './components/user-profile/avatar-selector/avatar-selector.component';
 import { GamePageComponent } from './pages/game-page/game-page.component';
@@ -136,6 +139,9 @@ registerLocaleData(localeFr);
         SwiperComponent,
         SwiperSlideComponent,
         SwiperNavigationComponent,
+        AnalysisOverviewComponent,
+        AnalysisResultModalComponent,
+        AnalysisWaitingDialogComponent,
         AvatarSelectorComponent,
         GamePageComponent,
         GamePlayersComponent,

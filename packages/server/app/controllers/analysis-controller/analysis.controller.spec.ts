@@ -5,6 +5,7 @@ import { Application } from '@app/app';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import { AnalysisRequestInfoType } from '@common/models/analysis';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
@@ -75,7 +76,7 @@ describe('AnalysisController', () => {
     describe('handleRequestAnalysis', () => {
         it('should call gameHistoriesService.requestAnalysis', async () => {
             analysisPersistenceServiceStub.requestAnalysis.resolves();
-            await controller['handleRequestAnalysis'](1, 1);
+            await controller['handleRequestAnalysis'](1, 1, AnalysisRequestInfoType.ID_GAME);
             expect(analysisPersistenceServiceStub.requestAnalysis.called).to.be.true;
         });
     });

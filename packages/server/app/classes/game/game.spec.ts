@@ -838,7 +838,7 @@ describe('Game', () => {
             chai.spy.on(game.board, ['isWithinBounds'], () => true);
             game.roundManager = roundManagerStub as unknown as RoundManager;
 
-            round = { player: game.player1, startTime: new Date(), limitTime: new Date(), tiles: [] };
+            round = { player: game.player1, startTime: new Date(), limitTime: new Date(), tiles: [], board: {} as unknown as Board };
             roundManagerStub.getCurrentRound.returns(round);
         });
 
