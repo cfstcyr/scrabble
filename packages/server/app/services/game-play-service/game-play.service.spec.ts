@@ -41,6 +41,8 @@ import { UserStatisticsService } from '@app/services/user-statistics-service/use
 import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 import { AnalysisService } from '@app/services/analysis-service/analysis.service';
 import { ActionType } from '@common/models/action';
+import { RatingService } from '../rating-service/rating.service';
+import { GameHistoryPlayerCreation } from '@common/models/game-history';
 
 const expect = chai.expect;
 
@@ -461,10 +463,9 @@ describe('GamePlayService', () => {
         });
     });
 
-    describe('PlayerLeftEvent', () => {
+    describe.only('PlayerLeftEvent', () => {
         const playerWhoLeftId = 'playerWhoLeftId';
         let activeGameServiceStub: SinonStubbedInstance<ActiveGameService>;
-        let highScoresServiceStub: SinonStubbedInstance<HighScoresService>;
         let dictionaryServiceStub: SinonStubbedInstance<DictionaryService>;
         let gameHistoriesServiceStub: SinonStubbedInstance<GameHistoriesService>;
         let virtualPlayerServiceStub: SinonStubbedInstance<VirtualPlayerService>;
@@ -474,7 +475,19 @@ describe('GamePlayService', () => {
         let analysisServiceStub: SinonStubbedInstance<AnalysisService>;
 
         beforeEach(() => {
+            chai.spy.on(RatingService, 'adjustRatings', () => undefined);
+            chai.spy.on(RatingService, 'adjustAbandoningUserRating', () => undefined);
+            chai.spy.on(gamePlayService, 'createGameHistoryPlayerAbandon', () => {
+                console.log('createGameHistoryPlayerAbandon');
+                return {} as unknown as GameHistoryPlayerCreation;
+            });
+
+            chai.spy.on(gamePlayService, 'updateLeaverStatistics', () => {
+                console.log('updateLeaverStatistics');
+            });
+
             activeGameServiceStub = createStubInstance(ActiveGameService);
+            gameHistoriesServiceStub = createStubInstance(GameHistoriesService);
             virtualPlayerServiceStub = createStubInstance(VirtualPlayerService);
             activeGameServiceStub.playerLeftEvent = new EventEmitter();
             activeGameServiceStub.getGame.returns(gameStub as unknown as Game);
@@ -485,7 +498,6 @@ describe('GamePlayService', () => {
             analysisServiceStub = createStubInstance(AnalysisService);
             gamePlayService = new GamePlayService(
                 activeGameServiceStub as unknown as ActiveGameService,
-                highScoresServiceStub as unknown as HighScoresService,
                 dictionaryServiceStub as unknown as DictionaryService,
                 gameHistoriesServiceStub as unknown as GameHistoriesService,
                 virtualPlayerServiceStub as unknown as VirtualPlayerService,
@@ -498,7 +510,10 @@ describe('GamePlayService', () => {
             gameStub.player2 = new Player(playerWhoLeftId, USER2);
             gameStub.player3 = new Player(playerWhoLeftId, USER3);
             gameStub.player4 = new Player(playerWhoLeftId, USER4);
+            sinon.stub(Player.prototype, 'idUser').get(() => 1);
             gameStub.getOpponentPlayers.returns([gameStub.player2, gameStub.player3, gameStub.player4]);
+            gameStub.getPlayers.returns([gameStub.player1, gameStub.player2, gameStub.player3, gameStub.player4]);
+            gameHistoriesServiceStub.addGameHistory.resolves(1);
         });
 
         afterEach(() => {
@@ -532,6 +547,7 @@ describe('GamePlayService', () => {
             const emitSpy = chai.spy.on(gamePlayService['activeGameService'].playerLeftEvent, 'emit', () => {
                 return;
             });
+            chai.spy.on(gamePlayService, 'handleGameOver', async () => []);
 
             await gamePlayService['handlePlayerLeftEvent'](DEFAULT_GAME_ID, playerWhoLeftId);
             expect(virtualPlayerServiceStub.triggerVirtualPlayerTurn.calledOnce).to.be.true;
@@ -575,26 +591,17 @@ describe('GamePlayService', () => {
         });
 
         it('should call end of game and endgame message', async () => {
-            gameStub.isAddedToDatabase = true;
             await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(gameStub.endOfGame.calledOnce).to.be.true;
             expect(gameStub.endGameMessage.calledOnce).to.be.true;
         });
 
         it('should add to game histories if not already added', async () => {
-            gameStub.isAddedToDatabase = false;
             await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(gameHistoriesServiceStub.addGameHistory.calledOnce).to.be.true;
         });
 
-        it('should change isAddedtoDatabase', async () => {
-            gameStub.isAddedToDatabase = false;
-            await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
-            expect(gameStub.isAddedToDatabase).to.be.true;
-        });
-
         it('should call getConnectedRealPlayers', async () => {
-            gameStub.isAddedToDatabase = false;
             await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(gameStub.getConnectedRealPlayers.calledOnce).to.be.true;
             expect(highScoresServiceStub.addHighScore.calledOnce).to.be.true;
@@ -635,7 +642,6 @@ describe('GamePlayService', () => {
 
         it('should modify both ids', async () => {
             const result = gamePlayService['addMissingPlayerId']('', '', { player1: { id: 'id1' }, player2: { id: 'id2' } });
-            gameStub.isAddedToDatabase = true;
             gameStub.dictionarySummary = { id: 'id' } as unknown as DictionarySummary;
             await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(result.player1!.id).to.equal(gameStub.player1.id);

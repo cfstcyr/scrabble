@@ -234,9 +234,11 @@ export class GamePlayService {
         const game = this.activeGameService.getGame(gameId, playerWhoLeftId);
         const playersStillInGame = game.getOpponentPlayers(playerWhoLeftId);
         const playerWhoLeft = game.getPlayer(playerWhoLeftId);
-
+        console.log('apresgetplayer');
         RatingService.adjustAbandoningUserRating(playerWhoLeft, playersStillInGame);
         this.updateLeaverStatistics(game, playerWhoLeft);
+        console.log('apresgupdateLeaverStatisticsetplayer');
+
         game.idGameHistory = await this.gameHistoriesService.addGameHistory({
             gameHistory: {
                 startTime: game.roundManager.getGameStartTime(),
@@ -244,6 +246,8 @@ export class GamePlayService {
             },
             players: [this.createGameHistoryPlayerAbandon(playerWhoLeft)],
         });
+        console.log('addGameHistory');
+
         if (playersStillInGame.every((playerStillInGame) => isIdVirtualPlayer(playerStillInGame.id))) {
             game.getPlayer(playerWhoLeftId).isConnected = false;
             const endOfGameData: GameUpdateData = {};
@@ -253,11 +257,13 @@ export class GamePlayService {
             this.activeGameService.removeGame(gameId, playerWhoLeftId);
             return;
         }
+        console.log('apres playersStillInGame.every');
 
         const updatedData: GameUpdateData = game.replacePlayer(
             playerWhoLeftId,
             this.virtualPlayerFactory.generateVirtualPlayer(gameId, game.virtualPlayerLevel, playersStillInGame),
         );
+        console.log('apres replacePlayer');
 
         // RatingService.adjustAbandoningUserRating(playerWhoLeft, playersStillInGame);
         // this.updateLeaverStatistics(game, playerWhoLeft);
