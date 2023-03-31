@@ -15,7 +15,8 @@ export class GameHistoriesController extends BaseController {
     protected configure(router: Router): void {
         router.get('/', async (req: UserRequest, res: Response, next) => {
             try {
-                res.status(StatusCodes.OK).json(await this.gameHistoriesService.getGameHistory(req.body.idUser));
+                const result = await this.gameHistoriesService.getGameHistory(req.body.idUser);
+                res.status(StatusCodes.OK).json(result);
             } catch (exception) {
                 next(exception);
             }

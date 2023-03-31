@@ -55,8 +55,6 @@ class AppButton extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
       height: _getSize(),
       minWidth: _getSize(),
-
-
       padding: iconOnly ? EdgeInsets.zero : null,
       elevation: type == AppButtonType.normal ? 1 : 0,
       focusElevation: type == AppButtonType.normal ? 4 : 0,
@@ -73,7 +71,7 @@ class AppButton extends StatelessWidget {
   Color _getColor() {
     switch (theme) {
       case AppButtonTheme.primary:
-        return _themeColorService.themeColor;
+        return _themeColorService.themeDetails.value.color.colorValue;
       case AppButtonTheme.danger:
         return Colors.red;
       case AppButtonTheme.tomato:

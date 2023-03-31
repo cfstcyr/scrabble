@@ -137,7 +137,9 @@ SizedBox setPlayerName(String username, ThemeData theme) {
       username,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-          fontSize: 17, color: theme.primaryColor, fontWeight: FontWeight.w500),
+          fontSize: 17,
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.w500),
     ),
   );
 }

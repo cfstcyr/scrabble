@@ -49,4 +49,16 @@ $side-size: 450px;
             font-size: 1.15em;
         }
     }
+
+    &__actions__over {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+
+        &__button {
+            height: 100%;
+            width: 100%;
+            font-size: 1.15em;
+        }
+    }
 }

@@ -66,7 +66,9 @@ abstract class AbstractPlayer extends StatelessWidget {
   }
 
   Color? getColor() {
-    return isPlaying ? _themeColorService.themeColor : null;
+    return isPlaying
+        ? _themeColorService.themeDetails.value.color.colorValue
+        : null;
   }
 
   Color? getTextColor() {

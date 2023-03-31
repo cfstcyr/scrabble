@@ -8,10 +8,10 @@ export interface Round {
     startTime: Date;
     limitTime: Date;
     tiles: Tile[];
+    board: Board;
 }
 
 export interface CompletedRound extends Round {
     completedTime: Date;
     actionPlayed: Action;
-    board: Board;
 }
