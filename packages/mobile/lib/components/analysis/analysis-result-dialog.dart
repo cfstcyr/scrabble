@@ -1,14 +1,13 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/classes/analysis/analysis-overview.dart';
-import 'package:mobile/components/analysis/analysis-overview-widget.dart';
+import 'package:mobile/classes/analysis/analysis.dart';
+import 'package:mobile/components/analysis/critical-moment-widget.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
-AnalysisOverview overview = AnalysisOverview(majorMistakeCount: 2, mediumMistakeCount: 5, minorMistakeCount: 10);
 
 class AnalysisResultDialog {
-    void openAnalysisResultDialog(BuildContext context) {
+  void openAnalysisResultDialog(BuildContext context, List<CriticalMoment> criticalMoments) {
     ThemeData theme = Theme.of(context);
 
     showDialog(
@@ -19,6 +18,7 @@ class AnalysisResultDialog {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(8.0)),
             ),
+            insetPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             title: Center(
               child: Text(
                 'Analyse de la partie',
@@ -38,7 +38,10 @@ class AnalysisResultDialog {
             //     Text('hi')
             //   ],
             // ),
-            content: AnalysisOverviewWidget(overview: overview,),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: CriticalMomentWidget(criticalMoment: criticalMoments[0]),
+            ),
             actions: [
               AppButton(
                 onPressed: () => _closeAnalysisResult(context),

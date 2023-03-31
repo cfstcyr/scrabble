@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/analysis/analysis-overview.dart';
 import 'package:mobile/components/analysis/single-analysis-overview.dart';

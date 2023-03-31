@@ -26,8 +26,7 @@ class AnalysisController {
             AnalysisCompleted.fromJson(jsonDecode(value.body)))
         .timeout(Duration(seconds: 5), onTimeout: () {
       print('timeout');
-      return AnalysisCompleted(
-          idGameHistory: 1, idUser: 1, criticalMoments: []);
+      throw Exception('Analysis not completed in time');
     });
   }
 
