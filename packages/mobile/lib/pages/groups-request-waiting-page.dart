@@ -40,28 +40,19 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
     });
 
     rejectedSubscription = rejectedStream.listen((PublicUser host) {
+      Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
+      Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
       triggerDialogBox("Demande rejetée", [
         Text("${host.username} a rejeté votre demande",
             style: TextStyle(fontSize: 16))
       ], [
         DialogBoxButtonParameters(
-            content: 'OK',
-            theme: AppButtonTheme.primary,
-            onPressed: () =>
-                Navigator.pushReplacementNamed(context, GROUPS_ROUTE))
+            content: 'OK', theme: AppButtonTheme.primary, closesDialog: true)
       ]);
     });
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
-      Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
-
-      triggerDialogBox("Partie annulée", [
-        Text("${host.username} a annulé la partie",
-            style: TextStyle(fontSize: 16))
-      ], [
-        DialogBoxButtonParameters(
-            content: 'OK', theme: AppButtonTheme.primary, closesDialog: true)
-      ]);
+      handleCanceledGame(host, context);
     });
   }
 

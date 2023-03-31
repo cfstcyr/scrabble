@@ -11,7 +11,6 @@ import '../../constants/create-account-constants.dart';
 import '../../constants/join-game.constants.dart';
 import '../../constants/join-group.constants.dart';
 import '../../view-methods/group.methods.dart';
-import '../alert-dialog.dart';
 import '../app_button.dart';
 
 void showGamePasswordPopup(BuildContext context, Group group,
@@ -145,46 +144,4 @@ class _PasswordDialogState extends State<PasswordDialog> {
       backgroundColor: Colors.white,
     );
   }
-}
-
-void handleCanceledGame(PublicUser host, BuildContext context) {
-  Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
-
-  triggerDialogBox(GAME_CANCELED, [
-    Text("${host.username} a annulé la partie")
-  ], [
-    DialogBoxButtonParameters(
-      content: 'OK',
-      closesDialog: true,
-      theme: AppButtonTheme.primary,
-    )
-  ]);
-}
-
-void handleFullGroup(bool isFull, context) {
-  Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
-
-  triggerDialogBox(GAME_STARTED, [
-    Text(GAME_STARTED_MESSAGE)
-  ], [
-    DialogBoxButtonParameters(
-      closesDialog: true,
-      content: 'OK',
-      theme: AppButtonTheme.primary,
-    )
-  ]);
-}
-
-void handleGameStarted(PublicUser host, context) {
-  Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
-
-  triggerDialogBox(GAME_STARTED, [
-    Text(GAME_STARTED_MESSAGE)
-  ], [
-    DialogBoxButtonParameters(
-      content: 'OK',
-      closesDialog: true,
-      theme: AppButtonTheme.primary,
-    ),
-  ]);
 }
