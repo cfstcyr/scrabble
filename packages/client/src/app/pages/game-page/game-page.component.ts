@@ -37,12 +37,6 @@ import {
     MIN_CONFETTI_COUNT,
 } from '@app/constants/pages-constants';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
-import { GameService } from '@app/services';
-import { ActionService } from '@app/services/action-service/action.service';
-import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
-import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
-import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Analysis, AnalysisRequestInfoType } from '@common/models/analysis';
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
