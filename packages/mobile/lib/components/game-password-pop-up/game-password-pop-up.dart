@@ -16,7 +16,6 @@ import '../app_button.dart';
 
 void showGamePasswordPopup(BuildContext context, Group group,
     Function joinGroupFunction, bool isObserver) {
-  String _password = "";
   final BehaviorSubject<TextFieldHandler> passwordHandler =
       BehaviorSubject<TextFieldHandler>.seeded(TextFieldHandler());
   showDialog<String>(
