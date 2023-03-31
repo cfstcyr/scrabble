@@ -11,6 +11,7 @@ import { takeUntil } from 'rxjs/operators';
 import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
 import { BACKSPACE } from '@app/constants/components-constants';
 import { removeAccents } from '@app/utils/remove-accents/remove-accents';
+import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 
 @Component({
     selector: 'app-game-board-wrapper',
@@ -31,6 +32,7 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
         readonly boardService: BoardService,
         readonly tilePlacementService: TilePlacementService,
         readonly gameService: GameService,
+        private readonly roundManagerService: RoundManagerService,
         private readonly boardCursorService: BoardCursorService,
     ) {}
 
@@ -54,6 +56,7 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
         this.boardService.subscribeToBoardUpdate(this.componentDestroyed$, this.handleUpdateBoard.bind(this));
         this.tilePlacementService.tilePlacements$.pipe(takeUntil(this.componentDestroyed$)).subscribe(this.handlePlaceTiles.bind(this));
         this.boardService.subscribeToTemporaryTilePlacements(this.componentDestroyed$, this.handleOpponentPlaceTiles.bind(this));
+        this.roundManagerService.subscribeToEndRoundEvent(this.componentDestroyed$, this.resetNotAppliedSquares.bind(this));
 
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());
@@ -67,6 +70,7 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
     }
 
     resetNotAppliedSquares(): void {
+        this.boardCursorService.clear();
         this.tilePlacementService.resetTiles();
     }
 
