@@ -1,9 +1,12 @@
+import 'package:mobile/classes/abstract-game.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/actions/word-placement.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-parser.dart';
+import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AnalysisPending {
   final int idGameHistory;
@@ -78,4 +81,7 @@ class CriticalMoment {
             : null,
         bestPlacement: ScoredWordPlacement.fromJson(json['bestPlacement']));
   }
+
+  ValueStream<AbstractGame> get convertToGameStream => BehaviorSubject.seeded((AbstractGame(
+      board: Board().withGrid(grid), tileRack: TileRack().setTiles(tiles)))).stream;
 }

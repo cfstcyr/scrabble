@@ -77,6 +77,11 @@ class Board {
     }
   }
 
+  Board withGrid(List<List<Square>> grid) {
+    this.grid = grid;
+    return this;
+  }
+
   _applyMultipliers() {
     // Center
     grid[7][7].multiplier = Multiplier(value: 2, type: MultiplierType.word);
