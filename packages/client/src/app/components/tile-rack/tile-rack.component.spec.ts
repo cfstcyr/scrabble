@@ -131,6 +131,7 @@ describe('TileRackComponent', () => {
                     provide: TilePlacementService,
                     useValue: jasmine.createSpyObj('TilePlacementService', ['placeTile', 'handleCancelPlacement', 'resetTiles'], {
                         tilePlacements$: new Subject(),
+                        tilePlacements: [],
                     }),
                 },
             ],
