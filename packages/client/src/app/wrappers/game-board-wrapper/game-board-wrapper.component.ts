@@ -10,6 +10,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
 import { BACKSPACE } from '@app/constants/components-constants';
+import { removeAccents } from '@app/utils/remove-accents/remove-accents';
 
 @Component({
     selector: 'app-game-board-wrapper',
@@ -35,8 +36,10 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
 
     @HostListener('document:keypress', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent): void {
-        if (event.key.length === 1 && event.key.toLowerCase() >= 'a' && event.key.toLowerCase() <= 'z') {
-            this.boardCursorService.handleLetter(event.key, event.shiftKey);
+        const key = removeAccents(event.key.toLowerCase());
+
+        if (event.key.length === 1 && key >= 'a' && key <= 'z') {
+            this.boardCursorService.handleLetter(key, event.shiftKey);
         } else if (event.key === BACKSPACE) {
             this.boardCursorService.handleBackspace();
         }
@@ -57,7 +60,7 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
 
         this.boardCursorService.initialize(this.grid, () => [...(this.gameService.getLocalPlayer()?.getTiles() ?? [])]);
     }
-    
+
     ngOnDestroy() {
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
