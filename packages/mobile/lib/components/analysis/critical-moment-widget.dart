@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mobile/classes/analysis/action-shown.dart';
 import 'package:mobile/classes/analysis/analysis.dart';
 import 'package:mobile/components/app-toggle-button.dart';
@@ -20,6 +21,8 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+
     return Column(
       children: [
         // Toggle action
@@ -28,12 +31,16 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
             optionsToValue: ACTION_SHOWN_OPTIONS_TO_VALUES,
             toggleOptionWidget: generateActionShownWidget),
         // Points
+        SizedBox(height: SPACE_2,),
         Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                color: _themeColorService.themeDetails.value.color.colorValue ),
-            child:
-                Text('${widget.criticalMoment.playedPlacement?.score ?? 0}')),
+                color: _themeColorService.themeDetails.value.color.colorValue),
+            padding: EdgeInsets.all(SPACE_1),
+            child: Text(
+              '${widget.criticalMoment.playedPlacement?.score ?? 0} pts',
+              style: theme.textTheme.titleSmall!.copyWith(color: Colors.white),
+            )),
         // Board
         // Tilerack
       ],
