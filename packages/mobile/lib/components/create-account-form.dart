@@ -173,7 +173,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
                               text: REDIRECT_LOGIN_LABEL_FR),
                           AppButton(
                               onPressed: isButtonEnabled
-                                  ? () => {createAccount()}
+                                  ? () => createAccount()
                                   : null,
                               text: CREATE_ACCOUNT_LABEL_FR),
                         ],
