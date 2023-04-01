@@ -207,7 +207,7 @@ export class GamePlayService {
     }
 
     private async updateUserStatistics(game: Game, updatedData: GameUpdateData): Promise<void> {
-        const time = (Date.now() - game.roundManager.getGameStartTime().getTime()) / SECONDS_TO_MILLISECONDS;
+        const time = (game.gameHistory.gameHistory.endTime.getTime() - game.roundManager.getGameStartTime().getTime()) / SECONDS_TO_MILLISECONDS;
 
         const addGameToStatistics: Promise<PublicUserStatistics>[] = [];
 
