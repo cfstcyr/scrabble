@@ -8,26 +8,31 @@ abstract class AppToggleOption {
 class AppToggleButton<T extends AppToggleOption, V extends Enum>
     extends StatefulWidget {
   AppToggleButton(
-      {required this.defaultValue,
-      required this.optionsToValue,
-      required this.toggleOptionWidget,
-      this.orientation = Axis.horizontal})
-      : _selected$ = BehaviorSubject.seeded(optionsToValue[defaultValue]!);
+      {required V defaultValue,
+      required Map<V, T> optionsToValue,
+      required Widget Function(T value) toggleOptionWidget,
+      Axis orientation = Axis.horizontal})
+      : _defaultValue = defaultValue,
+        _optionsToValue = optionsToValue,
+        _toggleOptionWidget = toggleOptionWidget,
+        _orientation = orientation {
+    _selected$ = BehaviorSubject.seeded(_optionsToValue[_defaultValue]!);
+  }
 
-  final Axis orientation;
-  final V defaultValue;
-  final Map<V, T> optionsToValue;
-  final Widget Function(T value) toggleOptionWidget;
+  final Axis _orientation;
+  final V _defaultValue;
+  final Map<V, T> _optionsToValue;
+  final Widget Function(T value) _toggleOptionWidget;
 
   late final BehaviorSubject<T> _selected$;
 
   Stream<T> get selectedStream => _selected$.stream;
 
-  T? get toggledValue => _selected$.valueOrNull;
+  T? get selectedValue => _selected$.valueOrNull;
 
-  List<V> get toggleOptions => optionsToValue.keys.toList();
+  List<V> get _toggleOptions => _optionsToValue.keys.toList();
 
-  List<T> get toggleValues => optionsToValue.values.toList();
+  List<T> get _toggleValues => _optionsToValue.values.toList();
 
   @override
   State<AppToggleButton> createState() => _AppToggleButtonState<T, V>();
@@ -43,8 +48,9 @@ class _AppToggleButtonState<T extends AppToggleOption, V extends Enum>
 
     _selectedOption =
         widget.selectedStream.switchMap<List<bool>>((T currentSelection) {
-      return Stream.value(widget.toggleOptions
-          .map<bool>((V option) => option.name == currentSelection.getEnumName())
+      return Stream.value(widget._toggleOptions
+          .map<bool>(
+              (V option) => option.name == currentSelection.getEnumName())
           .toList());
     });
   }
@@ -59,15 +65,15 @@ class _AppToggleButtonState<T extends AppToggleOption, V extends Enum>
           if (!snapshot.hasData) return SizedBox.shrink();
 
           return ToggleButtons(
-              direction: widget.orientation,
+              direction: widget._orientation,
               isSelected: snapshot.data!,
               onPressed: (int index) =>
-                  widget._selected$.add(widget.toggleValues[index]),
+                  widget._selected$.add(widget._toggleValues[index]),
               color: Colors.black,
               selectedColor: Colors.white,
               fillColor: theme.primaryColor,
-              children: widget.toggleValues
-                  .map((T value) => widget.toggleOptionWidget(value))
+              children: widget._toggleValues
+                  .map((T value) => widget._toggleOptionWidget(value))
                   .toList());
         });
   }

@@ -68,7 +68,7 @@ void showStartPuzzleDialog(BuildContext context) {
                       getIt
                           .get<PuzzleService>()
                           .startPuzzle(
-                              puzzleLevelSelector.toggledValue?.roundDuration ??
+                              puzzleLevelSelector.selectedValue?.roundDuration ??
                                   advancedPuzzleLevel.roundDuration)
                           .then((bool isSuccess) {
                         Navigator.pop(context);
