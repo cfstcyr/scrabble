@@ -1,16 +1,17 @@
 import Game from '@app/classes/game/game';
 import { ReadyGameConfig, StartGameData } from '@app/classes/game/game-config';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import Player from '@app/classes/player/player';
+import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
 import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
+import { ChatService } from '@app/services/chat-service/chat.service';
+import { SocketService } from '@app/services/socket-service/socket.service';
 import { Channel } from '@common/models/chat/channel';
+import { Observer } from '@common/models/observer';
 import { TypeOfId } from '@common/types/id';
 import { EventEmitter } from 'events';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { ChatService } from '@app/services/chat-service/chat.service';
-import { SocketService } from '@app/services/socket-service/socket.service';
-import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
-import { Observer } from '@common/models/observer';
 
 @Service()
 export class ActiveGameService {
@@ -97,5 +98,17 @@ export class ActiveGameService {
         if (this.isGameOver(gameId, playerId)) return;
 
         this.playerLeftEvent.emit('playerLeftGame', gameId, playerId);
+    }
+    async handleReplaceVirtualPlayer(gameId: string, observerId: string, playerNumber: string) {
+        const game: Game = this.getGame(gameId, observerId);
+        const replacedVirtualPlayer = game.getPlayerByNumber(playerNumber);
+        const observer: Observer = game.observers.filter((_observer) => _observer.id === observerId)[0];
+        const newPlayer: Player = this.observerToPlayer(observer);
+        newPlayer.tiles = replacedVirtualPlayer.tiles;
+        newPlayer.score = replacedVirtualPlayer.score;
+        game.player3 = newPlayer;
+    }
+    private observerToPlayer(observer: Observer): Player {
+        return new Player(observer.id, observer.publicUser);
     }
 }
