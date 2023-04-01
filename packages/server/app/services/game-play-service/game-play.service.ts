@@ -21,7 +21,7 @@ import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
-import { PublicUserStatistics } from '@common/models/user-statistics';
+import { PublicUserStatistics, UserGameStatisticInfo } from '@common/models/user-statistics';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 import { AnalysisService } from '@app/services/analysis-service/analysis.service';
@@ -182,51 +182,45 @@ export class GamePlayService {
             });
     }
 
+    private createGameStatisticsInfo(player: Player, updatedData: GameUpdateData, time: number, index: number): UserGameStatisticInfo {
+        return {
+            hasWon: updatedData.winners?.includes(player.publicUser.username) ?? false,
+            points: this.getUpdataDataPlayer(updatedData, index)?.score ?? 0,
+            time,
+            ratingDifference: player.adjustedRating - player.initialRating,
+        };
+    }
+
+    private getUpdataDataPlayer(updatedData: GameUpdateData, index: number): PlayerData | undefined {
+        switch (index) {
+            case 1:
+                return updatedData.player1;
+            case 2:
+                return updatedData.player2;
+            case 3:
+                return updatedData.player3;
+            case 4:
+                return updatedData.player4;
+            default:
+                return undefined;
+        }
+    }
+
     private async updateUserStatistics(game: Game, updatedData: GameUpdateData): Promise<void> {
         const time = (Date.now() - game.roundManager.getGameStartTime().getTime()) / SECONDS_TO_MILLISECONDS;
 
         const addGameToStatistics: Promise<PublicUserStatistics>[] = [];
 
-        if (!isIdVirtualPlayer(game.player1.id))
-            addGameToStatistics.push(
-                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player1.id), {
-                    hasWon: updatedData.winners?.includes(game.player1.publicUser.username) ?? false,
-                    points: updatedData.player1?.score ?? 0,
-                    time,
-                    ratingDifference: game.player1.adjustedRating - game.player1.initialRating,
-                }),
-            );
-
-        if (!isIdVirtualPlayer(game.player2.id))
-            addGameToStatistics.push(
-                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player2.id), {
-                    hasWon: updatedData.winners?.includes(game.player2.publicUser.username) ?? false,
-                    points: updatedData.player2?.score ?? 0,
-                    time,
-                    ratingDifference: game.player2.adjustedRating - game.player2.initialRating,
-                }),
-            );
-
-        if (!isIdVirtualPlayer(game.player3.id))
-            addGameToStatistics.push(
-                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player3.id), {
-                    hasWon: updatedData.winners?.includes(game.player3.publicUser.username) ?? false,
-                    points: updatedData.player3?.score ?? 0,
-                    time,
-                    ratingDifference: game.player3.adjustedRating - game.player3.initialRating,
-                }),
-            );
-
-        if (!isIdVirtualPlayer(game.player4.id))
-            addGameToStatistics.push(
-                this.userStatisticsService.addGameToStatistics(this.authenticationService.connectedUsers.getUserId(game.player4.id), {
-                    hasWon: updatedData.winners?.includes(game.player4.publicUser.username) ?? false,
-                    points: updatedData.player4?.score ?? 0,
-                    time,
-                    ratingDifference: game.player4.adjustedRating - game.player4.initialRating,
-                }),
-            );
-
+        game.getPlayers().forEach((player, index) => {
+            if (!isIdVirtualPlayer(player.id) && player.isConnected) {
+                addGameToStatistics.push(
+                    this.userStatisticsService.addGameToStatistics(
+                        this.authenticationService.connectedUsers.getUserId(player.id),
+                        this.createGameStatisticsInfo(player, updatedData, time, index + 1),
+                    ),
+                );
+            }
+        });
         await Promise.all(addGameToStatistics);
     }
 
@@ -264,16 +258,6 @@ export class GamePlayService {
             this.virtualPlayerFactory.generateVirtualPlayer(gameId, game.virtualPlayerLevel, playersStillInGame),
         );
         console.log('apres replacePlayer');
-
-        // RatingService.adjustAbandoningUserRating(playerWhoLeft, playersStillInGame);
-        // this.updateLeaverStatistics(game, playerWhoLeft);
-        // game.idGameHistory = await this.gameHistoriesService.addGameHistory({
-        //     gameHistory: {
-        //         startTime: game.roundManager.getGameStartTime(),
-        //         endTime: new Date(),
-        //     },
-        //     players: [this.createGameHistoryPlayerAbandon(playerWhoLeft)],
-        // });
 
         if (this.isVirtualPlayerTurn(game)) {
             this.virtualPlayerService.triggerVirtualPlayerTurn(

@@ -38,12 +38,12 @@ export class RatingService {
         const firstPlayerExpectedResult = this.calculateExpectedResult(firstPlayer.initialRating, secondPlayer.initialRating);
 
         console.log(`BEFORE CHANGE adjustedRatingPlayer1=${firstPlayer.adjustedRating}, adjustedRatingPlayer2=${secondPlayer.adjustedRating}`);
-        // if (firstPlayer.isConnected) {
+        if (firstPlayer.isConnected) {
             firstPlayer.adjustedRating += ELO_CHANGE_SPEED * (firstPlayerResult - firstPlayerExpectedResult);
-        // }
-        // if (secondPlayer.isConnected) {
+        }
+        if (secondPlayer.isConnected) {
             secondPlayer.adjustedRating += ELO_CHANGE_SPEED * (secondPlayerResult - (1 - firstPlayerExpectedResult));
-        // }
+        }
         
         console.log(`AFTER CHANGE adjustedRatingPlayer1=${firstPlayer.adjustedRating}, adjustedRatingPlayer2=${secondPlayer.adjustedRating}`);
 
