@@ -1,6 +1,7 @@
 import { PlayerData } from '@app/classes/communication/';
 import { Tile } from '@app/classes/tile';
 import { PublicUser } from '@common/models/user';
+import { DEFAULT_PLAYER_RATING } from '@common/models/constants';
 export default class Player {
     id: string;
     publicUser: PublicUser;
@@ -13,7 +14,7 @@ export default class Player {
         this.id = id;
         this.publicUser = publicUser;
         this.score = 0;
-        this.adjustedRating = 1000;
+        this.adjustedRating = DEFAULT_PLAYER_RATING;
         this.ratingVariation = 0;
         this.tiles = [...tiles];
     }

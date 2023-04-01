@@ -89,7 +89,7 @@ export default class Game {
         return game;
     }
 
-    createGameHistoryPlayerAbandon(player: Player): GameHistoryPlayerCreation {
+    createGameHistoryPlayer(player: Player): GameHistoryPlayerCreation {
         return {
             idUser: isIdVirtualPlayer(player.id) ? undefined : player.idUser,
             score: player.score,
@@ -109,53 +109,17 @@ export default class Game {
             players: this.getPlayers()
                 .map((player) => {
                     if (player.isConnected) {
-                        return this.createGameHistoryPlayerAbandon(player);
+                        return this.createGameHistoryPlayer(player);
                     }
                     return undefined;
                 })
                 .filter((player) => player !== undefined) as GameHistoryPlayerCreation[],
-
-            // players: [
-            //     {
-            //         idUser: isIdVirtualPlayer(this.player1.id) ? undefined : this.player1.idUser,
-            //         score: this.player1.score,
-            //         isVirtualPlayer: isIdVirtualPlayer(this.player1.id),
-            //         isWinner: this.isPlayerWinner(this.player1),
-            //         ratingVariation: this.player1.adjustedRating - this.player1.initialRating,
-            //         hasAbandoned: !this.player1.isConnected,
-            //     },
-            //     {
-            //         idUser: isIdVirtualPlayer(this.player2.id) ? undefined : this.player2.idUser,
-            //         score: this.player2.score,
-            //         isVirtualPlayer: isIdVirtualPlayer(this.player2.id),
-            //         isWinner: this.isPlayerWinner(this.player2),
-            //         ratingVariation: this.player2.adjustedRating - this.player2.initialRating,
-            //         hasAbandoned: !this.player2.isConnected,
-            //     },
-            //     {
-            //         idUser: isIdVirtualPlayer(this.player3.id) ? undefined : this.player3.idUser,
-            //         score: this.player3.score,
-            //         isVirtualPlayer: isIdVirtualPlayer(this.player3.id),
-            //         isWinner: this.isPlayerWinner(this.player3),
-            //         ratingVariation: this.player3.adjustedRating - this.player3.initialRating,
-            //         hasAbandoned: !this.player3.isConnected,
-            //     },
-            //     {
-            //         idUser: isIdVirtualPlayer(this.player4.id) ? undefined : this.player4.idUser,
-            //         score: this.player4.score,
-            //         isVirtualPlayer: isIdVirtualPlayer(this.player4.id),
-            //         isWinner: this.isPlayerWinner(this.player4),
-            //         ratingVariation: this.player4.adjustedRating - this.player4.initialRating,
-            //         hasAbandoned: !this.player4.isConnected,
-            //     },
-            // ],
         };
     }
 
     isPlayerWinner(currentPlayer: Player): boolean {
         const opponents = this.getOpponentPlayers(currentPlayer);
         for (const opponent of opponents) {
-            // if (currentPlayer.score < opponent.score) {
             if (opponent.isConnected && currentPlayer.score < opponent.score) {
                 return false;
             }

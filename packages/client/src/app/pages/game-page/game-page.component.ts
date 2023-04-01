@@ -38,6 +38,7 @@ import { TilePlacementService } from '@app/services/tile-placement-service/tile-
 import { Analysis, AnalysisRequestInfoType } from '@common/models/analysis';
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
+import { DEFAULT_PLAYER_RATING } from '@common/models/constants';
 
 @Component({
     selector: 'app-game-page',
@@ -185,8 +186,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         this.dialog.open(EndGameDialogComponent, {
             data: {
                 hasWon: this.isLocalPlayerWinner(winnerNames),
-                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-                adjustedRating: localPlayer?.adjustedRating ?? 1000,
+                adjustedRating: localPlayer?.adjustedRating ?? DEFAULT_PLAYER_RATING,
                 ratingVariation: localPlayer?.ratingVariation ?? 0,
                 action: () => this.handlePlayerLeaves(),
                 actionAnalysis: () => this.requestAnalysis(),

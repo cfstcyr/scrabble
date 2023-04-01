@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { EndGameDialogParameters } from './end-game-dialog.types';
-import { DIALOG_END_OF_GAME_TITLE } from '@app/constants/pages-constants';
+import { DIALOG_END_OF_GAME_LOSS_MESSAGE, DIALOG_END_OF_GAME_TITLE, DIALOG_END_OF_GAME_WIN_MESSAGE } from '@app/constants/pages-constants';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { Router } from '@angular/router';
 
@@ -14,7 +14,6 @@ export class EndGameDialogComponent {
     title: string;
     hasWon: boolean;
     message: string;
-    // ratingMessage: string;
     adjustedRating: number;
     ratingVariation: number;
     action?: () => void;
@@ -26,7 +25,7 @@ export class EndGameDialogComponent {
     ) {
         this.hasWon = data.hasWon;
         this.title = DIALOG_END_OF_GAME_TITLE(this.hasWon);
-        this.message = this.hasWon ? 'Bravo pour votre victoire!' : 'Meilleure chance la prochaine fois!';
+        this.message = this.hasWon ? DIALOG_END_OF_GAME_WIN_MESSAGE : DIALOG_END_OF_GAME_LOSS_MESSAGE;
         this.ratingVariation = data.ratingVariation;
         this.adjustedRating = data.adjustedRating;
         this.action = data.action;

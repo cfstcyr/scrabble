@@ -6,6 +6,7 @@ import { RatedUser, User } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
 import { Service } from 'typedi';
 import { PublicUserStatistics, UserGameStatisticInfo, UserStatistics } from '@common/models/user-statistics';
+import { DEFAULT_PLAYER_RATING } from '@common/models/constants';
 
 export const NUMBER_OF_USERS_IN_LEADERBOARD = 25;
 
@@ -56,7 +57,7 @@ export class UserStatisticsService {
             averageTimePerGame: 0,
             gamesPlayedCount: 0,
             gamesWonCount: 0,
-            rating: 1000,
+            rating: DEFAULT_PLAYER_RATING,
         });
     }
 

@@ -31,6 +31,8 @@ export const DIALOG_NO_ACTIVE_GAME_CONTENT = "Vous n'avez aucune partie en cours
 export const DIALOG_NO_ACTIVE_GAME_BUTTON = "Retour à la page d'accueil";
 
 export const DIALOG_END_OF_GAME_TITLE = (isLocalPlayerWinner: boolean) => `Fin de la partie - ${isLocalPlayerWinner ? 'Victoire' : 'Défaite'}`;
+export const DIALOG_END_OF_GAME_WIN_MESSAGE = 'Bravo pour votre victoire!';
+export const DIALOG_END_OF_GAME_LOSS_MESSAGE = 'Meilleure chance la prochaine fois!';
 
 export const DIALOG_END_OF_GAME_OBSERVER_TITLE = 'Fin de la partie';
 export const DIALOG_END_OF_GAME_OBSERVER_CONTENT = (winnerNames: string[]) =>
