@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/analysis/action-shown.dart';
 import 'package:mobile/classes/analysis/analysis.dart';
+import 'package:mobile/components/analysis/no-interaction-tile-rack.dart';
 import 'package:mobile/components/app-toggle-button.dart';
 import 'package:mobile/components/game/game_board.dart';
+import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -24,31 +26,58 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Toggle action
-          AppToggleButton<ActionShownValue, ActionShown>(
-              defaultValue: ActionShown.played,
-              optionsToValue: ACTION_SHOWN_OPTIONS_TO_VALUES,
-              toggleOptionWidget: generateActionShownWidget),
-          // Points
-          SizedBox(height: SPACE_2,),
-          Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  color: _themeColorService.themeDetails.value.color.colorValue),
-              padding: EdgeInsets.all(SPACE_1),
-              child: Text(
-                '${widget.criticalMoment.playedPlacement?.score ?? 0} pts',
-                style: theme.textTheme.titleSmall!.copyWith(color: Colors.white),
-              )),
-          SizedBox(height: SPACE_2,),
-          SizedBox(width: MediaQuery.of(context).size.width - 600, height: MediaQuery.of(context).size.height - 120, child: GameBoard(gameStream: widget.criticalMoment.convertToGameStream)),
-          // Board
-          // Tilerack
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Transform.translate(
+            offset: Offset(32, 0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                AppToggleButton<ActionShownValue, ActionShown>(
+                    defaultValue: ActionShown.played,
+                    optionsToValue: ACTION_SHOWN_OPTIONS_TO_VALUES,
+                    toggleOptionWidget: generateActionShownWidget, orientation: Axis.vertical,),
+                // Points
+                SizedBox(
+                  height: SPACE_2,
+                ),
+                Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        color:
+                            _themeColorService.themeDetails.value.color.colorValue),
+                    padding: EdgeInsets.all(SPACE_1),
+                    child: Text(
+                      '${widget.criticalMoment.playedPlacement?.score ?? 0} pts',
+                      style:
+                          theme.textTheme.titleSmall!.copyWith(color: Colors.white),
+                    )),
+              ],
+            ),
+          ),
+        ),
+        Column(
+          children: [
+            SizedBox(
+                width: 560,
+                height: 560,
+                child: GameBoard(
+                    gameStream: widget.criticalMoment.convertToGameStream)),
+            SizedBox(
+                height: 60,
+                child: NoInteractionTileRack(
+                    gameStream: widget.criticalMoment.convertToGameStream,
+                    tileSize: TILE_SIZE - 10)),
+            // Board
+            // Tilerack
+          ],
+        ),
+        Spacer(),
+      ],
     );
   }
 }

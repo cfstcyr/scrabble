@@ -10,9 +10,11 @@ class AppToggleButton<T extends AppToggleOption, V extends Enum>
   AppToggleButton(
       {required this.defaultValue,
       required this.optionsToValue,
-      required this.toggleOptionWidget})
+      required this.toggleOptionWidget,
+      this.orientation = Axis.horizontal})
       : _selected$ = BehaviorSubject.seeded(optionsToValue[defaultValue]!);
 
+  final Axis orientation;
   final V defaultValue;
   final Map<V, T> optionsToValue;
   final Widget Function(T value) toggleOptionWidget;
@@ -57,7 +59,7 @@ class _AppToggleButtonState<T extends AppToggleOption, V extends Enum>
           if (!snapshot.hasData) return SizedBox.shrink();
 
           return ToggleButtons(
-              direction: Axis.horizontal,
+              direction: widget.orientation,
               isSelected: snapshot.data!,
               onPressed: (int index) =>
                   widget._selected$.add(widget.toggleValues[index]),

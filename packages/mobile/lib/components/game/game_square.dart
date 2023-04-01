@@ -106,6 +106,7 @@ class GameSquare extends StatelessWidget {
                             Text(
                               'x${square.multiplier!.value}',
                               style: TextStyle(
+                                // fontSize: 12,
                                 height: 1,
                               ),
                             )

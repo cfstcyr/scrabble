@@ -26,8 +26,7 @@ class AnalysisResultDialog {
                     ?.copyWith(fontWeight: FontWeight.w500),
               ),
             ),
-            titlePadding: EdgeInsets.zero,
-            // titlePadding: EdgeInsets.only(left: SPACE_4 * 4, right: SPACE_4 * 4, top: SPACE_3, bottom: SPACE_1),
+            titlePadding: EdgeInsets.only(left: SPACE_4 * 4, right: SPACE_4 * 4, top: SPACE_3, bottom: SPACE_1 / 2),
             // content: CarouselSlider(
             //   options: CarouselOptions(
             //     autoPlay: false,
@@ -43,9 +42,8 @@ class AnalysisResultDialog {
               height: double.infinity,
               child: CriticalMomentWidget(criticalMoment: criticalMoments[0]),
             ),
-            contentPadding: EdgeInsets.zero,
-            // actionsPadding: EdgeInsets.only(left: SPACE_2, right: SPACE_4, top: SPACE_1, bottom: SPACE_2),
-            actionsPadding: EdgeInsets.zero,
+            contentPadding: EdgeInsets.symmetric(vertical: 0),
+            actionsPadding: EdgeInsets.only(left: SPACE_2, right: SPACE_4, top: 0, bottom: SPACE_2),
             actions: [
               AppButton(
                 onPressed: () => _closeAnalysisResult(context),

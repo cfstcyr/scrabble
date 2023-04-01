@@ -10,11 +10,13 @@ import 'package:rxdart/rxdart.dart';
 import 'package:mobile/classes/tile/tile-rack.dart' as p;
 
 abstract class AbstractTileRack extends StatelessWidget {
-  AbstractTileRack({required this.gameStream});
+  AbstractTileRack({required this.gameStream, this.tileSize = TILE_SIZE});
 
   final ValueStream<AbstractGame?> gameStream;
   final BehaviorSubject<int?> _currentTileIndex = BehaviorSubject();
   final BehaviorSubject<int?> _currentHoveredTileIndex = BehaviorSubject();
+
+  final double tileSize;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,13 @@ abstract class AbstractTileRack extends StatelessWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     alignment: WrapAlignment.spaceBetween,
                     children: [
-                      ShuffleTileRackButton(tileRack: game.data!.tileRack),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children:
+                          startOfTileRackButtons(tileRack: game.data!.tileRack),
+                      ),
                       playerTileRack(game.data!.tileRack.stream),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -52,6 +60,10 @@ abstract class AbstractTileRack extends StatelessWidget {
   List<Widget> endOfTileRackButtons(p.TileRack tileRack, Board board);
 
   Widget buildTile(c.Tile tile, int index);
+
+  List<Widget> startOfTileRackButtons({required p.TileRack tileRack}) {
+    return List.of([ShuffleTileRackButton(tileRack: tileRack)]);
+  }
 
   Widget playerTileRack(Stream<List<c.Tile>> tilesStream) {
     return StreamBuilder(
@@ -121,20 +133,20 @@ abstract class AbstractTileRack extends StatelessWidget {
           children: [
             Tile(
               tile: tile,
-              size: TILE_SIZE,
+              size: tileSize,
               shouldWiggle: shouldWiggle,
             ),
             Wrap(
               children: [
                 _buildTarget(index - 1,
-                    width: TILE_SIZE / 2, height: TILE_SIZE),
-                _buildTarget(index, width: TILE_SIZE / 2, height: TILE_SIZE),
+                    width: tileSize / 2, height: tileSize),
+                _buildTarget(index, width: tileSize / 2, height: tileSize),
               ],
             ),
           ],
         ),
         _buildTarget(index,
-            width: SPACE_2, height: TILE_SIZE, changeOnActive: true)
+            width: SPACE_2, height: tileSize, changeOnActive: true)
       ],
     );
   }
