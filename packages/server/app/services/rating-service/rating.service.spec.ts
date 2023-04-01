@@ -1,188 +1,93 @@
-// /* eslint-disable @typescript-eslint/no-magic-numbers */
-// /* eslint-disable @typescript-eslint/no-empty-function */
-// /* eslint-disable dot-notation */
-// /* eslint-disable no-unused-expressions */
-// /* eslint-disable @typescript-eslint/no-unused-expressions */
-// import Game from '@app/classes/game/game';
-// import Player from '@app/classes/player/player';
-// import * as chai from 'chai';
-// import * as chaiAsPromised from 'chai-as-promised';
-// import * as spies from 'chai-spies';
-// import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
-// import * as Sinon from 'sinon';
-// import { Container } from 'typedi';
-// import { AnalysisService } fro./elo.serviceice';
-// import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
-// import WordFindingService from '@app/services/word-finding-service/word-finding.service';
-// import { Tile } from '@app/classes/tile';
-// import { Square } from '@app/classes/square';
-// import { ActionExchange, ActionPass, ActionPlace } from '@app/classes/actions';
-// import { WordPlacement } from '@app/classes/word-finding';
-// import { CompletedRound } from '@app/classes/round/round';
-// import { CriticalMoment } from '@common/models/analysis';
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable dot-notation */
+// Lint no unused expression must be disabled to use chai syntax
+/* eslint-disable @typescript-eslint/no-unused-expressions, no-unused-expressions */
+import Player from '@app/classes/player/player';
+import * as chai from 'chai';
+import { expect } from 'chai';
+import * as spies from 'chai-spies';
+import { DEFAULT_PLAYER_RATING } from '@common/models/constants';
+import { RatingService } from './rating.service';
+chai.use(spies);
 
-// const expect = chai.expect;
+describe('RatingService', () => {
+    let player1: Player;
+    let player2: Player;
+    let player3: Player;
+    let player4: Player;
 
-// chai.use(spies);
-// chai.use(chaiAsPromised);
+    beforeEach(() => {
+        player1 = new Player('id', { avatar: '', username: '', email: '' });
+        player2 = new Player('id', { avatar: '', username: '', email: '' });
+        player3 = new Player('id', { avatar: '', username: '', email: '' });
+        player4 = new Player('id', { avatar: '', username: '', email: '' });
+        player1.adjustedRating = DEFAULT_PLAYER_RATING;
+        player2.adjustedRating = DEFAULT_PLAYER_RATING;
+        player3.adjustedRating = DEFAULT_PLAYER_RATING;
+        player4.adjustedRating = DEFAULT_PLAYER_RATING;
+        player1.initialRating = DEFAULT_PLAYER_RATING;
+        player2.initialRating = DEFAULT_PLAYER_RATING;
+        player3.initialRating = DEFAULT_PLAYER_RATING;
+        player4.initialRating = DEFAULT_PLAYER_RATING;
+    });
 
-// const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
-// const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
-// const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
-// const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
+    afterEach(() => {
+        chai.spy.restore();
+    });
 
-// const DEFAULT_PLAYER_1 = new Player('id1', USER1);
-// const DEFAULT_PLAYER_2 = new Player('id2', USER2);
-// const DEFAULT_PLAYER_3 = new Player('id3', USER3);
-// const DEFAULT_PLAYER_4 = new Player('id4', USER4);
-// const DEFAULT_ID = 'gameId';
-// const DEFAULT_USER_ID = 69;
+    describe('adjustRatings', () => {
+        it('should call evaluateWinner 6 times (3 + 2 + 1)', () => {
+            const players = [{} as unknown as Player, {} as unknown as Player, {} as unknown as Player, {} as unknown as Player];
+            const conversionSpy = chai.spy.on(RatingService, 'evaluateWinner', () => {});
+            RatingService.adjustRatings(players);
+            expect(conversionSpy).to.have.been.called.exactly(6);
+        });
+    });
 
-// const DEFAULT_COMPLETED_ROUNDS = [{ player: DEFAULT_PLAYER_1 }, { player: DEFAULT_PLAYER_2 }, { player: DEFAULT_PLAYER_1 }];
-// const DEFAULT_GAME_MANAGER = { completedRounds: DEFAULT_COMPLETED_ROUNDS };
-// const DEFAULT_GAME = {
-//     player1: DEFAULT_PLAYER_1,
-//     player2: DEFAULT_PLAYER_2,
-//     player3: DEFAULT_PLAYER_3,
-//     player4: DEFAULT_PLAYER_4,
-//     id: DEFAULT_ID,
-//     gameIsOver: false,
-//     roundManager: DEFAULT_GAME_MANAGER,
-//     dictionarySummary: { id: '' },
-//     getId: () => DEFAULT_ID,
-//     createStartGameData: () => undefined,
-//     areGameOverConditionsMet: () => true,
-//     getPlayers: () => [DEFAULT_PLAYER_1, DEFAULT_PLAYER_2, DEFAULT_PLAYER_3, DEFAULT_PLAYER_4],
-// };
+    describe('adjustAbandoningUserRating', () => {
+        it('should decrease the elo of player1', () => {
+            const players = [player2, player3, player4];
+            const difference = RatingService.adjustAbandoningUserRating(player1, players);
+            expect(difference).to.equal(player1.adjustedRating - player1.initialRating);
+            expect(player1.adjustedRating < player1.initialRating).to.be.true;
+        });
+    });
 
-// const TILES_1 = [{} as unknown as Tile, {} as unknown as Tile, {} as unknown as Tile];
-// const DEFAULT_BOARD = [[{} as unknown as Square], [{} as unknown as Square]];
+    describe('evaluateWinner', () => {
+        it('should decrease the elo of player1 if he has a lower score than player 2', () => {
+            player1.score = 0;
+            player2.score = 10;
+            RatingService['evaluateWinner'](player1, player2);
+            expect(player1.adjustedRating < player1.initialRating).to.be.true;
+        });
 
-// const DEFAULT_PASS_ACTION = {} as unknown as ActionPass;
-// const DEFAULT_EXCHANGE_ACTION = {} as unknown as ActionExchange;
-// const DEFAULT_PLACE_ACTION = { scoredPoints: 1, wordPlacement: {} as unknown as WordPlacement } as unknown as ActionPlace;
+        it('should decrease the elo of player1 the same amount no matter the point difference', () => {
+            player1.score = 0;
+            player2.score = 10;
+            RatingService['evaluateWinner'](player1, player2);
+            const differenceLowScoreDiff = player1.adjustedRating - player1.initialRating;
+            player1.adjustedRating = player1.initialRating;
+            player1.score = 0;
+            player2.score = 100000;
+            RatingService['evaluateWinner'](player1, player2);
+            const differenceHighScoreDiff = player1.adjustedRating - player1.initialRating;
+            expect(differenceLowScoreDiff).to.equal(differenceHighScoreDiff);
+        });
 
-// const CRITICAL_MOMENT_PASS_ROUND = {
-//     tiles: TILES_1,
-//     board: DEFAULT_BOARD,
-//     actionPlayed: DEFAULT_PASS_ACTION,
-// };
-
-// const CRITICAL_MOMENT_EXCHANGE_ROUND = {
-//     tiles: TILES_1,
-//     board: DEFAULT_BOARD,
-//     actionPlayed: DEFAULT_EXCHANGE_ACTION,
-// };
-
-// const CRITICAL_MOMENT_PLACE_ROUND = {
-//     tiles: TILES_1,
-//     board: DEFAULT_BOARD,
-//     actionPlayed: DEFAULT_PLACE_ACTION,
-// };
-
-// describe('AnalysisService', () => {
-//     let analysisService: AnalysisService;
-//     let testingUnit: ServicesTestingUnit;
-
-//     beforeEach(() => {
-//         testingUnit = new ServicesTestingUnit().withStubbed(WordFindingService).withStubbed(AnalysisPersistenceService);
-//     });
-
-//     beforeEach(async () => {
-//         analysisService = Container.get(AnalysisService);
-
-//         Sinon.stub(Player.prototype, 'idUser').get(() => 'DEFAULT_USER_ID');
-//     });
-
-//     afterEach(async () => {
-//         chai.spy.restore();
-//         Sinon.restore();
-//         testingUnit.restore();
-//     });
-
-//     it('should create', () => {
-//         expect(analysisService).to.exist;
-//     });
-
-//     describe('addAnalysis', async () => {
-//         let spy: unknown;
-
-//         it('should call asynchronousAnalysis with the correct parameters', async () => {
-//             spy = chai.spy.on(analysisService, 'asynchronousAnalysis', async () => Promise.resolve());
-//             const game = DEFAULT_GAME as unknown as Game;
-//             const idGameHistory = 1;
-//             await analysisService.addAnalysis(game, idGameHistory);
-//             expect(spy).to.have.been.called();
-//         });
-//     });
-
-//     describe('asynchronousAnalysis', async () => {
-//         it('should call analyseRound when it is the correct player', async () => {
-//             const spyAnalyseRound = chai.spy.on(analysisService, 'analyseRound', () => ({} as unknown as CriticalMoment));
-//             chai.spy.on(analysisService['analysisPersistenceService'], 'addAnalysis', async () => {});
-
-//             const game = DEFAULT_GAME as unknown as Game;
-//             const idGameHistory = 1;
-//             const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGame: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
-//             await analysisService['asynchronousAnalysis'](game, playerAnalyses, idGameHistory);
-//             expect(spyAnalyseRound).to.have.been.called.twice;
-//         });
-
-//         it('should call addAnalysis for each player', async () => {
-//             chai.spy.on(analysisService, 'analyseRound', () => ({} as unknown as CriticalMoment));
-//             const spyAddAnalysis = chai.spy.on(analysisService['analysisPersistenceService'], 'addAnalysis', () => {});
-
-//             const game = DEFAULT_GAME as unknown as Game;
-//             const idGameHistory = 1;
-//             const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGame: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
-//             await analysisService['asynchronousAnalysis'](game, playerAnalyses, idGameHistory);
-//             expect(spyAddAnalysis).to.have.been.called();
-//         });
-//     });
-
-//     describe('analyseRound', async () => {
-//         it('should call findBestPlacement and early return if nothing found ', async () => {
-//             const spyFindBestPlacement = chai.spy.on(analysisService, 'findBestPlacement', () => undefined);
-//             const game = DEFAULT_GAME as unknown as Game;
-
-//             analysisService['analyseRound'](CRITICAL_MOMENT_PASS_ROUND as unknown as CompletedRound, game);
-//             expect(spyFindBestPlacement).to.have.been.called();
-//         });
-
-//         it('should return undefined if action place and point difference lower than POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD ', () => {
-//             chai.spy.on(analysisService, 'findBestPlacement', () => {
-//                 return { score: 10 };
-//             });
-//             const game = DEFAULT_GAME as unknown as Game;
-
-//             expect(analysisService['analyseRound'](CRITICAL_MOMENT_PLACE_ROUND as unknown as CompletedRound, game)).to.be.undefined;
-//         });
-
-//         it('should return a critical moment if action place and point diff greater than POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD ', () => {
-//             chai.spy.on(analysisService, 'findBestPlacement', () => {
-//                 return { score: 40 };
-//             });
-//             const game = DEFAULT_GAME as unknown as Game;
-
-//             expect(analysisService['analyseRound'](CRITICAL_MOMENT_PLACE_ROUND as unknown as CompletedRound, game)).to.be.not.undefined;
-//         });
-
-//         it('should return undefined if action pass or exchange and point difference lower than POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD ', () => {
-//             chai.spy.on(analysisService, 'findBestPlacement', () => {
-//                 return { score: 10 };
-//             });
-//             const game = DEFAULT_GAME as unknown as Game;
-
-//             expect(analysisService['analyseRound'](CRITICAL_MOMENT_EXCHANGE_ROUND as unknown as CompletedRound, game)).to.be.undefined;
-//         });
-
-//         it('should return a critical moment if action exchange and point diff greater than POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD ', () => {
-//             chai.spy.on(analysisService, 'findBestPlacement', () => {
-//                 return { score: 40 };
-//             });
-//             const game = DEFAULT_GAME as unknown as Game;
-
-//             expect(analysisService['analyseRound'](CRITICAL_MOMENT_EXCHANGE_ROUND as unknown as CompletedRound, game)).to.be.not.undefined;
-//         });
-//     });
-// });
+        it('should decrease the elo of player1 more if he loses to a lower player', () => {
+            player1.score = 0;
+            player2.score = 10;
+            RatingService['evaluateWinner'](player1, player2);
+            const differenceSameElo = player1.adjustedRating - player1.initialRating;
+            player1.adjustedRating = player1.initialRating;
+            player2.initialRating = 500;
+            player2.adjustedRating = 500;
+            player1.score = 0;
+            player2.score = 10;
+            RatingService['evaluateWinner'](player1, player2);
+            const differenceLoseLowElo = player1.adjustedRating - player1.initialRating;
+            expect(differenceLoseLowElo < differenceSameElo).to.be.true;
+        });
+    });
+});
