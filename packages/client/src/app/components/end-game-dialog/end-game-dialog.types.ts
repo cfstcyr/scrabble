@@ -3,4 +3,5 @@ export interface EndGameDialogParameters {
     adjustedRating: number;
     ratingVariation: number;
     action?: () => void;
+    actionAnalysis?: () => void;
 }

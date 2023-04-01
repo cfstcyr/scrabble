@@ -18,6 +18,7 @@ export class EndGameDialogComponent {
     adjustedRating: number;
     ratingVariation: number;
     action?: () => void;
+    actionAnalysis?: () => void;
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: EndGameDialogParameters,
         private router: Router,
@@ -29,11 +30,17 @@ export class EndGameDialogComponent {
         this.ratingVariation = data.ratingVariation;
         this.adjustedRating = data.adjustedRating;
         this.action = data.action;
+        this.actionAnalysis = data.actionAnalysis;
     }
 
     handleButtonClick() {
         if (this.action) this.action();
         this.router.navigate([ROUTE_HOME]);
+        this.dialogRef.close();
+    }
+
+    handleAnalysisButtonClick() {
+        if (this.actionAnalysis) this.actionAnalysis();
         this.dialogRef.close();
     }
 }

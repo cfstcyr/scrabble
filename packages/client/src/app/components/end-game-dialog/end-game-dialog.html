@@ -15,11 +15,12 @@
 </mat-dialog-content>
 <mat-dialog-actions>
         <button class="dialog-button" mat-flat-button (click)="handleButtonClick()">
-            <!-- <app-icon *ngIf="btn.icon" [icon]="btn.icon"></app-icon> -->
             Quitter la partie
         </button>
+        <button class="dialog-button" mat-flat-button (click)="handleAnalysisButtonClick()">
+            Analyser la partie
+        </button>
         <button class="dialog-button" mat-flat-button mat-dialog-close>
-            <!-- <app-icon *ngIf="btn.icon" [icon]="btn.icon"></app-icon> -->
             Rester sur cette page
         </button>
 </mat-dialog-actions>

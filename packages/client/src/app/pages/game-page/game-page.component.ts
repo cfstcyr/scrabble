@@ -189,6 +189,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
                 adjustedRating: localPlayer?.adjustedRating ?? 1000,
                 ratingVariation: localPlayer?.ratingVariation ?? 0,
                 action: () => this.handlePlayerLeaves(),
+                actionAnalysis: () => this.requestAnalysis(),
             },
         });
 

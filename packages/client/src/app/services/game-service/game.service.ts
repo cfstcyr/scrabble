@@ -191,10 +191,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
     private handleGameUpdate(gameUpdateData: GameUpdateData): void {
         this.tilePlacementService.resetTiles();
 
-        if (gameUpdateData.isGameOver) {
-            this.idGameHistory = gameUpdateData.idGameHistory;
-            this.handleGameOver(gameUpdateData.winners ?? []);
-        }
         if (gameUpdateData.player1) {
             this.handleUpdatePlayerData(gameUpdateData.player1);
         }
@@ -208,6 +204,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
             this.handleUpdatePlayerData(gameUpdateData.player4);
         }
         if (gameUpdateData.isGameOver) {
+            this.idGameHistory = gameUpdateData.idGameHistory;
             this.handleGameOver(gameUpdateData.winners ?? []);
         }
         if (gameUpdateData.board) {
