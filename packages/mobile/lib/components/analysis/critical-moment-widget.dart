@@ -55,6 +55,10 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
                     builder: (context, snapshot) {
                       bool isGreenBackground = !snapshot.hasData ||
                           snapshot.data!.getEnumName() == ActionShown.best.name;
+
+                      int scoreToShow = snapshot.hasData
+                          ? _computeScoreToShow(snapshot.data!)
+                          : 0;
                       return Container(
                           decoration: BoxDecoration(
                               borderRadius:
@@ -65,7 +69,7 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
                                   : Colors.grey.shade500),
                           padding: EdgeInsets.all(SPACE_1),
                           child: Text(
-                            '${widget.criticalMoment.playedPlacement?.score ?? 0} pts',
+                            '$scoreToShow pts',
                             style: theme.textTheme.titleSmall!
                                 .copyWith(color: Colors.white),
                           ));
@@ -93,6 +97,12 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
         Spacer(),
       ],
     );
+  }
+
+  int _computeScoreToShow(ActionShownValue selectedValue) {
+    return selectedValue.getEnumName() == ActionShown.played.name
+        ? widget.criticalMoment.playedPlacement?.score ?? 0
+        : widget.criticalMoment.bestPlacement.score;
   }
 }
 
