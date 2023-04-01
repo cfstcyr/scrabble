@@ -11,6 +11,7 @@ export const ESCAPE = 'Escape';
 export const ARROW_LEFT = 'ArrowLeft';
 export const ARROW_RIGHT = 'ArrowRight';
 export const ENTER = 'Enter';
+export const SPACE = ' ';
 export const KEYDOWN = 'keydown';
 export const DEFAULT_HIGH_SCORE: SingleHighScore = { name: 'player1', score: 0 };
 

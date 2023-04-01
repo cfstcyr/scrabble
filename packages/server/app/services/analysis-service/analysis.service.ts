@@ -1,4 +1,4 @@
-import { CriticalMoment, PlayerAnalysis } from '@app/classes/analysis/analysis';
+import { PlayerAnalysis } from '@app/classes/analysis/analysis';
 import Game from '@app/classes/game/game';
 import { CompletedRound } from '@app/classes/round/round';
 import Range from '@app/classes/range/range';
@@ -12,6 +12,7 @@ import { ActionType } from '@common/models/action';
 import { POINT_DIFFERENCE_CRITICAL_MOMENT_THRESHOLD } from '@app/constants/services-constants/analysis-const';
 import { GameHistory } from '@common/models/game-history';
 import { TypeOfId } from '@common/types/id';
+import { CriticalMoment } from '@common/models/analysis';
 
 @Service()
 export class AnalysisService {
@@ -27,7 +28,7 @@ export class AnalysisService {
         const playerAnalyses: PlayerAnalysis[] = [];
         for (const player of game.getPlayers()) {
             if (player instanceof AbstractVirtualPlayer) continue;
-            playerAnalyses.push({ player, analysis: { idGame: idGameHistory, idUser: player.idUser, criticalMoments: [] } });
+            playerAnalyses.push({ player, analysis: { idGameHistory: idGameHistory, idUser: player.idUser, criticalMoments: [] } });
         }
 
         await this.asynchronousAnalysis(game, playerAnalyses, idGameHistory);
@@ -74,7 +75,7 @@ export class AnalysisService {
     private findBestPlacement(round: CompletedRound, dictionaryId: string): ScoredWordPlacement | undefined {
         const wordFindingInstance = this.wordFindingService.getWordFindingInstance(this.wordFindingRequest.useCase, dictionaryId, [
             round.board,
-            round.player.tiles,
+            round.tiles,
             this.wordFindingRequest,
         ]);
         return wordFindingInstance.findWords().pop();

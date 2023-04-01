@@ -7,7 +7,7 @@
 /* eslint-disable dot-notation */
 import { Action, ActionExchange, ActionHelp, ActionPass, ActionPlace, ActionReserve } from '@app/classes/actions';
 import ActionHint from '@app/classes/actions/action-hint/action-hint';
-import { Orientation } from '@app/classes/board';
+import { Board, Orientation } from '@app/classes/board';
 import { ActionData, ActionExchangePayload, ActionPlacePayload } from '@app/classes/communication/action-data';
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
@@ -107,7 +107,7 @@ describe('GamePlayService', () => {
         gameStub.gameIsOver = false;
         gameStub.dictionarySummary = { id: 'id' } as unknown as DictionarySummary;
 
-        round = { player: gameStub.player1, startTime: new Date(), limitTime: new Date(), tiles: [] };
+        round = { player: gameStub.player1, startTime: new Date(), limitTime: new Date(), tiles: [], board: {} as unknown as Board };
         roundManagerStub.nextRound.returns(round);
         roundManagerStub.getCurrentRound.returns(round);
 

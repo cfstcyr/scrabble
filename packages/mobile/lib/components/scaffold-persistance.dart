@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/notification-pastille.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/services/chat.service.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:mobile/services/chat.service.dart';
 
 import 'chat-management.dart';
 
@@ -13,18 +12,31 @@ class MyScaffold extends StatelessWidget {
   final ChatService _chatService = getIt.get<ChatService>();
   final Widget body;
   final String title;
+  final Color backgroundColor;
+  final bool hasBackButton;
 
-  MyScaffold({required this.body, required this.title});
+  MyScaffold(
+      {required this.body,
+      required this.title,
+      this.backgroundColor = Colors.white,
+      this.hasBackButton = false});
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Scaffold(
-      body: body,
       appBar: AppBar(
+        leading: hasBackButton
+            ? IconButton(
+                icon: Icon(Icons.arrow_back, color: theme.primaryColor),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : null,
+        automaticallyImplyLeading: false,
         title: Text(title),
         shadowColor: Colors.black,
         backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
+        surfaceTintColor: theme.colorScheme.primary,
         elevation: 1,
         centerTitle: true,
         actions: [
@@ -37,7 +49,8 @@ class MyScaffold extends StatelessWidget {
                   if (snapshot.hasData) {
                     bool hasUnreadMessages = snapshot.data!;
 
-                    pastilleColor = _getNotificationPastilleColor(hasUnreadMessages);
+                    pastilleColor =
+                        _getNotificationPastilleColor(hasUnreadMessages);
                   }
 
                   return NotificationPastille(
@@ -64,6 +77,8 @@ class MyScaffold extends StatelessWidget {
                   )),
         ],
       ),
+      body: body,
+      backgroundColor: backgroundColor,
       endDrawer: Container(width: 325, child: const ChatManagement()),
     );
   }

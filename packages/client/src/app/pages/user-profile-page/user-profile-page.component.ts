@@ -1,9 +1,20 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import {
+    AnalysisResultModalComponent,
+    AnalysisResultModalParameters,
+} from '@app/components/analysis/analysis-result-modal/analysis-result-modal.component';
+import {
+    AnalysisWaitingDialogComponent,
+    AnalysisWaitingDialogParameter,
+} from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 import { UserService } from '@app/services/user-service/user.service';
+import { Analysis, AnalysisData, AnalysisRequestInfoType } from '@common/models/analysis';
 import { GameHistoryForUser } from '@common/models/game-history';
 import { PublicServerAction } from '@common/models/server-action';
+import { TypeOfId } from '@common/types/id';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -16,7 +27,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     @ViewChild('gameHistoryPaginator') gameHistoryPaginator: MatPaginator;
     @ViewChild('serverActionsPaginator') serverActionsPaginator: MatPaginator;
 
-    gameHistoryColumns: string[] = ['startTime', 'endTime', 'gameResult', 'ratingVariation', 'score'];
+    gameHistoryColumns: string[] = ['startTime', 'endTime', 'gameResult', 'ratingVariation', 'score', 'analysis'];
     serverActionsColumns: string[] = ['timestamp', 'actionType'];
 
     avatar: Observable<string | undefined>;
@@ -29,8 +40,9 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     rating: Observable<number | undefined>;
     gameHistory: MatTableDataSource<GameHistoryForUser>;
     serverActions: MatTableDataSource<PublicServerAction>;
-
-    constructor(private readonly userService: UserService) {
+    analysis: Analysis;
+    idAnalysis: TypeOfId<Analysis>;
+    constructor(private readonly userService: UserService, private readonly dialog: MatDialog) {
         this.avatar = this.userService.user.pipe(map((user) => user?.avatar));
         this.username = this.userService.user.pipe(map((user) => user?.username));
         this.email = this.userService.user.pipe(map((user) => user?.email));
@@ -61,5 +73,36 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
 
     openEditUserDialog(): void {
         this.userService.openEditUserDialog();
+    }
+
+    requestAnalysis(idAnalysis: TypeOfId<AnalysisData>): void {
+        if (this.analysis && this.idAnalysis === idAnalysis) {
+            this.showAnalysisModal(this.analysis);
+        } else {
+            const dialogRef = this.dialog.open<AnalysisWaitingDialogComponent, AnalysisWaitingDialogParameter>(AnalysisWaitingDialogComponent, {
+                disableClose: false,
+                data: { id: idAnalysis, type: AnalysisRequestInfoType.ID_ANALYSIS },
+            });
+            dialogRef.afterClosed().subscribe((analysis) => {
+                if (analysis) {
+                    this.analysis = analysis;
+                    this.idAnalysis = idAnalysis;
+                    this.showAnalysisModal(analysis);
+                }
+            });
+        }
+    }
+
+    private showAnalysisModal(analysis: Analysis) {
+        this.dialog.open<AnalysisResultModalComponent, AnalysisResultModalParameters>(AnalysisResultModalComponent, {
+            disableClose: false,
+            data: {
+                leftButton: {
+                    content: 'Retourner au profil',
+                    closeDialog: true,
+                },
+                analysis,
+            },
+        });
     }
 }
