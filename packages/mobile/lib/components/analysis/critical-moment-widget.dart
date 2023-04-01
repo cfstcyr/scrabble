@@ -26,6 +26,14 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
+    AppToggleButton<ActionShownValue, ActionShown> actionShownToggle =
+        AppToggleButton<ActionShownValue, ActionShown>(
+      defaultValue: ActionShown.played,
+      optionsToValue: ACTION_SHOWN_OPTIONS_TO_VALUES,
+      toggleOptionWidget: generateActionShownWidget,
+      orientation: Axis.vertical,
+    );
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,25 +45,31 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                AppToggleButton<ActionShownValue, ActionShown>(
-                    defaultValue: ActionShown.played,
-                    optionsToValue: ACTION_SHOWN_OPTIONS_TO_VALUES,
-                    toggleOptionWidget: generateActionShownWidget, orientation: Axis.vertical,),
+                actionShownToggle,
                 // Points
                 SizedBox(
                   height: SPACE_2,
                 ),
-                Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        color:
-                            _themeColorService.themeDetails.value.color.colorValue),
-                    padding: EdgeInsets.all(SPACE_1),
-                    child: Text(
-                      '${widget.criticalMoment.playedPlacement?.score ?? 0} pts',
-                      style:
-                          theme.textTheme.titleSmall!.copyWith(color: Colors.white),
-                    )),
+                StreamBuilder<ActionShownValue>(
+                    stream: actionShownToggle.selectedStream,
+                    builder: (context, snapshot) {
+                      bool isGreenBackground = !snapshot.hasData ||
+                          snapshot.data!.getEnumName() == ActionShown.best.name;
+                      return Container(
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8.0)),
+                              color: isGreenBackground
+                                  ? _themeColorService
+                                      .themeDetails.value.color.colorValue
+                                  : Colors.grey.shade500),
+                          padding: EdgeInsets.all(SPACE_1),
+                          child: Text(
+                            '${widget.criticalMoment.playedPlacement?.score ?? 0} pts',
+                            style: theme.textTheme.titleSmall!
+                                .copyWith(color: Colors.white),
+                          ));
+                    }),
               ],
             ),
           ),
