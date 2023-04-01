@@ -104,9 +104,8 @@ export class ActiveGameService {
         const replacedVirtualPlayer = game.getPlayerByNumber(playerNumber);
         const observer: Observer = game.observers.filter((_observer) => _observer.id === observerId)[0];
         const newPlayer: Player = this.observerToPlayer(observer);
-        newPlayer.tiles = replacedVirtualPlayer.tiles;
-        newPlayer.score = replacedVirtualPlayer.score;
-        game.player3 = newPlayer;
+
+        game.replacePlayer(replacedVirtualPlayer.id, newPlayer);
     }
     private observerToPlayer(observer: Observer): Player {
         return new Player(observer.id, observer.publicUser);
