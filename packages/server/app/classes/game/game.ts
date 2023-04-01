@@ -11,7 +11,6 @@ import RoundManager from '@app/classes/round/round-manager';
 import { LetterValue, Tile } from '@app/classes/tile';
 import TileReserve from '@app/classes/tile/tile-reserve';
 import { TileReserveData } from '@app/classes/tile/tile.types';
-import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { END_GAME_HEADER_MESSAGE, START_TILES_AMOUNT } from '@app/constants/classes-constants';
 import { WINNER_MESSAGE } from '@app/constants/game-constants';
 import { INVALID_PLAYER_ID_FOR_GAME } from '@app/constants/services-errors';
@@ -149,15 +148,6 @@ export default class Game {
 
     getGroupChannelId(): TypeOfId<Channel> {
         return this.groupChannelId;
-    }
-
-    getConnectedRealPlayers(): Player[] {
-        const connectedRealPlayers: Player[] = [];
-        if (this.player1.isConnected && !(this.player1 instanceof AbstractVirtualPlayer)) connectedRealPlayers.push(this.player1);
-        if (this.player2.isConnected && !(this.player2 instanceof AbstractVirtualPlayer)) connectedRealPlayers.push(this.player2);
-        if (this.player3.isConnected && !(this.player3 instanceof AbstractVirtualPlayer)) connectedRealPlayers.push(this.player3);
-        if (this.player4.isConnected && !(this.player4 instanceof AbstractVirtualPlayer)) connectedRealPlayers.push(this.player4);
-        return connectedRealPlayers;
     }
 
     getPlayer(playerId: string): Player {

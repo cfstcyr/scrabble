@@ -41,7 +41,7 @@ import { UserStatisticsService } from '@app/services/user-statistics-service/use
 import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 import { AnalysisService } from '@app/services/analysis-service/analysis.service';
 import { ActionType } from '@common/models/action';
-import { RatingService } from '../rating-service/rating.service';
+import { RatingService } from '@app/services/rating-service/rating.service';
 import { GameHistoryPlayerCreation } from '@common/models/game-history';
 
 const expect = chai.expect;
@@ -114,7 +114,6 @@ describe('GamePlayService', () => {
         gameStub.endOfGame.returns([DEFAULT_PLAYER_SCORE, DEFAULT_PLAYER_SCORE]);
         gameStub.endGameMessage.returns([]);
         gameStub.replacePlayer.returns({});
-        gameStub.getConnectedRealPlayers.returns([gameStub.player1]);
         gameStub['getTilesLeftPerLetter'].returns(new Map(DEFAULT_GET_TILES_PER_LETTER_ARRAY));
 
         player = gameStub.player1;
@@ -463,7 +462,7 @@ describe('GamePlayService', () => {
         });
     });
 
-    describe.only('PlayerLeftEvent', () => {
+    describe('PlayerLeftEvent', () => {
         const playerWhoLeftId = 'playerWhoLeftId';
         let activeGameServiceStub: SinonStubbedInstance<ActiveGameService>;
         let dictionaryServiceStub: SinonStubbedInstance<DictionaryService>;
@@ -478,13 +477,11 @@ describe('GamePlayService', () => {
             chai.spy.on(RatingService, 'adjustRatings', () => undefined);
             chai.spy.on(RatingService, 'adjustAbandoningUserRating', () => undefined);
             chai.spy.on(gamePlayService, 'createGameHistoryPlayerAbandon', () => {
-                console.log('createGameHistoryPlayerAbandon');
                 return {} as unknown as GameHistoryPlayerCreation;
             });
+            sinon.stub(Player.prototype, 'idUser').get(() => 1);
 
-            chai.spy.on(gamePlayService, 'updateLeaverStatistics', () => {
-                console.log('updateLeaverStatistics');
-            });
+            chai.spy.on(gamePlayService, 'updateLeaverStatistics', () => {});
 
             activeGameServiceStub = createStubInstance(ActiveGameService);
             gameHistoriesServiceStub = createStubInstance(GameHistoriesService);
@@ -510,7 +507,6 @@ describe('GamePlayService', () => {
             gameStub.player2 = new Player(playerWhoLeftId, USER2);
             gameStub.player3 = new Player(playerWhoLeftId, USER3);
             gameStub.player4 = new Player(playerWhoLeftId, USER4);
-            sinon.stub(Player.prototype, 'idUser').get(() => 1);
             gameStub.getOpponentPlayers.returns([gameStub.player2, gameStub.player3, gameStub.player4]);
             gameStub.getPlayers.returns([gameStub.player1, gameStub.player2, gameStub.player3, gameStub.player4]);
             gameHistoriesServiceStub.addGameHistory.resolves(1);
@@ -544,6 +540,9 @@ describe('GamePlayService', () => {
             const isIdVirtualPlayerStub = stub(arrowFunction, 'isIdVirtualPlayer');
             isIdVirtualPlayerStub.onFirstCall().returns(false);
             isIdVirtualPlayerStub.onSecondCall().returns(true);
+            isIdVirtualPlayerStub.onThirdCall().returns(true);
+            isIdVirtualPlayerStub.onCall(4).returns(true);
+            isIdVirtualPlayerStub.onCall(5).returns(true);
             const emitSpy = chai.spy.on(gamePlayService['activeGameService'].playerLeftEvent, 'emit', () => {
                 return;
             });
@@ -588,6 +587,11 @@ describe('GamePlayService', () => {
             chai.spy.on(gamePlayService['analysisService'], 'addAnalysis', () => {
                 return;
             });
+
+            chai.spy.on(RatingService, 'adjustRatings', () => undefined);
+            sinon.stub(Player.prototype, 'idUser').get(() => 1);
+
+            gameStub.completeGameHistory.returns();
         });
 
         it('should call end of game and endgame message', async () => {
@@ -599,12 +603,6 @@ describe('GamePlayService', () => {
         it('should add to game histories if not already added', async () => {
             await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(gameHistoriesServiceStub.addGameHistory.calledOnce).to.be.true;
-        });
-
-        it('should call getConnectedRealPlayers', async () => {
-            await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
-            expect(gameStub.getConnectedRealPlayers.calledOnce).to.be.true;
-            expect(highScoresServiceStub.addHighScore.calledOnce).to.be.true;
         });
 
         it('should update set updatedData players score if they exist', async () => {
@@ -643,7 +641,6 @@ describe('GamePlayService', () => {
         it('should modify both ids', async () => {
             const result = gamePlayService['addMissingPlayerId']('', '', { player1: { id: 'id1' }, player2: { id: 'id2' } });
             gameStub.dictionarySummary = { id: 'id' } as unknown as DictionarySummary;
-            await gamePlayService['handleGameOver'](gameStub as unknown as Game, {});
             expect(result.player1!.id).to.equal(gameStub.player1.id);
             expect(result.player2!.id).to.equal(gameStub.player2.id);
         });
