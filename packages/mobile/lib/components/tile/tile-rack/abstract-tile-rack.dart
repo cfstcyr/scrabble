@@ -37,8 +37,8 @@ abstract class AbstractTileRack extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
-                        children:
-                          startOfTileRackButtons(tileRack: game.data!.tileRack),
+                        children: startOfTileRackButtons(
+                            tileRack: game.data!.tileRack),
                       ),
                       playerTileRack(game.data!.tileRack.stream),
                       Row(
@@ -126,20 +126,20 @@ abstract class AbstractTileRack extends StatelessWidget {
     );
   }
 
-  Widget buildWrappedTile(c.Tile tile, int index, bool shouldWiggle) {
+  Widget buildWrappedTile(c.Tile tile, int index, bool shouldWiggle,
+      {Color tint = Colors.transparent}) {
     return Wrap(
       children: [
         Stack(
           children: [
             Tile(
-              tile: tile,
-              size: tileSize,
-              shouldWiggle: shouldWiggle,
-            ),
+                tile: tile,
+                size: tileSize,
+                shouldWiggle: shouldWiggle,
+                tint: tint),
             Wrap(
               children: [
-                _buildTarget(index - 1,
-                    width: tileSize / 2, height: tileSize),
+                _buildTarget(index - 1, width: tileSize / 2, height: tileSize),
                 _buildTarget(index, width: tileSize / 2, height: tileSize),
               ],
             ),

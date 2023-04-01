@@ -1,7 +1,11 @@
 import 'package:mobile/classes/actions/action-place.dart';
+import 'package:mobile/classes/board/board.dart';
+import 'package:mobile/classes/board/navigator.dart';
 import 'package:mobile/classes/board/orientation.dart';
 import 'package:mobile/classes/board/position.dart';
+import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-parser.dart';
+import 'package:mobile/classes/tile/tile.dart';
 
 class WordPlacement {
   final ActionPlacePayload actionPlacePayload;
@@ -16,21 +20,35 @@ class WordPlacement {
           'startPosition': actionPlacePayload.toJson()['startPosition'],
         },
       };
+
+  List<Square> toSquaresOnBoard(Board board) {
+    List<Square> squares = [];
+    Position currentPosition = actionPlacePayload.position;
+    Navigator boardNavigator = board.navigate(currentPosition, orientation: actionPlacePayload.orientation);
+
+    for (Tile tile in actionPlacePayload.tiles) {
+      // print(tile.toJson());
+      // print(currentPosition.x);
+      squares.add(Square(tile: tile, position: currentPosition.copy()));
+      currentPosition = boardNavigator.forward().position;
+    }
+
+    // print(squares.length);
+    return squares;
+  }
 }
 
 
-class ScoredWordPlacement extends ActionPlacePayload {
+class ScoredWordPlacement extends WordPlacement {
   final int score;
 
   ScoredWordPlacement(
-      {required super.tiles, required super.position, required super.orientation, required this.score});
+      {required super.actionPlacePayload, required this.score});
 
   factory ScoredWordPlacement.fromJson(Map<String, dynamic> json) {
-    ActionPlacePayload wordPlacement = ActionPlacePayload.fromJson(json);
+    ActionPlacePayload actionPlacePayload = ActionPlacePayload.fromJson(json);
     return ScoredWordPlacement(
-        tiles: wordPlacement.tiles,
-        position: wordPlacement.position,
-        orientation: wordPlacement.orientation,
+        actionPlacePayload: actionPlacePayload,
         score: json['score'] as int);
   }
 }

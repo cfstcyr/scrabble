@@ -64,12 +64,15 @@ class CriticalMoment {
   final ScoredWordPlacement? playedPlacement;
   final ScoredWordPlacement bestPlacement;
 
+  final BehaviorSubject<AbstractGame> _game$;
+
   CriticalMoment(
       {required this.grid,
       required this.tiles,
       required this.actionType,
       required this.playedPlacement,
-      required this.bestPlacement});
+      required this.bestPlacement}) : _game$ = BehaviorSubject.seeded((AbstractGame(
+      board: Board().withGrid(grid), tileRack: TileRack().setTiles(tiles))));
 
   factory CriticalMoment.fromJson(Map<String, dynamic> json) {
     return CriticalMoment(
@@ -82,6 +85,16 @@ class CriticalMoment {
         bestPlacement: ScoredWordPlacement.fromJson(json['bestPlacement']));
   }
 
-  ValueStream<AbstractGame> get convertToGameStream => BehaviorSubject.seeded((AbstractGame(
-      board: Board().withGrid(grid), tileRack: TileRack().setTiles(tiles)))).stream;
+  ValueStream<AbstractGame> get convertToGameStream => _game$.stream;
+
+  void showPlacementOnBoard(ScoredWordPlacement placement) {
+    Board updatedBoard = Board().withGrid(grid);
+    List<Square> squaresToPlace = placement.toSquaresOnBoard(updatedBoard);
+
+    updatedBoard.updateBoardData(squaresToPlace);
+
+    AbstractGame updatedGame = AbstractGame(board: updatedBoard, tileRack: _game$.value.tileRack);
+
+    _game$.add(updatedGame);
+  }
 }

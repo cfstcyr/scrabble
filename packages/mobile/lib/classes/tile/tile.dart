@@ -39,4 +39,15 @@ class Tile {
   void toggleIsSelected() {
     isSelectedForExchange = !isSelectedForExchange;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Tile &&
+          runtimeType == other.runtimeType &&
+          letter == other.letter &&
+          value == other.value;
+
+  @override
+  int get hashCode => letter.hashCode ^ value.hashCode;
 }
