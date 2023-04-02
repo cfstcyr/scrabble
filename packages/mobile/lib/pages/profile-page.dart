@@ -9,6 +9,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../classes/game-history.dart';
 import '../classes/user.dart';
+import '../constants/user-constants.dart';
 import '../locator.dart';
 import '../services/user.service.dart';
 
@@ -19,12 +20,8 @@ class ProfilePage extends StatelessWidget {
 
   BehaviorSubject<PublicUser?> user = BehaviorSubject.seeded(null);
   bool isLocalUser = false;
-  BehaviorSubject<UserStatistics> statistics = BehaviorSubject.seeded(
-      UserStatistics(
-          averagePointsPerGame: -1,
-          averageTimePerGame: -1,
-          gamesPlayedCount: -1,
-          gamesWonCount: -1));
+  BehaviorSubject<UserStatistics> statistics =
+      BehaviorSubject.seeded(DEFAULT_USER_STATISTICS);
   BehaviorSubject<List<GameHistory>> gameHistory = BehaviorSubject.seeded([]);
 
   @override

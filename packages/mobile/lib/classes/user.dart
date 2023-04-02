@@ -207,7 +207,6 @@ class UserSearchItem {
 }
 
 class UserSearchQueryResult {
-  // String query;
   List<UserSearchItem> results;
 
   UserSearchQueryResult({required this.results});
