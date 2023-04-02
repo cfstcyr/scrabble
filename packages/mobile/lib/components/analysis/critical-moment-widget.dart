@@ -38,6 +38,8 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+
     AppToggleButton<ActionShownValue, ActionShown> actionShownToggle =
         AppToggleButton<ActionShownValue, ActionShown>(
       defaultValue: ActionShown.played,
@@ -50,6 +52,10 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
         stream: actionShownToggle.selectedStream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) return SizedBox.shrink();
+
+          bool shouldShowPlacement =
+              snapshot.data!.getEnum() == ActionShown.best ||
+                  _criticalMomentView.actionType == ActionType.place;
 
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -72,10 +78,10 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
                   ),
                 ),
               ),
-              _criticalMomentView.actionType == ActionType.place
+              shouldShowPlacement
                   ? _getPlacementAnalysis(
                       _computePlacementViewFromSelection(snapshot.data!))
-                  : SizedBox(),
+                  : _getNonPlacementAnalysis(theme),
               Spacer(),
             ],
           );
@@ -96,6 +102,19 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
               tileViews: placement.tileRackView,
             )),
       ],
+    );
+  }
+
+  Widget _getNonPlacementAnalysis(ThemeData theme) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(60),
+        child: Text(
+          'Vous avez passé votre tour',
+          style: theme.textTheme.displaySmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 
