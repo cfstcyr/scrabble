@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/analysis/analysis-request.dart';
 import 'package:mobile/classes/analysis/analysis.dart';
+import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/components/analysis/analysis-result-dialog.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
@@ -25,8 +26,13 @@ class PostGameActions extends StatelessWidget {
       return;
     }
 
-    analysis = await _analysisService.requestAnalysis(
-        _gameService.game.idGameHistory ?? -1, AnalysisRequestInfoType.idGame);
+    int idAnalysis = _gameService.game.idGameHistory ?? -1;
+    analysis = await AnalysisRequestDialog(
+            title: "En attente de l'analyse",
+            message: "Analyse en cours",
+            idAnalysis: idAnalysis,
+            requestType: AnalysisRequestInfoType.idGame)
+        .openAnalysisRequestDialog(context);
   }
 
   @override
@@ -38,18 +44,27 @@ class PostGameActions extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              AppButton(
-                onPressed: () => leave(context),
-                icon: Icons.output_outlined,
-                size: AppButtonSize.large,
-                theme: AppButtonTheme.danger,
+              Spacer(flex: 1),
+              Expanded(
+                flex: 2,
+                child: AppButton(
+                  onPressed: () => leave(context),
+                  icon: Icons.output_outlined,
+                  size: AppButtonSize.large,
+                  theme: AppButtonTheme.danger,
+                ),
               ),
-              AppButton(
-                onPressed: () => requestAnalysis(context),
-                icon: Icons.science,
-                size: AppButtonSize.large,
-                theme: AppButtonTheme.primary,
+              Spacer(flex: 2,),
+              Expanded(
+                flex: 2,
+                child: AppButton(
+                  onPressed: () => requestAnalysis(context),
+                  icon: Icons.science,
+                  size: AppButtonSize.large,
+                  theme: AppButtonTheme.primary,
+                ),
               ),
+              Spacer(flex: 1,)
             ],
           )),
     );

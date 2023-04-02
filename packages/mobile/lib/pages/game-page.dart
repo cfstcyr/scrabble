@@ -43,8 +43,9 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.paused)
+    if (state == AppLifecycleState.paused) {
       getIt.get<GamePlayController>().leaveGame();
+    }
     if (state == AppLifecycleState.resumed) {
       InitializerService initializerService = getIt.get<InitializerService>();
       await initializerService.initialize();
@@ -117,7 +118,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
                               ],
                             ),
                             Expanded(child: GameMessages()),
-                            _actions(snapshot.data!),
+                            _actions(snapshot.data),
                           ],
                         ),
                       ),

@@ -63,16 +63,13 @@ class UserProfileGameHistory extends StatelessWidget {
                                                   title:
                                                       "En attente de l'analyse",
                                                   message:
-                                                      "Chargement de l'analyse")
+                                                      "Chargement de l'analyse",
+                                                  idAnalysis: idAnalysis,
+                                                  requestType:
+                                                      AnalysisRequestInfoType
+                                                          .idAnalysis)
                                               .openAnalysisRequestDialog(
                                                   context);
-
-                                          await Future.delayed(Duration(milliseconds: 500));
-
-                                          _analysisService.requestAnalysis(
-                                              idAnalysis,
-                                              AnalysisRequestInfoType
-                                                  .idAnalysis);
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(

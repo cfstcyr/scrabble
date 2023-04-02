@@ -1,20 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/analysis/analysis-request.dart';
+import 'package:mobile/classes/analysis/analysis.dart';
 import 'package:mobile/components/app-circular-spinner.dart';
 import 'package:mobile/components/LoadingDots.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/services/analysis-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 class AnalysisRequestDialog {
   final String title;
   String message;
   final bool isLoading;
+  final int? idAnalysis;
+  final AnalysisRequestInfoType? requestType;
 
   AnalysisRequestDialog(
-      {required this.title, required this.message, this.isLoading = true});
+      {required this.title,
+      required this.message,
+      this.isLoading = true,
+      this.idAnalysis,
+      this.requestType});
 
-  void openAnalysisRequestDialog(BuildContext context) {
+  Future<AnalysisCompleted?> openAnalysisRequestDialog(BuildContext context) async {
+    _openDialog(context);
+
+    if (idAnalysis == null || requestType == null) return null;
+
+    await Future.delayed(Duration(milliseconds: 500));
+
+    return await getIt.get<AnalysisService>().requestAnalysis(idAnalysis!, requestType!);
+  }
+
+  void _openDialog(BuildContext context) {
     ThemeColorService themeColorService = getIt.get<ThemeColorService>();
     ThemeData theme = Theme.of(context);
 
@@ -47,7 +66,11 @@ class AnalysisRequestDialog {
                             .themeDetails.value.color.colorValue,
                         size: AppCircularSpinnerSize.large,
                       )
-                    : Icon(Icons.error, color: theme.colorScheme.error, size: 96,),
+                    : Icon(
+                        Icons.error,
+                        color: theme.colorScheme.error,
+                        size: 96,
+                      ),
                 SizedBox(
                   height: SPACE_4,
                 ),
@@ -59,7 +82,10 @@ class AnalysisRequestDialog {
                       message,
                       style: theme.textTheme.titleMedium,
                     ),
-                    LoadingDots(style: theme.textTheme.titleMedium!, isPlaying: isLoading,),
+                    LoadingDots(
+                      style: theme.textTheme.titleMedium!,
+                      isPlaying: isLoading,
+                    ),
                   ],
                 )
               ],
