@@ -63,16 +63,13 @@ class CriticalMoment {
   final ActionType actionType;
   final ScoredWordPlacement? playedPlacement;
   final ScoredWordPlacement bestPlacement;
-
-  final BehaviorSubject<AbstractGame> _game$;
-
+  
   CriticalMoment(
       {required this.grid,
       required this.tiles,
       required this.actionType,
       required this.playedPlacement,
-      required this.bestPlacement}) : _game$ = BehaviorSubject.seeded((AbstractGame(
-      board: Board().withGrid(grid), tileRack: TileRack().setTiles(tiles))));
+      required this.bestPlacement});
 
   factory CriticalMoment.fromJson(Map<String, dynamic> json) {
     return CriticalMoment(
