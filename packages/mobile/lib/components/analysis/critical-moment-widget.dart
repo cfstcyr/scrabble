@@ -111,8 +111,6 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
               gameStream: placement.gameStream,
               tileViews: placement.tileRackView,
             )),
-        // Board
-        // Tilerack
       ],
     );
   }

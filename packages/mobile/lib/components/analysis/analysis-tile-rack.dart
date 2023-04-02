@@ -4,6 +4,8 @@ import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/components/tile/tile-rack/abstract-tile-rack.dart';
 import 'package:mobile/components/tile/tile.dart' as w;
+import 'package:mobile/constants/game.constants.dart';
+import 'package:mobile/constants/layout.constants.dart';
 
 
 class AnalysisTileRack extends AbstractTileRack {
@@ -23,6 +25,9 @@ class AnalysisTileRack extends AbstractTileRack {
 
   @override
   Widget buildTile(Tile tile, int index) {
-    return tileViews[index];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: SPACE_1),
+      child: tileViews[index],
+    );
   }
 }

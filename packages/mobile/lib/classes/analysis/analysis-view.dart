@@ -38,7 +38,7 @@ class PlacementView {
     board.updateBoardData(squaresToPlace);
 
     placement._gameForPlacement$ = BehaviorSubject.seeded(
-        AbstractGame(board: board, tileRack: TileRack()));
+        AbstractGame(board: board, tileRack: TileRack().setTiles(criticalMoment.tiles)));
 
     return placement;
   }
