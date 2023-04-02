@@ -63,7 +63,7 @@ class CriticalMoment {
   final ActionType actionType;
   final ScoredWordPlacement? playedPlacement;
   final ScoredWordPlacement bestPlacement;
-  
+
   CriticalMoment(
       {required this.grid,
       required this.tiles,

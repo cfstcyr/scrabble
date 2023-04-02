@@ -70,7 +70,7 @@ abstract class AbstractTileRack extends StatelessWidget {
           return snapshot.data != null
               ? Wrap(
                   children: [
-                    buildTarget(-1,
+                    _buildTarget(-1,
                         width: SPACE_2,
                         height: TILE_SIZE,
                         changeOnActive: true),
@@ -137,19 +137,19 @@ abstract class AbstractTileRack extends StatelessWidget {
                 tint: tint),
             Wrap(
               children: [
-                buildTarget(index - 1, width: TILE_SIZE / 2, height: TILE_SIZE),
-                buildTarget(index, width: TILE_SIZE / 2, height: TILE_SIZE),
+                _buildTarget(index - 1, width: TILE_SIZE / 2, height: TILE_SIZE),
+                _buildTarget(index, width: TILE_SIZE / 2, height: TILE_SIZE),
               ],
             ),
           ],
         ),
-        buildTarget(index,
+        _buildTarget(index,
             width: SPACE_2, height: TILE_SIZE, changeOnActive: true)
       ],
     );
   }
 
-  StreamBuilder<AbstractGame?> buildTarget(int index,
+  StreamBuilder<AbstractGame?> _buildTarget(int index,
       {double width = 0, double height = 0, bool changeOnActive = false}) {
     return StreamBuilder<AbstractGame?>(
         stream: gameStream,
