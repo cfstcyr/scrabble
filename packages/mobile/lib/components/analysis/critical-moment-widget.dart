@@ -107,7 +107,7 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
       child: Padding(
         padding: const EdgeInsets.all(60),
         child: Text(
-          'Vous avez passé votre tour',
+          _getNonPlacementText(),
           style: theme.textTheme.displaySmall!
               .copyWith(fontWeight: FontWeight.bold),
         ),
@@ -145,6 +145,12 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
     return selectedValue.getEnum() == ActionShown.played
         ? _criticalMomentView.playedPlacement
         : _criticalMomentView.bestPlacement;
+  }
+
+  String _getNonPlacementText() {
+    return _criticalMomentView.actionType == ActionType.exchange
+        ? 'Vous avez échangé vos tuiles'
+        : 'Vous avez passé votre tour';
   }
 }
 

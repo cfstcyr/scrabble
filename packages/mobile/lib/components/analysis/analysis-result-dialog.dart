@@ -52,18 +52,22 @@ class AnalysisResultDialog {
                 options: CarouselOptions(
                   autoPlay: false,
                   enableInfiniteScroll: false,
-                  enlargeCenterPage: true,
+                  viewportFraction: 1.0,
                   onPageChanged: (index, _) => _currentSlideIndex$.add(index),
                 ),
                 items: [
-                  AnalysisOverviewWidget(
-                      overview: AnalysisOverview.fromCriticalMoments(
-                          criticalMoments)),
+                  _carouselItem(
+                    child: AnalysisOverviewWidget(
+                        overview: AnalysisOverview.fromCriticalMoments(
+                            criticalMoments)),
+                  ),
                   ...List.generate(
                       criticalMoments.length,
                           (index) =>
-                          CriticalMomentWidget(
-                              criticalMoment: criticalMoments[index]))
+                          _carouselItem(
+                            child: CriticalMomentWidget(
+                                criticalMoment: criticalMoments[index]),
+                          ))
                 ],
               ),
             ),
@@ -98,6 +102,10 @@ class AnalysisResultDialog {
             backgroundColor: Colors.white,
           );
         });
+  }
+
+  Widget _carouselItem({required Widget child}) {
+    return child;
   }
 
   Widget _slideIndicator(ThemeData theme) {
