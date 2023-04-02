@@ -23,11 +23,7 @@ class AnalysisController {
         .get(Uri.parse("$endpoint/$idAnalysis"),
             params: requestTypeParams(requestType))
         .then((Response value) =>
-            AnalysisCompleted.fromJson(jsonDecode(value.body)))
-        .timeout(Duration(seconds: 5), onTimeout: () {
-      print('timeout');
-      throw Exception('Analysis not completed in time');
-    });
+            AnalysisCompleted.fromJson(jsonDecode(value.body)));
   }
 
   static final AnalysisController _instance =
