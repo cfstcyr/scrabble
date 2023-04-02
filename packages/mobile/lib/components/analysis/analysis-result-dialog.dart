@@ -40,7 +40,7 @@ class AnalysisResultDialog {
                 options: CarouselOptions(
                   autoPlay: false,
                   enableInfiniteScroll: false,
-
+                  enlargeCenterPage: true,
                 ),
                 items: [
                   AnalysisOverviewWidget(
