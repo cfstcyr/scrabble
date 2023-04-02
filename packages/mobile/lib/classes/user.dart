@@ -254,8 +254,9 @@ class UserStatistics {
 
   UserStatistics.fromJson(Map<String, dynamic> json)
       : this(
-            averagePointsPerGame: json['averagePointsPerGame'],
-            averageTimePerGame: json['averageTimePerGame'],
+            averagePointsPerGame:
+                (json['averagePointsPerGame'] as num).toDouble(),
+            averageTimePerGame: (json['averageTimePerGame'] as num).toDouble(),
             gamesPlayedCount: json['gamesPlayedCount'],
             gamesWonCount: json['gamesWonCount']);
 }

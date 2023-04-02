@@ -36,7 +36,9 @@ class ProfilePage extends StatelessWidget {
           padding: EdgeInsets.all(SPACE_3),
           child: Column(children: [
             UserProfileInfo(user: user, isLocalUser: isLocalUser),
-            UserProfileStatistics(),
+            UserProfileStatistics(
+              statistics: _userService.getUserStatistics(),
+            ),
             UserProfileGameHistory(),
             UserProfileServerActions(),
           ]),
