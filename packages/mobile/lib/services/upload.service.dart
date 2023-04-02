@@ -7,6 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 import '../components/alert-dialog.dart';
+import '../constants/upload.constants.dart';
 
 class UploadService {
   UploadService._privateConstructor();
@@ -14,9 +15,9 @@ class UploadService {
   final client = UploadcareClient(
     options: ClientOptions(
       authorizationScheme: AuthSchemeRegular(
-        apiVersion: 'v0.5',
-        publicKey: '18e381be1851edb422d0',
-        privateKey: '595c87058e07b9f4e0c6',
+        apiVersion: UPLOAD_VERSION,
+        publicKey: UPLOAD_PUBLIC_KEY,
+        privateKey: UPLOAD_PRIVATE_KEY,
       ),
     ),
   );
@@ -27,10 +28,12 @@ class UploadService {
 
   Future<String?> getImage(ImageSource media) async {
     var img = await picker.pickImage(source: media);
-    return await client.upload.base(UCFile(File(img!.path)));
+    if (img == null) return Future.value('');
+    return await client.upload.base(UCFile(File(img.path)));
   }
 
-  String formatAvatarLink(String? id) {
+  String? formatAvatarLink(String? id) {
+    if (id == null || id.isEmpty) return null;
     return 'https://ucarecdn.com/$id/';
   }
 
