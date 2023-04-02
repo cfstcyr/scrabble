@@ -51,13 +51,12 @@ class PlacementView {
   }
 
   GameBoard generateGameBoard() {
-    gameBoard = GameBoard(gameStream: gameStream);
-    return gameBoard!;
+    return gameBoard ?? GameBoard(gameStream: gameStream);
   }
 
   AnalysisTileRack generateTileRack() {
-    tileRack = AnalysisTileRack(gameStream: gameStream, tileViews: tileViews);
-    return tileRack!;
+    return tileRack ??
+        AnalysisTileRack(gameStream: gameStream, tileViews: tileViews);
   }
 
   static List<w.Tile> _transformToTileRackView(
