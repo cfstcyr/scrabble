@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/group.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/pages/create-account-page.dart';
 import 'package:mobile/pages/create-game-page.dart';
 import 'package:mobile/pages/game-page.dart';
@@ -40,7 +41,6 @@ final ROUTES = {
   HOME_ROUTE: (context) => HomePage(),
   GROUPS_ROUTE: (context) => GroupPage(),
   GAME_PAGE_ROUTE: (context) => GamePage(),
-  PROFILE_ROUTE: (context) => ProfilePage(),
   PROFILE_EDIT_ROUTE: (context) => ProfileEditPage(),
   PROFILE_SEARCH_ROUTE: (context) => ProfileSearchPage(),
   PUZZLE_ROUTE: (context) => PuzzlePage(),
@@ -49,17 +49,30 @@ final ROUTES = {
 Route<dynamic>? customOnGenerateRoute(RouteSettings settings) {
   switch (settings.name) {
     case (CREATE_LOBBY_ROUTE):
-      return MaterialPageRoute(builder: (context) {
-        return CreateLobbyPage(group: settings.arguments as Group);
-      });
+      return MaterialPageRoute(
+          settings: settings,
+          builder: (context) {
+            return CreateLobbyPage(group: settings.arguments as Group);
+          });
     case (JOIN_WAITING_ROUTE):
-      return MaterialPageRoute(builder: (context) {
-        return GroupRequestWaitingPage(group: settings.arguments as Group);
-      });
+      return MaterialPageRoute(
+          settings: settings,
+          builder: (context) {
+            return GroupRequestWaitingPage(group: settings.arguments as Group);
+          });
     case (JOIN_LOBBY_ROUTE):
-      return MaterialPageRoute(builder: (context) {
-        return JoinWaitingPage(currentGroup: settings.arguments as Group);
-      });
+      return MaterialPageRoute(
+          settings: settings,
+          builder: (context) {
+            return JoinWaitingPage(currentGroup: settings.arguments as Group);
+          });
+    case (PROFILE_ROUTE):
+      return MaterialPageRoute(
+          settings: settings,
+          builder: (context) {
+            return ProfilePage(
+                userSearchResult: settings.arguments as PublicUser);
+          });
     default:
       return null;
   }

@@ -8,13 +8,19 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/services/user.service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../alert-dialog.dart';
 
 class UserProfileInfo extends StatelessWidget {
+  UserProfileInfo({required this.user, required this.isLocalUser});
+
   final UserService _userService = getIt.get<UserService>();
   final AccountAuthenticationController _authService =
       getIt.get<AccountAuthenticationController>();
+
+  BehaviorSubject<PublicUser?> user = BehaviorSubject.seeded(null);
+  bool isLocalUser = false;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +28,7 @@ class UserProfileInfo extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(SPACE_3),
         child: StreamBuilder<PublicUser?>(
-          stream: _userService.user,
+          stream: user,
           builder: (context, snapshot) {
             return snapshot.data != null
                 ? Row(

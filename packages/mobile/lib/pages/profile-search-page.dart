@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/text-field-handler.dart';
+import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
@@ -7,6 +8,7 @@ import 'package:mobile/services/user.service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../components/user-avatar.dart';
+import '../routes/routes.dart';
 
 class ProfileSearchPage extends StatefulWidget {
   @override
@@ -38,6 +40,10 @@ class ProfileEditPageState extends State<ProfileSearchPage> {
 
   void _handleSearchQueryChanged(String value) {
     _currentSearchQuery$.add(value.isNotEmpty ? value : null);
+  }
+
+  PublicUser _castAsPublicUser(UserSearchItem user) {
+    return PublicUser(username: user.username, avatar: user.avatar);
   }
 
   @override
@@ -112,7 +118,16 @@ class ProfileEditPageState extends State<ProfileSearchPage> {
                                                               4.0))),
                                               child: InkWell(
                                                 onTap: () {
-                                                  // TODO NAVIGATE TO PROFILE
+                                                  _userService
+                                                      .getProfileByUsername(
+                                                          users.data![index]
+                                                              .username);
+                                                  Navigator.pushNamed(
+                                                      context, PROFILE_ROUTE,
+                                                      arguments:
+                                                          _castAsPublicUser(
+                                                              users.data![
+                                                                  index]));
                                                 },
                                                 child: Padding(
                                                   padding:

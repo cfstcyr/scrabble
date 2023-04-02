@@ -6,6 +6,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/chat.service.dart';
 
+import '../services/user.service.dart';
 import 'chat-management.dart';
 
 class MyScaffold extends StatelessWidget {
@@ -77,7 +78,8 @@ class MyScaffold extends StatelessWidget {
               builder: (context) => InkWell(
                     onTap: _canNavigateToProfile(context)
                         ? () {
-                            Navigator.pushNamed(context, PROFILE_ROUTE);
+                            Navigator.pushNamed(context, PROFILE_ROUTE,
+                                arguments: getIt.get<UserService>().user.value);
                           }
                         : null,
                     child: Padding(
@@ -101,7 +103,6 @@ class MyScaffold extends StatelessWidget {
   }
 
   bool _isProfile(BuildContext context) {
-    print(ModalRoute.of(context)?.settings.name);
     return ModalRoute.of(context)?.settings.name == PROFILE_ROUTE;
   }
 
