@@ -100,9 +100,9 @@ class MyScaffold extends StatelessWidget {
   }
 
   bool _canNavigateToProfile(BuildContext context) {
-    return !isLocalProfile ||
-        ModalRoute.of(context)?.settings.name != PROFILE_ROUTE &&
-            ModalRoute.of(context)?.settings.name != PROFILE_EDIT_ROUTE;
+    return ModalRoute.of(context)?.settings.name != PROFILE_ROUTE &&
+        ModalRoute.of(context)?.settings.name != PROFILE_EDIT_ROUTE &&
+        ModalRoute.of(context)?.settings.name != PROFILE_SEARCH_ROUTE;
   }
 
   bool _isLocalProfile(BuildContext context) {

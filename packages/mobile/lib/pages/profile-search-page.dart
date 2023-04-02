@@ -106,7 +106,6 @@ class ProfileEditPageState extends State<ProfileSearchPage> {
                                         physics: NeverScrollableScrollPhysics(),
                                         itemCount: users.data!.length,
                                         itemBuilder: (_, int index) {
-                                          print(users.data);
                                           return Padding(
                                             padding: const EdgeInsets.only(
                                                 left: 8, right: 8, bottom: 8),
