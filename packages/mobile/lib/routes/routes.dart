@@ -13,9 +13,9 @@ import 'package:mobile/pages/profile-edit-page.dart';
 import 'package:mobile/pages/profile-page.dart';
 import 'package:mobile/pages/puzzle-page.dart';
 
-import '../main.dart';
 import '../pages/create-lobby.dart';
 import '../pages/groups-request-waiting-page.dart';
+import '../pages/profile-search-page.dart';
 
 const BASE_ROUTE = '/';
 const LOGIN_ROUTE = '/login';
@@ -29,6 +29,7 @@ const CREATE_GAME = "/create-game";
 const GAME_PAGE_ROUTE = '/game';
 const PROFILE_ROUTE = '/profile';
 const PROFILE_EDIT_ROUTE = '/edit-profile';
+const PROFILE_SEARCH_ROUTE = '/search-profile';
 const PUZZLE_ROUTE = '/puzzle';
 
 final ROUTES = {
@@ -41,6 +42,7 @@ final ROUTES = {
   GAME_PAGE_ROUTE: (context) => GamePage(),
   PROFILE_ROUTE: (context) => ProfilePage(),
   PROFILE_EDIT_ROUTE: (context) => ProfileEditPage(),
+  PROFILE_SEARCH_ROUTE: (context) => ProfileSearchPage(),
   PUZZLE_ROUTE: (context) => PuzzlePage(),
 };
 

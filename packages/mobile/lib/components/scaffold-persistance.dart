@@ -40,6 +40,18 @@ class MyScaffold extends StatelessWidget {
         elevation: 1,
         centerTitle: true,
         actions: [
+          _isProfile(context)
+              ? Builder(
+                  builder: (context) => InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, PROFILE_SEARCH_ROUTE);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(right: SPACE_2),
+                          child: Icon(Icons.search),
+                        ),
+                      ))
+              : Container(),
           Builder(
             builder: (context) => StreamBuilder<dynamic>(
                 stream: _chatService.hasUnreadMessages,
@@ -86,6 +98,11 @@ class MyScaffold extends StatelessWidget {
   bool _canNavigateToProfile(BuildContext context) {
     return ModalRoute.of(context)?.settings.name != PROFILE_ROUTE &&
         ModalRoute.of(context)?.settings.name != PROFILE_EDIT_ROUTE;
+  }
+
+  bool _isProfile(BuildContext context) {
+    print(ModalRoute.of(context)?.settings.name);
+    return ModalRoute.of(context)?.settings.name == PROFILE_ROUTE;
   }
 
   Color? _getNotificationPastilleColor(bool hasUnreadMessages) {

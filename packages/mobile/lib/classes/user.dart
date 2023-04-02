@@ -1,5 +1,7 @@
 import 'package:mobile/constants/avatars-constants.dart';
 
+import 'game-history.dart';
+
 class User {
   int idUser;
   String hash;
@@ -180,6 +182,61 @@ class EditableUserFields {
       'username': username,
       'avatar': avatar,
     };
+  }
+}
+
+class UserSearchItem {
+  String username;
+  String avatar;
+
+  UserSearchItem({required this.username, required this.avatar});
+
+  factory UserSearchItem.fromJson(Map<String, dynamic> json) {
+    return UserSearchItem(
+      username: json['username'] as String,
+      avatar: json['avatar'] ?? AVATARS.first,
+    );
+  }
+
+  static List<UserSearchItem> fromJsonList(List<dynamic> list) {
+    return list
+        .map<UserSearchItem>(
+            (json) => UserSearchItem.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+}
+
+class UserSearchQueryResult {
+  // String query;
+  List<UserSearchItem> results;
+
+  UserSearchQueryResult({required this.results});
+
+  factory UserSearchQueryResult.fromJson(dynamic json) {
+    return UserSearchQueryResult(
+      results: UserSearchItem.fromJsonList(json),
+    );
+  }
+}
+
+class UserSearchResult {
+  List<GameHistory> gameHistory;
+  UserStatistics statistics;
+  String username;
+  String avatar;
+
+  UserSearchResult(
+      {required this.username,
+      required this.avatar,
+      required this.gameHistory,
+      required this.statistics});
+
+  factory UserSearchResult.fromJson(Map<String, dynamic> json) {
+    return UserSearchResult(
+        username: json['username'] as String,
+        avatar: json['avatar'] ?? AVATARS.first,
+        gameHistory: GameHistory.fromJsonList(json['gameHistory']),
+        statistics: UserStatistics.fromJson(json['statistics']));
   }
 }
 

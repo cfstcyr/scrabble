@@ -30,6 +30,17 @@ class UserController {
         (await _http.get(Uri.parse("$endpoint/users/statistics"))).body));
   }
 
+  Future<UserSearchResult> getProfileByUsername(String username) async {
+    return UserSearchResult.fromJson(jsonDecode(
+        (await _http.get(Uri.parse("$endpoint/users/profile/$username")))
+            .body));
+  }
+
+  Future<List<UserSearchItem>> searchUsers(String? query) async {
+    return UserSearchItem.fromJsonList(jsonDecode(
+        (await _http.get(Uri.parse("$endpoint/users/search?q=$query"))).body));
+  }
+
   Future<List<GameHistory>> getGameHistory() async {
     return GameHistory.fromJsonList(jsonDecode(
         (await _http.get(Uri.parse("$endpoint/gameHistories"))).body));
