@@ -15,9 +15,13 @@ class AnalysisResultDialog {
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
   final List<CriticalMoment> criticalMoments;
   final BehaviorSubject<int> _currentSlideIndex$;
+  final List<CriticalMomentWidget> _criticalMomentWidgets;
 
   AnalysisResultDialog({required this.criticalMoments})
-      : _currentSlideIndex$ = BehaviorSubject.seeded(0);
+      : _currentSlideIndex$ = BehaviorSubject.seeded(0),
+        _criticalMomentWidgets = criticalMoments
+            .map((CriticalMoment c) => CriticalMomentWidget(criticalMoment: c))
+            .toList();
 
   void openAnalysisResultDialog(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -44,10 +48,7 @@ class AnalysisResultDialog {
                 top: SPACE_3,
                 bottom: SPACE_1 / 2),
             content: SizedBox(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               height: double.infinity,
               child: CarouselSlider(
                 options: CarouselOptions(
@@ -57,18 +58,11 @@ class AnalysisResultDialog {
                   onPageChanged: (index, _) => _currentSlideIndex$.add(index),
                 ),
                 items: [
-                  _carouselItem(
-                    child: AnalysisOverviewWidget(
-                        overview: AnalysisOverview.fromCriticalMoments(
-                            criticalMoments)),
+                  AnalysisOverviewWidget(
+                    overview:
+                        AnalysisOverview.fromCriticalMoments(criticalMoments),
                   ),
-                  ...List.generate(
-                      criticalMoments.length,
-                          (index) =>
-                          _carouselItem(
-                            child: CriticalMomentWidget(
-                                criticalMoment: criticalMoments[index]),
-                          ))
+                  ..._criticalMomentWidgets
                 ],
               ),
             ),
@@ -105,10 +99,6 @@ class AnalysisResultDialog {
         });
   }
 
-  Widget _carouselItem({required Widget child}) {
-    return child;
-  }
-
   Widget _slideIndicator(ThemeData theme) {
     return StreamBuilder<int>(
         stream: _currentSlideIndex$.stream,
@@ -117,21 +107,27 @@ class AnalysisResultDialog {
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: List.generate(criticalMoments.length + 1, (index) =>
-                Row(
-                  children: [
-                    Container(
-                      width: 30,
-                      height: 10,
-                      color: selectedIndex == index ? _themeColorService
-                          .themeDetails.value.color.colorValue : theme.colorScheme
-                          .tertiary,),
-                    index <= criticalMoments.length - 1 ? SizedBox(width: SPACE_2,) : SizedBox.shrink()
-                  ],
-                )),
+            children: List.generate(
+                criticalMoments.length + 1,
+                (index) => Row(
+                      children: [
+                        Container(
+                          width: 30,
+                          height: 10,
+                          color: selectedIndex == index
+                              ? _themeColorService
+                                  .themeDetails.value.color.colorValue
+                              : theme.colorScheme.tertiary,
+                        ),
+                        index <= criticalMoments.length - 1
+                            ? SizedBox(
+                                width: SPACE_2,
+                              )
+                            : SizedBox.shrink()
+                      ],
+                    )),
           );
-        }
-    );
+        });
   }
 
   void _closeAnalysisResult(BuildContext context) {
