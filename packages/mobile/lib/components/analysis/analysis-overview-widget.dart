@@ -23,7 +23,7 @@ class _AnalysisOverviewWidgetState extends State<AnalysisOverviewWidget> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Transform.translate(
-          offset: Offset(-16, 0),
+          offset: Offset(-32, 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
