@@ -91,13 +91,16 @@ class ProfileEditPageState extends State<ProfileSearchPage> {
                           builder: (context, query) {
                             return FutureBuilder(
                                 future: _userService.searchUsers(query.data),
-                                builder: (context, users) => users.data != null
+                                builder: (context, users) => users.data !=
+                                            null &&
+                                        users.data!.isNotEmpty
                                     ? ListView.builder(
                                         scrollDirection: Axis.vertical,
                                         shrinkWrap: true,
                                         physics: NeverScrollableScrollPhysics(),
                                         itemCount: users.data!.length,
                                         itemBuilder: (_, int index) {
+                                          print(users.data);
                                           return Padding(
                                             padding: const EdgeInsets.only(
                                                 left: 8, right: 8, bottom: 8),
