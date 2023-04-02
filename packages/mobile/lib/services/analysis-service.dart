@@ -13,15 +13,17 @@ class AnalysisService {
 
   AnalysisService._privateConstructor();
 
-  void requestAnalysis(
+  Future<AnalysisCompleted?> requestAnalysis(
       int idAnalysis, AnalysisRequestInfoType requestType) async {
-    _analysisController
+    return _analysisController
         .requestAnalysis(idAnalysis, requestType)
         .then((AnalysisCompleted analysisCompleted) {
       Navigator.pop(navigatorKey.currentContext!);
 
       AnalysisResultDialog(criticalMoments: analysisCompleted.criticalMoments)
           .openAnalysisResultDialog(navigatorKey.currentContext!);
+
+      return analysisCompleted;
     }).catchError((error) {
       Navigator.pop(navigatorKey.currentContext!);
 

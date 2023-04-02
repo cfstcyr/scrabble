@@ -124,6 +124,7 @@ class GameService {
 
     if (gameUpdate.isGameOver != null) {
       game.isOver = gameUpdate.isGameOver!;
+      game.idGameHistory = gameUpdate.idGameHistory;
       if (game.isOver) {
         getIt
             .get<EndGameService>()

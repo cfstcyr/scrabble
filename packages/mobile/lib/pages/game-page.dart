@@ -5,6 +5,7 @@ import 'package:mobile/components/game/game_board.dart';
 import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/game/game_timer.dart';
 import 'package:mobile/components/game/multiplayer-tile-rack.dart';
+import 'package:mobile/components/game/post-game_actions.dart';
 import 'package:mobile/components/player/players_container.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/constants/layout.constants.dart';
@@ -116,7 +117,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
                               ],
                             ),
                             Expanded(child: GameMessages()),
-                            GameActions(),
+                            _actions(snapshot.data!),
                           ],
                         ),
                       ),
@@ -128,6 +129,10 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
           }),
       onWillPop: () => _handleBack(context),
     );
+  }
+
+  Widget _actions(MultiplayerGame? game) {
+    return game != null && game.isOver ? PostGameActions() : GameActions();
   }
 
   Future<bool> _handleBack(BuildContext context) {
