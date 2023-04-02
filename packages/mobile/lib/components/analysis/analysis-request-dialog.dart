@@ -5,6 +5,7 @@ import 'package:mobile/components/app-circular-spinner.dart';
 import 'package:mobile/components/LoadingDots.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/locale/analysis-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/analysis-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -93,7 +94,7 @@ class AnalysisRequestDialog {
             actions: [
               AppButton(
                 onPressed: () => _cancelAnalysisRequest(context),
-                text: isLoading ? 'Annuler' : 'Fermer',
+                text: isLoading ? CANCEL_ANALYSIS_REQUEST : CLOSE_ANALYSIS_REQUEST,
                 theme: AppButtonTheme.secondary,
                 size: AppButtonSize.normal,
               )

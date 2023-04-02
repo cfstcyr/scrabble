@@ -6,6 +6,7 @@ import 'package:mobile/components/analysis/analysis-overview-widget.dart';
 import 'package:mobile/components/analysis/critical-moment-widget.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/locale/analysis-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:rxdart/rxdart.dart';
@@ -32,7 +33,7 @@ class AnalysisResultDialog {
             insetPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             title: Center(
               child: Text(
-                'Analyse de la partie',
+                ANALYSIS_RESULT_TITLE,
                 style: theme.textTheme.headlineMedium
                     ?.copyWith(fontWeight: FontWeight.w500),
               ),
@@ -88,7 +89,7 @@ class AnalysisResultDialog {
                         Spacer(),
                         AppButton(
                           onPressed: () => _closeAnalysisResult(context),
-                          text: "Fermer l'analyse",
+                          text: CLOSE_ANALYSIS_RESULT,
                           theme: AppButtonTheme.secondary,
                           size: AppButtonSize.normal,
                         ),

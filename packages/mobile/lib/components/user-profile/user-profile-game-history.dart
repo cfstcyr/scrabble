@@ -5,6 +5,7 @@ import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/components/table.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/locale/analysis-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/analysis-service.dart';
 import 'package:mobile/services/user.service.dart';
@@ -60,10 +61,9 @@ class UserProfileGameHistory extends StatelessWidget {
                                   onPressed: idAnalysis != null
                                       ? () async {
                                           AnalysisRequestDialog(
-                                                  title:
-                                                      "En attente de l'analyse",
+                                                  title: ANALYSIS_REQUEST_TITLE,
                                                   message:
-                                                      "Chargement de l'analyse",
+                                                      ANALYSIS_REQUEST_LOADING,
                                                   idAnalysis: idAnalysis,
                                                   requestType:
                                                       AnalysisRequestInfoType

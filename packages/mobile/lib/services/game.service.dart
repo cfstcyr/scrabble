@@ -10,6 +10,7 @@ import 'package:mobile/classes/game/players_container.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/constants/game-events.dart';
+import 'package:mobile/constants/locale/analysis-constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
@@ -200,8 +201,8 @@ class GameService {
                 Navigator.pop(context);
 
                 AnalysisRequestDialog(
-                    title: "En attente de l'analyse",
-                    message: "Analyse en cours",
+                    title: ANALYSIS_REQUEST_TITLE,
+                    message: ANALYSIS_REQUEST_COMPUTING,
                     idAnalysis: game.idGameHistory,
                     requestType: AnalysisRequestInfoType.idGame)
                     .openAnalysisRequestDialog(context);

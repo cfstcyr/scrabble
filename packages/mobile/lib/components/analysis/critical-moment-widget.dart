@@ -11,6 +11,7 @@ import 'package:mobile/components/app-toggle-button.dart';
 import 'package:mobile/components/game/game_board.dart';
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/locale/analysis-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:rxdart/rxdart.dart';
@@ -149,8 +150,8 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
 
   String _getNonPlacementText() {
     return _criticalMomentView.actionType == ActionType.exchange
-        ? 'Vous avez échangé vos tuiles'
-        : 'Vous avez passé votre tour';
+        ? CRITICAL_MOMENT_EXCHANGE
+        : CRITICAL_MOMENT_PASS;
   }
 }
 

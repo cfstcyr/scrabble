@@ -5,6 +5,7 @@ import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/components/analysis/analysis-result-dialog.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/locale/analysis-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/analysis-service.dart';
 import 'package:mobile/services/game.service.dart';
@@ -28,8 +29,8 @@ class PostGameActions extends StatelessWidget {
 
     int idAnalysis = _gameService.game.idGameHistory ?? -1;
     analysis = await AnalysisRequestDialog(
-            title: "En attente de l'analyse",
-            message: "Analyse en cours",
+            title: ANALYSIS_REQUEST_TITLE,
+            message: ANALYSIS_REQUEST_COMPUTING,
             idAnalysis: idAnalysis,
             requestType: AnalysisRequestInfoType.idGame)
         .openAnalysisRequestDialog(context);

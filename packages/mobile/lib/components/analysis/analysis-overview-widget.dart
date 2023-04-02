@@ -3,6 +3,7 @@ import 'package:mobile/classes/analysis/analysis-overview.dart';
 import 'package:mobile/components/analysis/single-analysis-overview.dart';
 import 'package:mobile/constants/analysis.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/locale/analysis-constants.dart';
 
 class AnalysisOverviewWidget extends StatefulWidget {
   AnalysisOverviewWidget({required this.overview});
@@ -29,19 +30,19 @@ class _AnalysisOverviewWidgetState extends State<AnalysisOverviewWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SingleAnalysisOverview(
-                title: 'Opportunités manquées',
+                title: CRITICAL_MOMENT_MINOR_MISTAKE_NAME,
                 color: MINOR_MISTAKES_SPINNER_COLOR,
                 value: widget.overview.minorMistakeCount.toDouble(),
                 maximum: widget.overview.totalMistakes.toDouble(),
               ),
               SingleAnalysisOverview(
-                title: 'Imprécisions',
+                title: CRITICAL_MOMENT_MEDIUM_MISTAKE_NAME,
                 color: MEDIUM_MISTAKES_SPINNER_COLOR,
                 value: widget.overview.mediumMistakeCount.toDouble(),
                 maximum: widget.overview.totalMistakes.toDouble(),
               ),
               SingleAnalysisOverview(
-                title: 'Erreurs',
+                title: CRITICAL_MOMENT_MAJOR_MISTAKE_NAME,
                 color: MAJOR_MISTAKES_SPINNER_COLOR,
                 value: widget.overview.majorMistakeCount.toDouble(),
                 maximum: widget.overview.totalMistakes.toDouble(),
@@ -59,7 +60,7 @@ class _AnalysisOverviewWidgetState extends State<AnalysisOverviewWidget> {
         Opacity(
             opacity: 0.6,
             child: Text(
-              'Déplacez vous vers la droite pour voir les solutions possibles',
+              ANALYSIS_RESULT_MOVE_EXPLANATION,
               style: theme.textTheme.titleMedium,
             ))
       ],
