@@ -20,8 +20,8 @@ class AnalysisService {
         .then((AnalysisCompleted analysisCompleted) {
       Navigator.pop(navigatorKey.currentContext!);
 
-      AnalysisResultDialog().openAnalysisResultDialog(
-          navigatorKey.currentContext!, analysisCompleted.criticalMoments);
+      AnalysisResultDialog(criticalMoments: analysisCompleted.criticalMoments)
+          .openAnalysisResultDialog(navigatorKey.currentContext!);
     }).catchError((error) {
       Navigator.pop(navigatorKey.currentContext!);
 

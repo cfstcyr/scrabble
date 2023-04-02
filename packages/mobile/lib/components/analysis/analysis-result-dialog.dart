@@ -6,10 +6,19 @@ import 'package:mobile/components/analysis/analysis-overview-widget.dart';
 import 'package:mobile/components/analysis/critical-moment-widget.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/services/theme-color-service.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AnalysisResultDialog {
-  void openAnalysisResultDialog(
-      BuildContext context, List<CriticalMoment> criticalMoments) {
+  final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
+  final List<CriticalMoment> criticalMoments;
+  final BehaviorSubject<int> _currentSlideIndex$;
+
+  AnalysisResultDialog({required this.criticalMoments})
+      : _currentSlideIndex$ = BehaviorSubject.seeded(0);
+
+  void openAnalysisResultDialog(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
     showDialog(
@@ -34,13 +43,17 @@ class AnalysisResultDialog {
                 top: SPACE_3,
                 bottom: SPACE_1 / 2),
             content: SizedBox(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
               height: double.infinity,
               child: CarouselSlider(
                 options: CarouselOptions(
                   autoPlay: false,
                   enableInfiniteScroll: false,
                   enlargeCenterPage: true,
+                  onPageChanged: (index, _) => _currentSlideIndex$.add(index),
                 ),
                 items: [
                   AnalysisOverviewWidget(
@@ -48,26 +61,68 @@ class AnalysisResultDialog {
                           criticalMoments)),
                   ...List.generate(
                       criticalMoments.length,
-                      (index) => CriticalMomentWidget(
-                          criticalMoment: criticalMoments[index]))
+                          (index) =>
+                          CriticalMomentWidget(
+                              criticalMoment: criticalMoments[index]))
                 ],
               ),
             ),
             contentPadding: EdgeInsets.symmetric(vertical: 0),
             actionsPadding: EdgeInsets.only(
                 left: SPACE_2, right: SPACE_4, top: 0, bottom: SPACE_2),
+            actionsAlignment: MainAxisAlignment.center,
             actions: [
-              AppButton(
-                onPressed: () => _closeAnalysisResult(context),
-                text: "Fermer l'analyse",
-                theme: AppButtonTheme.secondary,
-                size: AppButtonSize.normal,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Spacer(),
+                  Expanded(child: _slideIndicator(theme)),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Spacer(),
+                        AppButton(
+                          onPressed: () => _closeAnalysisResult(context),
+                          text: "Fermer l'analyse",
+                          theme: AppButtonTheme.secondary,
+                          size: AppButtonSize.normal,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               )
             ],
             surfaceTintColor: Colors.white,
             backgroundColor: Colors.white,
           );
         });
+  }
+
+  Widget _slideIndicator(ThemeData theme) {
+    return StreamBuilder<int>(
+        stream: _currentSlideIndex$.stream,
+        builder: (context, snapshot) {
+          int selectedIndex = snapshot.hasData ? snapshot.data! : 0;
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: List.generate(criticalMoments.length + 1, (index) =>
+                Row(
+                  children: [
+                    Container(
+                      width: 30,
+                      height: 10,
+                      color: selectedIndex == index ? _themeColorService
+                          .themeDetails.value.color.colorValue : theme.colorScheme
+                          .tertiary,),
+                    index <= criticalMoments.length - 1 ? SizedBox(width: SPACE_2,) : SizedBox.shrink()
+                  ],
+                )),
+          );
+        }
+    );
   }
 
   void _closeAnalysisResult(BuildContext context) {
