@@ -15,12 +15,14 @@ class MyScaffold extends StatelessWidget {
   final String title;
   final Color backgroundColor;
   final bool hasBackButton;
+  final bool isLocalProfile;
 
   MyScaffold(
       {required this.body,
       required this.title,
       this.backgroundColor = Colors.white,
-      this.hasBackButton = false});
+      this.hasBackButton = false,
+      this.isLocalProfile = true});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,7 @@ class MyScaffold extends StatelessWidget {
         elevation: 1,
         centerTitle: true,
         actions: [
-          _isProfile(context)
+          _isLocalProfile(context)
               ? Builder(
                   builder: (context) => InkWell(
                         onTap: () {
@@ -98,12 +100,14 @@ class MyScaffold extends StatelessWidget {
   }
 
   bool _canNavigateToProfile(BuildContext context) {
-    return ModalRoute.of(context)?.settings.name != PROFILE_ROUTE &&
-        ModalRoute.of(context)?.settings.name != PROFILE_EDIT_ROUTE;
+    return !isLocalProfile ||
+        ModalRoute.of(context)?.settings.name != PROFILE_ROUTE &&
+            ModalRoute.of(context)?.settings.name != PROFILE_EDIT_ROUTE;
   }
 
-  bool _isProfile(BuildContext context) {
-    return ModalRoute.of(context)?.settings.name == PROFILE_ROUTE;
+  bool _isLocalProfile(BuildContext context) {
+    return isLocalProfile &&
+        ModalRoute.of(context)?.settings.name == PROFILE_ROUTE;
   }
 
   Color? _getNotificationPastilleColor(bool hasUnreadMessages) {

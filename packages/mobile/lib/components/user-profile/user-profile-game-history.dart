@@ -3,13 +3,13 @@ import 'package:intl/intl.dart';
 import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/components/table.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/locator.dart';
-import 'package:mobile/services/user.service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../utils/duration.dart';
 
 class UserProfileGameHistory extends StatelessWidget {
-  final UserService _userService = getIt.get<UserService>();
+  UserProfileGameHistory({required this.gameHistory});
+  final BehaviorSubject<List<GameHistory>> gameHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +23,8 @@ class UserProfileGameHistory extends StatelessWidget {
               'Historique de partie',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
             ),
-            FutureBuilder(
-              future: _userService.getGameHistory(),
+            StreamBuilder(
+              stream: gameHistory,
               builder: (context, snapshot) => snapshot.hasData
                   ? AppTable<GameHistory>(data: snapshot.data!, columns: [
                       AppTableColumn(
