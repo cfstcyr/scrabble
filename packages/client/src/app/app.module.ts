@@ -74,6 +74,8 @@ import { GamePlayersComponent } from './components/game/game-players/game-player
 import { GameTilesLeftComponent } from './components/game/game-tiles-left/game-tiles-left.component';
 import { GameTimerComponent } from './components/game/game-timer/game-timer.component';
 import { GameObserversPlayersComponent } from './components/game/game-observers-players/game-observers-players.component';
+import { ColorThemeDialogComponent } from './components/color-theme-dialog/color-theme-dialog';
+import { ColorThemeService } from './services/color-theme-service/color-theme.service';
 
 registerLocaleData(localeFr);
 
@@ -148,6 +150,7 @@ registerLocaleData(localeFr);
         GameTilesLeftComponent,
         GameTimerComponent,
         GameObserversPlayersComponent,
+        ColorThemeDialogComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -162,6 +165,7 @@ registerLocaleData(localeFr);
     ],
     providers: [
         InitializerService,
+        ColorThemeService,
         {
             provide: APP_INITIALIZER,
             useFactory: (initializer: InitializerService) => () => initializer.initialize(),
