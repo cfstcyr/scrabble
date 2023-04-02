@@ -50,4 +50,13 @@ class Tile {
 
   @override
   int get hashCode => letter.hashCode ^ value.hashCode;
+
+  Tile copy() {
+    return Tile(
+      value: value,
+      letter: letter,
+      playedLetter: playedLetter,
+      isWildcard: isWildcard
+    );
+  }
 }

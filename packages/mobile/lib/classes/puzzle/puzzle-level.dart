@@ -30,6 +30,11 @@ class PuzzleLevel extends AppToggleOption {
   String getEnumName() {
     return nameEnum.name;
   }
+
+  @override
+  Enum getEnum() {
+    return nameEnum;
+  }
 }
 
 final Map<PuzzleLevelName, String> PUZZLE_LEVEL_NAMES = {

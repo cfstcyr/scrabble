@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class AppToggleOption {
+abstract class AppToggleOption<V extends Enum> {
+  V getEnum();
   String getEnumName();
 }
 

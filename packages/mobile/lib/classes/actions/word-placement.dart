@@ -27,13 +27,10 @@ class WordPlacement {
     Navigator boardNavigator = board.navigate(currentPosition, orientation: actionPlacePayload.orientation);
 
     for (Tile tile in actionPlacePayload.tiles) {
-      // print(tile.toJson());
-      // print(currentPosition.x);
       squares.add(Square(tile: tile, position: currentPosition.copy()));
       currentPosition = boardNavigator.forward().position;
     }
 
-    // print(squares.length);
     return squares;
   }
 }

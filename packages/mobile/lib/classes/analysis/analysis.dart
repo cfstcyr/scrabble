@@ -84,17 +84,4 @@ class CriticalMoment {
             : null,
         bestPlacement: ScoredWordPlacement.fromJson(json['bestPlacement']));
   }
-
-  ValueStream<AbstractGame> get convertToGameStream => _game$.stream;
-
-  void showPlacementOnBoard(ScoredWordPlacement placement) {
-    Board updatedBoard = Board().withGrid(grid);
-    List<Square> squaresToPlace = placement.toSquaresOnBoard(updatedBoard);
-
-    updatedBoard.updateBoardData(squaresToPlace);
-
-    AbstractGame updatedGame = AbstractGame(board: updatedBoard, tileRack: _game$.value.tileRack);
-
-    _game$.add(updatedGame);
   }
-}

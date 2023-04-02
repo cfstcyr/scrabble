@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/actions/word-placement.dart';
 import 'package:mobile/classes/analysis/action-shown.dart';
+import 'package:mobile/classes/analysis/analysis-view.dart';
 import 'package:mobile/classes/analysis/analysis.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/components/analysis/analysis-tile-rack.dart';
@@ -12,6 +13,7 @@ import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:rxdart/rxdart.dart';
 
 class CriticalMomentWidget extends StatefulWidget {
   CriticalMomentWidget({required this.criticalMoment});
@@ -24,6 +26,31 @@ class CriticalMomentWidget extends StatefulWidget {
 
 class _CriticalMomentState extends State<CriticalMomentWidget> {
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
+  late final CriticalMomentView _criticalMomentView;
+
+  late final Stream<PlacementView> _placementViewStream;
+
+  final AppToggleButton<ActionShownValue, ActionShown> _actionShownToggle =
+      AppToggleButton<ActionShownValue, ActionShown>(
+    defaultValue: ActionShown.played,
+    optionsToValue: ACTION_SHOWN_OPTIONS_TO_VALUES,
+    toggleOptionWidget: generateActionShownWidget,
+    orientation: Axis.vertical,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+
+    _criticalMomentView =
+        CriticalMomentView.fromCriticalMoment(widget.criticalMoment);
+
+    _placementViewStream = _actionShownToggle.selectedStream.switchMap(
+        (ActionShownValue selectedValue) => Stream.value(
+            selectedValue.getEnum() == ActionShown.played
+                ? _criticalMomentView.playedPlacement
+                : _criticalMomentView.bestPlacement));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +66,6 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
         stream: actionShownToggle.selectedStream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) return SizedBox.shrink();
-
-          print(widget.criticalMoment.actionType);
-
-          ScoredWordPlacement? shownPlacement =
-              widget.criticalMoment.actionType == ActionType.place
-                  ? _computeShownPlacementFromSelection(snapshot.data!)
-                  : null;
 
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -68,30 +88,28 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
                   ),
                 ),
               ),
-              shownPlacement != null ? _getPlacementAnalysis(shownPlacement) : SizedBox(),
+              _criticalMomentView.actionType == ActionType.place
+                  ? _getPlacementAnalysis(
+                      _computePlacementViewFromSelection(snapshot.data!))
+                  : SizedBox(),
               Spacer(),
             ],
           );
         });
   }
 
-  Widget _getPlacementAnalysis(ScoredWordPlacement placement) {
-    print(placement.actionPlacePayload.toJson());
-    widget.criticalMoment.showPlacementOnBoard(placement);
-
+  Widget _getPlacementAnalysis(PlacementView placement) {
     return Column(
       children: [
         SizedBox(
             width: 560,
             height: 560,
-            child: GameBoard(
-                gameStream: widget.criticalMoment.convertToGameStream)),
+            child: GameBoard(gameStream: placement.gameStream)),
         SizedBox(
             height: 60,
             child: AnalysisTileRack(
-              gameStream: widget.criticalMoment.convertToGameStream,
-              tileSize: TILE_SIZE - 10,
-              usedTiles: [...placement.actionPlacePayload.tiles],
+              gameStream: placement.gameStream,
+              tileViews: placement.tileRackView,
             )),
         // Board
         // Tilerack
@@ -101,8 +119,7 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
 
   Widget _getScore(
       BuildContext context, AsyncSnapshot<ActionShownValue> snapshot) {
-    bool isGreenBackground =
-        snapshot.data!.getEnumName() == ActionShown.best.name;
+    bool isGreenBackground = snapshot.data!.getEnum() == ActionShown.best;
 
     return Container(
         decoration: BoxDecoration(
@@ -121,16 +138,16 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
   }
 
   int _computeScoreToShow(ActionShownValue selectedValue) {
-    return selectedValue.getEnumName() == ActionShown.played.name
+    return selectedValue.getEnum() == ActionShown.played
         ? widget.criticalMoment.playedPlacement?.score ?? 0
         : widget.criticalMoment.bestPlacement.score;
   }
 
-  ScoredWordPlacement _computeShownPlacementFromSelection(
+  PlacementView _computePlacementViewFromSelection(
       ActionShownValue selectedValue) {
-    return selectedValue.getEnumName() == ActionShown.played.name
-        ? widget.criticalMoment.playedPlacement!
-        : widget.criticalMoment.bestPlacement;
+    return selectedValue.getEnum() == ActionShown.played
+        ? _criticalMomentView.playedPlacement
+        : _criticalMomentView.bestPlacement;
   }
 }
 

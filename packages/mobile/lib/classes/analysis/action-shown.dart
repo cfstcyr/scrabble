@@ -18,6 +18,11 @@ class ActionShownValue extends AppToggleOption {
   String getEnumName() {
     return actionShow.name;
   }
+
+  @override
+  Enum getEnum() {
+    return actionShow;
+  }
 }
 
 final Map<ActionShown, String> ACTION_SHOWN_NAMES = {
