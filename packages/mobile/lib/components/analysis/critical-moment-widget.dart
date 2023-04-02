@@ -73,7 +73,7 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
                       SizedBox(
                         height: SPACE_2,
                       ),
-                      _getScore(context, snapshot),
+                      _getScore(context, snapshot.data!),
                     ],
                   ),
                 ),
@@ -89,18 +89,15 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
   }
 
   Widget _getPlacementAnalysis(PlacementView placement) {
+    GameBoard gameBoard = placement.gameBoard ?? placement.generateGameBoard();
+
+    AnalysisTileRack tileRack =
+        placement.tileRack ?? placement.generateTileRack();
+
     return Column(
       children: [
-        SizedBox(
-            width: 560,
-            height: 560,
-            child: GameBoard(gameStream: placement.gameStream)),
-        SizedBox(
-            height: 60,
-            child: AnalysisTileRack(
-              gameStream: placement.gameStream,
-              tileViews: placement.tileRackView,
-            )),
+        SizedBox(width: 560, height: 560, child: gameBoard),
+        SizedBox(height: 60, child: tileRack),
       ],
     );
   }
@@ -118,9 +115,8 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
     );
   }
 
-  Widget _getScore(
-      BuildContext context, AsyncSnapshot<ActionShownValue> snapshot) {
-    bool isGreenBackground = snapshot.data!.getEnum() == ActionShown.best;
+  Widget _getScore(BuildContext context, ActionShownValue selectedValue) {
+    bool isGreenBackground = selectedValue.getEnum() == ActionShown.best;
 
     return Container(
         decoration: BoxDecoration(
@@ -130,7 +126,7 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
                 : Colors.grey.shade500),
         padding: EdgeInsets.all(SPACE_1),
         child: Text(
-          '${_computeScoreToShow(snapshot.data!)} pts',
+          '${_computeScoreToShow(selectedValue)} pts',
           style: Theme.of(context)
               .textTheme
               .titleSmall!
