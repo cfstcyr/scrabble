@@ -28,28 +28,12 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
   late final CriticalMomentView _criticalMomentView;
 
-  late final Stream<PlacementView> _placementViewStream;
-
-  final AppToggleButton<ActionShownValue, ActionShown> _actionShownToggle =
-      AppToggleButton<ActionShownValue, ActionShown>(
-    defaultValue: ActionShown.played,
-    optionsToValue: ACTION_SHOWN_OPTIONS_TO_VALUES,
-    toggleOptionWidget: generateActionShownWidget,
-    orientation: Axis.vertical,
-  );
-
   @override
   void initState() {
     super.initState();
 
     _criticalMomentView =
         CriticalMomentView.fromCriticalMoment(widget.criticalMoment);
-
-    _placementViewStream = _actionShownToggle.selectedStream.switchMap(
-        (ActionShownValue selectedValue) => Stream.value(
-            selectedValue.getEnum() == ActionShown.played
-                ? _criticalMomentView.playedPlacement
-                : _criticalMomentView.bestPlacement));
   }
 
   @override

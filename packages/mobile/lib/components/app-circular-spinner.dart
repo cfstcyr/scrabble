@@ -104,6 +104,7 @@ class AppCircularSpinner extends StatelessWidget {
   }
 
   double _computeValue() {
+    if (maximumValue == 0) return 0;
     return (value! / maximumValue!) * SPINNER_OPENING_PERCENT;
   }
 
