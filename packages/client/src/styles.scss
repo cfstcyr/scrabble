@@ -9,6 +9,22 @@
 @include mat.core();
 
 
+// Color secondaryButton = Color.fromRGBO(216, 216, 216, 1);
+
+// Color menuSecondaryButton = Color.fromRGBO(222, 239, 223, 1);
+
+// Color cardColor = Color.fromRGBO(255, 255, 255, 1);
+
+// export enum HexThemeColor {
+//   Green = '#1B5E20',
+//   Blue = '#0A3B48', #0d47a1
+//   Purple = '#A801FF',
+//   Pink = '#FF01A2',
+//   Red = '#d92f08',
+//   Black = '#000000',
+// }
+
+
 $green-theme: mat.define-light-theme(
     (
         color: (
@@ -22,8 +38,8 @@ $green-theme: mat.define-light-theme(
 $blue-theme: mat.define-light-theme(
     (
         color: (
-            primary: mat.define-palette(mat.$blue-palette,900),
-            accent: mat.define-palette(mat.$blue-palette, A200, A100, A400),
+            primary: mat.define-palette(mat.$indigo-palette,900),
+            accent: mat.define-palette(mat.$indigo-palette, A200, A100, A400),
             warn: mat.define-palette(mat.$red-palette),
         ),
     )
@@ -32,7 +48,7 @@ $blue-theme: mat.define-light-theme(
 $purple-theme: mat.define-light-theme(
     (
         color: (
-            primary: mat.define-palette(mat.$purple-palette,900),
+            primary: mat.define-palette(mat.$purple-palette,400),
             accent: mat.define-palette(mat.$purple-palette, A200, A100, A400),
             warn: mat.define-palette(mat.$red-palette),
         ),
@@ -42,7 +58,7 @@ $purple-theme: mat.define-light-theme(
 $pink-theme: mat.define-light-theme(
     (
         color: (
-            primary: mat.define-palette(mat.$pink-palette,900),
+            primary: mat.define-palette(mat.$pink-palette,500),
             accent: mat.define-palette(mat.$pink-palette, A200, A100, A400),
             warn: mat.define-palette(mat.$red-palette),
         ),
