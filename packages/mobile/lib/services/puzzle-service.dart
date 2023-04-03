@@ -6,6 +6,7 @@ import 'package:mobile/classes/actions/word-placement.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/http/ResponseResult.dart';
 import 'package:mobile/classes/puzzle/puzzle-config.dart';
+import 'package:mobile/classes/puzzle/puzzle-level.dart';
 import 'package:mobile/classes/puzzle/puzzle-player.dart';
 import 'package:mobile/classes/puzzle/puzzle-result.dart';
 import 'package:mobile/classes/puzzle/puzzle.dart';
@@ -14,6 +15,7 @@ import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
+import 'package:mobile/components/puzzle/puzzle-result-dialog.dart';
 import 'package:mobile/constants/puzzle-constants.dart';
 import 'package:mobile/constants/socket-constants.dart';
 import 'package:mobile/controllers/puzzle-controller.dart';
@@ -28,8 +30,7 @@ import 'package:rxdart/rxdart.dart';
 import '../locator.dart';
 
 class PuzzleService {
-  final PuzzleController _puzzleController =
-  getIt.get<PuzzleController>();
+  final PuzzleController _puzzleController = getIt.get<PuzzleController>();
   final RoundService _roundService = getIt.get<RoundService>();
   final UserService _userService = getIt.get<UserService>();
   final BehaviorSubject<PuzzleGame?> _puzzle;
@@ -39,8 +40,7 @@ class PuzzleService {
       : _puzzle = BehaviorSubject(),
         _currentPlayer = null;
 
-  static final PuzzleService _instance =
-  PuzzleService._privateConstructor();
+  static final PuzzleService _instance = PuzzleService._privateConstructor();
 
   factory PuzzleService() {
     return _instance;
@@ -48,10 +48,10 @@ class PuzzleService {
 
   ValueStream<PuzzleGame?> get puzzleStream => _puzzle.stream;
 
-  Future<bool> startPuzzle(Duration roundDuration) async {
+  Future<bool> startPuzzle(PuzzleLevel puzzleLevel) async {
     return await _puzzleController.startPuzzle().then((Response value) {
       _handleStartPuzzle(StartPuzzle.fromJson(jsonDecode(value.body))
-          .withRoundDuration(roundDuration));
+          .withPuzzleLevel(puzzleLevel));
       return true;
     }).catchError((error) => false);
   }
@@ -66,11 +66,15 @@ class PuzzleService {
     TileRack tileRack = TileRack().setTiles(tileRackConfig);
 
     PuzzlePlayer player = _getPuzzlePlayerForGame();
-    _puzzle.add(
-        PuzzleGame(board: board, tileRack: tileRack, puzzlePlayer: player));
+    _puzzle.add(PuzzleGame(
+        board: board,
+        tileRack: tileRack,
+        puzzlePlayer: player,
+        puzzleLevel: startPuzzle.puzzleLevel));
 
-    Round firstRound = Round(socketIdOfActivePlayer: UNDEFINED_SOCKET,
-        duration: startPuzzle.roundDuration);
+    Round firstRound = Round(
+        socketIdOfActivePlayer: UNDEFINED_SOCKET,
+        duration: startPuzzle.puzzleLevel.roundDuration);
 
     _roundService.startRound(firstRound, _onTimerExpires);
   }
@@ -83,25 +87,36 @@ class PuzzleService {
     Placement? placement = _puzzle.value?.board.currentPlacement;
 
     if (placement == null) {
-      throw Exception(
-        'Cannot play placement, placement is null');
+      throw Exception('Cannot play placement, placement is null');
     }
 
-    WordPlacement wordPlacement = WordPlacement(
-        actionPlacePayload: placement.toActionPayload());
-    return _puzzleController.completePuzzle(wordPlacement).then((Response response) {
-      PuzzleResult puzzleResult = PuzzleResult.fromJson(jsonDecode(response.body));
+    WordPlacement wordPlacement =
+        WordPlacement(actionPlacePayload: placement.toActionPayload());
+    return _puzzleController
+        .completePuzzle(wordPlacement)
+        .then((Response response) {
+      PuzzleResult puzzleResult =
+          PuzzleResult.fromJson(jsonDecode(response.body));
+
+      _handlePuzzleResult(
+          puzzleResult,
+          ScoredWordPlacement(
+              actionPlacePayload: wordPlacement.actionPlacePayload,
+              score: puzzleResult.userPoints));
 
       return ResponseResult.success();
     }).catchError((_) => ResponseResult.error());
-
-    // TODO Updater le nombre de points dans PuzzlePlayer
   }
 
   Future<ResponseResult> abandonPuzzle() {
-    _puzzleController.abandonPuzzle();
+    _puzzleController.abandonPuzzle().then((Response response) {
+      PuzzleResult puzzleResult =
+          PuzzleResult.fromJson(jsonDecode(response.body));
 
-    // TODO Updater le nombre de points dans PuzzlePlayer
+      _handlePuzzleResult(puzzleResult, null);
+
+      return ResponseResult.success();
+    }).catchError((_) => ResponseResult.error());
 
     return Future.value(ResponseResult.success());
   }
@@ -111,14 +126,27 @@ class PuzzleService {
     _currentPlayer = null;
   }
 
+  void _handlePuzzleResult(
+      PuzzleResult puzzleResult, ScoredWordPlacement? playedPlacement) {
+    PuzzlePlayed puzzlePlayed = PuzzlePlayed.afterPlayed(
+        _puzzle.value!.puzzleLevel.nameEnum, playedPlacement, puzzleResult);
+
+    _currentPlayer!.updateStreak(puzzleResult);
+    // TODO: Add to chat
+
+    PuzzleResultDialog(puzzlePlayed: puzzlePlayed)
+        .openAnalysisResultDialog(navigatorKey.currentContext!);
+  }
+
   void _onTimerExpires() {
     completePuzzle();
   }
 
   PuzzlePlayer _getPuzzlePlayerForGame() {
-    return _currentPlayer ?? PuzzlePlayer(
-        user: _userService.user.value ?? UNKNOWN_USER,
-        streakPoints: 0,
-        streakMaxPoints: 0);
+    return _currentPlayer ??
+        PuzzlePlayer(
+            user: _userService.user.value ?? UNKNOWN_USER,
+            streakPoints: 0,
+            streakMaxPoints: 0);
   }
 }

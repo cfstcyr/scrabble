@@ -1,5 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:math';
+
 import 'package:mobile/classes/actions/word-placement.dart';
 import 'package:mobile/classes/puzzle/puzzle-level.dart';
 
@@ -17,7 +19,7 @@ class PuzzleResult {
 
   factory PuzzleResult.fromJson(Map<String, dynamic> json) {
     return PuzzleResult(
-        userPoints: json['userPoints'] as int,
+        userPoints: max(0, json['userPoints'] as int),
         result: PuzzleResultStatus.parse(json['result']),
         targetPlacement: ScoredWordPlacement.fromJson(json['targetPlacement']),
         allPlacements: (json['allPlacements'] as List<dynamic>)
