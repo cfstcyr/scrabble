@@ -45,27 +45,28 @@ class PostGameActions extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Spacer(flex: 1),
               Expanded(
-                flex: 2,
+                flex: 5,
                 child: AppButton(
                   onPressed: () => leave(context),
                   icon: Icons.output_outlined,
+                  text: 'Quitter',
                   size: AppButtonSize.large,
                   theme: AppButtonTheme.danger,
                 ),
               ),
-              Spacer(flex: 2,),
+              Spacer(flex: 1,),
               Expanded(
-                flex: 2,
+                flex: 5,
                 child: AppButton(
                   onPressed: () => requestAnalysis(context),
                   icon: Icons.science,
+                  text: 'Analyse',
                   size: AppButtonSize.large,
                   theme: AppButtonTheme.primary,
                 ),
               ),
-              Spacer(flex: 1,)
+              // Spacer(flex: 1,)
             ],
           )),
     );

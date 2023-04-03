@@ -8,13 +8,14 @@ import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/constants/locale/analysis-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/analysis-service.dart';
+import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/services/user.service.dart';
 
 import '../../utils/duration.dart';
 
 class UserProfileGameHistory extends StatelessWidget {
   final UserService _userService = getIt.get<UserService>();
-  final AnalysisService _analysisService = getIt.get<AnalysisService>();
+  final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
 
   @override
   Widget build(BuildContext context) {
@@ -57,25 +58,35 @@ class UserProfileGameHistory extends StatelessWidget {
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                ElevatedButton(
-                                  onPressed: idAnalysis != null
-                                      ? () async {
-                                          AnalysisRequestDialog(
-                                                  title: ANALYSIS_REQUEST_TITLE,
-                                                  message:
-                                                      ANALYSIS_REQUEST_LOADING,
-                                                  idAnalysis: idAnalysis,
-                                                  requestType:
-                                                      AnalysisRequestInfoType
-                                                          .idAnalysis)
-                                              .openAnalysisRequestDialog(
-                                                  context);
-                                        }
-                                      : null,
-                                  style: ElevatedButton.styleFrom(
-                                    shape: CircleBorder(),
-                                  ),
-                                  child: Icon(Icons.science_rounded),
+                                StreamBuilder<ThemeDetails>(
+                                  stream: _themeColorService.themeDetails.stream,
+                                  builder: (context, snapshot) {
+                                    ThemeColor themeColor = snapshot.data?.color ?? ThemeColor.green;
+
+                                    return ElevatedButton(
+                                      onPressed: idAnalysis != null
+                                          ? () async {
+                                              AnalysisRequestDialog(
+                                                      title: ANALYSIS_REQUEST_TITLE,
+                                                      message:
+                                                          ANALYSIS_REQUEST_LOADING,
+                                                      idAnalysis: idAnalysis,
+                                                      requestType:
+                                                          AnalysisRequestInfoType
+                                                              .idAnalysis)
+                                                  .openAnalysisRequestDialog(
+                                                      context);
+                                            }
+                                          : null,
+                                      style: ElevatedButton.styleFrom(
+                                        shape: CircleBorder(),
+                                        minimumSize: Size.fromRadius(24),
+                                        backgroundColor: themeColor.colorValue,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: Icon(Icons.science_rounded),
+                                    );
+                                  }
                                 ),
                               ],
                             );
