@@ -24,6 +24,7 @@ export const DIALOG_ABANDON_BUTTON_CONTINUE = 'Continuer la partie';
 export const DIALOG_QUIT_TITLE = 'Quitter la partie';
 export const DIALOG_QUIT_CONTENT = 'Voulez-vous vraiment quitter la partie?';
 export const DIALOG_QUIT_BUTTON_CONFIRM = 'Quitter la partie';
+export const DIALOG_ANALYSIS_BUTTON_CONFIRM = 'Analyser la partie';
 export const DIALOG_QUIT_STAY = 'Rester dans la partie';
 export const DIALOG_NO_ACTIVE_GAME_TITLE = 'Aucune partie en cours';
 export const DIALOG_NO_ACTIVE_GAME_CONTENT = "Vous n'avez aucune partie en cours. Veuillez en joindre ou en créer une.";

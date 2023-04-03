@@ -7,4 +7,6 @@ export enum COLORS {
     Word2x = 'rgb(245, 173, 170)',
     Letter3x = 'rgb(34, 162, 236)',
     Word3x = 'rgb(248, 100, 95)',
+    Yellow = '#ffd000',
+    Orange = '#ff8100',
 }

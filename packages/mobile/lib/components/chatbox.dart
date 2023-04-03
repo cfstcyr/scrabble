@@ -26,8 +26,8 @@ class _ChatboxState extends State<Chatbox> {
 
   late PublicUser userData;
   late types.User _userView;
-  final Color themeColor = getIt.get<ThemeColorService>().themeColor;
-
+  Color themeColor =
+      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
   @override
   void initState() {
     super.initState();
@@ -39,11 +39,16 @@ class _ChatboxState extends State<Chatbox> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.channel.name)),
+      appBar: AppBar(
+          title: Text(widget.channel.name),
+          shadowColor: Colors.black,
+          backgroundColor: Colors.white,
+          elevation: 1,
+          surfaceTintColor: theme.colorScheme.primary),
       body: Chat(
         theme: DefaultChatTheme(
-          inputBackgroundColor: theme.colorScheme.primary,
-          primaryColor: theme.colorScheme.primary,
+          inputBackgroundColor: themeColor,
+          primaryColor: themeColor,
         ),
         messages: _filterToChatBoxFormat(widget.channel.messages),
         onSendPressed: _handleSendPressed,
@@ -66,7 +71,8 @@ class _ChatboxState extends State<Chatbox> {
     }
   }
 
-  List<types.TextMessage> _filterToChatBoxFormat(List<ChannelMessage> messages) {
+  List<types.TextMessage> _filterToChatBoxFormat(
+      List<ChannelMessage> messages) {
     return List<types.TextMessage>.from(
         messages.map((message) => _toChatBoxFormat(message.message)));
   }

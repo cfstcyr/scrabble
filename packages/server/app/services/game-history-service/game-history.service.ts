@@ -1,10 +1,12 @@
-import { GAME_HISTORY_PLAYER_TABLE, GAME_HISTORY_TABLE } from '@app/constants/services-constants/database-const';
+/* eslint-disable @typescript-eslint/naming-convention */
+import { ANALYSIS_TABLE, GAME_HISTORY_PLAYER_TABLE, GAME_HISTORY_TABLE } from '@app/constants/services-constants/database-const';
 import DatabaseService from '@app/services/database-service/database.service';
 import 'mock-fs'; // required when running test. Otherwise compiler cannot resolve fs, path and __dirname
 import { Service } from 'typedi';
 import { GameHistory, GameHistoryCreation, GameHistoryForUser, GameHistoryPlayer } from '@common/models/game-history';
 import { TypeOfId } from '@common/types/id';
 import { User } from '@common/models/user';
+import { AnalysisData } from '@common/models/analysis';
 
 @Service()
 export default class GameHistoriesService {
@@ -27,13 +29,18 @@ export default class GameHistoriesService {
 
     async getGameHistory(idUser: TypeOfId<User>): Promise<GameHistoryForUser[]> {
         return await this.table
-            .select('startTime', 'endTime', 'hasBeenAbandoned', 'score', 'isWinner')
+            .select('startTime', 'endTime', 'hasBeenAbandoned', 'score', 'isWinner', 'idAnalysis')
             .leftJoin<GameHistoryPlayer>(
                 GAME_HISTORY_PLAYER_TABLE,
                 `${GAME_HISTORY_TABLE}.idGameHistory`,
                 `${GAME_HISTORY_PLAYER_TABLE}.idGameHistory`,
             )
-            .where({ idUser })
+            .leftJoin<AnalysisData>(ANALYSIS_TABLE, (builder) => {
+                builder
+                    .on(`${GAME_HISTORY_TABLE}.idGameHistory`, '=', `${ANALYSIS_TABLE}.idGameHistory`)
+                    .andOn(`${ANALYSIS_TABLE}.idUser`, '=', `${GAME_HISTORY_PLAYER_TABLE}.idUser`);
+            })
+            .where(`${GAME_HISTORY_PLAYER_TABLE}.idUser`, idUser)
             .orderBy('startTime', 'desc');
     }
 

@@ -17,7 +17,9 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-service-data';
+import { GameHistory } from '@common/models/game-history';
 import { TilePlacement } from '@common/models/tile-placement';
+import { TypeOfId } from '@common/types/id';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -30,6 +32,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     isGameSetUp: boolean;
     isGameOver: boolean;
     isObserver: boolean | undefined;
+    idGameHistory: TypeOfId<GameHistory> | undefined;
 
     private gameId: string;
     private playerContainer?: PlayerContainer;
@@ -103,6 +106,11 @@ export default class GameService implements OnDestroy, IResetServiceData {
     getLocalPlayerId(): string | undefined {
         if (!this.playerContainer) return undefined;
         return this.playerContainer.getLocalPlayerId();
+    }
+
+    getAdversaries(): Player[] {
+        if (!this.playerContainer) return [];
+        return this.playerContainer.getAdversaries();
     }
 
     setLocalPlayer(playerNumber: number): void {
@@ -183,6 +191,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     private handleGameUpdate(gameUpdateData: GameUpdateData): void {
         this.tilePlacementService.resetTiles();
         if (gameUpdateData.isGameOver) {
+            this.idGameHistory = gameUpdateData.idGameHistory;
             this.handleGameOver(gameUpdateData.winners ?? []);
         }
         if (gameUpdateData.player1) {

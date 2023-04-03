@@ -4,17 +4,15 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/text-field-handler.dart';
+import 'package:mobile/components/app_button.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/routes/routes.dart';
-import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../classes/user.dart';
 import '../constants/create-account-constants.dart';
 import '../constants/login-constants.dart';
 import '../controllers/account-authentification-controller.dart';
-import '../pages/create-account-page.dart';
 import '../services/socket.service.dart';
 
 class LoginForm extends StatefulWidget {
@@ -28,7 +26,8 @@ class _LoginFormState extends State<LoginForm> {
 
   bool get isButtonEnabled => isFirstSubmit;
   SocketService socketService = getIt.get<SocketService>();
-  Color themeColor = getIt.get<ThemeColorService>().themeColor;
+  Color themeColor =
+      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
   AccountAuthenticationController authController =
       getIt.get<AccountAuthenticationController>();
 
@@ -114,39 +113,23 @@ class _LoginFormState extends State<LoginForm> {
                   },
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
-                SizedBox(width: 100),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (await isLoggedIn(UserLoginCredentials(
-                        email: emailHandler.controller.text,
-                        password: passwordHandler.controller.text))) {
-                      if (context.mounted) {
-                        Navigator.of(context).pushReplacementNamed(HOME_ROUTE);
+                AppButton(
+                    onPressed: () async {
+                      if (await isLoggedIn(UserLoginCredentials(
+                          email: emailHandler.controller.text,
+                          password: passwordHandler.controller.text))) {
+                        if (context.mounted) {
+                          Navigator.of(context)
+                              .pushReplacementNamed(HOME_ROUTE);
+                        }
                       }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: themeColor,
-                    shadowColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3.0),
-                    ),
-                  ),
-                  child: Text(
-                    LOGIN_LABEL_FR,
-                    style: isButtonEnabled
-                        ? TextStyle(color: Colors.white, fontSize: 15)
-                        : TextStyle(
-                            color: Color.fromARGB(255, 87, 87, 87),
-                            fontSize: 15),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, SIGNUP_ROUTE);
-                  },
-                  child: Text(CREATE_ACCOUNT_LABEL_FR),
-                ),
+                    },
+                    text: LOGIN_LABEL_FR),
+                AppButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, SIGNUP_ROUTE);
+                    },
+                    text: CREATE_ACCOUNT_LABEL_FR)
               ]),
             ],
           ),
