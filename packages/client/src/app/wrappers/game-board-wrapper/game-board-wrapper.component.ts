@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { Square, SquareView } from '@app/classes/square';
 import { TilePlacement } from '@app/classes/tile';
@@ -6,31 +6,39 @@ import { SQUARE_SIZE, UNDEFINED_SQUARE } from '@app/constants/game-constants';
 import { BoardService, GameService } from '@app/services';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Orientation } from '@common/models/position';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-game-board-wrapper',
     templateUrl: './game-board-wrapper.component.html',
     styleUrls: ['./game-board-wrapper.component.scss'],
 })
-export class GameBoardWrapperComponent implements OnInit {
+export class GameBoardWrapperComponent implements OnInit, OnDestroy {
     @Input() isObserver: boolean;
+    @Input() canInteract: boolean = true;
     grid: BehaviorSubject<SquareView[][]> = new BehaviorSubject<SquareView[][]>([]);
 
     private notAppliedSquares: SquareView[] = [];
     private newlyPlacedTiles: SquareView[] = [];
     private opponentPlacedTiles: SquareView[] = [];
+    private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
 
     constructor(readonly boardService: BoardService, readonly tilePlacementService: TilePlacementService, readonly gameService: GameService) {}
 
     ngOnInit(): void {
-        this.boardService.subscribeToInitializeBoard(of(), this.initializeBoard.bind(this));
-        this.boardService.subscribeToBoardUpdate(of(), this.handleUpdateBoard.bind(this));
-        this.tilePlacementService.tilePlacements$.subscribe(this.handlePlaceTiles.bind(this));
-        this.boardService.subscribeToTemporaryTilePlacements(this.handleOpponentPlaceTiles.bind(this));
+        this.boardService.subscribeToInitializeBoard(this.componentDestroyed$, this.initializeBoard.bind(this));
+        this.boardService.subscribeToBoardUpdate(this.componentDestroyed$, this.handleUpdateBoard.bind(this));
+        this.tilePlacementService.tilePlacements$.pipe(takeUntil(this.componentDestroyed$)).subscribe(this.handlePlaceTiles.bind(this));
+        this.boardService.subscribeToTemporaryTilePlacements(this.componentDestroyed$, this.handleOpponentPlaceTiles.bind(this));
 
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());
+    }
+
+    ngOnDestroy() {
+        this.componentDestroyed$.next(true);
+        this.componentDestroyed$.complete();
     }
 
     resetNotAppliedSquares(): void {

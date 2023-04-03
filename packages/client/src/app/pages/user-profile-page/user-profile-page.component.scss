@@ -1,3 +1,8 @@
+::ng-deep mat-dialog-container.mat-dialog-container {
+    max-height: calc(100vh -24px) !important;
+}
+  
+
 .page {
     padding-top: 60px;
 
@@ -9,6 +14,8 @@
         flex-direction: column;
         gap: 16px;
     }
+
+
 
     .user-stats {
         display: grid;
@@ -42,6 +49,19 @@
             background-color: tomato;
             color: white;
         }
+    }
+
+    .analysis-status {
+        $size: 40px;
+        height: $size;
+        width: $size;
+        border-radius: $size;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 1em;
+        min-width: unset;
     }
 
     .table {

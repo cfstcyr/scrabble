@@ -4,7 +4,6 @@ import { PrivateRouteGuard } from '@app/guard/private-route/private-route.guard'
 import { PublicRouteGuard } from '@app/guard/public-route/public-route.guard';
 import { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';
 import { GameCreationPageComponent } from '@app/pages/game-creation-page/game-creation-page.component';
-import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { HomePageComponent } from '@app/pages/home-page/home-page.component';
 import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';
 import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.component';
@@ -29,6 +28,7 @@ import {
 import { SearchPageComponent } from '@app/pages/search-page/search-page.component';
 import { UserSearchResultPageComponent } from '@app/pages/user-search-result-page/user-search-result-page.component';
 import { PuzzlePageComponent } from '@app/pages/puzzle-page/puzzle-page.component';
+import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 
 const privateRoute: Route = {
     canActivate: [PrivateRouteGuard],

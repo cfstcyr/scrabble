@@ -5,10 +5,10 @@
 exports.up = async function(knex) {
     await knex.schema.createTable('Analysis', function(table) {
         table.increments('idAnalysis').primary();
-        table.integer('idGame');
+        table.integer('idGameHistory');
         table.integer('idUser');
         table.foreign('idUser').references('idUser').inTable('User');
-        table.foreign('idGame').references('idGameHistory').inTable('GameHistory');
+        table.foreign('idGameHistory').references('idGameHistory').inTable('GameHistory');
       });
       
       await knex.schema.createTable('Placement', function(table) {
