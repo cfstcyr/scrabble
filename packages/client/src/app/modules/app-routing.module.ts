@@ -24,10 +24,12 @@ import {
     ROUTE_SIGNUP,
     ROUTE_SEARCH,
     ROUTE_PUZZLE,
+    ROUTE_RATING_LEADERBOARD,
 } from '@app/constants/routes-constants';
 import { SearchPageComponent } from '@app/pages/search-page/search-page.component';
-import { UserSearchResultPageComponent } from '@app/pages/user-search-result-page/user-search-result-page.component';
 import { PuzzlePageComponent } from '@app/pages/puzzle-page/puzzle-page.component';
+import { RatingLeaderboardPageComponent } from '@app/pages/rating-leaderboard-page/rating-leaderboard-page.component';
+import { UserSearchResultPageComponent } from '@app/pages/user-search-result-page/user-search-result-page.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 
 const privateRoute: Route = {
@@ -62,6 +64,7 @@ const routes: Routes = [
         ],
     },
     { path: ROUTE_PUZZLE, component: PuzzlePageComponent, ...privateRoute },
+    { path: ROUTE_RATING_LEADERBOARD, component: RatingLeaderboardPageComponent, ...privateRoute },
     { path: '**', redirectTo: ROUTE_HOME },
 ].map((route) => ({ ...route, path: removeStartSlash(route.path) }));
 

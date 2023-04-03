@@ -11,16 +11,13 @@ import {
     AnalysisWaitingDialogParameter,
 } from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { EndGameDialogComponent } from '@app/components/end-game-dialog/end-game-dialog';
 import { DefaultDialogParameters } from '@app/components/default-dialog/default-dialog.component.types';
 import {
     DIALOG_ABANDON_BUTTON_CONFIRM,
     DIALOG_ABANDON_BUTTON_CONTINUE,
     DIALOG_ABANDON_CONTENT,
     DIALOG_ABANDON_TITLE,
-    DIALOG_ANALYSIS_BUTTON_CONFIRM,
-    DIALOG_END_OF_GAME_CLOSE_BUTTON,
-    DIALOG_END_OF_GAME_CONTENT,
-    DIALOG_END_OF_GAME_TITLE,
     DIALOG_NO_ACTIVE_GAME_BUTTON,
     DIALOG_NO_ACTIVE_GAME_CONTENT,
     DIALOG_NO_ACTIVE_GAME_TITLE,
@@ -41,6 +38,7 @@ import { TilePlacementService } from '@app/services/tile-placement-service/tile-
 import { Analysis, AnalysisRequestInfoType } from '@common/models/analysis';
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
+import { DEFAULT_PLAYER_RATING } from '@common/models/constants';
 
 @Component({
     selector: 'app-game-page',
@@ -86,7 +84,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.gameViewEventManagerService.subscribeToGameViewEvent('noActiveGame', this.componentDestroyed$, this.openNoActiveGameDialog.bind(this));
-        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, this.openEngOfGameDialog.bind(this));
+        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, this.endOfGameDialog.bind(this));
     }
 
     handleHintButtonClick(): void {
@@ -182,31 +180,16 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
     }
 
-    private openEngOfGameDialog(winnerNames: string[]) {
-        this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
-            data: {
-                title: DIALOG_END_OF_GAME_TITLE(this.isLocalPlayerWinner(winnerNames)),
-                content: DIALOG_END_OF_GAME_CONTENT(this.isLocalPlayerWinner(winnerNames)),
-                buttons: [
-                    {
-                        content: DIALOG_QUIT_BUTTON_CONFIRM,
-                        redirect: ROUTE_HOME,
-                        style: 'background-color: rgb(231, 231, 231)',
-                        action: () => this.handlePlayerLeaves(),
-                    },
-                    {
-                        closeDialog: true,
-                        content: DIALOG_ANALYSIS_BUTTON_CONFIRM,
-                        style: 'background-color: rgb(231, 231, 231)',
-                        action: () => this.requestAnalysis(),
-                    },
+    private endOfGameDialog(winnerNames: string[]): void {
+        const localPlayer = this.gameService.getLocalPlayer();
 
-                    {
-                        content: DIALOG_END_OF_GAME_CLOSE_BUTTON,
-                        closeDialog: true,
-                        style: 'background-color: rgb(231, 231, 231)',
-                    },
-                ],
+        this.dialog.open(EndGameDialogComponent, {
+            data: {
+                hasWon: this.isLocalPlayerWinner(winnerNames),
+                adjustedRating: localPlayer?.adjustedRating ?? DEFAULT_PLAYER_RATING,
+                ratingVariation: localPlayer?.ratingVariation ?? 0,
+                action: () => this.handlePlayerLeaves(),
+                actionAnalysis: () => this.requestAnalysis(),
             },
         });
 

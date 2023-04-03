@@ -8,17 +8,18 @@ export interface GameHistoryPlayer {
     score: number;
     isVirtualPlayer: boolean;
     isWinner: boolean;
+    ratingVariation: number;
+    hasAbandoned: boolean;
 }
 
 export interface GameHistory {
     idGameHistory: number;
     startTime: Date;
     endTime: Date;
-    hasBeenAbandoned: boolean;
 }
 
 export type GameHistoryPlayerCreation = Omit<GameHistoryPlayer, IdOf<GameHistory>>;
 
 export type GameHistoryCreation = { gameHistory: NoId<GameHistory>; players: GameHistoryPlayerCreation[] };
 
-export type GameHistoryForUser = NoId<GameHistory> & Pick<GameHistoryPlayer, 'score' | 'isWinner'> & Pick<AnalysisData, 'idAnalysis'>;
+export type GameHistoryForUser = NoId<GameHistory> & Pick<GameHistoryPlayer, 'score' | 'isWinner' | 'ratingVariation' | 'hasAbandoned'> & Pick<AnalysisData, 'idAnalysis'>;
