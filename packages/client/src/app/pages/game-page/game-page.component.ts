@@ -1,6 +1,11 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Observable, Subject } from 'rxjs';
+import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
+import { ActionService } from '@app/services/action-service/action.service';
+import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
+import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
+import { GameService } from '@app/services';
 import { ActionType } from '@app/classes/actions/action-data';
 import {
     AnalysisResultModalComponent,
@@ -32,15 +37,11 @@ import {
     MIN_CONFETTI_COUNT,
 } from '@app/constants/pages-constants';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
-import { GameService } from '@app/services';
-import { ActionService } from '@app/services/action-service/action.service';
-import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
-import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
-import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Analysis, AnalysisRequestInfoType } from '@common/models/analysis';
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
+import { Observable, Subject } from 'rxjs';
+import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
 
 @Component({
     selector: 'app-game-page',
@@ -60,6 +61,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private readonly gameViewEventManagerService: GameViewEventManagerService,
         private readonly actionService: ActionService,
         private readonly tilePlacementService: TilePlacementService,
+        private readonly boardCursorService: BoardCursorService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
@@ -67,6 +69,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     @HostListener('document:keydown.enter', ['$event'])
     handleEnter(): void {
+        this.boardCursorService.isDisabled = true;
+        this.boardCursorService.clearCurrentCursor();
         this.gameService.playTilesOnBoard();
     }
 
@@ -94,7 +98,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     handlePassButtonClick(): void {
+        this.boardCursorService.isDisabled = true;
         this.gameService.makeTilePlacement([]);
+        this.boardCursorService.clear();
         this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PASS, {}, '', true));
     }
 

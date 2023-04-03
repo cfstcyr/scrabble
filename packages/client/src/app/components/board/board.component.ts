@@ -13,9 +13,14 @@ export class BoardComponent {
     @Input() grid: Observable<SquareView[][]>;
     @Input() canInteract: boolean = true;
     @Output() clearNewlyPlacedTiles: EventEmitter<void> = new EventEmitter();
+    @Output() onSquareClick: EventEmitter<SquareView> = new EventEmitter();
     letters = LETTER_VALUES;
 
     onBoardClick() {
         this.clearNewlyPlacedTiles.next();
+    }
+
+    squareClickHandler(squareView: SquareView): void {
+        this.onSquareClick.emit(squareView);
     }
 }
