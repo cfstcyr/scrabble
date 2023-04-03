@@ -63,7 +63,7 @@ class AnalysisResultDialog {
                         AnalysisOverview.fromCriticalMoments(criticalMoments),
                   ),
                   ..._criticalMomentWidgets
-                ],
+                ].map((w) => _slideWidget(child: w)).toList(),
               ),
             ),
             contentPadding: EdgeInsets.symmetric(vertical: 0),
@@ -97,6 +97,10 @@ class AnalysisResultDialog {
             backgroundColor: Colors.white,
           );
         });
+  }
+
+  Widget _slideWidget({required Widget child}) {
+    return Center(child: SingleChildScrollView(child: child,));
   }
 
   Widget _slideIndicator(ThemeData theme) {

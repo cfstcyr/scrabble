@@ -49,46 +49,44 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
       orientation: Axis.vertical,
     );
 
-    return SingleChildScrollView(
-      child: StreamBuilder<ActionShownValue>(
-          stream: actionShownToggle.selectedStream,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return SizedBox.shrink();
+    return StreamBuilder<ActionShownValue>(
+        stream: actionShownToggle.selectedStream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return SizedBox.shrink();
 
-            bool shouldShowPlacement =
-                snapshot.data!.getEnum() == ActionShown.best ||
-                    _criticalMomentView.actionType == ActionType.place;
+          bool shouldShowPlacement =
+              snapshot.data!.getEnum() == ActionShown.best ||
+                  _criticalMomentView.actionType == ActionType.place;
 
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Transform.translate(
-                    offset: Offset(32, 0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        actionShownToggle,
-                        // Points
-                        SizedBox(
-                          height: SPACE_2,
-                        ),
-                        _getScore(context, snapshot.data!),
-                      ],
-                    ),
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Transform.translate(
+                  offset: Offset(32, 0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      actionShownToggle,
+                      // Points
+                      SizedBox(
+                        height: SPACE_2,
+                      ),
+                      _getScore(context, snapshot.data!),
+                    ],
                   ),
                 ),
-                shouldShowPlacement
-                    ? _getPlacementAnalysis(
-                        _computePlacementViewFromSelection(snapshot.data!))
-                    : _getNonPlacementAnalysis(theme),
-                Spacer(),
-              ],
-            );
-          }),
-    );
+              ),
+              shouldShowPlacement
+                  ? _getPlacementAnalysis(
+                      _computePlacementViewFromSelection(snapshot.data!))
+                  : _getNonPlacementAnalysis(theme),
+              Spacer(),
+            ],
+          );
+        });
   }
 
   Widget _getPlacementAnalysis(PlacementView placement) {
@@ -97,9 +95,10 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
     AnalysisTileRack tileRack =
         placement.tileRack ?? placement.generateTileRack();
 
+    const double size = 560;
     return Column(
       children: [
-        SizedBox(width: 560, height: 560, child: gameBoard),
+        SizedBox(width: size, height: size, child: gameBoard),
         SizedBox(height: 60, child: tileRack),
       ],
     );
