@@ -91,13 +91,13 @@ class PuzzleService {
     }
 
     WordPlacement wordPlacement =
-        WordPlacement(actionPlacePayload: placement.toActionPayload());
+    WordPlacement(actionPlacePayload: placement.toActionPayload());
     return _puzzleController
         .completePuzzle(wordPlacement)
         .then((Response response) {
       PuzzleResult puzzleResult =
-          PuzzleResult.fromJson(jsonDecode(response.body));
-
+      PuzzleResult.fromJson(jsonDecode(response.body));
+      
       _handlePuzzleResult(
           puzzleResult,
           ScoredWordPlacement(
@@ -105,7 +105,7 @@ class PuzzleService {
               score: puzzleResult.userPoints));
 
       return ResponseResult.success();
-    }).catchError((_) => ResponseResult.error());
+    }, onError: (_) => ResponseResult.error());
   }
 
   Future<ResponseResult> abandonPuzzle() {
@@ -131,8 +131,9 @@ class PuzzleService {
     PuzzlePlayed puzzlePlayed = PuzzlePlayed.afterPlayed(
         _puzzle.value!.puzzleLevel.nameEnum, playedPlacement, puzzleResult);
 
-    _currentPlayer!.updateStreak(puzzleResult);
+    _currentPlayer?.updateStreak(puzzleResult);
     // TODO: Add to chat
+    // TODO: Stop timer
 
     PuzzleResultDialog(puzzlePlayed: puzzlePlayed)
         .openAnalysisResultDialog(navigatorKey.currentContext!);

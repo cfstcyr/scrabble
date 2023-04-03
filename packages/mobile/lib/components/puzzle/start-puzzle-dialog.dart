@@ -6,6 +6,7 @@ import 'package:mobile/components/create-game/timer-selector.dart';
 import 'package:mobile/components/error-pop-up.dart';
 import 'package:mobile/components/app-toggle-button.dart';
 import 'package:mobile/components/puzzle/puzzle-level-widget.dart';
+import 'package:mobile/constants/home-page.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/constants/locale/puzzle-constants.dart';
 import 'package:mobile/locator.dart';
@@ -27,7 +28,7 @@ void showStartPuzzleDialog(BuildContext context) {
 
         return AlertDialog(
           title: Center(
-            child: Text(PUZZLE_PAGE_TITLE,
+            child: Text(PUZZLE_TITLE,
                 style: theme.textTheme.displayMedium
                     ?.copyWith(fontWeight: FontWeight.w500)),
           ),

@@ -69,7 +69,7 @@ class HomePage extends StatelessWidget {
                         _handleStartPuzzle(context);
                       },
                       size: AppButtonSize.large,
-                      child: Text(START_PUZZLE_MESSAGE,
+                      child: Text(PUZZLE_TITLE,
                           style: TextStyle(color: Colors.white, fontSize: 18)),
                     ),
                   ],
