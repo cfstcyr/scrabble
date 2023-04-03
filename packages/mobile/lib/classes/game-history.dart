@@ -17,11 +17,11 @@ class GameHistory {
 
   GameHistory.fromJson(Map<String, dynamic> json)
       : this(
-            startTime: DateTime.parse(json['startTime']),
-            endTime: DateTime.parse(json['endTime']),
-            score: json['score'],
-            hasAbandoned: json['hasAbandoned'],
-            isWinner: json['isWinner']);
+          startTime: DateTime.parse(json['startTime']),
+          endTime: DateTime.parse(json['endTime']),
+          score: json['score'],
+          hasAbandoned: json['hasAbandoned'],
+          isWinner: json['isWinner'],
           idAnalysis: json['idAnalysis'],
         );
 
