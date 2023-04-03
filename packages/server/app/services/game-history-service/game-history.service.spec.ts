@@ -12,18 +12,21 @@ const DEFAULT_PLAYER_1: GameHistoryPlayerCreation = {
     score: 1,
     isVirtualPlayer: false,
     isWinner: false,
+    ratingVariation: 1,
+    hasAbandoned: false,
 };
 const DEFAULT_PLAYER_2: GameHistoryPlayerCreation = {
     idUser: DEFAULT_USER_2.idUser,
     score: 2,
     isVirtualPlayer: true,
     isWinner: true,
+    ratingVariation: 1,
+    hasAbandoned: true,
 };
 const DEFAULT_GAME_HISTORY: GameHistory = {
     idGameHistory: 1,
     startTime: new Date(),
     endTime: new Date(),
-    hasBeenAbandoned: false,
 };
 
 describe('GameHistoriesService', () => {

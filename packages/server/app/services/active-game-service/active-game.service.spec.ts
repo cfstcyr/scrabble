@@ -56,6 +56,7 @@ const DEFAULT_GAME = {
     gameIsOver: false,
 
     getId: () => DEFAULT_ID,
+    getPlayers: () => [DEFAULT_PLAYER_1, DEFAULT_PLAYER_2, DEFAULT_PLAYER_3, DEFAULT_PLAYER_4],
     createStartGameData: () => undefined,
     areGameOverConditionsMet: () => true,
 };
@@ -98,6 +99,7 @@ describe('ActiveGameService', () => {
 
         beforeEach(() => {
             spy = chai.spy.on(Game, 'createGame', async () => Promise.resolve(DEFAULT_GAME));
+            chai.spy.on(activeGameService, 'setPlayerElo', async () => Promise.resolve(true));
         });
 
         afterEach(() => {

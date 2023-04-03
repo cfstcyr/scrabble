@@ -2,14 +2,14 @@ class GameHistory {
   DateTime startTime;
   DateTime endTime;
   int score;
-  bool hasBeenAbandoned;
+  bool hasAbandoned;
   bool isWinner;
 
   GameHistory({
     required this.startTime,
     required this.endTime,
     required this.score,
-    required this.hasBeenAbandoned,
+    required this.hasAbandoned,
     required this.isWinner,
   });
 
@@ -18,7 +18,7 @@ class GameHistory {
             startTime: DateTime.parse(json['startTime']),
             endTime: DateTime.parse(json['endTime']),
             score: json['score'],
-            hasBeenAbandoned: json['hasBeenAbandoned'],
+            hasAbandoned: json['hasAbandoned'],
             isWinner: json['isWinner']);
 
   static List<GameHistory> fromJsonList(List<dynamic> list) {

@@ -23,4 +23,8 @@ export interface UserFieldValidation {
     isAvailable: boolean;
 }
 
+export interface RatedUser extends PublicUser {
+    rating: number;
+}
+
 export const UNKOWN_USER: PublicUser = { email: '', username: 'Inconnu', avatar: '' };
