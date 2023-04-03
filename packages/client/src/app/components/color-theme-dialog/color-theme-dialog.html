@@ -1,14 +1,22 @@
 <div id="buttons-container">
-    <button mat-flat-button  (click)="changeTheme('$scrabble-theme')">
+    <button mat-flat-button  (click)="changeTheme(themeColors.Green)">
         <app-icon icon="chevron-left"></app-icon>
         Vert
     </button> 
-    <button mat-flat-button  (click)="changeTheme('$indigo-pink-theme')">
+    <button mat-flat-button  (click)="changeTheme(themeColors.Purple)">
         <app-icon icon="chevron-left"></app-icon>
         Mauve
     </button> 
-    <button mat-flat-button  (click)="changeTheme('orange')">
+    <button mat-flat-button  (click)="changeTheme(themeColors.Pink)">
         <app-icon icon="chevron-left"></app-icon>
-        Orange
+        Rose
+    </button> 
+    <button mat-flat-button  (click)="changeTheme(themeColors.Blue)">
+        <app-icon icon="chevron-left"></app-icon>
+        Bleu
+    </button> 
+    <button mat-flat-button  (click)="changeTheme(themeColors.Red)">
+        <app-icon icon="chevron-left"></app-icon>
+        Rouge
     </button> 
 </div>
