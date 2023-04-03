@@ -28,7 +28,7 @@ import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { Subject } from 'rxjs';
-import { GroupRequestWaitingDialogComponent } from './color-theme-dialog';
+import { ColorThemeDialogComponent } from './color-theme-dialog';
 
 const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 const TEST_GROUP: Group = {
@@ -59,12 +59,12 @@ export class MatDialogMock {
     }
 }
 
-describe('GroupRequestWaitingDialogComponent', () => {
-    let component: GroupRequestWaitingDialogComponent;
-    let fixture: ComponentFixture<GroupRequestWaitingDialogComponent>;
+describe('ColorThemeDialogComponent', () => {
+    let component: ColorThemeDialogComponent;
+    let fixture: ComponentFixture<ColorThemeDialogComponent>;
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [GroupRequestWaitingDialogComponent, IconComponent, PageHeaderComponent],
+            declarations: [ColorThemeDialogComponent, IconComponent, PageHeaderComponent],
             imports: [
                 AppMaterialModule,
                 MatFormFieldModule,
@@ -95,13 +95,12 @@ describe('GroupRequestWaitingDialogComponent', () => {
                     provide: MatDialogRef,
                     useClass: MatDialogMock,
                 },
-                { provide: MAT_DIALOG_DATA, useValue: { group: TEST_GROUP } },
             ],
         }).compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(GroupRequestWaitingDialogComponent);
+        fixture = TestBed.createComponent(ColorThemeDialogComponent);
 
         component = fixture.componentInstance;
         fixture.detectChanges();
