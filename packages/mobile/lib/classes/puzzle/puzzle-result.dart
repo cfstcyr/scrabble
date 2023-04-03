@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:mobile/classes/actions/word-placement.dart';
+import 'package:mobile/classes/puzzle/puzzle-level.dart';
 
 class PuzzleResult {
   final int userPoints;
@@ -23,6 +24,29 @@ class PuzzleResult {
             .map((dynamic placement) => ScoredWordPlacement.fromJson(placement))
             .toList());
   }
+}
+
+class PuzzlePlayed extends PuzzleResult {
+  final PuzzleLevelName levelName;
+  final ScoredWordPlacement? playedPlacement;
+
+  PuzzlePlayed(
+      {required super.userPoints,
+      required super.result,
+      required super.targetPlacement,
+      required super.allPlacements,
+      required this.levelName,
+      required this.playedPlacement});
+
+  factory PuzzlePlayed.afterPlayed(PuzzleLevelName levelName,
+          ScoredWordPlacement? playedPlacement, PuzzleResult puzzleResult) =>
+      PuzzlePlayed(
+          userPoints: puzzleResult.userPoints,
+          result: puzzleResult.result,
+          targetPlacement: puzzleResult.targetPlacement,
+          allPlacements: puzzleResult.allPlacements,
+          levelName: levelName,
+          playedPlacement: playedPlacement);
 }
 
 enum PuzzleResultStatus {

@@ -8,6 +8,8 @@ enum PuzzleLevelName {
   beginner,
   advanced,
   expert;
+
+  String get displayName => PUZZLE_LEVEL_NAMES[this] ?? 'Inconnu';
 }
 
 class PuzzleLevel extends AppToggleOption {
