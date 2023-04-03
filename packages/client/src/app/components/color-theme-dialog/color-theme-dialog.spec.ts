@@ -9,7 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -24,22 +24,9 @@ import { PageHeaderComponent } from '@app/components/page-header/page-header.com
 import { AppMaterialModule } from '@app/modules/material.module';
 import { GroupsPageComponent } from '@app/pages/groups-page/groups-page.component';
 import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';
-import { GameVisibility } from '@common/models/game-visibility';
-import { Group } from '@common/models/group';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { Subject } from 'rxjs';
 import { ColorThemeDialogComponent } from './color-theme-dialog';
 
-const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
-const TEST_GROUP: Group = {
-    maxRoundTime: 1,
-    groupId: 'idgroup',
-    user1: USER1,
-    virtualPlayerLevel: VirtualPlayerLevel.Beginner,
-    gameVisibility: GameVisibility.Private,
-    password: '',
-    numberOfObservers: 0,
-};
 
 @Component({
     template: '',
@@ -53,7 +40,6 @@ export class MatDialogMock {
             close: () => ({}),
         };
     }
-    // confirmationSpy = spyOn(service['gameDispatcherController'], 'handleStartGame').and.returnValue(confirmationObservable);
     backdropClick() {
         return this.confirmationObservable.asObservable();
     }
