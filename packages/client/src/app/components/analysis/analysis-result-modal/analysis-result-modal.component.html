@@ -35,7 +35,6 @@
             <p class='analysis-message'>{{message}}</p>
             <p class='help'>Utilisez les flèches pour voir les solutions possibles</p>
         </app-swiper-slide>
-
         <app-swiper-slide class='placement-slide result-placement' *ngFor='let criticalMoment of criticalMoments; let index = index'>
             <mat-button-toggle-group name="actionShown" [(ngModel)]="criticalMoment.actionToShow">
                 <mat-button-toggle value="playedAction" id="toggle">Action faite</mat-button-toggle>

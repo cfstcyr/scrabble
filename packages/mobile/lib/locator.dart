@@ -22,6 +22,7 @@ import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:mobile/services/upload.service.dart';
 import 'package:mobile/services/user-session.service.dart';
 import 'package:mobile/services/user.service.dart';
 
@@ -71,11 +72,11 @@ class CustomLocator {
     getIt.registerLazySingleton<PuzzleController>(() => PuzzleController());
     getIt.registerLazySingleton<AnalysisController>(() => AnalysisController());
     getIt.registerLazySingleton<AnalysisService>(() => AnalysisService());
+    getIt.registerLazySingleton<UploadService>(() => UploadService());
   }
 
   void _registerActiveSingleton() {
-    getIt.registerSingleton<ChatService>(
-        ChatService());
+    getIt.registerSingleton<ChatService>(ChatService());
     getIt.registerSingleton<AccountAuthenticationController>(
         AccountAuthenticationController());
     getIt.registerSingleton<InitializerService>(InitializerService());

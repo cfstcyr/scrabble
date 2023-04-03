@@ -2,11 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/user.dart';
-import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 
@@ -38,18 +36,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
     });
 
     canceledSubscription = canceledStream.listen((PublicUser host) {
-      triggerDialogBox("Partie annulée", [
-        Text("${host.username} a annulé la partie",
-            style: TextStyle(fontSize: 16))
-      ], [
-        DialogBoxButtonParameters(
-            content: 'OK',
-            theme: AppButtonTheme.primary,
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
-            })
-      ]);
+      handleCanceledGame(host, context);
     });
   }
 

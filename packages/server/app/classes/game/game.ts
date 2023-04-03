@@ -11,7 +11,6 @@ import RoundManager from '@app/classes/round/round-manager';
 import { LetterValue, Tile } from '@app/classes/tile';
 import TileReserve from '@app/classes/tile/tile-reserve';
 import { TileReserveData } from '@app/classes/tile/tile.types';
-import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { END_GAME_HEADER_MESSAGE, START_TILES_AMOUNT } from '@app/constants/classes-constants';
 import { WINNER_MESSAGE } from '@app/constants/game-constants';
 import { INVALID_PLAYER_ID_FOR_GAME } from '@app/constants/services-errors';
@@ -27,7 +26,7 @@ import { ReadyGameConfig, StartGameData } from './game-config';
 import { INVALID_LIST_LENGTH } from '@app/constants/classes-errors';
 import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
-import { GameHistoryCreation } from '@common/models/game-history';
+import { GameHistoryCreation, GameHistoryPlayerCreation } from '@common/models/game-history';
 import { Observer } from '@common/models/observer';
 
 export default class Game {
@@ -41,9 +40,9 @@ export default class Game {
     player3: Player;
     player4: Player;
     observers: Observer[];
-    isAddedToDatabase: boolean;
     gameIsOver: boolean;
     gameHistory: GameHistoryCreation;
+    idGameHistory: number;
     virtualPlayerLevel: VirtualPlayerLevel;
     private tileReserve: TileReserve;
     private id: string;
@@ -75,7 +74,6 @@ export default class Game {
         game.dictionarySummary = config.dictionarySummary;
         game.tileReserve = new TileReserve();
         game.board = this.boardService.initializeBoard();
-        game.isAddedToDatabase = false;
         game.gameIsOver = false;
         game.virtualPlayerLevel = config.virtualPlayerLevel;
         await game.tileReserve.init();
@@ -90,46 +88,38 @@ export default class Game {
         return game;
     }
 
+    createGameHistoryPlayer(player: Player): GameHistoryPlayerCreation {
+        return {
+            idUser: isIdVirtualPlayer(player.id) ? undefined : player.idUser,
+            score: player.score,
+            isVirtualPlayer: isIdVirtualPlayer(player.id),
+            isWinner: this.isPlayerWinner(player),
+            ratingVariation: player.adjustedRating - player.initialRating,
+            hasAbandoned: false,
+        };
+    }
+
     completeGameHistory(): void {
         this.gameHistory = {
             gameHistory: {
                 startTime: this.roundManager.getGameStartTime(),
                 endTime: new Date(),
-                hasBeenAbandoned: !this.player1.isConnected || !this.player2.isConnected || !this.player3.isConnected || !this.player4.isConnected,
             },
-            players: [
-                {
-                    idUser: isIdVirtualPlayer(this.player1.id) ? undefined : this.player1.idUser,
-                    score: this.player1.score,
-                    isVirtualPlayer: isIdVirtualPlayer(this.player1.id),
-                    isWinner: this.isPlayerWinner(this.player1),
-                },
-                {
-                    idUser: isIdVirtualPlayer(this.player2.id) ? undefined : this.player2.idUser,
-                    score: this.player2.score,
-                    isVirtualPlayer: isIdVirtualPlayer(this.player2.id),
-                    isWinner: this.isPlayerWinner(this.player2),
-                },
-                {
-                    idUser: isIdVirtualPlayer(this.player3.id) ? undefined : this.player3.idUser,
-                    score: this.player3.score,
-                    isVirtualPlayer: isIdVirtualPlayer(this.player3.id),
-                    isWinner: this.isPlayerWinner(this.player3),
-                },
-                {
-                    idUser: isIdVirtualPlayer(this.player4.id) ? undefined : this.player4.idUser,
-                    score: this.player4.score,
-                    isVirtualPlayer: isIdVirtualPlayer(this.player4.id),
-                    isWinner: this.isPlayerWinner(this.player4),
-                },
-            ],
+            players: this.getPlayers()
+                .map((player) => {
+                    if (player.isConnected) {
+                        return this.createGameHistoryPlayer(player);
+                    }
+                    return undefined;
+                })
+                .filter((player) => player !== undefined) as GameHistoryPlayerCreation[],
         };
     }
 
     isPlayerWinner(currentPlayer: Player): boolean {
         const opponents = this.getOpponentPlayers(currentPlayer);
         for (const opponent of opponents) {
-            if (currentPlayer.score < opponent.score) {
+            if (opponent.isConnected && currentPlayer.score < opponent.score) {
                 return false;
             }
         }
@@ -158,15 +148,6 @@ export default class Game {
 
     getGroupChannelId(): TypeOfId<Channel> {
         return this.groupChannelId;
-    }
-
-    getConnectedRealPlayers(): Player[] {
-        const connectedRealPlayers: Player[] = [];
-        if (this.player1.isConnected && !(this.player1 instanceof AbstractVirtualPlayer)) connectedRealPlayers.push(this.player1);
-        if (this.player2.isConnected && !(this.player2 instanceof AbstractVirtualPlayer)) connectedRealPlayers.push(this.player2);
-        if (this.player3.isConnected && !(this.player3 instanceof AbstractVirtualPlayer)) connectedRealPlayers.push(this.player3);
-        if (this.player4.isConnected && !(this.player4 instanceof AbstractVirtualPlayer)) connectedRealPlayers.push(this.player4);
-        return connectedRealPlayers;
     }
 
     getPlayer(playerId: string): Player {
@@ -262,8 +243,6 @@ export default class Game {
         this.gameIsOver = true;
 
         const finalScores = this.getEndOfGameScores();
-
-        this.completeGameHistory();
         return finalScores;
     }
 

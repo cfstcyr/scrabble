@@ -1,11 +1,14 @@
 import { HttpException } from '@app/classes/http-exception/http-exception';
-import { USER_STATISTICS_TABLE } from '@app/constants/services-constants/database-const';
+import { USER_STATISTICS_TABLE, USER_TABLE } from '@app/constants/services-constants/database-const';
 import { CANNOT_GET_STATISTICS_FOR_USER } from '@app/constants/services-errors';
 import DatabaseService from '@app/services/database-service/database.service';
-import { User } from '@common/models/user';
+import { RatedUser, User } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
 import { Service } from 'typedi';
 import { PublicUserStatistics, UserGameStatisticInfo, UserStatistics } from '@common/models/user-statistics';
+import { DEFAULT_PLAYER_RATING } from '@common/models/constants';
+
+export const NUMBER_OF_USERS_IN_LEADERBOARD = 25;
 
 @Service()
 export class UserStatisticsService {
@@ -24,12 +27,23 @@ export class UserStatisticsService {
         return statistics;
     }
 
+    async getTopRatings(): Promise<RatedUser[]> {
+        const topUsers = await this.table
+            .select('u.username as username', 'u.avatar as avatar', 'u.email as email', `${USER_STATISTICS_TABLE}.rating`)
+            .join(`${USER_TABLE} as u`, 'u.idUser', `${USER_STATISTICS_TABLE}.idUser`)
+            .orderBy(`${USER_STATISTICS_TABLE}.rating`, 'desc')
+            .limit(NUMBER_OF_USERS_IN_LEADERBOARD);
+
+        return topUsers;
+    }
+
     async addGameToStatistics(idUser: TypeOfId<User>, game: UserGameStatisticInfo): Promise<PublicUserStatistics> {
         const statistics = await this.getStatistics(idUser);
 
         statistics.averagePointsPerGame = this.calculateNewAveragePointsPerGame(statistics, game);
         statistics.averageTimePerGame = this.calculateNewAverageTimePerGame(statistics, game);
         statistics.gamesPlayedCount++;
+        statistics.rating += game.ratingDifference;
         if (game.hasWon) statistics.gamesWonCount++;
 
         await this.table.where({ idUser }).update(statistics);
@@ -43,15 +57,19 @@ export class UserStatisticsService {
             averageTimePerGame: 0,
             gamesPlayedCount: 0,
             gamesWonCount: 0,
+            rating: DEFAULT_PLAYER_RATING,
         });
     }
 
-    private async createStatistics(idUser: TypeOfId<User>): Promise<void> {
+    async createStatistics(idUser: TypeOfId<User>): Promise<void> {
         await this.table.insert({ idUser });
     }
 
     private async tryGetStatistics(idUser: TypeOfId<User>): Promise<PublicUserStatistics | undefined> {
-        return this.table.select('averagePointsPerGame', 'averageTimePerGame', 'gamesPlayedCount', 'gamesWonCount').where({ idUser }).first();
+        return this.table
+            .select('averagePointsPerGame', 'averageTimePerGame', 'gamesPlayedCount', 'gamesWonCount', 'rating')
+            .where({ idUser })
+            .first();
     }
 
     private calculateNewAveragePointsPerGame(statistics: PublicUserStatistics, game: UserGameStatisticInfo): number {

@@ -107,7 +107,7 @@ class UserProfileGameHistory extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        ...gameHistory.hasBeenAbandoned
+        ...gameHistory.hasAbandoned
             ? [
                 _gameStatus(Colors.grey.shade300, Icons.flag),
                 SizedBox(

@@ -2,7 +2,7 @@ class GameHistory {
   DateTime startTime;
   DateTime endTime;
   int score;
-  bool hasBeenAbandoned;
+  bool hasAbandoned;
   bool isWinner;
   int? idAnalysis;
 
@@ -10,18 +10,18 @@ class GameHistory {
     required this.startTime,
     required this.endTime,
     required this.score,
-    required this.hasBeenAbandoned,
+    required this.hasAbandoned,
     required this.isWinner,
     required this.idAnalysis,
   });
 
   GameHistory.fromJson(Map<String, dynamic> json)
       : this(
-          startTime: DateTime.parse(json['startTime']),
-          endTime: DateTime.parse(json['endTime']),
-          score: json['score'],
-          hasBeenAbandoned: json['hasBeenAbandoned'],
-          isWinner: json['isWinner'],
+            startTime: DateTime.parse(json['startTime']),
+            endTime: DateTime.parse(json['endTime']),
+            score: json['score'],
+            hasAbandoned: json['hasAbandoned'],
+            isWinner: json['isWinner']);
           idAnalysis: json['idAnalysis'],
         );
 

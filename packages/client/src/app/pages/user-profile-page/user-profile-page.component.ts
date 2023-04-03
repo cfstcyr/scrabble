@@ -27,7 +27,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     @ViewChild('gameHistoryPaginator') gameHistoryPaginator: MatPaginator;
     @ViewChild('serverActionsPaginator') serverActionsPaginator: MatPaginator;
 
-    gameHistoryColumns: string[] = ['startTime', 'endTime', 'gameResult', 'score', 'analysis'];
+    gameHistoryColumns: string[] = ['startTime', 'endTime', 'gameResult', 'ratingVariation', 'score', 'analysis'];
     serverActionsColumns: string[] = ['timestamp', 'actionType'];
 
     avatar: Observable<string | undefined>;
@@ -37,6 +37,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     gamesWonCount: Observable<number | undefined>;
     averagePointsPerGame: Observable<number | undefined>;
     averageTimePerGame: Observable<number | undefined>;
+    rating: Observable<number | undefined>;
     gameHistory: MatTableDataSource<GameHistoryForUser>;
     serverActions: MatTableDataSource<PublicServerAction>;
     analysis: Analysis;
@@ -50,6 +51,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
         this.gamesWonCount = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.gamesWonCount));
         this.averagePointsPerGame = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.averagePointsPerGame));
         this.averageTimePerGame = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.averageTimePerGame));
+        this.rating = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.rating));
 
         this.gameHistory = new MatTableDataSource<GameHistoryForUser>([]);
         this.serverActions = new MatTableDataSource<PublicServerAction>([]);
