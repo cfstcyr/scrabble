@@ -90,10 +90,8 @@ class _CriticalMomentState extends State<CriticalMomentWidget> {
   }
 
   Widget _getPlacementAnalysis(PlacementView placement) {
-    GameBoard gameBoard = placement.gameBoard ?? placement.generateGameBoard();
-
-    AnalysisTileRack tileRack =
-        placement.tileRack ?? placement.generateTileRack();
+    GameBoard gameBoard = placement.generateGameBoard();
+    AnalysisTileRack tileRack = placement.generateTileRack();
 
     const double size = 560;
     return Column(
