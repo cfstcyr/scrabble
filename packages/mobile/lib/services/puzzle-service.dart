@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mobile/classes/actions/word-placement.dart';
 import 'package:mobile/classes/board/board.dart';
+import 'package:mobile/classes/http/ResponseResult.dart';
 import 'package:mobile/classes/puzzle/puzzle-config.dart';
 import 'package:mobile/classes/puzzle/puzzle-player.dart';
+import 'package:mobile/classes/puzzle/puzzle-result.dart';
 import 'package:mobile/classes/puzzle/puzzle.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/square.dart';
@@ -27,16 +29,18 @@ import '../locator.dart';
 
 class PuzzleService {
   final PuzzleController _puzzleController =
-      getIt.get<PuzzleController>();
+  getIt.get<PuzzleController>();
   final RoundService _roundService = getIt.get<RoundService>();
   final UserService _userService = getIt.get<UserService>();
   final BehaviorSubject<PuzzleGame?> _puzzle;
   PuzzlePlayer? _currentPlayer;
 
-  PuzzleService._privateConstructor() : _puzzle = BehaviorSubject(), _currentPlayer = null;
+  PuzzleService._privateConstructor()
+      : _puzzle = BehaviorSubject(),
+        _currentPlayer = null;
 
   static final PuzzleService _instance =
-      PuzzleService._privateConstructor();
+  PuzzleService._privateConstructor();
 
   factory PuzzleService() {
     return _instance;
@@ -62,33 +66,44 @@ class PuzzleService {
     TileRack tileRack = TileRack().setTiles(tileRackConfig);
 
     PuzzlePlayer player = _getPuzzlePlayerForGame();
-    _puzzle.add(PuzzleGame(board: board, tileRack: tileRack, puzzlePlayer: player));
+    _puzzle.add(
+        PuzzleGame(board: board, tileRack: tileRack, puzzlePlayer: player));
 
-    Round firstRound = Round(socketIdOfActivePlayer: UNDEFINED_SOCKET, duration: startPuzzle.roundDuration);
+    Round firstRound = Round(socketIdOfActivePlayer: UNDEFINED_SOCKET,
+        duration: startPuzzle.roundDuration);
 
     _roundService.startRound(firstRound, _onTimerExpires);
   }
 
-  void completePuzzle() {
-    if(!(_puzzle.value?.board.isValidPlacement ?? false)) {
-      abandonPuzzle();
-      return;
+  Future<ResponseResult> completePuzzle() {
+    if (!(_puzzle.value?.board.isValidPlacement ?? false)) {
+      return abandonPuzzle();
     }
 
     Placement? placement = _puzzle.value?.board.currentPlacement;
 
-    if (placement == null) throw Exception('Cannot play placement, placement is null');
+    if (placement == null) {
+      throw Exception(
+        'Cannot play placement, placement is null');
+    }
 
-    WordPlacement wordPlacement = WordPlacement(actionPlacePayload: placement.toActionPayload());
-    _puzzleController.completePuzzle(wordPlacement);
+    WordPlacement wordPlacement = WordPlacement(
+        actionPlacePayload: placement.toActionPayload());
+    return _puzzleController.completePuzzle(wordPlacement).then((Response response) {
+      PuzzleResult puzzleResult = PuzzleResult.fromJson(jsonDecode(response.body));
+
+      return ResponseResult.success();
+    }).catchError((_) => ResponseResult.error());
 
     // TODO Updater le nombre de points dans PuzzlePlayer
   }
 
-  void abandonPuzzle() {
+  Future<ResponseResult> abandonPuzzle() {
     _puzzleController.abandonPuzzle();
 
     // TODO Updater le nombre de points dans PuzzlePlayer
+
+    return Future.value(ResponseResult.success());
   }
 
   void quitPuzzle() {
@@ -101,6 +116,9 @@ class PuzzleService {
   }
 
   PuzzlePlayer _getPuzzlePlayerForGame() {
-    return _currentPlayer ?? PuzzlePlayer(user: _userService.user.value ?? UNKNOWN_USER, streakPoints: 0, streakMaxPoints: 0);
+    return _currentPlayer ?? PuzzlePlayer(
+        user: _userService.user.value ?? UNKNOWN_USER,
+        streakPoints: 0,
+        streakMaxPoints: 0);
   }
 }

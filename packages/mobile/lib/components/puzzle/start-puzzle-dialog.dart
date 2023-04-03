@@ -73,7 +73,6 @@ void showStartPuzzleDialog(BuildContext context) {
                           .then((bool isSuccess) {
                         Navigator.pop(context);
                         if (isSuccess) {
-                          // start puzzle and it will push
                           getIt.get<GameMessagesService>().resetMessages();
                           Navigator.pushReplacementNamed(context, PUZZLE_ROUTE);
                         } else {
