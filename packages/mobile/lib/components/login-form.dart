@@ -4,6 +4,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/text-field-handler.dart';
+import 'package:mobile/components/app_button.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -112,39 +113,23 @@ class _LoginFormState extends State<LoginForm> {
                   },
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
-                SizedBox(width: 100),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (await isLoggedIn(UserLoginCredentials(
-                        email: emailHandler.controller.text,
-                        password: passwordHandler.controller.text))) {
-                      if (context.mounted) {
-                        Navigator.of(context).pushReplacementNamed(HOME_ROUTE);
+                AppButton(
+                    onPressed: () async {
+                      if (await isLoggedIn(UserLoginCredentials(
+                          email: emailHandler.controller.text,
+                          password: passwordHandler.controller.text))) {
+                        if (context.mounted) {
+                          Navigator.of(context)
+                              .pushReplacementNamed(HOME_ROUTE);
+                        }
                       }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: themeColor,
-                    shadowColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3.0),
-                    ),
-                  ),
-                  child: Text(
-                    LOGIN_LABEL_FR,
-                    style: isButtonEnabled
-                        ? TextStyle(color: Colors.white, fontSize: 15)
-                        : TextStyle(
-                            color: Color.fromARGB(255, 87, 87, 87),
-                            fontSize: 15),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, SIGNUP_ROUTE);
-                  },
-                  child: Text(CREATE_ACCOUNT_LABEL_FR),
-                ),
+                    },
+                    text: LOGIN_LABEL_FR),
+                AppButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, SIGNUP_ROUTE);
+                    },
+                    text: CREATE_ACCOUNT_LABEL_FR)
               ]),
             ],
           ),

@@ -14,6 +14,7 @@ import 'package:rxdart/rxdart.dart';
 import '../constants/create-account-constants.dart';
 import '../controllers/account-authentification-controller.dart';
 import '../pages/home-page.dart';
+import 'app_button.dart';
 
 class CreateAccountForm extends StatefulWidget {
   @override
@@ -65,7 +66,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
         child: Column(
           children: [
             Container(
-              width: 500,
+              width: 600,
               constraints: BoxConstraints(minHeight: 540),
               child: Card(
                 child: Padding(
@@ -163,37 +164,18 @@ class CreateAccountFormState extends State<CreateAccountForm> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushReplacementNamed(
-                                  context, LOGIN_ROUTE);
-                            },
-                            child: const Text(
-                              REDIRECT_LOGIN_LABEL_FR,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 15),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: isButtonEnabled
-                                ? () => {createAccount()}
-                                : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: themeColor,
-                              shadowColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(3.0),
-                              ),
-                            ),
-                            child: Text(
-                              CREATE_ACCOUNT_LABEL_FR,
-                              style: isButtonEnabled
-                                  ? TextStyle(color: Colors.white, fontSize: 15)
-                                  : TextStyle(
-                                      color: Color.fromARGB(255, 87, 87, 87),
-                                      fontSize: 15),
-                            ),
-                          ),
+                          AppButton(
+                              onPressed: () {
+                                Navigator.pushReplacementNamed(
+                                    context, LOGIN_ROUTE);
+                              },
+                              theme: AppButtonTheme.secondary,
+                              text: REDIRECT_LOGIN_LABEL_FR),
+                          AppButton(
+                              onPressed: isButtonEnabled
+                                  ? () => createAccount()
+                                  : null,
+                              text: CREATE_ACCOUNT_LABEL_FR),
                         ],
                       ),
                     ],

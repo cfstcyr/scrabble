@@ -1,12 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/pages/join-waiting-page.dart';
 import 'package:mobile/services/group-join.service.dart';
-import 'package:mobile/view-methods/group.methods.dart';
 
-import '../classes/group.dart';
 import '../components/group/group-selection.dart';
 import '../constants/locale/group-selection-constants.dart';
 import '../locator.dart';
