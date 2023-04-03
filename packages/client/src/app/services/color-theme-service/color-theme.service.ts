@@ -10,6 +10,15 @@ export enum ThemeColor {
     Black = 'black-theme',
 }
 
+export enum HexThemeColor {
+    Green = '#1B5E20',
+    Blue = '#0A3B48',
+    Purple = '#A801FF',
+    Pink = '#FF01A2',
+    Red = '#d92f08',
+    Black = '#000000',
+}
+
 export const LOGO_PATH_GREEN = 'https://ucarecdn.com/d53bcb33-e937-4e0b-bd89-192468b2bb9f/';
 export const LOGO_PATH_BLUE = 'https://ucarecdn.com/cf0af053-7248-43d0-8c7e-436d26710266/';
 export const LOGO_PATH_PINK = 'https://ucarecdn.com/b9a8f9e1-6fbd-44cd-99dd-f70ea4b30257/';
@@ -34,6 +43,7 @@ export class ColorThemeService {
         body.classList.add(themeColor);
         this.colorTheme.next(themeColor);
         this.logoTheme.next(this.getLogoLink());
+        document.documentElement.style.setProperty('--primary', this.getPrimaryColor());
     }
 
     getColorTheme() {
@@ -48,6 +58,24 @@ export class ColorThemeService {
         return this.logoTheme.asObservable();
     }
 
+    private getPrimaryColor(): string {
+        switch (this.colorTheme.value) {
+            case ThemeColor.Blue:
+                return HexThemeColor.Blue;
+            case ThemeColor.Pink:
+                return HexThemeColor.Pink;
+            case ThemeColor.Purple:
+                return HexThemeColor.Purple;
+            case ThemeColor.Black:
+                return HexThemeColor.Black;
+            case ThemeColor.Red:
+                return HexThemeColor.Red;
+            case ThemeColor.Green:
+                return HexThemeColor.Green;
+            default:
+                return HexThemeColor.Green;
+        }
+    }
     private getLogoLink(): string {
         switch (this.colorTheme.value) {
             case ThemeColor.Blue:

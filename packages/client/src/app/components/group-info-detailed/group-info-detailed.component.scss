@@ -45,7 +45,7 @@ mat-card {
           max-width: 100%;
           max-height: 100%;
           object-fit: cover;
-          color: $primary;
+          color: var(--primary);
         }
       }
       
@@ -55,7 +55,7 @@ mat-card {
       }
       
       .player-name {
-        color: $primary;
+        color: var(--primary);
         font-size: 17px;
         font-weight: bold;
 
@@ -76,7 +76,7 @@ mat-card {
       .vs {
         font-size: 20px;
         font-weight: bold;
-        color: $primary;
+        color: var(--primary);
       }
 
     .info-container {

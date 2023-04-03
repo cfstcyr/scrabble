@@ -58,7 +58,7 @@ $img-size: 50px;
             cursor: pointer;
             border: solid 2px transparent;
             opacity: 1;
-            color: $primary;
+            color: var(--primary);
         }
     }
 

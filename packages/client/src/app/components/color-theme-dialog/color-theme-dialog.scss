@@ -1,18 +1,45 @@
 @import '../../style/variables.scss';
 
-.primary {
-    color: $primary;
-}
-.secondary {
-    opacity: 0.45;
+// .primary {
+//     color: var(--primary);
+// }
+// .secondary {
+//     opacity: 0.45;
+// }
+
+// #buttons-container {
+//     text-align: right;
+//     margin-top: 25px;
+// }
+
+// .bold-primary {
+//     color: var(--primary);
+//     font-weight: 500;
+// }
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    padding-top: 20px;
 }
 
-#buttons-container {
-    text-align: right;
-    margin-top: 25px;
-}
-
-.bold-primary {
-    color: $primary;
-    font-weight: 500;
-}
+.color-themes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    .color-theme {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin: 0 10px;
+      border: 2px solid transparent;
+      transition: border-color 0.3s ease-in-out;
+      cursor: pointer;
+  
+      &.selected {
+        border-color: black;
+      }
+    }
+  }
+  
