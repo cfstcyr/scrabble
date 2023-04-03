@@ -8,23 +8,6 @@
 // Be sure that you only ever include this mixin once!
 @include mat.core();
 
-
-// Color secondaryButton = Color.fromRGBO(216, 216, 216, 1);
-
-// Color menuSecondaryButton = Color.fromRGBO(222, 239, 223, 1);
-
-// Color cardColor = Color.fromRGBO(255, 255, 255, 1);
-
-// export enum HexThemeColor {
-//   Green = '#1B5E20',
-//   Blue = '#0A3B48', #0d47a1
-//   Purple = '#A801FF',
-//   Pink = '#FF01A2',
-//   Red = '#d92f08',
-//   Black = '#000000',
-// }
-
-
 $green-theme: mat.define-light-theme(
     (
         color: (
