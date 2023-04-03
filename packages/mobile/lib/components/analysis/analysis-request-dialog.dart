@@ -56,40 +56,42 @@ class AnalysisRequestDialog {
             ),
             titlePadding: EdgeInsets.symmetric(
                 horizontal: SPACE_4 * 4, vertical: SPACE_4),
-            content: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                isLoading
-                    ? AppCircularSpinner(
-                        isLoading: true,
-                        color: themeColorService
-                            .themeDetails.value.color.colorValue,
-                        size: AppCircularSpinnerSize.large,
-                      )
-                    : Icon(
-                        Icons.error,
-                        color: theme.colorScheme.error,
-                        size: 96,
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  isLoading
+                      ? AppCircularSpinner(
+                          isLoading: true,
+                          color: themeColorService
+                              .themeDetails.value.color.colorValue,
+                          size: AppCircularSpinnerSize.large,
+                        )
+                      : Icon(
+                          Icons.error,
+                          color: theme.colorScheme.error,
+                          size: 96,
+                        ),
+                  SizedBox(
+                    height: SPACE_4,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        message,
+                        style: theme.textTheme.titleMedium,
                       ),
-                SizedBox(
-                  height: SPACE_4,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      message,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    LoadingDots(
-                      style: theme.textTheme.titleMedium!,
-                      isPlaying: isLoading,
-                    ),
-                  ],
-                )
-              ],
+                      LoadingDots(
+                        style: theme.textTheme.titleMedium!,
+                        isPlaying: isLoading,
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
             actions: [
               AppButton(
