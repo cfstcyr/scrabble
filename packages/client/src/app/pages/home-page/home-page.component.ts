@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { LOGO } from '@app/constants/app-constants';
-import { ROUTE_GAME_CREATION, ROUTE_GROUPS, ROUTE_PUZZLE } from '@app/constants/routes-constants';
+import { ROUTE_GAME_CREATION, ROUTE_GROUPS, ROUTE_PUZZLE, ROUTE_RATING_LEADERBOARD } from '@app/constants/routes-constants';
 
 @Component({
     selector: 'app-home-page',
@@ -11,5 +11,6 @@ export class HomePageComponent {
     routeGroups = ROUTE_GROUPS;
     routeGameCreation = ROUTE_GAME_CREATION;
     routePuzzle = ROUTE_PUZZLE;
+    routeLeaderboard = ROUTE_RATING_LEADERBOARD;
     logo = LOGO;
 }

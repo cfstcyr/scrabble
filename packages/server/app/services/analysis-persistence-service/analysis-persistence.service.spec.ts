@@ -43,14 +43,12 @@ const GAME_HISTORY_1: GameHistory = {
     idGameHistory: 1,
     startTime: new Date(),
     endTime: new Date(),
-    hasBeenAbandoned: false,
 };
 
 const GAME_HISTORY_2: GameHistory = {
     idGameHistory: 2,
     startTime: new Date(),
     endTime: new Date(),
-    hasBeenAbandoned: false,
 };
 
 const PLACEMENT_DATA_1: PlacementData = {

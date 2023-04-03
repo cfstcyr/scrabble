@@ -46,6 +46,14 @@ export class UserController extends BaseController {
             }
         });
 
+        router.get('/ratings', async (req: UserRequest, res, next) => {
+            try {
+                res.status(StatusCodes.OK).json(await this.userStatisticsService.getTopRatings());
+            } catch (e) {
+                next(e);
+            }
+        });
+
         router.get('/search', async (req: UserRequest, res, next) => {
             try {
                 const query: string | undefined = req.query.q as string | undefined;
