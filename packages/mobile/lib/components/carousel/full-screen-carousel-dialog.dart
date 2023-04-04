@@ -13,7 +13,7 @@ import 'package:rxdart/rxdart.dart';
 
 class FullScreenCarouselDialog {
   final String title;
-  final String closeButtonText;
+  final List<AppButton> actionButtons;
   final List<Widget> slides;
 
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
@@ -21,7 +21,7 @@ class FullScreenCarouselDialog {
 
   FullScreenCarouselDialog(
       {required this.title,
-      this.closeButtonText = 'Fermer',
+      required this.actionButtons,
       required this.slides})
       : _currentSlideIndex$ = BehaviorSubject.seeded(0);
 
@@ -78,12 +78,7 @@ class FullScreenCarouselDialog {
                     child: Row(
                       children: [
                         Spacer(),
-                        AppButton(
-                          onPressed: () => _closeDialog(context),
-                          text: closeButtonText,
-                          theme: AppButtonTheme.secondary,
-                          size: AppButtonSize.normal,
-                        ),
+                        ...actionButtons
                       ],
                     ),
                   ),

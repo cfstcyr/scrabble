@@ -97,7 +97,7 @@ class PuzzleService {
         .then((Response response) {
       PuzzleResult puzzleResult =
       PuzzleResult.fromJson(jsonDecode(response.body));
-      
+
       _handlePuzzleResult(
           puzzleResult,
           ScoredWordPlacement(
