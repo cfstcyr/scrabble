@@ -103,11 +103,16 @@ export class SocketService {
             socket.on('disconnect', () => {
                 this.handleDisconnect(socket);
             });
+
+            socket.on('error', (error) => {
+                // eslint-disable-next-line no-console
+                console.error('\x1b[1m\x1b[3m<< !Socket error! >>\x1b[0m', error);
+            });
         });
 
         this.sio.on('error', (error) => {
             // eslint-disable-next-line no-console
-            console.error('\x1b[1m\x1b[3m<< !Socket error! >>\x1b[0m', error);
+            console.error('\x1b[1m\x1b[3m<< !SIO error! >>\x1b[0m', error);
         });
     }
 
