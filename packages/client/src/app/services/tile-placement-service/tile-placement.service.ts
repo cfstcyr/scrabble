@@ -70,6 +70,8 @@ export class TilePlacementService {
     }
 
     moveTile(tilePlacement: TilePlacement, previousPosition: Position): void {
+        this.soundService.playSound(SoundName.TilePlacementSound);
+
         const placements = [...this.tilePlacements];
         const previousPlacement: TilePlacement = { ...tilePlacement, position: previousPosition };
 

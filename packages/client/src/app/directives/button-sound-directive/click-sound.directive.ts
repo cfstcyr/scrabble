@@ -1,6 +1,5 @@
 import { Directive, HostListener, Inject } from '@angular/core';
-import { SoundService } from './sound.service';
-import { SoundName } from '@app/services/sound-service/sound.service';
+import { SoundName, SoundService } from '@app/services/sound-service/sound.service';
 
 @Directive({
     selector: 'button',

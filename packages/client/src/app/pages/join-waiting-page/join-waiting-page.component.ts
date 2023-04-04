@@ -8,7 +8,7 @@ import { DEFAULT_GROUP, DIALOG_BUTTON_CONTENT_RETURN_GROUP, DIALOG_CANCEL_CONTEN
 import { ROUTE_GAME, ROUTE_GAME_OBSERVER, ROUTE_GROUPS } from '@app/constants/routes-constants';
 import GameDispatcherService from '@app/services/game-dispatcher-service/game-dispatcher.service';
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
-import { SoundService } from '@app/services/sound-service/sound.service';
+// import { SoundService } from '@app/services/sound-service/sound.service';
 import { Group } from '@common/models/group';
 import { PublicUser } from '@common/models/user';
 import { Subject } from 'rxjs';
@@ -30,11 +30,11 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
         public gameDispatcherService: GameDispatcherService,
         private readonly playerLeavesService: PlayerLeavesService,
-        private readonly soundService: SoundService,
+        // private readonly soundService: SoundService,
         public router: Router,
     ) {
         this.componentDestroyed$ = new Subject();
-        this.soundService.playLobbyMusic();
+        // this.soundService.playLobbyMusic();
     }
 
     @HostListener('window:beforeunload')

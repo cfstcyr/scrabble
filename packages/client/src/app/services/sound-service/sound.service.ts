@@ -11,14 +11,26 @@ export enum SoundName {
     TilePlacementSound = 'TilePlacementSound',
 }
 
-export enum MusicName {
+export enum BackgroundMusicName {
     BackgroundMusic1 = 'BackgroundMusic1',
-    // LowTimeSound = 'LowTimeSound',
-    // VictorySound = 'VictorySound',
-    // EndGameSound = 'EndGameSound',
-    // TilePlacementSound = 'TilePlacementSound',
+    BackgroundMusic2 = 'BackgroundMusic2',
+    BackgroundMusic3 = 'BackgroundMusic3',
 }
 
+export enum LobbyMusicName {
+    LobbyMusic1 = 'LobbyMusic1',
+    LobbyMusic2 = 'LobbyMusic2',
+    LobbyMusic3 = 'LobbyMusic3',
+}
+
+export interface Musics {
+    backgroundMusics: Howl[];
+    lobbyMusics: Howl[];
+    currentMusicType: MusicType;
+    currentMusic?: Howl;
+    backgroundMusicIndex: number;
+    lobbyMusicIndex: number;
+}
 export enum MusicType {
     NoMusic,
     BackgroundMusic,
@@ -27,7 +39,7 @@ export enum MusicType {
 
 export const PAGES_NO_MUSIC = [ROUTE_GAME, ROUTE_PUZZLE, ROUTE_GAME_OBSERVER];
 export const PAGES_LOBBY_MUSIC = [ROUTE_CREATE_WAITING, ROUTE_JOIN_WAITING];
-export const SOUND_FOLDER_PATH = 'src/assets/sound/';
+export const SOUND_FOLDER_PATH = 'assets\\sound\\';
 export const LOW_TIME = 20;
 export const CRITICAL_LOW_TIME = 5;
 
@@ -37,9 +49,7 @@ export const CRITICAL_LOW_TIME = 5;
 export class SoundService {
     isMusicEnabled: boolean = true;
     isSoundEnabled: boolean = true;
-    private backgroundMusic: Howl;
-    private lobbyMusic: Howl;
-    private currentMusicType: MusicType = MusicType.BackgroundMusic;
+    private musics: Musics;
     private soundsMap: Map<SoundName, Howl>;
     constructor() {
         this.soundsMap = new Map();
@@ -47,31 +57,46 @@ export class SoundService {
             this.soundsMap.set(
                 sound,
                 new Howl({
-                    src: [`${SOUND_FOLDER_PATH}${sound}`],
+                    src: [`${SOUND_FOLDER_PATH}${sound}.mp3`],
                 }),
             );
         }
 
-        this.backgroundMusic = new Howl({
-            src: [`${SOUND_FOLDER_PATH}${MusicName.BackgroundMusic1}`],
-            loop: true,
-        });
+        this.musics = { backgroundMusicIndex: 0, backgroundMusics: [], lobbyMusicIndex: 0, lobbyMusics: [], currentMusicType: MusicType.NoMusic };
+        for (const sound of Object.values(BackgroundMusicName)) {
+            this.musics.backgroundMusics.push(
+                new Howl({
+                    src: [`${SOUND_FOLDER_PATH}${sound}.mp3`],
+                    onend: () => this.startNextTrack(MusicType.BackgroundMusic),
+                }),
+            );
+        }
+        for (const sound of Object.values(LobbyMusicName)) {
+            this.musics.lobbyMusics.push(
+                new Howl({
+                    src: [`${SOUND_FOLDER_PATH}${sound}.mp3`],
+                    onend: () => this.startNextTrack(MusicType.LobbyMusic),
+                }),
+            );
+        }
     }
 
-    playBackgroundMusic() {
-        this.backgroundMusic.play();
+    startNextTrack(musicType: MusicType) {
+        if (musicType === MusicType.BackgroundMusic) {
+            this.musics.backgroundMusicIndex = (this.musics.backgroundMusicIndex + 1) % this.musics.backgroundMusics.length;
+            const music = this.musics.backgroundMusics[this.musics.backgroundMusicIndex];
+            music.play();
+        } else if (musicType === MusicType.LobbyMusic) {
+            this.musics.lobbyMusicIndex = (this.musics.lobbyMusicIndex + 1) % this.musics.lobbyMusics.length;
+            const music = this.musics.lobbyMusics[this.musics.lobbyMusicIndex];
+            music.play();
+        }
     }
 
-    stopBackgroundMusic() {
-        this.backgroundMusic.stop();
-    }
-
-    playLobbyMusic() {
-        this.lobbyMusic.play();
-    }
-
-    stopLobbyMusic() {
-        this.lobbyMusic.stop();
+    startMusic() {
+        const music = this.musics.backgroundMusics[0];
+        music.play();
+        this.musics.currentMusic = music;
     }
 
     changeMusic(newUrl: string) {
@@ -81,19 +106,26 @@ export class SoundService {
             ? MusicType.LobbyMusic
             : MusicType.BackgroundMusic;
 
-        if (this.currentMusicType !== newUrlType) {
-            console.log('changeMusic would have changed the music type from: ', this.currentMusicType, ' to: ', newUrlType);
-            // stop the correct music
-            // start the correct music
-            this.currentMusicType = newUrlType;
+        if (this.musics.currentMusicType !== newUrlType) {
+            if (this.musics.currentMusic) {
+                this.musics.currentMusic.stop();
+            }
+            if (newUrlType !== MusicType.NoMusic) {
+                const newSound =
+                    this.musics.currentMusicType === MusicType.BackgroundMusic
+                        ? this.musics.backgroundMusics[this.musics.backgroundMusicIndex]
+                        : this.musics.lobbyMusics[this.musics.lobbyMusicIndex];
+                newSound.play();
+                this.musics.currentMusic = newSound;
+            }
+            this.musics.currentMusicType = newUrlType;
         }
     }
 
     playSound(soundName: SoundName) {
         const sound = this.soundsMap.get(soundName);
-        if (sound) sound.play();
-        else {
-            console.log('soundName: ', soundName, 'is Not found in the map or in the assets');
+        if (sound) {
+            sound.play();
         }
     }
 }
