@@ -98,7 +98,6 @@ export class SocketService {
         this.sio.on('connection', (socket) => {
             socket.on('error', (error) => {
                 // eslint-disable-next-line no-console
-                // yo2
                 console.error('\x1b[1m\x1b[3m<< !Socket error! >>\x1b[0m', error);
             });
 
@@ -111,6 +110,7 @@ export class SocketService {
             });
 
             this.configureSocketsEvent.emit(SOCKET_CONFIGURE_EVENT_NAME, socket);
+
             socket.on('disconnect', () => {
                 this.handleDisconnect(socket);
             });
