@@ -2,11 +2,14 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { IconName } from '@app/components/icon/icon.component.type';
+import { DAILY_PUZZLE_TIME } from '@app/constants/puzzle-constants';
 
 export interface StartPuzzleModalParameters {
     onStart: (level: PuzzleLevel) => void;
     onCancel: () => void;
     defaultTime: number;
+    isDaily: boolean;
+    title: string;
 }
 
 export interface PuzzleLevel {
@@ -29,7 +32,7 @@ const PUZZLE_LEVELS: PuzzleLevel[] = [
         id: '2',
         name: 'Avancé',
         description: '2 min',
-        time: 120,
+        time: DAILY_PUZZLE_TIME,
         icons: ['bolt', 'bolt'],
     },
     {
@@ -55,7 +58,20 @@ export class StartPuzzleModalComponent {
         private readonly dialogRef: MatDialogRef<StartPuzzleModalComponent>,
         private readonly formBuilder: FormBuilder,
     ) {
-        this.timeField = this.formBuilder.control(parameters.defaultTime ?? PUZZLE_LEVELS[0].time, Validators.required);
+        this.timeField = this.formBuilder.control(
+            parameters.isDaily ? DAILY_PUZZLE_TIME : parameters.defaultTime ?? PUZZLE_LEVELS[0].time,
+            Validators.required,
+        );
+
+        if (parameters.isDaily) this.timeField.disable();
+    }
+
+    get title(): string {
+        return this.parameters.title ?? 'Puzzle';
+    }
+
+    get isDaily(): boolean {
+        return this.parameters.isDaily ?? false;
     }
 
     onConfirm() {

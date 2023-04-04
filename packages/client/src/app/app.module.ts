@@ -81,6 +81,7 @@ import { ColorThemeDialogComponent } from './components/color-theme-dialog/color
 import { ColorThemeService } from './services/color-theme-service/color-theme.service';
 import { ClickSoundDirective } from './directives/button-sound-directive/click-sound.directive';
 import { SoundSettingsDialogComponent } from './components/sound-settings-dialog/sound-settings-dialog';
+import { PuzzleHomePageComponent } from './pages/puzzle-home-page/puzzle-home-page.component';
 
 registerLocaleData(localeFr);
 
@@ -160,6 +161,7 @@ registerLocaleData(localeFr);
         ColorThemeDialogComponent,
         ClickSoundDirective,
         SoundSettingsDialogComponent,
+        PuzzleHomePageComponent,
     ],
     imports: [
         AppMaterialModule,

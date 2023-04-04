@@ -65,9 +65,9 @@ export class PuzzleController extends BaseController {
             },
         );
 
-        router.post('/abandon', (req: UserRequest<{ status?: PuzzleResultStatus }>, res, next) => {
+        router.post('/abandon', async (req: UserRequest<{ status?: PuzzleResultStatus }>, res, next) => {
             try {
-                res.status(StatusCodes.OK).send(this.puzzleService.abandonPuzzle(req.body.idUser, req.body.status));
+                res.status(StatusCodes.OK).send(await this.puzzleService.abandonPuzzle(req.body.idUser, req.body.status));
             } catch (e) {
                 next(e);
             }

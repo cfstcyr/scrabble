@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PuzzleController } from '@app/controllers/puzzle-controller/puzzle.controller';
-import { Puzzle, PuzzleResult, PuzzleResultStatus } from '@common/models/puzzle';
+import { DailyPuzzleLeaderboard, Puzzle, PuzzleResult, PuzzleResultStatus } from '@common/models/puzzle';
 import { WordPlacement } from '@common/models/word-finding';
 import { Observable } from 'rxjs';
 import {
@@ -18,6 +18,7 @@ import {
     ABANDON_PUZZLE_DIALOG_TITLE,
 } from '@app/constants/puzzle-constants';
 import { ENTER, ESCAPE } from '@app/constants/components-constants';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -29,13 +30,15 @@ export class PuzzleService {
         return this.puzzleController.start();
     }
 
-    askToStart(onStart: (level: PuzzleLevel) => void, onCancel: () => void, defaultTime: number | undefined): void {
+    askToStart(onStart: (level: PuzzleLevel) => void, onCancel: () => void, defaultTime: number | undefined, isDaily: boolean = false): void {
         this.dialog.open<StartPuzzleModalComponent, Partial<StartPuzzleModalParameters>>(StartPuzzleModalComponent, {
             disableClose: true,
             data: {
                 onStart,
                 onCancel,
                 defaultTime,
+                isDaily,
+                title: isDaily ? 'Puzzle du jour' : 'Nouveau puzzle',
             },
         });
     }
@@ -73,5 +76,17 @@ export class PuzzleService {
 
     timeout(): Observable<PuzzleResult> {
         return this.puzzleController.abandon(PuzzleResultStatus.Timeout);
+    }
+
+    startDaily(): Observable<Puzzle> {
+        return this.puzzleController.startDaily();
+    }
+
+    isDailyCompleted(): Observable<boolean> {
+        return this.puzzleController.isDailyCompleted().pipe(map((response) => response.isCompleted));
+    }
+
+    getDailyPuzzleLeaderboard(): Observable<DailyPuzzleLeaderboard> {
+        return this.puzzleController.getDailyPuzzleLeaderboard();
     }
 }

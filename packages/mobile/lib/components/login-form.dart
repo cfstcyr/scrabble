@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/text-field-handler.dart';
@@ -94,6 +93,7 @@ class _LoginFormState extends State<LoginForm> {
                     focusNode: passwordHandler.focusNode,
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: !isPasswordShown,
+                    onSubmitted: (data) async => login(context),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: PASSWORD_LABEL_FR,
@@ -114,21 +114,10 @@ class _LoginFormState extends State<LoginForm> {
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
                 AppButton(
-                    onPressed: () async {
-                      if (await isLoggedIn(UserLoginCredentials(
-                          email: emailHandler.controller.text,
-                          password: passwordHandler.controller.text))) {
-                        if (context.mounted) {
-                          Navigator.of(context)
-                              .pushReplacementNamed(HOME_ROUTE);
-                        }
-                      }
-                    },
+                    onPressed: () async => login(context),
                     text: LOGIN_LABEL_FR),
                 AppButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, SIGNUP_ROUTE);
-                    },
+                    onPressed: () => Navigator.pushNamed(context, SIGNUP_ROUTE),
                     text: CREATE_ACCOUNT_LABEL_FR)
               ]),
             ],
@@ -138,12 +127,27 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
+  void login(BuildContext context) async {
+    if (await isLoggedIn(UserLoginCredentials(
+        email: emailHandler.controller.text,
+        password: passwordHandler.controller.text))) {
+      if (context.mounted) {
+        Navigator.of(context).pushReplacementNamed(HOME_ROUTE);
+      }
+    }
+  }
+
+  bool validation(String email) {
+    return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+")
+        .hasMatch(email);
+  }
+
   Future<void> validateEmail() async {
     if (emailHandler.controller.text.isEmpty) {
       setState(() {
         emailHandler.errorMessage = EMAIL_EMPTY_FR;
       });
-    } else if (!EmailValidator.validate(emailHandler.controller.text, true)) {
+    } else if (!validation(emailHandler.controller.text)) {
       setState(() {
         emailHandler.errorMessage = EMAIL_INVALID_FORMAT_FR;
       });
@@ -158,7 +162,7 @@ class _LoginFormState extends State<LoginForm> {
     LoginResponse res = await authController.login(credentials);
     if (!res.isAuthorized) {
       setState(() {
-        emailHandler.errorMessage = res.errorMessage;
+        passwordHandler.errorMessage = res.errorMessage;
       });
     }
     return res.isAuthorized;
