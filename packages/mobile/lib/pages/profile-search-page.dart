@@ -49,6 +49,7 @@ class ProfileEditPageState extends State<ProfileSearchPage> {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
+      hasBackButton: true,
       title: "Recherche d'utilisateur",
       body: SingleChildScrollView(
           child: Container(
@@ -128,29 +129,40 @@ class ProfileEditPageState extends State<ProfileSearchPage> {
                                                               users.data![
                                                                   index]));
                                                 },
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 8,
-                                                          right: 8,
-                                                          top: 4,
-                                                          bottom: 4),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Avatar(
-                                                        avatar: users
-                                                            .data![index]
-                                                            .avatar,
-                                                        size: 48,
-                                                        radius: 20,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8,
+                                                              right: 8,
+                                                              top: 4,
+                                                              bottom: 4),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Avatar(
+                                                            avatar: users
+                                                                .data![index]
+                                                                .avatar,
+                                                            size: 48,
+                                                            radius: 20,
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Text(users
+                                                              .data![index]
+                                                              .username),
+                                                        ],
                                                       ),
-                                                      SizedBox(width: 10),
-                                                      Text(users.data![index]
-                                                          .username),
-                                                    ],
-                                                  ),
+                                                    ),
+                                                    Icon(Icons
+                                                        .arrow_forward_ios_outlined)
+                                                  ],
                                                 ),
                                               ),
                                             ),

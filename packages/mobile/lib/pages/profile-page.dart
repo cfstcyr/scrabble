@@ -20,6 +20,7 @@ class ProfilePage extends StatelessWidget {
 
   BehaviorSubject<PublicUser?> user = BehaviorSubject.seeded(null);
   bool isLocalUser = false;
+  String title = 'Mon profil';
   BehaviorSubject<UserStatistics> statistics =
       BehaviorSubject.seeded(DEFAULT_USER_STATISTICS);
   BehaviorSubject<List<GameHistory>> gameHistory = BehaviorSubject.seeded([]);
@@ -32,6 +33,7 @@ class ProfilePage extends StatelessWidget {
       _userService.getUserStatistics().then((event) => statistics.add(event));
       _userService.getGameHistory().then((event) => gameHistory.add(event));
     } else {
+      title = 'Profil de ${userSearchResult.username}';
       user.add(userSearchResult);
       _userService
           .getProfileByUsername(userSearchResult.username)
@@ -42,8 +44,9 @@ class ProfilePage extends StatelessWidget {
     }
 
     return MyScaffold(
-      title: 'Mon profile',
+      title: title,
       isLocalProfile: isLocalUser,
+      hasBackButton: true,
       body: Container(
         color: Colors.grey.shade100,
         child: SingleChildScrollView(

@@ -5,6 +5,7 @@ import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/chat.service.dart';
+import 'package:mobile/services/theme-color-service.dart';
 
 import '../services/user.service.dart';
 import 'chat-management.dart';
@@ -27,11 +28,16 @@ class MyScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
+    Color mainColor =
+        getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
     return Scaffold(
       appBar: AppBar(
         leading: hasBackButton
             ? IconButton(
-                icon: Icon(Icons.arrow_back, color: theme.primaryColor),
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: theme.primaryColor,
+                ),
                 onPressed: () => Navigator.of(context).pop(),
               )
             : null,
@@ -51,7 +57,7 @@ class MyScaffold extends StatelessWidget {
                         },
                         child: Padding(
                           padding: EdgeInsets.only(right: SPACE_2),
-                          child: Icon(Icons.search),
+                          child: Icon(Icons.search, color: mainColor),
                         ),
                       ))
               : Container(),
