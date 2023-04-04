@@ -34,11 +34,9 @@ class PuzzleService {
   final RoundService _roundService = getIt.get<RoundService>();
   final UserService _userService = getIt.get<UserService>();
   final BehaviorSubject<PuzzleGame?> _puzzle;
-  PuzzlePlayer? _currentPlayer;
 
   PuzzleService._privateConstructor()
-      : _puzzle = BehaviorSubject(),
-        _currentPlayer = null;
+      : _puzzle = BehaviorSubject.seeded(null);
 
   static final PuzzleService _instance = PuzzleService._privateConstructor();
 
@@ -123,7 +121,7 @@ class PuzzleService {
 
   void quitPuzzle() {
     _puzzleController.quitPuzzle();
-    _currentPlayer = null;
+    _puzzle.add(null);
   }
 
   void _handlePuzzleResult(
@@ -131,12 +129,13 @@ class PuzzleService {
     PuzzlePlayed puzzlePlayed = PuzzlePlayed.afterPlayed(
         _puzzle.value!.puzzleLevel.nameEnum, playedPlacement, puzzleResult);
 
-    _currentPlayer?.updateStreak(puzzleResult);
-    // TODO: Add to chat
-    // TODO: Stop timer
-
     PuzzleResultDialog(puzzlePlayed: puzzlePlayed)
         .openAnalysisResultDialog(navigatorKey.currentContext!);
+
+    _puzzle.value?.puzzlePlayer.updateStreak(puzzleResult);
+    _puzzle.add(_puzzle.value);
+    // TODO: Add to chat
+    // TODO: Stop timer
   }
 
   void _onTimerExpires() {
@@ -144,7 +143,7 @@ class PuzzleService {
   }
 
   PuzzlePlayer _getPuzzlePlayerForGame() {
-    return _currentPlayer ??
+    return _puzzle.value?.puzzlePlayer ??
         PuzzlePlayer(
             user: _userService.user.value ?? UNKNOWN_USER,
             streakPoints: 0,
