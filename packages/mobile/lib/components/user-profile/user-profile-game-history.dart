@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/classes/analysis/analysis-request.dart';
 import 'package:mobile/classes/game-history.dart';
+import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/components/table.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:mobile/constants/locale/analysis-constants.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/services/analysis-service.dart';
+import 'package:mobile/services/theme-color-service.dart';
+import 'package:mobile/services/user.service.dart';
 
 import '../../utils/duration.dart';
 
 class UserProfileGameHistory extends StatelessWidget {
   UserProfileGameHistory({required this.gameHistory});
   final BehaviorSubject<List<GameHistory>> gameHistory;
+  final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +34,7 @@ class UserProfileGameHistory extends StatelessWidget {
             StreamBuilder(
               stream: gameHistory,
               builder: (context, snapshot) => snapshot.hasData
-                  ? AppTable<GameHistory>(data: snapshot.data!, columns: [
+                  ? AppTable(data: snapshot.data!, columns: [
                       AppTableColumn(
                           title: 'Début',
                           builder: (context, row) => Text(
@@ -44,7 +52,47 @@ class UserProfileGameHistory extends StatelessWidget {
                           title: 'Score',
                           builder: (context, row) => Text(
                                 '${row.data.score} pts',
-                              ))
+                              )),
+                      AppTableColumn(
+                          title: 'Analyse',
+                          builder: (context, row) {
+                            int? idAnalysis = row.data.idAnalysis;
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                StreamBuilder<ThemeDetails>(
+                                  stream: _themeColorService.themeDetails.stream,
+                                  builder: (context, snapshot) {
+                                    ThemeColor themeColor = snapshot.data?.color ?? ThemeColor.green;
+
+                                    return ElevatedButton(
+                                      onPressed: idAnalysis != null
+                                          ? () async {
+                                              AnalysisRequestDialog(
+                                                      title: ANALYSIS_REQUEST_TITLE,
+                                                      message:
+                                                          ANALYSIS_REQUEST_LOADING,
+                                                      idAnalysis: idAnalysis,
+                                                      requestType:
+                                                          AnalysisRequestInfoType
+                                                              .idAnalysis)
+                                                  .openAnalysisRequestDialog(
+                                                      context);
+                                            }
+                                          : null,
+                                      style: ElevatedButton.styleFrom(
+                                        shape: CircleBorder(),
+                                        minimumSize: Size.fromRadius(24),
+                                        backgroundColor: themeColor.colorValue,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: Icon(Icons.science_rounded),
+                                    );
+                                  }
+                                ),
+                              ],
+                            );
+                          })
                     ])
                   : snapshot.hasError
                       ? Text(
@@ -61,7 +109,7 @@ class UserProfileGameHistory extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        ...gameHistory.hasBeenAbandoned
+        ...gameHistory.hasAbandoned
             ? [
                 _gameStatus(Colors.grey.shade300, Icons.flag),
                 SizedBox(

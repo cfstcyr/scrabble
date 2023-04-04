@@ -3,6 +3,7 @@
         <app-board
             [grid]="grid"
             [canInteract]="(isPlaying | async) ?? false"
+            (onSquareClick)='handleSquareClick($event)'
         ></app-board>
     </mat-card>
 
@@ -51,8 +52,10 @@
             <div
                 class="tile-rack"
             >
-                <div class="rack-tile-container"
-                    *ngFor="let tile of (tiles | async)" [ngClass]="{ selected: tile.isSelected, hidden: tile.isUsed }"
+                <div
+                    class="rack-tile-container"
+                    *ngFor="let tile of (tiles | async)"
+                    [ngClass]="{ selected: tile.isSelected, hidden: tile.isUsed }"
                 >
                     <app-tile [tile]="tile" class="rack-tile">
                         {{ tile.letter }}

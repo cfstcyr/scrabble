@@ -31,6 +31,7 @@ class IndividualGroup extends StatefulWidget {
 class _IndividualGroupState extends State<IndividualGroup> {
   final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
 
+  @override
   void initState() {
     super.initState();
   }

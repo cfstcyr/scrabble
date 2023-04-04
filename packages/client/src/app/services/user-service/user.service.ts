@@ -5,7 +5,7 @@ import { DEBOUNCE_TIME, LOGIN_REQUIRED } from '@app/constants/services-errors';
 import { UserController } from '@app/controllers/user-controller/user.controller';
 import { GameHistoryForUser } from '@common/models/game-history';
 import { PublicServerAction } from '@common/models/server-action';
-import { EditableUserFields, PublicUser } from '@common/models/user';
+import { EditableUserFields, PublicUser, RatedUser } from '@common/models/user';
 import { PublicUserStatistics } from '@common/models/user-statistics';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
@@ -75,6 +75,10 @@ export class UserService {
                 );
             }),
         );
+    }
+
+    requestRatingLeaderboard(): Observable<RatedUser[]> {
+        return this.userController.getRatingLeaderboard();
     }
 
     updateStatistics(): void {

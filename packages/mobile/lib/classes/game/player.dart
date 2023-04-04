@@ -1,4 +1,5 @@
 import 'package:mobile/classes/player/player-data.dart';
+import 'package:mobile/classes/tile/tile-parser.dart';
 import 'package:mobile/classes/user.dart';
 
 import '../tile/tile.dart';
@@ -25,9 +26,7 @@ class Player {
       score: json['score'] ?? 0,
       tiles:
           json['tiles'] != null && (json['tiles'] as List<dynamic>).isNotEmpty
-              ? (json['tiles'] as List<dynamic>)
-                  .map((dynamic tile) => Tile.fromJson(tile))
-                  .toList()
+              ? TilesParser().parseTiles(json['tiles'] as List<dynamic>)
               : List<Tile>.empty(),
     );
   }

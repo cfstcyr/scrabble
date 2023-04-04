@@ -4,5 +4,6 @@
         [grid]="grid"
         [canInteract]='!gameService.isGameOver && canInteract'
         (clearNewlyPlacedTiles)="clearNewlyPlacedTiles()"
+        (onSquareClick)='squareClickHandler($event)'
     ></app-board>
 </mat-card>

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
@@ -14,10 +16,8 @@ import 'package:mobile/services/game.service.dart';
 // ignore: constant_identifier_names
 const Color NOT_APPLIED_COLOR = Color.fromARGB(255, 66, 135, 69);
 
-class GameSquare extends StatelessWidget {
+class GameSquare extends StatefulWidget {
   final TileRack? tileRack;
-  final GameEventService _gameEventService = getIt.get<GameEventService>();
-
   final Square square;
   final Color color;
 
@@ -25,9 +25,27 @@ class GameSquare extends StatelessWidget {
     required this.tileRack,
     required this.square,
   }) : color =
-            square.multiplier != null ? square.getColor() : Color(0xFFEEEEEE) {
-    _gameEventService.listen<void>(
+            square.multiplier != null ? square.getColor() : Color(0xFFEEEEEE);
+
+  @override
+  State<GameSquare> createState() => _GameSquareState();
+}
+
+class _GameSquareState extends State<GameSquare> {
+  final GameEventService _gameEventService = getIt.get<GameEventService>();
+  late final StreamSubscription<void> _putTilesBackSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _putTilesBackSubscription = _gameEventService.listen<void>(
         PUT_BACK_TILES_ON_TILE_RACK, _onPutBackTiles);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _putTilesBackSubscription.cancel();
   }
 
   @override
@@ -36,13 +54,13 @@ class GameSquare extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: color,
+            color: widget.color,
             borderRadius: BorderRadius.all(Radius.circular(6)),
           ),
           child: _getContent(),
         ),
         StreamBuilder<c.Tile?>(
-          stream: square.tile,
+          stream: widget.square.tile,
           builder: (context, snapshot) {
             return snapshot.data != null
                 ? SizedBox(
@@ -83,28 +101,28 @@ class GameSquare extends StatelessWidget {
 
   Widget _getContent() {
     return StreamBuilder(
-        stream: square.tile,
+        stream: widget.square.tile,
         builder: (context, snapshot) {
           return Stack(
             alignment: Alignment.center,
             children: [
-              square.isCenter
+              widget.square.isCenter
                   ? Container(
                       transform: Matrix4.translationValues(0, -2, 0),
                       child: Text('★', style: TextStyle(fontSize: 24)),
                     )
-                  : square.multiplier != null
+                  : widget.square.multiplier != null
                       ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              square.multiplier!.getType().toUpperCase(),
+                              widget.square.multiplier!.getType().toUpperCase(),
                               style: TextStyle(
                                 fontSize: 8,
                               ),
                             ),
                             Text(
-                              'x${square.multiplier!.value}',
+                              'x${widget.square.multiplier!.value}',
                               style: TextStyle(
                                 height: 1,
                               ),
@@ -114,7 +132,7 @@ class GameSquare extends StatelessWidget {
                       : SizedBox(),
               snapshot.data != null
                   ? StreamBuilder<bool>(
-                      stream: square.isAppliedStream,
+                      stream: widget.square.isAppliedStream,
                       builder: (context, isAppliedSnapshot) {
                         return isAppliedSnapshot.data ?? false
                             ? Tile(tile: snapshot.data)
@@ -152,34 +170,34 @@ class GameSquare extends StatelessWidget {
   }
 
   _onPlaceTile(BuildContext context, c.Tile tile) async {
-    square.setTile(tile);
+    widget.square.setTile(tile);
 
     if (tile.isWildcard) {
-      await triggerWildcardDialog(context, square: square);
+      await triggerWildcardDialog(context, square: widget.square);
     }
 
     _gameEventService.add<TilePlacement>(PLACE_TILE_ON_BOARD,
-        TilePlacement(tile: tile, position: square.position));
+        TilePlacement(tile: tile, position: widget.square.position));
   }
 
   _onPutBackTiles(void _) {
-    var tile = square.getTile();
+    var tile = widget.square.getTile();
 
-    if (!square.getIsApplied() && tile != null) {
-      tileRack?.placeTile(tile);
+    if (!widget.square.getIsApplied() && tile != null) {
+      widget.tileRack?.placeTile(tile);
       removeTile();
     }
   }
 
   removeTile() {
-    var tile = square.getTile();
+    var tile = widget.square.getTile();
 
     if (tile != null) {
       if (tile.isWildcard) tile.playedLetter = null;
 
-      square.removeTile();
+      widget.square.removeTile();
       _gameEventService.add<TilePlacement>(REMOVE_TILE_FROM_BOARD,
-          TilePlacement(tile: tile, position: square.position));
+          TilePlacement(tile: tile, position: widget.square.position));
     }
   }
 }
