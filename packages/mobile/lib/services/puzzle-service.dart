@@ -35,8 +35,7 @@ class PuzzleService {
   final UserService _userService = getIt.get<UserService>();
   final BehaviorSubject<PuzzleGame?> _puzzle;
 
-  PuzzleService._privateConstructor()
-      : _puzzle = BehaviorSubject.seeded(null);
+  PuzzleService._privateConstructor() : _puzzle = BehaviorSubject.seeded(null);
 
   static final PuzzleService _instance = PuzzleService._privateConstructor();
 
@@ -68,7 +67,8 @@ class PuzzleService {
         board: board,
         tileRack: tileRack,
         puzzlePlayer: player,
-        puzzleLevel: startPuzzle.puzzleLevel));
+        puzzleLevel: startPuzzle.puzzleLevel,
+        gridConfig: gridConfig));
 
     Round firstRound = Round(
         socketIdOfActivePlayer: UNDEFINED_SOCKET,
@@ -89,15 +89,15 @@ class PuzzleService {
     }
 
     WordPlacement wordPlacement =
-    WordPlacement(actionPlacePayload: placement.toActionPayload());
-    return _puzzleController
-        .completePuzzle(wordPlacement)
-        .then((Response response) {
+        WordPlacement(actionPlacePayload: placement.toActionPayload());
+    return _puzzleController.completePuzzle(wordPlacement).then(
+        (Response response) {
       PuzzleResult puzzleResult =
-      PuzzleResult.fromJson(jsonDecode(response.body));
+          PuzzleResult.fromJson(jsonDecode(response.body));
 
       _handlePuzzleResult(
           puzzleResult,
+          _puzzle.value!.gridConfig,
           ScoredWordPlacement(
               actionPlacePayload: wordPlacement.actionPlacePayload,
               score: puzzleResult.userPoints));
@@ -111,7 +111,7 @@ class PuzzleService {
       PuzzleResult puzzleResult =
           PuzzleResult.fromJson(jsonDecode(response.body));
 
-      _handlePuzzleResult(puzzleResult, null);
+      _handlePuzzleResult(puzzleResult, _puzzle.value!.gridConfig, null);
 
       return ResponseResult.success();
     }).catchError((_) => ResponseResult.error());
@@ -124,10 +124,10 @@ class PuzzleService {
     _puzzle.add(null);
   }
 
-  void _handlePuzzleResult(
-      PuzzleResult puzzleResult, ScoredWordPlacement? playedPlacement) {
+  void _handlePuzzleResult(PuzzleResult puzzleResult, List<Square> gridConfig,
+      ScoredWordPlacement? playedPlacement) {
     PuzzlePlayed puzzlePlayed = PuzzlePlayed.afterPlayed(
-        _puzzle.value!.puzzleLevel.nameEnum, playedPlacement, puzzleResult);
+        _puzzle.value!.puzzleLevel.nameEnum, gridConfig, playedPlacement, puzzleResult);
 
     PuzzleResultDialog(puzzlePlayed: puzzlePlayed)
         .openAnalysisResultDialog(navigatorKey.currentContext!);

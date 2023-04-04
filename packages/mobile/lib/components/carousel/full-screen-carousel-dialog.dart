@@ -107,7 +107,7 @@ class FullScreenCarouselDialog {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: List.generate(
-                slides.length + 1,
+                slides.length,
                 (index) => Row(
                       children: [
                         Container(

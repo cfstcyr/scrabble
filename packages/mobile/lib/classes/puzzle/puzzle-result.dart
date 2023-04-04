@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:mobile/classes/actions/word-placement.dart';
 import 'package:mobile/classes/puzzle/puzzle-level.dart';
+import 'package:mobile/classes/tile/square.dart';
 
 class PuzzleResult {
   final int userPoints;
@@ -31,6 +32,7 @@ class PuzzleResult {
 class PuzzlePlayed extends PuzzleResult {
   final PuzzleLevelName levelName;
   final ScoredWordPlacement? playedPlacement;
+  final List<Square> gridConfig;
 
   PuzzlePlayed(
       {required super.userPoints,
@@ -38,17 +40,22 @@ class PuzzlePlayed extends PuzzleResult {
       required super.targetPlacement,
       required super.allPlacements,
       required this.levelName,
-      required this.playedPlacement});
+      required this.playedPlacement,
+      required this.gridConfig});
 
-  factory PuzzlePlayed.afterPlayed(PuzzleLevelName levelName,
-          ScoredWordPlacement? playedPlacement, PuzzleResult puzzleResult) =>
+  factory PuzzlePlayed.afterPlayed(
+          PuzzleLevelName levelName,
+          List<Square> gridConfig,
+          ScoredWordPlacement? playedPlacement,
+          PuzzleResult puzzleResult) =>
       PuzzlePlayed(
           userPoints: puzzleResult.userPoints,
           result: puzzleResult.result,
           targetPlacement: puzzleResult.targetPlacement,
           allPlacements: puzzleResult.allPlacements,
           levelName: levelName,
-          playedPlacement: playedPlacement);
+          playedPlacement: playedPlacement,
+          gridConfig: gridConfig);
 }
 
 enum PuzzleResultStatus {

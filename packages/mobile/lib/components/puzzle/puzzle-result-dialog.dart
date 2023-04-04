@@ -1,6 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/actions/word-placement.dart';
 import 'package:mobile/classes/analysis/analysis-overview.dart';
+import 'package:mobile/classes/analysis/analysis-view.dart';
 import 'package:mobile/classes/analysis/analysis.dart';
 import 'package:mobile/classes/puzzle/puzzle-level.dart';
 import 'package:mobile/classes/puzzle/puzzle-overview.dart';
@@ -21,10 +23,11 @@ import 'package:rxdart/rxdart.dart';
 
 class PuzzleResultDialog {
   final PuzzlePlayed puzzlePlayed;
-  final List<PuzzleSolution> _puzzleSolutions;
+  List<PuzzleSolution> _puzzleSolutions;
 
-  PuzzleResultDialog({required this.puzzlePlayed})
-      : _puzzleSolutions = List.empty();
+  PuzzleResultDialog({required this.puzzlePlayed}) : _puzzleSolutions = [] {
+    _puzzleSolutions = _generateSlides();
+  }
 
   void openAnalysisResultDialog(BuildContext context) {
     FullScreenCarouselDialog(
@@ -62,8 +65,22 @@ class PuzzleResultDialog {
   void _quitPuzzle(BuildContext context) {
     Navigator.popUntil(
         context,
-        (predicate) =>
-            predicate.settings.name == HOME_ROUTE ||
+            (predicate) =>
+        predicate.settings.name == HOME_ROUTE ||
             predicate.settings.name == BASE_ROUTE);
+  }
+
+  List<PuzzleSolution> _generateSlides() {
+    List<PlacementView> placementsToShow = [
+      _generatePlacementView(puzzlePlayed.targetPlacement),
+      ...puzzlePlayed.allPlacements.map((placement) => _generatePlacementView(placement))
+    ];
+    if (puzzlePlayed.playedPlacement != null) placementsToShow.insert(0, _generatePlacementView(puzzlePlayed.playedPlacement!));
+
+    return placementsToShow.map((view) => PuzzleSolution(placementToShow: view)).toList();
+  }
+
+  PlacementView _generatePlacementView(ScoredWordPlacement placement) {
+    return PlacementView().fromPuzzlePlayed(puzzlePlayed.gridConfig, placement);
   }
 }

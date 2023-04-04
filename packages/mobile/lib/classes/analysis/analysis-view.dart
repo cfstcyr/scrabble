@@ -19,16 +19,16 @@ class PlacementView {
   GameBoard? gameBoard;
   AnalysisTileRack? tileRack;
 
-  final List<w.Tile> tileViews;
+  final List<w.Tile>? tileViews;
   final ScoredWordPlacement? placement;
 
   BehaviorSubject<AbstractGame>? _gameForPlacement$;
 
   ValueStream<AbstractGame> get gameStream => _gameForPlacement$!.stream;
 
-  PlacementView({required this.tileViews, this.placement});
+  PlacementView({this.tileViews, this.placement});
 
-  factory PlacementView.fromCriticalMoment(
+  PlacementView fromCriticalMoment(
       CriticalMoment criticalMoment, ScoredWordPlacement? scoredWordPlacement) {
     List<w.Tile> tileRackView =
         _transformToTileRackView(criticalMoment.tiles, scoredWordPlacement);
@@ -38,16 +38,16 @@ class PlacementView {
 
     if (scoredWordPlacement == null) return placement;
 
-    Board board = Board().withGrid(copyGrid(criticalMoment.grid));
-    List<Square> squaresToPlace = scoredWordPlacement.toSquaresOnBoard(board);
-    board.updateBoardData(squaresToPlace);
+    return placement.withPlacementOnBoard(criticalMoment.grid, scoredWordPlacement);
+  }
 
-    placement._gameForPlacement$ = BehaviorSubject.seeded(AbstractGame(
-        board: board,
-        tileRack: TileRack()
-            .setTiles(tileRackView.map((w.Tile t) => t.tile!).toList())));
+  PlacementView fromPuzzlePlayed(List<Square> gridConfig, ScoredWordPlacement placement) {
+    PlacementView placementView = PlacementView(placement: placement);
 
-    return placement;
+    Board board = Board();
+    board.updateBoardData(gridConfig);
+
+    return placementView.withPlacementOnBoard(board.grid, placement);
   }
 
   GameBoard generateGameBoard() {
@@ -56,7 +56,20 @@ class PlacementView {
 
   AnalysisTileRack generateTileRack() {
     return tileRack ??
-        AnalysisTileRack(gameStream: gameStream, tileViews: tileViews);
+        AnalysisTileRack(gameStream: gameStream, tileViews: tileViews!);
+  }
+
+  PlacementView withPlacementOnBoard(List<List<Square>> grid, ScoredWordPlacement scoredPlacement) {
+    Board board = Board().withGrid(copyGrid(grid));
+    List<Square> squaresToPlace = scoredPlacement.toSquaresOnBoard(board);
+    board.updateBoardData(squaresToPlace);
+
+    _gameForPlacement$ = BehaviorSubject.seeded(AbstractGame(
+        board: board,
+        tileRack: TileRack()
+            .setTiles(List.generate(7, (index) => Tile()))));
+
+    return this;
   }
 
   static List<w.Tile> _transformToTileRackView(
@@ -104,9 +117,9 @@ class CriticalMomentView {
   factory CriticalMomentView.fromCriticalMoment(CriticalMoment criticalMoment) {
     return CriticalMomentView(
         actionType: criticalMoment.actionType,
-        bestPlacement: PlacementView.fromCriticalMoment(
+        bestPlacement: PlacementView().fromCriticalMoment(
             criticalMoment, criticalMoment.bestPlacement),
-        playedPlacement: PlacementView.fromCriticalMoment(
+        playedPlacement: PlacementView().fromCriticalMoment(
             criticalMoment, criticalMoment.playedPlacement));
   }
 }
