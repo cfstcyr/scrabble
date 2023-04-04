@@ -28,7 +28,9 @@ class WordPlacement {
 
     for (Tile tile in actionPlacePayload.tiles) {
       squares.add(Square(tile: tile, position: currentPosition.copy()));
-      currentPosition = boardNavigator.forward().position;
+      do {
+        currentPosition = boardNavigator.forward().position;
+      } while(boardNavigator.square.getTile() != null);
     }
 
     return squares;

@@ -141,7 +141,7 @@ class PuzzleService {
 
     _puzzle.value?.puzzlePlayer.updateStreak(puzzleResult);
     _puzzle.add(_puzzle.value);
-    
+
     if (playedPlacement != null) {
       _gamePlayController.gameMessage$.add(puzzlePlayed.placementToGameMessage());
     }
