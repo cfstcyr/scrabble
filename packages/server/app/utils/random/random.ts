@@ -1,5 +1,7 @@
+import * as seedrandom from 'seedrandom';
+
 export class Random {
-    static getRandomElementsFromArray<T>(array: T[], elementsToChoose: number = 1): T[] {
+    static getRandomElementsFromArray<T>(array: T[], elementsToChoose: number = 1, random = seedrandom()): T[] {
         if (elementsToChoose > array.length) return array;
 
         let length = array.length;
@@ -7,7 +9,7 @@ export class Random {
         const taken = new Array(length);
 
         while (elementsToChoose--) {
-            const randomIndex = Math.floor(Math.random() * length);
+            const randomIndex = Math.floor(random() * length);
 
             result[elementsToChoose] = array[randomIndex in taken ? taken[randomIndex] : randomIndex];
             taken[randomIndex] = --length in taken ? taken[length] : length;
@@ -15,22 +17,22 @@ export class Random {
         return result;
     }
 
-    static popRandom<T>(array: T[]): T | undefined {
-        return array.splice(Math.floor(Math.random() * array.length), 1).pop();
+    static popRandom<T>(array: T[], random = seedrandom()): T | undefined {
+        return array.splice(Math.floor(random() * array.length), 1).pop();
     }
 
-    static randomIntFromInterval(min: number, max: number): number {
-        return Math.floor(Math.random() * (max - min + 1) + min);
+    static randomIntFromInterval(min: number, max: number, random = seedrandom()): number {
+        return Math.floor(random() * (max - min + 1) + min);
     }
 
-    static shuffle<T>(array: T[]): T[] {
+    static shuffle<T>(array: T[], random = seedrandom()): T[] {
         let currentIndex = array.length;
         let randomIndex;
 
         // While there remain elements to shuffle.
         while (currentIndex !== 0) {
             // Pick a remaining element.
-            randomIndex = Math.floor(Math.random() * currentIndex);
+            randomIndex = Math.floor(random() * currentIndex);
             currentIndex--;
 
             // And swap it with the current element.

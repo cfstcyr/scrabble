@@ -11,8 +11,8 @@ export const MAX_EXPERT_CONSECUTIVE_EXCHANGES = 3;
 export class ExpertVirtualPlayer extends AbstractVirtualPlayer {
     private consecutiveExchangeCount = 0;
 
-    constructor(gameId: string, name: string) {
-        super(gameId, name);
+    constructor(gameId: string, name: string, avatar: string = '') {
+        super(gameId, name, avatar);
         this.initialRating = EXPERT_PLAYER_RATING;
         this.adjustedRating = EXPERT_PLAYER_RATING;
     }
