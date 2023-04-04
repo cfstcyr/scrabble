@@ -26,14 +26,14 @@
                 display: none;
 
                 &:checked + .field-button {
-                    background-color: rgba($primary, 0.15);
+                    background-color: rgba(var(--primary), 0.15);
 
                     &:hover {
-                        background-color: rgba($primary, 0.15);
+                        background-color: rgba(var(--primary), 0.15);
                     }
 
                     .icons {
-                        color: $primary;
+                        color: rgb(var(--primary));
                     }
                 }
             }

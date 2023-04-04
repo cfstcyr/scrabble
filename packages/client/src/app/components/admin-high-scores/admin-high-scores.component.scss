@@ -28,7 +28,7 @@
 //         .title {
 //             font-size: x-large;
 //             font-weight: bold;
-//             color: $primary;
+//             color: rgb(var(--primary));
 //         }
 
 //         .high-scores-box {
@@ -82,7 +82,7 @@
 //             }
 
 //             .high-score:nth-child(2n) {
-//                 background-color: rgba($primary, 0.15);
+//                 background-color: rgba(rgb(var(--primary)), 0.15);
 //             }
 //         }
 

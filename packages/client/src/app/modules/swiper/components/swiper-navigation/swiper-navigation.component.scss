@@ -50,7 +50,7 @@
 
         &--active {
             .swiper-navigation__item__marker {
-                background-color: $primary;
+                background-color: rgb(var(--primary));
             }
 
         }
