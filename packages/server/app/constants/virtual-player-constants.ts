@@ -20,4 +20,4 @@ export const HIGH_SCORE_RANGE_MIN = 13;
 export const HIGH_SCORE_RANGE_MAX = 18;
 export const MINIMUM_TILES_LEFT_FOR_EXCHANGE = 7;
 
-export const VIRTUAL_PLAYER_NAMES = ['Ahmad', 'Ali', 'Nikolay', 'Michel', 'Éric', 'Martine', 'Maude', 'Émilie'];
+export const VIRTUAL_PLAYER_NAMES = ['Ahmad', 'Ali', 'Nikolay', 'Michel', 'Éric', 'Martine', 'Maud', 'Émilie'];

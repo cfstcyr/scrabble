@@ -79,7 +79,7 @@ $border-radius: 6px;
 
     .avatar__input:checked + .avatar__img {
         scale: 1.1;
-        border-color: var(--primary);
+        border-color: rgb(var(--primary));
         opacity: 1;
     }
 }

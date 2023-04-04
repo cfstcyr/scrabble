@@ -11,12 +11,12 @@ export enum ThemeColor {
 }
 
 export enum HexThemeColor {
-    Green = '#1B5E20',
-    Blue = '#0A3B48',
-    Purple = '#A801FF',
-    Pink = '#FF01A2',
-    Red = '#d92f08',
-    Black = '#000000',
+    Green = '27, 94, 32',
+    Blue = '10, 59, 72',
+    Purple = '168, 1, 255',
+    Pink = '255, 1, 162',
+    Red = '217, 47, 8',
+    Black = '0, 0, 0',
 }
 
 export const LOGO_PATH_GREEN = 'https://ucarecdn.com/d53bcb33-e937-4e0b-bd89-192468b2bb9f/';

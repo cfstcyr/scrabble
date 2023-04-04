@@ -60,7 +60,7 @@
     &.theme {
         &--primary {
             .score, .icon {
-                color: var(--primary);
+                color: rgb(var(--primary));
             }
         }
 
