@@ -18,6 +18,6 @@ export class HomePageComponent {
     logo: Observable<string | undefined>;
 
     constructor(private colorThemeService: ColorThemeService) {
-        this.logo = this.colorThemeService.getLogoTheme().pipe();
+        this.logo = this.colorThemeService.getLogoTheme();
     }
 }

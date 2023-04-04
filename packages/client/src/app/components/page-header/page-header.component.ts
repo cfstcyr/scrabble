@@ -28,7 +28,7 @@ export class PageHeaderComponent {
         private readonly router: Router,
     ) {
         this.user = this.userService.user;
-        this.logo = this.colorThemeService.getLogoTheme().pipe();
+        this.logo = this.colorThemeService.getLogoTheme();
     }
 
     signOut(): void {
