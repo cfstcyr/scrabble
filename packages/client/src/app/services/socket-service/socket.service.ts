@@ -39,7 +39,7 @@ export default class SocketService {
             this.socketError.next(error);
             this.alertService.error(error.message, { log: `Error ${error.status}: ${error.message}` });
         });
-        // yo
+        // yo2
 
         return isReady.asObservable();
     }
