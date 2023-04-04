@@ -67,7 +67,7 @@
             &__rank {
                 height: 2em;
                 width: 2em;
-                background-color: $primary;
+                background-color: var(--primary);
                 color: white;
                 display: flex;
                 align-items: center;
