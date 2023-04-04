@@ -60,7 +60,6 @@ class ProfilePage extends StatelessWidget {
           ]),
         )),
       ),
-      hasBackButton: true,
     );
   }
 }
