@@ -27,7 +27,6 @@ import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-wait
 import { Subject } from 'rxjs';
 import { ColorThemeDialogComponent } from './color-theme-dialog';
 
-
 @Component({
     template: '',
 })

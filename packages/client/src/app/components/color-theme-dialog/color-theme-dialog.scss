@@ -1,29 +1,21 @@
 @import '../../style/variables.scss';
 
-// .primary {
-//     color: var(--primary);
-// }
-// .secondary {
-//     opacity: 0.45;
-// }
-
-// #buttons-container {
-//     text-align: right;
-//     margin-top: 25px;
-// }
-
-// .bold-primary {
-//     color: var(--primary);
-//     font-weight: 500;
-// }
+.content {
+  width: 300px
+}
+h2 {
+  text-align: center;
+}
 .button-container {
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    padding-top: 20px;
 }
 
 .color-themes {
+  padding-top: 20px;
+  padding-bottom: 40px;
+
     display: flex;
     justify-content: center;
     align-items: center;
