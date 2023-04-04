@@ -55,6 +55,7 @@ describe('TilePlacementService', () => {
         gamesWonCount: 1,
         averageTimePerGame: 1,
         averagePointsPerGame: 1,
+        rating: 1,
     });
     userService.gameHistory = new BehaviorSubject<GameHistoryForUser[]>([]);
     userService.serverActions = new BehaviorSubject<PublicServerAction[]>([]);

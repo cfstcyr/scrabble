@@ -8,10 +8,10 @@ import { Service } from 'typedi';
 
 @Service()
 export class VirtualPlayerFactory {
-    generateVirtualPlayer(gameId: string, virtualPlayerLevel: VirtualPlayerLevel, playersInGame: Player[]): Player {
+    generateVirtualPlayer(gameId: string, virtualPlayerLevel: VirtualPlayerLevel, playersInGame: Player[], avatar: string = ''): Player {
         return virtualPlayerLevel === VirtualPlayerLevel.Beginner
-            ? new BeginnerVirtualPlayer(gameId, this.getRandomVirtualPlayerName(playersInGame))
-            : new ExpertVirtualPlayer(gameId, this.getRandomVirtualPlayerName(playersInGame));
+            ? new BeginnerVirtualPlayer(gameId, this.getRandomVirtualPlayerName(playersInGame), avatar)
+            : new ExpertVirtualPlayer(gameId, this.getRandomVirtualPlayerName(playersInGame), avatar);
     }
 
     private getRandomVirtualPlayerName(players: Player[]): string {

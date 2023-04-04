@@ -11,13 +11,22 @@ import { ChatService } from '@app/services/chat-service/chat.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
 import { Observer } from '@common/models/observer';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
+import Player from '@app/classes/player/player';
+import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 
+export const EXPERT_PLAYER_RATING = 1400;
+export const BEGINNER_PLAYER_RATING = 1100;
 @Service()
 export class ActiveGameService {
     playerLeftEvent: EventEmitter;
     private activeGames: Game[];
 
-    constructor(private readonly socketService: SocketService, private readonly chatService: ChatService) {
+    constructor(
+        private readonly socketService: SocketService,
+        private readonly chatService: ChatService,
+        private userStatisticService: UserStatisticsService,
+    ) {
         this.playerLeftEvent = new EventEmitter();
         this.activeGames = [];
         Game.injectServices();
@@ -26,7 +35,17 @@ export class ActiveGameService {
     async beginGame(id: string, groupChannelId: TypeOfId<Channel>, config: ReadyGameConfig, joinedObservers: Observer[]): Promise<StartGameData> {
         const game = await Game.createGame(id, groupChannelId, config, joinedObservers);
         this.activeGames.push(game);
+        game.getPlayers().forEach(async (player) => await this.setPlayerElo(player));
         return game.createStartGameData();
+    }
+
+    async setPlayerElo(player: Player) {
+        if (player instanceof AbstractVirtualPlayer) {
+            return;
+        }
+        const rating = (await this.userStatisticService.getStatistics(player.idUser)).rating;
+        player.initialRating = rating;
+        player.adjustedRating = rating;
     }
 
     getGame(id: string, playerId: string): Game {
