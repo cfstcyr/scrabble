@@ -199,8 +199,8 @@ $side-size: 300px;
 
 .tile-rack {
     &--hovered {
-        border-color: $primary !important;
-        background-color: rgba($primary, 0.1);
+        border-color: var(--primary) !important;
+        background-color: rgba(var(--primary), 0.1);
     }
 }
 

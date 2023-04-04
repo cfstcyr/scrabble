@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { ROUTE_LOGIN, ROUTE_PROFILE } from '@app/constants/routes-constants';
 import { AuthenticationService } from '@app/services/authentication-service/authentication.service';
+import { ColorThemeService } from '@app/services/color-theme-service/color-theme.service';
 import { UserService } from '@app/services/user-service/user.service';
 import { PublicUser } from '@common/models/user';
 import { Observable } from 'rxjs';
@@ -18,13 +19,16 @@ export class PageHeaderComponent {
     @Input() button: string = '';
     @Input() buttonRoute: string = '/';
     user: Observable<PublicUser | undefined>;
+    logo: Observable<string | undefined>;
 
     constructor(
         private readonly userService: UserService,
         private readonly authenticationService: AuthenticationService,
+        private readonly colorThemeService: ColorThemeService,
         private readonly router: Router,
     ) {
         this.user = this.userService.user;
+        this.logo = this.colorThemeService.getLogoTheme();
     }
 
     signOut(): void {

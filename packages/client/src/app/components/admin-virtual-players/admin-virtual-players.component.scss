@@ -6,7 +6,7 @@
 // }
 
 // .primary {
-//     color: $primary;
+//     color: var(--primary);
 // }
 // .secondary {
 //     opacity: 0.45;
@@ -96,11 +96,11 @@
 // }
 
 // ::ng-deep snack-bar-container.success {
-//     background: lighten($primary, 70%);
-//     color: $primary;
+//     background: lighten(var(--primary), 70%);
+//     color: var(--primary);
     
 //     button {
-//         color: $primary;
+//         color: var(--primary);
 //     }
 // }
 // ::ng-deep snack-bar-container.error {

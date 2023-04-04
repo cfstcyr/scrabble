@@ -10,6 +10,7 @@ import {
     AnalysisWaitingDialogComponent,
     AnalysisWaitingDialogParameter,
 } from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
+import { ColorThemeDialogComponent } from '@app/components/color-theme-dialog/color-theme-dialog';
 import { UserService } from '@app/services/user-service/user.service';
 import { Analysis, AnalysisData, AnalysisRequestInfoType } from '@common/models/analysis';
 import { GameHistoryForUser } from '@common/models/game-history';
@@ -69,6 +70,10 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         this.gameHistory.paginator = this.gameHistoryPaginator;
         this.serverActions.paginator = this.serverActionsPaginator;
+    }
+
+    openColorDialog(): void {
+        this.dialog.open<ColorThemeDialogComponent>(ColorThemeDialogComponent, {});
     }
 
     openEditUserDialog(): void {
