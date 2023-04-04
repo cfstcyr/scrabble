@@ -230,7 +230,7 @@ export class GamePlayController extends BaseController {
     private handleTilePlacement(gameId: string, playerId: string, data: TilePlacement[]) {
         this.socketService.emitToRoomNoSender(gameId, playerId, 'tilePlacement', data);
     }
-    private handleReplaceVirtualPlayer(gameId: string, observerId: string): void {
-        this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId);
+    private handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: string): void {
+        this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
     }
 }
