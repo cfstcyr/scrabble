@@ -94,6 +94,7 @@ class _LoginFormState extends State<LoginForm> {
                     focusNode: passwordHandler.focusNode,
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: !isPasswordShown,
+                    onSubmitted: (data) async => goNext(context),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: PASSWORD_LABEL_FR,
@@ -114,21 +115,10 @@ class _LoginFormState extends State<LoginForm> {
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
                 AppButton(
-                    onPressed: () async {
-                      if (await isLoggedIn(UserLoginCredentials(
-                          email: emailHandler.controller.text,
-                          password: passwordHandler.controller.text))) {
-                        if (context.mounted) {
-                          Navigator.of(context)
-                              .pushReplacementNamed(HOME_ROUTE);
-                        }
-                      }
-                    },
+                    onPressed: () async => goNext(context),
                     text: LOGIN_LABEL_FR),
                 AppButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, SIGNUP_ROUTE);
-                    },
+                    onPressed: () => Navigator.pushNamed(context, SIGNUP_ROUTE),
                     text: CREATE_ACCOUNT_LABEL_FR)
               ]),
             ],
@@ -136,6 +126,16 @@ class _LoginFormState extends State<LoginForm> {
         )
       ],
     );
+  }
+
+  void goNext(BuildContext context) async {
+    if (await isLoggedIn(UserLoginCredentials(
+        email: emailHandler.controller.text,
+        password: passwordHandler.controller.text))) {
+      if (context.mounted) {
+        Navigator.of(context).pushReplacementNamed(HOME_ROUTE);
+      }
+    }
   }
 
   Future<void> validateEmail() async {
