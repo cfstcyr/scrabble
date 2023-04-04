@@ -28,7 +28,10 @@ export class GamePlayController {
             this.actionDone$.next();
         });
     }
-
+    replaceVirtualPlayerByObserver(gameId: string, virtualPlayerNumber: string): void {
+        const endpoint = `${environment.serverUrl}/games/${gameId}/players/replace`;
+        this.http.post(endpoint, { virtualPlayerNumber }).subscribe();
+    }
     sendMessage(gameId: string, message: Message): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/players/message`;
         this.http.post(endpoint, message).subscribe();
