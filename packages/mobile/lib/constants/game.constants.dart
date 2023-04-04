@@ -24,3 +24,5 @@ const String CANNOT_VALIDATE_PLACEMENT_IS_OUT_OF_BOUNDS =
     'Cannot validate placement: placement is out of bounds';
 
 const int MAX_TILES_PER_PLAYER = 7;
+
+const double GAME_BOARD_SIZE = 630.0;

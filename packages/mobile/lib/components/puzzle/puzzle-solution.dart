@@ -9,6 +9,7 @@ import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/components/analysis/analysis-tile-rack.dart';
 import 'package:mobile/components/app-toggle-button.dart';
 import 'package:mobile/components/game/game_board.dart';
+import 'package:mobile/constants/carousel-constants.dart';
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/constants/locale/analysis-constants.dart';
@@ -66,10 +67,10 @@ class _PuzzleSolutionState extends State<PuzzleSolution> {
   Widget _getPlacementAnalysis(PlacementView placement) {
     GameBoard gameBoard = placement.generateGameBoard();
 
-    const double size = 560;
+    gameBoard.size = BOARD_SIZE;
     return Column(
       children: [
-        SizedBox(width: size, height: size, child: gameBoard),
+        SizedBox(width: BOARD_SIZE, height: BOARD_SIZE, child: gameBoard),
       ],
     );
   }

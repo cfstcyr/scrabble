@@ -21,7 +21,7 @@ class PuzzleResult {
 
   factory PuzzleResult.fromJson(Map<String, dynamic> json) {
     return PuzzleResult(
-        userPoints: max(0, json['userPoints'] as int),
+        userPoints: max(0, json['userPoints'] ?? 0),
         result: PuzzleResultStatus.parse(json['result']),
         targetPlacement: ScoredWordPlacement.fromJson(json['targetPlacement']),
         allPlacements: (json['allPlacements'] as List<dynamic>)

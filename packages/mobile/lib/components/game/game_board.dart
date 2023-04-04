@@ -14,9 +14,10 @@ import '../../constants/game.constants.dart';
 
 class GameBoard extends StatelessWidget {
 
-  GameBoard({required this.gameStream});
+  GameBoard({required this.gameStream, this.size = 630});
 
   final Stream<AbstractGame?> gameStream;
+  double size;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +42,7 @@ class GameBoard extends StatelessWidget {
                     tileRack: snapshot.hasData ? snapshot.data!.tileRack : null,
                     square: snapshot.data?.board.getSquare(position) ??
                         Square(position: Position(0, 0)),
+                    boardSize: size,
                   );
                 }),
               );
