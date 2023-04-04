@@ -19,8 +19,16 @@ import { Tile } from '@app/classes/tile';
 import { StringConversion } from '@app/utils/string-conversion/string-conversion';
 import { WordsVerificationService } from '@app/services/words-verification-service/words-verification.service';
 import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
-import { PuzzleResult, PuzzleResultSolution, PuzzleResultStatus } from '@common/models/puzzle';
-import { ActivePuzzle, CachedPuzzle, DailyPuzzle, DailyPuzzleLeaderboard, DailyPuzzleResult, Puzzle } from '@app/classes/puzzle/puzzle';
+import {
+    DailyPuzzleLeaderboard,
+    DailyPuzzleResult,
+    PUZZLE_ABANDONED_OR_FAILED,
+    PUZZLE_NOT_COMPLETED,
+    PuzzleResult,
+    PuzzleResultSolution,
+    PuzzleResultStatus,
+} from '@common/models/puzzle';
+import { ActivePuzzle, CachedPuzzle, DailyPuzzle, Puzzle } from '@app/classes/puzzle/puzzle';
 import { DailyPuzzleGenerator } from '@app/classes/puzzle/daily-puzzle-generator/daily-puzzle-generator';
 import { DAILY_PUZZLE_TABLE, USER_TABLE } from '@app/constants/services-constants/database-const';
 import DatabaseService from '@app/services/database-service/database.service';
@@ -84,7 +92,7 @@ export class PuzzleService {
         }
 
         this.activePuzzle.set(idUser, { puzzle, isDaily: true });
-        await this.table.insert({ idUser, date: this.getDateForDailyPuzzle(), score: -1 });
+        await this.table.insert({ idUser, date: this.getDateForDailyPuzzle(), score: PUZZLE_NOT_COMPLETED });
 
         return puzzle;
     }
@@ -96,10 +104,11 @@ export class PuzzleService {
     async getDailyPuzzleLeaderboard(idUser: TypeOfId<User>): Promise<DailyPuzzleLeaderboard> {
         const date = this.getDateForDailyPuzzle();
         const leaderboard: DailyPuzzleResult[] = await this.table
-            .select('score', `${USER_TABLE}.username`)
+            .select('score', `${USER_TABLE}.username`, `${USER_TABLE}.avatar`)
             .where({ date })
+            .andWhere('score', '>', 0)
             .leftJoin<User>(USER_TABLE, `${USER_TABLE}.idUser`, '=', `${DAILY_PUZZLE_TABLE}.idUser`)
-            .orderBy('score', 'asc')
+            .orderBy('score', 'desc')
             .limit(PUZZLE_LEADERBOARD_SIZE);
 
         const userScore = await this.table.where({ idUser, date }).first();
@@ -112,9 +121,9 @@ export class PuzzleService {
 
         return {
             leaderboard,
-            userScore: userScore?.score ?? 0,
-            userRank: ((userRank?.count ?? 0) as number) + 1,
-            totalPlayers: (totalPlayers?.count ?? 0) as number,
+            userScore: userScore?.score ?? -1,
+            userRank: userScore ? Number(userRank) + 1 : -1,
+            totalPlayers: Number(totalPlayers?.count ?? 0),
         };
     }
 
@@ -165,11 +174,11 @@ export class PuzzleService {
         const { targetPlacement, allPlacements } = this.getSolution(activePuzzle.puzzle);
 
         if (activePuzzle.isDaily) {
-            await this.table.update({ score: 0 }).where({ idUser, date: this.getDateForDailyPuzzle() });
+            await this.table.update({ score: PUZZLE_ABANDONED_OR_FAILED }).where({ idUser, date: this.getDateForDailyPuzzle() });
         }
 
         return {
-            userPoints: -1,
+            userPoints: PUZZLE_ABANDONED_OR_FAILED,
             result,
             targetPlacement,
             allPlacements,

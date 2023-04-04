@@ -18,7 +18,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { TokenValidation } from '@app/classes/authentication/token-validation';
-import { ROUTE_LOGIN } from '@app/constants/routes-constants';
+import { ROUTE_LOGIN, ROUTE_PUZZLE_HOME } from '@app/constants/routes-constants';
 
 @Injectable({
     providedIn: 'root',
@@ -57,7 +57,7 @@ export class InitializerService {
                 this.handleInvalidConnection();
             } else {
                 // Force reactivate guard to redirect if needed
-                this.router.navigate([this.router.url], { queryParams: { redirect: true } });
+                this.router.navigate([ROUTE_PUZZLE_HOME], { queryParams: { redirect: true } });
 
                 this.state.next({ state: InitializeState.Ready });
             }

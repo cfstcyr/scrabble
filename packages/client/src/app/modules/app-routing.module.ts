@@ -26,6 +26,7 @@ import {
     ROUTE_RATING_LEADERBOARD,
     ROUTE_PUZZLE_GAME,
     ROUTE_PUZZLE_HOME,
+    ROUTE_PUZZLE_GAME_DAILY,
 } from '@app/constants/routes-constants';
 import { SearchPageComponent } from '@app/pages/search-page/search-page.component';
 import { PuzzlePageComponent } from '@app/pages/puzzle-page/puzzle-page.component';
@@ -66,7 +67,8 @@ const routes: Routes = [
         ],
     },
     { path: ROUTE_PUZZLE_HOME, component: PuzzleHomePageComponent, ...privateRoute },
-    { path: ROUTE_PUZZLE_GAME, component: PuzzlePageComponent, ...privateRoute },
+    { path: ROUTE_PUZZLE_GAME, component: PuzzlePageComponent, data: { isDaily: false }, ...privateRoute },
+    { path: ROUTE_PUZZLE_GAME_DAILY, component: PuzzlePageComponent, data: { isDaily: true }, ...privateRoute },
     { path: ROUTE_RATING_LEADERBOARD, component: RatingLeaderboardPageComponent, ...privateRoute },
     { path: '**', redirectTo: ROUTE_HOME },
 ].map((route) => ({ ...route, path: removeStartSlash(route.path) }));
