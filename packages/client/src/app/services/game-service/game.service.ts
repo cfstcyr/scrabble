@@ -150,6 +150,9 @@ export default class GameService implements OnDestroy, IResetServiceData {
             this.gameController.handleTilePlacement(this.gameId, tilePlacement);
         }
     }
+    replaceVirtualPlayer(virtualPlayerNumber: string) {
+        this.gameController.replaceVirtualPlayerByObserver(this.gameId, virtualPlayerNumber);
+    }
 
     cannotPlay(): boolean {
         return this.isGameSetUp && !this.isLocalPlayerPlaying();
