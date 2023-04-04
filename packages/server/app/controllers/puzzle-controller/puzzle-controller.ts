@@ -40,6 +40,14 @@ export class PuzzleController extends BaseController {
             }
         });
 
+        router.post('/daily/leaderboard', async (req: UserRequest, res, next) => {
+            try {
+                res.status(StatusCodes.OK).send(await this.puzzleService.getDailyPuzzleLeaderboard(req.body.idUser));
+            } catch (e) {
+                next(e);
+            }
+        });
+
         router.post(
             '/complete',
             ...wordPlacementValidator('wordPlacement'),
