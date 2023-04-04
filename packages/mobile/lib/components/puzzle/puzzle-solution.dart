@@ -17,8 +17,9 @@ import 'package:mobile/services/theme-color-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class PuzzleSolution extends StatefulWidget {
-  PuzzleSolution({required this.placementToShow});
+  PuzzleSolution({required this.solutionName, required this.placementToShow});
 
+  final String solutionName;
   final PlacementView placementToShow;
 
   @override
@@ -49,7 +50,14 @@ class _PuzzleSolutionState extends State<PuzzleSolution> {
             ),
           ),
         ),
-        _getPlacementAnalysis(widget.placementToShow),
+        Column(children: [
+          Opacity(
+            opacity: 0.64,
+            child: Text(widget.solutionName,
+                style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.w500)),
+          ),
+          _getPlacementAnalysis(widget.placementToShow)
+        ]),
         Spacer(),
       ],
     );

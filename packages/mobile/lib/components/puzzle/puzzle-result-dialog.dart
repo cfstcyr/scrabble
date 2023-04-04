@@ -65,22 +65,37 @@ class PuzzleResultDialog {
   void _quitPuzzle(BuildContext context) {
     Navigator.popUntil(
         context,
-            (predicate) =>
-        predicate.settings.name == HOME_ROUTE ||
+        (predicate) =>
+            predicate.settings.name == HOME_ROUTE ||
             predicate.settings.name == BASE_ROUTE);
   }
 
   List<PuzzleSolution> _generateSlides() {
     List<PlacementView> placementsToShow = [
-      _generatePlacementView(puzzlePlayed.targetPlacement),
-      ...puzzlePlayed.allPlacements.map((placement) => _generatePlacementView(placement))
+      ...List.generate(
+          puzzlePlayed.allPlacements.length,
+          (index) => _generatePlacementView(puzzlePlayed.allPlacements[index],
+              name: 'Solution #${index + 1}'))
     ];
-    if (puzzlePlayed.playedPlacement != null) placementsToShow.insert(0, _generatePlacementView(puzzlePlayed.playedPlacement!));
 
-    return placementsToShow.map((view) => PuzzleSolution(placementToShow: view)).toList();
+    if (puzzlePlayed.playedPlacement != null) {
+      placementsToShow.insert(
+          0, _generatePlacementView(puzzlePlayed.playedPlacement!, name: 'Votre placement'));
+    }
+
+    print(placementsToShow[0].name);
+
+    return placementsToShow
+        .map((view) => PuzzleSolution(
+              placementToShow: view,
+              solutionName: view.name ?? 'Placement',
+            ))
+        .toList();
   }
 
-  PlacementView _generatePlacementView(ScoredWordPlacement placement) {
-    return PlacementView().fromPuzzlePlayed(puzzlePlayed.gridConfig, placement);
+  PlacementView _generatePlacementView(ScoredWordPlacement placement,
+      {required String name}) {
+    return PlacementView(name: name)
+        .fromPuzzlePlayed(puzzlePlayed.gridConfig, placement);
   }
 }

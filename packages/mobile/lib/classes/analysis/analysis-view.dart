@@ -19,6 +19,7 @@ class PlacementView {
   GameBoard? gameBoard;
   AnalysisTileRack? tileRack;
 
+  final String? name;
   final List<w.Tile>? tileViews;
   final ScoredWordPlacement? placement;
 
@@ -26,7 +27,7 @@ class PlacementView {
 
   ValueStream<AbstractGame> get gameStream => _gameForPlacement$!.stream;
 
-  PlacementView({this.tileViews, this.placement});
+  PlacementView({this.name, this.tileViews, this.placement});
 
   PlacementView fromCriticalMoment(
       CriticalMoment criticalMoment, ScoredWordPlacement? scoredWordPlacement) {
@@ -42,7 +43,7 @@ class PlacementView {
   }
 
   PlacementView fromPuzzlePlayed(List<Square> gridConfig, ScoredWordPlacement placement) {
-    PlacementView placementView = PlacementView(placement: placement);
+    PlacementView placementView = PlacementView(name: name, placement: placement);
 
     Board board = Board();
     board.updateBoardData(gridConfig);
