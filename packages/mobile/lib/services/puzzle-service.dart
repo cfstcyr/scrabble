@@ -18,6 +18,7 @@ import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/components/puzzle/puzzle-result-dialog.dart';
 import 'package:mobile/constants/puzzle-constants.dart';
 import 'package:mobile/constants/socket-constants.dart';
+import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/puzzle-controller.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
@@ -33,6 +34,8 @@ class PuzzleService {
   final PuzzleController _puzzleController = getIt.get<PuzzleController>();
   final RoundService _roundService = getIt.get<RoundService>();
   final UserService _userService = getIt.get<UserService>();
+  final GamePlayController _gamePlayController =
+      getIt.get<GamePlayController>();
   final BehaviorSubject<PuzzleGame?> _puzzle;
 
   PuzzleService._privateConstructor() : _puzzle = BehaviorSubject.seeded(null);
@@ -127,15 +130,21 @@ class PuzzleService {
   void _handlePuzzleResult(PuzzleResult puzzleResult, List<Square> gridConfig,
       ScoredWordPlacement? playedPlacement) {
     PuzzlePlayed puzzlePlayed = PuzzlePlayed.afterPlayed(
-        _puzzle.value!.puzzleLevel.nameEnum, gridConfig, playedPlacement, puzzleResult);
+        _puzzle.value!.puzzleLevel.nameEnum,
+        gridConfig,
+        playedPlacement,
+        puzzleResult);
 
+    _roundService.endRound();
     PuzzleResultDialog(puzzlePlayed: puzzlePlayed)
         .openAnalysisResultDialog(navigatorKey.currentContext!);
 
     _puzzle.value?.puzzlePlayer.updateStreak(puzzleResult);
     _puzzle.add(_puzzle.value);
-    // TODO: Add to chat
-    // TODO: Stop timer
+    
+    if (playedPlacement != null) {
+      _gamePlayController.gameMessage$.add(puzzlePlayed.placementToGameMessage());
+    }
   }
 
   void _onTimerExpires() {

@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:mobile/classes/actions/word-placement.dart';
+import 'package:mobile/classes/game/game-message.dart';
 import 'package:mobile/classes/puzzle/puzzle-level.dart';
 import 'package:mobile/classes/tile/square.dart';
 
@@ -56,6 +57,14 @@ class PuzzlePlayed extends PuzzleResult {
           levelName: levelName,
           playedPlacement: playedPlacement,
           gridConfig: gridConfig);
+
+  GameMessage placementToGameMessage() {
+    return GameMessage(
+        content:
+            'Vous avez placé ${playedPlacement?.tilesToString() ?? ''} pour $userPoints points',
+        gameId: '',
+        senderId: '');
+  }
 }
 
 enum PuzzleResultStatus {

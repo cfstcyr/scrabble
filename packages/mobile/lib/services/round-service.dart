@@ -6,9 +6,6 @@ import 'package:rxdart/rxdart.dart';
 import 'game-event.service.dart';
 
 class RoundService {
-  final ActionService _actionService = getIt.get<ActionService>();
-  final GameEventService _gameEventService = getIt.get<GameEventService>();
-
   final Subject<Duration> _startRound$ = PublishSubject();
   final Subject _endRound$ = PublishSubject();
   final Subject _roundTimeout$ = PublishSubject();
