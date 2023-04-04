@@ -55,10 +55,7 @@ class MyScaffold extends StatelessWidget {
                         onTap: () {
                           Navigator.pushNamed(context, PROFILE_SEARCH_ROUTE);
                         },
-                        child: Padding(
-                          padding: EdgeInsets.only(right: SPACE_2),
-                          child: Icon(Icons.search, color: mainColor),
-                        ),
+                        child: Icon(Icons.search, color: mainColor, size: 28),
                       ))
               : Container(),
           Builder(
@@ -77,7 +74,7 @@ class MyScaffold extends StatelessWidget {
                   return NotificationPastille(
                       pastilleColor: pastilleColor,
                       child: IconButton(
-                        icon: Icon(Icons.chat),
+                        icon: Icon(Icons.chat, color: mainColor),
                         onPressed: () => Scaffold.of(context).openEndDrawer(),
                       ));
                 }),
