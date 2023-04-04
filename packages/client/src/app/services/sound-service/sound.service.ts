@@ -47,12 +47,13 @@ export const CRITICAL_LOW_TIME = 5;
     providedIn: 'root',
 })
 export class SoundService {
-    isMusicEnabled: boolean = true;
-    isSoundEnabled: boolean = true;
+    static isSoundEnabled = true;
+    private isMusicEnabled: boolean;
     private musics: Musics;
     private soundsMap: Map<SoundName, Howl>;
     constructor() {
         this.soundsMap = new Map();
+        this.isMusicEnabled = true;
         for (const sound of Object.values(SoundName)) {
             this.soundsMap.set(
                 sound,
@@ -81,25 +82,47 @@ export class SoundService {
         }
     }
 
+    get isMusicEnabledSetting(): boolean {
+        return this.isMusicEnabled;
+    }
+
+    set isMusicEnabledSetting(newSetting: boolean) {
+        if (this.isMusicEnabled === newSetting) return;
+        this.isMusicEnabled = newSetting;
+        if (!this.isMusicEnabled) {
+            this.musics.currentMusic?.stop();
+            this.musics.currentMusic = undefined;
+        } else {
+            this.startNextTrack(this.musics.currentMusicType);
+        }
+    }
+
     startNextTrack(musicType: MusicType) {
+        if (!this.isMusicEnabled) return;
         if (musicType === MusicType.BackgroundMusic) {
             this.musics.backgroundMusicIndex = (this.musics.backgroundMusicIndex + 1) % this.musics.backgroundMusics.length;
             const music = this.musics.backgroundMusics[this.musics.backgroundMusicIndex];
+            this.musics.currentMusic = music;
             music.play();
         } else if (musicType === MusicType.LobbyMusic) {
             this.musics.lobbyMusicIndex = (this.musics.lobbyMusicIndex + 1) % this.musics.lobbyMusics.length;
             const music = this.musics.lobbyMusics[this.musics.lobbyMusicIndex];
+            this.musics.currentMusic = music;
             music.play();
         }
     }
 
     startMusic() {
+        this.musics.currentMusic?.stop();
+        if (!this.isMusicEnabled) return;
         const music = this.musics.backgroundMusics[0];
         music.play();
         this.musics.currentMusic = music;
     }
 
     changeMusic(newUrl: string) {
+        if (!this.isMusicEnabled) return;
+
         const newUrlType = PAGES_NO_MUSIC.includes(newUrl)
             ? MusicType.NoMusic
             : PAGES_LOBBY_MUSIC.includes(newUrl)
@@ -107,22 +130,24 @@ export class SoundService {
             : MusicType.BackgroundMusic;
 
         if (this.musics.currentMusicType !== newUrlType) {
+            this.musics.currentMusicType = newUrlType;
             if (this.musics.currentMusic) {
                 this.musics.currentMusic.stop();
             }
-            if (newUrlType !== MusicType.NoMusic) {
-                const newSound =
+            if (newUrlType !== MusicType.NoMusic && this.isMusicEnabled) {
+                const newMusic =
                     this.musics.currentMusicType === MusicType.BackgroundMusic
                         ? this.musics.backgroundMusics[this.musics.backgroundMusicIndex]
                         : this.musics.lobbyMusics[this.musics.lobbyMusicIndex];
-                newSound.play();
-                this.musics.currentMusic = newSound;
+                newMusic.play();
+                this.musics.currentMusic = newMusic;
             }
-            this.musics.currentMusicType = newUrlType;
         }
     }
 
     playSound(soundName: SoundName) {
+        if (!SoundService.isSoundEnabled) return;
+
         const sound = this.soundsMap.get(soundName);
         if (sound) {
             sound.play();

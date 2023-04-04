@@ -80,6 +80,7 @@ import { GameObserversPlayersComponent } from './components/game/game-observers-
 import { ColorThemeDialogComponent } from './components/color-theme-dialog/color-theme-dialog';
 import { ColorThemeService } from './services/color-theme-service/color-theme.service';
 import { ClickSoundDirective } from './directives/button-sound-directive/click-sound.directive';
+import { SoundSettingsDialogComponent } from './components/sound-settings-dialog/sound-settings-dialog';
 
 registerLocaleData(localeFr);
 
@@ -158,6 +159,7 @@ registerLocaleData(localeFr);
         GameObserversPlayersComponent,
         ColorThemeDialogComponent,
         ClickSoundDirective,
+        SoundSettingsDialogComponent,
     ],
     imports: [
         AppMaterialModule,
