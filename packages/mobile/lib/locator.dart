@@ -1,10 +1,12 @@
 import 'package:get_it/get_it.dart';
+import 'package:mobile/controllers/analysis-controller.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
 import 'package:mobile/controllers/puzzle-controller.dart';
 import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/services/action-service.dart';
+import 'package:mobile/services/analysis-service.dart';
 import 'package:mobile/services/client.dart';
 import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game-creation-service.dart';
@@ -68,6 +70,8 @@ class CustomLocator {
     getIt.registerLazySingleton<GameCreationController>(
         () => GameCreationController());
     getIt.registerLazySingleton<PuzzleController>(() => PuzzleController());
+    getIt.registerLazySingleton<AnalysisController>(() => AnalysisController());
+    getIt.registerLazySingleton<AnalysisService>(() => AnalysisService());
     getIt.registerLazySingleton<UploadService>(() => UploadService());
   }
 

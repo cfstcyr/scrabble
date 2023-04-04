@@ -15,9 +15,9 @@ class Tile extends StatelessWidget {
 
   final double size;
 
-  final Color tint;
-
   final bool shouldWiggle;
+
+  Color tint;
 
   @override
   Widget build(BuildContext context) {
