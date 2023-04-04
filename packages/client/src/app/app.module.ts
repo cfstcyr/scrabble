@@ -77,6 +77,7 @@ import { GamePlayersComponent } from './components/game/game-players/game-player
 import { GameTilesLeftComponent } from './components/game/game-tiles-left/game-tiles-left.component';
 import { GameTimerComponent } from './components/game/game-timer/game-timer.component';
 import { GameObserversPlayersComponent } from './components/game/game-observers-players/game-observers-players.component';
+import { PuzzleHomePageComponent } from './pages/puzzle-home-page/puzzle-home-page.component';
 
 registerLocaleData(localeFr);
 
@@ -153,6 +154,7 @@ registerLocaleData(localeFr);
         GameTilesLeftComponent,
         GameTimerComponent,
         GameObserversPlayersComponent,
+        PuzzleHomePageComponent,
     ],
     imports: [
         AppMaterialModule,

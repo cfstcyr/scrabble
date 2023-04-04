@@ -23,14 +23,16 @@ import {
     ROUTE_PROFILE,
     ROUTE_SIGNUP,
     ROUTE_SEARCH,
-    ROUTE_PUZZLE,
     ROUTE_RATING_LEADERBOARD,
+    ROUTE_PUZZLE_GAME,
+    ROUTE_PUZZLE_HOME,
 } from '@app/constants/routes-constants';
 import { SearchPageComponent } from '@app/pages/search-page/search-page.component';
 import { PuzzlePageComponent } from '@app/pages/puzzle-page/puzzle-page.component';
 import { RatingLeaderboardPageComponent } from '@app/pages/rating-leaderboard-page/rating-leaderboard-page.component';
 import { UserSearchResultPageComponent } from '@app/pages/user-search-result-page/user-search-result-page.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
+import { PuzzleHomePageComponent } from '@app/pages/puzzle-home-page/puzzle-home-page.component';
 
 const privateRoute: Route = {
     canActivate: [PrivateRouteGuard],
@@ -63,7 +65,8 @@ const routes: Routes = [
             { path: ':username', component: UserSearchResultPageComponent, ...privateRoute },
         ],
     },
-    { path: ROUTE_PUZZLE, component: PuzzlePageComponent, ...privateRoute },
+    { path: ROUTE_PUZZLE_HOME, component: PuzzleHomePageComponent, ...privateRoute },
+    { path: ROUTE_PUZZLE_GAME, component: PuzzlePageComponent, ...privateRoute },
     { path: ROUTE_RATING_LEADERBOARD, component: RatingLeaderboardPageComponent, ...privateRoute },
     { path: '**', redirectTo: ROUTE_HOME },
 ].map((route) => ({ ...route, path: removeStartSlash(route.path) }));
