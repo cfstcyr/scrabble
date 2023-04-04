@@ -93,7 +93,7 @@ class _LoginFormState extends State<LoginForm> {
                     focusNode: passwordHandler.focusNode,
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: !isPasswordShown,
-                    onSubmitted: (data) async => goNext(context),
+                    onSubmitted: (data) async => login(context),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: PASSWORD_LABEL_FR,
@@ -114,7 +114,7 @@ class _LoginFormState extends State<LoginForm> {
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
                 AppButton(
-                    onPressed: () async => goNext(context),
+                    onPressed: () async => login(context),
                     text: LOGIN_LABEL_FR),
                 AppButton(
                     onPressed: () => Navigator.pushNamed(context, SIGNUP_ROUTE),
@@ -127,7 +127,7 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  void goNext(BuildContext context) async {
+  void login(BuildContext context) async {
     if (await isLoggedIn(UserLoginCredentials(
         email: emailHandler.controller.text,
         password: passwordHandler.controller.text))) {

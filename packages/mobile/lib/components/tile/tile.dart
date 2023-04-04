@@ -81,7 +81,7 @@ class Tile extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '${tile?.value != null && tile!.value != 0 ? tile!.value : ''}',
+                            _getDisplayValue(tile),
                             style: TextStyle(
                               fontSize: size / 3.5,
                               fontWeight: FontWeight.w600,
@@ -94,6 +94,10 @@ class Tile extends StatelessWidget {
                 ))
           ],
         ));
+  }
+
+  String _getDisplayValue(c.Tile? tile) {
+    return '${tile?.value != null && tile!.value != 0 ? tile.value : ''}';
   }
 
   Color _getTintColor() {
