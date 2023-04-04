@@ -28,6 +28,7 @@ class MyScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
+
     Color mainColor =
         getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
     return Scaffold(
