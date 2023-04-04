@@ -6,6 +6,7 @@ class MultiplayerGame extends AbstractGame {
   PlayersContainer players;
   List<TileReserveData> tileReserve;
   bool isOver;
+  int? idGameHistory;
 
   MultiplayerGame({
     required super.board,

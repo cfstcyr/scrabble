@@ -69,7 +69,19 @@ class Square {
       tile: json['tile'] != null
           ? Tile.fromJson(json['tile'] as Map<String, dynamic>)
           : null,
-      isApplied: json['isApplied'] != null ? json['isApplied'] as bool : json['tile'] != null,
+      isApplied: json['isApplied'] != null
+          ? json['isApplied'] as bool
+          : json['tile'] != null,
+    );
+  }
+
+  Square copy() {
+    return Square(
+      position: position.copy(),
+      tile: _tile.value?.copy(),
+      multiplier: multiplier?.copy(),
+      isCenter: isCenter,
+      isApplied: true,
     );
   }
 }

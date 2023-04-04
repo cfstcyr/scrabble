@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mobile/classes/actions/action-data.dart';
+import 'package:mobile/classes/analysis/analysis-request.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/game/game-config.dart';
 import 'package:mobile/classes/game/game-update.dart';
@@ -7,7 +8,9 @@ import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
+import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/constants/game-events.dart';
+import 'package:mobile/constants/locale/analysis-constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
@@ -124,6 +127,7 @@ class GameService {
 
     if (gameUpdate.isGameOver != null) {
       game.isOver = gameUpdate.isGameOver!;
+      game.idGameHistory = gameUpdate.idGameHistory;
       if (game.isOver) {
         getIt
             .get<EndGameService>()
@@ -174,28 +178,38 @@ class GameService {
     String player = getIt.get<UserService>().getUser().username;
     bool isWinner = getIt.get<EndGameService>().winners$.value.contains(player);
 
-    triggerDialogBox(DIALOG_END_OF_GAME_TITLE(isWinner), [
-      Text(DIALOG_END_OF_GAME_CONTENT(isWinner), style: TextStyle(fontSize: 16))
-    ], [
-      DialogBoxButtonParameters(
-          content: DIALOG_LEAVE_BUTTON_CONTINUE,
-          theme: AppButtonTheme.secondary,
-          onPressed: () async {
-            await getIt.get<GamePlayController>().leaveGame();
+    triggerDialogBox(
+        DIALOG_END_OF_GAME_TITLE(isWinner),
+        [
+          Text(DIALOG_END_OF_GAME_CONTENT(isWinner),
+              style: TextStyle(fontSize: 16))
+        ],
+        [
+          DialogBoxButtonParameters(
+              content: DIALOG_LEAVE_BUTTON_CONTINUE,
+              theme: AppButtonTheme.secondary,
+              onPressed: () async {
+                await getIt.get<GamePlayController>().leaveGame();
 
-            if (!context.mounted) return;
-            Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
-          }),
-      DialogBoxButtonParameters(
-        content: DIALOG_STAY_BUTTON_CONTINUE,
-        theme: AppButtonTheme.secondary,
-        closesDialog: true,
-      ),
-    ]);
-  }
+                if (!context.mounted) return;
+                Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
+              }),
+          DialogBoxButtonParameters(
+            content: DIALOG_SEE_ANALYSIS_BUTTON,
+            theme: AppButtonTheme.primary,
+              onPressed: () {
+                Navigator.pop(context);
 
-  bool isActivePlayer(String socketId) {
-    return _roundService.getActivePlayerId() == socketId;
+                AnalysisRequestDialog(
+                    title: ANALYSIS_REQUEST_TITLE,
+                    message: ANALYSIS_REQUEST_COMPUTING,
+                    idAnalysis: game.idGameHistory,
+                    requestType: AnalysisRequestInfoType.idGame)
+                    .openAnalysisRequestDialog(context);
+              }
+          ),
+        ],
+        dismissOnBackgroundTouch: true);
   }
 
   void _onTimerExpires() {
