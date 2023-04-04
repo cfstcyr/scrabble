@@ -27,33 +27,43 @@ class PuzzleResultDialog {
       : _puzzleSolutions = List.empty();
 
   void openAnalysisResultDialog(BuildContext context) {
-    FullScreenCarouselDialog(title: ANALYSIS_RESULT_TITLE, actionButtons: [
-      AppButton(
-        onPressed: () => _quitPuzzle(context),
-        text: "Retour à l'accueil",
-        theme: AppButtonTheme.secondary,
-        size: AppButtonSize.normal,
-      ),
-      AppButton(
-        onPressed: () => _startNextPuzzle(),
-        text: "Prochain puzzle",
-        theme: AppButtonTheme.primary,
-        size: AppButtonSize.normal,
-      )
-    ], slides: [
-      PuzzleOverviewWidget(
-          overview: PuzzleOverview.fromPuzzlePlayed(puzzlePlayed)),
-      ..._puzzleSolutions
-    ]).openDialog(context);
+    FullScreenCarouselDialog(
+        title: 'Résultat du Puzzle ${puzzlePlayed.levelName.displayName}',
+        actionButtons: [
+          AppButton(
+            onPressed: () => _quitPuzzle(context),
+            text: "Retour à l'accueil",
+            theme: AppButtonTheme.secondary,
+            size: AppButtonSize.normal,
+          ),
+          SizedBox(
+            width: SPACE_2,
+          ),
+          AppButton(
+            onPressed: () => _startNextPuzzle(context),
+            text: "Prochain puzzle",
+            theme: AppButtonTheme.primary,
+            size: AppButtonSize.normal,
+          )
+        ],
+        slides: [
+          PuzzleOverviewWidget(
+              overview: PuzzleOverview.fromPuzzlePlayed(puzzlePlayed)),
+          ..._puzzleSolutions
+        ]).openDialog(context);
   }
 
-  void _startNextPuzzle() {
+  void _startNextPuzzle(BuildContext context) {
+    Navigator.pop(context);
     getIt.get<PuzzleService>().startPuzzle(
         PUZZLE_LEVELS[puzzlePlayed.levelName] ?? advancedPuzzleLevel);
   }
 
   void _quitPuzzle(BuildContext context) {
     Navigator.popUntil(
-        context, (predicate) => predicate.settings.name == HOME_ROUTE);
+        context,
+        (predicate) =>
+            predicate.settings.name == HOME_ROUTE ||
+            predicate.settings.name == BASE_ROUTE);
   }
 }

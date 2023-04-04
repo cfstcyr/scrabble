@@ -13,7 +13,7 @@ import 'package:rxdart/rxdart.dart';
 
 class FullScreenCarouselDialog {
   final String title;
-  final List<AppButton> actionButtons;
+  final List<Widget> actionButtons;
   final List<Widget> slides;
 
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();

@@ -28,20 +28,16 @@ class _PuzzleOverviewWidgetState extends State<PuzzleOverviewWidget> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Transform.translate(
-          offset: Offset(-32, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SingleAnalysisOverview(
-                title: 'Puzzle ${widget.overview.levelName}',
-                color: _themeColorService.themeDetails.value.color.colorValue,
-                value: widget.overview.scoredPoints.toDouble(),
-                maximum: widget.overview.maxPoints.toDouble(),
-              ),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SingleAnalysisOverview(
+              color: _themeColorService.themeDetails.value.color.colorValue,
+              value: widget.overview.scoredPoints.toDouble(),
+              maximum: widget.overview.maxPoints.toDouble(),
+            ),
+          ],
         ),
         SizedBox(height: SPACE_4,),
         Text(
