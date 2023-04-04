@@ -9,9 +9,7 @@ class Tile extends StatelessWidget {
     this.size = 40,
     this.tint = Colors.transparent,
     this.shouldWiggle = false,
-  }) {
-    print("tile ${tile?.isWildcard} ${tile?.letter} ${tile?.playedLetter}");
-  }
+  });
 
   final c.Tile? tile;
 
