@@ -113,11 +113,11 @@ describe('PuzzleService', () => {
             const result = await service.getDailyPuzzleLeaderboard(DEFAULT_ID_USER);
 
             expect(result.leaderboard).to.have.lengthOf(5);
-            expect(result.leaderboard[0].score).to.equal(10);
-            expect(result.leaderboard[1].score).to.equal(20);
-            expect(result.leaderboard[2].score).to.equal(30);
-            expect(result.leaderboard[3].score).to.equal(40);
-            expect(result.leaderboard[4].score).to.equal(50);
+            expect(result.leaderboard[0].score).to.equal(60);
+            expect(result.leaderboard[1].score).to.equal(50);
+            expect(result.leaderboard[2].score).to.equal(40);
+            expect(result.leaderboard[3].score).to.equal(30);
+            expect(result.leaderboard[4].score).to.equal(20);
         });
 
         it('should return user rank', async () => {
