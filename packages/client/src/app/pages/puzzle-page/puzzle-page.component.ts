@@ -16,8 +16,8 @@ import { catchError, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { PuzzleLevel } from '@app/components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
 import { puzzleSettings } from '@app/utils/settings';
-import { Router } from '@angular/router';
-import { ROUTE_HOME } from '@app/constants/routes-constants';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ROUTE_PUZZLE_HOME } from '@app/constants/routes-constants';
 import { BACKSPACE, ENTER, ESCAPE } from '@app/constants/components-constants';
 import { PuzzleResultModalComponent, PuzzleResultModalParameters } from '@app/components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
 import { WordPlacement } from '@common/models/word-finding';
@@ -40,6 +40,7 @@ export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
     styleUrls: ['./puzzle-page.component.scss'],
 })
 export class PuzzlePageComponent implements OnInit {
+    isDailyPuzzle: boolean = false;
     history: PuzzleResult[] = [];
     startGrid: SquareView[][];
     grid: BehaviorSubject<SquareView[][]> = new BehaviorSubject<SquareView[][]>([]);
@@ -58,6 +59,7 @@ export class PuzzlePageComponent implements OnInit {
         private readonly dialog: MatDialog,
         private readonly router: Router,
         private readonly boardCursorService: BoardCursorService,
+        private readonly route: ActivatedRoute,
     ) {}
 
     get stopPlaying(): Observable<boolean> {
@@ -92,6 +94,8 @@ export class PuzzlePageComponent implements OnInit {
 
         this.tilePlacementService.tilePlacements$.subscribe((tilePlacements) => this.handleUsedTiles(tilePlacements));
 
+        this.route.data.subscribe((data) => (this.isDailyPuzzle = data.isDaily));
+
         this.askStart();
     }
 
@@ -103,9 +107,10 @@ export class PuzzlePageComponent implements OnInit {
                 puzzleSettings.setTime(level.time);
             },
             () => {
-                this.router.navigate([ROUTE_HOME]);
+                this.router.navigate([ROUTE_PUZZLE_HOME]);
             },
             puzzleSettings.getTime(),
+            this.isDailyPuzzle,
         );
     }
 
@@ -115,7 +120,7 @@ export class PuzzlePageComponent implements OnInit {
         this.dragAndDropService.reset();
         this.clearNotAppliedSquares();
 
-        this.puzzleService.start().subscribe((puzzle) => {
+        (this.isDailyPuzzle ? this.puzzleService.startDaily() : this.puzzleService.start()).subscribe((puzzle) => {
             const grid = puzzle.board.grid.map((row) => row.map((square) => new SquareView({ ...square }, SQUARE_SIZE)));
             this.startGrid = puzzle.board.grid.map((row) => row.map((square) => new SquareView({ ...square }, SQUARE_SIZE)));
 
@@ -263,10 +268,18 @@ export class PuzzlePageComponent implements OnInit {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 level: this.level!,
                 onCancel: () => {
-                    this.router.navigate([ROUTE_HOME]);
+                    this.router.navigate([ROUTE_PUZZLE_HOME]);
                 },
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                onContinue: () => this.start(this.level!.time),
+
+                onContinue: () => {
+                    if (this.isDailyPuzzle) {
+                        this.router.navigate([ROUTE_PUZZLE_HOME]);
+                    } else {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        this.start(this.level!.time);
+                    }
+                },
+                hideContinueButton: this.isDailyPuzzle,
             },
         });
     }
@@ -283,7 +296,7 @@ export class PuzzlePageComponent implements OnInit {
                         key: ESCAPE,
                         closeDialog: true,
                         action: () => {
-                            this.router.navigate([ROUTE_HOME]);
+                            this.router.navigate([ROUTE_PUZZLE_HOME]);
                         },
                     },
                     {

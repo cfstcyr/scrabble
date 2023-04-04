@@ -17,6 +17,7 @@ export interface PuzzleResultModalParameters {
     placement: WordPlacement | undefined;
     onCancel: () => void;
     onContinue: () => void;
+    hideContinueButton: boolean;
 }
 
 @Component({

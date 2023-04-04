@@ -79,6 +79,7 @@ import { GameTimerComponent } from './components/game/game-timer/game-timer.comp
 import { GameObserversPlayersComponent } from './components/game/game-observers-players/game-observers-players.component';
 import { ColorThemeDialogComponent } from './components/color-theme-dialog/color-theme-dialog';
 import { ColorThemeService } from './services/color-theme-service/color-theme.service';
+import { PuzzleHomePageComponent } from './pages/puzzle-home-page/puzzle-home-page.component';
 
 registerLocaleData(localeFr);
 
@@ -156,6 +157,7 @@ registerLocaleData(localeFr);
         GameTimerComponent,
         GameObserversPlayersComponent,
         ColorThemeDialogComponent,
+        PuzzleHomePageComponent,
     ],
     imports: [
         AppMaterialModule,
