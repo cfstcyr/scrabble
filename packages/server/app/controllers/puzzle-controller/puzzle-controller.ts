@@ -16,26 +16,54 @@ export class PuzzleController extends BaseController {
     }
 
     protected configure(router: Router): void {
-        router.post('/start', (req: UserRequest, res, next) => {
+        router.post('/start', async (req: UserRequest, res, next) => {
             try {
-                res.status(StatusCodes.OK).send(this.puzzleService.startPuzzle(req.body.idUser));
+                res.status(StatusCodes.OK).send(await this.puzzleService.startPuzzle(req.body.idUser));
             } catch (e) {
                 next(e);
             }
         });
 
-        router.post('/complete', ...wordPlacementValidator('wordPlacement'), (req: UserRequest<{ wordPlacement: WordPlacement }>, res, next) => {
+        router.post('/daily/start', async (req: UserRequest, res, next) => {
             try {
-                res.status(StatusCodes.OK).send(
-                    this.puzzleService.completePuzzle(req.body.idUser, {
-                        ...req.body.wordPlacement,
-                        startPosition: Position.fromJson(req.body.wordPlacement.startPosition),
-                    }),
-                );
+                res.status(StatusCodes.OK).send(await this.puzzleService.startDailyPuzzle(req.body.idUser));
             } catch (e) {
                 next(e);
             }
         });
+
+        router.post('/daily/is-completed', async (req: UserRequest, res, next) => {
+            try {
+                res.status(StatusCodes.OK).send({ isCompleted: !(await this.puzzleService.canDoDailyPuzzle(req.body.idUser)) });
+            } catch (e) {
+                next(e);
+            }
+        });
+
+        router.post('/daily/leaderboard', async (req: UserRequest, res, next) => {
+            try {
+                res.status(StatusCodes.OK).send(await this.puzzleService.getDailyPuzzleLeaderboard(req.body.idUser));
+            } catch (e) {
+                next(e);
+            }
+        });
+
+        router.post(
+            '/complete',
+            ...wordPlacementValidator('wordPlacement'),
+            async (req: UserRequest<{ wordPlacement: WordPlacement }>, res, next) => {
+                try {
+                    res.status(StatusCodes.OK).send(
+                        await this.puzzleService.completePuzzle(req.body.idUser, {
+                            ...req.body.wordPlacement,
+                            startPosition: Position.fromJson(req.body.wordPlacement.startPosition),
+                        }),
+                    );
+                } catch (e) {
+                    next(e);
+                }
+            },
+        );
 
         router.post('/abandon', (req: UserRequest<{ status?: PuzzleResultStatus }>, res, next) => {
             try {

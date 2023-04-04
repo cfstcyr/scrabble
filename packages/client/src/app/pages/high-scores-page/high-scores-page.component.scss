@@ -97,10 +97,10 @@
 
 //                     &.mat-button-toggle-checked {
 //                         mat-card.content {
-//                             background-color: rgba($primary, 0.15);
-//                             border: solid 1px rgba($primary, 0.1);
+//                             background-color: rgba(var(--primary), 0.15);
+//                             border: solid 1px rgba(var(--primary), 0.1);
 //                             app-icon {
-//                                 color: $primary;
+//                                 color: var(--primary);
 //                             }
 //                         }
 //                     }
@@ -158,7 +158,7 @@
 //             }
 
 //             .high-score:nth-child(2n) {
-//                 background-color: rgba($primary, 0.15);
+//                 background-color: rgba(var(--primary), 0.15);
 //             }
 //         }
 

@@ -21,8 +21,8 @@ import { BEGINNER_PLAYER_RATING } from '@app/services/active-game-service/active
 import { Random } from '@app/utils/random/random';
 
 export class BeginnerVirtualPlayer extends AbstractVirtualPlayer {
-    constructor(gameId: string, name: string) {
-        super(gameId, name);
+    constructor(gameId: string, name: string, avatar: string = '') {
+        super(gameId, name, avatar);
         this.initialRating = BEGINNER_PLAYER_RATING;
         this.adjustedRating = BEGINNER_PLAYER_RATING;
     }

@@ -31,7 +31,13 @@ abstract class AbstractTileRack extends StatelessWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     alignment: WrapAlignment.spaceBetween,
                     children: [
-                      ShuffleTileRackButton(tileRack: game.data!.tileRack),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: startOfTileRackButtons(
+                            tileRack: game.data!.tileRack),
+                      ),
                       playerTileRack(game.data!.tileRack.stream),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -52,6 +58,10 @@ abstract class AbstractTileRack extends StatelessWidget {
   List<Widget> endOfTileRackButtons(p.TileRack tileRack, Board board);
 
   Widget buildTile(c.Tile tile, int index);
+
+  List<Widget> startOfTileRackButtons({required p.TileRack tileRack}) {
+    return List.of([ShuffleTileRackButton(tileRack: tileRack)]);
+  }
 
   Widget playerTileRack(Stream<List<c.Tile>> tilesStream) {
     return StreamBuilder(
@@ -114,20 +124,20 @@ abstract class AbstractTileRack extends StatelessWidget {
     );
   }
 
-  Widget buildWrappedTile(c.Tile tile, int index, bool shouldWiggle) {
+  Widget buildWrappedTile(c.Tile tile, int index, bool shouldWiggle,
+      {Color tint = Colors.transparent}) {
     return Wrap(
       children: [
         Stack(
           children: [
             Tile(
-              tile: tile,
-              size: TILE_SIZE,
-              shouldWiggle: shouldWiggle,
-            ),
+                tile: tile,
+                size: TILE_SIZE,
+                shouldWiggle: shouldWiggle,
+                tint: tint),
             Wrap(
               children: [
-                _buildTarget(index - 1,
-                    width: TILE_SIZE / 2, height: TILE_SIZE),
+                _buildTarget(index - 1, width: TILE_SIZE / 2, height: TILE_SIZE),
                 _buildTarget(index, width: TILE_SIZE / 2, height: TILE_SIZE),
               ],
             ),

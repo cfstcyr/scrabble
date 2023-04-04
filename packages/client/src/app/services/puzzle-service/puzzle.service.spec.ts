@@ -4,6 +4,7 @@ import { PuzzleService } from './puzzle.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { PuzzleController } from '@app/controllers/puzzle-controller/puzzle.controller';
 import { WordPlacement } from '@common/models/word-finding';
+import { MatDialogModule } from '@angular/material/dialog';
 
 describe('PuzzleService', () => {
     let service: PuzzleService;
@@ -13,7 +14,7 @@ describe('PuzzleService', () => {
         puzzleController = jasmine.createSpyObj(PuzzleController, ['start', 'complete', 'abandon']);
 
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, MatDialogModule],
             providers: [{ provide: PuzzleController, useValue: puzzleController }],
         });
         service = TestBed.inject(PuzzleService);
