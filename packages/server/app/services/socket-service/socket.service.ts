@@ -104,6 +104,11 @@ export class SocketService {
                 this.handleDisconnect(socket);
             });
         });
+
+        this.sio.on('error', (error) => {
+            // eslint-disable-next-line no-console
+            console.error('\x1b[1m\x1b[3m<< !Socket error! >>\x1b[0m', error);
+        });
     }
 
     addToRoom(socketId: string, room: string): void {
