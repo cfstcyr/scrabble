@@ -20,7 +20,7 @@
     </div>
 
     <div class='group-request__spinner'>
-        <mat-spinner color='primary' [diameter]='50'></mat-spinner>
+        <mat-spinner color='primary' [diameter]='50' *ngIf='state === "ready"'></mat-spinner>
     </div>
 
     <div class='group-request__buttons'>

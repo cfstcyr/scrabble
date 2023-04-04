@@ -1,32 +1,16 @@
 @import '../../style/variables.scss';
-//
-//.primary {
-//    color: $primary;
-//}
-//.secondary {
-//    opacity: 0.45;
-//}
-//
-//#buttons-container {
-//    text-align: right;
-//    margin-top: 25px;
-//}
-//
-//.bold-primary {
-//    color: $primary;
-//    font-weight: 500;
-//}
 
 .group-request {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 24px;
+    width: 400px;
 
     &__creator {
         display: grid;
         width: 225px;
-        background-color: rgba($primary, 0.15);
+        background-color: rgba(var(--primary), 0.15);
         grid-template-columns: auto minmax(0, 1fr);
         padding: 12px;
         border-radius: 100px;
@@ -34,7 +18,7 @@
         gap: 12px;
         font-size: 1.25em;
         font-weight: 500;
-        color: $primary;
+        color: rgb(var(--primary));
 
         &__avatar {
             border-radius: 50%;
