@@ -3,6 +3,7 @@ import { FeedbackMessage, FeedbackMessages } from '@app/classes/communication/fe
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
 import { GameRequest, PlaceRequest } from '@app/classes/communication/request';
+import Game from '@app/classes/game/game';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { CONTENT_REQUIRED, SENDER_REQUIRED } from '@app/constants/controllers-errors';
@@ -232,5 +233,21 @@ export class GamePlayController extends BaseController {
     }
     private handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: string): void {
         this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
+        const game: Game = this.activeGameService.getGame(gameId, observerId);
+
+        const updatedData = {
+            player1: game.player1,
+            player2: game.player2,
+            player3: game.player3,
+            player4: game.player4,
+            isGameOver: game.gameIsOver,
+        };
+
+        this.gameUpdate(gameId, updatedData);
+        this.socketService.emitToRoom(gameId, 'newMessage', {
+            content: 'Un Observateur a remplacé le JV ',
+            senderId: 'system',
+            gameId,
+        });
     }
 }
