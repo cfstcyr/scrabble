@@ -83,8 +83,6 @@ class PuzzleResultDialog {
           0, _generatePlacementView(puzzlePlayed.playedPlacement!, name: 'Votre placement'));
     }
 
-    print(placementsToShow[0].name);
-
     return placementsToShow
         .map((view) => PuzzleSolution(
               placementToShow: view,

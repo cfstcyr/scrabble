@@ -73,7 +73,7 @@ class Board {
 
   updateBoardData(List<Square> squares) {
     for (var square in squares) {
-      grid[square.position.row][square.position.column] = square;
+      grid[square.position.row][square.position.column] = square.copy();
     }
   }
 

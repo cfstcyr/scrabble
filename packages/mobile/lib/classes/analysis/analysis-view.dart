@@ -39,16 +39,19 @@ class PlacementView {
 
     if (scoredWordPlacement == null) return placement;
 
-    return placement.withPlacementOnBoard(criticalMoment.grid, scoredWordPlacement);
+    return placement.withPlacementOnBoard(
+        grid: criticalMoment.grid, scoredWordPlacement);
   }
 
-  PlacementView fromPuzzlePlayed(List<Square> gridConfig, ScoredWordPlacement placement) {
-    PlacementView placementView = PlacementView(name: name, placement: placement);
+  PlacementView fromPuzzlePlayed(
+      List<Square> gridConfig, ScoredWordPlacement placement) {
+    PlacementView placementView =
+        PlacementView(name: name, placement: placement);
 
     Board board = Board();
     board.updateBoardData(gridConfig);
 
-    return placementView.withPlacementOnBoard(board.grid, placement);
+    return placementView.withPlacementOnBoard(board: board, placement);
   }
 
   GameBoard generateGameBoard() {
@@ -60,15 +63,19 @@ class PlacementView {
         AnalysisTileRack(gameStream: gameStream, tileViews: tileViews!);
   }
 
-  PlacementView withPlacementOnBoard(List<List<Square>> grid, ScoredWordPlacement scoredPlacement) {
-    Board board = Board().withGrid(copyGrid(grid));
-    List<Square> squaresToPlace = scoredPlacement.toSquaresOnBoard(board);
+  PlacementView withPlacementOnBoard(ScoredWordPlacement scoredPlacement,
+      {List<List<Square>>? grid, Board? board}) {
+    if (board == null && grid != null) {
+      board = Board().withGrid(copyGrid(grid));
+    }
+
+    List<Square> squaresToPlace = scoredPlacement.toSquaresOnBoard(board!);
     board.updateBoardData(squaresToPlace);
 
     _gameForPlacement$ = BehaviorSubject.seeded(AbstractGame(
         board: board,
         tileRack: TileRack()
-            .setTiles(List.generate(7, (index) => Tile()))));
+            .setTiles(List.generate(MAX_TILES_PER_PLAYER, (index) => Tile()))));
 
     return this;
   }
@@ -118,8 +125,8 @@ class CriticalMomentView {
   factory CriticalMomentView.fromCriticalMoment(CriticalMoment criticalMoment) {
     return CriticalMomentView(
         actionType: criticalMoment.actionType,
-        bestPlacement: PlacementView().fromCriticalMoment(
-            criticalMoment, criticalMoment.bestPlacement),
+        bestPlacement: PlacementView()
+            .fromCriticalMoment(criticalMoment, criticalMoment.bestPlacement),
         playedPlacement: PlacementView().fromCriticalMoment(
             criticalMoment, criticalMoment.playedPlacement));
   }

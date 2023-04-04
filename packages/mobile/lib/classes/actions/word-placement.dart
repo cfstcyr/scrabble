@@ -30,7 +30,7 @@ class WordPlacement {
       squares.add(Square(tile: tile, position: currentPosition.copy()));
       do {
         currentPosition = boardNavigator.forward().position;
-      } while(boardNavigator.square.getTile() != null);
+      } while(boardNavigator.isWithinBounds() && boardNavigator.square.getTile() != null);
     }
 
     return squares;
