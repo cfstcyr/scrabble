@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/
 import { MatDialog } from '@angular/material/dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
+import { OBSERVER_HELP_DELAY, OBSERVER_HELP_MESSAGE } from '@app/constants/game-constants';
 import {
     DIALOG_END_OF_GAME_CLOSE_BUTTON,
     DIALOG_END_OF_GAME_OBSERVER_CONTENT,
@@ -16,12 +17,11 @@ import {
 } from '@app/constants/pages-constants';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { GameService } from '@app/services';
+import { AlertService } from '@app/services/alert-service/alert.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
 import { Subject } from 'rxjs';
-import { AlertService } from '@app/services/alert-service/alert.service';
-import { OBSERVER_HELP_DELAY, OBSERVER_HELP_MESSAGE } from '@app/constants/game-constants';
 
 @Component({
     selector: 'app-observer-game-page',
@@ -81,6 +81,11 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     changeObservingPlayer(playerNumber: number): void {
         this.hasChangedPlayer = true;
         this.gameService.setLocalPlayer(playerNumber);
+    }
+
+    replaceObservingVirtualPlayer(virtualPlayerNumber: string) {
+        // remplacer le JV:
+        this.gameService.replaceVirtualPlayer(virtualPlayerNumber);
     }
 
     getObservingPlayerId(): string | undefined {
