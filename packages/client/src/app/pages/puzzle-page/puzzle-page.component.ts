@@ -31,6 +31,7 @@ import {
     PUZZLE_ERROR_DIALOG_TITLE,
 } from '@app/constants/puzzle-constants';
 import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
+import { CRITICAL_LOW_TIME, LOW_TIME, SoundName, SoundService } from '@app/services/sound-service/sound.service';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
@@ -58,6 +59,7 @@ export class PuzzlePageComponent implements OnInit {
         private readonly dialog: MatDialog,
         private readonly router: Router,
         private readonly boardCursorService: BoardCursorService,
+        private readonly soundService: SoundService,
     ) {}
 
     get stopPlaying(): Observable<boolean> {
@@ -250,7 +252,14 @@ export class PuzzlePageComponent implements OnInit {
             .subscribe(() => this.timeout());
         timer(0, SECONDS_TO_MILLISECONDS)
             .pipe(takeUntil(this.stopPlaying))
-            .subscribe(() => this.timer?.decrement());
+            .subscribe(() => {
+                this.timer?.decrement();
+                if (this.timer?.getTime() === LOW_TIME) {
+                    this.soundService.playSound(SoundName.LowTimeSound);
+                } else if (this.timer?.getTime() === CRITICAL_LOW_TIME) {
+                    this.soundService.playSound(SoundName.CriticalLowTimeSound);
+                }
+            });
     }
 
     private showEndOfPuzzleModal(result: PuzzleResult, placement: WordPlacement | undefined) {
