@@ -56,7 +56,7 @@ class Tile extends StatelessWidget {
                       child: Center(
                         child: Text(
                           tile != null
-                              ? (tile!.isWildcard
+                              ? (tile!.isWildcard && tile?.playedLetter != null
                                   ? (tile!.playedLetter ?? '')
                                   : (tile!.letter ?? ''))
                               : '',
@@ -81,7 +81,7 @@ class Tile extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '${tile?.value ?? ''}',
+                            _getDisplayValue(tile),
                             style: TextStyle(
                               fontSize: size / 3.5,
                               fontWeight: FontWeight.w600,
@@ -96,7 +96,13 @@ class Tile extends StatelessWidget {
         ));
   }
 
+  String _getDisplayValue(c.Tile? tile) {
+    return '${tile?.value != null && tile!.value != 0 ? tile.value : ''}';
+  }
+
   Color _getTintColor() {
-    return tile != null && tile!.isSelectedForExchange ? Colors.lightBlue : tint;
+    return tile != null && tile!.isSelectedForExchange
+        ? Colors.lightBlue
+        : tint;
   }
 }
