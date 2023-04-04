@@ -3,6 +3,7 @@ import { DictionaryNode } from '@app/classes/dictionary';
 import { BoardPlacement } from '@app/classes/word-finding';
 import { LETTER_VALUES } from '@app/constants/game-constants';
 import { Random } from '@app/utils/random/random';
+import * as seedrandom from 'seedrandom';
 
 export class DictionarySearcherRandom {
     /**
@@ -32,8 +33,11 @@ export class DictionarySearcherRandom {
      * we remove the level and those above it and pop a node at the level before it.
      */
     private stack: DictionaryNode[][];
+    private readonly random: seedrandom.PRNG;
 
-    constructor(private node: DictionaryNode, private boardPlacement: BoardPlacement) {}
+    constructor(private node: DictionaryNode, private boardPlacement: BoardPlacement, random = seedrandom()) {
+        this.random = random;
+    }
 
     *[Symbol.iterator](): Generator<string> {
         this.initSearch();
@@ -79,7 +83,7 @@ export class DictionarySearcherRandom {
             }
 
             this.clearEmptyLevelsFromStack();
-        } while (this.stack.length > 0 && (currentNode = Random.popRandom(this.stack[this.stack.length - 1])));
+        } while (this.stack.length > 0 && (currentNode = Random.popRandom(this.stack[this.stack.length - 1], this.random)));
     }
 
     private initSearch(): void {

@@ -51,6 +51,7 @@
     "dependencies": {
         "@types/bcryptjs": "^2.4.2",
         "@types/mock-fs": "^4.13.1",
+        "@types/seedrandom": "^3.0.5",
         "@types/uuid": "^8.3.4",
         "ajv": "^8.11.0",
         "bcryptjs": "^2.4.3",
@@ -72,6 +73,7 @@
         "pg-mem": "^2.6.4",
         "prettier": "^2.3.2",
         "reflect-metadata": "^0.1.13",
+        "seedrandom": "^3.0.5",
         "serve-favicon": "~2.5.0",
         "socket.io": "^4.4.1",
         "socket.io-client": "^4.4.1",
