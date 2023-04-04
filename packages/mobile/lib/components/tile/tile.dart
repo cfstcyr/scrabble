@@ -9,7 +9,9 @@ class Tile extends StatelessWidget {
     this.size = 40,
     this.tint = Colors.transparent,
     this.shouldWiggle = false,
-  });
+  }) {
+    print("tile ${tile?.isWildcard} ${tile?.letter} ${tile?.playedLetter}");
+  }
 
   final c.Tile? tile;
 
@@ -56,7 +58,7 @@ class Tile extends StatelessWidget {
                       child: Center(
                         child: Text(
                           tile != null
-                              ? (tile!.isWildcard
+                              ? (tile!.isWildcard && tile?.playedLetter != null
                                   ? (tile!.playedLetter ?? '')
                                   : (tile!.letter ?? ''))
                               : '',
@@ -81,7 +83,7 @@ class Tile extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '${tile?.value ?? ''}',
+                            '${tile?.value != null && tile!.value != 0 ? tile!.value : ''}',
                             style: TextStyle(
                               fontSize: size / 3.5,
                               fontWeight: FontWeight.w600,
@@ -97,6 +99,8 @@ class Tile extends StatelessWidget {
   }
 
   Color _getTintColor() {
-    return tile != null && tile!.isSelectedForExchange ? Colors.lightBlue : tint;
+    return tile != null && tile!.isSelectedForExchange
+        ? Colors.lightBlue
+        : tint;
   }
 }
