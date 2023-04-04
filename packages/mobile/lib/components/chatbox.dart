@@ -45,6 +45,15 @@ class _ChatboxState extends State<Chatbox> {
           shadowColor: Colors.black,
           backgroundColor: Colors.white,
           elevation: 1,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: theme.primaryColor,
+            ),
+            onPressed: () =>
+                _chatService.scaffoldKey.currentState?.closeEndDrawer(),
+          ),
+          automaticallyImplyLeading: false,
           surfaceTintColor: theme.colorScheme.primary),
       body: Chat(
         theme: DefaultChatTheme(
