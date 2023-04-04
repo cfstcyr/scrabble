@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
-import { Subject } from 'rxjs';
 import { Player } from '@app/classes/player';
-import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
+import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
 import { GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 interface GamePlayer {
@@ -49,7 +49,9 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
     }
-
+    handleReplaceVirtualPlayerByObserver(virtualPlayerNumber: string) {
+        this.gameService.replaceVirtualPlayer(virtualPlayerNumber);
+    }
     private setupGame(): void {
         if (this.roundManager.timer) {
             this.roundManager.timer.pipe(takeUntil(this.componentDestroyed$)).subscribe(([, activePlayer]) => {
