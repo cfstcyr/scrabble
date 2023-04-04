@@ -166,8 +166,6 @@ deploy:client:
     rules:
         - if: '$CI_COMMIT_TAG'
           when: manual
-          changes:
-              - packages/client/**/*
     script:
         - export DOCKER_BUILDKIT=1
         - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -182,8 +180,6 @@ deploy:server:
     rules:
         - if: '$CI_COMMIT_TAG'
           when: manual
-          changes:
-              - packages/server/**/*
     script:
         - export DOCKER_BUILDKIT=1
         - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
