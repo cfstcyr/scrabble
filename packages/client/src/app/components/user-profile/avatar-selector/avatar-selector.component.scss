@@ -14,7 +14,7 @@
         width: 50px;
         border-radius: 100px;
         border: none;
-        background-color: var(--primary);
+        background-color: rgb(var(--primary));
         color: white;
         font-size: 1.25em;
         cursor: pointer;
@@ -64,7 +64,7 @@
 
     &__preset__input:checked + .avatar-selector__preset__image {
         scale: 1.1;
-        border-color: var(--primary);
+        border-color: rgb(var(--primary));
         opacity: 1;
     }
 }

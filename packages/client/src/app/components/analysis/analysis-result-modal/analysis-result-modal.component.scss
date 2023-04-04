@@ -121,7 +121,7 @@ $side-size: 300px;
     }
 
     #left {
-        background-color: var(--primary);
+        background-color: rgb(var(--primary));
         color: white;
     }
 
@@ -151,7 +151,7 @@ $side-size: 300px;
 
             .slide-points {
                 margin: 0;
-                background-color: var(--primary);
+                background-color: rgb(var(--primary));
                 padding: 4px 8px;
                 border-radius: 4px;
                 color: white;

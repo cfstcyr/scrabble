@@ -19,7 +19,7 @@ $max-width: 1200px;
 
             p.indicator {
                 @include no-select;
-                background-color: var(--primary);
+                background-color: rgb(var(--primary));
                 color: white;
                 height: 24px;
                 width: 24px;
@@ -64,7 +64,7 @@ $max-width: 1200px;
                 }
 
                 &:before {
-                    background-color: var(--primary);
+                    background-color: rgb(var(--primary));
                     height: 0;
                     z-index: -1;
                     transition: ease-in height 0.2s;
