@@ -31,6 +31,7 @@ describe('UserAchievementDialogComponent', () => {
             declarations: [UserAchievementDialogComponent],
             providers: [
                 { provide: MAT_DIALOG_DATA, useValue: achievement },
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
                 { provide: MatDialogRef, useValue: { close: () => {} } },
             ],
         }).compileComponents();
