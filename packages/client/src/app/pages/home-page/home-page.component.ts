@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { LOGO } from '@app/constants/app-constants';
-import { ROUTE_GAME_CREATION, ROUTE_GROUPS, ROUTE_PUZZLE, ROUTE_RATING_LEADERBOARD } from '@app/constants/routes-constants';
+import { ColorThemeService } from '@app/services/color-theme-service/color-theme.service';
+import { Observable } from 'rxjs';
+import { ROUTE_GAME_CREATION, ROUTE_GROUPS, ROUTE_PUZZLE_HOME, ROUTE_RATING_LEADERBOARD } from '@app/constants/routes-constants';
 
 @Component({
     selector: 'app-home-page',
@@ -10,7 +12,12 @@ import { ROUTE_GAME_CREATION, ROUTE_GROUPS, ROUTE_PUZZLE, ROUTE_RATING_LEADERBOA
 export class HomePageComponent {
     routeGroups = ROUTE_GROUPS;
     routeGameCreation = ROUTE_GAME_CREATION;
-    routePuzzle = ROUTE_PUZZLE;
+    routePuzzle = ROUTE_PUZZLE_HOME;
     routeLeaderboard = ROUTE_RATING_LEADERBOARD;
-    logo = LOGO;
+    defaultLogo: string = LOGO;
+    logo: Observable<string | undefined>;
+
+    constructor(private colorThemeService: ColorThemeService) {
+        this.logo = this.colorThemeService.getLogoTheme();
+    }
 }

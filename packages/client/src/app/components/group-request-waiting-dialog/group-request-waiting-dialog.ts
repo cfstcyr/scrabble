@@ -64,6 +64,19 @@ export class GroupRequestWaitingDialogComponent implements OnInit, OnDestroy {
         this.dialogRef.close();
     }
 
+    getTitle(): string {
+        switch (this.state) {
+            case RequestState.Ready:
+                return 'En attente de la réponse du créateur';
+            case RequestState.Invalid:
+                return 'Vous avez été refusé par le créateur';
+            case RequestState.Canceled:
+                return 'La partie a été annulée';
+            default:
+                return '';
+        }
+    }
+
     private routerChangeMethod(url: string): void {
         if (url !== ROUTE_JOIN_WAITING) {
             this.playerLeavesService.handleLeaveGroup();

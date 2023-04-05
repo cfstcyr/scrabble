@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/locator.dart';
-import 'package:mobile/services/user.service.dart';
+import 'package:rxdart/rxdart.dart';
+
+import '../../classes/user.dart';
 
 class UserProfileStatisticsItem extends StatelessWidget {
   final String title;
@@ -31,15 +32,15 @@ class UserProfileStatisticsItem extends StatelessWidget {
 }
 
 class UserProfileStatistics extends StatelessWidget {
-  final UserService _userService = getIt.get<UserService>();
-
+  UserProfileStatistics({required this.statistics});
+  final BehaviorSubject<UserStatistics> statistics;
   @override
   Widget build(BuildContext context) {
     return Card(
         child: Padding(
       padding: EdgeInsets.all(SPACE_3),
-      child: FutureBuilder(
-          future: _userService.getUserStatistics(),
+      child: StreamBuilder(
+          stream: statistics,
           builder: (context, snapshot) => snapshot.hasData
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

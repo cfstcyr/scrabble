@@ -77,7 +77,7 @@ mat-card {
 
             &.opponent {
                 p.message {
-                    background: $primary;
+                    background: rgb(var(--primary));
                     color: white;
                     border-top-right-radius: 1em;
                     border-bottom-right-radius: 1em;

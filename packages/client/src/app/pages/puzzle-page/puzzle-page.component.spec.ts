@@ -25,7 +25,13 @@ describe('PuzzlePageComponent', () => {
     let puzzleService: jasmine.SpyObj<PuzzleService>;
 
     beforeEach(async () => {
-        puzzleService = jasmine.createSpyObj(PuzzleService, { start: new Subject(), complete: new Subject(), abandon: new Subject() });
+        puzzleService = jasmine.createSpyObj(PuzzleService, {
+            start: new Subject(),
+            complete: new Subject(),
+            abandon: new Subject(),
+            askToStart: undefined,
+            askToAbandon: undefined,
+        });
 
         await TestBed.configureTestingModule({
             imports: [

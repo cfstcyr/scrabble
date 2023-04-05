@@ -40,6 +40,14 @@ class UserService {
     return await _userController.getUserStatistics();
   }
 
+  Future<List<UserSearchItem>> searchUsers(String? query) async {
+    return await _userController.searchUsers(query);
+  }
+
+  Future<UserSearchResult> getProfileByUsername(String username) async {
+    return await _userController.getProfileByUsername(username);
+  }
+
   Future<List<GameHistory>> getGameHistory() async {
     return await _userController.getGameHistory();
   }
