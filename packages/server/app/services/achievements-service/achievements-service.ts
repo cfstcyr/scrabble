@@ -74,7 +74,10 @@ export class AchievementsService {
         const [, count] = gameHistory.reduce<[date: Date, count: number]>(
             ([previousDate, previousCount], current) => {
                 const currentDate = new Date(current.endTime.getFullYear(), current.endTime.getMonth(), current.endTime.getDate());
-                return [currentDate, currentDate.getTime() - previousDate.getTime() <= TIME_24_HOURS ? previousCount + 1 : 0];
+                const isConsecutive = currentDate.getTime() - previousDate.getTime() <= TIME_24_HOURS;
+                const isSameDay = currentDate.getTime() === previousDate.getTime();
+
+                return [currentDate, isConsecutive ? previousCount + (isSameDay ? 0 : 1) : 0];
             },
             [new Date(0), 0],
         );

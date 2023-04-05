@@ -44,10 +44,18 @@ export class UserStatisticsService {
         statistics.averageTimePerGame = this.calculateNewAverageTimePerGame(statistics, game);
         statistics.gamesPlayedCount++;
         statistics.rating += game.ratingDifference;
+        statistics.ratingMax = Math.max(statistics.ratingMax, statistics.rating);
         if (game.hasWon) statistics.gamesWonCount++;
 
         await this.table.where({ idUser }).update(statistics);
 
+        return statistics;
+    }
+
+    async addBingoToStatistics(idUser: TypeOfId<User>): Promise<PublicUserStatistics> {
+        const statistics = await this.getStatistics(idUser);
+        statistics.bingoCount++;
+        await this.table.where({ idUser }).update(statistics);
         return statistics;
     }
 
