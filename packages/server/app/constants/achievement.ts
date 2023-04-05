@@ -101,7 +101,7 @@ export const ACHIEVEMENT_POINTS: Achievement = {
 };
 
 export const ACHIEVEMENT_BINGO: Achievement = {
-    name: 'Bingo complété',
+    name: 'Bingo complétés',
     description: 'Nombre de fois où les 7 tuiles ont été utilisées pour former un mot',
     defaultImage: 'https://ucarecdn.com/bf9f4210-cf9d-425d-bd01-5e9e43a84cd7/',
     zeroValue: 0,
