@@ -7,7 +7,7 @@ import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/game.constants.dart';
 
 class TilePlacement {
-  final Tile tile;
+  Tile tile;
   final Position position;
 
   TilePlacement({required this.tile, required this.position});
