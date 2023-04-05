@@ -55,45 +55,42 @@ class _ProfilePageState extends State<ProfilePage> {
             .then((value) {
           statistics$.add(value.statistics);
           gameHistory$.add(value.gameHistory);
-          return Stream.value(widget.userSearchResult);
         });
+        return Stream.value(widget.userSearchResult);
       }
-      return Stream.value(null);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(
-      title: title,
-      isLocalProfile: isLocalUser,
-      hasBackButton: true,
-      body: Container(
-        color: Colors.grey.shade100,
-        child: SingleChildScrollView(
-            child: Container(
-          padding: EdgeInsets.all(SPACE_3),
-          child: StreamBuilder<dynamic>(
-              stream: _userProfilePageStream(),
-              builder: (context, snapshot) {
-                PublicUser user =
-                    snapshot.hasData ? snapshot.data![0] : UNKNOWN_USER;
-                UserStatistics statistics = snapshot.hasData
-                    ? snapshot.data[1]
-                    : DEFAULT_USER_STATISTICS;
-                List<GameHistory> gameHistories =
-                    snapshot.hasData ? snapshot.data[2] : [];
+    return StreamBuilder<dynamic>(
+        stream: _userProfilePageStream(),
+        builder: (context, snapshot) {
+          PublicUser user = snapshot.hasData ? snapshot.data![0] : UNKNOWN_USER;
+          UserStatistics statistics =
+              snapshot.hasData ? snapshot.data[1] : DEFAULT_USER_STATISTICS;
+          List<GameHistory> gameHistories =
+              snapshot.hasData ? snapshot.data[2] : [];
 
-                return Column(children: [
+          return MyScaffold(
+            title: title,
+            isLocalProfile: isLocalUser,
+            hasBackButton: true,
+            body: Container(
+              color: Colors.grey.shade100,
+              child: SingleChildScrollView(
+                  child: Container(
+                padding: EdgeInsets.all(SPACE_3),
+                child: Column(children: [
                   UserProfileInfo(user: user, isLocalUser: isLocalUser),
                   UserProfileStatistics(statistics: statistics),
                   UserProfileGameHistory(gameHistories: gameHistories),
                   isLocalUser ? UserProfileServerActions() : Container(),
-                ]);
-              }),
-        )),
-      ),
-    );
+                ]),
+              )),
+            ),
+          );
+        });
   }
 
   Stream<dynamic> _userProfilePageStream() {
