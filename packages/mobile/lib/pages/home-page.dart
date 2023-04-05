@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
-      title: "Home",
+      title: "Accueil",
       body: Container(
         constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
