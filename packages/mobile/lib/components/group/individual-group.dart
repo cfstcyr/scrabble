@@ -249,7 +249,7 @@ class GroupParameters extends StatelessWidget {
   Widget build(BuildContext context) {
     return IntrinsicWidth(
       child: SizedBox(
-        width: 115,
+        width: 130,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
