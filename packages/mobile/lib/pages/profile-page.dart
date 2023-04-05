@@ -5,6 +5,7 @@ import 'package:mobile/components/user-profile/user-profile-info.dart';
 import 'package:mobile/components/user-profile/user-profile-server-actions.dart';
 import 'package:mobile/components/user-profile/user-profile-statistics.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/constants/puzzle-constants.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../classes/game-history.dart';
@@ -18,28 +19,28 @@ class ProfilePage extends StatelessWidget {
   final UserService _userService = getIt.get<UserService>();
   final PublicUser userSearchResult;
 
-  BehaviorSubject<PublicUser?> user = BehaviorSubject.seeded(null);
+  BehaviorSubject<PublicUser?> user$ = BehaviorSubject.seeded(null);
   bool isLocalUser = false;
   String title = 'Mon profil';
-  BehaviorSubject<UserStatistics> statistics =
+  BehaviorSubject<UserStatistics> statistics$ =
       BehaviorSubject.seeded(DEFAULT_USER_STATISTICS);
-  BehaviorSubject<List<GameHistory>> gameHistory = BehaviorSubject.seeded([]);
+  BehaviorSubject<List<GameHistory>> gameHistory$ = BehaviorSubject.seeded([]);
 
   @override
   Widget build(BuildContext context) {
     if (_userService.user.value?.username == userSearchResult.username) {
-      user.add(_userService.user.value);
+      user$.add(_userService.user.value);
       isLocalUser = true;
-      _userService.getUserStatistics().then((event) => statistics.add(event));
-      _userService.getGameHistory().then((event) => gameHistory.add(event));
+      _userService.getUserStatistics().then((event) => statistics$.add(event));
+      _userService.getGameHistory().then((event) => gameHistory$.add(event));
     } else {
       title = 'Profil de ${userSearchResult.username}';
-      user.add(userSearchResult);
+      user$.add(userSearchResult);
       _userService
           .getProfileByUsername(userSearchResult.username)
           .then((value) {
-        statistics.add(value.statistics);
-        gameHistory.add(value.gameHistory);
+        statistics$.add(value.statistics);
+        gameHistory$.add(value.gameHistory);
       });
     }
 
@@ -52,14 +53,27 @@ class ProfilePage extends StatelessWidget {
         child: SingleChildScrollView(
             child: Container(
           padding: EdgeInsets.all(SPACE_3),
-          child: Column(children: [
-            UserProfileInfo(user: user, isLocalUser: isLocalUser),
-            UserProfileStatistics(statistics: statistics),
-            UserProfileGameHistory(gameHistory: gameHistory),
-            isLocalUser ? UserProfileServerActions() : Container(),
-          ]),
+          child: StreamBuilder<dynamic>(
+            stream: _userProfilePageStream(),
+            builder: (context, snapshot) {
+              PublicUser user = snapshot.hasData ? snapshot.data![0] : UNKNOWN_USER;
+              UserStatistics statistics = snapshot.hasData ? snapshot.data[1] : DEFAULT_USER_STATISTICS;
+              List<GameHistory> gameHistories = snapshot.hasData ? snapshot.data[2] : [];
+
+              return Column(children: [
+                UserProfileInfo(user: user, isLocalUser: isLocalUser),
+                UserProfileStatistics(statistics: statistics),
+                UserProfileGameHistory(gameHistories: gameHistories),
+                isLocalUser ? UserProfileServerActions() : Container(),
+              ]);
+            }
+          ),
         )),
       ),
     );
+  }
+
+  Stream<dynamic> _userProfilePageStream() {
+    return CombineLatestStream([user$.stream, statistics$.stream, gameHistory$.stream], (values) => values);
   }
 }
