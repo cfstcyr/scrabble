@@ -3,14 +3,14 @@ class Tile {
   final int? value;
   final bool isWildcard;
   String? playedLetter;
-  bool isSelectedForExchange;
+  TileState _state;
 
   Tile(
       {this.letter,
       this.value,
       this.isWildcard = false,
       this.playedLetter,
-      this.isSelectedForExchange = false});
+        TileState state = TileState.normal}) : _state = state;
 
   static Tile wildcard() {
     return Tile(value: 0, letter: '*', isWildcard: true);
@@ -36,8 +36,12 @@ class Tile {
         'playedLetter': playedLetter,
       };
 
+  bool get isSelectedForExchange => _state == TileState.selectedForExchange;
+
+  void unselectTile() => _state == TileState.normal;
+
   void toggleIsSelected() {
-    isSelectedForExchange = !isSelectedForExchange;
+    _state = _state == TileState.normal ? TileState.selectedForExchange : TileState.normal;
   }
 
   @override
@@ -59,4 +63,11 @@ class Tile {
       isWildcard: isWildcard
     );
   }
+}
+
+enum TileState {
+  normal,
+  notApplied,
+  selectedForExchange,
+  synced
 }

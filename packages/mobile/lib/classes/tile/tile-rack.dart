@@ -111,7 +111,7 @@ class TileRack {
 
   void _resetSelectedTiles() {
     setTiles(stream.value.map((Tile tile) {
-      tile.isSelectedForExchange = false;
+      tile.unselectTile();
       return tile;
     }).toList());
   }
