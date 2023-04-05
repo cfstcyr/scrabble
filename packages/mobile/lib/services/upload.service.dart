@@ -56,7 +56,7 @@ class UploadService {
               icon: Icons.camera,
               theme: AppButtonTheme.primary,
               onPressed: () async {
-                Navigator.pop(context);
+                // Navigator.pop(context);
                 image.add(formatAvatarLink(await getImage(ImageSource.camera)));
               }),
         ],
