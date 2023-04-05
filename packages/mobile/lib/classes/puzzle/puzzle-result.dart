@@ -95,6 +95,10 @@ enum PuzzleResultStatus {
         .first
         .key;
   }
+
+  Map<String, dynamic> toJson() => {
+    'status': PUZZLE_RESULT_TO_DISPLAY_NAME[this],
+  };
 }
 
 Map<PuzzleResultStatus, String> PUZZLE_RESULT_TO_DISPLAY_NAME = {

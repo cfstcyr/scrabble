@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/actions/word-placement.dart';
+import 'package:mobile/classes/puzzle/puzzle-result.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import '../locator.dart';
 import '../services/client.dart';
@@ -24,8 +25,8 @@ class PuzzleController {
     return http.post(Uri.parse("$endpoint/complete"), body: jsonEncode(placement));
   }
 
-  Future<Response> abandonPuzzle() async {
-    return http.post(Uri.parse("$endpoint/abandon"));
+  Future<Response> abandonPuzzle({required PuzzleResultStatus resultStatus}) async {
+    return http.post(Uri.parse("$endpoint/abandon"), body: jsonEncode(resultStatus));
   }
 
   void quitPuzzle() {

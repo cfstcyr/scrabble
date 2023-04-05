@@ -82,7 +82,7 @@ class PuzzleService {
 
   Future<ResponseResult> completePuzzle() {
     if (!(_puzzle.value?.board.isValidPlacement ?? false)) {
-      return abandonPuzzle();
+      return abandonPuzzle(resultStatus: PuzzleResultStatus.timeout);
     }
 
     Placement? placement = _puzzle.value?.board.currentPlacement;
@@ -109,15 +109,17 @@ class PuzzleService {
     }, onError: (_) => ResponseResult.error());
   }
 
-  Future<ResponseResult> abandonPuzzle() {
-    _puzzleController.abandonPuzzle().then((Response response) {
+  Future<ResponseResult> abandonPuzzle({PuzzleResultStatus resultStatus = PuzzleResultStatus.abandoned}) {
+    _puzzleController.abandonPuzzle(resultStatus: resultStatus).then((Response response) {
+      print(response.statusCode);
+      print(response.body);
       PuzzleResult puzzleResult =
           PuzzleResult.fromJson(jsonDecode(response.body));
 
       _handlePuzzleResult(puzzleResult, _puzzle.value!.gridConfig, null);
 
       return ResponseResult.success();
-    }).catchError((_) => ResponseResult.error());
+    });
 
     return Future.value(ResponseResult.success());
   }
