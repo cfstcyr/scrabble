@@ -20,7 +20,7 @@ export class UserSearchService {
     ) {}
 
     async search(query: string, exclude?: TypeOfId<User>): Promise<UserSearchItem[]> {
-        const sqlQuery = this.table.select('username', 'avatar').where('username', 'like', `%${query}%`).limit(USER_SEARCH_LIMIT);
+        const sqlQuery = this.table.select('username', 'avatar').where('username', 'ILIKE', `%${query}%`).limit(USER_SEARCH_LIMIT);
 
         if (exclude !== undefined) sqlQuery.andWhereNot({ idUser: exclude });
 

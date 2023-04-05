@@ -10,6 +10,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
 
+import '../../services/theme-color-service.dart';
 import '../../utils/duration-format.dart';
 
 class IndividualGroup extends StatefulWidget {
@@ -30,6 +31,7 @@ class IndividualGroup extends StatefulWidget {
 class _IndividualGroupState extends State<IndividualGroup> {
   final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
 
+  @override
   void initState() {
     super.initState();
   }
@@ -41,6 +43,8 @@ class _IndividualGroupState extends State<IndividualGroup> {
 
   @override
   Widget build(BuildContext context) {
+    Color themeColor =
+        getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -81,8 +85,10 @@ class _IndividualGroupState extends State<IndividualGroup> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Observers(),
                         SizedBox(width: 16),
+                        Observers(
+                            numberOfObservers: widget.group.numberOfObservers),
+                        SizedBox(width: 8),
                         GameVisibilityView(
                           gameVisibility: widget.group.gameVisibility,
                         ),
@@ -95,10 +101,31 @@ class _IndividualGroupState extends State<IndividualGroup> {
                               width: 60,
                               height: 60,
                               child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    if (widget.group.gameVisibility ==
+                                        GameVisibility.protected) {
+                                      await groupJoinService
+                                          .handleGroupUpdatesRequest(
+                                              widget.group.groupId!, true);
+                                      // ignore: use_build_context_synchronously
+                                      showGamePasswordPopup(
+                                          context,
+                                          widget.group,
+                                          widget.joinGroupFunction,
+                                          true);
+                                    } else {
+                                      widget.joinGroupFunction(
+                                          widget.group.groupId, "", true);
+                                      Navigator.pushNamed(
+                                              context, JOIN_WAITING_ROUTE,
+                                              arguments: widget.group)
+                                          .then((_) => getIt
+                                              .get<GroupJoinService>()
+                                              .getGroups());
+                                    }
+                                  },
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          widget.theme.primaryColor,
+                                      backgroundColor: themeColor,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(
@@ -125,10 +152,12 @@ class _IndividualGroupState extends State<IndividualGroup> {
                                                 .handleGroupUpdatesRequest(
                                                     widget.group.groupId!,
                                                     false);
+                                            // ignore: use_build_context_synchronously
                                             showGamePasswordPopup(
                                                 context,
                                                 widget.group,
-                                                widget.joinGroupFunction);
+                                                widget.joinGroupFunction,
+                                                false);
                                           } else {
                                             widget.joinGroupFunction(
                                                 widget.group.groupId,
@@ -144,8 +173,7 @@ class _IndividualGroupState extends State<IndividualGroup> {
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          widget.theme.primaryColor,
+                                      backgroundColor: themeColor,
                                       foregroundColor: Colors.white,
                                       padding: EdgeInsets.all(0),
                                       shape: BeveledRectangleBorder(
@@ -169,6 +197,28 @@ class _IndividualGroupState extends State<IndividualGroup> {
   }
 }
 
+class Observers extends StatelessWidget {
+  const Observers({super.key, required this.numberOfObservers});
+
+  final int numberOfObservers;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(Icons.visibility, size: 40),
+        SizedBox(width: 8),
+        Text(
+          numberOfObservers.toString(),
+          style:
+              TextStyle(fontSize: 24, fontWeight: FontWeight.w500, height: 1),
+        )
+      ],
+    );
+  }
+}
+
 class GameVisibilityView extends StatelessWidget {
   const GameVisibilityView({super.key, required this.gameVisibility});
 
@@ -182,32 +232,6 @@ class GameVisibilityView extends StatelessWidget {
         preferBelow: false,
         showDuration: Duration(seconds: 3),
         child: Icon(gameVisibility.icon, size: 40));
-  }
-}
-
-class Observers extends StatelessWidget {
-  const Observers({
-    super.key,
-  });
-
-  // TODO: Add dynamic number
-  final int numberOfObservers = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return numberOfObservers != 0
-        ? Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.visibility_outlined, size: 30),
-              SizedBox(width: 4),
-              Text(
-                numberOfObservers.toString(),
-                style: TextStyle(fontSize: 24),
-              )
-            ],
-          )
-        : SizedBox.shrink();
   }
 }
 

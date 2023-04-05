@@ -9,6 +9,7 @@ class Group {
   final VirtualPlayerLevel virtualPlayerLevel;
   final GameVisibility gameVisibility;
   final String? password;
+  int numberOfObservers;
   bool? canJoin;
 
   Group(
@@ -18,7 +19,8 @@ class Group {
       required this.gameVisibility,
       this.canJoin,
       this.groupId,
-      this.password});
+      this.password,
+      this.numberOfObservers = 0});
 
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
@@ -27,7 +29,8 @@ class Group {
         virtualPlayerLevel:
             VirtualPlayerLevel.fromJson(json['virtualPlayerLevel']),
         gameVisibility: GameVisibility.fromJson(json['gameVisibility']),
-        groupId: json['groupId'] as String);
+        groupId: json['groupId'] as String,
+        numberOfObservers: json['numberOfObservers'] as int);
   }
 
   Map<String, dynamic> toJson() => {
@@ -39,6 +42,7 @@ class Group {
         'maxRoundTime': maxRoundTime,
         'virtualPlayerLevel': virtualPlayerLevel.levelName,
         'gameVisibility': gameVisibility.name,
+        'numberOfObservers': numberOfObservers,
       };
   Map<String, dynamic> GroupCreationDatatoJson() => {
         'user1': users[0],

@@ -4,9 +4,12 @@ import { Inject, Injectable } from '@angular/core';
 import { Position } from '@app/classes/board-navigator/position';
 import { Tile } from '@app/classes/tile';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
+import { GameService } from '@app/services';
+import { Subject } from 'rxjs';
 
 const SQUARE_CLASS = 'square';
 const HAS_TILE_CLASS = 'has-tile';
+const SQUARE_CAN_DROP = 'can-drop';
 const HOVERED_SQUARE_CLASS = 'square--hovered';
 const TILE_RACK_CLASS = 'tile-rack';
 const HOVERED_TILE_RACK_CLASS = 'tile-rack--hovered';
@@ -22,12 +25,26 @@ interface HoveredSquare {
 export class DragAndDropService {
     private currentHoveredTileRackElement?: Element;
     private currentHoveredSquare?: HoveredSquare;
+    private dropSubject$ = new Subject();
+    private beforeDropSubject$ = new Subject();
 
-    constructor(@Inject(DOCUMENT) private readonly document: Document, private readonly tilePlacementService: TilePlacementService) {
+    constructor(
+        @Inject(DOCUMENT) private readonly document: Document,
+        private readonly tilePlacementService: TilePlacementService,
+        private readonly gameService: GameService,
+    ) {
         this.tilePlacementService.tilePlacements$.subscribe(() => {
             this.removeCurrentHoveredSquare();
             this.removeCurrentHoveredTileRackElement();
         });
+    }
+
+    get drop$() {
+        return this.dropSubject$.asObservable();
+    }
+
+    get beforeDrop$() {
+        return this.beforeDropSubject$.asObservable();
     }
 
     onRackTileMove(event: CdkDragMove<HTMLElement>): void {
@@ -49,6 +66,7 @@ export class DragAndDropService {
 
     onRackTileDrop(tile: Tile): void {
         if (this.currentHoveredSquare) {
+            this.beforeDropSubject$.next();
             this.tilePlacementService.placeTile({
                 tile,
                 position: this.currentHoveredSquare.position,
@@ -56,10 +74,12 @@ export class DragAndDropService {
         }
 
         this.removeCurrentHoveredSquare();
+        this.dropSubject$.next();
     }
 
     onBoardTileDrop(tile: Tile, previousPosition: Position): void {
         if (this.currentHoveredSquare) {
+            this.beforeDropSubject$.next();
             this.tilePlacementService.moveTile(
                 {
                     tile,
@@ -74,9 +94,17 @@ export class DragAndDropService {
 
             this.removeCurrentHoveredTileRackElement();
         }
+        this.dropSubject$.next();
+    }
+
+    reset(): void {
+        this.removeCurrentHoveredSquare();
+        this.removeCurrentHoveredTileRackElement();
     }
 
     private onTileMove(event: CdkDragMove<HTMLElement>): void {
+        if (this.gameService.cannotPlay()) return;
+
         const hoveredSquare = this.getHoveredSquare(event);
 
         if (!hoveredSquare) {
@@ -96,7 +124,7 @@ export class DragAndDropService {
 
         if (!squareElement) return;
 
-        if (squareElement.classList.contains(HAS_TILE_CLASS)) return;
+        if (squareElement.classList.contains(HAS_TILE_CLASS) || !squareElement.classList.contains(SQUARE_CAN_DROP)) return;
 
         const columnAttr = squareElement.attributes.getNamedItem('column');
         const rowAttr = squareElement.attributes.getNamedItem('row');

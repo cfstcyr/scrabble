@@ -26,6 +26,7 @@ const DEFAULT_PUBLIC_STATISTICS: PublicUserStatistics = {
     averageTimePerGame: 300,
     gamesPlayedCount: 4,
     gamesWonCount: 2,
+    rating: 1,
 };
 const DEFAULT_STATISTICS: UserStatistics = {
     idUser: DEFAULT_USER.idUser,

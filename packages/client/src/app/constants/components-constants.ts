@@ -11,6 +11,7 @@ export const ESCAPE = 'Escape';
 export const ARROW_LEFT = 'ArrowLeft';
 export const ARROW_RIGHT = 'ArrowRight';
 export const ENTER = 'Enter';
+export const SPACE = ' ';
 export const KEYDOWN = 'keydown';
 export const DEFAULT_HIGH_SCORE: SingleHighScore = { name: 'player1', score: 0 };
 
@@ -34,7 +35,7 @@ export const GAME_HISTORY_COLUMNS: DisplayGameHistoryColumns = {
     endDate: 'Date de fin',
     endTime: 'Heure de fin',
     duration: 'Durée',
-    hasBeenAbandoned: 'Partie abandonnée',
+    hasAbandoned: 'Partie abandonnée',
     player1Data: 'Joueur 1',
     player1Name: 'Nom joueur 1',
     player1Score: 'Pointage joueur 1',
@@ -47,7 +48,7 @@ export const DEFAULT_GAME_HISTORY_COLUMNS: DisplayGameHistoryKeys[] = [
     'startDate',
     'startTime',
     'duration',
-    'hasBeenAbandoned',
+    'hasAbandoned',
     'player1Name',
     'player1Score',
     'player2Name',

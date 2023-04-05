@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/game/player.dart' as c;
 import 'package:mobile/components/animation/pulse.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/constants/layout.constants.dart';
@@ -7,17 +7,18 @@ import 'package:mobile/constants/user-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/services/theme-color-service.dart';
-import 'package:mobile/classes/game/player.dart' as c;
 
 abstract class AbstractPlayer extends StatelessWidget {
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
 
   final bool isPlaying;
   final c.Player player;
+  final bool isObserved;
 
   AbstractPlayer({
     required this.player,
     this.isPlaying = false,
+    this.isObserved = false,
   });
 
   @override
@@ -44,7 +45,9 @@ abstract class AbstractPlayer extends StatelessWidget {
             background: theme.colorScheme.onBackground,
             radius: 16,
             size: large ? 44 : 22),
-        SizedBox(width: SPACE_1,),
+        SizedBox(
+          width: SPACE_1,
+        ),
         Expanded(
             child: Container(
           margin: EdgeInsets.only(right: SPACE_2),
@@ -63,7 +66,9 @@ abstract class AbstractPlayer extends StatelessWidget {
   }
 
   Color? getColor() {
-    return isPlaying ? _themeColorService.themeColor : null;
+    return isPlaying
+        ? _themeColorService.themeDetails.value.color.colorValue
+        : null;
   }
 
   Color? getTextColor() {

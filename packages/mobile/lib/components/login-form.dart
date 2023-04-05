@@ -1,20 +1,17 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/text-field-handler.dart';
+import 'package:mobile/components/app_button.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/routes/routes.dart';
-import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../classes/user.dart';
 import '../constants/create-account-constants.dart';
 import '../constants/login-constants.dart';
 import '../controllers/account-authentification-controller.dart';
-import '../pages/create-account-page.dart';
 import '../services/socket.service.dart';
 
 class LoginForm extends StatefulWidget {
@@ -28,7 +25,8 @@ class _LoginFormState extends State<LoginForm> {
 
   bool get isButtonEnabled => isFirstSubmit;
   SocketService socketService = getIt.get<SocketService>();
-  Color themeColor = getIt.get<ThemeColorService>().themeColor;
+  Color themeColor =
+      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
   AccountAuthenticationController authController =
       getIt.get<AccountAuthenticationController>();
 
@@ -95,6 +93,7 @@ class _LoginFormState extends State<LoginForm> {
                     focusNode: passwordHandler.focusNode,
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: !isPasswordShown,
+                    onSubmitted: (data) async => login(context),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: PASSWORD_LABEL_FR,
@@ -114,39 +113,12 @@ class _LoginFormState extends State<LoginForm> {
                   },
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
-                SizedBox(width: 100),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (await isLoggedIn(UserLoginCredentials(
-                        email: emailHandler.controller.text,
-                        password: passwordHandler.controller.text))) {
-                      if (context.mounted) {
-                        Navigator.of(context).pushReplacementNamed(HOME_ROUTE);
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: themeColor,
-                    shadowColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3.0),
-                    ),
-                  ),
-                  child: Text(
-                    LOGIN_LABEL_FR,
-                    style: isButtonEnabled
-                        ? TextStyle(color: Colors.white, fontSize: 15)
-                        : TextStyle(
-                            color: Color.fromARGB(255, 87, 87, 87),
-                            fontSize: 15),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, SIGNUP_ROUTE);
-                  },
-                  child: Text(CREATE_ACCOUNT_LABEL_FR),
-                ),
+                AppButton(
+                    onPressed: () async => login(context),
+                    text: LOGIN_LABEL_FR),
+                AppButton(
+                    onPressed: () => Navigator.pushNamed(context, SIGNUP_ROUTE),
+                    text: CREATE_ACCOUNT_LABEL_FR)
               ]),
             ],
           ),
@@ -155,12 +127,27 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
+  void login(BuildContext context) async {
+    if (await isLoggedIn(UserLoginCredentials(
+        email: emailHandler.controller.text,
+        password: passwordHandler.controller.text))) {
+      if (context.mounted) {
+        Navigator.of(context).pushReplacementNamed(HOME_ROUTE);
+      }
+    }
+  }
+
+  bool validation(String email) {
+    return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+")
+        .hasMatch(email);
+  }
+
   Future<void> validateEmail() async {
     if (emailHandler.controller.text.isEmpty) {
       setState(() {
         emailHandler.errorMessage = EMAIL_EMPTY_FR;
       });
-    } else if (!EmailValidator.validate(emailHandler.controller.text, true)) {
+    } else if (!validation(emailHandler.controller.text)) {
       setState(() {
         emailHandler.errorMessage = EMAIL_INVALID_FORMAT_FR;
       });
@@ -175,7 +162,7 @@ class _LoginFormState extends State<LoginForm> {
     LoginResponse res = await authController.login(credentials);
     if (!res.isAuthorized) {
       setState(() {
-        emailHandler.errorMessage = res.errorMessage;
+        passwordHandler.errorMessage = res.errorMessage;
       });
     }
     return res.isAuthorized;

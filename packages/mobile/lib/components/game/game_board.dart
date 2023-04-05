@@ -16,7 +16,7 @@ class GameBoard extends StatelessWidget {
 
   GameBoard({required this.gameStream});
 
-  final ValueStream<AbstractGame?> gameStream;
+  final Stream<AbstractGame?> gameStream;
 
   @override
   Widget build(BuildContext context) {

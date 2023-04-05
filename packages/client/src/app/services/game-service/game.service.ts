@@ -17,7 +17,9 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-service-data';
+import { GameHistory } from '@common/models/game-history';
 import { TilePlacement } from '@common/models/tile-placement';
+import { TypeOfId } from '@common/types/id';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -30,6 +32,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     isGameSetUp: boolean;
     isGameOver: boolean;
     isObserver: boolean | undefined;
+    idGameHistory: TypeOfId<GameHistory> | undefined;
 
     private gameId: string;
     private playerContainer?: PlayerContainer;
@@ -105,6 +108,11 @@ export default class GameService implements OnDestroy, IResetServiceData {
         return this.playerContainer.getLocalPlayerId();
     }
 
+    getAdversaries(): Player[] {
+        if (!this.playerContainer) return [];
+        return this.playerContainer.getAdversaries();
+    }
+
     setLocalPlayer(playerNumber: number): void {
         if (!this.playerContainer) return;
         this.playerContainer.setLocalPlayer(playerNumber);
@@ -143,6 +151,10 @@ export default class GameService implements OnDestroy, IResetServiceData {
         }
     }
 
+    cannotPlay(): boolean {
+        return this.isGameSetUp && !this.isLocalPlayerPlaying();
+    }
+
     private async initializeGame(localPlayerId: string, startGameData: StartGameData, isObserver: boolean): Promise<void> {
         this.isObserver = isObserver;
         this.gameId = startGameData.gameId;
@@ -178,9 +190,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
 
     private handleGameUpdate(gameUpdateData: GameUpdateData): void {
         this.tilePlacementService.resetTiles();
-        if (gameUpdateData.isGameOver) {
-            this.handleGameOver(gameUpdateData.winners ?? []);
-        }
+
         if (gameUpdateData.player1) {
             this.handleUpdatePlayerData(gameUpdateData.player1);
         }
@@ -192,6 +202,10 @@ export default class GameService implements OnDestroy, IResetServiceData {
         }
         if (gameUpdateData.player4) {
             this.handleUpdatePlayerData(gameUpdateData.player4);
+        }
+        if (gameUpdateData.isGameOver) {
+            this.idGameHistory = gameUpdateData.idGameHistory;
+            this.handleGameOver(gameUpdateData.winners ?? []);
         }
         if (gameUpdateData.board) {
             this.boardService.updateBoard(gameUpdateData.board);
@@ -229,6 +243,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
 
     private handleGameOver(winnerNames: string[]): void {
         this.isGameOver = true;
+        this.isGameSetUp = false;
         this.roundManager.resetTimerData();
         this.gameViewEventManagerService.emitGameViewEvent('endOfGame', winnerNames);
     }

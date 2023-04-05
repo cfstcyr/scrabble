@@ -22,10 +22,12 @@ import {
 } from '@app/constants/puzzle-constants';
 import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
 import { Puzzle } from '@app/classes/puzzle/puzzle';
+import * as seedrandom from 'seedrandom';
 
 type WordPlacementParams = Pick<BoardPlacement, 'maxSize' | 'minSize'>;
 
 export class PuzzleGenerator {
+    protected random: seedrandom.PRNG;
     private readonly dictionaryService: DictionaryService;
     private readonly boardService: BoardService;
     private readonly wordsVerificationService: WordsVerificationService;
@@ -41,6 +43,7 @@ export class PuzzleGenerator {
         skipPlacementDistanceCutoff = SKIP_PLACEMENT_DISTANCE_CUTOFF,
         bingoWordSize = MAX_TILES_PER_PLAYER,
     }: Partial<PuzzleGeneratorParameters> = {}) {
+        this.random = seedrandom();
         this.dictionaryService = Container.get(DictionaryService);
         this.boardService = Container.get(BoardService);
         this.wordsVerificationService = Container.get(WordsVerificationService);
@@ -61,6 +64,7 @@ export class PuzzleGenerator {
                     const letterValue = letter.toUpperCase() as LetterValue;
                     return { letter: letterValue, value: letterDistributionMap.get(letterValue)?.score ?? 0 };
                 }),
+                this.random,
             ),
         };
     }
@@ -82,7 +86,7 @@ export class PuzzleGenerator {
     }
 
     private generateBoard(): void {
-        const wordsCount = Math.floor(Math.random() * (this.parameters.maxWordCount - this.parameters.minWordCount)) + this.parameters.minWordCount;
+        const wordsCount = Math.floor(this.random() * (this.parameters.maxWordCount - this.parameters.minWordCount)) + this.parameters.minWordCount;
 
         for (let i = 0; i < wordsCount; ++i) {
             let placedWord = false;
@@ -110,6 +114,7 @@ export class PuzzleGenerator {
         const dictionarySearcher = new DictionarySearcherRandom(
             this.dictionary,
             this.convertPlacementForDictionarySearch(placement, { minSize, maxSize }),
+            this.random,
         );
 
         for (const word of dictionarySearcher) {
@@ -157,13 +162,14 @@ export class PuzzleGenerator {
     private placeWord(board: Board, word: string, placement: BoardPlacement): void {
         const navigator = new BoardNavigator(board, placement.position, placement.orientation);
         for (const c of word.split('')) {
-            navigator.square.tile = { letter: c.toUpperCase() as LetterValue, value: 1 };
+            const letter = c.toUpperCase() as LetterValue;
+            navigator.square.tile = { letter, value: letterDistributionMap.get(letter)?.score ?? 0 };
             navigator.forward();
         }
     }
 
     private *getPlacementIterator(): Generator<BoardPlacement> {
-        const extractor = new BoardPlacementsExtractor(this.board);
+        const extractor = new BoardPlacementsExtractor(this.board, this.random);
         const placementQueue: BoardPlacement[] = [];
 
         for (const placement of extractor) {
@@ -196,7 +202,8 @@ export class PuzzleGenerator {
     private shouldSkipPlacement(placement: BoardPlacement): boolean {
         return (
             placement.letters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff) ||
-            placement.perpendicularLetters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff)
+            placement.perpendicularLetters.some(({ distance }) => distance > this.parameters.skipPlacementDistanceCutoff) ||
+            placement.letters.length + placement.perpendicularLetters.length > 1
         );
     }
 }

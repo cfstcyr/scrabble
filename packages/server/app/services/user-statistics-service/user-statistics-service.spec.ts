@@ -22,6 +22,7 @@ const DEFAULT_PUBLIC_STATISTICS: PublicUserStatistics = {
     averageTimePerGame: 300,
     gamesPlayedCount: 4,
     gamesWonCount: 2,
+    rating: 1,
 };
 const DEFAULT_STATISTICS: UserStatistics = {
     idUser: DEFAULT_USER.idUser,
@@ -31,6 +32,7 @@ const DEFAULT_GAME_STATISTICS_INFO: UserGameStatisticInfo = {
     hasWon: true,
     points: 10,
     time: 200,
+    ratingDifference: 5,
 };
 
 describe('UserStatisticsService', () => {

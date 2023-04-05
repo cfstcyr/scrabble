@@ -19,3 +19,9 @@ String getUsersInitials(String username) {
       ? username.trim()[0].toUpperCase()
       : uppercaseLetters.take(2).join();
 }
+
+UserStatistics DEFAULT_USER_STATISTICS = UserStatistics(
+    averagePointsPerGame: -1,
+    averageTimePerGame: -1,
+    gamesPlayedCount: -1,
+    gamesWonCount: -1);

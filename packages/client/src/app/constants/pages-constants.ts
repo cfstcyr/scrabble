@@ -24,14 +24,16 @@ export const DIALOG_ABANDON_BUTTON_CONTINUE = 'Continuer la partie';
 export const DIALOG_QUIT_TITLE = 'Quitter la partie';
 export const DIALOG_QUIT_CONTENT = 'Voulez-vous vraiment quitter la partie?';
 export const DIALOG_QUIT_BUTTON_CONFIRM = 'Quitter la partie';
+export const DIALOG_ANALYSIS_BUTTON_CONFIRM = 'Analyser la partie';
 export const DIALOG_QUIT_STAY = 'Rester dans la partie';
 export const DIALOG_NO_ACTIVE_GAME_TITLE = 'Aucune partie en cours';
 export const DIALOG_NO_ACTIVE_GAME_CONTENT = "Vous n'avez aucune partie en cours. Veuillez en joindre ou en créer une.";
 export const DIALOG_NO_ACTIVE_GAME_BUTTON = "Retour à la page d'accueil";
 
 export const DIALOG_END_OF_GAME_TITLE = (isLocalPlayerWinner: boolean) => `Fin de la partie - ${isLocalPlayerWinner ? 'Victoire' : 'Défaite'}`;
-export const DIALOG_END_OF_GAME_CONTENT = (isLocalPlayerWinner: boolean) =>
-    isLocalPlayerWinner ? 'Bravo pour votre victoire!' : 'Meilleure chance la prochaine fois!';
+export const DIALOG_END_OF_GAME_WIN_MESSAGE = 'Bravo pour votre victoire!';
+export const DIALOG_END_OF_GAME_LOSS_MESSAGE = 'Meilleure chance la prochaine fois!';
+
 export const DIALOG_END_OF_GAME_OBSERVER_TITLE = 'Fin de la partie';
 export const DIALOG_END_OF_GAME_OBSERVER_CONTENT = (winnerNames: string[]) =>
     `Bravo à${winnerNames.reduce((acc: string, current: string) => acc + ' ' + current, '')} pour la victoire!`;

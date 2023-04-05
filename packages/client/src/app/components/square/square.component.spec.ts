@@ -6,7 +6,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,43 +18,14 @@ import { SquareView } from '@app/classes/square';
 import { IconComponent } from '@app/components/icon/icon.component';
 import { SQUARE_SIZE, UNDEFINED_SQUARE, UNDEFINED_SQUARE_SIZE } from '@app/constants/game-constants';
 import { AppMaterialModule } from '@app/modules/material.module';
-import { BoardService } from '@app/services';
 import { DragAndDropService } from '@app/services/drag-and-drop-service/drag-and-drop.service';
-import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Subject } from 'rxjs';
 import { SquareComponent } from './square.component';
 
-class MockBoardService {
-    isLocalPlayer(): boolean {
-        return false;
-    }
-}
-
-class MockRoundManager {
-    isActivePlayerLocalPlayer(): boolean {
-        return true;
-    }
-}
-
 describe('SquareComponent', () => {
     let component: SquareComponent;
     let fixture: ComponentFixture<CenterSquareWrapperComponent>;
-    let mockBoardService;
-    let mockRoundManager;
-    let tilePlacementServiceSpy: TilePlacementService;
-    let spyDragAndDropService: DragAndDropService;
-
-    beforeEach(() => {
-        mockBoardService = new MockBoardService();
-        mockRoundManager = new MockRoundManager();
-        tilePlacementServiceSpy = new TilePlacementService(
-            mockBoardService as unknown as BoardService,
-            {} as unknown as MatDialog,
-            mockRoundManager as unknown as RoundManagerService,
-        );
-        spyDragAndDropService = new DragAndDropService({} as unknown as Document, tilePlacementServiceSpy as unknown as TilePlacementService);
-    });
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -76,8 +47,11 @@ describe('SquareComponent', () => {
             declarations: [SquareComponent, CenterSquareWrapperComponent, IconComponent],
             providers: [
                 Renderer2,
-                { provide: DragAndDropService, useValue: spyDragAndDropService },
-                { provide: TilePlacementService, useValue: tilePlacementServiceSpy },
+                {
+                    provide: DragAndDropService,
+                    useValue: jasmine.createSpyObj(['onRackTileMove', 'onBoardTileMove', 'onRackTileDrop', 'onBoardTileDrop', 'reset']),
+                },
+                { provide: TilePlacementService, useValue: jasmine.createSpyObj(['placeTile']) },
             ],
         }).compileComponents();
     });
@@ -138,7 +112,7 @@ export class SquareTestWrapper {
         this.squareView = new SquareView(UNDEFINED_SQUARE, UNDEFINED_SQUARE_SIZE);
         this.squareComponent = new SquareComponent(
             jasmine.createSpyObj(DragAndDropService, ['onBoardTileMove', 'onBoardTileDrop']),
-            jasmine.createSpyObj('TilePlacementService', [], { tilePlacements$: new Subject() }),
+            jasmine.createSpyObj('TilePlacementService', ['placeTile'], { tilePlacements$: new Subject() }),
         );
         this.squareComponent.squareView = this.squareView;
     }

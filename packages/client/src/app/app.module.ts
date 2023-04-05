@@ -6,7 +6,6 @@ import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BoardComponent } from '@app/components/board/board.component';
 import { SquareComponent } from '@app/components/square/square.component';
 import { TileRackComponent } from '@app/components/tile-rack/tile-rack.component';
 import { TileComponent } from '@app/components/tile/tile.component';
@@ -14,7 +13,6 @@ import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { CreateWaitingPageComponent } from '@app/pages/create-waiting-page/create-waiting-page.component';
-import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { HomePageComponent } from '@app/pages/home-page/home-page.component';
 import { JoinWaitingPageComponent } from '@app/pages/join-waiting-page/join-waiting-page.component';
 import { ChatBoxComponent } from './components/chatbox/chatbox.component';
@@ -22,7 +20,6 @@ import { CommunicationBoxComponent } from './components/communication-box/commun
 import { DefaultDialogComponent } from './components/default-dialog/default-dialog.component';
 import { HighScoreBoxComponent } from './components/high-score-box/high-score-box.component';
 import { IconComponent } from './components/icon/icon.component';
-import { InformationBoxComponent } from './components/information-box/information-box.component';
 import { GroupInfoComponent } from './components/group-info/group-info.component';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { TimerSelectionComponent } from './components/timer-selection/timer-selection.component';
@@ -57,6 +54,32 @@ import { UserProfileEditDialogComponent } from './components/user-profile/user-p
 import { SearchPageComponent } from './pages/search-page/search-page.component';
 import { UserSearchResultPageComponent } from './pages/user-search-result-page/user-search-result-page.component';
 import { ChooseBlankTileDialogComponent } from './components/choose-blank-tile-dialog/choose-blank-tile-dialog.component';
+import { PuzzlePageComponent } from './pages/puzzle-page/puzzle-page.component';
+import { BoardComponent } from './components/board/board.component';
+import { GameBoardWrapperComponent } from './wrappers/game-board-wrapper/game-board-wrapper.component';
+import { StartPuzzleModalComponent } from './components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
+import { PuzzleScoreComponent } from './components/puzzle/puzzle-score/puzzle-score.component';
+import { PuzzleResultModalComponent } from './components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
+import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.component';
+import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
+import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
+import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/puzzle-history.component';
+import { RatingLeaderboardPageComponent } from './pages/rating-leaderboard-page/rating-leaderboard-page.component';
+import { LocatorService } from './services/locator-service/locator.service';
+import { EndGameDialogComponent } from './components/end-game-dialog/end-game-dialog';
+import { AnalysisOverviewComponent } from './components/analysis/analysis-overview/analysis-overview.component';
+import { AnalysisResultModalComponent } from './components/analysis/analysis-result-modal/analysis-result-modal.component';
+import { AnalysisWaitingDialogComponent } from './components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
+import { UcWidgetModule } from 'ngx-uploadcare-widget';
+import { AvatarSelectorComponent } from './components/user-profile/avatar-selector/avatar-selector.component';
+import { GamePageComponent } from './pages/game-page/game-page.component';
+import { GamePlayersComponent } from './components/game/game-players/game-players.component';
+import { GameTilesLeftComponent } from './components/game/game-tiles-left/game-tiles-left.component';
+import { GameTimerComponent } from './components/game/game-timer/game-timer.component';
+import { GameObserversPlayersComponent } from './components/game/game-observers-players/game-observers-players.component';
+import { ColorThemeDialogComponent } from './components/color-theme-dialog/color-theme-dialog';
+import { ColorThemeService } from './services/color-theme-service/color-theme.service';
+import { PuzzleHomePageComponent } from './pages/puzzle-home-page/puzzle-home-page.component';
 
 registerLocaleData(localeFr);
 
@@ -69,15 +92,12 @@ registerLocaleData(localeFr);
 @NgModule({
     declarations: [
         AppComponent,
-        GamePageComponent,
         HomePageComponent,
         SignUpPageComponent,
         LoginPageComponent,
         SquareComponent,
         TileComponent,
-        InformationBoxComponent,
         CommunicationBoxComponent,
-        BoardComponent,
         TileRackComponent,
         GroupsPageComponent,
         GroupInfoComponent,
@@ -115,6 +135,29 @@ registerLocaleData(localeFr);
         SearchPageComponent,
         UserSearchResultPageComponent,
         ChooseBlankTileDialogComponent,
+        PuzzlePageComponent,
+        BoardComponent,
+        GameBoardWrapperComponent,
+        StartPuzzleModalComponent,
+        PuzzleScoreComponent,
+        PuzzleResultModalComponent,
+        PuzzleHistoryComponent,
+        SwiperComponent,
+        SwiperSlideComponent,
+        SwiperNavigationComponent,
+        AnalysisOverviewComponent,
+        AnalysisResultModalComponent,
+        AnalysisWaitingDialogComponent,
+        AvatarSelectorComponent,
+        RatingLeaderboardPageComponent,
+        EndGameDialogComponent,
+        GamePageComponent,
+        GamePlayersComponent,
+        GameTilesLeftComponent,
+        GameTimerComponent,
+        GameObserversPlayersComponent,
+        ColorThemeDialogComponent,
+        PuzzleHomePageComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -125,13 +168,15 @@ registerLocaleData(localeFr);
         ReactiveFormsModule,
         HttpClientModule,
         ScrollingModule,
+        UcWidgetModule,
     ],
     providers: [
         InitializerService,
+        ColorThemeService,
         {
             provide: APP_INITIALIZER,
             useFactory: (initializer: InitializerService) => () => initializer.initialize(),
-            deps: [InitializerService],
+            deps: [InitializerService, LocatorService],
             multi: true,
         },
         {
@@ -139,7 +184,9 @@ registerLocaleData(localeFr);
             useValue: 'fr-CA',
         },
         { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
+        LocatorService,
     ],
     bootstrap: [AppComponent],
+    exports: [IconComponent],
 })
 export class AppModule {}

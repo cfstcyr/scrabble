@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, HostListener, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { BUTTON_MUST_HAVE_CONTENT, DIALOG_BUTTONS_MUST_BE_AN_ARRAY, DIALOG_MUST_HAVE_TITLE } from '@app/constants/component-errors';
@@ -41,6 +41,16 @@ export class DefaultDialogComponent {
 
         if (this.checkbox) {
             this.checkbox.checked = this.checkbox.checked ?? false;
+        }
+    }
+
+    @HostListener('document:keydown', ['$event'])
+    handleKeyboardEvent(event: KeyboardEvent): void {
+        for (const button of this.data.buttons) {
+            if (button.key === event.key) {
+                this.handleButtonClick(button);
+                event.stopPropagation();
+            }
         }
     }
 

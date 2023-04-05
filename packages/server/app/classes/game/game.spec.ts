@@ -12,7 +12,6 @@ import RoundManager from '@app/classes/round/round-manager';
 import { LetterValue, Tile } from '@app/classes/tile';
 import TileReserve from '@app/classes/tile/tile-reserve';
 import { TileReserveData } from '@app/classes/tile/tile.types';
-import { BeginnerVirtualPlayer } from '@app/classes/virtual-player/beginner-virtual-player/beginner-virtual-player';
 import { TEST_DICTIONARY } from '@app/constants/dictionary-tests-const';
 import { INVALID_PLAYER_ID_FOR_GAME } from '@app/constants/services-errors';
 import BoardService from '@app/services/board-service/board.service';
@@ -52,8 +51,6 @@ const DEFAULT_PLAYER_1 = new Player(DEFAULT_PLAYER_1_ID, USER1);
 const DEFAULT_PLAYER_2 = new Player(DEFAULT_PLAYER_2_ID, USER2);
 const DEFAULT_PLAYER_3 = new Player(DEFAULT_PLAYER_3_ID, USER3);
 const DEFAULT_PLAYER_4 = new Player(DEFAULT_PLAYER_4_ID, USER4);
-const DEFAULT_VIRTUAL_PLAYER_ID = 'virtualplayerid';
-const DEFAULT_VIRTUAL_PLAYER = new BeginnerVirtualPlayer(DEFAULT_VIRTUAL_PLAYER_ID, 'virtualplayername');
 
 const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     player1: DEFAULT_PLAYER_1,
@@ -237,33 +234,6 @@ describe('Game', () => {
             it('should throw error if invalid id', () => {
                 const invalidId = 'invalidId';
                 expect(() => game.getPlayer(invalidId)).to.throw(INVALID_PLAYER_ID_FOR_GAME);
-            });
-        });
-
-        describe('getConnectedRealPlayers', () => {
-            it('should return all players if they are both real and connected', () => {
-                game.player1.isConnected = true;
-                game.player2.isConnected = true;
-                game.player3.isConnected = true;
-                game.player4.isConnected = true;
-                expect(game.getConnectedRealPlayers()).to.deep.equal([DEFAULT_PLAYER_1, DEFAULT_PLAYER_2, DEFAULT_PLAYER_3, DEFAULT_PLAYER_4]);
-            });
-
-            it('should return the player that is still connected (Player 1)', () => {
-                game.player1.isConnected = true;
-                game.player2.isConnected = false;
-                game.player3.isConnected = false;
-                game.player4.isConnected = false;
-                expect(game.getConnectedRealPlayers()).to.deep.equal([DEFAULT_PLAYER_1]);
-            });
-
-            it('should return the players that are real players and conencted ', () => {
-                game.player1 = DEFAULT_VIRTUAL_PLAYER;
-                game.player1.isConnected = true;
-                game.player2.isConnected = true;
-                game.player3.isConnected = false;
-                game.player4.isConnected = true;
-                expect(game.getConnectedRealPlayers()).to.deep.equal([DEFAULT_PLAYER_2, DEFAULT_PLAYER_4]);
             });
         });
     });
@@ -594,23 +564,6 @@ describe('Game', () => {
             player4Stub.getTileRackPoints.returns(PLAYER_4_TILE_SCORE);
         });
 
-        it('should set hasBeenAbandonned to false if no player is disconnected', () => {
-            game.completeGameHistory();
-            expect(game.gameHistory.gameHistory.hasBeenAbandoned).to.be.false;
-        });
-
-        it('should set hasBeenAbandonned to true if player1 is disconnected', () => {
-            game.player1.isConnected = false;
-            game.completeGameHistory();
-            expect(game.gameHistory.gameHistory.hasBeenAbandoned).to.be.true;
-        });
-
-        it('should set hasBeenAbandonned to true if player2 is disconnected', () => {
-            game.player2.isConnected = false;
-            game.completeGameHistory();
-            expect(game.gameHistory.gameHistory.hasBeenAbandoned).to.be.true;
-        });
-
         describe('isPlayerWinner', () => {
             it('should set player1Data.isWinner to true if winnerName is not player 1 but player1 has highest score', () => {
                 game.player1.score = 200;
@@ -733,6 +686,10 @@ describe('Game', () => {
             player2Stub.id = DEFAULT_PLAYER_2_ID;
             player3Stub.id = DEFAULT_PLAYER_3_ID;
             player4Stub.id = DEFAULT_PLAYER_4_ID;
+            player1Stub.isConnected = true;
+            player2Stub.isConnected = true;
+            player3Stub.isConnected = true;
+            player4Stub.isConnected = true;
             game.player1 = player1Stub as unknown as Player;
             game.player2 = player2Stub as unknown as Player;
             game.player3 = player3Stub as unknown as Player;
@@ -838,7 +795,7 @@ describe('Game', () => {
             chai.spy.on(game.board, ['isWithinBounds'], () => true);
             game.roundManager = roundManagerStub as unknown as RoundManager;
 
-            round = { player: game.player1, startTime: new Date(), limitTime: new Date(), tiles: [] };
+            round = { player: game.player1, startTime: new Date(), limitTime: new Date(), tiles: [], board: {} as unknown as Board };
             roundManagerStub.getCurrentRound.returns(round);
         });
 

@@ -3,7 +3,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
-import { Analysis, AnalysisData, CriticalMoment, CriticalMomentData, PlacementData } from '@app/classes/analysis/analysis';
 import { ScoredWordPlacement } from '@common/models/word-finding';
 import {
     ANALYSIS_TABLE,
@@ -15,7 +14,7 @@ import {
 import DatabaseService from '@app/services/database-service/database.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { ActionType } from '@common/models/action';
-import { Square, Tile, Board, LetterValue } from '@common/models/game';
+import { Square, Tile, Board } from '@common/models/game';
 import { GameHistory } from '@common/models/game-history';
 import { Orientation } from '@common/models/position';
 import { User } from '@common/models/user';
@@ -23,6 +22,7 @@ import { expect } from 'chai';
 import { Knex } from 'knex';
 import { Container } from 'typedi';
 import { AnalysisPersistenceService } from './analysis-persistence.service';
+import { PlacementData, CriticalMomentData, AnalysisData, CriticalMoment, Analysis } from '@common/models/analysis';
 
 const USER_1: User = {
     avatar: 'a',
@@ -43,14 +43,12 @@ const GAME_HISTORY_1: GameHistory = {
     idGameHistory: 1,
     startTime: new Date(),
     endTime: new Date(),
-    hasBeenAbandoned: false,
 };
 
 const GAME_HISTORY_2: GameHistory = {
     idGameHistory: 2,
     startTime: new Date(),
     endTime: new Date(),
-    hasBeenAbandoned: false,
 };
 
 const PLACEMENT_DATA_1: PlacementData = {
@@ -104,25 +102,25 @@ const CRITICAL_MOMENT_DATA_2: CriticalMomentData = {
 };
 
 const ANALYSIS_1: AnalysisData = {
-    idGame: 1,
+    idGameHistory: 1,
     idUser: 1,
     idAnalysis: 1,
 };
 
 const ANALYSIS_2: AnalysisData = {
-    idGame: 1,
+    idGameHistory: 1,
     idUser: 2,
     idAnalysis: 2,
 };
 
 const ANALYSIS_3: AnalysisData = {
-    idGame: 2,
+    idGameHistory: 2,
     idUser: 1,
     idAnalysis: 3,
 };
 
 const ANALYSIS_4: AnalysisData = {
-    idGame: 2,
+    idGameHistory: 2,
     idUser: 2,
     idAnalysis: 4,
 };
@@ -208,7 +206,7 @@ const REAL_CRITICAL_MOMENT_2: CriticalMoment = {
 };
 
 const REAL_ANALYSIS: Analysis = {
-    idGame: 1,
+    idGameHistory: 1,
     idUser: 1,
     criticalMoments: [REAL_CRITICAL_MOMENT_1, REAL_CRITICAL_MOMENT_2],
 };
@@ -269,7 +267,7 @@ describe('AnalysisPersistenceService', () => {
         it('should return the correct analysis', async () => {
             const analysis = await service.requestAnalysis(1, 1);
             expect(analysis.idUser).to.equal(1);
-            expect(analysis.idGame).to.equal(1);
+            expect(analysis.idGameHistory).to.equal(1);
             expect(analysis.criticalMoments.length).to.equal(2);
         });
 
@@ -278,30 +276,8 @@ describe('AnalysisPersistenceService', () => {
 
             expect(analysis.criticalMoments[0].actionType).to.equal(CRITICAL_MOMENT_DATA_1.actionType);
             expect(analysis.criticalMoments[0].bestPlacement.score).to.equal(PLACEMENT_DATA_1.score);
-            const trimmedString1 = CRITICAL_MOMENT_DATA_1.board.replace(/\s+/g, '');
-            expect(analysis.criticalMoments[0].filledSquares.length).to.equal(trimmedString1.length);
             expect(analysis.criticalMoments[1].actionType).to.equal(CRITICAL_MOMENT_DATA_2.actionType);
             expect(analysis.criticalMoments[1].bestPlacement.score).to.equal(PLACEMENT_DATA_2.score);
-            const trimmedString2 = CRITICAL_MOMENT_DATA_2.board.replace(/\s+/g, '');
-            expect(analysis.criticalMoments[1].filledSquares.length).to.equal(trimmedString2.length);
-        });
-
-        it('should return the correct filledSquares', async () => {
-            const analysis = await service.requestAnalysis(1, 1);
-
-            expect(analysis.criticalMoments[0].filledSquares[0].position.column).to.equal(0);
-            expect(analysis.criticalMoments[0].filledSquares[0].position.row).to.equal(0);
-            expect(analysis.criticalMoments[0].filledSquares[0].tile?.isBlank).to.equal(false);
-            expect(analysis.criticalMoments[0].filledSquares[0].tile?.playedLetter).to.equal(undefined);
-            expect(analysis.criticalMoments[0].filledSquares[0].tile?.value).to.equal(1);
-            expect(analysis.criticalMoments[0].filledSquares[0].tile?.letter).to.equal('T' as LetterValue);
-
-            expect(analysis.criticalMoments[0].filledSquares[1].position.column).to.equal(1);
-            expect(analysis.criticalMoments[0].filledSquares[1].position.row).to.equal(0);
-            expect(analysis.criticalMoments[0].filledSquares[1].tile?.isBlank).to.equal(true);
-            expect(analysis.criticalMoments[0].filledSquares[1].tile?.playedLetter).to.equal('E' as LetterValue);
-            expect(analysis.criticalMoments[0].filledSquares[1].tile?.value).to.equal(0);
-            expect(analysis.criticalMoments[0].filledSquares[1].tile?.letter).to.equal('*' as LetterValue);
         });
     });
 

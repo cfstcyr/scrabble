@@ -64,7 +64,7 @@ class ProfileEditPageState extends State<ProfileEditPage> {
                 padding: EdgeInsets.all(SPACE_3),
                 child: Column(children: [
                   Container(
-                    width: 500,
+                    width: 600,
                     child: Card(
                         child: Padding(
                       padding: EdgeInsets.all(SPACE_2),

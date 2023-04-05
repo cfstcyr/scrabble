@@ -1,15 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/constants/login-constants.dart';
 import 'package:mobile/environments/environment.dart';
-import 'package:mobile/routes/navigator-key.dart';
-import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/client.dart';
 import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/services/user-session.service.dart';

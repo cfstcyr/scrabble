@@ -4,6 +4,7 @@ import { NO_COLOR_FOR_MULTIPLIER, NO_SQUARE_FOR_SQUARE_VIEW } from '@app/constan
 import { COLORS } from '@app/constants/colors-constants';
 import { MultiplierEffect, MultiplierValue } from '@common/models/game';
 import { MULTIPLIER_COLOR_MAP } from './square-multiplier-to-color-map';
+import { Orientation } from '@app/classes/actions/orientation';
 
 export default class SquareView {
     square: Square;
@@ -11,6 +12,8 @@ export default class SquareView {
     applied: boolean;
     newlyPlaced: boolean;
     halfOppacity?: boolean;
+    isCursor?: boolean;
+    cursorOrientation?: Orientation;
 
     constructor(square: Square, squareSize: Vec2) {
         this.square = square;

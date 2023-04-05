@@ -9,6 +9,7 @@ import 'package:mobile/services/theme-color-service.dart';
 import '../classes/channel-message.dart';
 import '../classes/chat-message.dart';
 import '../locator.dart';
+import '../routes/routes.dart';
 import '../services/user.service.dart';
 
 class Chatbox extends StatefulWidget {
@@ -26,8 +27,8 @@ class _ChatboxState extends State<Chatbox> {
 
   late PublicUser userData;
   late types.User _userView;
-  final Color themeColor = getIt.get<ThemeColorService>().themeColor;
-
+  Color themeColor =
+      getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
   @override
   void initState() {
     super.initState();
@@ -39,12 +40,27 @@ class _ChatboxState extends State<Chatbox> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.channel.name)),
+      appBar: AppBar(
+          title: Text(widget.channel.name),
+          shadowColor: Colors.black,
+          backgroundColor: Colors.white,
+          elevation: 1,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: theme.primaryColor,
+            ),
+            onPressed: () =>
+                _chatService.scaffoldKey.currentState?.closeEndDrawer(),
+          ),
+          automaticallyImplyLeading: false,
+          surfaceTintColor: theme.colorScheme.primary),
       body: Chat(
         theme: DefaultChatTheme(
-          inputBackgroundColor: theme.colorScheme.primary,
-          primaryColor: theme.colorScheme.primary,
+          inputBackgroundColor: themeColor,
+          primaryColor: themeColor,
         ),
+        onAvatarTap: _navigateToProfile,
         messages: _filterToChatBoxFormat(widget.channel.messages),
         onSendPressed: _handleSendPressed,
         showUserAvatars: true,
@@ -52,6 +68,12 @@ class _ChatboxState extends State<Chatbox> {
         user: _userView,
       ),
     );
+  }
+
+  void _navigateToProfile(types.User user) {
+    Navigator.pushNamed(context, PROFILE_ROUTE,
+        arguments: PublicUser(
+            username: user.firstName ?? '', avatar: user.imageUrl ?? ''));
   }
 
   void _handleSendPressed(types.PartialText message) {
@@ -66,7 +88,8 @@ class _ChatboxState extends State<Chatbox> {
     }
   }
 
-  List<types.TextMessage> _filterToChatBoxFormat(List<ChannelMessage> messages) {
+  List<types.TextMessage> _filterToChatBoxFormat(
+      List<ChannelMessage> messages) {
     return List<types.TextMessage>.from(
         messages.map((message) => _toChatBoxFormat(message.message)));
   }
@@ -74,7 +97,9 @@ class _ChatboxState extends State<Chatbox> {
   types.TextMessage _toChatBoxFormat(ChatMessage message) {
     return types.TextMessage(
       author: types.User(
-          id: message.sender.email, firstName: message.sender.username),
+          imageUrl: message.sender.avatar,
+          id: message.sender.email,
+          firstName: message.sender.username),
       createdAt: DateTime.parse(message.date).millisecondsSinceEpoch,
       id: message.uid,
       text: message.content,

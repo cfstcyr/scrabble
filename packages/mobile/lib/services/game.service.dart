@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mobile/classes/actions/action-data.dart';
+import 'package:mobile/classes/analysis/analysis-request.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/game/game-config.dart';
 import 'package:mobile/classes/game/game-update.dart';
@@ -7,7 +8,9 @@ import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
+import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/constants/game-events.dart';
+import 'package:mobile/constants/locale/analysis-constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
@@ -24,13 +27,15 @@ import 'package:rxdart/rxdart.dart';
 import '../components/alert-dialog.dart';
 import '../components/app_button.dart';
 import '../constants/locale/game-constants.dart';
-import '../utils/round-utils.dart';
+import 'game-observer-service.dart';
 
 class GameService {
   final GamePlayController gamePlayController = getIt.get<GamePlayController>();
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
   final GameEventService _gameEventService = getIt.get<GameEventService>();
+  final GameObserverService _gameObserverService =
+      getIt.get<GameObserverService>();
   final BehaviorSubject<MultiplayerGame?> _game;
 
   static final GameService _instance = GameService._();
@@ -54,11 +59,17 @@ class GameService {
         player2: startGameData.player2,
         player3: startGameData.player3,
         player4: startGameData.player4);
+
     playersContainer.localPlayerId = localPlayerId;
+    if (getIt.get<UserService>().isObserver) {
+      playersContainer.localPlayerId = playersContainer.player1.socketId;
+    }
 
     playersContainer.players
         .where((Player player) => player.socketId == localPlayerId)
         .map((Player player) => player.isLocalPlayer = true);
+
+    _gameObserverService.playersContainer.add(playersContainer);
 
     TileRack tileRack =
         TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
@@ -104,6 +115,8 @@ class GameService {
       game.players.getPlayer(4).updatePlayerData(gameUpdate.player4!);
     }
 
+    _gameObserverService.playersContainer.add(game.players);
+
     if (gameUpdate.board != null) {
       game.board.updateBoardData(gameUpdate.board!);
     }
@@ -114,6 +127,7 @@ class GameService {
 
     if (gameUpdate.isGameOver != null) {
       game.isOver = gameUpdate.isGameOver!;
+      game.idGameHistory = gameUpdate.idGameHistory;
       if (game.isOver) {
         getIt
             .get<EndGameService>()
@@ -121,7 +135,9 @@ class GameService {
       }
     }
 
-    game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
+    if (!getIt.get<UserService>().isObserver) {
+      game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
+    }
 
     _game.add(game);
   }
@@ -162,37 +178,44 @@ class GameService {
     String player = getIt.get<UserService>().getUser().username;
     bool isWinner = getIt.get<EndGameService>().winners$.value.contains(player);
 
-    triggerDialogBox(DIALOG_END_OF_GAME_TITLE(isWinner), [
-      Text(DIALOG_END_OF_GAME_CONTENT(isWinner), style: TextStyle(fontSize: 16))
-    ], [
-      DialogBoxButtonParameters(
-          content: DIALOG_LEAVE_BUTTON_CONTINUE,
-          theme: AppButtonTheme.secondary,
-          onPressed: () async {
-            await getIt.get<GamePlayController>().leaveGame();
+    triggerDialogBox(
+        DIALOG_END_OF_GAME_TITLE(isWinner),
+        [
+          Text(DIALOG_END_OF_GAME_CONTENT(isWinner),
+              style: TextStyle(fontSize: 16))
+        ],
+        [
+          DialogBoxButtonParameters(
+              content: DIALOG_LEAVE_BUTTON_CONTINUE,
+              theme: AppButtonTheme.secondary,
+              onPressed: () async {
+                await getIt.get<GamePlayController>().leaveGame();
 
-            if (!context.mounted) return;
-            Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
-          }),
-      DialogBoxButtonParameters(
-        content: DIALOG_STAY_BUTTON_CONTINUE,
-        theme: AppButtonTheme.secondary,
-        closesDialog: true,
-      ),
-    ]);
-  }
+                if (!context.mounted) return;
+                Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
+              }),
+          DialogBoxButtonParameters(
+            content: DIALOG_SEE_ANALYSIS_BUTTON,
+            theme: AppButtonTheme.primary,
+              onPressed: () {
+                Navigator.pop(context);
 
-  bool isLocalPlayerActivePlayer() {
-    return isActivePlayer(game.players.getLocalPlayer().socketId);
-  }
-
-  bool isActivePlayer(String socketId) {
-    return _roundService.getActivePlayerId() == socketId;
+                AnalysisRequestDialog(
+                    title: ANALYSIS_REQUEST_TITLE,
+                    message: ANALYSIS_REQUEST_COMPUTING,
+                    idAnalysis: game.idGameHistory,
+                    requestType: AnalysisRequestInfoType.idGame)
+                    .openAnalysisRequestDialog(context);
+              }
+          ),
+        ],
+        dismissOnBackgroundTouch: true);
   }
 
   void _onTimerExpires() {
-    if (_roundService.currentRound.socketIdOfActivePlayer ==
-        game.players.getLocalPlayer().socketId) {
+    if (!getIt.get<UserService>().isObserver &&
+        _roundService.currentRound.socketIdOfActivePlayer ==
+            getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
       _actionService.sendAction(ActionType.pass);
       _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
     }

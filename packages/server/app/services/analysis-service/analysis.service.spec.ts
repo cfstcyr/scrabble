@@ -14,12 +14,12 @@ import { Container } from 'typedi';
 import { AnalysisService } from './analysis.service';
 import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
 import WordFindingService from '@app/services/word-finding-service/word-finding.service';
-import { CriticalMoment } from '@app/classes/analysis/analysis';
 import { Tile } from '@app/classes/tile';
 import { Square } from '@app/classes/square';
 import { ActionExchange, ActionPass, ActionPlace } from '@app/classes/actions';
 import { WordPlacement } from '@app/classes/word-finding';
 import { CompletedRound } from '@app/classes/round/round';
+import { CriticalMoment } from '@common/models/analysis';
 
 const expect = chai.expect;
 
@@ -123,7 +123,7 @@ describe('AnalysisService', () => {
 
             const game = DEFAULT_GAME as unknown as Game;
             const idGameHistory = 1;
-            const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGame: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
+            const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGameHistory: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
             await analysisService['asynchronousAnalysis'](game, playerAnalyses, idGameHistory);
             expect(spyAnalyseRound).to.have.been.called.twice;
         });
@@ -134,7 +134,7 @@ describe('AnalysisService', () => {
 
             const game = DEFAULT_GAME as unknown as Game;
             const idGameHistory = 1;
-            const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGame: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
+            const playerAnalyses = [{ player: DEFAULT_PLAYER_1, analysis: { idGameHistory: idGameHistory, idUser: DEFAULT_USER_ID, criticalMoments: [] } }];
             await analysisService['asynchronousAnalysis'](game, playerAnalyses, idGameHistory);
             expect(spyAddAnalysis).to.have.been.called();
         });
