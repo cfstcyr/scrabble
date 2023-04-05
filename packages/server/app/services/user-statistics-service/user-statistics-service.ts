@@ -67,7 +67,7 @@ export class UserStatisticsService {
 
     private async tryGetStatistics(idUser: TypeOfId<User>): Promise<PublicUserStatistics | undefined> {
         return this.table
-            .select('averagePointsPerGame', 'averageTimePerGame', 'gamesPlayedCount', 'gamesWonCount', 'rating')
+            .select('averagePointsPerGame', 'averageTimePerGame', 'gamesPlayedCount', 'gamesWonCount', 'rating', 'ratingMax', 'bingoCount')
             .where({ idUser })
             .first();
     }
