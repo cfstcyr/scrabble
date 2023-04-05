@@ -93,7 +93,7 @@ export const ACHIEVEMENT_POINTS = {
 };
 
 export const ACHIEVEMENT_BINGO = {
-    name: 'Bingo complété',
+    name: 'Bingo complétés',
     description: 'Nombre de fois où les 7 tuiles ont été utilisées pour former un mot',
     levels: [
         {
