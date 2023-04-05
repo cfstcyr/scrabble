@@ -19,6 +19,15 @@
         padding: 24px;
     }
 
+    .achievements {
+        &__content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            justify-content: center;
+        }
+    }
+
     .game-result {
         $size: 30px;
         height: $size;

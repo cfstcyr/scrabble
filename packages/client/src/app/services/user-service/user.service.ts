@@ -21,6 +21,7 @@ export class UserService {
     user: BehaviorSubject<PublicUser | undefined>;
     statistics: BehaviorSubject<PublicUserStatistics | undefined>;
     gameHistory: BehaviorSubject<GameHistoryForUser[] | undefined>;
+    achievements: BehaviorSubject<UserAchievement[] | undefined>;
     serverActions: BehaviorSubject<PublicServerAction[] | undefined>;
 
     constructor(private readonly userController: UserController, private readonly alertService: AlertService, private readonly dialog: MatDialog) {
@@ -28,6 +29,7 @@ export class UserService {
         this.statistics = new BehaviorSubject<PublicUserStatistics | undefined>(undefined);
         this.gameHistory = new BehaviorSubject<GameHistoryForUser[] | undefined>(undefined);
         this.serverActions = new BehaviorSubject<PublicServerAction[] | undefined>(undefined);
+        this.achievements = new BehaviorSubject<UserAchievement[] | undefined>(undefined);
     }
 
     isConnected(): Observable<boolean> {
@@ -104,6 +106,10 @@ export class UserService {
         this.userController.getServerActions().subscribe((serverActions) => this.serverActions.next(serverActions));
     }
 
+    updateAchievements(): void {
+        this.userController.getAchievements().subscribe((achievements) => this.achievements.next(achievements));
+    }
+
     openEditUserDialog(): Observable<boolean> {
         const subject = new Subject<boolean>();
 
@@ -127,9 +133,5 @@ export class UserService {
         });
 
         return subject.asObservable();
-    }
-
-    getAchievements(): Observable<UserAchievement[]> {
-        return this.userController.getAchievements();
     }
 }
