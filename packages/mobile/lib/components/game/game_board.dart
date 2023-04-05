@@ -14,9 +14,10 @@ import '../../constants/game.constants.dart';
 
 class GameBoard extends StatelessWidget {
 
-  GameBoard({required this.gameStream, this.size = 630});
+  GameBoard({required this.gameStream, this.isInteractable = true, this.size = 630});
 
   final Stream<AbstractGame?> gameStream;
+  final bool isInteractable;
   double size;
 
   @override
@@ -43,6 +44,7 @@ class GameBoard extends StatelessWidget {
                     square: snapshot.data?.board.getSquare(position) ??
                         Square(position: Position(0, 0)),
                     boardSize: size,
+                    isInteractable: isInteractable,
                   );
                 }),
               );

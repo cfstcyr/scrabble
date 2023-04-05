@@ -55,7 +55,7 @@ class PlacementView {
   }
 
   GameBoard generateGameBoard() {
-    return gameBoard ?? GameBoard(gameStream: gameStream);
+    return gameBoard ?? GameBoard(gameStream: gameStream, isInteractable: false,);
   }
 
   AnalysisTileRack generateTileRack() {

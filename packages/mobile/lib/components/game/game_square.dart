@@ -21,11 +21,13 @@ class GameSquare extends StatefulWidget {
   final Square square;
   final Color color;
   final double boardSize;
+  final bool isInteractable;
 
   GameSquare({
     required this.tileRack,
     required this.square,
     required this.boardSize,
+    required this.isInteractable,
   }) : color =
             square.multiplier != null ? square.getColor() : Color(0xFFEEEEEE);
 
@@ -112,7 +114,11 @@ class _GameSquareState extends State<GameSquare> {
               widget.square.isCenter
                   ? Container(
                       transform: Matrix4.translationValues(0, -2, 0),
-                      child: Text('★', style: TextStyle(fontSize: 24), textScaleFactor: contentScale,),
+                      child: Text(
+                        '★',
+                        style: TextStyle(fontSize: 24),
+                        textScaleFactor: contentScale,
+                      ),
                     )
                   : widget.square.multiplier != null
                       ? Column(
@@ -141,31 +147,36 @@ class _GameSquareState extends State<GameSquare> {
                       builder: (context, isAppliedSnapshot) {
                         return isAppliedSnapshot.data ?? false
                             ? Tile(tile: snapshot.data)
-                            : Draggable(
-                                data: snapshot.data,
-                                feedback: Card(
-                                  color: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  child: Tile(
+                            : widget.isInteractable
+                                ? Draggable(
+                                    data: snapshot.data,
+                                    feedback: Card(
+                                      color: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      child: Tile(
+                                        tile: snapshot.data,
+                                        shouldWiggle: true,
+                                        size: TILE_SIZE_DRAG,
+                                      ),
+                                    ),
+                                    childWhenDragging: Opacity(
+                                      opacity: 0,
+                                      child: Tile(
+                                        tile: snapshot.data,
+                                      ),
+                                    ),
+                                    child: Tile(
+                                      tile: snapshot.data,
+                                      tint: NOT_APPLIED_COLOR,
+                                    ),
+                                    onDragCompleted: () {
+                                      removeTile();
+                                    },
+                                  )
+                                : Tile(
                                     tile: snapshot.data,
-                                    shouldWiggle: true,
-                                    size: TILE_SIZE_DRAG,
-                                  ),
-                                ),
-                                childWhenDragging: Opacity(
-                                  opacity: 0,
-                                  child: Tile(
-                                    tile: snapshot.data,
-                                  ),
-                                ),
-                                child: Tile(
-                                  tile: snapshot.data,
-                                  tint: NOT_APPLIED_COLOR,
-                                ),
-                                onDragCompleted: () {
-                                  removeTile();
-                                },
-                              );
+                                    tint: NOT_APPLIED_COLOR,
+                                  );
                       },
                     )
                   : Opacity(opacity: 0, child: Tile()),
