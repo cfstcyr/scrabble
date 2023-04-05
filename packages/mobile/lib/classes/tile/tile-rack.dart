@@ -16,7 +16,7 @@ class TileRack {
       : _tiles = BehaviorSubject.seeded(tiles),
         _isExchangeModeEnabled$ = BehaviorSubject.seeded(false) {
     _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD, (placement) {
-      removeTile(placement.tile.withState(TileState.defaultState));
+      removeTile(placement.tile);
     });
   }
 

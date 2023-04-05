@@ -118,6 +118,7 @@ class GameService {
     _gameObserverService.playersContainer.add(game.players);
 
     if (gameUpdate.board != null) {
+      gameUpdate.board!.map((e) => print(e.getTile()?.state));
       game.board.updateBoardData(gameUpdate.board!);
     }
 

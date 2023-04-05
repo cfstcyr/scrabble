@@ -4,11 +4,13 @@ import 'package:mobile/classes/board/position.dart';
 import 'package:mobile/classes/tile/multiplier.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 import 'package:mobile/classes/vector.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-event.service.dart';
+import 'package:mobile/services/tile-synchronisation.service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class Board {
@@ -16,6 +18,8 @@ class Board {
   late List<List<Square>> grid;
   BehaviorSubject<Placement> _currentPlacement$;
   BehaviorSubject<bool> _isValidPlacement$;
+
+  List<TilePlacement> currentSynchronisedTiles = [];
 
   Board()
       : _currentPlacement$ = BehaviorSubject.seeded(Placement()),
@@ -28,6 +32,7 @@ class Board {
 
     _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD,
         (tilePlacement) {
+      print('place');
       var placement = _currentPlacement$.value;
       placement.add(tilePlacement);
 
@@ -37,6 +42,7 @@ class Board {
 
     _gameEventService.listen<TilePlacement>(REMOVE_TILE_FROM_BOARD,
         (tilePlacement) {
+          print('remove');
       var placement = _currentPlacement$.value;
 
       placement.remove(tilePlacement);

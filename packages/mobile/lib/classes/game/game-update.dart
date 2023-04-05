@@ -2,6 +2,7 @@ import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-reserve.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 
 class GameUpdateData {
   final PlayerUpdateData? player1;
@@ -46,8 +47,14 @@ class GameUpdateData {
             ? List<String>.from(json['winners'] as List)
             : null,
         board: json['board'] != null
-            ? List<Square>.from(
-                (json['board'] as List).map((e) => Square.fromJson(e)))
+            ? List<Square>.from((json['board'] as List)
+                .map((e) => Square.fromJson(e))
+                .map((Square s) {
+                if (s.getTile() != null) {
+                  s.setTile(s.getTile()!.withState(TileState.defaultState));
+                }
+                return s;
+              }).toList())
             : null,
         round: json['round'] != null
             ? Round.fromJson(json['round'] as Map<String, dynamic>)
