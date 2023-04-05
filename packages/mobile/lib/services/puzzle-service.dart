@@ -111,8 +111,6 @@ class PuzzleService {
 
   Future<ResponseResult> abandonPuzzle({PuzzleResultStatus resultStatus = PuzzleResultStatus.abandoned}) {
     _puzzleController.abandonPuzzle(resultStatus: resultStatus).then((Response response) {
-      print(response.statusCode);
-      print(response.body);
       PuzzleResult puzzleResult =
           PuzzleResult.fromJson(jsonDecode(response.body));
 
@@ -127,6 +125,7 @@ class PuzzleService {
   void quitPuzzle() {
     _puzzleController.quitPuzzle();
     _puzzle.add(null);
+    _roundService.endRound();
   }
 
   void _handlePuzzleResult(PuzzleResult puzzleResult, List<Square> gridConfig,
