@@ -12,6 +12,7 @@ import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/op
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { UserSearchQueryResult, UserSearchResult } from '@common/models/user-search';
 import { USERNAME_IS_REQUIRED } from '@app/constants/authentification-constants';
+import { UserAchievement } from '@common/models/achievement';
 
 @Injectable({
     providedIn: 'root',
@@ -126,5 +127,9 @@ export class UserService {
         });
 
         return subject.asObservable();
+    }
+
+    getAchievements(): Observable<UserAchievement[]> {
+        return this.userController.getAchievements();
     }
 }
