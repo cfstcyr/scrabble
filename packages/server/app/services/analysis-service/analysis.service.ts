@@ -28,7 +28,7 @@ export class AnalysisService {
         const playerAnalyses: PlayerAnalysis[] = [];
         for (const player of game.getPlayers()) {
             if (player instanceof AbstractVirtualPlayer) continue;
-            playerAnalyses.push({ player, analysis: { idGameHistory: idGameHistory, idUser: player.idUser, criticalMoments: [] } });
+            playerAnalyses.push({ player, analysis: { idGameHistory, idUser: player.idUser, criticalMoments: [] } });
         }
 
         await this.asynchronousAnalysis(game, playerAnalyses, idGameHistory);
