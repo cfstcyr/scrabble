@@ -124,8 +124,7 @@ abstract class AbstractTileRack extends StatelessWidget {
     );
   }
 
-  Widget buildWrappedTile(c.Tile tile, int index, bool shouldWiggle,
-      {Color tint = Colors.transparent}) {
+  Widget buildWrappedTile(c.Tile tile, int index, bool shouldWiggle) {
     return Wrap(
       children: [
         Stack(
@@ -133,8 +132,7 @@ abstract class AbstractTileRack extends StatelessWidget {
             Tile(
                 tile: tile,
                 size: TILE_SIZE,
-                shouldWiggle: shouldWiggle,
-                tint: tint),
+                shouldWiggle: shouldWiggle),
             Wrap(
               children: [
                 _buildTarget(index - 1, width: TILE_SIZE / 2, height: TILE_SIZE),

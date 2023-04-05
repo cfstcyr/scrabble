@@ -40,6 +40,8 @@ class Tile {
         'playedLetter': playedLetter,
       };
 
+  TileState get state => _state.value;
+
   Tile withState(TileState state) {
     _state.add(state);
     return this;
@@ -79,7 +81,8 @@ class Tile {
         value: value,
         letter: letter,
         playedLetter: playedLetter,
-        isWildcard: isWildcard);
+        isWildcard: isWildcard,
+        state: state);
   }
 }
 

@@ -19,12 +19,16 @@ class TilePlacement {
   }
 
   Map<String, dynamic> toJson() => {
-    'tile': tile.toJson(),
-    'position': position.toJson(),
-  };
+        'tile': tile.toJson(),
+        'position': position.toJson(),
+      };
 
   bool equals(TilePlacement other) {
     return position.equals(other.position) && tile == other.tile;
+  }
+
+  TilePlacement copy() {
+    return TilePlacement(tile: tile.copy(), position: position.copy());
   }
 }
 

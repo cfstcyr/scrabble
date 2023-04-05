@@ -1,5 +1,6 @@
 import 'package:mobile/classes/actions/action-exchange.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/locator.dart';
@@ -15,7 +16,7 @@ class TileRack {
       : _tiles = BehaviorSubject.seeded(tiles),
         _isExchangeModeEnabled$ = BehaviorSubject.seeded(false) {
     _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD, (placement) {
-      removeTile(placement.tile);
+      removeTile(placement.tile.withState(TileState.defaultState));
     });
   }
 

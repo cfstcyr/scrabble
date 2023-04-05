@@ -156,7 +156,6 @@ class _GameSquareState extends State<GameSquare> {
                                 ),
                                 child: Tile(
                                   tile: snapshot.data,
-                                  tint: NOT_APPLIED_COLOR,
                                 ),
                                 onDragCompleted: () {
                                   removeTile();
@@ -171,29 +170,32 @@ class _GameSquareState extends State<GameSquare> {
   }
 
   _onPlaceTile(BuildContext context, c.Tile tile) async {
-    widget.square.setTile(tile.withState(TileState.notApplied));
+    tile.withState(TileState.notApplied);
+
+    widget.square.setTile(tile);
 
     if (tile.isWildcard) {
       await triggerWildcardDialog(context, square: widget.square);
     }
 
     _gameEventService.add<TilePlacement>(PLACE_TILE_ON_BOARD,
-        TilePlacement(tile: tile, position: widget.square.position));
+        TilePlacement(tile: tile.copy(), position: widget.square.position));
   }
 
   _onPutBackTiles(void _) {
-    var tile = widget.square.getTile();
+    c.Tile? tile = widget.square.getTile();
 
-    if (!widget.square.getIsApplied() && tile != null) {
-      widget.tileRack?.placeTile(tile);
+    if (tile != null && !widget.square.getIsApplied()) {
+      widget.tileRack?.placeTile(tile.withState(TileState.defaultState));
       removeTile();
     }
   }
 
   removeTile() {
-    var tile = widget.square.getTile();
+    c.Tile? tile = widget.square.getTile();
 
     if (tile != null) {
+      tile.withState(TileState.defaultState);
       if (tile.isWildcard) tile.playedLetter = null;
 
       widget.square.removeTile();
