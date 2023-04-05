@@ -22,15 +22,3 @@ export interface DailyPuzzle {
     date: Date;
     score: number;
 }
-
-export interface DailyPuzzleResult {
-    username: string;
-    score: number;
-}
-
-export interface DailyPuzzleLeaderboard {
-    leaderboard: DailyPuzzleResult[];
-    userScore: number;
-    userRank: number;
-    totalPlayers: number;
-}

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { ROUTE_RATING_LEADERBOARD } from '@app/constants/routes-constants';
+import { ROUTE_PUZZLE_HOME, ROUTE_RATING_LEADERBOARD } from '@app/constants/routes-constants';
 import { USER_NOT_FOUND } from '@app/constants/services-errors';
 import { LocatorService } from '@app/services/locator-service/locator.service';
 import { UserService } from '@app/services/user-service/user.service';
@@ -25,7 +25,6 @@ export class UserSearchResultPageComponent implements AfterViewInit {
     error$: Observable<string | undefined>;
     gameHistory: MatTableDataSource<GameHistoryForUser>;
     achievements: Observable<UserAchievement[] | undefined>;
-    isFromLeaderboard: boolean = false;
 
     constructor(private readonly route: ActivatedRoute, private readonly userService: UserService, private locatorService: LocatorService) {
         this.user$ = this.userService.getProfileByUsername(this.route.params.pipe(map((params) => params.username)));
@@ -44,6 +43,11 @@ export class UserSearchResultPageComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.gameHistory.paginator = this.gameHistoryPaginator;
-        this.isFromLeaderboard = this.locatorService.getPreviousUrl().includes(ROUTE_RATING_LEADERBOARD);
+    }
+
+    get previousUrl(): string | undefined {
+        return [ROUTE_RATING_LEADERBOARD, ROUTE_PUZZLE_HOME].some((route) => route.includes(this.locatorService.getPreviousUrl()))
+            ? this.locatorService.getPreviousUrl()
+            : undefined;
     }
 }

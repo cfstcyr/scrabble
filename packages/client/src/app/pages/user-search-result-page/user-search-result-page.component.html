@@ -1,8 +1,7 @@
-<app-page-header *ngIf="!isFromLeaderboard" title="Profil utilisateur" buttonRoute="/search">
+<app-page-header *ngIf="!previousUrl" title="Profil utilisateur" buttonRoute="/search">
     <app-header-btn link="/search" header-button><app-icon icon="search" styling="solid"></app-icon></app-header-btn>
 </app-page-header>
-<app-page-header *ngIf="isFromLeaderboard" title="Profil utilisateur" buttonRoute="/leaderboard">
-    <app-header-btn  link="/leaderboard" header-button><app-icon icon="search" styling="solid"></app-icon></app-header-btn>
+<app-page-header *ngIf="previousUrl" title="Profil utilisateur" [buttonRoute]="previousUrl">
 </app-page-header>
 <div class="page">
     <div class="page-content">

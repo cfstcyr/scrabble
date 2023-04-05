@@ -28,13 +28,31 @@
                 &:checked + .field-button {
                     background-color: rgba(var(--primary), 0.15);
 
-                    &:hover {
-                        background-color: rgba(var(--primary), 0.15);
-                    }
-
                     .icons {
                         color: rgb(var(--primary));
                     }
+                }
+
+                &:not(:disabled):checked + .field-button {
+                    &:hover {
+                        background-color: rgba(var(--primary), 0.15);
+                    }
+                }
+
+                &:not(:disabled) + .field-button {
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: rgba(0, 0, 0, 0.015);
+                    }
+
+                    &:active {
+                        scale: 0.965;
+                    }
+                }
+
+                &:disabled + .field-button {
+                    opacity: 0.65;
                 }
             }
 
@@ -43,7 +61,6 @@
                 gap: 6px;
                 flex-direction: column;
                 align-items: center;
-                cursor: pointer;
                 box-sizing: border-box;
                 transition: ease-in scale 0.1s;
 
@@ -67,16 +84,14 @@
                     opacity: 0.55;
                     font-weight: 600;
                 }
-
-                &:hover {
-                    background-color: rgba(0, 0, 0, 0.015);
-                }
-
-                &:active {
-                    scale: 0.965;
-                }
             }
         }
+    }
+
+    .daily-puzzle-message {
+        text-align: center;
+        font-weight: 500;
+        opacity: 0.55;
     }
 
     .buttons {
