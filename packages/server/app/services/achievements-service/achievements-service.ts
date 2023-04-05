@@ -71,23 +71,27 @@ export class AchievementsService {
     }
 
     private getConsecutiveDaysAchievement(gameHistory: GameHistoryForUser[]): UserAchievement {
-        const [, count] = gameHistory.reduce<[date: Date, count: number]>(
+        let max = 0;
+        gameHistory.reduce<[date: Date, count: number]>(
             ([previousDate, previousCount], current) => {
                 const currentDate = new Date(current.endTime.getFullYear(), current.endTime.getMonth(), current.endTime.getDate());
                 const isConsecutive = currentDate.getTime() - previousDate.getTime() <= TIME_24_HOURS;
                 const isSameDay = currentDate.getTime() === previousDate.getTime();
+                const updatedCount = isConsecutive ? previousCount + (isSameDay ? 0 : 1) : 1;
 
-                return [currentDate, isConsecutive ? previousCount + (isSameDay ? 0 : 1) : 0];
+                if (updatedCount > max) max = updatedCount;
+
+                return [currentDate, updatedCount];
             },
             [new Date(0), 0],
         );
-        const [level, levelIndex] = this.getLevel(ACHIEVEMENT_CONSECUTIVE_DAYS, count) ?? [];
+        const [level, levelIndex] = this.getLevel(ACHIEVEMENT_CONSECUTIVE_DAYS, max) ?? [];
 
         return {
             achievement: ACHIEVEMENT_CONSECUTIVE_DAYS,
             level,
             levelIndex,
-            value: count,
+            value: max,
         };
     }
 

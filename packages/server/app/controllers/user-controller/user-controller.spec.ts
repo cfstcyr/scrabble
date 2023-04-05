@@ -27,6 +27,8 @@ const DEFAULT_PUBLIC_STATISTICS: PublicUserStatistics = {
     gamesPlayedCount: 4,
     gamesWonCount: 2,
     rating: 1,
+    ratingMax: 1,
+    bingoCount: 0,
 };
 const DEFAULT_STATISTICS: UserStatistics = {
     idUser: DEFAULT_USER.idUser,
