@@ -81,7 +81,7 @@ class Square {
       tile: _tile.value?.copy(),
       multiplier: multiplier?.copy(),
       isCenter: isCenter,
-      isApplied: true,
+      isApplied: getIsApplied(),
     );
   }
 }

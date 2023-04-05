@@ -45,10 +45,7 @@ class TileSynchronisationController {
               .map((tilePlacement) => TilePlacement.fromJson(tilePlacement))
               .toList();
 
-      tilePlacements
-          .map((e) => print(
-              'Tile: ${e.tile.toJson()}, Position: ${e.position.x}/${e.position.y}'))
-          .toList();
+      _synchronisedTiles$.add(tilePlacements);
     });
   }
 

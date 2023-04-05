@@ -23,6 +23,7 @@ import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:mobile/services/tile-synchronisation.service.dart';
 import 'package:mobile/services/upload.service.dart';
 import 'package:mobile/services/user-session.service.dart';
 import 'package:mobile/services/user.service.dart';
@@ -65,6 +66,11 @@ class CustomLocator {
     getIt.registerLazySingleton<GroupJoinService>(() => GroupJoinService());
 
     getIt.registerLazySingleton<GamePlayController>(() => GamePlayController());
+    getIt.registerLazySingleton<TileSynchronisationController>(
+        () => TileSynchronisationController());
+    getIt.registerLazySingleton<TileSynchronisationService>(
+        () => TileSynchronisationService());
+
     getIt.registerLazySingleton<ActionService>(() => ActionService());
     getIt.registerLazySingleton<PlayerLeaveService>(() => PlayerLeaveService());
 
@@ -88,9 +94,5 @@ class CustomLocator {
     getIt.registerSingleton<EndGameService>(EndGameService());
     getIt.registerSingleton<GameMessagesService>(GameMessagesService());
     getIt.registerSingleton<GroupJoinController>(GroupJoinController());
-
-    // TODO: Register lazy when done
-    getIt.registerSingleton<TileSynchronisationController>(
-        TileSynchronisationController());
   }
 }
