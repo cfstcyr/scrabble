@@ -65,9 +65,6 @@ describe('AchievementsService', () => {
         service = Container.get(AchievementsService);
         databaseService = Container.get(DatabaseService);
         userTable = () => databaseService.knex(USER_TABLE);
-        // gameHistoryTable = () => databaseService.knex('game_history');
-        // gameHistoryPlayerTable = () => databaseService.knex('game_history_player');
-        // userStatisticsTable = () => databaseService.knex('user_statistics');
     });
 
     beforeEach(async () => {
