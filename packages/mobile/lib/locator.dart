@@ -4,6 +4,7 @@ import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
 import 'package:mobile/controllers/puzzle-controller.dart';
+import 'package:mobile/controllers/tile-synchronisation-controller.dart';
 import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/analysis-service.dart';
@@ -87,5 +88,9 @@ class CustomLocator {
     getIt.registerSingleton<EndGameService>(EndGameService());
     getIt.registerSingleton<GameMessagesService>(GameMessagesService());
     getIt.registerSingleton<GroupJoinController>(GroupJoinController());
+
+    // TODO: Register lazy when done
+    getIt.registerSingleton<TileSynchronisationController>(
+        TileSynchronisationController());
   }
 }

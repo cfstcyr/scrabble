@@ -12,6 +12,17 @@ class TilePlacement {
 
   TilePlacement({required this.tile, required this.position});
 
+  factory TilePlacement.fromJson(Map<String, dynamic> json) {
+    return TilePlacement(
+        tile: Tile.fromJson(json['tile']),
+        position: Position.fromJson(json['position']));
+  }
+
+  Map<String, dynamic> toJson() => {
+    'tile': tile.toJson(),
+    'position': position.toJson(),
+  };
+
   bool equals(TilePlacement other) {
     return position.equals(other.position) && tile == other.tile;
   }
@@ -129,7 +140,8 @@ class Placement {
   }
 
   bool _placementIncludesMiddle() {
-    return tiles.any((TilePlacement tile) => tile.position.row == MIDDLE_ROW && tile.position.column == MIDDLE_COL);
+    return tiles.any((TilePlacement tile) =>
+        tile.position.row == MIDDLE_ROW && tile.position.column == MIDDLE_COL);
   }
 
   Placement clone() {
