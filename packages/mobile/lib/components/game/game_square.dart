@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/components/tile/wildcard-dialog.dart';
@@ -170,7 +171,7 @@ class _GameSquareState extends State<GameSquare> {
   }
 
   _onPlaceTile(BuildContext context, c.Tile tile) async {
-    widget.square.setTile(tile);
+    widget.square.setTile(tile.withState(TileState.notApplied));
 
     if (tile.isWildcard) {
       await triggerWildcardDialog(context, square: widget.square);
