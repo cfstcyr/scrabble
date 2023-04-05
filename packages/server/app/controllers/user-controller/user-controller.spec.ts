@@ -8,6 +8,7 @@ import { Container } from 'typedi';
 import * as supertest from 'supertest';
 import { PublicUserStatistics, UserStatistics } from '@common/models/user-statistics';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
+import { expect } from 'chai';
 
 const DEFAULT_USER: User = {
     idUser: 1,
@@ -113,6 +114,27 @@ describe('UserController', () => {
 
             it('should return 404 if not found', async () => {
                 return supertest(expressApp).get(`/api/users/profile/${DEFAULT_USER.username}`).send({ idUser: -1 }).expect(StatusCodes.NOT_FOUND);
+            });
+        });
+    });
+
+    describe('/api/users/achievements', () => {
+        describe('GET', () => {
+            it('should return 200 OK', async () => {
+                await userService['table'].insert(DEFAULT_USER);
+                return supertest(expressApp).get('/api/users/achievements').send({ idUser: DEFAULT_USER.idUser }).expect(StatusCodes.OK);
+            });
+
+            it('should return achievements array', async () => {
+                await userService['table'].insert(DEFAULT_USER);
+                return supertest(expressApp)
+                    .get('/api/users/achievements')
+                    .send({ idUser: DEFAULT_USER.idUser })
+                    .expect(StatusCodes.OK)
+                    .then((res) => {
+                        expect(res.body).to.be.an('array');
+                        expect(res.body).length.to.be.greaterThan(0);
+                    });
             });
         });
     });
