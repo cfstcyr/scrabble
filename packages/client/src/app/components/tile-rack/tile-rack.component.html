@@ -2,7 +2,7 @@
     <mat-card>
         <div class="tile-rack-actions">
             <button
-                matTooltip='Mélanger les tuiles'
+                [matTooltip]="isObserver ? 'Vous ne pouvez pas faire d\'action en tant qu\'observateur' : 'Mélanger les tuiles'"
                 mat-flat-button
                 color='primary'
                 class='tile-rack-actions__button tile-rack-actions__button--shuffle'

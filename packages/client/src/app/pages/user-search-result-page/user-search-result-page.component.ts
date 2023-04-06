@@ -11,6 +11,7 @@ import { UserSearchResult } from '@common/models/user-search';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { UserAchievement } from '@common/models/achievement';
+import { Timer } from '@app/classes/round/timer';
 @Component({
     selector: 'app-user-search-result-page',
     templateUrl: './user-search-result-page.component.html',
@@ -23,6 +24,7 @@ export class UserSearchResultPageComponent implements AfterViewInit {
 
     user$: Observable<UserSearchResult | undefined>;
     error$: Observable<string | undefined>;
+    averageTime: Observable<string | undefined>;
     gameHistory: MatTableDataSource<GameHistoryForUser>;
     achievements: Observable<UserAchievement[] | undefined>;
 
@@ -39,6 +41,7 @@ export class UserSearchResultPageComponent implements AfterViewInit {
             this.gameHistory.data = user?.gameHistory ?? [];
         });
         this.achievements = this.user$.pipe(map((user) => user?.achievements ?? []));
+        this.averageTime = 1this.user$.pipe(map((user) => Timer.convertTime(user?.statistics.averageTimePerGame ?? 0).getStringTimer()));
     }
 
     ngAfterViewInit(): void {
