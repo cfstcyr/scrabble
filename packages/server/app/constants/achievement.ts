@@ -1,8 +1,10 @@
 import { Achievement } from '@common/models/achievement';
 
-export const ACHIEVEMENT_COMPLETED_GAMES = {
+export const ACHIEVEMENT_COMPLETED_GAMES: Achievement = {
     name: 'Parties complétées',
     description: 'Nombres de parties complétées',
+    defaultImage: 'https://ucarecdn.com/98e747fd-296e-492f-99ca-ef11d55c7c03/',
+    zeroValue: 0,
     levels: [
         {
             value: 1,
@@ -23,9 +25,11 @@ export const ACHIEVEMENT_COMPLETED_GAMES = {
     ],
 };
 
-export const ACHIEVEMENT_WON_GAMES = {
+export const ACHIEVEMENT_WON_GAMES: Achievement = {
     name: 'Parties gagnées',
     description: 'Nombres de parties gagnées',
+    defaultImage: 'https://ucarecdn.com/69f05dfb-888a-45ff-94b6-d183f106f27c/',
+    zeroValue: 0,
     levels: [
         {
             value: 1,
@@ -46,9 +50,11 @@ export const ACHIEVEMENT_WON_GAMES = {
     ],
 };
 
-export const ACHIEVEMENT_CONSECUTIVE_DAYS = {
+export const ACHIEVEMENT_CONSECUTIVE_DAYS: Achievement = {
     name: 'Jours consécutifs',
     description: 'Nombre de jours consécutifs avec une partie jouée',
+    defaultImage: 'https://ucarecdn.com/a779d441-8640-43b8-bba8-9d72c3121c8a/',
+    zeroValue: 0,
     levels: [
         {
             value: 3,
@@ -69,9 +75,11 @@ export const ACHIEVEMENT_CONSECUTIVE_DAYS = {
     ],
 };
 
-export const ACHIEVEMENT_POINTS = {
+export const ACHIEVEMENT_POINTS: Achievement = {
     name: 'Points accumulés',
     description: 'Nombre total de points accumulés durant les parties',
+    defaultImage: 'https://ucarecdn.com/7f1f63cd-2234-4fd6-931d-156267f6e2a8/',
+    zeroValue: 0,
     levels: [
         {
             value: 100,
@@ -92,9 +100,11 @@ export const ACHIEVEMENT_POINTS = {
     ],
 };
 
-export const ACHIEVEMENT_BINGO = {
+export const ACHIEVEMENT_BINGO: Achievement = {
     name: 'Bingo complétés',
     description: 'Nombre de fois où les 7 tuiles ont été utilisées pour former un mot',
+    defaultImage: 'https://ucarecdn.com/bf9f4210-cf9d-425d-bd01-5e9e43a84cd7/',
+    zeroValue: 0,
     levels: [
         {
             value: 1,
@@ -115,9 +125,11 @@ export const ACHIEVEMENT_BINGO = {
     ],
 };
 
-export const ACHIEVEMENT_ELO = {
+export const ACHIEVEMENT_ELO: Achievement = {
     name: 'Sommet personnel',
     description: 'Valeur de ELO maximale atteinte',
+    defaultImage: 'https://ucarecdn.com/8e17c136-1beb-4dc7-aabe-f9321b9c61b2/',
+    zeroValue: 1000,
     levels: [
         {
             value: 1050,

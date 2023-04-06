@@ -12,6 +12,7 @@ import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/op
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { UserSearchQueryResult, UserSearchResult } from '@common/models/user-search';
 import { USERNAME_IS_REQUIRED } from '@app/constants/authentification-constants';
+import { UserAchievement } from '@common/models/achievement';
 
 @Injectable({
     providedIn: 'root',
@@ -20,6 +21,7 @@ export class UserService {
     user: BehaviorSubject<PublicUser | undefined>;
     statistics: BehaviorSubject<PublicUserStatistics | undefined>;
     gameHistory: BehaviorSubject<GameHistoryForUser[] | undefined>;
+    achievements: BehaviorSubject<UserAchievement[] | undefined>;
     serverActions: BehaviorSubject<PublicServerAction[] | undefined>;
 
     constructor(private readonly userController: UserController, private readonly alertService: AlertService, private readonly dialog: MatDialog) {
@@ -27,6 +29,7 @@ export class UserService {
         this.statistics = new BehaviorSubject<PublicUserStatistics | undefined>(undefined);
         this.gameHistory = new BehaviorSubject<GameHistoryForUser[] | undefined>(undefined);
         this.serverActions = new BehaviorSubject<PublicServerAction[] | undefined>(undefined);
+        this.achievements = new BehaviorSubject<UserAchievement[] | undefined>(undefined);
     }
 
     isConnected(): Observable<boolean> {
@@ -101,6 +104,10 @@ export class UserService {
 
     updateServerActions(): void {
         this.userController.getServerActions().subscribe((serverActions) => this.serverActions.next(serverActions));
+    }
+
+    updateAchievements(): void {
+        this.userController.getAchievements().subscribe((achievements) => this.achievements.next(achievements));
     }
 
     openEditUserDialog(): Observable<boolean> {
