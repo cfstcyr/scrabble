@@ -34,8 +34,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   BehaviorSubject<UserStatistics> statistics$ =
       BehaviorSubject.seeded(DEFAULT_USER_STATISTICS);
-
   BehaviorSubject<List<GameHistory>> gameHistory$ = BehaviorSubject.seeded([]);
+  BehaviorSubject<List<UserAchievement>> achievements$ = BehaviorSubject.seeded([]);
 
   @override
   void initState() {
@@ -49,6 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
             .getUserStatistics()
             .then((event) => statistics$.add(event));
         _userService.getGameHistory().then((event) => gameHistory$.add(event));
+        _userService.getAchievements().then((event) => achievements$.add(event));
         return Stream.value(user);
       } else {
         title = 'Profil de ${widget.userSearchResult.username}';
@@ -57,6 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
             .then((value) {
           statistics$.add(value.statistics);
           gameHistory$.add(value.gameHistory);
+          achievements$.add(value.achievements);
         });
         return Stream.value(widget.userSearchResult);
       }
@@ -73,6 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
               snapshot.hasData ? snapshot.data[1] : DEFAULT_USER_STATISTICS;
           List<GameHistory> gameHistories =
               snapshot.hasData ? snapshot.data[2] : [];
+          List<UserAchievement> achievements = snapshot.hasData ? snapshot.data[3] : [];
 
           return MyScaffold(
             title: title,
@@ -86,6 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(children: [
                   UserProfileInfo(user: user, isLocalUser: isLocalUser),
                   UserProfileStatistics(statistics: statistics),
+                  UserProfileAchievements(achievements: achievements),
                   UserProfileGameHistory(gameHistories: gameHistories),
                   isLocalUser ? UserProfileServerActions() : Container(),
                 ]),
@@ -97,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Stream<dynamic> _userProfilePageStream() {
     return CombineLatestStream<dynamic, dynamic>(
-        [userToShow, statistics$.stream, gameHistory$.stream],
+        [userToShow, statistics$.stream, gameHistory$.stream, achievements$.stream],
         (values) => values);
   }
 }

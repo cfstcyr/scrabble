@@ -17,34 +17,29 @@ enum AchievementProgressType {
 
 class UserProfileAchievements extends StatelessWidget {
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
-  final BehaviorSubject<List<UserAchievement>> achievements;
+  final List<UserAchievement> achievements;
 
   UserProfileAchievements({required this.achievements});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
-        padding: EdgeInsets.all(SPACE_4),
-        child: StreamBuilder<List<UserAchievement>>(
-            stream: achievements,
-            builder: (context, snapshot) => Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: SPACE_3,
-                      runSpacing: SPACE_3,
-                      children: snapshot.data
-                              ?.map((achievement) =>
-                                  buildAchievement(context, achievement))
-                              .toList() ??
-                          [],
-                    )
-                  ],
-                )),
-      ),
-    );
+        child: Padding(
+            padding: EdgeInsets.all(SPACE_4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: SPACE_3,
+                  runSpacing: SPACE_3,
+                  children: achievements
+                      .map((achievement) =>
+                          buildAchievement(context, achievement))
+                      .toList(),
+                )
+              ],
+            )));
   }
 
   Widget buildAchievement(BuildContext context, UserAchievement achievement) {
