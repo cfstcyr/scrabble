@@ -24,4 +24,7 @@ UserStatistics DEFAULT_USER_STATISTICS = UserStatistics(
     averagePointsPerGame: -1,
     averageTimePerGame: -1,
     gamesPlayedCount: -1,
-    gamesWonCount: -1);
+    gamesWonCount: -1,
+    rating: 1000,
+    ratingMax: 1000,
+    bingoCount: 0);

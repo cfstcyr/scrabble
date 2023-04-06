@@ -9,6 +9,8 @@ class Player {
   PublicUser user;
   int score;
   bool isLocalPlayer;
+  int adjustedRating;
+  int ratingVariation;
   List<Tile> tiles;
 
   Player({
@@ -17,6 +19,8 @@ class Player {
     required this.score,
     this.isLocalPlayer = false,
     required this.tiles,
+    this.adjustedRating = 1000,
+    this.ratingVariation = 0,
   });
 
   factory Player.fromJson(Map<String, dynamic> json) {
@@ -24,6 +28,8 @@ class Player {
       socketId: json['id'],
       user: PublicUser.fromJson(json['publicUser']),
       score: json['score'] ?? 0,
+      adjustedRating: json['adjustedRating'],
+      ratingVariation: json['ratingVariation'],
       tiles:
           json['tiles'] != null && (json['tiles'] as List<dynamic>).isNotEmpty
               ? TilesParser().parseTiles(json['tiles'] as List<dynamic>)

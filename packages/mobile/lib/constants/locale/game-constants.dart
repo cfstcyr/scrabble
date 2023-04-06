@@ -7,6 +7,7 @@ const DIALOG_ABANDON_BUTTON_CONTINUE = 'Continuer la partie';
 const DIALOG_LEAVE_BUTTON_CONTINUE = 'Quitter la partie';
 const DIALOG_STAY_BUTTON_CONTINUE = 'Rester sur cette page';
 const DIALOG_SEE_ANALYSIS_BUTTON = "Consulter l'analyse";
+const DIALOG_END_OF_GAME_RATING_CONTENT = "Votre nouveau classement Elo est de";
 String Function(bool isLocalWinner) DIALOG_END_OF_GAME_TITLE =
     (bool isLocalWinner) =>
         'Fin de la partie - ${isLocalWinner ? 'Victoire' : 'Défaite'}';

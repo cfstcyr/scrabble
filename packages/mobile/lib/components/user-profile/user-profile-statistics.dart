@@ -47,6 +47,10 @@ class UserProfileStatistics extends StatelessWidget {
                   children: [
                     Expanded(
                         child: UserProfileStatisticsItem(
+                            title: "CLASSEMENT ELO",
+                            value: "${snapshot.data?.rating ?? 0}")),
+                    Expanded(
+                        child: UserProfileStatisticsItem(
                             title: "Parties jouées",
                             value: "${snapshot.data?.gamesPlayedCount ?? 0}")),
                     Expanded(
