@@ -4,6 +4,7 @@ import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { INVALID_ID_FOR_SOCKET, NO_TOKEN, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServerActionService } from '@app/services/server-action-service/server-action.service';
 import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
@@ -39,7 +40,11 @@ export class SocketService {
     private sockets: Map<string, io.Socket>;
     private configureSocketsEvent: EventEmitter;
 
-    constructor(private readonly authentificationService: AuthentificationService, private readonly serverActionService: ServerActionService) {
+    constructor(
+        private readonly authentificationService: AuthentificationService,
+        private readonly serverActionService: ServerActionService,
+        private readonly notificationService: NotificationService,
+    ) {
         this.sockets = new Map();
         this.configureSocketsEvent = new EventEmitter();
     }
@@ -104,10 +109,12 @@ export class SocketService {
             this.sockets.set(socket.id, socket);
             socket.emit('initialization', { id: socket.id });
 
+            const idUser = this.authentificationService.connectedUsers.getUserId(socket.id);
             this.serverActionService.addAction({
-                idUser: this.authentificationService.connectedUsers.getUserId(socket.id),
+                idUser,
                 actionType: ServerActionType.LOGIN,
             });
+            this.notificationService.removeScheduledNotification(idUser);
 
             this.configureSocketsEvent.emit(SOCKET_CONFIGURE_EVENT_NAME, socket);
 
@@ -219,11 +226,12 @@ export class SocketService {
     }
 
     private handleDisconnect(socket: io.Socket): void {
+        const idUser = this.authentificationService.connectedUsers.getUserId(socket.id);
         this.serverActionService.addAction({
-            idUser: this.authentificationService.connectedUsers.getUserId(socket.id),
+            idUser,
             actionType: ServerActionType.LOGOUT,
         });
-
+        this.notificationService.scheduleReminderNotification(idUser);
         this.authentificationService.disconnectSocket(socket.id);
         this.sockets.delete(socket.id);
     }
