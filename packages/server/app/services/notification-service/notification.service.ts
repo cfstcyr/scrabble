@@ -2,19 +2,22 @@ import { UserId } from '@app/classes/user/connected-user-types';
 import { MINUTES_TO_SECONDS, SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 
 import * as admin from 'firebase-admin';
-
-export const FIREBASE_KEY_PATH = '../../../log3900-polyscrabble-firebase-adminsdk-key.json';
+import { join } from 'path';
+import { Service } from 'typedi';
+export const FIREBASE_KEY_PATH = '../../../assets/log3900-polyscrabble-firebase-adminsdk-key.json';
 export const NOTIFICATION_TITLE = 'Revenez!';
 export const NOTIFICATION_DESCRIPTION = 'Venez nous amuser sur PolyScrabble. On vous attend avec impatiente!';
 export const REMINDER_DELAY_IN_MINUTES = 5;
 
+@Service()
 export class NotificationService {
     private mobileUserTokens: Map<UserId, string>;
     private scheduledNotifications: Map<UserId, NodeJS.Timeout>;
 
     constructor() {
+        const filePath = join(__dirname, FIREBASE_KEY_PATH);
         admin.initializeApp({
-            credential: admin.credential.cert(FIREBASE_KEY_PATH),
+            credential: admin.credential.cert(filePath),
         });
     }
 
