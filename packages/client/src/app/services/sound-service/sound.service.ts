@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { ROUTE_CREATE_WAITING, ROUTE_GAME, ROUTE_GAME_OBSERVER, ROUTE_JOIN_WAITING, ROUTE_PUZZLE } from '@app/constants/routes-constants';
+import {
+    ROUTE_CREATE_WAITING,
+    ROUTE_GAME,
+    ROUTE_GAME_OBSERVER,
+    ROUTE_JOIN_WAITING,
+    ROUTE_PUZZLE_GAME,
+    ROUTE_PUZZLE_GAME_DAILY,
+    ROUTE_PUZZLE_HOME,
+} from '@app/constants/routes-constants';
 import { Howl } from 'howler';
 
 export enum SoundName {
@@ -37,7 +45,7 @@ export enum MusicType {
     LobbyMusic,
 }
 
-export const PAGES_NO_MUSIC = [ROUTE_GAME, ROUTE_PUZZLE, ROUTE_GAME_OBSERVER];
+export const PAGES_NO_MUSIC = [ROUTE_GAME, ROUTE_GAME_OBSERVER, ROUTE_PUZZLE_GAME, ROUTE_PUZZLE_GAME_DAILY, ROUTE_PUZZLE_HOME];
 export const PAGES_LOBBY_MUSIC = [ROUTE_CREATE_WAITING, ROUTE_JOIN_WAITING];
 export const SOUND_FOLDER_PATH = 'assets\\sound\\';
 export const LOW_TIME = 20;

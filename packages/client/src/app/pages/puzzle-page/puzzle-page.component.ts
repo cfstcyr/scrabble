@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
