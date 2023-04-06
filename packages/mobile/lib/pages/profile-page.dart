@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/achievements.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
+import 'package:mobile/components/user-profile/user-profile-achievements.dart';
 import 'package:mobile/components/user-profile/user-profile-game-history.dart';
 import 'package:mobile/components/user-profile/user-profile-info.dart';
 import 'package:mobile/components/user-profile/user-profile-server-actions.dart';
@@ -24,6 +26,8 @@ class ProfilePage extends StatelessWidget {
   BehaviorSubject<UserStatistics> statistics =
       BehaviorSubject.seeded(DEFAULT_USER_STATISTICS);
   BehaviorSubject<List<GameHistory>> gameHistory = BehaviorSubject.seeded([]);
+  BehaviorSubject<List<UserAchievement>> achievements =
+      BehaviorSubject.seeded([]);
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +36,7 @@ class ProfilePage extends StatelessWidget {
       isLocalUser = true;
       _userService.getUserStatistics().then((event) => statistics.add(event));
       _userService.getGameHistory().then((event) => gameHistory.add(event));
+      _userService.getAchievements().then((event) => achievements.add(event));
     } else {
       title = 'Profil de ${userSearchResult.username}';
       user.add(userSearchResult);
@@ -40,6 +45,7 @@ class ProfilePage extends StatelessWidget {
           .then((value) {
         statistics.add(value.statistics);
         gameHistory.add(value.gameHistory);
+        achievements.add(value.achievements);
       });
     }
 
@@ -55,6 +61,7 @@ class ProfilePage extends StatelessWidget {
           child: Column(children: [
             UserProfileInfo(user: user, isLocalUser: isLocalUser),
             UserProfileStatistics(statistics: statistics),
+            UserProfileAchievements(achievements: achievements),
             UserProfileGameHistory(gameHistory: gameHistory),
             isLocalUser ? UserProfileServerActions() : Container(),
           ]),
