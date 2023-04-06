@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/achievements.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
+import 'package:mobile/components/user-profile/user-profile-achievements.dart';
 import 'package:mobile/components/user-profile/user-profile-game-history.dart';
 import 'package:mobile/components/user-profile/user-profile-info.dart';
 import 'package:mobile/components/user-profile/user-profile-server-actions.dart';

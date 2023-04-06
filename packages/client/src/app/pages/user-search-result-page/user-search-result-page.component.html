@@ -12,14 +12,15 @@
             </mat-card>
         </ng-container>
 
-        <ng-container *ngIf="(error$ | async) === undefined && (user$ | async) as user">
+        <ng-container>
             <app-user-profile-info
+                *ngIf='(user$ | async) as user'
                 [avatar]="user.avatar"
                 [username]="user.username"
             >
             </app-user-profile-info>
 
-            <mat-card class="user-stats">
+            <mat-card class="user-stats" *ngIf='(user$ | async) as user'>
                 <app-user-profile-stats-item title="Classement Elo" [value]="((user.statistics.rating| number:'1.0-0') ?? 1000)">
                     <app-icon icon="trophy" styling="solid" stats-icon></app-icon>
                 </app-user-profile-stats-item>
@@ -35,6 +36,13 @@
                 <app-user-profile-stats-item title="Temps moyen" [value]="((user.statistics.averageTimePerGame| number:'1.0-0') ?? 0) + ' s'">
                     <app-icon icon="clock" styling="solid" stats-icon></app-icon>
                 </app-user-profile-stats-item>
+            </mat-card>
+
+            <mat-card class='achievements'>
+                <h2>Badges</h2>
+                <div class='achievements__content'>
+                    <app-user-achievement *ngFor='let achievement of achievements | async' [achievement]='achievement'></app-user-achievement>
+                </div>
             </mat-card>
 
             <mat-card style="padding: 24px">
@@ -80,9 +88,9 @@
                     </ng-container>
                 </table>
 
-                <mat-paginator [pageSizeOptions]="[5, 10, 20]"
-                    showFirstLastButtons
-                    #gameHistoryPaginator></mat-paginator>
+                <mat-paginator [pageSizeOptions]="[5, 10, 20, 100]"
+                   showFirstLastButtons
+                   #gameHistoryPaginator></mat-paginator>
             </mat-card>
         </ng-container>
     </div>
