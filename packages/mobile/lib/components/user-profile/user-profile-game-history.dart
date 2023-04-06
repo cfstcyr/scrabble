@@ -15,8 +15,9 @@ import 'package:mobile/services/user.service.dart';
 import '../../utils/duration.dart';
 
 class UserProfileGameHistory extends StatelessWidget {
-  UserProfileGameHistory({required this.gameHistory});
-  final BehaviorSubject<List<GameHistory>> gameHistory;
+  UserProfileGameHistory({required this.gameHistories});
+
+  final List<GameHistory> gameHistories;
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
 
   @override
@@ -31,45 +32,47 @@ class UserProfileGameHistory extends StatelessWidget {
               'Historique de partie',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
             ),
-            StreamBuilder(
-              stream: gameHistory,
-              builder: (context, snapshot) => snapshot.hasData
-                  ? AppTable(data: snapshot.data!, columns: [
-                      AppTableColumn(
-                          title: 'Début',
-                          builder: (context, row) => Text(
-                              DateFormat('d MMMM yyyy, h:mm:ss', 'fr')
-                                  .format(row.data.startTime))),
-                      AppTableColumn(
-                        title: 'Durée',
+            gameHistories.isNotEmpty
+                ? AppTable(data: gameHistories, columns: [
+                    AppTableColumn(
+                        title: 'Début',
                         builder: (context, row) => Text(
-                            "${minutes(row.data.endTime.difference(row.data.startTime))} m ${seconds(row.data.endTime.difference(row.data.startTime))} s"),
-                      ),
-                      AppTableColumn(
-                          title: 'Résultat',
-                          builder: (context, row) => _getGameStatus(row.data)),
-                      AppTableColumn(
-                          title: 'Score',
-                          builder: (context, row) => Text(
-                                '${row.data.score} pts',
-                              )),
-                      AppTableColumn(
-                          title: 'Analyse',
-                          builder: (context, row) {
-                            int? idAnalysis = row.data.idAnalysis;
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                StreamBuilder<ThemeDetails>(
-                                  stream: _themeColorService.themeDetails.stream,
+                            DateFormat('d MMMM yyyy, h:mm:ss', 'fr')
+                                .format(row.data.startTime))),
+                    AppTableColumn(
+                      title: 'Durée',
+                      builder: (context, row) => Text(
+                          "${minutes(row.data.endTime.difference(row.data.startTime))} m ${seconds(row.data.endTime.difference(row.data.startTime))} s"),
+                    ),
+                    AppTableColumn(
+                        title: 'Résultat',
+                        builder: (context, row) => _getGameStatus(row.data)),
+                    AppTableColumn(
+                        title: 'Score',
+                        builder: (context, row) => Text(
+                              '${row.data.score} pts',
+                            )),
+                    AppTableColumn(
+                        title: 'Analyse',
+                        builder: (context, row) {
+                          int? idAnalysis = row.data.idAnalysis;
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              StreamBuilder<ThemeDetails>(
+                                  stream:
+                                      _themeColorService.themeDetails.stream,
                                   builder: (context, snapshot) {
-                                    ThemeColor themeColor = snapshot.data?.color ?? ThemeColor.green;
+                                    ThemeColor themeColor =
+                                        snapshot.data?.color ??
+                                            ThemeColor.green;
 
                                     return ElevatedButton(
                                       onPressed: idAnalysis != null
                                           ? () async {
                                               AnalysisRequestDialog(
-                                                      title: ANALYSIS_REQUEST_TITLE,
+                                                      title:
+                                                          ANALYSIS_REQUEST_TITLE,
                                                       message:
                                                           ANALYSIS_REQUEST_LOADING,
                                                       idAnalysis: idAnalysis,
@@ -88,17 +91,12 @@ class UserProfileGameHistory extends StatelessWidget {
                                       ),
                                       child: Icon(Icons.science_rounded),
                                     );
-                                  }
-                                ),
-                              ],
-                            );
-                          })
-                    ])
-                  : snapshot.hasError
-                      ? Text(
-                          'Impossible de charger l\'historique de partie ${snapshot.error}')
-                      : Container(),
-            )
+                                  }),
+                            ],
+                          );
+                        })
+                  ])
+                : Text('Impossible de charger l\'historique de partie')
           ],
         ),
       ),

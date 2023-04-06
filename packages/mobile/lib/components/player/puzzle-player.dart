@@ -48,13 +48,18 @@ class PuzzlePlayer extends StatelessWidget {
                   ),
                   Opacity(
                     opacity: 0.64,
-                    child: Text(
-                      '${player.streakPoints} / ${player.streakMaxPoints} pts',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          height: 1,
-                          color: Colors.white),
+                    child: SizedBox(
+                      width: 120,
+                      child: Text(
+                        '${player.streakPoints} / ${player.streakMaxPoints} pts',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            height: 1,
+                            color: Colors.white),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.right,
+                      ),
                     ),
                   ),
                 ],

@@ -17,7 +17,7 @@ class ActionPlacePayload extends ActionPayload {
         .map((tile) => Tile(
             letter: tile['letter'],
             value: tile['value'],
-            isWildcard: tile['isBlank'],
+            isWildcard: tile['isBlank'] ?? false,
             playedLetter: tile['playedLetter']))
         .toList();
     position =
