@@ -45,6 +45,7 @@ class ProfilePage extends StatelessWidget {
           .then((value) {
         statistics.add(value.statistics);
         gameHistory.add(value.gameHistory);
+        achievements.add(value.achievements);
       });
     }
 
