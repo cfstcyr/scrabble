@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/analysis/analysis-request.dart';
 import 'package:mobile/classes/board/board.dart';
@@ -175,14 +175,28 @@ class GameService {
   }
 
   void handleEndGame(BuildContext context) {
-    String player = getIt.get<UserService>().getUser().username;
-    bool isWinner = getIt.get<EndGameService>().winners$.value.contains(player);
+    String localUsername = getIt.get<UserService>().getUser().username;
+    bool isWinner =
+        getIt.get<EndGameService>().winners$.value.contains(localUsername);
+    Player localPlayer = game.players.getPlayerByName(localUsername);
+    /**
+     *                 adjustedRating: localPlayer?.adjustedRating ?? DEFAULT_PLAYER_RATING,
+                ratingVariation: localPlayer?.ratingVariation ?? 0,
+     */
 
     triggerDialogBox(
         DIALOG_END_OF_GAME_TITLE(isWinner),
         [
           Text(DIALOG_END_OF_GAME_CONTENT(isWinner),
-              style: TextStyle(fontSize: 16))
+              style: TextStyle(fontSize: 16)),
+          Text(
+              "$DIALOG_END_OF_GAME_RATING_CONTENT ${localPlayer.adjustedRating}",
+              style: TextStyle(fontSize: 16)),
+          localPlayer.ratingVariation >= 0
+              ? Text("(+${localPlayer.ratingVariation})",
+                  style: TextStyle(color: Colors.green))
+              : Text("(-${localPlayer.ratingVariation})",
+                  style: TextStyle(color: Colors.red))
         ],
         [
           DialogBoxButtonParameters(
@@ -195,19 +209,18 @@ class GameService {
                 Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
               }),
           DialogBoxButtonParameters(
-            content: DIALOG_SEE_ANALYSIS_BUTTON,
-            theme: AppButtonTheme.primary,
+              content: DIALOG_SEE_ANALYSIS_BUTTON,
+              theme: AppButtonTheme.primary,
               onPressed: () {
                 Navigator.pop(context);
 
                 AnalysisRequestDialog(
-                    title: ANALYSIS_REQUEST_TITLE,
-                    message: ANALYSIS_REQUEST_COMPUTING,
-                    idAnalysis: game.idGameHistory,
-                    requestType: AnalysisRequestInfoType.idGame)
+                        title: ANALYSIS_REQUEST_TITLE,
+                        message: ANALYSIS_REQUEST_COMPUTING,
+                        idAnalysis: game.idGameHistory,
+                        requestType: AnalysisRequestInfoType.idGame)
                     .openAnalysisRequestDialog(context);
-              }
-          ),
+              }),
         ],
         dismissOnBackgroundTouch: true);
   }

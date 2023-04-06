@@ -44,6 +44,10 @@ class UserService {
     return await _userController.searchUsers(query);
   }
 
+  Future<List<RatedUser>> requestRatingLeaderboard() async {
+    return await _userController.getRatingLeaderboard();
+  }
+
   Future<UserSearchResult> getProfileByUsername(String username) async {
     return await _userController.getProfileByUsername(username);
   }
