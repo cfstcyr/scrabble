@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/achievements.dart';
+import 'package:mobile/components/alert-dialog.dart';
+import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/image.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:rxdart/rxdart.dart';
@@ -50,12 +52,24 @@ class UserProfileAchievements extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: SPACE_3),
       child: Column(
         children: [
-          Container(
-            margin: EdgeInsets.only(bottom: SPACE_1),
-            child: AppImage(
-              src: achievement.level?.image ??
-                  achievement.achievement.defaultImage,
-              width: 125,
+          GestureDetector(
+            onTap: () => triggerDialogBox(
+                achievement.achievement.name,
+                [buildDialog(context, achievement)],
+                [
+                  DialogBoxButtonParameters(
+                      content: 'Ok',
+                      theme: AppButtonTheme.primary,
+                      closesDialog: true)
+                ],
+                dismissOnBackgroundTouch: true),
+            child: Container(
+              margin: EdgeInsets.only(bottom: SPACE_1),
+              child: AppImage(
+                src: achievement.level?.image ??
+                    achievement.achievement.defaultImage,
+                width: 125,
+              ),
             ),
           ),
           Text(
@@ -88,12 +102,47 @@ class UserProfileAchievements extends StatelessWidget {
           children: [
             Text('Prochain niveau: '),
             Text(
-              (getNextLevelPoints(achievement) - achievement.value).toString(),
+              getNextLevelPoints(achievement).toString(),
               style: TextStyle(fontWeight: FontWeight.w500),
             )
           ],
         );
     }
+  }
+
+  Widget buildDialog(BuildContext context, UserAchievement achievement) {
+    return Row(
+      children: achievement.achievement.levels
+          .asMap()
+          .entries
+          .map<Widget>((level) => Container(
+                margin: EdgeInsets.symmetric(horizontal: SPACE_3),
+                child: Opacity(
+                  opacity:
+                      ((achievement.levelIndex ?? -1) >= level.key ? 1 : 0.55),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(bottom: SPACE_1),
+                        child: AppImage(
+                          src: level.value.image,
+                          width: 100,
+                        ),
+                      ),
+                      Text(
+                        level.value.value.toString(),
+                        style: TextStyle(
+                            color: _themeColorService
+                                .themeDetails.value.color.colorValue,
+                            fontSize: 36,
+                            fontWeight: FontWeight.w600),
+                      )
+                    ],
+                  ),
+                ),
+              ))
+          .toList(),
+    );
   }
 
   AchievementProgressType getProgressType(UserAchievement achievement) {
