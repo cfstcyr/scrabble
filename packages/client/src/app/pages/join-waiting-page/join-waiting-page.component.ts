@@ -30,11 +30,9 @@ export class JoinWaitingPageComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
         public gameDispatcherService: GameDispatcherService,
         private readonly playerLeavesService: PlayerLeavesService,
-        // private readonly soundService: SoundService,
         public router: Router,
     ) {
         this.componentDestroyed$ = new Subject();
-        // this.soundService.playLobbyMusic();
     }
 
     @HostListener('window:beforeunload')
