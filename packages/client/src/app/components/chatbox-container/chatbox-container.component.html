@@ -1,7 +1,7 @@
 <div class="chatbox-container">
     <div class="chatbox-container__chatboxes">
         <ng-container *ngFor="let channel of getOpenedChannels() | async">
-            <app-chatbox-message [title]="channel.name" [messages]="channel.messages" (sendMessage)="handleSendMessage(channel, $event)">
+            <app-chatbox-message [title]="channel.name" [messages]="channel.messages" [isPrimary]='isGameChannel(channel)' (sendMessage)="handleSendMessage(channel, $event)">
                 <app-icon-button action-button (click)="minimizeChannel(channel)">
                     <app-icon icon="minus"></app-icon>
                 </app-icon-button>

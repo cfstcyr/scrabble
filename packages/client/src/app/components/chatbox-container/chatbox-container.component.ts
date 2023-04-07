@@ -207,6 +207,10 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
         });
     }
 
+    isGameChannel(channel: ClientChannel): boolean {
+        return channel.name === GROUP_CHANNEL_NAME && channel.private === true;
+    }
+
     private quitChannelFromMenu(channel: ClientChannel): void {
         this.minimizeChannel(channel);
         this.quitChannel.emit(channel);

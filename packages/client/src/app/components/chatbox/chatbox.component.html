@@ -1,4 +1,4 @@
-<div class="chatbox">
+<div class="chatbox" [ngClass]='{ "chatbox--primary": isPrimary }'>
     <div class="chatbox__header">
         <div class="chatbox__header__left">
             <div [ngClass]="{'chatbox__header__icons': true, 'chatbox__header__icons--two-icons': !!icon2}" *ngIf="!hideIcon">
