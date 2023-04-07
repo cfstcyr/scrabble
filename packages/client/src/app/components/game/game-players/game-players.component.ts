@@ -111,7 +111,7 @@ export class GamePlayersComponent implements OnInit, OnDestroy {
             });
         }
 
-        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, (players: string[]) => {
+        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, () => {
             this.localPlayer = { ...this.localPlayer, isPlaying: false };
         });
     }
