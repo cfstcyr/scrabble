@@ -61,7 +61,7 @@ class Board {
             _handleSynchronisedTilesUpdate(synchronisedTiles));
 
     _gameEventService.listen<void>(
-        CLEAR_SYNCED_TILES, (void _) => currentSynchronisedTiles.clear());
+        CLEAR_SYNCED_TILES, (void _) => _handleClearSynchronisedTiles());
   }
 
   Square getSquare(Vec2 v) {
@@ -177,15 +177,20 @@ class Board {
   }
 
   void _handleSynchronisedTilesUpdate(List<TilePlacement> synchronisedTiles) {
-    // for (TilePlacement tilePlacement in currentSynchronisedTiles) {
-    //   getSquare(tilePlacement.position).removeTile();
-    // }
-    //
-    // currentSynchronisedTiles = [...synchronisedTiles];
-    //
-    // for (TilePlacement tilePlacement in currentSynchronisedTiles) {
-    //   getSquare(tilePlacement.position).setTile(tilePlacement.tile);
-    // }
+    _handleClearSynchronisedTiles();
+
+    currentSynchronisedTiles = [...synchronisedTiles];
+
+    for (TilePlacement tilePlacement in currentSynchronisedTiles) {
+      getSquare(tilePlacement.position).setTile(tilePlacement.tile);
+    }
+  }
+
+  void _handleClearSynchronisedTiles() {
+    for (TilePlacement tilePlacement in currentSynchronisedTiles) {
+      if(getSquare(tilePlacement.position).getTile()?.state != TileState.synced) continue;
+      getSquare(tilePlacement.position).removeTile();
+    }
   }
 
   static List<List<Square>> gridFromJson(List<dynamic> grid) {

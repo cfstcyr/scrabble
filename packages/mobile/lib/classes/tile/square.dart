@@ -56,6 +56,7 @@ class Square {
   }
 
   Square removeTile() {
+    print('Remove tile in square: ${tile.value?.letter} + ${tile.value?.state}');
     _tile.add(null);
     return this;
   }
