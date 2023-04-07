@@ -10,7 +10,6 @@ class Tile extends StatelessWidget {
   Tile({
     this.tile,
     this.size = 40,
-    // this.tint = Colors.transparent,
     this.shouldWiggle = false,
   });
 
@@ -20,7 +19,6 @@ class Tile extends StatelessWidget {
 
   final bool shouldWiggle;
 
-  // Color tint;
 
   @override
   Widget build(BuildContext context) {
@@ -52,59 +50,29 @@ class Tile extends StatelessWidget {
               SizedBox(
                   width: size,
                   height: size,
-                  width: size,
-                ),
-              ),
-            ),
-            SizedBox(
-                width: size,
-                height: size,
-                child: Stack(
-                  children: [
-                    Container(
-                      transform: tile?.value != null
-                          ? Matrix4.translationValues(-1, -1, 0)
-                          : Matrix4.translationValues(0, 0, 0),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) => Center(
-                          child: Text(
-                            tile != null
-                                ? (tile!.isWildcard &&
-                                        tile?.playedLetter != null
-                                    ? (tile!.playedLetter ?? '')
-                                    : (tile!.letter ?? ''))
-                                : '',
-                            textScaleFactor:
-                                max(0.8, constraints.maxWidth / TILE_SIZE),
-                            style: TextStyle(
-                              color: (tile?.isWildcard ?? false)
-                                  ? Colors.red
-                                  : Color.fromRGBO(80, 55, 10, 1),
-                              fontWeight: FontWeight.w600,
-                              fontSize: size / 1.7,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: double.maxFinite,
-                      padding: EdgeInsets.only(
-                        bottom: 2,
-                        right: 4,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          LayoutBuilder(
-                            builder: (context, constraints) => Text(
-                              _getDisplayValue(tile),
+                  child: Stack(
+                    children: [
+                      Container(
+                        transform: tile?.value != null
+                            ? Matrix4.translationValues(-1, -1, 0)
+                            : Matrix4.translationValues(0, 0, 0),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) => Center(
+                            child: Text(
+                              tile != null
+                                  ? (tile!.isWildcard &&
+                                  tile?.playedLetter != null
+                                  ? (tile!.playedLetter ?? '')
+                                  : (tile!.letter ?? ''))
+                                  : '',
                               textScaleFactor:
-                                  max(0.8, constraints.maxWidth / TILE_SIZE),
+                              max(0.8, constraints.maxWidth / TILE_SIZE),
                               style: TextStyle(
-                                fontSize: size / 3.5,
+                                color: (tile?.isWildcard ?? false)
+                                    ? Colors.red
+                                    : Color.fromRGBO(80, 55, 10, 1),
                                 fontWeight: FontWeight.w600,
+                                fontSize: size / 1.7,
                               ),
                             ),
                           ),
@@ -120,11 +88,15 @@ class Tile extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              _getDisplayValue(tile),
-                              style: TextStyle(
-                                fontSize: size / 3.5,
-                                fontWeight: FontWeight.w600,
+                            LayoutBuilder(
+                              builder: (context, constraints) => Text(
+                                _getDisplayValue(tile),
+                                textScaleFactor:
+                                max(0.8, constraints.maxWidth / TILE_SIZE),
+                                style: TextStyle(
+                                  fontSize: size / 3.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             )
                           ],
@@ -149,3 +121,4 @@ class Tile extends StatelessWidget {
     return tile?.state.opacity ?? 1.0;
   }
 }
+

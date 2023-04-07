@@ -4,6 +4,7 @@ import 'package:http_interceptor/http/http.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/game/game-message.dart';
 import 'package:mobile/classes/game/game-update.dart';
+import 'package:mobile/classes/http/ResponseResult.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
 import 'package:mobile/constants/socket-events/game-events.dart';
 import 'package:mobile/locator.dart';
@@ -32,24 +33,23 @@ class GamePlayController {
 
   String? currentGameId;
 
-  Stream<void> get actionDoneEvent => _actionDone$.stream;
+  Stream<ResponseResult> get actionDoneEvent => _actionDone$.stream;
 
   Stream<GameUpdateData> get gameUpdateEvent => gameUpdate$.stream;
 
   Stream<GameMessage?> get messageEvent => gameMessage$.stream;
 
-
   final BehaviorSubject<GameUpdateData> gameUpdate$ =
       BehaviorSubject<GameUpdateData>();
   final BehaviorSubject<GameMessage?> gameMessage$ =
       BehaviorSubject<GameMessage?>.seeded(null);
-  final PublishSubject<void> _actionDone$ = PublishSubject<void>();
+  final PublishSubject<ResponseResult> _actionDone$ = PublishSubject<ResponseResult>();
 
   Future<void> sendAction(ActionData actionData) async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/players/action");
     http
         .post(endpoint, body: jsonEncode(actionData))
-        .then((_) => _actionDone$.add(null));
+        .then((_) => _actionDone$.add(ResponseResult.success()), onError: (_) => _actionDone$.add(ResponseResult.error()));
   }
 
   Future<void> leaveGame() async {

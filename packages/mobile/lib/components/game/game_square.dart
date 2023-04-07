@@ -28,7 +28,7 @@ class GameSquare extends StatefulWidget {
   GameSquare({
     required this.tileRack,
     required this.square,
-    required this.isLocalPlayerPlaying
+    required this.isLocalPlayerPlaying,
     required this.boardSize,
     required this.isInteractable,
   }) : color =
@@ -119,7 +119,7 @@ class _GameSquareState extends State<GameSquare> {
                 child: widget.square.isCenter
                     ? Container(
                         transform: Matrix4.translationValues(0, -2, 0),
-                        child: Text('★', style: TextStyle(fontSize: 24), textScalefactor: contextScale),
+                        child: Text('★', style: TextStyle(fontSize: 24), textScaleFactor: contentScale),
                       )
                     : widget.square.multiplier != null
                         ? Column(
@@ -208,6 +208,7 @@ class _GameSquareState extends State<GameSquare> {
       return;
     }
 
+    print('put back tiles');
     // Ordre important, car si on removeTile avant, getTile() est null
     widget.tileRack?.placeTile(widget.square.getTile()!);
     removeTile();
@@ -222,7 +223,7 @@ class _GameSquareState extends State<GameSquare> {
 
     if (tile.isWildcard) tile.playedLetter = null;
 
-    print('Remove tile in square: ${tile.letter} + ${tile.state}');
+    print('Remove tile in game_square: ${tile.letter} + ${tile.state}');
     widget.square.removeTile();
 
     _gameEventService.add<TilePlacement>(REMOVE_TILE_FROM_BOARD,
