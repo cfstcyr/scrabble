@@ -37,7 +37,9 @@ class Board {
       print('place');
       if (tilePlacement.tile.state == TileState.synced) return;
       var placement = _currentPlacement$.value;
+
       placement.add(tilePlacement);
+      _tileSynchronisationService.sendPlacementForSynchronisation(placement);
 
       _currentPlacement$.add(placement.clone());
       _isValidPlacement$.add(placement.validatePlacement(this));
@@ -51,6 +53,7 @@ class Board {
       var placement = _currentPlacement$.value;
 
       placement.remove(tilePlacement);
+      _tileSynchronisationService.sendPlacementForSynchronisation(placement);
 
       _currentPlacement$.add(placement.clone());
       _isValidPlacement$.add(placement.validatePlacement(this));

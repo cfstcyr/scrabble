@@ -26,16 +26,18 @@ class TileSynchronisationController {
     _configureSocket();
   }
 
-  final PublishSubject<List<TilePlacement>> _synchronisedTiles$ = PublishSubject();
+  final PublishSubject<List<TilePlacement>> _synchronisedTiles$ =
+      PublishSubject();
 
   Stream<List<TilePlacement>> get synchronisedTiles =>
       _synchronisedTiles$.stream;
 
   Future<Response> sendSyncedTilePlacement(List<TilePlacement> tilePlacements) {
+    print(jsonEncode(tilePlacements));
     return http.post(
         Uri.parse(
             '$GAME_ENDPOINT/${_gamePlayController.currentGameId}/squares/place'),
-        body: jsonEncode(tilePlacements));
+        body: jsonEncode({'tilePlacement': tilePlacements}));
   }
 
   void _configureSocket() {

@@ -28,6 +28,10 @@ class TileSynchronisationService {
                 return tilePlacement;
               }).toList());
 
+  void sendPlacementForSynchronisation(Placement placement) async {
+    await _tileSynchronisationController.sendSyncedTilePlacement(placement.tiles);
+  }
+
   static final TileSynchronisationService _instance =
       TileSynchronisationService._privateConstructor();
 
