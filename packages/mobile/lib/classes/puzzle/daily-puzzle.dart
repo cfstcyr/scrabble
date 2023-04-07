@@ -41,4 +41,14 @@ class DailyPuzzleLeaderboard {
   }
 }
 
+class DailyCompletionStatus {
+  final bool isCompleted;
+
+  DailyCompletionStatus({required this.isCompleted});
+
+  factory DailyCompletionStatus.fromJson(Map<String, dynamic> json) {
+    return DailyCompletionStatus(isCompleted: json['isCompleted']);
+  }
+}
+
 const DAILY_PUZZLE_NOT_COMPLETED = -2;

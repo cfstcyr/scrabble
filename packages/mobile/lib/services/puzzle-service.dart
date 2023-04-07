@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:mobile/classes/actions/word-placement.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/http/ResponseResult.dart';
+import 'package:mobile/classes/puzzle/daily-puzzle.dart';
 import 'package:mobile/classes/puzzle/puzzle-config.dart';
 import 'package:mobile/classes/puzzle/puzzle-level.dart';
 import 'package:mobile/classes/puzzle/puzzle-player.dart';
@@ -126,6 +127,30 @@ class PuzzleService {
     _puzzleController.quitPuzzle();
     _puzzle.add(null);
     _roundService.endRound();
+  }
+
+  Future<bool> startDailyPuzzle() async {
+    return await _puzzleController.startDailyPuzzle().then((Response value) {
+      _handleStartPuzzle(StartPuzzle.fromJson(jsonDecode(value.body))
+          .withPuzzleLevel(advancedPuzzleLevel));
+      return true;
+    }).catchError((error) => false);
+  }
+
+  Future<bool> isDailyCompleted() async {
+    return await _puzzleController.isDailyCompleted().then((Response value) {
+      print(jsonDecode(value.body));
+      DailyCompletionStatus isCompletedStatus  = DailyCompletionStatus.fromJson(jsonDecode(value.body));
+      return isCompletedStatus.isCompleted;
+    }).catchError((error) => false);
+  }
+
+  Future<DailyPuzzleLeaderboard> getDailyPuzzleLeaderboard() async {
+    return await _puzzleController.getDailyPuzzleLeaderboard().then((Response value) {
+      print(jsonDecode(value.body));
+      DailyPuzzleLeaderboard leaderboard  = DailyPuzzleLeaderboard.fromJson(jsonDecode(value.body));
+      return leaderboard;
+    });
   }
 
   void _handlePuzzleResult(PuzzleResult puzzleResult, List<Square> gridConfig,
