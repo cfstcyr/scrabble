@@ -59,7 +59,7 @@ dependencies:
     carousel_slider: ^4.2.1
     image_picker: ^0.8.7
     uploadcare_client: ^6.2.1
-    firebase_core: 
+    firebase_core: ^2.9.0
     firebase_messaging: ^14.4.0
 
 dev_dependencies:

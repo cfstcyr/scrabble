@@ -26,6 +26,7 @@ Future<void> main() async {
     defaultValue: Environment.DEV,
   );
   await Firebase.initializeApp();
+
   Environment().initConfig(environment);
   CustomLocator().setUpLocator();
   getIt.get<InitializerService>().initialize();
