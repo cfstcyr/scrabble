@@ -6,10 +6,13 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import { Subject } from 'rxjs';
 import { Player } from '@app/classes/player';
 import { takeUntil } from 'rxjs/operators';
+import { LetterValue, Tile } from '@app/classes/tile';
 
 interface GamePlayer {
     isActive: boolean;
     player: Player;
+    tilesLeft: number;
+    tilesLeftTile: Tile;
 }
 
 interface LocalGamePlayer extends GamePlayer {
@@ -23,7 +26,13 @@ interface LocalGamePlayer extends GamePlayer {
 })
 export class GamePlayersComponent implements OnInit, OnDestroy {
     readonly maxTilesPerPlayer = MAX_TILES_PER_PLAYER;
-    localPlayer: LocalGamePlayer = { isActive: false, isPlaying: false, player: new Player('', { username: 'Player1', email: '', avatar: '' }, []) };
+    localPlayer: LocalGamePlayer = {
+        isActive: false,
+        isPlaying: false,
+        player: new Player('', { username: 'Player1', email: '', avatar: '' }, []),
+        tilesLeft: 0,
+        tilesLeftTile: {} as Tile,
+    };
     adversaryPlayers: GamePlayer[] = [];
     private componentDestroyed$: Subject<boolean>;
 
@@ -50,6 +59,10 @@ export class GamePlayersComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.complete();
     }
 
+    get adversaries(): GamePlayer[] {
+        return [this.adversary1, this.adversary2, this.adversary3];
+    }
+
     isActive(): boolean {
         return this.gameService.isLocalPlayerPlaying();
     }
@@ -59,15 +72,36 @@ export class GamePlayersComponent implements OnInit, OnDestroy {
     }
 
     get adversary1(): GamePlayer {
-        return this.adversaryPlayers[0] ?? { isActive: false, player: new Player('', { username: 'Player2', email: '', avatar: '' }, []) };
+        return (
+            this.adversaryPlayers[0] ?? {
+                isActive: false,
+                player: new Player('', { username: 'Player2', email: '', avatar: '' }, []),
+                tilesLeft: 0,
+                tilesLeftTile: {} as Tile,
+            }
+        );
     }
 
     get adversary2(): GamePlayer {
-        return this.adversaryPlayers[1] ?? { isActive: false, player: new Player('', { username: 'Player3', email: '', avatar: '' }, []) };
+        return (
+            this.adversaryPlayers[1] ?? {
+                isActive: false,
+                player: new Player('', { username: 'Player3', email: '', avatar: '' }, []),
+                tilesLeft: 0,
+                tilesLeftTile: {} as Tile,
+            }
+        );
     }
 
     get adversary3(): GamePlayer {
-        return this.adversaryPlayers[2] ?? { isActive: false, player: new Player('', { username: 'Player4', email: '', avatar: '' }, []) };
+        return (
+            this.adversaryPlayers[2] ?? {
+                isActive: false,
+                player: new Player('', { username: 'Player4', email: '', avatar: '' }, []),
+                tilesLeft: 0,
+                tilesLeftTile: {} as Tile,
+            }
+        );
     }
 
     private setupGame(): void {
@@ -91,6 +125,8 @@ export class GamePlayersComponent implements OnInit, OnDestroy {
             isActive: localIsActive,
             isPlaying: localIsActive && !this.gameService.isGameOver,
             player: localPlayer ?? new Player('', { username: 'Player', email: '', avatar: '' }, []),
+            tilesLeft: localPlayer?.getTiles().length ?? 0,
+            tilesLeftTile: { letter: `${localPlayer?.getTiles().length ?? 0}` as LetterValue, value: 0 },
         };
 
         this.adversaryPlayers = [];
@@ -98,6 +134,8 @@ export class GamePlayersComponent implements OnInit, OnDestroy {
             this.adversaryPlayers.push({
                 isActive: !!adversary && !!activePlayer && activePlayer.id === adversary.id,
                 player: adversary ?? new Player('', { username: 'Player', email: '', avatar: '' }, []),
+                tilesLeft: adversary.getTiles().length,
+                tilesLeftTile: { letter: `${adversary.getTiles().length}` as LetterValue, value: 0 },
             });
         }
     }
