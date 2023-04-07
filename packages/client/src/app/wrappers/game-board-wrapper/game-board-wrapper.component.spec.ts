@@ -27,12 +27,14 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { GameBoardWrapperComponent } from './game-board-wrapper.component';
+import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
 
 describe('GameBoardWrapperComponent', () => {
     let boardServiceSpy: jasmine.SpyObj<BoardService>;
     let component: GameBoardWrapperComponent;
     let fixture: ComponentFixture<GameBoardWrapperComponent>;
     let getSquareSpy: jasmine.Spy;
+    let boardCursorService: BoardCursorService;
 
     const BOARD_SERVICE_GRID_SIZE: Vec2 = { x: 5, y: 5 };
     const createGrid = (gridSize: Vec2): Square[][] => {
@@ -127,6 +129,7 @@ describe('GameBoardWrapperComponent', () => {
             return board[row][column];
         });
         component['initializeBoard'](grid);
+        boardCursorService = TestBed.inject(BoardCursorService);
     });
 
     it('should create', () => {
@@ -254,6 +257,36 @@ describe('GameBoardWrapperComponent', () => {
         expect(component.grid.value[0][0].square).toEqual(squaresToUpdate[0]);
         expect(component.grid.value[1][0].square).toEqual(squaresToUpdate[1]);
         expect(component.grid.value[0][1].square).toEqual(squaresToUpdate[2]);
+    });
+
+    describe('handleKeyboardEvent', () => {
+        it('should call handleLetter if is a letter', () => {
+            const spy = spyOn(boardCursorService, 'handleLetter');
+            const event = new KeyboardEvent('keydown', { key: 'a' });
+            component.handleKeyboardEvent(event);
+            expect(spy).toHaveBeenCalledOnceWith('a', false);
+        });
+
+        it('should call handleLetter if is a letter with accent', () => {
+            const spy = spyOn(boardCursorService, 'handleLetter');
+            const event = new KeyboardEvent('keydown', { key: 'à' });
+            component.handleKeyboardEvent(event);
+            expect(spy).toHaveBeenCalledOnceWith('a', false);
+        });
+
+        it('should not call handleLetter if is not a letter', () => {
+            const spy = spyOn(boardCursorService, 'handleLetter');
+            const event = new KeyboardEvent('keydown', { key: 'Shift' });
+            component.handleKeyboardEvent(event);
+            expect(spy).not.toHaveBeenCalled();
+        });
+
+        it('should call handleBackspace if is backspace', () => {
+            const spy = spyOn(boardCursorService, 'handleBackspace');
+            const event = new KeyboardEvent('keydown', { key: 'Backspace' });
+            component.handleKeyboardEvent(event);
+            expect(spy).toHaveBeenCalled();
+        });
     });
 
     describe('handlePlaceTiles', () => {

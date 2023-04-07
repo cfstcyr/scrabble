@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/puzzle/puzzle-result.dart';
 import 'package:mobile/classes/puzzle/puzzle.dart';
 import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/components/app_button.dart';
@@ -27,35 +28,49 @@ class PuzzleActions extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  AppButton(
-                    onPressed: () => _quit(context),
-                    icon: Icons.output_outlined,
-                    size: AppButtonSize.large,
-                    theme: AppButtonTheme.danger,
+                  Spacer(),
+                  Expanded(
+                    flex: 2,
+                    child: AppButton(
+                      onPressed: () => _quit(context),
+                      icon: Icons.output_outlined,
+                      size: AppButtonSize.large,
+                      theme: AppButtonTheme.danger,
+                    ),
                   ),
-                  AppButton(
-                    onPressed: () {
-                      _gameEventService.add<void>(
-                          PUT_BACK_TILES_ON_TILE_RACK, null);
-                      _puzzleService.abandonPuzzle();
-                    },
-                    icon: Icons.not_interested_rounded,
-                    size: AppButtonSize.large,
-                  ), // Passer
+                  Spacer(),
+                  Expanded(
+                    flex: 2,
+                    child: AppButton(
+                      onPressed: () {
+                        _gameEventService.add<void>(
+                            PUT_BACK_TILES_ON_TILE_RACK, null);
+                        _puzzleService.abandonPuzzle(
+                            resultStatus: PuzzleResultStatus.abandoned);
+                      },
+                      icon: Icons.not_interested_rounded,
+                      size: AppButtonSize.large,
+                    ),
+                  ),
+                  Spacer(),
                   StreamBuilder<bool>(
                     stream: snapshot.hasData
                         ? snapshot.data!.board.isValidPlacementStream
                         : Stream.value(false),
                     builder: (context, canPlace) {
-                      return AppButton(
-                        onPressed: canPlace.data ?? false
-                            ? () => _puzzleService.completePuzzle()
-                            : null,
-                        icon: Icons.play_arrow_rounded,
-                        size: AppButtonSize.large,
+                      return Expanded(
+                        flex: 2,
+                        child: AppButton(
+                          onPressed: canPlace.data ?? false
+                              ? () => _puzzleService.completePuzzle()
+                              : null,
+                          icon: Icons.play_arrow_rounded,
+                          size: AppButtonSize.large,
+                        ),
                       );
                     },
                   ),
+                  Spacer(),
                 ],
               )),
         );

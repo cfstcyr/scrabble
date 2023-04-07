@@ -10,6 +10,7 @@ import {
     AnalysisWaitingDialogComponent,
     AnalysisWaitingDialogParameter,
 } from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
+import { ColorThemeDialogComponent } from '@app/components/color-theme-dialog/color-theme-dialog';
 import { UserService } from '@app/services/user-service/user.service';
 import { Analysis, AnalysisData, AnalysisRequestInfoType } from '@common/models/analysis';
 import { GameHistoryForUser } from '@common/models/game-history';
@@ -17,6 +18,7 @@ import { PublicServerAction } from '@common/models/server-action';
 import { TypeOfId } from '@common/types/id';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { UserAchievement } from '@common/models/achievement';
 
 @Component({
     selector: 'app-user-profile-page',
@@ -27,7 +29,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     @ViewChild('gameHistoryPaginator') gameHistoryPaginator: MatPaginator;
     @ViewChild('serverActionsPaginator') serverActionsPaginator: MatPaginator;
 
-    gameHistoryColumns: string[] = ['startTime', 'endTime', 'gameResult', 'score', 'analysis'];
+    gameHistoryColumns: string[] = ['startTime', 'endTime', 'gameResult', 'ratingVariation', 'score', 'analysis'];
     serverActionsColumns: string[] = ['timestamp', 'actionType'];
 
     avatar: Observable<string | undefined>;
@@ -37,8 +39,10 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     gamesWonCount: Observable<number | undefined>;
     averagePointsPerGame: Observable<number | undefined>;
     averageTimePerGame: Observable<number | undefined>;
+    rating: Observable<number | undefined>;
     gameHistory: MatTableDataSource<GameHistoryForUser>;
     serverActions: MatTableDataSource<PublicServerAction>;
+    achievements: Observable<UserAchievement[] | undefined>;
     analysis: Analysis;
     idAnalysis: TypeOfId<Analysis>;
     constructor(private readonly userService: UserService, private readonly dialog: MatDialog) {
@@ -50,6 +54,8 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
         this.gamesWonCount = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.gamesWonCount));
         this.averagePointsPerGame = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.averagePointsPerGame));
         this.averageTimePerGame = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.averageTimePerGame));
+        this.rating = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.rating));
+        this.achievements = this.userService.achievements.asObservable();
 
         this.gameHistory = new MatTableDataSource<GameHistoryForUser>([]);
         this.serverActions = new MatTableDataSource<PublicServerAction>([]);
@@ -62,11 +68,16 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
         this.userService.updateStatistics();
         this.userService.updateGameHistory();
         this.userService.updateServerActions();
+        this.userService.updateAchievements();
     }
 
     ngAfterViewInit(): void {
         this.gameHistory.paginator = this.gameHistoryPaginator;
         this.serverActions.paginator = this.serverActionsPaginator;
+    }
+
+    openColorDialog(): void {
+        this.dialog.open<ColorThemeDialogComponent>(ColorThemeDialogComponent, {});
     }
 
     openEditUserDialog(): void {

@@ -80,7 +80,7 @@
         }
 
         &--active {
-            background-color: $primary;
+            background-color: rgb(var(--primary));
             color: white;
         }
 

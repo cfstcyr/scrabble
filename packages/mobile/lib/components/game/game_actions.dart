@@ -42,23 +42,16 @@ class GameActions extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  StreamBuilder<bool>(
-                      stream: _endGameStream(),
-                      initialData: false,
-                      builder: (context, snapshot) {
-                        bool isOver = snapshot.hasData && snapshot.data!;
-                        return AppButton(
-                          onPressed: () =>
-                              isOver || getIt.get<UserService>().isObserver
-                                  ? leave(context)
-                                  : surrender(context),
-                          icon: isOver || getIt.get<UserService>().isObserver
-                              ? Icons.output_outlined
-                              : Icons.flag,
-                          size: AppButtonSize.large,
-                          theme: AppButtonTheme.danger,
-                        );
-                      }),
+                  AppButton(
+                    onPressed: () => getIt.get<UserService>().isObserver
+                        ? leave(context)
+                        : surrender(context),
+                    icon: getIt.get<UserService>().isObserver
+                        ? Icons.output_outlined
+                        : Icons.flag,
+                    size: AppButtonSize.large,
+                    theme: AppButtonTheme.danger,
+                  ),
                   StreamBuilder<bool>(
                       stream: _canPlayStream(),
                       initialData: false,

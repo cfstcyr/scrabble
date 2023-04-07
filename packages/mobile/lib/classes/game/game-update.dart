@@ -13,18 +13,19 @@ class GameUpdateData {
   final List<Square>? board;
   final Round? round;
   final List<TileReserveData>? tileReserve;
+  final int? idGameHistory;
 
-  GameUpdateData({
-    this.player1,
-    this.player2,
-    this.player3,
-    this.player4,
-    this.isGameOver,
-    this.winners,
-    this.board,
-    this.round,
-    this.tileReserve,
-  });
+  GameUpdateData(
+      {this.player1,
+      this.player2,
+      this.player3,
+      this.player4,
+      this.isGameOver,
+      this.winners,
+      this.board,
+      this.round,
+      this.tileReserve,
+      this.idGameHistory});
 
   factory GameUpdateData.fromJson(Map<String, dynamic> json) {
     return GameUpdateData(
@@ -56,6 +57,7 @@ class GameUpdateData {
             ? (json['tileReserve'] as List<dynamic>)
                 .map((dynamic tile) => TileReserveData.fromJson(tile))
                 .toList()
-            : null);
+            : null,
+        idGameHistory: json['idGameHistory'] as int? ?? -1);
   }
 }

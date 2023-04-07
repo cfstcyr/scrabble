@@ -2,4 +2,4 @@
 
 import 'package:mobile/classes/user.dart';
 
-final PublicUser UNKNOWN_USER = PublicUser(username: 'Inconnu');
+final PublicUser UNKNOWN_USER = PublicUser(username: '?', avatar: '');

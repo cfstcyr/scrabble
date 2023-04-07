@@ -73,8 +73,13 @@ class Board {
 
   updateBoardData(List<Square> squares) {
     for (var square in squares) {
-      grid[square.position.row][square.position.column] = square;
+      grid[square.position.row][square.position.column] = square.copy();
     }
+  }
+
+  Board withGrid(List<List<Square>> grid) {
+    this.grid = grid;
+    return this;
   }
 
   _applyMultipliers() {
@@ -149,5 +154,13 @@ class Board {
     grid[0][7].multiplier = Multiplier(value: 3, type: MultiplierType.word);
     grid[7][14].multiplier = Multiplier(value: 3, type: MultiplierType.word);
     grid[14][7].multiplier = Multiplier(value: 3, type: MultiplierType.word);
+  }
+
+  static List<List<Square>> gridFromJson(List<dynamic> grid) {
+    return grid
+        .map<List<Square>>((dynamic row) => row
+            .map<Square>((dynamic square) => Square.fromJson(square))
+            .toList())
+        .toList();
   }
 }

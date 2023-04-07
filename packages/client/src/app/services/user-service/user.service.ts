@@ -5,13 +5,14 @@ import { DEBOUNCE_TIME, LOGIN_REQUIRED } from '@app/constants/services-errors';
 import { UserController } from '@app/controllers/user-controller/user.controller';
 import { GameHistoryForUser } from '@common/models/game-history';
 import { PublicServerAction } from '@common/models/server-action';
-import { EditableUserFields, PublicUser } from '@common/models/user';
+import { EditableUserFields, PublicUser, RatedUser } from '@common/models/user';
 import { PublicUserStatistics } from '@common/models/user-statistics';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { UserSearchQueryResult, UserSearchResult } from '@common/models/user-search';
 import { USERNAME_IS_REQUIRED } from '@app/constants/authentification-constants';
+import { UserAchievement } from '@common/models/achievement';
 
 @Injectable({
     providedIn: 'root',
@@ -20,6 +21,7 @@ export class UserService {
     user: BehaviorSubject<PublicUser | undefined>;
     statistics: BehaviorSubject<PublicUserStatistics | undefined>;
     gameHistory: BehaviorSubject<GameHistoryForUser[] | undefined>;
+    achievements: BehaviorSubject<UserAchievement[] | undefined>;
     serverActions: BehaviorSubject<PublicServerAction[] | undefined>;
 
     constructor(private readonly userController: UserController, private readonly alertService: AlertService, private readonly dialog: MatDialog) {
@@ -27,6 +29,7 @@ export class UserService {
         this.statistics = new BehaviorSubject<PublicUserStatistics | undefined>(undefined);
         this.gameHistory = new BehaviorSubject<GameHistoryForUser[] | undefined>(undefined);
         this.serverActions = new BehaviorSubject<PublicServerAction[] | undefined>(undefined);
+        this.achievements = new BehaviorSubject<UserAchievement[] | undefined>(undefined);
     }
 
     isConnected(): Observable<boolean> {
@@ -77,6 +80,10 @@ export class UserService {
         );
     }
 
+    requestRatingLeaderboard(): Observable<RatedUser[]> {
+        return this.userController.getRatingLeaderboard();
+    }
+
     updateStatistics(): void {
         this.userController.getUserStatistics().subscribe((userStatistics) => this.statistics.next(userStatistics));
     }
@@ -97,6 +104,10 @@ export class UserService {
 
     updateServerActions(): void {
         this.userController.getServerActions().subscribe((serverActions) => this.serverActions.next(serverActions));
+    }
+
+    updateAchievements(): void {
+        this.userController.getAchievements().subscribe((achievements) => this.achievements.next(achievements));
     }
 
     openEditUserDialog(): Observable<boolean> {

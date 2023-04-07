@@ -1,3 +1,4 @@
+import 'package:mobile/classes/achievements.dart';
 import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/classes/server-action.dart';
 import 'package:mobile/controllers/user-controller.dart';
@@ -40,11 +41,23 @@ class UserService {
     return await _userController.getUserStatistics();
   }
 
+  Future<List<UserSearchItem>> searchUsers(String? query) async {
+    return await _userController.searchUsers(query);
+  }
+
+  Future<UserSearchResult> getProfileByUsername(String username) async {
+    return await _userController.getProfileByUsername(username);
+  }
+
   Future<List<GameHistory>> getGameHistory() async {
     return await _userController.getGameHistory();
   }
 
   Future<List<ServerAction>> getServerActions() async {
     return await _userController.getServerActions();
+  }
+
+  Future<List<UserAchievement>> getAchievements() async {
+    return await _userController.getAchievements();
   }
 }

@@ -76,9 +76,8 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
             surfaceTintColor: Colors.white,
             color: Colors.white,
             borderOnForeground: true,
-            child: SizedBox(
-              width: 400,
-              height: 400,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: 400, minHeight: 400, maxWidth: 500, maxHeight: 400),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 32, 0, 16),
                 child: Column(

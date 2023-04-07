@@ -2,10 +2,12 @@ import Game from '@app/classes/game/game';
 import { ReadyGameConfig, StartGameData } from '@app/classes/game/game-config';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
+import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
 import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 import { Channel } from '@common/models/chat/channel';
 import { Observer } from '@common/models/observer';
 import { TypeOfId } from '@common/types/id';
@@ -13,12 +15,18 @@ import { EventEmitter } from 'events';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 
+export const EXPERT_PLAYER_RATING = 1400;
+export const BEGINNER_PLAYER_RATING = 1100;
 @Service()
 export class ActiveGameService {
     playerLeftEvent: EventEmitter;
     private activeGames: Game[];
 
-    constructor(private readonly socketService: SocketService, private readonly chatService: ChatService) {
+    constructor(
+        private readonly socketService: SocketService,
+        private readonly chatService: ChatService,
+        private userStatisticService: UserStatisticsService,
+    ) {
         this.playerLeftEvent = new EventEmitter();
         this.activeGames = [];
         Game.injectServices();
@@ -27,7 +35,17 @@ export class ActiveGameService {
     async beginGame(id: string, groupChannelId: TypeOfId<Channel>, config: ReadyGameConfig, joinedObservers: Observer[]): Promise<StartGameData> {
         const game = await Game.createGame(id, groupChannelId, config, joinedObservers);
         this.activeGames.push(game);
+        game.getPlayers().forEach(async (player) => await this.setPlayerElo(player));
         return game.createStartGameData();
+    }
+
+    async setPlayerElo(player: Player) {
+        if (player instanceof AbstractVirtualPlayer) {
+            return;
+        }
+        const rating = (await this.userStatisticService.getStatistics(player.idUser)).rating;
+        player.initialRating = rating;
+        player.adjustedRating = rating;
     }
 
     getGame(id: string, playerId: string): Game {

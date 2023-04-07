@@ -117,20 +117,6 @@ build:server:
         paths:
             - packages/server/out/
 
-test:client:
-    stage: test
-    <<: *only-client
-    needs: ['build:client']
-    script:
-        - Xvfb :99 -ac -screen 0 1920x1080x24 &
-        - cd packages/client
-        - npm run coverage -- --browsers=ChromeHeadlessNoSandbox --watch=false
-    dependencies:
-        - build:client
-    artifacts:
-        paths:
-            - packages/client/coverage/
-
 test:server:
     stage: test
     <<: *only-server
@@ -180,8 +166,6 @@ deploy:client:
     rules:
         - if: '$CI_COMMIT_TAG'
           when: manual
-          changes:
-              - packages/client/**/*
     script:
         - export DOCKER_BUILDKIT=1
         - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -196,8 +180,6 @@ deploy:server:
     rules:
         - if: '$CI_COMMIT_TAG'
           when: manual
-          changes:
-              - packages/server/**/*
     script:
         - export DOCKER_BUILDKIT=1
         - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY

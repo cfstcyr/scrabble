@@ -9,6 +9,7 @@ import { UserRequest } from '@app/types/user';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { SEARCH_QUERY_IS_REQUIRED } from '@app/constants/controllers-errors';
 import { UserSearchService } from '@app/services/user-search-service/user-search-service';
+import { AchievementsService } from '@app/services/achievements-service/achievements-service';
 
 @Service()
 export class UserController extends BaseController {
@@ -16,6 +17,7 @@ export class UserController extends BaseController {
         private readonly userService: UserService,
         private readonly userStatisticsService: UserStatisticsService,
         private readonly userSearchService: UserSearchService,
+        private readonly achievementsService: AchievementsService,
     ) {
         super('/api/users');
     }
@@ -46,6 +48,14 @@ export class UserController extends BaseController {
             }
         });
 
+        router.get('/ratings', async (req: UserRequest, res, next) => {
+            try {
+                res.status(StatusCodes.OK).json(await this.userStatisticsService.getTopRatings());
+            } catch (e) {
+                next(e);
+            }
+        });
+
         router.get('/search', async (req: UserRequest, res, next) => {
             try {
                 const query: string | undefined = req.query.q as string | undefined;
@@ -61,6 +71,14 @@ export class UserController extends BaseController {
         router.get('/profile/:username', async (req, res, next) => {
             try {
                 res.status(StatusCodes.OK).json(await this.userSearchService.findProfileWithUsername(req.params.username));
+            } catch (e) {
+                next(e);
+            }
+        });
+
+        router.get('/achievements', async (req: UserRequest, res, next) => {
+            try {
+                res.status(StatusCodes.OK).json(await this.achievementsService.getAchievements(req.body.idUser));
             } catch (e) {
                 next(e);
             }

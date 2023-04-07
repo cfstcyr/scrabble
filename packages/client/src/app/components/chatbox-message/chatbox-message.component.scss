@@ -91,7 +91,7 @@
 
             .chatbox-message__message {
                 text-align: right;
-                background-color: $primary;
+                background-color: rgb(var(--primary));
                 color: white;
                 border-top-left-radius: $border-radius-l;
                 border-bottom-left-radius: $border-radius-l;

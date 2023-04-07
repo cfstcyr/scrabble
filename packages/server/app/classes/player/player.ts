@@ -9,6 +9,7 @@ import { Observer } from '@common/models/observer';
 import { PublicUser, User } from '@common/models/user';
 import { TypeOfId } from '@common/types/id';
 import { Container } from 'typedi';
+import { UserId } from '@app/classes/user/connected-user-types';
 
 export default class Player implements Observer {
     publicUser: PublicUser;
@@ -16,6 +17,9 @@ export default class Player implements Observer {
     tiles: Tile[];
     id: string;
     isConnected: boolean;
+    initialRating: number;
+    adjustedRating: number;
+    private idUserPrivate: UserId;
     private objectives: AbstractObjective[];
     private readonly objectiveService: ObjectivesService;
 
@@ -79,7 +83,13 @@ export default class Player implements Observer {
     }
 
     get idUser(): TypeOfId<User> {
-        return Container.get(AuthentificationService).connectedUsers.getUserId(this.id);
+        if (this.idUserPrivate) return this.idUserPrivate;
+        this.idUserPrivate = Container.get(AuthentificationService).connectedUsers.getUserId(this.id);
+        return this.idUserPrivate;
+    }
+
+    set idUser(idUser: TypeOfId<User>) {
+        this.idUserPrivate = idUser;
     }
 
     private tilesToString(): string {

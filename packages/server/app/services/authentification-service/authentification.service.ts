@@ -14,12 +14,13 @@ import * as jwt from 'jsonwebtoken';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
 import { UserService } from '@app/services/user-service/user-service';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 
 @Service()
 export class AuthentificationService {
     connectedUsers: ConnectedUser;
 
-    constructor(private databaseService: DatabaseService, private userService: UserService) {
+    constructor(private databaseService: DatabaseService, private userService: UserService, private userStatisticsService: UserStatisticsService) {
         this.connectedUsers = new ConnectedUser();
     }
 
@@ -98,10 +99,16 @@ export class AuthentificationService {
 
     private async insertUser(user: User): Promise<TokenData> {
         return new Promise((resolve, reject) => {
+            let userId: number;
             this.table
                 .returning('idUser')
                 .insert(user)
-                .then((data) => resolve(data[0] as unknown as TokenData))
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .then(async (data: any) => {
+                    userId = data[0];
+                    this.userStatisticsService.createStatistics(data[0].idUser);
+                })
+                .then(() => resolve(userId as unknown as TokenData))
                 .catch((err) => reject(err));
         });
     }

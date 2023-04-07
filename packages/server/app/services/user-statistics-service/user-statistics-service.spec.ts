@@ -22,6 +22,9 @@ const DEFAULT_PUBLIC_STATISTICS: PublicUserStatistics = {
     averageTimePerGame: 300,
     gamesPlayedCount: 4,
     gamesWonCount: 2,
+    rating: 1,
+    ratingMax: 1,
+    bingoCount: 0,
 };
 const DEFAULT_STATISTICS: UserStatistics = {
     idUser: DEFAULT_USER.idUser,
@@ -31,6 +34,7 @@ const DEFAULT_GAME_STATISTICS_INFO: UserGameStatisticInfo = {
     hasWon: true,
     points: 10,
     time: 200,
+    ratingDifference: 5,
 };
 
 describe('UserStatisticsService', () => {
@@ -106,6 +110,19 @@ describe('UserStatisticsService', () => {
             await statsTable().insert(DEFAULT_STATISTICS);
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             expect((await service.addGameToStatistics(DEFAULT_USER.idUser, DEFAULT_GAME_STATISTICS_INFO)).averageTimePerGame).to.equal(280);
+        });
+    });
+
+    describe('addBingoToStatistics', () => {
+        it('should increment bingoCount', async () => {
+            await statsTable().insert(DEFAULT_STATISTICS);
+            expect((await service.addBingoToStatistics(DEFAULT_USER.idUser)).bingoCount).to.equal(DEFAULT_STATISTICS.bingoCount + 1);
+        });
+
+        it('should increment bingoCount 2', async () => {
+            const bingoCount = 666;
+            await statsTable().insert({ ...DEFAULT_STATISTICS, bingoCount });
+            expect((await service.addBingoToStatistics(DEFAULT_USER.idUser)).bingoCount).to.equal(bingoCount + 1);
         });
     });
 });

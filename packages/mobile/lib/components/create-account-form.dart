@@ -66,7 +66,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
         child: Column(
           children: [
             Container(
-              width: 500,
+              width: 600,
               constraints: BoxConstraints(minHeight: 540),
               child: Card(
                 child: Padding(
