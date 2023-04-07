@@ -12,6 +12,10 @@ interface GamePlayer {
     player: Player;
 }
 
+interface LocalGamePlayer extends GamePlayer {
+    isPlaying: boolean;
+}
+
 @Component({
     selector: 'app-game-players',
     templateUrl: './game-players.component.html',
@@ -19,7 +23,7 @@ interface GamePlayer {
 })
 export class GamePlayersComponent implements OnInit, OnDestroy {
     readonly maxTilesPerPlayer = MAX_TILES_PER_PLAYER;
-    localPlayer: GamePlayer = { isActive: false, player: new Player('', { username: 'Player1', email: '', avatar: '' }, []) };
+    localPlayer: LocalGamePlayer = { isActive: false, isPlaying: false, player: new Player('', { username: 'Player1', email: '', avatar: '' }, []) };
     adversaryPlayers: GamePlayer[] = [];
     private componentDestroyed$: Subject<boolean>;
 
@@ -72,13 +76,20 @@ export class GamePlayersComponent implements OnInit, OnDestroy {
                 this.updatePlayers(activePlayer);
             });
         }
+
+        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, (players: string[]) => {
+            this.localPlayer = { ...this.localPlayer, isPlaying: false };
+        });
     }
 
     private updatePlayers(activePlayer: Player | undefined): void {
         const localPlayer = this.gameService.getLocalPlayer();
 
+        const localIsActive = !!localPlayer && !!activePlayer && activePlayer.id === localPlayer.id;
+
         this.localPlayer = {
-            isActive: !!localPlayer && !!activePlayer && activePlayer.id === localPlayer.id,
+            isActive: localIsActive,
+            isPlaying: localIsActive && !this.gameService.isGameOver,
             player: localPlayer ?? new Player('', { username: 'Player', email: '', avatar: '' }, []),
         };
 
