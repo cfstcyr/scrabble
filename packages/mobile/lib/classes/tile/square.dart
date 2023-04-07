@@ -41,7 +41,6 @@ class Square {
   }
 
   Square setTile(Tile tile) {
-    print('Set tile in square: ${tile.letter} + ${tile.state}');
     _tile.add(tile);
     return this;
   }
@@ -56,7 +55,6 @@ class Square {
   }
 
   Square removeTile() {
-    print('Remove tile in square: ${tile.value?.letter} + ${tile.value?.state}');
     _tile.add(null);
     return this;
   }

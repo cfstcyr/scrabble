@@ -187,8 +187,6 @@ class _GameSquareState extends State<GameSquare> {
   }
 
   _onPlaceTile(BuildContext context, c.Tile tile) async {
-    print('Place: ${tile.letter}');
-
     if (tile.isWildcard) {
       await triggerWildcardDialog(context, square: widget.square);
     }
@@ -208,14 +206,12 @@ class _GameSquareState extends State<GameSquare> {
       return;
     }
 
-    print('put back tiles');
     // Ordre important, car si on removeTile avant, getTile() est null
     widget.tileRack?.placeTile(widget.square.getTile()!);
     removeTile();
   }
 
   removeTile() {
-    print('Remove tests: ${widget.square.getTile()?.letter} + ${widget.square.getTile()?.state} + ${widget.square.getIsApplied()}');
     if (widget.square.getTile() == null) return;
     if (widget.square.getIsApplied()) return;
 
@@ -223,7 +219,6 @@ class _GameSquareState extends State<GameSquare> {
 
     if (tile.isWildcard) tile.playedLetter = null;
 
-    print('Remove tile in game_square: ${tile.letter} + ${tile.state}');
     widget.square.removeTile();
 
     _gameEventService.add<TilePlacement>(REMOVE_TILE_FROM_BOARD,

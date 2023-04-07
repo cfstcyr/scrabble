@@ -50,7 +50,6 @@ class TileRack {
   }
 
   TileRack removeTile(Tile tile) {
-    print('Remove tile from tilerack: ${tile.letter} + ${tile.state}');
     List<Tile> tiles = _tiles.value;
 
     tiles.remove(tile);
@@ -59,13 +58,10 @@ class TileRack {
   }
 
   placeTile(Tile tile, {int? from, int? to}) {
-    print('Place tile in tilerack: ${tile.letter} + ${tile.state}');
-    // tile.withState(TileState.defaultState);
     List<Tile> tiles = _tiles.value;
 
     if (to != null) {
       int computedFrom = from ?? tiles.indexOf(tile);
-      print('From: $from');
       // If it was not in the tilerack
       if (computedFrom < 0 || tile.state == TileState.notApplied) {
         // Add to tile rack
@@ -82,7 +78,6 @@ class TileRack {
         tiles[to] = tile;
       }
     } else {
-      // tiles.remove(tile);
       tiles.add(tile);
     }
 

@@ -169,6 +169,9 @@ class GameActions extends StatelessWidget {
         [_canPlayStream(), game.board.isValidPlacementStream], (values) {
       bool canPlay = values[0];
       bool isValidPlacement = values[1];
+
+      print('CanPlay: $canPlay');
+      print('IsValidPlacement: $isValidPlacement');
       return canPlay && isValidPlacement;
     });
   }

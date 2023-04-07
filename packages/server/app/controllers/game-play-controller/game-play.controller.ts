@@ -90,6 +90,7 @@ export class GamePlayController extends BaseController {
             const { gameId } = req.params;
             const body = { tilePlacement: req.body.tilePlacement, idUser: req.body.idUser };
             try {
+                console.log(body.tilePlacement);
                 const playerId = this.authentificationService.connectedUsers.getSocketId(body.idUser);
                 this.handleTilePlacement(gameId, playerId, body.tilePlacement);
                 res.status(StatusCodes.NO_CONTENT).send();

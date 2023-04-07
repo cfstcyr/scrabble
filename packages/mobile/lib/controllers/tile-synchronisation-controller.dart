@@ -33,7 +33,6 @@ class TileSynchronisationController {
       _synchronisedTiles$.stream;
 
   Future<Response> sendSyncedTilePlacement(List<TilePlacement> tilePlacements) {
-    print(jsonEncode(tilePlacements));
     return http.post(
         Uri.parse(
             '$GAME_ENDPOINT/${_gamePlayController.currentGameId}/squares/place'),
