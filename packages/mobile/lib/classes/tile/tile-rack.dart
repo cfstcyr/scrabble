@@ -103,8 +103,9 @@ class TileRack {
   }
 
   void toggleSelectedTile(Tile tile) {
+
     tile.toggleIsSelected();
-    setTiles(stream.value);
+    setTiles(stream.value, overrideState: false);
   }
 
   ActionExchangePayload getSelectedTilesPayload() {
