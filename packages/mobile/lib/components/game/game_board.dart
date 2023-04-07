@@ -38,7 +38,9 @@ class GameBoard extends StatelessWidget {
               if (!snapshot.hasData) return SizedBox.shrink();
 
               AbstractGame? game = snapshot.data! is List ? snapshot.data![0] : snapshot.data!;
-              bool isLocalPlayerPlaying = game is MultiplayerGame? ? snapshot.data![1] : false;
+              bool isLocalPlayerPlaying = game is MultiplayerGame? ? snapshot.data![1] : true;
+
+              print(isLocalPlayerPlaying);
 
               return GridView.count(
                 crossAxisCount: GRID_SIZE,
