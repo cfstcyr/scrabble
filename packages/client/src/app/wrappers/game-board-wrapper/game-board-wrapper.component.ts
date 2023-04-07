@@ -38,7 +38,7 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
 
     @HostListener('document:keypress', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent): void {
-        if (this.isObserver) return;
+        if (this.isObserver || this.gameService.isGameOver) return;
 
         const key = removeAccents(event.key.toLowerCase());
 
@@ -82,7 +82,7 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
     }
 
     squareClickHandler(squareView: SquareView): void {
-        if (this.isObserver || this.gameService.cannotPlay()) return;
+        if (this.isObserver || this.gameService.isGameOver || this.gameService.cannotPlay()) return;
         this.boardCursorService.handleSquareClick(squareView);
     }
 
