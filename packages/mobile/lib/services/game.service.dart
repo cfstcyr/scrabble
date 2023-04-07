@@ -179,24 +179,13 @@ class GameService {
     bool isWinner =
         getIt.get<EndGameService>().winners$.value.contains(localUsername);
     Player localPlayer = game.players.getPlayerByName(localUsername);
-    /**
-     *                 adjustedRating: localPlayer?.adjustedRating ?? DEFAULT_PLAYER_RATING,
-                ratingVariation: localPlayer?.ratingVariation ?? 0,
-     */
 
     triggerDialogBox(
         DIALOG_END_OF_GAME_TITLE(isWinner),
         [
           Text(DIALOG_END_OF_GAME_CONTENT(isWinner),
               style: TextStyle(fontSize: 16)),
-          Text(
-              "$DIALOG_END_OF_GAME_RATING_CONTENT ${localPlayer.adjustedRating}",
-              style: TextStyle(fontSize: 16)),
-          localPlayer.ratingVariation >= 0
-              ? Text("(+${localPlayer.ratingVariation})",
-                  style: TextStyle(color: Colors.green))
-              : Text("(-${localPlayer.ratingVariation})",
-                  style: TextStyle(color: Colors.red))
+          handleRatingChange(localPlayer),
         ],
         [
           DialogBoxButtonParameters(
@@ -223,6 +212,22 @@ class GameService {
               }),
         ],
         dismissOnBackgroundTouch: true);
+  }
+
+  Widget handleRatingChange(Player localPlayer) {
+    return Row(
+      children: [
+        Text(
+            "$DIALOG_END_OF_GAME_RATING_CONTENT ${localPlayer.adjustedRating.round()}",
+            style: TextStyle(fontSize: 16)),
+        SizedBox(width: 5),
+        localPlayer.ratingVariation >= 0
+            ? Text("(+${localPlayer.ratingVariation.round()})",
+                style: TextStyle(color: Colors.green))
+            : Text("(${localPlayer.ratingVariation.round()})",
+                style: TextStyle(color: Colors.red))
+      ],
+    );
   }
 
   void _onTimerExpires() {
