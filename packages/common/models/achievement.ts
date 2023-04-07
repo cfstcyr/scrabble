@@ -1,6 +1,8 @@
 export interface Achievement {
     name: string;
     description: string;
+    defaultImage: string;
+    zeroValue: number;
     levels: AchievementLevel[];
 }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:mobile/classes/analysis/analysis-request.dart';
 import 'package:mobile/classes/analysis/analysis.dart';
@@ -18,21 +20,24 @@ class AnalysisService {
       int idAnalysis, AnalysisRequestInfoType requestType) async {
     return _analysisController
         .requestAnalysis(idAnalysis, requestType)
-        .then((AnalysisCompleted analysisCompleted) {
+        .then<AnalysisCompleted?>((AnalysisCompleted analysisCompleted) {
       Navigator.pop(navigatorKey.currentContext!);
 
       AnalysisResultDialog(criticalMoments: analysisCompleted.criticalMoments)
           .openAnalysisResultDialog(navigatorKey.currentContext!);
 
       return analysisCompleted;
-    }).catchError((error) {
+    }, onError: (_) {
+          print(_);
       Navigator.pop(navigatorKey.currentContext!);
 
       AnalysisRequestDialog(
-              title: ANALYSIS_NOT_FOUND_TITLE,
-              message: ANALYSIS_NOT_FOUND_MESSAGE,
-              isLoading: false)
+          title: ANALYSIS_NOT_FOUND_TITLE,
+          message: ANALYSIS_NOT_FOUND_MESSAGE,
+          isLoading: false)
           .openAnalysisRequestDialog(navigatorKey.currentContext!);
+
+      return null;
     });
   }
 

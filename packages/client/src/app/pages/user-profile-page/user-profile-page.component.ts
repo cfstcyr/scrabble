@@ -18,6 +18,7 @@ import { PublicServerAction } from '@common/models/server-action';
 import { TypeOfId } from '@common/types/id';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { UserAchievement } from '@common/models/achievement';
 
 @Component({
     selector: 'app-user-profile-page',
@@ -41,6 +42,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     rating: Observable<number | undefined>;
     gameHistory: MatTableDataSource<GameHistoryForUser>;
     serverActions: MatTableDataSource<PublicServerAction>;
+    achievements: Observable<UserAchievement[] | undefined>;
     analysis: Analysis;
     idAnalysis: TypeOfId<Analysis>;
     constructor(private readonly userService: UserService, private readonly dialog: MatDialog) {
@@ -53,6 +55,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
         this.averagePointsPerGame = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.averagePointsPerGame));
         this.averageTimePerGame = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.averageTimePerGame));
         this.rating = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.rating));
+        this.achievements = this.userService.achievements.asObservable();
 
         this.gameHistory = new MatTableDataSource<GameHistoryForUser>([]);
         this.serverActions = new MatTableDataSource<PublicServerAction>([]);
@@ -65,6 +68,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
         this.userService.updateStatistics();
         this.userService.updateGameHistory();
         this.userService.updateServerActions();
+        this.userService.updateAchievements();
     }
 
     ngAfterViewInit(): void {

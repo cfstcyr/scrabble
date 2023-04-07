@@ -33,15 +33,15 @@ class UserProfileStatisticsItem extends StatelessWidget {
 
 class UserProfileStatistics extends StatelessWidget {
   UserProfileStatistics({required this.statistics});
-  final BehaviorSubject<UserStatistics> statistics;
+
+  final UserStatistics? statistics;
+
   @override
   Widget build(BuildContext context) {
     return Card(
-        child: Padding(
-      padding: EdgeInsets.all(SPACE_3),
-      child: StreamBuilder(
-          stream: statistics,
-          builder: (context, snapshot) => snapshot.hasData
+      child: Padding(
+          padding: EdgeInsets.all(SPACE_3),
+          child: statistics != null
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -52,26 +52,24 @@ class UserProfileStatistics extends StatelessWidget {
                     Expanded(
                         child: UserProfileStatisticsItem(
                             title: "Parties jouées",
-                            value: "${snapshot.data?.gamesPlayedCount ?? 0}")),
+                            value: "${statistics!.gamesPlayedCount}")),
                     Expanded(
                         child: UserProfileStatisticsItem(
                             title: "Parties gagnées",
-                            value: "${snapshot.data?.gamesWonCount ?? 0}")),
+                            value: "${statistics!.gamesWonCount}")),
                     Expanded(
                         child: UserProfileStatisticsItem(
                             title: "Moyenne de points",
                             value:
-                                "${(snapshot.data?.averagePointsPerGame ?? 0).round()} pts")),
+                                "${(statistics!.averagePointsPerGame).round()} pts")),
                     Expanded(
                         child: UserProfileStatisticsItem(
                             title: "Temps moyen",
                             value:
-                                "${(snapshot.data?.averageTimePerGame ?? 0).round()} s")),
+                                "${(statistics!.averageTimePerGame).round()} s")),
                   ],
                 )
-              : snapshot.hasError
-                  ? Text('Impossible de charger les statistiques')
-                  : Container()),
-    ));
+              : Text('Impossible de charger les statistiques')),
+    );
   }
 }

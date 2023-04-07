@@ -38,6 +38,13 @@
                 </app-user-profile-stats-item>
             </mat-card>
 
+            <mat-card class='achievements'>
+                <h2>Badges</h2>
+                <div class='achievements__content'>
+                    <app-user-achievement *ngFor='let achievement of achievements | async' [achievement]='achievement'></app-user-achievement>
+                </div>
+            </mat-card>
+
             <mat-card style="padding: 24px">
                 <h2>Historique de parties</h2>
                 <table

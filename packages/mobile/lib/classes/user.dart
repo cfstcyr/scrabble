@@ -1,3 +1,4 @@
+import 'package:mobile/classes/achievements.dart';
 import 'package:mobile/constants/avatars-constants.dart';
 
 import 'game-history.dart';
@@ -242,6 +243,7 @@ class UserSearchQueryResult {
 class UserSearchResult {
   List<GameHistory> gameHistory;
   UserStatistics statistics;
+  List<UserAchievement> achievements;
   String username;
   String avatar;
 
@@ -249,14 +251,16 @@ class UserSearchResult {
       {required this.username,
       required this.avatar,
       required this.gameHistory,
-      required this.statistics});
+      required this.statistics,
+      required this.achievements});
 
   factory UserSearchResult.fromJson(Map<String, dynamic> json) {
     return UserSearchResult(
         username: json['username'] as String,
         avatar: json['avatar'] ?? AVATARS.first,
         gameHistory: GameHistory.fromJsonList(json['gameHistory']),
-        statistics: UserStatistics.fromJson(json['statistics']));
+        statistics: UserStatistics.fromJson(json['statistics']),
+        achievements: UserAchievement.fromJsonList(json['achievements']));
   }
 }
 

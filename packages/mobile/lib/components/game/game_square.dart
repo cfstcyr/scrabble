@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/square.dart';
@@ -11,7 +12,6 @@ import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-event.service.dart';
-import 'package:mobile/services/game.service.dart';
 
 // ignore: constant_identifier_names
 const Color NOT_APPLIED_COLOR = Color.fromARGB(255, 66, 135, 69);
@@ -20,10 +20,14 @@ class GameSquare extends StatefulWidget {
   final TileRack? tileRack;
   final Square square;
   final Color color;
+  final double boardSize;
+  final bool isInteractable;
 
   GameSquare({
     required this.tileRack,
     required this.square,
+    required this.boardSize,
+    required this.isInteractable,
   }) : color =
             square.multiplier != null ? square.getColor() : Color(0xFFEEEEEE);
 
@@ -100,6 +104,7 @@ class _GameSquareState extends State<GameSquare> {
   }
 
   Widget _getContent() {
+    double contentScale = widget.boardSize / GAME_BOARD_SIZE;
     return StreamBuilder(
         stream: widget.square.tile,
         builder: (context, snapshot) {
@@ -109,7 +114,11 @@ class _GameSquareState extends State<GameSquare> {
               widget.square.isCenter
                   ? Container(
                       transform: Matrix4.translationValues(0, -2, 0),
-                      child: Text('★', style: TextStyle(fontSize: 24)),
+                      child: Text(
+                        '★',
+                        style: TextStyle(fontSize: 24),
+                        textScaleFactor: contentScale,
+                      ),
                     )
                   : widget.square.multiplier != null
                       ? Column(
@@ -117,12 +126,14 @@ class _GameSquareState extends State<GameSquare> {
                           children: [
                             Text(
                               widget.square.multiplier!.getType().toUpperCase(),
+                              textScaleFactor: contentScale,
                               style: TextStyle(
                                 fontSize: 8,
                               ),
                             ),
                             Text(
                               'x${widget.square.multiplier!.value}',
+                              textScaleFactor: contentScale,
                               style: TextStyle(
                                 height: 1,
                               ),
@@ -136,31 +147,36 @@ class _GameSquareState extends State<GameSquare> {
                       builder: (context, isAppliedSnapshot) {
                         return isAppliedSnapshot.data ?? false
                             ? Tile(tile: snapshot.data)
-                            : Draggable(
-                                data: snapshot.data,
-                                feedback: Card(
-                                  color: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  child: Tile(
+                            : widget.isInteractable
+                                ? Draggable(
+                                    data: snapshot.data,
+                                    feedback: Card(
+                                      color: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      child: Tile(
+                                        tile: snapshot.data,
+                                        shouldWiggle: true,
+                                        size: TILE_SIZE_DRAG,
+                                      ),
+                                    ),
+                                    childWhenDragging: Opacity(
+                                      opacity: 0,
+                                      child: Tile(
+                                        tile: snapshot.data,
+                                      ),
+                                    ),
+                                    child: Tile(
+                                      tile: snapshot.data,
+                                      tint: NOT_APPLIED_COLOR,
+                                    ),
+                                    onDragCompleted: () {
+                                      removeTile();
+                                    },
+                                  )
+                                : Tile(
                                     tile: snapshot.data,
-                                    shouldWiggle: true,
-                                    size: TILE_SIZE_DRAG,
-                                  ),
-                                ),
-                                childWhenDragging: Opacity(
-                                  opacity: 0,
-                                  child: Tile(
-                                    tile: snapshot.data,
-                                  ),
-                                ),
-                                child: Tile(
-                                  tile: snapshot.data,
-                                  tint: NOT_APPLIED_COLOR,
-                                ),
-                                onDragCompleted: () {
-                                  removeTile();
-                                },
-                              );
+                                    tint: NOT_APPLIED_COLOR,
+                                  );
                       },
                     )
                   : Opacity(opacity: 0, child: Tile()),

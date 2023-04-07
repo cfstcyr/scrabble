@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
-      title: "Home",
+      title: "Accueil",
       body: Container(
         constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
@@ -69,7 +69,7 @@ class HomePage extends StatelessWidget {
                         _handleStartPuzzle(context);
                       },
                       size: AppButtonSize.large,
-                      child: Text(START_PUZZLE_MESSAGE,
+                      child: Text(PUZZLE_TITLE,
                           style: TextStyle(color: Colors.white, fontSize: 18)),
                     ),
                     SizedBox(height: 10),

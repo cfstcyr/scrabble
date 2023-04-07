@@ -1,3 +1,4 @@
+import 'package:mobile/classes/achievements.dart';
 import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/classes/server-action.dart';
 import 'package:mobile/controllers/user-controller.dart';
@@ -58,5 +59,9 @@ class UserService {
 
   Future<List<ServerAction>> getServerActions() async {
     return await _userController.getServerActions();
+  }
+
+  Future<List<UserAchievement>> getAchievements() async {
+    return await _userController.getAchievements();
   }
 }
