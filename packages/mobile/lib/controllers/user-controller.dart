@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:mobile/classes/achievements.dart';
 import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/classes/server-action.dart';
 import 'package:mobile/classes/user.dart';
@@ -49,5 +50,10 @@ class UserController {
   Future<List<ServerAction>> getServerActions() async {
     return ServerAction.fromJsonList(jsonDecode(
         (await _http.get(Uri.parse("$endpoint/server-actions"))).body));
+  }
+
+  Future<List<UserAchievement>> getAchievements() async {
+    return UserAchievement.fromJsonList(jsonDecode(
+        (await _http.get(Uri.parse("$endpoint/users/achievements"))).body));
   }
 }

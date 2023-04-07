@@ -21,6 +21,9 @@ import { StatusCodes } from 'http-status-codes';
 import { Container } from 'typedi';
 import { IMPOSSIBLE_ACTION } from './action-errors';
 import { ActionType } from '@common/models/action';
+import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
+import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 
 export default class ActionPlace extends ActionPlay {
     wordPlacement: WordPlacement;
@@ -63,6 +66,8 @@ export default class ActionPlace extends ActionPlay {
 
         this.wordValidator.verifyWords(StringConversion.wordsToString(createdWords), this.game.dictionarySummary.id);
 
+        this.updateBingoStatistic(tilesToPlace);
+
         this.scoredPoints = this.scoreCalculator.calculatePoints(createdWords) + this.scoreCalculator.bonusPoints(tilesToPlace);
         const updatedSquares = this.updateBoard(createdWords);
 
@@ -99,6 +104,19 @@ export default class ActionPlace extends ActionPlay {
             placeMessage += `<br><br>${this.player.publicUser.username} a${message}`;
         });
         return { message: placeMessage };
+    }
+
+    private updateBingoStatistic(tilesToPlace: Tile[]): void {
+        if (this.player instanceof AbstractVirtualPlayer) return;
+
+        if (tilesToPlace.length === MAX_TILES_PER_PLAYER) {
+            Container.get(UserStatisticsService)
+                .addBingoToStatistics(this.player.idUser)
+                .catch((error) => {
+                    // eslint-disable-next-line no-console
+                    console.error('An error occurred while updating the bingo statistic: ', error);
+                });
+        }
     }
 
     private isLegalPlacement(words: [Square, Tile][][]): boolean {

@@ -93,7 +93,7 @@ class Board {
     for (var square in squares) {
       print(
           'Update board with: ${square.tile.value?.letter} + ${square.tile.value?.state}');
-      grid[square.position.row][square.position.column] = square;
+      grid[square.position.row][square.position.column] = square.copy();
     }
   }
 

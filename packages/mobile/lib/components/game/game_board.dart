@@ -13,7 +13,7 @@ import 'package:rxdart/rxdart.dart';
 import '../../constants/game.constants.dart';
 
 class GameBoard extends StatelessWidget {
-  GameBoard({required this.gameStream, this.isLocalPlayerPlaying})
+  GameBoard({required this.gameStream, this.isInteractable = true, this.size = 630, this.isLocalPlayerPlaying})
       : assert(
             gameStream is ValueStream<MultiplayerGame?>
                 ? isLocalPlayerPlaying != null
@@ -22,6 +22,8 @@ class GameBoard extends StatelessWidget {
 
   final Stream<AbstractGame?> gameStream;
   final Stream<bool>? isLocalPlayerPlaying;
+  final bool isInteractable;
+  double size;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +54,8 @@ class GameBoard extends StatelessWidget {
                     square: game?.board.getSquare(position) ??
                         Square(position: Position(0, 0)),
                       isLocalPlayerPlaying: isLocalPlayerPlaying
+                    boardSize: size,
+                    isInteractable: isInteractable,
                   );
                 }),
               );

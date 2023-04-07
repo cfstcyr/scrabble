@@ -7,6 +7,8 @@ export interface UserStatistics extends WithIdOf<User> {
     averagePointsPerGame: number;
     averageTimePerGame: number;
     rating: number;
+    ratingMax: number;
+    bingoCount: number;
 }
 
 export type PublicUserStatistics = Omit<UserStatistics, 'idUser'>;

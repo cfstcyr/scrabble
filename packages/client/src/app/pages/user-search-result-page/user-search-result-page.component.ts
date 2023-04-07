@@ -10,6 +10,7 @@ import { GameHistoryForUser } from '@common/models/game-history';
 import { UserSearchResult } from '@common/models/user-search';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { UserAchievement } from '@common/models/achievement';
 @Component({
     selector: 'app-user-search-result-page',
     templateUrl: './user-search-result-page.component.html',
@@ -23,6 +24,7 @@ export class UserSearchResultPageComponent implements AfterViewInit {
     user$: Observable<UserSearchResult | undefined>;
     error$: Observable<string | undefined>;
     gameHistory: MatTableDataSource<GameHistoryForUser>;
+    achievements: Observable<UserAchievement[] | undefined>;
 
     constructor(private readonly route: ActivatedRoute, private readonly userService: UserService, private locatorService: LocatorService) {
         this.user$ = this.userService.getProfileByUsername(this.route.params.pipe(map((params) => params.username)));
@@ -36,6 +38,7 @@ export class UserSearchResultPageComponent implements AfterViewInit {
         this.user$.subscribe((user) => {
             this.gameHistory.data = user?.gameHistory ?? [];
         });
+        this.achievements = this.user$.pipe(map((user) => user?.achievements ?? []));
     }
 
     ngAfterViewInit(): void {

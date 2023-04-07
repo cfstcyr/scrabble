@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/animation/wiggle.dart';
 import 'package:mobile/constants/assets.constants.dart';
+import 'package:mobile/constants/game.constants.dart';
 
 class Tile extends StatelessWidget {
   Tile({
@@ -49,25 +52,60 @@ class Tile extends StatelessWidget {
               SizedBox(
                   width: size,
                   height: size,
-                  child: Stack(
-                    children: [
-                      Container(
-                        transform: tile?.value != null
-                            ? Matrix4.translationValues(-1, -1, 0)
-                            : Matrix4.translationValues(0, 0, 0),
-                        child: Center(
+                  width: size,
+                ),
+              ),
+            ),
+            SizedBox(
+                width: size,
+                height: size,
+                child: Stack(
+                  children: [
+                    Container(
+                      transform: tile?.value != null
+                          ? Matrix4.translationValues(-1, -1, 0)
+                          : Matrix4.translationValues(0, 0, 0),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) => Center(
                           child: Text(
                             tile != null
-                                ? (tile!.isWildcard && tile?.playedLetter != null
+                                ? (tile!.isWildcard &&
+                                        tile?.playedLetter != null
                                     ? (tile!.playedLetter ?? '')
                                     : (tile!.letter ?? ''))
                                 : '',
+                            textScaleFactor:
+                                max(0.8, constraints.maxWidth / TILE_SIZE),
                             style: TextStyle(
                               color: (tile?.isWildcard ?? false)
                                   ? Colors.red
                                   : Color.fromRGBO(80, 55, 10, 1),
                               fontWeight: FontWeight.w600,
                               fontSize: size / 1.7,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: double.maxFinite,
+                      padding: EdgeInsets.only(
+                        bottom: 2,
+                        right: 4,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          LayoutBuilder(
+                            builder: (context, constraints) => Text(
+                              _getDisplayValue(tile),
+                              textScaleFactor:
+                                  max(0.8, constraints.maxWidth / TILE_SIZE),
+                              style: TextStyle(
+                                fontSize: size / 3.5,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),
