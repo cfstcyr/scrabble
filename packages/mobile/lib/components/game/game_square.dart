@@ -109,30 +109,33 @@ class _GameSquareState extends State<GameSquare> {
           return Stack(
             alignment: Alignment.center,
             children: [
-              widget.square.isCenter
-                  ? Container(
-                      transform: Matrix4.translationValues(0, -2, 0),
-                      child: Text('★', style: TextStyle(fontSize: 24)),
-                    )
-                  : widget.square.multiplier != null
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              widget.square.multiplier!.getType().toUpperCase(),
-                              style: TextStyle(
-                                fontSize: 8,
+              Opacity(
+                opacity: snapshot.data?.state == TileState.synced ? 0.25 : 1,
+                child: widget.square.isCenter
+                    ? Container(
+                        transform: Matrix4.translationValues(0, -2, 0),
+                        child: Text('★', style: TextStyle(fontSize: 24)),
+                      )
+                    : widget.square.multiplier != null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                widget.square.multiplier!.getType().toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 8,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'x${widget.square.multiplier!.value}',
-                              style: TextStyle(
-                                height: 1,
-                              ),
-                            )
-                          ],
-                        )
-                      : SizedBox(),
+                              Text(
+                                'x${widget.square.multiplier!.value}',
+                                style: TextStyle(
+                                  height: 1,
+                                ),
+                              )
+                            ],
+                          )
+                        : SizedBox(),
+              ),
               snapshot.data != null
                   ? StreamBuilder<bool>(
                       stream: widget.square.isAppliedStream,
