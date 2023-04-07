@@ -6,6 +6,7 @@ import 'package:mobile/classes/game/game-message.dart';
 import 'package:mobile/classes/game/game-update.dart';
 import 'package:mobile/classes/http/ResponseResult.dart';
 import 'package:mobile/constants/endpoint.constants.dart';
+import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/socket-events/game-events.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/socket.service.dart';
@@ -48,8 +49,7 @@ class GamePlayController {
   Future<void> sendAction(ActionData actionData) async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/players/action");
     http
-        .post(endpoint, body: jsonEncode(actionData))
-        .then((_) => _actionDone$.add(ResponseResult.success()), onError: (_) => _actionDone$.add(ResponseResult.error()));
+        .post(endpoint, body: jsonEncode(actionData));
   }
 
   Future<void> leaveGame() async {
@@ -64,7 +64,18 @@ class GamePlayController {
       gameUpdate$.add(GameUpdateData.fromJson(newData));
     });
     socketService.on(GAME_MESSAGE_EVENT_NAME, (dynamic gameMessage) {
-      gameMessage$.add(GameMessage.fromJson(gameMessage));
+      GameMessage message = GameMessage.fromJson(gameMessage);
+      gameMessage$.add(message);
+
+      _processActionDone(message);
     });
+  }
+
+  void _processActionDone(GameMessage message) {
+    if (message.senderId == SYSTEM_ID) {
+      _actionDone$.add(ResponseResult.success());
+    } else if (message.senderId == SYSTEM_ERROR_ID) {
+      _actionDone$.add(ResponseResult.error());
+    }
   }
 }
