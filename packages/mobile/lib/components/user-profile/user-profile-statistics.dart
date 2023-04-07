@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../../classes/user.dart';
 
@@ -48,23 +47,23 @@ class UserProfileStatistics extends StatelessWidget {
                     Expanded(
                         child: UserProfileStatisticsItem(
                             title: "CLASSEMENT ELO",
-                            value: "${snapshot.data?.rating ?? 0}")),
+                            value: "${statistics!.rating.round()}")),
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Parties jouées",
+                            title: "PARTIES JOUÉES",
                             value: "${statistics!.gamesPlayedCount}")),
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Parties gagnées",
+                            title: "PARTIES GAGNÉES",
                             value: "${statistics!.gamesWonCount}")),
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Moyenne de points",
+                            title: "MOYENNE DE POINTS",
                             value:
                                 "${(statistics!.averagePointsPerGame).round()} pts")),
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Temps moyen",
+                            title: "TEMPS MOYEN",
                             value:
                                 "${(statistics!.averageTimePerGame).round()} s")),
                   ],
