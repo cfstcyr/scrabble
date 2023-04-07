@@ -16,6 +16,7 @@ class GameEventService {
     _events[PLACE_TILE_ON_BOARD] = PublishSubject<TilePlacement>();
     _events[REMOVE_TILE_FROM_BOARD] = PublishSubject<TilePlacement>();
     _events[PUT_BACK_TILES_ON_TILE_RACK] = PublishSubject<void>();
+    _events[CLEAR_SYNCED_TILES] = PublishSubject<void>();
 
     /// Uncomment to log events
     // for (var entry in _events.entries) {

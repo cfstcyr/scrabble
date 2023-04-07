@@ -15,6 +15,8 @@ import 'package:rxdart/rxdart.dart';
 
 class Board {
   final GameEventService _gameEventService = getIt.get<GameEventService>();
+  final TileSynchronisationService _tileSynchronisationService =
+      getIt.get<TileSynchronisationService>();
   late List<List<Square>> grid;
   BehaviorSubject<Placement> _currentPlacement$;
   BehaviorSubject<bool> _isValidPlacement$;
@@ -33,6 +35,7 @@ class Board {
     _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD,
         (tilePlacement) {
       print('place');
+      if (tilePlacement.tile.state == TileState.synced) return;
       var placement = _currentPlacement$.value;
       placement.add(tilePlacement);
 
@@ -42,7 +45,9 @@ class Board {
 
     _gameEventService.listen<TilePlacement>(REMOVE_TILE_FROM_BOARD,
         (tilePlacement) {
-          print('remove event : ${tilePlacement.tile.letter} + ${tilePlacement.tile.state}');
+      print(
+          'remove event : ${tilePlacement.tile.letter} + ${tilePlacement.tile.state}');
+      if (tilePlacement.tile.state == TileState.synced) return;
       var placement = _currentPlacement$.value;
 
       placement.remove(tilePlacement);
@@ -50,6 +55,13 @@ class Board {
       _currentPlacement$.add(placement.clone());
       _isValidPlacement$.add(placement.validatePlacement(this));
     });
+
+    _tileSynchronisationService.synchronisedTiles.listen(
+        (List<TilePlacement> synchronisedTiles) =>
+            _handleSynchronisedTilesUpdate(synchronisedTiles));
+
+    _gameEventService.listen<void>(
+        CLEAR_SYNCED_TILES, (void _) => currentSynchronisedTiles.clear());
   }
 
   Square getSquare(Vec2 v) {
@@ -79,6 +91,8 @@ class Board {
 
   updateBoardData(List<Square> squares) {
     for (var square in squares) {
+      print(
+          'Update board with: ${square.tile.value?.letter} + ${square.tile.value?.state}');
       grid[square.position.row][square.position.column] = square;
     }
   }
@@ -160,6 +174,18 @@ class Board {
     grid[0][7].multiplier = Multiplier(value: 3, type: MultiplierType.word);
     grid[7][14].multiplier = Multiplier(value: 3, type: MultiplierType.word);
     grid[14][7].multiplier = Multiplier(value: 3, type: MultiplierType.word);
+  }
+
+  void _handleSynchronisedTilesUpdate(List<TilePlacement> synchronisedTiles) {
+    // for (TilePlacement tilePlacement in currentSynchronisedTiles) {
+    //   getSquare(tilePlacement.position).removeTile();
+    // }
+    //
+    // currentSynchronisedTiles = [...synchronisedTiles];
+    //
+    // for (TilePlacement tilePlacement in currentSynchronisedTiles) {
+    //   getSquare(tilePlacement.position).setTile(tilePlacement.tile);
+    // }
   }
 
   static List<List<Square>> gridFromJson(List<dynamic> grid) {

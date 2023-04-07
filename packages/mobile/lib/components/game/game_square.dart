@@ -21,10 +21,12 @@ class GameSquare extends StatefulWidget {
   final TileRack? tileRack;
   final Square square;
   final Color color;
+  final bool isLocalPlayerPlaying;
 
   GameSquare({
     required this.tileRack,
     required this.square,
+    required this.isLocalPlayerPlaying
   }) : color =
             square.multiplier != null ? square.getColor() : Color(0xFFEEEEEE);
 
@@ -63,7 +65,7 @@ class _GameSquareState extends State<GameSquare> {
         StreamBuilder<c.Tile?>(
           stream: widget.square.tile,
           builder: (context, snapshot) {
-            return snapshot.data != null
+            return snapshot.data != null || !widget.isLocalPlayerPlaying
                 ? SizedBox(
                     height: double.maxFinite,
                     width: double.maxFinite,
@@ -135,7 +137,8 @@ class _GameSquareState extends State<GameSquare> {
                   ? StreamBuilder<bool>(
                       stream: widget.square.isAppliedStream,
                       builder: (context, isAppliedSnapshot) {
-                        return isAppliedSnapshot.data ?? false
+                        bool canDrag = widget.isLocalPlayerPlaying && isAppliedSnapshot.hasData ? isAppliedSnapshot.data! : false;
+                        return canDrag
                             ? Tile(tile: snapshot.data)
                             : Draggable(
                                 data: snapshot.data,
@@ -187,11 +190,12 @@ class _GameSquareState extends State<GameSquare> {
   _onPutBackTiles(void _) {
     if (widget.square.getTile() == null) return;
     if (widget.square.getIsApplied()) return;
-    // if (widget.square.getTile()!.state == TileState.synced) return;
+    if (widget.square.getTile()!.state == TileState.synced) {
+      removeTile();
+      return;
+    }
 
-    print('put back tiles');
-    // Important de copy
-    // c.Tile squareTile = widget.square.getTile()!.copy();
+    // Ordre important, car si on removeTile avant, getTile() est null
     widget.tileRack?.placeTile(widget.square.getTile()!);
     removeTile();
   }
@@ -208,7 +212,6 @@ class _GameSquareState extends State<GameSquare> {
     print('Remove tile in square: ${tile.letter} + ${tile.state}');
     widget.square.removeTile();
 
-    // if (tile.state == TileState.synced) return;
     _gameEventService.add<TilePlacement>(REMOVE_TILE_FROM_BOARD,
         TilePlacement(tile: tile, position: widget.square.position));
   }

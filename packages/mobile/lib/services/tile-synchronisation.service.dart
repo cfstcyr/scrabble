@@ -24,9 +24,9 @@ class TileSynchronisationService {
           (List<TilePlacement> tilePlacements) =>
               tilePlacements.map((TilePlacement tilePlacement) {
                 tilePlacement.tile =
-                    tilePlacement.tile.copy().withState(TileState.synced);
+                    tilePlacement.tile.withState(TileState.synced);
                 return tilePlacement;
-              }));
+              }).toList());
 
   static final TileSynchronisationService _instance =
       TileSynchronisationService._privateConstructor();

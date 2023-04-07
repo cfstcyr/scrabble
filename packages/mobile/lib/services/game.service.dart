@@ -93,7 +93,7 @@ class GameService {
 
     MultiplayerGame game = _game.value!;
 
-    _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
+    _gameEventService.add<void>(CLEAR_SYNCED_TILES, null);
 
     if (gameUpdate.tileReserve != null) {
       game.tileReserve = gameUpdate.tileReserve!;
@@ -118,7 +118,6 @@ class GameService {
     _gameObserverService.playersContainer.add(game.players);
 
     if (gameUpdate.board != null) {
-      gameUpdate.board!.map((e) => print(e.getTile()?.state));
       game.board.updateBoardData(gameUpdate.board!);
     }
 
@@ -211,6 +210,15 @@ class GameService {
           ),
         ],
         dismissOnBackgroundTouch: true);
+  }
+
+  Stream<bool> isLocalPlayerPlaying() {
+    return CombineLatestStream<dynamic, bool>([_roundService.getActivePlayerId(), gameStream], (values) {
+      String activePlayerId = values[0];
+      MultiplayerGame? game = values[1];
+
+      return game != null ? game.players.localPlayerId == activePlayerId : false;
+    }).asBroadcastStream();
   }
 
   void _onTimerExpires() {
