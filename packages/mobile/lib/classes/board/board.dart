@@ -42,7 +42,7 @@ class Board {
 
     _gameEventService.listen<TilePlacement>(REMOVE_TILE_FROM_BOARD,
         (tilePlacement) {
-          print('remove');
+          print('remove event : ${tilePlacement.tile.letter} + ${tilePlacement.tile.state}');
       var placement = _currentPlacement$.value;
 
       placement.remove(tilePlacement);

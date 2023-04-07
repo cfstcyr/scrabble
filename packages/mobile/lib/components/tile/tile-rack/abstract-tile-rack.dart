@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/abstract-game.dart';
 import 'package:mobile/classes/board/board.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/tile/tile-rack/shuffle-tile-rack-button.dart';
 import 'package:mobile/components/tile/tile.dart';
@@ -90,6 +91,7 @@ abstract class AbstractTileRack extends StatelessWidget {
         Draggable(
             data: tile,
             onDragStarted: () {
+              tile.withState(TileState.defaultState);
               _currentTileIndex.add(index);
               _currentHoveredTileIndex.add(index);
             },
@@ -178,7 +180,7 @@ abstract class AbstractTileRack extends StatelessWidget {
                   });
             },
             onAccept: (data) {
-              snapshot.data!.tileRack.placeTile(data, to: index);
+              snapshot.data!.tileRack.placeTile(data, from: _currentTileIndex.value, to: index);
               _currentHoveredTileIndex.add(null);
             },
             onMove: (details) {

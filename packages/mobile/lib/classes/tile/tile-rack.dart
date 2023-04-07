@@ -37,8 +37,10 @@ class TileRack {
         .toList();
   }
 
-  TileRack setTiles(List<Tile> tiles) {
-    _tiles.add([...tiles]);
+  TileRack setTiles(List<Tile> tiles, {bool overrideState = true}) {
+    _tiles.add(overrideState
+        ? [...tiles.map((t) => t.copy().withState(TileState.defaultState)).toList()]
+        : [...tiles]);
     return this;
   }
 
@@ -48,35 +50,39 @@ class TileRack {
   }
 
   TileRack removeTile(Tile tile) {
+    print('Remove tile from tilerack: ${tile.letter} + ${tile.state}');
     List<Tile> tiles = _tiles.value;
 
     tiles.remove(tile);
-    _tiles.add([...tiles]);
+    setTiles(tiles);
     return this;
   }
 
-  placeTile(Tile tile, {int? to}) {
+  placeTile(Tile tile, {int? from, int? to}) {
+    print('Place tile in tilerack: ${tile.letter} + ${tile.state}');
+    // tile.withState(TileState.defaultState);
     List<Tile> tiles = _tiles.value;
 
     if (to != null) {
-      int from = tiles.indexOf(tile);
-
-      if (from < 0) {
+      int computedFrom = from ?? tiles.indexOf(tile);
+      print('From: $from');
+      // If it was not in the tilerack
+      if (computedFrom < 0 || tile.state == TileState.notApplied) {
         // Add to tile rack
         tiles.insert(to + 1, tile);
       } else {
         // Move from within tile rack
-        if (from > to) to = to + 1;
+        if (computedFrom > to) to = to + 1;
 
-        if (from < to) {
-          tiles.setRange(from, to, tiles, from + 1);
+        if (computedFrom < to) {
+          tiles.setRange(computedFrom, to, tiles, computedFrom + 1);
         } else {
-          tiles.setRange(to + 1, from + 1, tiles, to);
+          tiles.setRange(to + 1, computedFrom + 1, tiles, to);
         }
         tiles[to] = tile;
       }
     } else {
-      tiles.remove(tile);
+      // tiles.remove(tile);
       tiles.add(tile);
     }
 
@@ -86,7 +92,7 @@ class TileRack {
   shuffle() {
     var tiles = _tiles.value;
     tiles.shuffle();
-    _tiles.add([...tiles]);
+    setTiles(tiles);
   }
 
   void toggleExchangeMode() {

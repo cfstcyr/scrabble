@@ -46,7 +46,7 @@ class PlacementView {
     placement._gameForPlacement$ = BehaviorSubject.seeded(AbstractGame(
         board: board,
         tileRack: TileRack()
-            .setTiles(tileRackView.map((w.Tile t) => t.tile!).toList())));
+            .setTiles(tileRackView.map((w.Tile t) => t.tile!).toList(), overrideState: false)));
 
     return placement;
   }

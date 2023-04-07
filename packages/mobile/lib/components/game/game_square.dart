@@ -158,6 +158,7 @@ class _GameSquareState extends State<GameSquare> {
                                   tile: snapshot.data,
                                 ),
                                 onDragCompleted: () {
+                                  print('drag complete');
                                   removeTile();
                                 },
                               );
@@ -170,37 +171,45 @@ class _GameSquareState extends State<GameSquare> {
   }
 
   _onPlaceTile(BuildContext context, c.Tile tile) async {
-    tile.withState(TileState.notApplied);
-
-    widget.square.setTile(tile);
+    print('Place: ${tile.letter}');
 
     if (tile.isWildcard) {
       await triggerWildcardDialog(context, square: widget.square);
     }
 
     _gameEventService.add<TilePlacement>(PLACE_TILE_ON_BOARD,
-        TilePlacement(tile: tile.copy(), position: widget.square.position));
+        TilePlacement(tile: tile, position: widget.square.position));
+
+    tile = tile.copy().withState(TileState.notApplied);
+    widget.square.setTile(tile);
   }
 
   _onPutBackTiles(void _) {
-    c.Tile? tile = widget.square.getTile();
+    if (widget.square.getTile() == null) return;
+    if (widget.square.getIsApplied()) return;
+    // if (widget.square.getTile()!.state == TileState.synced) return;
 
-    if (tile != null && !widget.square.getIsApplied()) {
-      widget.tileRack?.placeTile(tile.withState(TileState.defaultState));
-      removeTile();
-    }
+    print('put back tiles');
+    // Important de copy
+    // c.Tile squareTile = widget.square.getTile()!.copy();
+    widget.tileRack?.placeTile(widget.square.getTile()!);
+    removeTile();
   }
 
   removeTile() {
-    c.Tile? tile = widget.square.getTile();
+    print('Remove tests: ${widget.square.getTile()?.letter} + ${widget.square.getTile()?.state} + ${widget.square.getIsApplied()}');
+    if (widget.square.getTile() == null) return;
+    if (widget.square.getIsApplied()) return;
 
-    if (tile != null) {
-      tile.withState(TileState.defaultState);
-      if (tile.isWildcard) tile.playedLetter = null;
+    c.Tile tile = widget.square.getTile()!;
 
-      widget.square.removeTile();
-      _gameEventService.add<TilePlacement>(REMOVE_TILE_FROM_BOARD,
-          TilePlacement(tile: tile, position: widget.square.position));
-    }
+    if (tile.isWildcard) tile.playedLetter = null;
+
+    print('Remove tile in square: ${tile.letter} + ${tile.state}');
+    widget.square.removeTile();
+
+    // if (tile.state == TileState.synced) return;
+    _gameEventService.add<TilePlacement>(REMOVE_TILE_FROM_BOARD,
+        TilePlacement(tile: tile, position: widget.square.position));
   }
 }

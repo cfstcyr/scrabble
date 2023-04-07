@@ -41,6 +41,7 @@ class Square {
   }
 
   Square setTile(Tile tile) {
+    print('Set tile in square: ${tile.letter} + ${tile.state}');
     _tile.add(tile);
     return this;
   }
