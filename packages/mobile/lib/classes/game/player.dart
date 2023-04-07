@@ -28,8 +28,8 @@ class Player {
       socketId: json['id'],
       user: PublicUser.fromJson(json['publicUser']),
       score: json['score'] ?? 0,
-      adjustedRating: json['adjustedRating'],
-      ratingVariation: json['ratingVariation'],
+      adjustedRating: json['adjustedRating'] ?? 1000,
+      ratingVariation: json['ratingVariation'] ?? 0,
       tiles:
           json['tiles'] != null && (json['tiles'] as List<dynamic>).isNotEmpty
               ? TilesParser().parseTiles(json['tiles'] as List<dynamic>)
