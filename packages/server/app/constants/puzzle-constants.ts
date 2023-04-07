@@ -1,7 +1,7 @@
 export const MIN_WORD_SIZE = 4;
 export const MAX_WORD_SIZE = 7;
-export const MIN_WORD_COUNT = 4;
-export const MAX_WORD_COUNT = 12;
+export const MIN_WORD_COUNT = 2;
+export const MAX_WORD_COUNT = 6;
 export const SKIP_PLACEMENT_DISTANCE_CUTOFF = 4;
 export const MAX_PLACEMENTS_IN_RESULT = 5;
 
