@@ -170,8 +170,6 @@ class GameActions extends StatelessWidget {
       bool canPlay = values[0];
       bool isValidPlacement = values[1];
 
-      print('CanPlay: $canPlay');
-      print('IsValidPlacement: $isValidPlacement');
       return canPlay && isValidPlacement;
     });
   }

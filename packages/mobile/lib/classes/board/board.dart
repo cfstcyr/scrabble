@@ -34,29 +34,32 @@ class Board {
 
     _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD,
         (tilePlacement) {
-      print('place');
       if (tilePlacement.tile.state == TileState.synced) return;
       var placement = _currentPlacement$.value;
 
       placement.add(tilePlacement);
       _tileSynchronisationService.sendPlacementForSynchronisation(placement);
 
-      _currentPlacement$.add(placement.clone());
-      _isValidPlacement$.add(placement.validatePlacement(this));
+      _handlePlacementUpdate(placement);
     });
 
     _gameEventService.listen<TilePlacement>(REMOVE_TILE_FROM_BOARD,
         (tilePlacement) {
-      print(
-          'remove event : ${tilePlacement.tile.letter} + ${tilePlacement.tile.state}');
       if (tilePlacement.tile.state == TileState.synced) return;
       var placement = _currentPlacement$.value;
 
       placement.remove(tilePlacement);
       _tileSynchronisationService.sendPlacementForSynchronisation(placement);
 
-      _currentPlacement$.add(placement.clone());
-      _isValidPlacement$.add(placement.validatePlacement(this));
+      _handlePlacementUpdate(placement);
+    });
+
+    _gameEventService.listen<void>(CLEAR_PLACEMENT, (void _) {
+      Placement placement = _currentPlacement$.value;
+
+      placement.clear();
+
+      _handlePlacementUpdate(placement);
     });
 
     _tileSynchronisationService.synchronisedTiles.listen(
@@ -101,6 +104,11 @@ class Board {
   Board withGrid(List<List<Square>> grid) {
     this.grid = grid;
     return this;
+  }
+
+  void _handlePlacementUpdate(Placement placement) {
+    _currentPlacement$.add(placement.clone());
+    _isValidPlacement$.add(placement.validatePlacement(this));
   }
 
   _applyMultipliers() {

@@ -94,6 +94,7 @@ class GameService {
     MultiplayerGame game = _game.value!;
 
     _gameEventService.add<void>(CLEAR_SYNCED_TILES, null);
+    _gameEventService.add<void>(CLEAR_PLACEMENT, null);
 
     if (gameUpdate.tileReserve != null) {
       game.tileReserve = gameUpdate.tileReserve!;

@@ -35,7 +35,7 @@ class TilePlacement {
 class Placement {
   List<TilePlacement> tiles;
 
-  Placement({this.tiles = const []});
+  Placement({List<TilePlacement>? tiles}) : tiles = tiles ?? [];
 
   add(TilePlacement tilePlacement) {
     tiles = [...tiles, tilePlacement];
@@ -49,6 +49,10 @@ class Placement {
     }
 
     tiles.removeAt(index);
+  }
+
+  clear() {
+    tiles.clear();
   }
 
   ActionPlacePayload toActionPayload() {
