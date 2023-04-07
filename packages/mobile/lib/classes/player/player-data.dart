@@ -6,6 +6,8 @@ class PlayerUpdateData {
   String? newId;
   PublicUser? publicUser;
   int? score;
+  double? ratingVariation;
+  double? adjustedRating;
   List<Tile>? tiles;
 
   PlayerUpdateData({
@@ -14,6 +16,8 @@ class PlayerUpdateData {
     this.publicUser,
     this.score,
     this.tiles,
+    this.adjustedRating,
+    this.ratingVariation,
   });
 
   factory PlayerUpdateData.fromJson(Map<String, dynamic> json) {
@@ -24,6 +28,12 @@ class PlayerUpdateData {
           ? PublicUser.fromJson(json['publicUser'] as Map<String, dynamic>)
           : null,
       score: json['score'] as int?,
+      adjustedRating: json['adjustedRating'] != null
+          ? (json['adjustedRating'] as num).toDouble()
+          : null,
+      ratingVariation: json['ratingVariation'] != null
+          ? (json['ratingVariation'] as num).toDouble()
+          : null,
       tiles: json['tiles'] != null
           ? List<Tile>.from(
               (json['tiles'] as List).map((e) => Tile.fromJson(e)))

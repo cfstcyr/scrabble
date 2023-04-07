@@ -28,3 +28,6 @@ UserStatistics DEFAULT_USER_STATISTICS = UserStatistics(
     rating: 1000,
     ratingMax: 1000,
     bingoCount: 0);
+
+const double DEFAULT_RATING = 1000;
+const double DEFAULT_RATING_VARIATION = 0;
