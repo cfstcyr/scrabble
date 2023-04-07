@@ -33,7 +33,8 @@ class LeaderBoardPage extends StatelessWidget {
                   ),
                   SizedBox(height: 15),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.only(
+                        top: 8, left: 8, bottom: 8, right: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -155,7 +156,8 @@ Widget handleUserRank(int index) {
     case (2):
       return Icon(Icons.star_border);
   }
-  return SizedBox(
+  return Container(
+    alignment: Alignment.center,
     width: 25,
     child: Text(
       "${index + 1}",
