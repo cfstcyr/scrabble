@@ -270,7 +270,7 @@ class UserStatistics {
   double averagePointsPerGame;
   double averageTimePerGame;
   double rating;
-  int ratingMax;
+  double ratingMax;
   int bingoCount;
 
   UserStatistics(
@@ -290,6 +290,6 @@ class UserStatistics {
             gamesPlayedCount: json['gamesPlayedCount'],
             gamesWonCount: json['gamesWonCount'],
             rating: (json['rating'] as num).toDouble(),
-            ratingMax: json['ratingMax'],
+            ratingMax: (json['ratingMax'] as num).toDouble(),
             bingoCount: json['bingoCount']);
 }
