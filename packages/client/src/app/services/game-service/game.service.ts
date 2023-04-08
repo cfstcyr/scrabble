@@ -167,6 +167,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
             startGameData.player3,
             startGameData.player4,
         ]);
+        alert('yoooo');
         this.tileReserve = startGameData.tileReserve;
         this.tilePlacementService.resetTiles();
 

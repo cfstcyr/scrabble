@@ -31,7 +31,7 @@ export class GamePlayController extends BaseController {
         private readonly socketService: SocketService,
         private readonly activeGameService: ActiveGameService,
         private readonly virtualPlayerService: VirtualPlayerService,
-        private readonly authentificationService: AuthentificationService,
+        private readonly authentificationService: AuthentificationService, // private readonly userService: UserService,
     ) {
         super('/api/games');
     }
@@ -69,7 +69,6 @@ export class GamePlayController extends BaseController {
             try {
                 const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
                 await this.handleReplaceVirtualPlayer(gameId, playerId, virtualPlayerNumber);
-
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
                 next(exception);
@@ -231,7 +230,8 @@ export class GamePlayController extends BaseController {
     private handleTilePlacement(gameId: string, playerId: string, data: TilePlacement[]) {
         this.socketService.emitToRoomNoSender(gameId, playerId, 'tilePlacement', data);
     }
-    private handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: string): void {
+    private async handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: string): Promise<void> {
+        console.log(virtualPlayerNumber);
         this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
         const game: Game = this.activeGameService.getGame(gameId, observerId);
 
@@ -242,10 +242,13 @@ export class GamePlayController extends BaseController {
             player4: game.player4,
             isGameOver: game.gameIsOver,
         };
-
+        console.log('updatedData' + updatedData.player3);
+        const observerSocket = this.socketService.getSocket(observerId);
+        this.socketService.emitToSocket(observerSocket.id, 'startGame', game.createStartGameData());
         this.gameUpdate(gameId, updatedData);
+        // const observer: PublicUser = await this.userService.getPublicUserById(observerId.);
         this.socketService.emitToRoom(gameId, 'newMessage', {
-            content: 'Un Observateur a remplacé le JV ',
+            content: ' Un observateur a remplacé un des JV ',
             senderId: 'system',
             gameId,
         });
