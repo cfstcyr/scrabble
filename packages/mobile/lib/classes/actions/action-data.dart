@@ -83,7 +83,6 @@ class ActionData<T extends ActionPayload> {
 String formatInput(ActionData data) {
   switch (data.type) {
     case (ActionType.place):
-      print((data.payload as ActionPlacePayload).tiles);
       return placeActionPayloadToString(data.payload as ActionPlacePayload);
     case (ActionType.exchange):
       return exchangeActionPayloadToString(
