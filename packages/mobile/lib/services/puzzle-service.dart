@@ -142,7 +142,7 @@ class PuzzleService {
       print(jsonDecode(value.body));
       DailyCompletionStatus isCompletedStatus  = DailyCompletionStatus.fromJson(jsonDecode(value.body));
       return isCompletedStatus.isCompleted;
-    }).catchError((error) => false);
+    }).catchError((error) => true);
   }
 
   Future<DailyPuzzleLeaderboard> getDailyPuzzleLeaderboard() async {

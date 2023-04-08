@@ -17,6 +17,8 @@ import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/puzzle-service.dart';
 
 void showStartDailyPuzzleDialog(BuildContext context) {
+  final PuzzleService _puzzleService = getIt.get<PuzzleService>();
+
   showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -30,9 +32,9 @@ void showStartDailyPuzzleDialog(BuildContext context) {
                     ?.copyWith(fontWeight: FontWeight.w500)),
           ),
           content:
-              SingleChildScrollView(child: Center(child: DailyPuzzleDialogContent())),
-          contentPadding:
-              EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
+              SizedBox(height: MediaQuery.of(context).size.height, child: Center(child: DailyPuzzleDialogContent())),
+          // contentPadding:
+          //     EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
           ),
