@@ -1,4 +1,5 @@
 @import '../../style/variables.scss';
+@import '../../style/utils.scss';
 
 .header {
     position: fixed;
@@ -6,6 +7,10 @@
     z-index: 10;
     padding: 8px 24px;
     box-sizing: border-box;
+
+    & * {
+        @include no-select;
+    }
 
     .content {
         display: grid;
