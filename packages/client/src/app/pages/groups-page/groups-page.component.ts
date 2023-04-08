@@ -2,16 +2,15 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GroupRequest } from '@app/classes/communication/group-request';
-// import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { GroupPasswordDialogComponent } from '@app/components/group-password-waiting-dialog/group-password-waiting-dialog';
 import { GroupRequestWaitingDialogComponent } from '@app/components/group-request-waiting-dialog/group-request-waiting-dialog';
 import { NO_GROUP_CAN_BE_JOINED } from '@app/constants/component-errors';
-// import { DIALOG_BUTTON_CONTENT_RETURN_GROUP, DIALOG_FULL_CONTENT, DIALOG_FULL_TITLE } from '@app/constants/pages-constants';
+import { DIALOG_BUTTON_CONTENT_RETURN_GROUP, DIALOG_FULL_CONTENT, DIALOG_FULL_TITLE } from '@app/constants/pages-constants';
 import { GameDispatcherService } from '@app/services/';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
 import { Subject } from 'rxjs';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 
 @Component({
     selector: 'app-groups-page',
@@ -19,37 +18,18 @@ import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
     styleUrls: ['./groups-page.component.scss'],
 })
 export class GroupsPageComponent implements OnInit, OnDestroy {
-    groups: Group[] = [
-        {
-            groupId: '1',
-            user1: { username: 'user1', avatar: '', email: '' },
-            maxRoundTime: 1,
-            gameVisibility: GameVisibility.Protected,
-            virtualPlayerLevel: VirtualPlayerLevel.Expert,
-            password: '',
-            numberOfObservers: 1,
-        },
-        {
-            groupId: '1',
-            user1: { username: 'user1fidhsaufhdsiuahfuidsahbgfudahbuyghfduayhguidfhgiuhn', avatar: '', email: '' },
-            maxRoundTime: 1,
-            gameVisibility: GameVisibility.Public,
-            virtualPlayerLevel: VirtualPlayerLevel.Beginner,
-            password: '',
-            numberOfObservers: 1,
-        },
-    ];
+    groups: Group[];
     private componentDestroyed$: Subject<boolean>;
 
     constructor(public gameDispatcherService: GameDispatcherService, public dialog: MatDialog, private snackBar: MatSnackBar) {
-        // this.groups = [];
+        this.groups = [];
         this.componentDestroyed$ = new Subject();
     }
 
     ngOnInit(): void {
-        // this.gameDispatcherService.subscribeToGroupsUpdateEvent(this.componentDestroyed$, (groups: Group[]) => this.updateGroups(groups));
-        // this.gameDispatcherService.subscribeToGroupFullEvent(this.componentDestroyed$, () => this.groupFullDialog());
-        // this.gameDispatcherService.handleGroupListRequest();
+        this.gameDispatcherService.subscribeToGroupsUpdateEvent(this.componentDestroyed$, (groups: Group[]) => this.updateGroups(groups));
+        this.gameDispatcherService.subscribeToGroupFullEvent(this.componentDestroyed$, () => this.groupFullDialog());
+        this.gameDispatcherService.handleGroupListRequest();
     }
 
     ngOnDestroy(): void {
@@ -90,24 +70,24 @@ export class GroupsPageComponent implements OnInit, OnDestroy {
         }
     }
 
-    // private updateGroups(groups: Group[]): void {
-    //     this.groups = groups;
-    // }
-    //
-    // private groupFullDialog(): void {
-    //     this.dialog.open(DefaultDialogComponent, {
-    //         data: {
-    //             title: DIALOG_FULL_TITLE,
-    //             content: DIALOG_FULL_CONTENT,
-    //             buttons: [
-    //                 {
-    //                     content: DIALOG_BUTTON_CONTENT_RETURN_GROUP,
-    //                     closeDialog: true,
-    //                 },
-    //             ],
-    //         },
-    //     });
-    // }
+    private updateGroups(groups: Group[]): void {
+        this.groups = groups;
+    }
+
+    private groupFullDialog(): void {
+        this.dialog.open(DefaultDialogComponent, {
+            data: {
+                title: DIALOG_FULL_TITLE,
+                content: DIALOG_FULL_CONTENT,
+                buttons: [
+                    {
+                        content: DIALOG_BUTTON_CONTENT_RETURN_GROUP,
+                        closeDialog: true,
+                    },
+                ],
+            },
+        });
+    }
 
     private groupPasswordDialog(group: Group, isObserver: boolean): void {
         const dialogRef = this.dialog.open(GroupPasswordDialogComponent, {
