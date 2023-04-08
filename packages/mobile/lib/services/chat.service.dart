@@ -18,6 +18,7 @@ class ChatService {
   final String endpoint = CHAT_ENDPOINT;
 
   SocketService socketService = getIt.get<SocketService>();
+  UserService userService = getIt.get<UserService>();
 
   ChatService._privateConstructor() {
     _configureSocket();
@@ -88,7 +89,7 @@ class ChatService {
   void readChannelMessages(int idChannel) {
     List<Channel> myChannels = [..._myChannels$.value];
     Channel channel =
-      myChannels.firstWhere((Channel c) => c.idChannel == idChannel);
+        myChannels.firstWhere((Channel c) => c.idChannel == idChannel);
 
     channel.messages
         .map((ChannelMessage message) => message.isRead = true)
@@ -101,10 +102,12 @@ class ChatService {
     socketService.on(MESSAGE_EVENT, (receivedChannelMessage) {
       ChannelMessage channelMessage =
           ChannelMessage.fromJson(receivedChannelMessage);
-      channelMessage.isRead = false;
+      channelMessage.isRead = userService.user.value?.username ==
+          channelMessage.message.sender.username;
 
       _handleNewMessage(channelMessage);
-      _handlePlayNotificationSound(channelMessage.message.sender.username, channelMessage.idChannel);
+      _handlePlayNotificationSound(
+          channelMessage.message.sender.username, channelMessage.idChannel);
     });
 
     socketService.on(CHANNEL_CREATED_EVENT, (receivedChannel) {
@@ -182,8 +185,11 @@ class ChatService {
   }
 
   void _handlePlayNotificationSound(String senderUsername, int idChannel) {
-    String? currentUsername = getIt.get<UserService>().user.valueOrNull?.username;
-    if (currentUsername == null || currentUsername == senderUsername || openedChannelId.value == idChannel) return;
+    String? currentUsername =
+        getIt.get<UserService>().user.valueOrNull?.username;
+    if (currentUsername == null ||
+        currentUsername == senderUsername ||
+        openedChannelId.value == idChannel) return;
 
     _notificationPlayer.play(AssetSource(NOTIFICATION_PATH));
   }
