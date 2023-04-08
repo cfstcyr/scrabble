@@ -22,8 +22,7 @@
         gap: 12px;
     }
 
-    &__content,
-    &__buttons {
+    mat-card {
         width: calc(100% - 48px);
         max-width: 450px;
     }
