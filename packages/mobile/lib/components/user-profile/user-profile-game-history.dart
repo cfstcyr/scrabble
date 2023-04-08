@@ -47,6 +47,10 @@ class UserProfileGameHistory extends StatelessWidget {
                         title: 'Résultat',
                         builder: (context, row) => _getGameStatus(row.data)),
                     AppTableColumn(
+                        title: 'Variation de Elo',
+                        builder: (context, row) => Text(
+                            '${row.data.ratingVariation > 0 ? '+' : ''}${row.data.ratingVariation.round()} Elo')),
+                    AppTableColumn(
                         title: 'Score',
                         builder: (context, row) => Text(
                               '${row.data.score} pts',

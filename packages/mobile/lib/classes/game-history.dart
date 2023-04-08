@@ -14,7 +14,7 @@ class GameHistory {
       required this.hasAbandoned,
       required this.isWinner,
       required this.idAnalysis,
-      required ratingVariation});
+      required this.ratingVariation});
 
   GameHistory.fromJson(Map<String, dynamic> json)
       : this(
