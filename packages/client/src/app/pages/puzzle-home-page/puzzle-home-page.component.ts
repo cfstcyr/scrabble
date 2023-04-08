@@ -33,6 +33,7 @@ export class PuzzleHomePageComponent {
     }
 
     private getMessage(leaderboard: DailyPuzzleLeaderboard): string {
+        console.log(leaderboard);
         if (leaderboard.userScore === PUZZLE_NOT_COMPLETED) return DAILY_PUZZLE_MESSAGE_NOT_COMPLETED;
         if (leaderboard.userScore <= 0) return DAILY_PUZZLE_MESSAGE_NOT_WON;
         if (leaderboard.userScore > 0 && leaderboard.userRank === 1) return DAILY_PUZZLE_MESSAGE_FIRST;
