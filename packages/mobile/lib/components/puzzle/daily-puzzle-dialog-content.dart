@@ -53,10 +53,6 @@ class _DailyPuzzleDialogContentState extends State<DailyPuzzleDialogContent> {
                     )),
               ),
             ),
-            // SizedBox(
-            //   height: SPACE_3,
-            // ),
-            // Spacer(),
             Expanded(flex: 1, child: leaderboard != null && leaderboard.leaderboard.isNotEmpty
                 ? SingleChildScrollView(
               child: Column(children: List.generate(
@@ -76,10 +72,6 @@ class _DailyPuzzleDialogContentState extends State<DailyPuzzleDialogContent> {
                 ),
               ),
             ),),
-            // SizedBox(
-            //   height: SPACE_3,
-            // ),
-            // Spacer(),
             Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(8.0)),

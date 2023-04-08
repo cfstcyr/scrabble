@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/puzzle/puzzle-level.dart';
+import 'package:mobile/classes/puzzle/puzzle-type.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/create-game/timer-selector.dart';
 import 'package:mobile/components/error-pop-up.dart';
@@ -66,40 +67,45 @@ void showStartDailyPuzzleDialog(BuildContext context) {
                 ),
                 ConstrainedBox(
                   constraints: BoxConstraints.tightFor(width: 216, height: 60),
-                  child: AppButton(
-                    onPressed: () {
-                      // getIt
-                      //     .get<PuzzleService>()
-                      //     .startPuzzle(puzzleLevelSelector.selectedValue ??
-                      //         advancedPuzzleLevel)
-                      //     .then((bool isSuccess) {
-                      //   Navigator.pop(context);
-                      //   if (isSuccess) {
-                      //     getIt.get<GameMessagesService>().resetMessages();
-                      //     Navigator.pushReplacementNamed(context, PUZZLE_ROUTE);
-                      //   } else {
-                      //     errorSnackBar(context, START_ERROR);
-                      //   }
-                      // });
-                    },
-                    theme: AppButtonTheme.primary,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(START_BUTTON,
-                            style: TextStyle(
-                                fontSize: 24,
-                                color: Colors.white,
-                                overflow: TextOverflow.ellipsis),
-                            textAlign: TextAlign.end),
-                        Icon(
-                          Icons.play_arrow_rounded,
-                          color: Colors.white,
-                          size: 48,
-                        )
-                      ],
-                    ),
+                  child: FutureBuilder<bool>(
+                    future: _puzzleService.isDailyCompleted(),
+                    builder: (context, snapshot) {
+                      bool isDailyCompleted = snapshot.data ?? true;
+                      return AppButton(
+                        onPressed: isDailyCompleted ? () {
+                          getIt
+                              .get<PuzzleService>()
+                              .startDailyPuzzle()
+                              .then((bool isSuccess) {
+                            Navigator.pop(context);
+                            if (isSuccess) {
+                              getIt.get<GameMessagesService>().resetMessages();
+                              Navigator.pushReplacementNamed(context, PUZZLE_ROUTE);
+                            } else {
+                              errorSnackBar(context, START_ERROR);
+                            }
+                          });
+                        } : null,
+                        theme: AppButtonTheme.primary,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(START_BUTTON,
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    color: Colors.white,
+                                    overflow: TextOverflow.ellipsis),
+                                textAlign: TextAlign.end),
+                            Icon(
+                              Icons.play_arrow_rounded,
+                              color: Colors.white,
+                              size: 48,
+                            )
+                          ],
+                        ),
+                      );
+                    }
                   ),
                 ),
               ],
