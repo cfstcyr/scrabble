@@ -73,4 +73,26 @@
             }
         }
     }
+
+    @media (max-width: 950px) {
+        .content {
+            grid-template-columns: auto auto 1fr;
+        }
+
+        .back-btn {
+            app-icon {
+                padding: 12px 12px 12px 0;
+            }
+
+            img {
+                display: none;
+            }
+        }
+
+        .user-container {
+            .username {
+                display: none;
+            }
+        }
+    }
 }
