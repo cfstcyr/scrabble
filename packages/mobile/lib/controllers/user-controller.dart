@@ -43,9 +43,8 @@ class UserController {
   }
 
   Future<List<RatedUser>> getRatingLeaderboard() async {
-    var b = jsonDecode(
-        (await _http.get(Uri.parse("$endpoint/users/ratings"))).body);
-    return RatedUser.fromJsonList(b);
+    return RatedUser.fromJsonList(jsonDecode(
+        (await _http.get(Uri.parse("$endpoint/users/ratings"))).body));
   }
 
   Future<List<GameHistory>> getGameHistory() async {
