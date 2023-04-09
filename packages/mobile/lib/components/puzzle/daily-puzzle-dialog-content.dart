@@ -8,8 +8,10 @@ import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/constants/locale/puzzle-constants.dart';
 import 'package:mobile/constants/puzzle-constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/puzzle-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:mobile/services/user.service.dart';
 
 class DailyPuzzleDialogContent extends StatefulWidget {
   @override
@@ -20,6 +22,7 @@ class DailyPuzzleDialogContent extends StatefulWidget {
 class _DailyPuzzleDialogContentState extends State<DailyPuzzleDialogContent> {
   final PuzzleService _puzzleService = getIt.get<PuzzleService>();
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
+  final UserService _userService = getIt.get<UserService>();
 
   @override
   Widget build(BuildContext context) {
@@ -111,47 +114,57 @@ class _DailyPuzzleDialogContentState extends State<DailyPuzzleDialogContent> {
   Widget _dailyLeaderboardEntry(int index, DailyPuzzleResult entryResult) {
     ThemeData theme = Theme.of(context);
 
-    return Card(
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _themeColorService.themeDetails.value.color.colorValue),
-            margin: EdgeInsets.only(left: SPACE_2),
-            width: 36,
-            height: 36,
-            child: Center(
-              child: Text('${index + 1}',
-                  style: theme.textTheme.titleSmall!.copyWith(
-                      color: Colors.white, fontWeight: FontWeight.w600)),
-            ),
-          ),
-          SizedBox(width: SPACE_2,),
-          Padding(
-            padding: const EdgeInsets.all(SPACE_2),
-            child: Avatar(
-              avatar: entryResult.avatar,
-              size: 42,
-            ),
-          ),
-          Spacer(),
-          Text(entryResult.username, overflow: TextOverflow.ellipsis,),
-          Spacer(),
-          Container(
+    return InkWell(
+      onTap: () {
+        _userService.getProfileByUsername(
+            entryResult.username);
+        Navigator.pushNamed(
+            context, PROFILE_ROUTE,
+            arguments:
+            entryResult);
+      },
+      child: Card(
+        child: Row(
+          children: [
+            Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  color: theme.colorScheme.tertiary),
-              padding: EdgeInsets.all(SPACE_1),
-              margin: EdgeInsets.only(right: SPACE_2),
-              child: Text(
-                '${entryResult.score} pts',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(fontWeight: FontWeight.w600),
-              )),
-        ],
+                  shape: BoxShape.circle,
+                  color: _themeColorService.themeDetails.value.color.colorValue),
+              margin: EdgeInsets.only(left: SPACE_2),
+              width: 36,
+              height: 36,
+              child: Center(
+                child: Text('${index + 1}',
+                    style: theme.textTheme.titleSmall!.copyWith(
+                        color: Colors.white, fontWeight: FontWeight.w600)),
+              ),
+            ),
+            SizedBox(width: SPACE_2,),
+            Padding(
+              padding: const EdgeInsets.all(SPACE_2),
+              child: Avatar(
+                avatar: entryResult.avatar,
+                size: 42,
+              ),
+            ),
+            Spacer(),
+            Text(entryResult.username, overflow: TextOverflow.ellipsis,),
+            Spacer(),
+            Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    color: theme.colorScheme.tertiary),
+                padding: EdgeInsets.all(SPACE_1),
+                margin: EdgeInsets.only(right: SPACE_2),
+                child: Text(
+                  '${entryResult.score} pts',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall!
+                      .copyWith(fontWeight: FontWeight.w600),
+                )),
+          ],
+        ),
       ),
     );
   }
