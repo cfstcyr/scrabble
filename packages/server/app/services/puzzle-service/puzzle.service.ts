@@ -121,8 +121,8 @@ export class PuzzleService {
 
         return {
             leaderboard,
-            userScore: userScore?.score ?? -1,
-            userRank: userScore ? Number(userRank?.count) + 1 : -1,
+            userScore: userScore?.score ?? PUZZLE_NOT_COMPLETED,
+            userRank: userScore ? Number(userRank?.count) + 1 : PUZZLE_NOT_COMPLETED,
             totalPlayers: Number(totalPlayers?.count ?? 0),
         };
     }

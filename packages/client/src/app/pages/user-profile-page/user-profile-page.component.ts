@@ -19,6 +19,7 @@ import { TypeOfId } from '@common/types/id';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UserAchievement } from '@common/models/achievement';
+import { Timer } from '@app/classes/round/timer';
 
 @Component({
     selector: 'app-user-profile-page',
@@ -38,7 +39,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
     gamesPlayedCount: Observable<number | undefined>;
     gamesWonCount: Observable<number | undefined>;
     averagePointsPerGame: Observable<number | undefined>;
-    averageTimePerGame: Observable<number | undefined>;
+    averageTimePerGame: Observable<string | undefined>;
     rating: Observable<number | undefined>;
     gameHistory: MatTableDataSource<GameHistoryForUser>;
     serverActions: MatTableDataSource<PublicServerAction>;
@@ -53,7 +54,9 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit {
         this.gamesPlayedCount = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.gamesPlayedCount));
         this.gamesWonCount = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.gamesWonCount));
         this.averagePointsPerGame = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.averagePointsPerGame));
-        this.averageTimePerGame = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.averageTimePerGame));
+        this.averageTimePerGame = this.userService.statistics.pipe(
+            map((userStatistics) => Timer.convertTime(userStatistics?.averageTimePerGame ?? 0).getStringTimer()),
+        );
         this.rating = this.userService.statistics.pipe(map((userStatistics) => userStatistics?.rating));
         this.achievements = this.userService.achievements.asObservable();
 

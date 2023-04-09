@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../../classes/user.dart';
 
@@ -47,25 +46,35 @@ class UserProfileStatistics extends StatelessWidget {
                   children: [
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Parties jouées",
+                            title: "CLASSEMENT ELO",
+                            value: "${statistics!.rating.round()}")),
+                    Expanded(
+                        child: UserProfileStatisticsItem(
+                            title: "PARTIES JOUÉES",
                             value: "${statistics!.gamesPlayedCount}")),
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Parties gagnées",
+                            title: "PARTIES GAGNÉES",
                             value: "${statistics!.gamesWonCount}")),
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Moyenne de points",
+                            title: "MOYENNE DE POINTS",
                             value:
                                 "${(statistics!.averagePointsPerGame).round()} pts")),
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Temps moyen",
-                            value:
-                                "${(statistics!.averageTimePerGame).round()} s")),
+                            title: "TEMPS MOYEN",
+                            value: handleTimeString(
+                                statistics!.averageTimePerGame))),
                   ],
                 )
               : Text('Impossible de charger les statistiques')),
     );
   }
+}
+
+String handleTimeString(double time) {
+  int timeInSec = (time % 60).round();
+  int timeInMin = ((time - timeInSec) / 60).round();
+  return timeInMin != 0 ? "$timeInMin min $timeInSec s" : "$timeInSec s";
 }

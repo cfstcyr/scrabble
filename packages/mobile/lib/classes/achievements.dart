@@ -43,7 +43,7 @@ class UserAchievement {
   Achievement achievement;
   AchievementLevel? level;
   int? levelIndex;
-  int value;
+  double value;
 
   UserAchievement({
     required this.achievement,
@@ -59,7 +59,7 @@ class UserAchievement {
                 ? null
                 : AchievementLevel.fromJson(json['level'])),
             levelIndex: json['levelIndex'],
-            value: (json['value'] as num).toInt());
+            value: (json['value'] as num).toDouble());
 
   static List<UserAchievement> fromJsonList(List<dynamic> list) {
     return list

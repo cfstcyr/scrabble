@@ -9,6 +9,7 @@ import 'package:mobile/pages/game-page.dart';
 import 'package:mobile/pages/groups-page.dart';
 import 'package:mobile/pages/home-page.dart';
 import 'package:mobile/pages/join-waiting-page.dart';
+import 'package:mobile/pages/leaderboard.dart';
 import 'package:mobile/pages/login-page.dart';
 import 'package:mobile/pages/profile-edit-page.dart';
 import 'package:mobile/pages/profile-page.dart';
@@ -32,6 +33,7 @@ const PROFILE_ROUTE = '/profile';
 const PROFILE_EDIT_ROUTE = '/edit-profile';
 const PROFILE_SEARCH_ROUTE = '/search-profile';
 const PUZZLE_ROUTE = '/puzzle';
+const LEADERBOARD_ROUTE = '/leaderboard';
 
 final ROUTES = {
   BASE_ROUTE: (context) => HomePage(),
@@ -44,6 +46,7 @@ final ROUTES = {
   PROFILE_EDIT_ROUTE: (context) => ProfileEditPage(),
   PROFILE_SEARCH_ROUTE: (context) => ProfileSearchPage(),
   PUZZLE_ROUTE: (context) => PuzzlePage(),
+  LEADERBOARD_ROUTE: (context) => LeaderBoardPage(),
 };
 
 Route<dynamic>? customOnGenerateRoute(RouteSettings settings) {

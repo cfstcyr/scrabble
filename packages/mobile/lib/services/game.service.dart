@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/analysis/analysis-request.dart';
 import 'package:mobile/classes/board/board.dart';
@@ -21,6 +21,7 @@ import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/user.service.dart';
+import 'package:mobile/view-methods/create-lobby-methods.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -34,6 +35,7 @@ class GameService {
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
   final GameEventService _gameEventService = getIt.get<GameEventService>();
+  final UserService _userService = getIt.get<UserService>();
   final GameObserverService _gameObserverService =
       getIt.get<GameObserverService>();
   final BehaviorSubject<MultiplayerGame?> _game;
@@ -61,7 +63,7 @@ class GameService {
         player4: startGameData.player4);
 
     playersContainer.localPlayerId = localPlayerId;
-    if (getIt.get<UserService>().isObserver) {
+    if (_userService.isObserver) {
       playersContainer.localPlayerId = playersContainer.player1.socketId;
     }
 
@@ -136,7 +138,7 @@ class GameService {
       }
     }
 
-    if (!getIt.get<UserService>().isObserver) {
+    if (!_userService.isObserver) {
       game.tileRack.setTiles(game.players.getLocalPlayer().tiles);
     }
 
@@ -176,15 +178,23 @@ class GameService {
   }
 
   void handleEndGame(BuildContext context) {
-    String player = getIt.get<UserService>().getUser().username;
-    bool isWinner = getIt.get<EndGameService>().winners$.value.contains(player);
+    String localUsername = _userService.getUser().username;
+    List<String> winners = getIt.get<EndGameService>().winners$.value;
+    bool isWinner = winners.contains(localUsername);
+
+    Player localPlayer = game.players.getPlayerByName(localUsername);
 
     triggerDialogBox(
-        DIALOG_END_OF_GAME_TITLE(isWinner),
-        [
-          Text(DIALOG_END_OF_GAME_CONTENT(isWinner),
-              style: TextStyle(fontSize: 16))
-        ],
+        !userService.isObserver
+            ? DIALOG_END_OF_GAME_TITLE(isWinner)
+            : DIALOG_END_OF_GAME_TITLE_OBSERVER(winners),
+        !userService.isObserver
+            ? [
+                Text(DIALOG_END_OF_GAME_CONTENT(isWinner),
+                    style: TextStyle(fontSize: 16)),
+                handleRatingChange(localPlayer),
+              ]
+            : [],
         [
           DialogBoxButtonParameters(
               content: DIALOG_LEAVE_BUTTON_CONTINUE,
@@ -196,19 +206,18 @@ class GameService {
                 Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
               }),
           DialogBoxButtonParameters(
-            content: DIALOG_SEE_ANALYSIS_BUTTON,
-            theme: AppButtonTheme.primary,
+              content: DIALOG_SEE_ANALYSIS_BUTTON,
+              theme: AppButtonTheme.primary,
               onPressed: () {
                 Navigator.pop(context);
 
                 AnalysisRequestDialog(
-                    title: ANALYSIS_REQUEST_TITLE,
-                    message: ANALYSIS_REQUEST_COMPUTING,
-                    idAnalysis: game.idGameHistory,
-                    requestType: AnalysisRequestInfoType.idGame)
+                        title: ANALYSIS_REQUEST_TITLE,
+                        message: ANALYSIS_REQUEST_COMPUTING,
+                        idAnalysis: game.idGameHistory,
+                        requestType: AnalysisRequestInfoType.idGame)
                     .openAnalysisRequestDialog(context);
-              }
-          ),
+              }),
         ],
         dismissOnBackgroundTouch: true);
   }
@@ -222,8 +231,24 @@ class GameService {
     }).asBroadcastStream();
   }
 
+  Widget handleRatingChange(Player localPlayer) {
+    return Row(
+      children: [
+        Text(
+            "$DIALOG_END_OF_GAME_RATING_CONTENT ${localPlayer.adjustedRating.round()}",
+            style: TextStyle(fontSize: 16)),
+        SizedBox(width: 5),
+        localPlayer.ratingVariation >= 0
+            ? Text("(+${localPlayer.ratingVariation.round()})",
+                style: TextStyle(color: Colors.green))
+            : Text("(${localPlayer.ratingVariation.round()})",
+                style: TextStyle(color: Colors.red))
+      ],
+    );
+  }
+
   void _onTimerExpires() {
-    if (!getIt.get<UserService>().isObserver &&
+    if (!_userService.isObserver &&
         _roundService.currentRound.socketIdOfActivePlayer ==
             getIt.get<GameService>().game.players.getLocalPlayer().socketId) {
       _actionService.sendAction(ActionType.pass);

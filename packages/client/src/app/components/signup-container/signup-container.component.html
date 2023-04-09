@@ -19,7 +19,7 @@
             <mat-form-field
                 appearance="outline"
                 [formGroup]="signupForm"
-                matTooltip="Votre nom doit être entre 1 et 40 caractères sans caractères spéciaux"
+                matTooltip="Votre nom doit être entre 1 et 20 caractères sans caractères spéciaux"
                 matTooltipPosition="above"
             >
                 <mat-label><app-icon icon="user"></app-icon> Pseudonyme</mat-label>
@@ -36,11 +36,12 @@
             <mat-form-field
                 appearance="outline"
                 [formGroup]="signupForm"
-                matTooltip="Au moins 8 caractères comprenant au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 symbole"
+                matTooltip="Au moins 8 caractères comprenant au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 symbole avec une taille maximale de 50 caractères"
                 matTooltipPosition="above"
             >
                 <mat-label><app-icon icon="lock"></app-icon> Mot de passe</mat-label>
-                <input matInput id="password" [type]="arePasswordsShown ? 'text' : 'password'" formControlName="password" autocomplete="off" />
+                <!-- <input matInput id="password" [type]="arePasswordsShown ? 'text' : 'password'"  formControlName="password" autocomplete="off" /> -->
+                <input matInput id="password" [type]="arePasswordsShown ? 'text' : 'password'" (blur)="handlePasswordLoseFocus()" formControlName="password" autocomplete="off" />
             </mat-form-field>
 
             <mat-form-field
