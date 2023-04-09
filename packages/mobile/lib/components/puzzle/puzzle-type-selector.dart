@@ -32,7 +32,6 @@ class PuzzleTypeSelector extends StatelessWidget {
                 ],
               ),),
             ),
-            // SizedBox(width: SPACE_2,),
             ConstrainedBox(
               constraints: BoxConstraints(minWidth: buttonSize, minHeight: buttonSize, maxWidth: buttonSize, maxHeight: buttonSize),
               child: AppButton(onPressed: () {
