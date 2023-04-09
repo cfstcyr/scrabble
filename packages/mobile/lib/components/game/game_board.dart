@@ -13,10 +13,15 @@ import 'package:rxdart/rxdart.dart';
 import '../../constants/game.constants.dart';
 
 class GameBoard extends StatelessWidget {
-
-  GameBoard({required this.gameStream, this.isInteractable = true, this.size = 630});
+  GameBoard({required this.gameStream, this.isInteractable = true, this.size = 630, this.isLocalPlayerPlaying})
+      : assert(
+            gameStream is ValueStream<MultiplayerGame?>
+                ? isLocalPlayerPlaying != null
+                : true,
+            'You have to define a isLocalPlayerPlaying stream in a Multiplayer Game');
 
   final Stream<AbstractGame?> gameStream;
+  final Stream<bool>? isLocalPlayerPlaying;
   final bool isInteractable;
   double size;
 
@@ -27,9 +32,14 @@ class GameBoard extends StatelessWidget {
         padding: EdgeInsets.all(SPACE_2),
         child: AspectRatio(
           aspectRatio: 1,
-          child: StreamBuilder<AbstractGame?>(
-            stream: gameStream,
+          child: StreamBuilder<dynamic>(
+            stream: gameBoardStream(),
             builder: (context, snapshot) {
+              if (!snapshot.hasData) return SizedBox.shrink();
+
+              AbstractGame? game = snapshot.data! is List ? snapshot.data![0] : snapshot.data!;
+              bool isLocalPlayerPlaying = game is MultiplayerGame? ? snapshot.data![1] : true;
+
               return GridView.count(
                 crossAxisCount: GRID_SIZE,
                 physics: NeverScrollableScrollPhysics(),
@@ -40,9 +50,10 @@ class GameBoard extends StatelessWidget {
                 children: List.generate(GRID_SIZE * GRID_SIZE, (index) {
                   var position = Position.fromVec2(Vec2.from1D(index));
                   return GameSquare(
-                    tileRack: snapshot.hasData ? snapshot.data!.tileRack : null,
-                    square: snapshot.data?.board.getSquare(position) ??
+                    tileRack: game?.tileRack,
+                    square: game?.board.getSquare(position) ??
                         Square(position: Position(0, 0)),
+                      isLocalPlayerPlaying: isLocalPlayerPlaying,
                     boardSize: size,
                     isInteractable: isInteractable,
                   );
@@ -53,5 +64,10 @@ class GameBoard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Stream<dynamic> gameBoardStream() {
+    if (isLocalPlayerPlaying == null) return gameStream;
+    return CombineLatestStream<dynamic, dynamic>([gameStream, isLocalPlayerPlaying!], (values) => values);
   }
 }
