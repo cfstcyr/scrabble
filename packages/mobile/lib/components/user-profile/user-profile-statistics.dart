@@ -74,7 +74,7 @@ class UserProfileStatistics extends StatelessWidget {
 }
 
 String handleTimeString(double time) {
-  int timeInMin = time.round() % 60;
-  int timeInSec = time.round() - timeInMin * 60;
+  int timeInSec = (time % 60).round();
+  int timeInMin = ((time - timeInSec) / 60).round();
   return timeInMin != 0 ? "$timeInMin min $timeInSec s" : "$timeInSec s";
 }
