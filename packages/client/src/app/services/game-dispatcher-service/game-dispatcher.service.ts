@@ -4,17 +4,17 @@ import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InitializeGameData } from '@app/classes/communication/game-config';
 import { VirtualPlayerLevel } from '@app/classes/player/virtual-player-level';
+import { ROUTE_CREATE_WAITING, ROUTE_JOIN_WAITING } from '@app/constants/routes-constants';
 import { GameDispatcherController } from '@app/controllers/game-dispatcher-controller/game-dispatcher.controller';
 import GameService from '@app/services/game-service/game.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+import { UserService } from '@app/services/user-service/user.service';
 import { GameVisibility } from '@common/models/game-visibility';
+import { Group, GroupData } from '@common/models/group';
+import { RequestingUsers } from '@common/models/requesting-users';
+import { PublicUser } from '@common/models/user';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UserService } from '@app/services/user-service/user.service';
-import { Group, GroupData } from '@common/models/group';
-import { PublicUser } from '@common/models/user';
-import { ROUTE_CREATE_WAITING, ROUTE_JOIN_WAITING } from '@app/constants/routes-constants';
-import { RequestingUsers } from '@common/models/requesting-users';
 
 @Injectable({
     providedIn: 'root',
@@ -71,6 +71,10 @@ export default class GameDispatcherService implements OnDestroy {
             async (initializeValue: InitializeGameData | undefined) =>
                 await this.gameService.handleInitializeGame(initializeValue, this.isObserver ?? false),
         );
+        this.gameDispatcherController.subscribeToReplaceVirtualPlayer(this.serviceDestroyed$, async (initializeValue: InitializeGameData) => {
+            this.isObserver = false;
+            await this.gameService.handleReplaceVirtualPlayer(initializeValue);
+        });
 
         this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());
     }

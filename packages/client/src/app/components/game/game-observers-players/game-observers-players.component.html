@@ -36,11 +36,8 @@
             <app-icon *ngIf='observedPlayerId === player3.player.id' icon='eye'></app-icon>
             <span class='game-observers-players__player__user__name'>{{player3.player.publicUser.username}}</span>
             <i class="fa-solid fa-arrows-rotate"></i>
-            <!-- <app-icon class="replace-jv-icon" *ngIf='observedPlayerId === player3.player.id' icon='arrows-rotate'>
-            </app-icon>
-        -->
-            <button class='replace-jv-button' mat-flat-button color="primary"
-                (click)="handleReplaceVirtualPlayerByObserver('3')">
+            <button *ngIf='observedPlayerId === player3.player.id' class='replace-jv-button' mat-flat-button
+                color="primary" (click)="handleReplaceVirtualPlayerByObserver('3')">
                 <app-icon icon="exchange" styling="solid"></app-icon>
             </button>
         </div>
@@ -58,10 +55,8 @@
             <app-icon *ngIf='observedPlayerId === player4.player.id' icon='eye'></app-icon>
             <span class='game-observers-players__player__user__name'>{{player4.player.publicUser.username}}</span>
             <i class="fa-solid fa-arrows-rotate"></i>
-            <!-- <app-icon class="replace-jv-icon" *ngIf='observedPlayerId === player4.player.id' icon='arrows-rotate'>
-            </app-icon> -->
-            <button class='replace-jv-button' mat-flat-button color="primary"
-                (click)="handleReplaceVirtualPlayerByObserver('4')">
+            <button *ngIf='observedPlayerId === player4.player.id' class='replace-jv-button' mat-flat-button
+                color="primary" (click)="handleReplaceVirtualPlayerByObserver('4')">
                 <app-icon icon="exchange" styling="solid"></app-icon>
             </button>
         </div>

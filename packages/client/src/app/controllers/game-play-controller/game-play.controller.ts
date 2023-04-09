@@ -4,7 +4,6 @@ import { ActionData } from '@app/classes/actions/action-data';
 import GameUpdateData from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
 import { HTTP_ABORT_ERROR } from '@app/constants/controllers-errors';
-import GameService from '@app/services/game-service/game.service';
 import SocketService from '@app/services/socket-service/socket.service';
 import { TilePlacement } from '@common/models/tile-placement';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
@@ -19,7 +18,7 @@ export class GamePlayController {
     private tilePlacement$ = new BehaviorSubject<TilePlacement[]>([]);
     private actionDone$ = new Subject<void>();
 
-    constructor(private http: HttpClient, private readonly socketService: SocketService, private readonly gameService: GameService) {
+    constructor(private http: HttpClient, private readonly socketService: SocketService) {
         this.configureSocket();
     }
 
@@ -31,10 +30,7 @@ export class GamePlayController {
     }
     replaceVirtualPlayerByObserver(gameId: string, virtualPlayerNumber: string): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/players/replace`;
-        console.log(virtualPlayerNumber);
-        this.http.post(endpoint, { virtualPlayerNumber }).subscribe(() => {
-            this.gameService.isObserver = false;
-        });
+        this.http.post(endpoint, { virtualPlayerNumber }).subscribe();
     }
     sendMessage(gameId: string, message: Message): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/players/message`;

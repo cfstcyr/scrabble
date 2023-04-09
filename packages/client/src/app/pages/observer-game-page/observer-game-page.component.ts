@@ -84,7 +84,6 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     }
 
     replaceObservingVirtualPlayer(virtualPlayerNumber: string) {
-        // remplacer le JV:
         this.gameService.replaceVirtualPlayer(virtualPlayerNumber);
     }
 

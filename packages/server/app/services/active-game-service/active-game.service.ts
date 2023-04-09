@@ -120,7 +120,6 @@ export class ActiveGameService {
     async handleReplaceVirtualPlayer(gameId: string, observerId: string, playerNumber: string) {
         const game: Game = this.getGame(gameId, observerId);
         const replacedVirtualPlayer = game.getPlayerByNumber(playerNumber);
-        console.log(replacedVirtualPlayer);
         const observer: Observer = game.observers.filter((_observer) => _observer.id === observerId)[0];
         const newPlayer: Player = this.observerToPlayer(observer);
 

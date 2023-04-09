@@ -7,7 +7,7 @@ import Game from '@app/classes/game/game';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { UserId } from '@app/classes/user/connected-user-types';
 import { CONTENT_REQUIRED, SENDER_REQUIRED } from '@app/constants/controllers-errors';
-import { INVALID_WORD_TIMEOUT, SYSTEM_ERROR_ID, SYSTEM_ID } from '@app/constants/game-constants';
+import { INVALID_WORD_TIMEOUT, OBSERVER_REPLACE_JV_MESSAGE, SYSTEM_ERROR_ID, SYSTEM_ID } from '@app/constants/game-constants';
 import { COMMAND_IS_INVALID, OPPONENT_PLAYED_INVALID_WORD } from '@app/constants/services-errors';
 import { BaseController } from '@app/controllers/base-controller';
 import { wordPlacementValidator } from '@app/middlewares/validators/tile-placement';
@@ -31,7 +31,7 @@ export class GamePlayController extends BaseController {
         private readonly socketService: SocketService,
         private readonly activeGameService: ActiveGameService,
         private readonly virtualPlayerService: VirtualPlayerService,
-        private readonly authentificationService: AuthentificationService, // private readonly userService: UserService,
+        private readonly authentificationService: AuthentificationService,
     ) {
         super('/api/games');
     }
@@ -66,6 +66,7 @@ export class GamePlayController extends BaseController {
             const { gameId } = req.params;
             const userId: UserId = req.body.idUser;
             const virtualPlayerNumber: string = req.body.virtualPlayerNumber;
+            console.log(virtualPlayerNumber);
             try {
                 const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
                 await this.handleReplaceVirtualPlayer(gameId, playerId, virtualPlayerNumber);
@@ -231,24 +232,17 @@ export class GamePlayController extends BaseController {
         this.socketService.emitToRoomNoSender(gameId, playerId, 'tilePlacement', data);
     }
     private async handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: string): Promise<void> {
-        console.log(virtualPlayerNumber);
         this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
         const game: Game = this.activeGameService.getGame(gameId, observerId);
-
+        const observerSocket = this.socketService.getSocket(observerId);
+        this.socketService.emitToSocket(observerSocket.id, 'replaceVirtualPlayer', game.createStartGameData());
         const updatedData = {
-            player1: game.player1,
-            player2: game.player2,
             player3: game.player3,
             player4: game.player4,
-            isGameOver: game.gameIsOver,
         };
-        console.log('updatedData' + updatedData.player3);
-        const observerSocket = this.socketService.getSocket(observerId);
-        this.socketService.emitToSocket(observerSocket.id, 'startGame', game.createStartGameData());
         this.gameUpdate(gameId, updatedData);
-        // const observer: PublicUser = await this.userService.getPublicUserById(observerId.);
         this.socketService.emitToRoom(gameId, 'newMessage', {
-            content: ' Un observateur a remplacé un des JV ',
+            content: OBSERVER_REPLACE_JV_MESSAGE,
             senderId: 'system',
             gameId,
         });
