@@ -147,7 +147,7 @@ class _DailyPuzzleDialogContentState extends State<DailyPuzzleDialogContent> {
                 size: 42,
               ),
             ),
-            Spacer(),
+            SizedBox(width: SPACE_2,),
             Text(entryResult.username, overflow: TextOverflow.ellipsis,),
             Spacer(),
             Container(
