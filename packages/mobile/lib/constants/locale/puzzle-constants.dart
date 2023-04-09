@@ -1,6 +1,5 @@
 // ignore_for_file: constant_identifier_names, non_constant_identifier_names
 
-const START_PUZZLE_TITLE = 'Mode Puzzle';
 const START_DAILY_TITLE = 'Mode Quotidien';
 const START_PRACTICE_TITLE = 'Mode Pratique';
 
