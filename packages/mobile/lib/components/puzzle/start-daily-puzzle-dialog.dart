@@ -18,7 +18,7 @@ import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/puzzle-service.dart';
 
 void showStartDailyPuzzleDialog(BuildContext context) {
-  final PuzzleService _puzzleService = getIt.get<PuzzleService>();
+  final PuzzleService puzzleService = getIt.get<PuzzleService>();
 
   showDialog<void>(
       context: context,
@@ -34,8 +34,6 @@ void showStartDailyPuzzleDialog(BuildContext context) {
           ),
           content:
               SizedBox(height: MediaQuery.of(context).size.height, child: Center(child: DailyPuzzleDialogContent())),
-          // contentPadding:
-          //     EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
           ),
@@ -68,7 +66,7 @@ void showStartDailyPuzzleDialog(BuildContext context) {
                 ConstrainedBox(
                   constraints: BoxConstraints.tightFor(width: 216, height: 60),
                   child: FutureBuilder<bool>(
-                    future: _puzzleService.isDailyCompleted(),
+                    future: puzzleService.isDailyCompleted(),
                     builder: (context, snapshot) {
                       bool isDailyCompleted = snapshot.data ?? true;
                       return AppButton(
