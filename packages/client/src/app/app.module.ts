@@ -79,6 +79,8 @@ import { GameTimerComponent } from './components/game/game-timer/game-timer.comp
 import { GameObserversPlayersComponent } from './components/game/game-observers-players/game-observers-players.component';
 import { ColorThemeDialogComponent } from './components/color-theme-dialog/color-theme-dialog';
 import { ColorThemeService } from './services/color-theme-service/color-theme.service';
+import { ClickSoundDirective } from './directives/button-sound-directive/click-sound.directive';
+import { SoundSettingsDialogComponent } from './components/sound-settings-dialog/sound-settings-dialog';
 import { PuzzleHomePageComponent } from './pages/puzzle-home-page/puzzle-home-page.component';
 import { UserAchievementComponent } from './components/user-profile/user-achievement/user-achievement.component';
 import { UserAchievementDialogComponent } from './components/user-profile/user-achievement-dialog/user-achievement-dialog.component';
@@ -159,6 +161,8 @@ registerLocaleData(localeFr);
         GameTimerComponent,
         GameObserversPlayersComponent,
         ColorThemeDialogComponent,
+        ClickSoundDirective,
+        SoundSettingsDialogComponent,
         PuzzleHomePageComponent,
         UserAchievementComponent,
         UserAchievementDialogComponent,
