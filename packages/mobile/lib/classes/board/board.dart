@@ -33,11 +33,13 @@ class Board {
     _applyMultipliers();
 
     _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD,
-        (tilePlacement) {
+        (tilePlacement) async {
       if (tilePlacement.tile.state == TileState.synced) return;
       var placement = _currentPlacement$.value;
 
       placement.add(tilePlacement);
+
+      await Future.delayed(Duration(milliseconds: 300));
       _tileSynchronisationService.sendPlacementForSynchronisation(placement);
 
       _handlePlacementUpdate(placement);
