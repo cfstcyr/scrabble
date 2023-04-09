@@ -4,6 +4,7 @@ import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
+import 'package:mobile/constants/game-messages-constants.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -16,7 +17,6 @@ import '../locator.dart';
 import '../utils/game_messages.dart';
 
 class GameMessagesService {
-  static const String HINT_MESSAGE = "**Mots trouvés** :";
   late List<Widget> messages = [_buildMessage("Début de la partie")];
 
   GameMessagesService._privateConstructor() {
@@ -95,7 +95,7 @@ class GameMessagesService {
                 )),
             TableCell(
               verticalAlignment: TableCellVerticalAlignment.middle,
-              child: _buildPoints(hintMessagePayload.points),
+              child: _buildPoints(hintMessagePayload),
             ),
             TableCell(
               verticalAlignment: TableCellVerticalAlignment.middle,
@@ -166,56 +166,16 @@ class GameMessagesService {
                   child: _buildPlacementMessageLetters(placement),
                 )),
             TableCell(
-                verticalAlignment: TableCellVerticalAlignment.middle,
-                child: Container(
-                  padding: EdgeInsets.all(SPACE_1),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(SPACE_1),
-                        decoration: BoxDecoration(
-                            color: placement is OpponentPlacementMessage
-                                ? Colors.black12
-                                : _themeColorService
-                                    .themeDetails.value.color.colorValue,
-                            borderRadius: BorderRadius.all(Radius.circular(6))),
-                        child: Wrap(
-                          spacing: 2,
-                          crossAxisAlignment: WrapCrossAlignment.end,
-                          children: [
-                            Text(
-                              "${placement.points}",
-                              style: TextStyle(
-                                  color: placement is OpponentPlacementMessage
-                                      ? Colors.black
-                                      : Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            Text(
-                              "pts",
-                              style: TextStyle(
-                                  color: placement is OpponentPlacementMessage
-                                      ? Colors.black54
-                                      : Colors.white54,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: _buildPoints(placement),
+            )
           ]),
         ],
       ),
     );
   }
 
-  Widget _buildPoints(int points) {
+  Widget _buildPoints(PlacementMessage placement) {
     return Container(
       padding: EdgeInsets.all(SPACE_1),
       child: Row(
@@ -225,14 +185,17 @@ class GameMessagesService {
           Container(
             padding: EdgeInsets.all(SPACE_1),
             decoration: BoxDecoration(
-                color: Colors.black12,
+                color: placement is OpponentPlacementMessage ||
+                        placement is HintMessagePayload
+                    ? Colors.black12
+                    : _themeColorService.themeDetails.value.color.colorValue,
                 borderRadius: BorderRadius.all(Radius.circular(6))),
             child: Wrap(
               spacing: 2,
               crossAxisAlignment: WrapCrossAlignment.end,
               children: [
                 Text(
-                  points.toString(),
+                  placement.points.toString(),
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -241,7 +204,11 @@ class GameMessagesService {
                 Text(
                   "pts",
                   style: TextStyle(
-                      color: Colors.black,
+                      color: placement is OpponentPlacementMessage ||
+                              placement is HintMessagePayload
+                          ? Colors.black
+                          : _themeColorService
+                              .themeDetails.value.color.colorValue,
                       fontSize: 12,
                       fontWeight: FontWeight.w600),
                 )
