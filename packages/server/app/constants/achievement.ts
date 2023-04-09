@@ -52,7 +52,7 @@ export const ACHIEVEMENT_WON_GAMES: Achievement = {
 
 export const ACHIEVEMENT_CONSECUTIVE_DAYS: Achievement = {
     name: 'Jours consécutifs',
-    description: 'Nombre de jours consécutifs avec une partie jouée',
+    description: 'Nombre de jours consécutifs avec une partie jouée (les journées changent à 8 P.M.)',
     defaultImage: 'https://ucarecdn.com/a779d441-8640-43b8-bba8-9d72c3121c8a/',
     zeroValue: 0,
     levels: [

@@ -3,7 +3,7 @@ import { GroupRequest } from '@app/classes/communication/group-request';
 import { Timer } from '@app/classes/round/timer';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Group } from '@common/models/group';
-import { UNKOWN_USER } from '@common/models/user';
+import { PublicUser, UNKOWN_USER } from '@common/models/user';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 @Component({
     selector: 'app-group-info',
@@ -40,5 +40,13 @@ export class GroupInfoComponent implements OnInit {
 
     observeGroup(): void {
         this.joinGroupId.emit({ groupId: this.group.groupId, isObserver: true });
+    }
+
+    canJoin(): boolean {
+        return !this.group.user2 || !this.group.user3 || !this.group.user4;
+    }
+
+    get users(): (PublicUser | undefined)[] {
+        return [this.group.user1, this.group.user2, this.group.user3, this.group.user4];
     }
 }
