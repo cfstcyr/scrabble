@@ -1,13 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:mobile/classes/actions/action-data.dart';
-import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/services/action-service.dart';
+import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import '../classes/game/game-message.dart';
@@ -30,6 +28,7 @@ class GameMessagesService {
   }
 
   ActionService _actionService = getIt.get<ActionService>();
+  GameService _gameService = getIt.get<GameService>();
 
   Stream<GameMessage?> get messageEvent => _chatController.gameMessage$.stream;
 
@@ -253,17 +252,13 @@ class GameMessagesService {
 
   Widget _buildPlayButton(HintMessagePayload hintPayload) {
     return AppButton(
-      onPressed: () => //TODO insert lgic here
-          _actionService.sendAction(
-        ActionType.place,
-        hintPayload.toActionPayload(),
-      ),
+      onPressed: () => _actionService.sendAction(ActionType.place,
+          hintPayload.toActionPayload(_gameService.getTileRack())),
       icon: Icons.play_arrow_rounded,
       size: AppButtonSize.normal,
       type: AppButtonType.normal,
     );
   }
-  // Shows only the play message
 
   bool _isHintMessage(List<String> subMessages) {
     if (subMessages[0] == HINT_MESSAGE) return true;
