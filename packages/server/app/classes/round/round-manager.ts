@@ -108,7 +108,7 @@ export default class RoundManager {
     verifyIfGameOver(): boolean {
         if (this.completedRounds.length < NUMBER_OF_PLAYERS_IN_GAME || !this.hasEveryonePlayedTwoRounds()) return false;
 
-        for (let i = 0; i < NUMBER_OF_PASSING_ROUNDS_TO_END_GAME * NUMBER_OF_PLAYERS_IN_GAME; i++) {
+        for (let i = 0; i < Math.min(NUMBER_OF_PASSING_ROUNDS_TO_END_GAME * NUMBER_OF_PLAYERS_IN_GAME, this.completedRounds.length); i++) {
             const round = this.completedRounds[this.completedRounds.length - 1 - i];
             if (round.player instanceof AbstractVirtualPlayer) continue;
             if (!(round.actionPlayed instanceof ActionPass)) {
@@ -123,6 +123,7 @@ export default class RoundManager {
         for (const round of this.completedRounds) {
             if (round.player instanceof AbstractVirtualPlayer) continue;
             const playerTurnCount = playersTurnCount.get(round.player);
+
             if (playerTurnCount) {
                 playersTurnCount.set(round.player, playerTurnCount + 1);
             } else {

@@ -64,6 +64,7 @@ export class UserProfileEditDialogComponent implements OnInit {
             if (this.initialUsernameValue === this.username.value) {
                 this.isUsernameTaken = false;
                 this.username.updateValueAndValidity();
+                return;
             }
             this.userValidatorService.validateUsername(this.username.value).subscribe(
                 (isAvailable) => {

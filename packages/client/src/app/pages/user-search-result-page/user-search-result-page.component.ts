@@ -24,7 +24,7 @@ export class UserSearchResultPageComponent implements AfterViewInit {
 
     user$: Observable<UserSearchResult | undefined>;
     error$: Observable<string | undefined>;
-    averageTime: Observable<string | undefined>;
+    averageTimePerGame: Observable<string | undefined>;
     gameHistory: MatTableDataSource<GameHistoryForUser>;
     achievements: Observable<UserAchievement[] | undefined>;
 
@@ -41,7 +41,7 @@ export class UserSearchResultPageComponent implements AfterViewInit {
             this.gameHistory.data = user?.gameHistory ?? [];
         });
         this.achievements = this.user$.pipe(map((user) => user?.achievements ?? []));
-        this.averageTime = 1this.user$.pipe(map((user) => Timer.convertTime(user?.statistics.averageTimePerGame ?? 0).getStringTimer()));
+        this.averageTimePerGame = this.user$.pipe(map((user) => Timer.convertTime(user?.statistics.averageTimePerGame ?? 0).getStringTimer()));
     }
 
     ngAfterViewInit(): void {

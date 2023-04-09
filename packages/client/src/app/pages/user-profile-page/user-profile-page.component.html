@@ -30,7 +30,7 @@
             <app-user-profile-stats-item title="Moyenne de points" [value]="(((averagePointsPerGame | async) | number:'1.0-0') ?? 0) + ' pts'">
                 <app-icon icon="poll-h" styling="solid" stats-icon></app-icon>
             </app-user-profile-stats-item>
-            <app-user-profile-stats-item title="Temps moyen" [value]="(((averageTimePerGame | async) | number:'1.0-0') ?? 0) + ' s'">
+            <app-user-profile-stats-item title="Temps moyen" [value]="(averageTimePerGame | async) ?? ''">
                 <app-icon icon="clock" styling="solid" stats-icon></app-icon>
             </app-user-profile-stats-item>
         </mat-card>

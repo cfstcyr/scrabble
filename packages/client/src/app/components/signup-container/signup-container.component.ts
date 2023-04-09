@@ -91,7 +91,8 @@ export class SignupContainerComponent implements OnChanges {
     }
 
     handlePasswordLoseFocus(): void {
-        this.fieldMatchValidator();
+        this.signupForm.controls.password?.updateValueAndValidity();
+        this.signupForm.controls.confirmPassword?.updateValueAndValidity();
     }
 
     private fieldMatchValidator(): ValidatorFn {

@@ -32,7 +32,8 @@ export class Timer {
     }
 
     getStringTimer(): string {
-        return `${this.minutes}:${this.getTimerSecondsPadded()}`;
+        const minutes = this.minutes > 0 ? `${this.minutes} min ` : '';
+        return `${minutes}${this.getTimerSecondsPadded()} s`;
     }
 }
 

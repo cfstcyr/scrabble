@@ -40,6 +40,7 @@
                 matTooltipPosition="above"
             >
                 <mat-label><app-icon icon="lock"></app-icon> Mot de passe</mat-label>
+                <!-- <input matInput id="password" [type]="arePasswordsShown ? 'text' : 'password'"  formControlName="password" autocomplete="off" /> -->
                 <input matInput id="password" [type]="arePasswordsShown ? 'text' : 'password'" (blur)="handlePasswordLoseFocus()" formControlName="password" autocomplete="off" />
             </mat-form-field>
 
@@ -82,7 +83,7 @@
                     [matTooltipDisabled]="isFormValid()"
                     matTooltipPosition="above"
                 >
-                    <button mat-flat-button color="primary" type="submit" id="create-game-button" [disabled]="isFormValid()" cdkFocusInitial>
+                    <button mat-flat-button color="primary" type="submit" id="create-game-button" [disabled]="!isFormValid()" cdkFocusInitial>
                         Créer son compte
                     </button>
                 </div>
