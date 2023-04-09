@@ -36,8 +36,19 @@
         }
 
         &__points {
+            display: grid;
+            grid-template-columns: auto auto;
+            align-items: center;
+            gap: 8px;
+
             &__value {
                 font-weight: 500;
+            }
+
+            app-tile {
+                height: 16px;
+                width: 16px;
+                font-size: 0.5em;
             }
         }
 
