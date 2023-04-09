@@ -1,6 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { InitializeState } from '@app/classes/connection-state-service/connection-state';
 import { InitializerService } from '@app/services/initializer-service/initializer.service';
+import { SoundService } from '@app/services/sound-service/sound.service';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -8,6 +9,7 @@ import { map } from 'rxjs/operators';
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
+    providers: [SoundService],
 })
 export class AppComponent implements OnDestroy {
     states: typeof InitializeState = InitializeState;

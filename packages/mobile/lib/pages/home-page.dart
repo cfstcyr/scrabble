@@ -73,6 +73,15 @@ class HomePage extends StatelessWidget {
                       child: Text(PUZZLE_TITLE,
                           style: TextStyle(color: Colors.white, fontSize: 18)),
                     ),
+                    SizedBox(height: 10),
+                    AppButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, LEADERBOARD_ROUTE);
+                      },
+                      size: AppButtonSize.large,
+                      child: Text(LEADERBOARD_MESSAGE,
+                          style: TextStyle(color: Colors.white, fontSize: 18)),
+                    ),
                   ],
                 ),
               ),

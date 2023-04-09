@@ -59,7 +59,7 @@ export class AchievementsService {
     }
 
     private getTotalPointsAchievement(gameHistory: GameHistoryForUser[]): UserAchievement {
-        const points = gameHistory.reduce((previous, current) => previous + current.score, 0);
+        const points = gameHistory.reduce((previous, current) => previous + (current.score > 0 ? current.score : 0), 0);
         const [level, levelIndex] = this.getLevel(ACHIEVEMENT_POINTS, points) ?? [];
 
         return {

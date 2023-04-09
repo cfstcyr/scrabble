@@ -40,6 +40,7 @@ import { DynamicSourceType } from 'party-js/lib/systems/sources';
 import { DEFAULT_PLAYER_RATING } from '@common/models/constants';
 import { Observable, Subject } from 'rxjs';
 import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
+import { SoundService, SoundName } from '@app/services/sound-service/sound.service';
 
 @Component({
     selector: 'app-game-page',
@@ -60,6 +61,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private readonly actionService: ActionService,
         private readonly tilePlacementService: TilePlacementService,
         private readonly boardCursorService: BoardCursorService,
+        private readonly soundService: SoundService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
@@ -203,6 +205,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     private openDialog(title: string, content: string, buttons: string[]): MatDialogRef<DefaultDialogComponent> {
+        this.soundService.playSound(SoundName.EndGameSound);
+
         return this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
             data: {
                 title,

@@ -18,12 +18,17 @@ export default {
     ],
 } as Meta;
 
-const template: Story<ChatBoxComponent> = (args: ChatBoxComponent) => ({
+export const template: Story<ChatBoxComponent> = (args: ChatBoxComponent) => ({
     props: args,
 });
+
+template.args = {
+    title: 'Chatbox',
+};
 
 export const primary = template.bind({});
 
 primary.args = {
-    title: 'Chatbox',
+    title: 'Primary chatbox',
+    isPrimary: true,
 };
