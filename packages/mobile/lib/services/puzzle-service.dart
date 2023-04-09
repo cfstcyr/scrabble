@@ -146,7 +146,6 @@ class PuzzleService {
 
   Future<bool> isDailyCompleted() async {
     return await _puzzleController.isDailyCompleted().then((Response value) {
-      print(jsonDecode(value.body));
       DailyCompletionStatus isCompletedStatus =
           DailyCompletionStatus.fromJson(jsonDecode(value.body));
       return isCompletedStatus.isCompleted;
@@ -157,7 +156,6 @@ class PuzzleService {
     return await _puzzleController
         .getDailyPuzzleLeaderboard()
         .then((Response value) {
-      print(jsonDecode(value.body));
       DailyPuzzleLeaderboard leaderboard =
           DailyPuzzleLeaderboard.fromJson(jsonDecode(value.body));
       return leaderboard;
