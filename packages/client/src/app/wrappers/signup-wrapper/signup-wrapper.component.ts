@@ -36,6 +36,8 @@ export class SignupWrapperComponent {
             },
             (error: HttpErrorResponse) => {
                 this.alertService.error(error.status === HttpStatusCode.NotAcceptable ? INVALID_SIGNUP_INFORMATION : SIGNUP_ERROR);
+                this.handleCheckEmailUnicity(userCredentials.email);
+                this.handleCheckUsernameUnicity(userCredentials.username);
             },
         );
     }

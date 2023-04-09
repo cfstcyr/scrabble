@@ -23,11 +23,11 @@
     .gold {
         color: #FFD700; /* Set the color for gold */
     }
-    
+
     .silver {
         color: #C0C0C0; /* Set the color for silver */
     }
-    
+
     .bronze {
         color: #CD7F32; /* Set the color for bronze */
     }
@@ -65,7 +65,7 @@
         flex-direction: column;
     }
 
-    
+
     #ranking {
         font-size: 2em;
         font-weight: 600;
@@ -87,6 +87,7 @@
         font-size: inherit;
         font-family: inherit;
         cursor: pointer;
+        text-align: inherit;
 
         img {
             height: 42px;
@@ -97,30 +98,20 @@
         }
 
         .player-info {
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-            height: 100%;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
         }
 
         .left-info {
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-            height: 100%;
-            justify-content: space-between;
-            text-align: left;
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 16px;
             align-items: center;
-            gap: 15px;
         }
         .info {
             font-size: 1.2em;
             font-weight: 500;
-            text-align: left;
-            align-items: center;
-            display: flex;
-            max-width: 200px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;

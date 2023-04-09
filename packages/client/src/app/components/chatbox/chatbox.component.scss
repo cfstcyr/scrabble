@@ -25,6 +25,8 @@
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 12px;
         border-bottom: $border;
+        border-top-left-radius: $border-radius - 1;
+        border-top-right-radius: $border-radius - 1;
 
         & * {
             @include no-select;
@@ -105,5 +107,29 @@
             scale: 0.925;
             transition: ease-in scale 0.1s;
         }
+    }
+
+    &--primary {
+        border-color: rgba(var(--primary), 0.5);
+
+        .chatbox__header {
+            background-color: rgb(var(--primary));
+            border-color: rgba(var(--primary), 0.5);
+            color: white;
+
+            &__icon {
+                background-color: white;
+            }
+
+            &::ng-deep {
+                app-icon {
+                    color: white;
+                }
+            }
+        }
+
+        //.chatbox__content {
+        //    background-color: rgba(var(--primary), 0.025);
+        //}
     }
 }
