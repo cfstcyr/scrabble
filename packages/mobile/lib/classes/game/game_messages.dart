@@ -1,3 +1,5 @@
+import 'package:mobile/classes/board/position.dart';
+
 class PlacementMessage {
   final String letters;
   final int points;
@@ -16,4 +18,20 @@ class OpponentPlacementMessage extends PlacementMessage {
     required super.letters,
     required super.points,
   });
+}
+
+class HintMessagePayload extends PlacementMessage {
+  final String position;
+
+  HintMessagePayload({
+    required super.letters,
+    required super.points,
+    required this.position,
+  });
+}
+
+class HintMessage {
+  final List<HintMessagePayload> hints;
+
+  HintMessage(this.hints);
 }
