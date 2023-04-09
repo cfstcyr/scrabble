@@ -122,7 +122,7 @@ export class PuzzleService {
         return {
             leaderboard,
             userScore: userScore?.score ?? -1,
-            userRank: userScore ? Number(userRank?.count) + 1 : -1,
+            userRank: userScore ? Number(userRank?.count) : -1,
             totalPlayers: Number(totalPlayers?.count ?? 0),
         };
     }
