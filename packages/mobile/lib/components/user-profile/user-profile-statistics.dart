@@ -64,11 +64,17 @@ class UserProfileStatistics extends StatelessWidget {
                     Expanded(
                         child: UserProfileStatisticsItem(
                             title: "TEMPS MOYEN",
-                            value:
-                                "${(statistics!.averageTimePerGame).round()} s")),
+                            value: handleTimeString(
+                                statistics!.averageTimePerGame))),
                   ],
                 )
               : Text('Impossible de charger les statistiques')),
     );
   }
+}
+
+String handleTimeString(double time) {
+  int timeInMin = time.round() % 60;
+  int timeInSec = time.round() - timeInMin * 60;
+  return timeInMin != 0 ? "$timeInMin min $timeInSec s" : "$timeInSec s";
 }
