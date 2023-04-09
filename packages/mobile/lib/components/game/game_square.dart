@@ -119,14 +119,18 @@ class _GameSquareState extends State<GameSquare> {
                 child: widget.square.isCenter
                     ? Container(
                         transform: Matrix4.translationValues(0, -2, 0),
-                        child: Text('★', style: TextStyle(fontSize: 24), textScaleFactor: contentScale),
+                        child: Text('★',
+                            style: TextStyle(fontSize: 24),
+                            textScaleFactor: contentScale),
                       )
                     : widget.square.multiplier != null
                         ? Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                widget.square.multiplier!.getType().toUpperCase(),
+                                widget.square.multiplier!
+                                    .getType()
+                                    .toUpperCase(),
                                 textScaleFactor: contentScale,
                                 style: TextStyle(
                                   fontSize: 8,
@@ -147,37 +151,38 @@ class _GameSquareState extends State<GameSquare> {
                   ? StreamBuilder<bool>(
                       stream: widget.square.isAppliedStream,
                       builder: (context, isAppliedSnapshot) {
-                        bool canDrag = widget.isLocalPlayerPlaying && isAppliedSnapshot.hasData ? isAppliedSnapshot.data! : false;
+                        c.Tile tile = snapshot.data!;
+
+                        bool canDrag = widget.isLocalPlayerPlaying &&
+                                widget.isInteractable &&
+                                tile.state == TileState.notApplied;
+
                         return canDrag
-                            ? Tile(tile: snapshot.data)
-                            : widget.isInteractable
-                                ? Draggable(
-                                    data: snapshot.data,
-                                    feedback: Card(
-                                      color: Colors.transparent,
-                                      shadowColor: Colors.transparent,
-                                      child: Tile(
-                                        tile: snapshot.data,
-                                        shouldWiggle: true,
-                                        size: TILE_SIZE_DRAG,
-                                      ),
-                                    ),
-                                    childWhenDragging: Opacity(
-                                      opacity: 0,
-                                      child: Tile(
-                                        tile: snapshot.data,
-                                      ),
-                                    ),
-                                    child: Tile(
-                                      tile: snapshot.data,
-                                    ),
-                                    onDragCompleted: () {
-                                      removeTile();
-                                    },
-                                  )
-                                : Tile(
+                            ? Draggable(
+                                data: snapshot.data,
+                                feedback: Card(
+                                  color: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  child: Tile(
                                     tile: snapshot.data,
-                                  );
+                                    shouldWiggle: true,
+                                    size: TILE_SIZE_DRAG,
+                                  ),
+                                ),
+                                childWhenDragging: Opacity(
+                                  opacity: 0,
+                                  child: Tile(
+                                    tile: snapshot.data,
+                                  ),
+                                ),
+                                child: Tile(
+                                  tile: snapshot.data,
+                                ),
+                                onDragCompleted: () {
+                                  removeTile();
+                                },
+                              )
+                            : Tile(tile: snapshot.data);
                       },
                     )
                   : Opacity(opacity: 0, child: Tile()),
