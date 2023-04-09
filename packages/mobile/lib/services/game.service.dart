@@ -222,15 +222,6 @@ class GameService {
         dismissOnBackgroundTouch: true);
   }
 
-  Stream<bool> isLocalPlayerPlaying() {
-    return CombineLatestStream<dynamic, bool>([_roundService.getActivePlayerId(), gameStream], (values) {
-      String activePlayerId = values[0];
-      MultiplayerGame? game = values[1];
-
-      return game != null ? game.players.localPlayerId == activePlayerId : false;
-    }).asBroadcastStream();
-  }
-
   Widget handleRatingChange(Player localPlayer) {
     return Row(
       children: [
@@ -245,6 +236,15 @@ class GameService {
                 style: TextStyle(color: Colors.red))
       ],
     );
+  }
+
+  Stream<bool> isLocalPlayerPlaying() {
+    return CombineLatestStream<dynamic, bool>([_roundService.getActivePlayerId(), gameStream], (values) {
+      String activePlayerId = values[0];
+      MultiplayerGame? game = values[1];
+
+      return game != null ? game.players.localPlayerId == activePlayerId : false;
+    }).asBroadcastStream();
   }
 
   void _onTimerExpires() {
