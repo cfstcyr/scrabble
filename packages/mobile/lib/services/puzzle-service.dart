@@ -10,6 +10,7 @@ import 'package:mobile/classes/puzzle/puzzle-config.dart';
 import 'package:mobile/classes/puzzle/puzzle-level.dart';
 import 'package:mobile/classes/puzzle/puzzle-player.dart';
 import 'package:mobile/classes/puzzle/puzzle-result.dart';
+import 'package:mobile/classes/puzzle/puzzle-type.dart';
 import 'package:mobile/classes/puzzle/puzzle.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/square.dart';
@@ -52,7 +53,8 @@ class PuzzleService {
   Future<bool> startPuzzle(PuzzleLevel puzzleLevel) async {
     return await _puzzleController.startPuzzle().then((Response value) {
       _handleStartPuzzle(StartPuzzle.fromJson(jsonDecode(value.body))
-          .withPuzzleLevel(puzzleLevel));
+          .withPuzzleLevel(puzzleLevel)
+          .withPuzzleType(PuzzleType.practice));
       return true;
     }).catchError((error) => false);
   }
@@ -72,7 +74,8 @@ class PuzzleService {
         tileRack: tileRack,
         puzzlePlayer: player,
         puzzleLevel: startPuzzle.puzzleLevel,
-        gridConfig: gridConfig));
+        gridConfig: gridConfig,
+        puzzleType: startPuzzle.puzzleType));
 
     Round firstRound = Round(
         socketIdOfActivePlayer: UNDEFINED_SOCKET,
@@ -101,7 +104,7 @@ class PuzzleService {
 
       _handlePuzzleResult(
           puzzleResult,
-          _puzzle.value!.gridConfig,
+          _puzzle.value!,
           ScoredWordPlacement(
               actionPlacePayload: wordPlacement.actionPlacePayload,
               score: puzzleResult.userPoints));
@@ -110,12 +113,15 @@ class PuzzleService {
     }, onError: (_) => ResponseResult.error());
   }
 
-  Future<ResponseResult> abandonPuzzle({PuzzleResultStatus resultStatus = PuzzleResultStatus.abandoned}) {
-    _puzzleController.abandonPuzzle(resultStatus: resultStatus).then((Response response) {
+  Future<ResponseResult> abandonPuzzle(
+      {PuzzleResultStatus resultStatus = PuzzleResultStatus.abandoned}) {
+    _puzzleController
+        .abandonPuzzle(resultStatus: resultStatus)
+        .then((Response response) {
       PuzzleResult puzzleResult =
           PuzzleResult.fromJson(jsonDecode(response.body));
 
-      _handlePuzzleResult(puzzleResult, _puzzle.value!.gridConfig, null);
+      _handlePuzzleResult(puzzleResult, _puzzle.value!, null);
 
       return ResponseResult.success();
     });
@@ -132,7 +138,8 @@ class PuzzleService {
   Future<bool> startDailyPuzzle() async {
     return await _puzzleController.startDailyPuzzle().then((Response value) {
       _handleStartPuzzle(StartPuzzle.fromJson(jsonDecode(value.body))
-          .withPuzzleLevel(advancedPuzzleLevel));
+          .withPuzzleLevel(advancedPuzzleLevel)
+          .withPuzzleType(PuzzleType.daily));
       return true;
     }).catchError((error) => false);
   }
@@ -140,36 +147,41 @@ class PuzzleService {
   Future<bool> isDailyCompleted() async {
     return await _puzzleController.isDailyCompleted().then((Response value) {
       print(jsonDecode(value.body));
-      DailyCompletionStatus isCompletedStatus  = DailyCompletionStatus.fromJson(jsonDecode(value.body));
+      DailyCompletionStatus isCompletedStatus =
+          DailyCompletionStatus.fromJson(jsonDecode(value.body));
       return isCompletedStatus.isCompleted;
     }).catchError((error) => true);
   }
 
   Future<DailyPuzzleLeaderboard> getDailyPuzzleLeaderboard() async {
-    return await _puzzleController.getDailyPuzzleLeaderboard().then((Response value) {
+    return await _puzzleController
+        .getDailyPuzzleLeaderboard()
+        .then((Response value) {
       print(jsonDecode(value.body));
-      DailyPuzzleLeaderboard leaderboard  = DailyPuzzleLeaderboard.fromJson(jsonDecode(value.body));
+      DailyPuzzleLeaderboard leaderboard =
+          DailyPuzzleLeaderboard.fromJson(jsonDecode(value.body));
       return leaderboard;
     });
   }
 
-  void _handlePuzzleResult(PuzzleResult puzzleResult, List<Square> gridConfig,
+  void _handlePuzzleResult(PuzzleResult puzzleResult, PuzzleGame puzzleGame,
       ScoredWordPlacement? playedPlacement) {
     PuzzlePlayed puzzlePlayed = PuzzlePlayed.afterPlayed(
         _puzzle.value!.puzzleLevel.nameEnum,
-        gridConfig,
+        puzzleGame.gridConfig,
         playedPlacement,
         puzzleResult);
 
     _roundService.endRound();
-    PuzzleResultDialog(puzzlePlayed: puzzlePlayed)
+    PuzzleResultDialog(puzzlePlayed: puzzlePlayed, puzzleType: puzzleGame.puzzleType)
         .openAnalysisResultDialog(navigatorKey.currentContext!);
 
     _puzzle.value?.puzzlePlayer.updateStreak(puzzleResult);
     _puzzle.add(_puzzle.value);
 
     if (playedPlacement != null) {
-      _gamePlayController.gameMessage$.add(puzzlePlayed.placementToGameMessage());
+      _gamePlayController.gameMessage$
+          .add(puzzlePlayed.placementToGameMessage());
     }
   }
 

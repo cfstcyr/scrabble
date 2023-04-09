@@ -56,10 +56,10 @@ class _DailyPuzzleDialogContentState extends State<DailyPuzzleDialogContent> {
             Expanded(flex: 1, child: leaderboard != null && leaderboard.leaderboard.isNotEmpty
                 ? SingleChildScrollView(
               child: Column(children: List.generate(
-                  5,
+                  leaderboard.leaderboard.length,
                       (index) =>
                       _dailyLeaderboardEntry(
-                          index, leaderboard.leaderboard[0]))),
+                          index, leaderboard.leaderboard[index]))),
             )
                 : Opacity(
               opacity: 0.64,

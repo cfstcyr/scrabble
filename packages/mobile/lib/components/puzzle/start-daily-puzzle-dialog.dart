@@ -72,7 +72,7 @@ void showStartDailyPuzzleDialog(BuildContext context) {
                     builder: (context, snapshot) {
                       bool isDailyCompleted = snapshot.data ?? true;
                       return AppButton(
-                        onPressed: isDailyCompleted ? () {
+                        onPressed: isDailyCompleted ? null : () {
                           getIt
                               .get<PuzzleService>()
                               .startDailyPuzzle()
@@ -85,7 +85,7 @@ void showStartDailyPuzzleDialog(BuildContext context) {
                               errorSnackBar(context, START_ERROR);
                             }
                           });
-                        } : null,
+                        },
                         theme: AppButtonTheme.primary,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
