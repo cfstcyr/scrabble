@@ -75,9 +75,9 @@ class GameMessagesService {
       margin: EdgeInsets.only(bottom: SPACE_1),
       child: Table(
         columnWidths: const <int, TableColumnWidth>{
-          0: FlexColumnWidth(0.7),
+          0: FlexColumnWidth(0.6),
           1: FlexColumnWidth(1.6),
-          2: FlexColumnWidth(0.6),
+          2: FlexColumnWidth(0.7),
           3: FlexColumnWidth(0.6),
         },
         children: [
@@ -115,7 +115,7 @@ class GameMessagesService {
       margin: EdgeInsets.only(bottom: SPACE_1),
       child: Column(
         children: [
-          Text(HINT_MESSAGE),
+          MarkdownBody(data: HINT_MESSAGE),
           ...subMessages.hints
               .map((HintMessagePayload hintMessagePayload) =>
                   _buildHindMessagePayload(hintMessagePayload))
@@ -131,7 +131,10 @@ class GameMessagesService {
       alignment: WrapAlignment.center,
       children: [
         ...placement.letters.split('').map((letter) => Tile(
-              tile: c.Tile(letter: letter),
+              tile: c.Tile(
+                  letter: letter.toUpperCase(),
+                  isWildcard: placement is HintMessagePayload &&
+                      letter == letter.toUpperCase()),
               size: 22,
             ))
       ],
@@ -222,7 +225,7 @@ class GameMessagesService {
           Container(
             padding: EdgeInsets.all(SPACE_1),
             decoration: BoxDecoration(
-                color: _themeColorService.themeDetails.value.color.colorValue,
+                color: Colors.black12,
                 borderRadius: BorderRadius.all(Radius.circular(6))),
             child: Wrap(
               spacing: 2,
@@ -231,14 +234,14 @@ class GameMessagesService {
                 Text(
                   points.toString(),
                   style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w600),
                 ),
                 Text(
                   "pts",
                   style: TextStyle(
-                      color: Colors.white54,
+                      color: Colors.black,
                       fontSize: 12,
                       fontWeight: FontWeight.w600),
                 )
