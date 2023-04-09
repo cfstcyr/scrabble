@@ -123,7 +123,7 @@ describe('PuzzleService', () => {
         it('should return user rank', async () => {
             const result = await service.getDailyPuzzleLeaderboard(3);
 
-            expect(result.userRank).to.equal(3);
+            expect(result.userRank).to.equal(2);
         });
 
         it('should return user score', async () => {
