@@ -29,6 +29,7 @@ class _ChatboxState extends State<Chatbox> {
   late types.User _userView;
   Color themeColor =
       getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
+
   @override
   void initState() {
     super.initState();
@@ -46,13 +47,14 @@ class _ChatboxState extends State<Chatbox> {
           backgroundColor: Colors.white,
           elevation: 1,
           leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: theme.primaryColor,
-            ),
-            onPressed: () =>
-                _chatService.scaffoldKey.currentState?.closeEndDrawer(),
-          ),
+              icon: Icon(
+                Icons.arrow_back,
+                color: theme.primaryColor,
+              ),
+              onPressed: () {
+                _chatService.scaffoldKey.currentState?.closeEndDrawer();
+                _chatService.closeChannel();
+              }),
           automaticallyImplyLeading: false,
           surfaceTintColor: theme.colorScheme.primary),
       body: Chat(

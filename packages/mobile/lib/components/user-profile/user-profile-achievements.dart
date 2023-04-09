@@ -4,7 +4,6 @@ import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/image.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../../locator.dart';
 import '../../services/theme-color-service.dart';
@@ -68,7 +67,7 @@ class UserProfileAchievements extends StatelessWidget {
             ),
           ),
           Text(
-            achievement.value.toString(),
+            achievement.value.round().toString(),
             style: TextStyle(
                 color: _themeColorService.themeDetails.value.color.colorValue,
                 fontSize: 36,

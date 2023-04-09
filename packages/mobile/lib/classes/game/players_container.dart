@@ -41,6 +41,10 @@ class PlayersContainer {
     throw Exception(INVALID_PLAYER_INDEX);
   }
 
+  Player getPlayerByName(String username) {
+    return players.firstWhere((player) => player.user.username == username);
+  }
+
   List<Player> get players => [player1, player2, player3, player4];
 
   setLocalPlayer(int playerNumber) {

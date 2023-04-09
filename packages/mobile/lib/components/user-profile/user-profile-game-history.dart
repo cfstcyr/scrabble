@@ -5,20 +5,19 @@ import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/components/table.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:mobile/constants/locale/analysis-constants.dart';
 import 'package:mobile/locator.dart';
-import 'package:mobile/services/analysis-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
-import 'package:mobile/services/user.service.dart';
 
 import '../../utils/duration.dart';
 
 class UserProfileGameHistory extends StatelessWidget {
-  UserProfileGameHistory({required this.gameHistories});
+  UserProfileGameHistory(
+      {required this.gameHistories, this.isLocalUser = false});
 
   final List<GameHistory> gameHistories;
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
+  final bool isLocalUser;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +47,10 @@ class UserProfileGameHistory extends StatelessWidget {
                         title: 'Résultat',
                         builder: (context, row) => _getGameStatus(row.data)),
                     AppTableColumn(
+                        title: 'Variation de Elo',
+                        builder: (context, row) => Text(
+                            '${row.data.ratingVariation > 0 ? '+' : ''}${row.data.ratingVariation.round()} Elo')),
+                    AppTableColumn(
                         title: 'Score',
                         builder: (context, row) => Text(
                               '${row.data.score} pts',
@@ -68,7 +71,8 @@ class UserProfileGameHistory extends StatelessWidget {
                                             ThemeColor.green;
 
                                     return ElevatedButton(
-                                      onPressed: idAnalysis != null
+                                      onPressed: idAnalysis != null &&
+                                              isLocalUser
                                           ? () async {
                                               AnalysisRequestDialog(
                                                       title:
@@ -94,7 +98,7 @@ class UserProfileGameHistory extends StatelessWidget {
                                   }),
                             ],
                           );
-                        })
+                        }),
                   ])
                 : Text('Impossible de charger l\'historique de partie')
           ],
