@@ -3,10 +3,12 @@
   <div class="not-title">
     <div class="settings">
       <label>
-        <input type="checkbox" name="musicEnabled" [(ngModel)]="isMusicEnabled" (ngModelChange)="saveMusic()"> Activer la musique
-      </label>
-      <label>
-        <input type="checkbox" name="soundEnabled" [(ngModel)]="isSoundEnabled" (ngModelChange)="saveSound()"> Activer les effets sonores
+        <mat-checkbox [(ngModel)]="isMusicEnabled" (ngModelChange)="saveMusic()" [ngModelOptions]="{ standalone: true }" color="primary">
+          Activer la musique</mat-checkbox>
+        </label>
+        <label>
+        <mat-checkbox [(ngModel)]="isSoundEnabled" (ngModelChange)="saveSound()" [ngModelOptions]="{ standalone: true }" color="primary">
+          Activer les effets sonores</mat-checkbox>
       </label>
     </div>
     <div class="button-container">
