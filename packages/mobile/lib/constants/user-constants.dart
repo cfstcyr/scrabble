@@ -22,7 +22,7 @@ String getUsersInitials(String username) {
 
 UserStatistics DEFAULT_USER_STATISTICS = UserStatistics(
     averagePointsPerGame: -1,
-    averageTimePerGame: -1,
+    averageTimePerGame: 60,
     gamesPlayedCount: -1,
     gamesWonCount: -1,
     rating: 1000,
