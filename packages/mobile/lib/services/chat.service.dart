@@ -103,7 +103,8 @@ class ChatService {
       ChannelMessage channelMessage =
           ChannelMessage.fromJson(receivedChannelMessage);
       channelMessage.isRead = userService.user.value?.username ==
-          channelMessage.message.sender.username;
+              channelMessage.message.sender.username ||
+          channelMessage.idChannel == openedChannelId.value;
 
       _handleNewMessage(channelMessage);
       _handlePlayNotificationSound(
