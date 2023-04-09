@@ -234,13 +234,14 @@ export class GamePlayController extends BaseController {
     private async handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: string): Promise<void> {
         this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
         const game: Game = this.activeGameService.getGame(gameId, observerId);
-        const observerSocket = this.socketService.getSocket(observerId);
-        this.socketService.emitToSocket(observerSocket.id, 'replaceVirtualPlayer', game.createStartGameData());
         const updatedData = {
             player3: game.player3,
             player4: game.player4,
         };
         this.gameUpdate(gameId, updatedData);
+        const observerSocket = this.socketService.getSocket(observerId);
+        this.socketService.emitToSocket(observerSocket.id, 'replaceVirtualPlayer', game.createStartGameData());
+
         this.socketService.emitToRoom(gameId, 'newMessage', {
             content: OBSERVER_REPLACE_JV_MESSAGE,
             senderId: 'system',

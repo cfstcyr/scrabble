@@ -21,7 +21,9 @@ export class GameDispatcherController implements OnDestroy {
     private groupFullEvent: Subject<void> = new Subject();
     private invalidPasswordEvent: Subject<void> = new Subject();
     private groupRequestValidEvent: Subject<void> = new Subject();
-    private replaceVirtualPlayerEvent: BehaviorSubject<InitializeGameData> = new BehaviorSubject<InitializeGameData>({} as InitializeGameData);
+    private replaceVirtualPlayerEvent: BehaviorSubject<InitializeGameData | undefined> = new BehaviorSubject<InitializeGameData | undefined>(
+        undefined,
+    );
     private groupsUpdateEvent: Subject<Group[]> = new Subject();
     private joinerRejectedEvent: Subject<PublicUser> = new Subject();
     private initializeGame$: BehaviorSubject<InitializeGameData | undefined> = new BehaviorSubject<InitializeGameData | undefined>(undefined);
@@ -128,7 +130,7 @@ export class GameDispatcherController implements OnDestroy {
     subscribeToInitializeGame(serviceDestroyed$: Subject<boolean>, callback: (value: InitializeGameData | undefined) => void): void {
         this.initializeGame$.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
-    subscribeToReplaceVirtualPlayer(serviceDestroyed$: Subject<boolean>, callback: (value: InitializeGameData) => void): void {
+    subscribeToReplaceVirtualPlayer(serviceDestroyed$: Subject<boolean>, callback: (value: InitializeGameData | undefined) => void): void {
         this.replaceVirtualPlayerEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
     private handleJoinError(errorStatus: HttpStatusCode): void {
@@ -171,7 +173,6 @@ export class GameDispatcherController implements OnDestroy {
             this.initializeGame$.next({ localPlayerId: this.socketService.getId(), startGameData });
         });
         this.socketService.on('replaceVirtualPlayer', (startGameData: StartGameData) => {
-            console.log(startGameData);
             this.replaceVirtualPlayerEvent.next({ localPlayerId: this.socketService.getId(), startGameData });
         });
     }

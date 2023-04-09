@@ -79,7 +79,8 @@ export default class GameService implements OnDestroy, IResetServiceData {
         await this.initializeGame(initializeGameData.localPlayerId, initializeGameData.startGameData, isObserver);
         this.gameViewEventManagerService.emitGameViewEvent('gameInitialized', initializeGameData);
     }
-    async handleReplaceVirtualPlayer(initializeGameData: InitializeGameData): Promise<void> {
+    async handleReplaceVirtualPlayer(initializeGameData: InitializeGameData | undefined): Promise<void> {
+        if (!initializeGameData) return;
         await this.handleReRouteObserverAfterReplacement(initializeGameData.localPlayerId, initializeGameData.startGameData);
     }
 
@@ -195,7 +196,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
     private async handleReRouteObserverAfterReplacement(observerId: string, gameData: StartGameData): Promise<void> {
         this.gameId = gameData.gameId;
-        alert(gameData.player3.publicUser?.username);
         this.playerContainer = new PlayerContainer(observerId, false).initializePlayers([
             gameData.player1,
             gameData.player2,
@@ -205,8 +205,8 @@ export default class GameService implements OnDestroy, IResetServiceData {
         this.tileReserve = gameData.tileReserve;
         this.tilePlacementService.resetTiles();
 
-        this.roundManager.initialize(observerId, gameData);
-        this.boardService.initializeBoard(gameData.board);
+        // this.roundManager.initialize(observerId, gameData);
+        // this.boardService.initializeBoard(gameData.board);
 
         this.isGameSetUp = true;
         this.isGameOver = false;

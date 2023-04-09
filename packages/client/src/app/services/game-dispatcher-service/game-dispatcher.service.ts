@@ -71,10 +71,13 @@ export default class GameDispatcherService implements OnDestroy {
             async (initializeValue: InitializeGameData | undefined) =>
                 await this.gameService.handleInitializeGame(initializeValue, this.isObserver ?? false),
         );
-        this.gameDispatcherController.subscribeToReplaceVirtualPlayer(this.serviceDestroyed$, async (initializeValue: InitializeGameData) => {
-            this.isObserver = false;
-            await this.gameService.handleReplaceVirtualPlayer(initializeValue);
-        });
+        this.gameDispatcherController.subscribeToReplaceVirtualPlayer(
+            this.serviceDestroyed$,
+            async (initializeValue: InitializeGameData | undefined) => {
+                this.isObserver = false;
+                await this.gameService.handleReplaceVirtualPlayer(initializeValue);
+            },
+        );
 
         this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());
     }
