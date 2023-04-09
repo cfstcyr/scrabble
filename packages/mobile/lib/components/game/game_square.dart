@@ -193,7 +193,8 @@ class _GameSquareState extends State<GameSquare> {
 
   _onPlaceTile(BuildContext context, c.Tile tile) async {
     if (tile.isWildcard) {
-      await triggerWildcardDialog(context, square: widget.square);
+      String playedLetter = await triggerWildcardDialog(context, square: widget.square);
+      tile.playedLetter = playedLetter;
     }
 
     _gameEventService.add<TilePlacement>(PLACE_TILE_ON_BOARD,

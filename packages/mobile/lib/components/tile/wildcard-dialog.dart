@@ -5,9 +5,9 @@ import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
-Future<void> triggerWildcardDialog(BuildContext context,
-    {required Square square}) {
-  return showDialog(
+Future<String> triggerWildcardDialog(BuildContext context,
+    {required Square square}) async {
+  return showDialog<String>(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -26,18 +26,7 @@ Future<void> triggerWildcardDialog(BuildContext context,
                   .split('')
                   .map((letter) => InkWell(
                         onTap: () {
-                          var tile = square.getTile();
-
-                          if (tile == null) {
-                            throw Exception(
-                                CANNOT_SET_LETTER_FOR_WILDCARD_SQUARE_EMPTY);
-                          }
-
-                          tile.playedLetter = letter;
-
-                          square.setTile(tile);
-
-                          Navigator.of(context).pop();
+                          Navigator.of(context).pop(letter);
                         },
                         child: Tile(
                           tile: c.Tile(letter: letter),
@@ -47,5 +36,8 @@ Future<void> triggerWildcardDialog(BuildContext context,
             ),
           ),
         );
-      });
+      }).then((String? playedLetter) {
+        if (playedLetter == null) throw Exception('Must choose letter for wildcard');
+    return playedLetter;
+  });
 }
