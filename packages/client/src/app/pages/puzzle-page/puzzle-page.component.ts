@@ -91,6 +91,11 @@ export class PuzzlePageComponent implements OnInit {
         this.tilePlacementService.resetTiles();
     }
 
+    @HostListener('document:keydown.backspace', ['$event'])
+    handleBackspaceEventEvent(): void {
+        this.boardCursorService.handleBackspace();
+    }
+
     ngOnInit(): void {
         this.tilePlacementService.resetTiles();
         this.dragAndDropService.reset();

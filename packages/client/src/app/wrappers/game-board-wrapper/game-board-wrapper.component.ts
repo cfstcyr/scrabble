@@ -53,6 +53,11 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
         this.boardCursorService.clear();
     }
 
+    @HostListener('document:keydown.backspace', ['$event'])
+    handleBackspaceEventEvent(): void {
+        this.boardCursorService.handleBackspace();
+    }
+
     ngOnInit(): void {
         this.boardService.subscribeToInitializeBoard(this.componentDestroyed$, this.initializeBoard.bind(this));
         this.boardService.subscribeToBoardUpdate(this.componentDestroyed$, this.handleUpdateBoard.bind(this));
