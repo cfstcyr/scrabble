@@ -12,9 +12,11 @@ import { Observable } from 'rxjs';
 })
 export class RatingLeaderboardPageComponent {
     results: Observable<RatedUser[]>;
+    ownUsername: string;
 
     constructor(private readonly userService: UserService, private router: Router) {
         this.results = this.userService.requestRatingLeaderboard();
+        this.ownUsername = this.userService.getUser().username;
     }
 
     async reRoute(username: string) {
