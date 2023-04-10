@@ -37,27 +37,27 @@ final GameVisibilityToggle publicToggle = GameVisibilityToggle(
   description: GameVisibility.public.description,
 );
 
-final GameVisibilityToggle privateToggle = GameVisibilityToggle(
-  id: '2',
-  nameEnum: GameVisibility.private,
-  icon: GameVisibility.private.icon,
-  description: GameVisibility.private.description,
-);
-
 final GameVisibilityToggle protectedToggle = GameVisibilityToggle(
-  id: '3',
+  id: '2',
   nameEnum: GameVisibility.protected,
   icon: GameVisibility.protected.icon,
   description: GameVisibility.protected.description,
 );
 
+final GameVisibilityToggle privateToggle = GameVisibilityToggle(
+  id: '3',
+  nameEnum: GameVisibility.private,
+  icon: GameVisibility.private.icon,
+  description: GameVisibility.private.description,
+);
+
 final Map<GameVisibility, GameVisibilityToggle> VISIBILITY_LEVELS = {
   GameVisibility.public: publicToggle,
-  GameVisibility.private: privateToggle,
   GameVisibility.protected: protectedToggle,
+  GameVisibility.private: privateToggle,
 };
 
-GameVisibilityToggle getDifficultyLevelFromIndex(int index) {
+GameVisibilityToggle getVisibilityFromIndex(int index) {
   if (index < 0 ||
       GAME_VISIBILITY_TO_NAME.isEmpty ||
       index >= GAME_VISIBILITY_TO_NAME.values.length) {
@@ -67,6 +67,6 @@ GameVisibilityToggle getDifficultyLevelFromIndex(int index) {
   return VISIBILITY_LEVELS.values.toList()[index];
 }
 
-GameVisibilityToggle getPuzzleLevelFromName(GameVisibilityToggle name) {
+GameVisibilityToggle getVisibilityFromName(GameVisibilityToggle name) {
   return VISIBILITY_LEVELS[name] ?? publicToggle;
 }
