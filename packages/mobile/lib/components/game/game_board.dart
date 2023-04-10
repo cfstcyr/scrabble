@@ -13,7 +13,11 @@ import 'package:rxdart/rxdart.dart';
 import '../../constants/game.constants.dart';
 
 class GameBoard extends StatelessWidget {
-  GameBoard({required this.gameStream, this.isInteractable = true, this.size = 630, this.isLocalPlayerPlaying})
+  GameBoard(
+      {required this.gameStream,
+      this.isInteractable = true,
+      this.size = 630,
+      this.isLocalPlayerPlaying})
       : assert(
             gameStream is ValueStream<MultiplayerGame?>
                 ? isLocalPlayerPlaying != null
@@ -37,8 +41,10 @@ class GameBoard extends StatelessWidget {
             builder: (context, snapshot) {
               if (!snapshot.hasData) return SizedBox.shrink();
 
-              AbstractGame? game = snapshot.data! is List ? snapshot.data![0] : snapshot.data!;
-              bool isLocalPlayerPlaying = game is MultiplayerGame? ? snapshot.data![1] : true;
+              AbstractGame? game =
+                  snapshot.data! is List ? snapshot.data![0] : snapshot.data!;
+              bool isLocalPlayerPlaying =
+                  game is MultiplayerGame? ? snapshot.data![1] : true;
 
               return GridView.count(
                 crossAxisCount: GRID_SIZE + 1,
@@ -47,7 +53,7 @@ class GameBoard extends StatelessWidget {
                 crossAxisSpacing: SPACE_1 / 2,
                 shrinkWrap: true,
                 childAspectRatio: 1,
-                children: _buildGridChildren(snapshot),
+                children: _buildGridChildren(game, isLocalPlayerPlaying),
               );
             },
           ),
@@ -56,7 +62,8 @@ class GameBoard extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildGridChildren(AsyncSnapshot<AbstractGame?> snapshot) {
+  List<Widget> _buildGridChildren(
+      AbstractGame? game, bool isLocalPlayerPlaying) {
     List<Widget> children = [];
 
     // add the column headers row
@@ -73,11 +80,12 @@ class GameBoard extends StatelessWidget {
       for (int col = 0; col < GRID_SIZE; col++) {
         var position = Position(row, col);
         children.add(GameSquare(
-          tileRack: snapshot.hasData ? snapshot.data!.tileRack : null,
-          square: snapshot.data?.board.getSquare(position) ??
+          tileRack: game?.tileRack,
+          square: game?.board.getSquare(position) ??
               Square(position: Position(0, 0)),
           boardSize: size,
           isInteractable: isInteractable,
+          isLocalPlayerPlaying: isLocalPlayerPlaying,
         ));
       }
     }
@@ -98,9 +106,11 @@ class GameBoard extends StatelessWidget {
         ),
       ),
     );
-    
+  }
+
   Stream<dynamic> gameBoardStream() {
     if (isLocalPlayerPlaying == null) return gameStream;
-    return CombineLatestStream<dynamic, dynamic>([gameStream, isLocalPlayerPlaying!], (values) => values);
+    return CombineLatestStream<dynamic, dynamic>(
+        [gameStream, isLocalPlayerPlaying!], (values) => values);
   }
 }
