@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/sound.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../locator.dart';
+import '../services/sound-service.dart';
 
 abstract class AppToggleOption<V extends Enum> {
   V getEnum();
@@ -43,6 +47,8 @@ class _AppToggleButtonState<T extends AppToggleOption, V extends Enum>
     extends State<AppToggleButton<T, V>> {
   late Stream<List<bool>> _selectedOption;
 
+  final SoundService _soundService = getIt.get<SoundService>();
+
   @override
   void initState() {
     super.initState();
@@ -68,8 +74,10 @@ class _AppToggleButtonState<T extends AppToggleOption, V extends Enum>
           return ToggleButtons(
               direction: widget._orientation,
               isSelected: snapshot.data!,
-              onPressed: (int index) =>
-                  widget._selected$.add(widget._toggleValues[index]),
+              onPressed: (int index) {
+                _soundService.playSound(Sound.click);
+                widget._selected$.add(widget._toggleValues[index]);
+              },
               color: Colors.black,
               selectedColor: Colors.white,
               fillColor: theme.primaryColor,

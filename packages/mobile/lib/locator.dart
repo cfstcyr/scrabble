@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobile/controllers/analysis-controller.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
@@ -8,6 +9,7 @@ import 'package:mobile/controllers/tile-synchronisation-controller.dart';
 import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/analysis-service.dart';
+import 'package:mobile/services/app-route-observer.dart';
 import 'package:mobile/services/client.dart';
 import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game-creation-service.dart';
@@ -21,6 +23,7 @@ import 'package:mobile/services/player-leave-service.dart';
 import 'package:mobile/services/puzzle-service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/socket.service.dart';
+import 'package:mobile/services/sound-service.dart';
 import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/services/tile-synchronisation.service.dart';
@@ -94,5 +97,8 @@ class CustomLocator {
     getIt.registerSingleton<EndGameService>(EndGameService());
     getIt.registerSingleton<GameMessagesService>(GameMessagesService());
     getIt.registerSingleton<GroupJoinController>(GroupJoinController());
+
+    getIt.registerSingleton<AppRouteObserver>(AppRouteObserver());
+    getIt.registerSingleton<SoundService>(SoundService());
   }
 }

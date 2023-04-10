@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/app-route-observer.dart';
 import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
 
   final InitializerService _initializerService =
       getIt.get<InitializerService>();
+  final AppRouteObserver _routeObserver = getIt.get<AppRouteObserver>();
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +73,7 @@ class MyApp extends StatelessWidget {
                   initialRoute: snapshot.data,
                   routes: ROUTES,
                   onGenerateRoute: customOnGenerateRoute,
+                  navigatorObservers: [_routeObserver],
                 );
               });
         });

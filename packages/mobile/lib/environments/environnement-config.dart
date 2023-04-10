@@ -13,13 +13,14 @@ abstract class BaseConfig {
 }
 
 class DevConfig implements BaseConfig {
-  String get ipAdressEmulator => '10.0.2.2';
+  String get ipAdressEmulator => 'localhost';
   String get ipAddressChrome => 'localhost';
 
   String get apiUrl => 'http://'
       '$ipAdressEmulator:${dotenv.env['SERVER_PORT']}/api';
 
-  String get webSocketUrl => 'http://$ipAdressEmulator:${dotenv.env['SERVER_PORT']}';
+  String get webSocketUrl =>
+      'http://$ipAdressEmulator:${dotenv.env['SERVER_PORT']}';
 
   bool get reportErrors => false;
 

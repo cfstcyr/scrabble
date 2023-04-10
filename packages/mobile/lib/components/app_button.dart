@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/sound.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/services/sound-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 enum AppButtonTheme {
@@ -24,6 +26,7 @@ enum AppButtonType {
 
 class AppButton extends StatelessWidget {
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
+  final SoundService _soundService = getIt.get<SoundService>();
   final Function()? onPressed;
   final AppButtonTheme theme;
   final AppButtonSize size;
@@ -47,7 +50,7 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      onPressed: onPressed,
+      onPressed: handlePressed,
       color: _getButtonColor(),
       disabledColor: type == AppButtonType.normal
           ? Colors.grey.shade300
@@ -165,6 +168,11 @@ class AppButton extends StatelessWidget {
     } else {
       return child;
     }
+  }
+
+  void handlePressed() {
+    _soundService.playSound(Sound.click);
+    if (onPressed != null) onPressed!();
   }
 }
 
