@@ -76,7 +76,7 @@ class GameMessagesService {
       child: Table(
         columnWidths: const <int, TableColumnWidth>{
           0: FlexColumnWidth(0.6),
-          1: FlexColumnWidth(1.6),
+          1: FlexColumnWidth(1.7),
           2: FlexColumnWidth(0.7),
           3: FlexColumnWidth(0.6),
         },
@@ -86,7 +86,9 @@ class GameMessagesService {
                 verticalAlignment: TableCellVerticalAlignment.middle,
                 child: Container(
                     padding: EdgeInsets.all(SPACE_1),
-                    child: Text(hintMessagePayload.position))),
+                    child: MarkdownBody(
+                      data: '**${hintMessagePayload.position}**',
+                    ))),
             TableCell(
                 verticalAlignment: TableCellVerticalAlignment.middle,
                 child: Container(

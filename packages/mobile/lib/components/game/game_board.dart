@@ -31,25 +31,60 @@ class GameBoard extends StatelessWidget {
             stream: gameStream,
             builder: (context, snapshot) {
               return GridView.count(
-                crossAxisCount: GRID_SIZE,
+                crossAxisCount: GRID_SIZE + 1,
                 physics: NeverScrollableScrollPhysics(),
                 mainAxisSpacing: SPACE_1 / 2,
                 crossAxisSpacing: SPACE_1 / 2,
                 shrinkWrap: true,
                 childAspectRatio: 1,
-                children: List.generate(GRID_SIZE * GRID_SIZE, (index) {
-                  var position = Position.fromVec2(Vec2.from1D(index));
-                  return GameSquare(
-                    tileRack: snapshot.hasData ? snapshot.data!.tileRack : null,
-                    square: snapshot.data?.board.getSquare(position) ??
-                        Square(position: Position(0, 0)),
-                    boardSize: size,
-                    isInteractable: isInteractable,
-                  );
-                }),
+                children: _buildGridChildren(snapshot),
               );
             },
           ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildGridChildren(AsyncSnapshot<AbstractGame?> snapshot) {
+    List<Widget> children = [];
+
+    // add the column headers row
+    children.add(_buildGridNumber(''));
+    for (int col = 0; col < GRID_SIZE; col++) {
+      children.add(_buildGridNumber((col + 1).toString()));
+    }
+
+    for (int row = 0; row < GRID_SIZE; row++) {
+      // add the row header cell
+      children
+          .add(_buildGridNumber(String.fromCharCode('A'.codeUnitAt(0) + row)));
+
+      for (int col = 0; col < GRID_SIZE; col++) {
+        var position = Position(row, col);
+        children.add(GameSquare(
+          tileRack: snapshot.hasData ? snapshot.data!.tileRack : null,
+          square: snapshot.data?.board.getSquare(position) ??
+              Square(position: Position(0, 0)),
+          boardSize: size,
+          isInteractable: isInteractable,
+        ));
+      }
+    }
+
+    return children;
+  }
+
+  Widget _buildGridNumber(String number) {
+    return Container(
+      alignment: Alignment.center,
+      color: Colors.white,
+      child: Text(
+        number is int ? number.toString() : number,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          fontFamily: 'CaveStoryRegular',
         ),
       ),
     );
