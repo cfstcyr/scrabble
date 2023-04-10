@@ -11,7 +11,8 @@ enum VirtualPlayerLevel {
   }
 
   static VirtualPlayerLevel fromString(String value) {
-    return VirtualPlayerLevel.values.firstWhere((VirtualPlayerLevel level) => level.levelName.toLowerCase() == value.toLowerCase());
+    return VirtualPlayerLevel.values.firstWhere((VirtualPlayerLevel level) =>
+        level.levelName.toLowerCase() == value.toLowerCase());
   }
 
   static VirtualPlayerLevel fromInteger(int value) {
