@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
-import 'create-game-level.dart';
+import 'virtual-player-toggle.dart';
 
-class DifficultyLevelWidget extends StatelessWidget {
-  DifficultyLevelWidget({required this.difficultyLevel});
+class VirtualPlayerLevelWidget extends StatelessWidget {
+  VirtualPlayerLevelWidget({required this.difficultyLevel});
 
   final VirtualPlayerToggle difficultyLevel;
 
@@ -42,4 +42,4 @@ class DifficultyLevelWidget extends StatelessWidget {
 }
 
 Widget generateDifficultyLevelWidget(VirtualPlayerToggle level) =>
-    DifficultyLevelWidget(difficultyLevel: level);
+    VirtualPlayerLevelWidget(difficultyLevel: level);

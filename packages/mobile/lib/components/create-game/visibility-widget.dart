@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/create-game/create-game-visibility.dart';
+import 'package:mobile/components/create-game/game-visibility-toggle.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
 class VisibilityWidget extends StatelessWidget {

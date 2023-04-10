@@ -22,8 +22,8 @@ import '../../constants/create-account-constants.dart';
 import '../../constants/create-game.constants.dart';
 import '../../pages/home-page.dart';
 import '../app-toggle-button.dart';
-import 'create-game-level.dart';
-import 'create-game-visibility.dart';
+import 'game-visibility-toggle.dart';
+import 'virtual-player-toggle.dart';
 
 class CreateGameForm extends StatefulWidget {
   @override
