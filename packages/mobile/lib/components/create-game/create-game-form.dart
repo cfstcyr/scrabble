@@ -6,6 +6,8 @@ import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
 import 'package:mobile/components/app_button.dart';
+import 'package:mobile/components/create-game/virtual-player-level-widget.dart';
+import 'package:mobile/components/create-game/visibility-widget.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
@@ -19,6 +21,9 @@ import '../../classes/group.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/create-game.constants.dart';
 import '../../pages/home-page.dart';
+import '../app-toggle-button.dart';
+import 'create-game-level.dart';
+import 'create-game-visibility.dart';
 
 class CreateGameForm extends StatefulWidget {
   @override
@@ -30,13 +35,14 @@ class CreateGameFormState extends State<CreateGameForm> {
   GameCreationService gameCreationService = getIt.get<GameCreationService>();
   UserService userService = getIt.get<UserService>();
 
-  BehaviorSubject<String?> _playerLevel =
-      BehaviorSubject<String?>.seeded(VirtualPlayerLevel.beginner.levelName);
-  BehaviorSubject<String?> _visibility =
-      BehaviorSubject<String?>.seeded(GameVisibility.public.name);
   BehaviorSubject<Duration> _timePerTurn =
       BehaviorSubject<Duration>.seeded(Duration(minutes: 1));
+
   late PublicUser _user;
+  late AppToggleButton<VirtualPlayerToggle, VirtualPlayerLevel>
+      difficultyLevelSelector;
+  late AppToggleButton<GameVisibilityToggle, GameVisibility> visibilitySelector;
+
   final BehaviorSubject<TextFieldHandler> _passwordHandler =
       BehaviorSubject<TextFieldHandler>.seeded(TextFieldHandler());
 
@@ -44,6 +50,15 @@ class CreateGameFormState extends State<CreateGameForm> {
   void initState() {
     super.initState();
     _user = userService.getUser();
+    difficultyLevelSelector =
+        AppToggleButton<VirtualPlayerToggle, VirtualPlayerLevel>(
+            defaultValue: VirtualPlayerLevel.beginner,
+            optionsToValue: DIFFICULTY_LEVELS,
+            toggleOptionWidget: generateDifficultyLevelWidget);
+    visibilitySelector = AppToggleButton<GameVisibilityToggle, GameVisibility>(
+        defaultValue: GameVisibility.public,
+        optionsToValue: VISIBILITY_LEVELS,
+        toggleOptionWidget: generateVisibilityWidget);
   }
 
   @override
@@ -71,96 +86,20 @@ class CreateGameFormState extends State<CreateGameForm> {
                         runSpacing: SPACE_2,
                         children: [
                           Text(VP_LEVEL_FIELD_TITLE_FR),
-                          StreamBuilder(
-                              stream: _playerLevel.stream,
-                              builder: (context, snapshot) {
-                                String? playerLevel =
-                                    snapshot.data ?? _playerLevel.value;
-                                return Row(
-                                  children: [
-                                    Expanded(
-                                      child: RadioListTile(
-                                        title: Text(VirtualPlayerLevel
-                                            .beginner.levelName),
-                                        value: VirtualPlayerLevel
-                                            .beginner.levelName,
-                                        groupValue: playerLevel,
-                                        onChanged: (value) =>
-                                            _playerLevel.add(value),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: RadioListTile(
-                                        title: Text(VirtualPlayerLevel
-                                            .expert.levelName),
-                                        value:
-                                            VirtualPlayerLevel.expert.levelName,
-                                        groupValue: playerLevel,
-                                        onChanged: (value) =>
-                                            _playerLevel.add(value),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }),
+                          Center(child: difficultyLevelSelector),
                           SizedBox(height: 16.0),
                           Text(VISIBILITY_FIELD_TITLE_FR),
-                          StreamBuilder(
-                              stream: _visibility.stream,
-                              builder: (context, snapshot) {
-                                String? visibility =
-                                    snapshot.data ?? _visibility.value;
-
-                                return Row(
-                                  children: [
-                                    Expanded(
-                                      child: RadioListTile(
-                                        title: Wrap(children: [
-                                          Text(GameVisibility.public.name),
-                                          Icon(Icons.public),
-                                        ]),
-                                        value: GameVisibility.public.name,
-                                        groupValue: visibility,
-                                        onChanged: (value) =>
-                                            _visibility.add(value),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: RadioListTile(
-                                        title: Wrap(children: [
-                                          Text(GameVisibility.protected.name),
-                                          Icon(Icons.security)
-                                        ]),
-                                        value: GameVisibility.protected.name,
-                                        groupValue: visibility,
-                                        onChanged: (value) =>
-                                            _visibility.add(value),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: RadioListTile(
-                                        title: Wrap(children: [
-                                          Text(GameVisibility.private.name),
-                                          Icon(Icons.lock)
-                                        ]),
-                                        value: GameVisibility.private.name,
-                                        groupValue: visibility,
-                                        onChanged: (value) =>
-                                            _visibility.add(value),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }),
+                          Center(child: visibilitySelector),
                           StreamBuilder(
                               stream: CombineLatestStream.list<dynamic>([
-                                _visibility.stream,
+                                visibilitySelector.selectedStream,
                                 _passwordHandler.stream
                               ]),
                               builder: (context, snapshot) {
                                 if (snapshot.data == null) return Container();
-
-                                String? visibility = snapshot.data![0];
+                                print(snapshot.data![0].nameEnum);
+                                String? visibility =
+                                    snapshot.data![0].nameEnum.name;
                                 TextFieldHandler passwordHandler =
                                     snapshot.data![1];
 
@@ -259,12 +198,16 @@ class CreateGameFormState extends State<CreateGameForm> {
 
   Future<void> createGame() async {
     List<PublicUser> _users = [_user];
+    String visibilityName = visibilitySelector.selectedValue?.nameEnum.name ??
+        GameVisibility.public.name;
     Group groupData = Group(
       users: _users,
       maxRoundTime: _timePerTurn.value.inSeconds,
-      virtualPlayerLevel: VirtualPlayerLevel.fromString(_playerLevel.value!),
-      gameVisibility: GameVisibility.fromString(_visibility.value!),
-      password: _visibility.value == GameVisibility.protected.name
+      virtualPlayerLevel: VirtualPlayerLevel.fromString(
+          difficultyLevelSelector.selectedValue?.nameEnum.levelName ??
+              VirtualPlayerLevel.beginner.levelName),
+      gameVisibility: GameVisibility.fromString(visibilityName),
+      password: visibilityName == GameVisibility.protected.name
           ? _passwordHandler.value.controller.text
           : '',
     );
@@ -283,8 +226,8 @@ class CreateGameFormState extends State<CreateGameForm> {
 
   Stream<bool> isFormValid() {
     return CombineLatestStream<dynamic, bool>(
-        [_visibility.stream, _passwordHandler.stream], (values) {
-      String? visibility = values[0];
+        [visibilitySelector.selectedStream, _passwordHandler.stream], (values) {
+      String? visibility = values[0].nameEnum.name;
       TextFieldHandler passwordHandler = values[1];
 
       if (visibility == GameVisibility.protected.name) {
