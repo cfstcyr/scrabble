@@ -186,6 +186,27 @@ class EditableUserFields {
   }
 }
 
+class RatedUser {
+  double rating;
+  PublicUser user;
+
+  RatedUser({required this.user, required this.rating});
+
+  factory RatedUser.fromJson(Map<String, dynamic> json) {
+    return RatedUser(
+      user: PublicUser.fromJson(json),
+      rating: (json['rating'] as num).toDouble(),
+    );
+  }
+
+  static List<RatedUser> fromJsonList(List<dynamic> list) {
+    return list
+        .map<RatedUser>(
+            (json) => RatedUser.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+}
+
 class UserSearchItem {
   String username;
   String avatar;
@@ -248,12 +269,18 @@ class UserStatistics {
   int gamesWonCount;
   double averagePointsPerGame;
   double averageTimePerGame;
+  double rating;
+  double ratingMax;
+  int bingoCount;
 
   UserStatistics(
       {required this.averagePointsPerGame,
       required this.averageTimePerGame,
       required this.gamesPlayedCount,
-      required this.gamesWonCount});
+      required this.gamesWonCount,
+      required this.rating,
+      required this.ratingMax,
+      required this.bingoCount});
 
   UserStatistics.fromJson(Map<String, dynamic> json)
       : this(
@@ -261,5 +288,8 @@ class UserStatistics {
                 (json['averagePointsPerGame'] as num).toDouble(),
             averageTimePerGame: (json['averageTimePerGame'] as num).toDouble(),
             gamesPlayedCount: json['gamesPlayedCount'],
-            gamesWonCount: json['gamesWonCount']);
+            gamesWonCount: json['gamesWonCount'],
+            rating: (json['rating'] as num).toDouble(),
+            ratingMax: (json['ratingMax'] as num).toDouble(),
+            bingoCount: json['bingoCount']);
 }

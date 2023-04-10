@@ -5,6 +5,7 @@ import 'package:mobile/classes/board/orientation.dart';
 import 'package:mobile/classes/board/position.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-parser.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 import 'package:mobile/classes/tile/tile.dart';
 
 class WordPlacement {
@@ -27,7 +28,7 @@ class WordPlacement {
         orientation: actionPlacePayload.orientation);
 
     for (Tile tile in actionPlacePayload.tiles) {
-      squares.add(Square(tile: tile, position: currentPosition.copy()));
+      squares.add(Square(tile: tile.withState(TileState.notApplied), position: currentPosition.copy()));
       do {
         currentPosition = boardNavigator.forward().position;
       } while(boardNavigator.isWithinBounds() && boardNavigator.square.getTile() != null);

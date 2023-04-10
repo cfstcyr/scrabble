@@ -7,20 +7,35 @@ import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/game.constants.dart';
 
 class TilePlacement {
-  final Tile tile;
+  Tile tile;
   final Position position;
 
   TilePlacement({required this.tile, required this.position});
 
+  factory TilePlacement.fromJson(Map<String, dynamic> json) {
+    return TilePlacement(
+        tile: Tile.fromJson(json['tile']),
+        position: Position.fromJson(json['position']));
+  }
+
+  Map<String, dynamic> toJson() => {
+        'tile': tile.toJson(),
+        'position': position.toJson(),
+      };
+
   bool equals(TilePlacement other) {
     return position.equals(other.position) && tile == other.tile;
+  }
+
+  TilePlacement copy() {
+    return TilePlacement(tile: tile.copy(), position: position.copy());
   }
 }
 
 class Placement {
   List<TilePlacement> tiles;
 
-  Placement({this.tiles = const []});
+  Placement({List<TilePlacement>? tiles}) : tiles = tiles ?? [];
 
   add(TilePlacement tilePlacement) {
     tiles = [...tiles, tilePlacement];
@@ -34,6 +49,10 @@ class Placement {
     }
 
     tiles.removeAt(index);
+  }
+
+  clear() {
+    tiles.clear();
   }
 
   ActionPlacePayload toActionPayload() {
@@ -129,7 +148,8 @@ class Placement {
   }
 
   bool _placementIncludesMiddle() {
-    return tiles.any((TilePlacement tile) => tile.position.row == MIDDLE_ROW && tile.position.column == MIDDLE_COL);
+    return tiles.any((TilePlacement tile) =>
+        tile.position.row == MIDDLE_ROW && tile.position.column == MIDDLE_COL);
   }
 
   Placement clone() {

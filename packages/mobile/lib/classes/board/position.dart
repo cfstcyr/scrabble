@@ -52,4 +52,6 @@ class Position extends Vec2 {
 
     return Position(column, row);
   }
+
+  Map<String, dynamic> toJson() => {'row': row, 'column': column};
 }
