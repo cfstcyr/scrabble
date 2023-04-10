@@ -97,9 +97,8 @@ class CreateGameFormState extends State<CreateGameForm> {
                               ]),
                               builder: (context, snapshot) {
                                 if (snapshot.data == null) return Container();
-                                print(snapshot.data![0].nameEnum);
                                 String? visibility =
-                                    snapshot.data![0].nameEnum.name;
+                                    snapshot.data![0].nameEnum.visibilityName;
                                 TextFieldHandler passwordHandler =
                                     snapshot.data![1];
 
@@ -131,8 +130,8 @@ class CreateGameFormState extends State<CreateGameForm> {
                               }),
                           SizedBox(height: 16.0),
                           Wrap(children: [
+                            Icon(Icons.hourglass_top),
                             Text(ROUND_TIME_FIELD_TITLE_FR),
-                            Icon(Icons.hourglass_top)
                           ]),
                           StreamBuilder<Duration>(
                               stream: _timePerTurn.stream,
@@ -140,27 +139,46 @@ class CreateGameFormState extends State<CreateGameForm> {
                                 Duration time =
                                     snapshot.data ?? _timePerTurn.value;
                                 return Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    IconButton(
-                                      icon: Icon(Icons.remove),
-                                      onPressed: time > MIN_TIME
-                                          ? () => _timePerTurn
-                                              .add(time -= INCREMENT_TIME)
-                                          : null,
+                                    Container(
+                                      width: 300,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 13),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(3),
+                                        border: Border.all(color: Colors.grey),
+                                      ),
+                                      child: Text(formatTime(time.inSeconds)),
                                     ),
-                                    Text(formatTime(time.inSeconds)),
-                                    IconButton(
-                                      icon: Icon(Icons.add),
-                                      onPressed: time < MAX_TIME
-                                          ? () => _timePerTurn
-                                              .add(time += INCREMENT_TIME)
-                                          : null,
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: AppButton(
+                                        icon: Icons.remove,
+                                        size: AppButtonSize.large,
+                                        onPressed: time > MIN_TIME
+                                            ? () => _timePerTurn
+                                                .add(time -= INCREMENT_TIME)
+                                            : null,
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: AppButton(
+                                        icon: Icons.add,
+                                        size: AppButtonSize.large,
+                                        onPressed: time < MAX_TIME
+                                            ? () => _timePerTurn
+                                                .add(time += INCREMENT_TIME)
+                                            : null,
+                                      ),
                                     ),
                                   ],
                                 );
                               }),
                         ],
                       ),
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -198,8 +216,9 @@ class CreateGameFormState extends State<CreateGameForm> {
 
   Future<void> createGame() async {
     List<PublicUser> _users = [_user];
-    String visibilityName = visibilitySelector.selectedValue?.nameEnum.name ??
-        GameVisibility.public.name;
+    String visibilityName =
+        visibilitySelector.selectedValue?.nameEnum.visibilityName ??
+            GameVisibility.public.name;
     Group groupData = Group(
       users: _users,
       maxRoundTime: _timePerTurn.value.inSeconds,
@@ -227,7 +246,7 @@ class CreateGameFormState extends State<CreateGameForm> {
   Stream<bool> isFormValid() {
     return CombineLatestStream<dynamic, bool>(
         [visibilitySelector.selectedStream, _passwordHandler.stream], (values) {
-      String? visibility = values[0].nameEnum.name;
+      String? visibility = values[0].nameEnum.visibilityName;
       TextFieldHandler passwordHandler = values[1];
 
       if (visibility == GameVisibility.protected.name) {

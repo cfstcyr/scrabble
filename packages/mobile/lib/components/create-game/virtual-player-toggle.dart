@@ -31,12 +31,12 @@ class VirtualPlayerToggle extends AppToggleOption {
 final VirtualPlayerToggle beginnerDifficultyLevel = VirtualPlayerToggle(
     id: '1',
     nameEnum: VirtualPlayerLevel.beginner,
-    icons: [Icons.precision_manufacturing]);
+    icons: [Icons.smart_toy_rounded]);
 
 final VirtualPlayerToggle expertDifficultyLevel = VirtualPlayerToggle(
     id: '2',
     nameEnum: VirtualPlayerLevel.expert,
-    icons: [Icons.precision_manufacturing, Icons.precision_manufacturing]);
+    icons: [Icons.smart_toy_rounded, Icons.smart_toy_rounded]);
 
 final Map<VirtualPlayerLevel, VirtualPlayerToggle> DIFFICULTY_LEVELS = {
   VirtualPlayerLevel.beginner: beginnerDifficultyLevel,
@@ -53,6 +53,6 @@ VirtualPlayerToggle getDifficultyLevelFromIndex(int index) {
   return DIFFICULTY_LEVELS.values.toList()[index];
 }
 
-VirtualPlayerToggle getPuzzleLevelFromName(VirtualPlayerToggle name) {
+VirtualPlayerToggle getPlayerLevelFromName(VirtualPlayerToggle name) {
   return DIFFICULTY_LEVELS[name] ?? expertDifficultyLevel;
 }
