@@ -29,6 +29,7 @@ class GameMessagesService {
 
   ActionService _actionService = getIt.get<ActionService>();
   GameService _gameService = getIt.get<GameService>();
+  GameEventService _gameEventService = getIt.get<GameEventService>();
 
   Stream<GameMessage?> get messageEvent => _chatController.gameMessage$.stream;
 
@@ -237,5 +238,15 @@ class GameMessagesService {
   bool _isHintMessage(List<String> subMessages) {
     if (subMessages[0] == HINT_MESSAGE) return true;
     return false;
+  }
+
+  void _hanldePlaceAction(HintMessagePayload hintPayload) {
+    _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
+    _sendAction(hintPayload);
+  }
+
+  void _sendAction(HintMessagePayload hintPayload) {
+    _actionService.sendAction(ActionType.place,
+        hintPayload.toActionPayload(_gameService.getTileRack()));
   }
 }
