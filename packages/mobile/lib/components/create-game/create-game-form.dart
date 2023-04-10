@@ -218,7 +218,7 @@ class CreateGameFormState extends State<CreateGameForm> {
     List<PublicUser> _users = [_user];
     String visibilityName =
         visibilitySelector.selectedValue?.nameEnum.visibilityName ??
-            GameVisibility.public.name;
+            GameVisibility.public.visibilityName;
     Group groupData = Group(
       users: _users,
       maxRoundTime: _timePerTurn.value.inSeconds,
@@ -226,7 +226,7 @@ class CreateGameFormState extends State<CreateGameForm> {
           difficultyLevelSelector.selectedValue?.nameEnum.levelName ??
               VirtualPlayerLevel.beginner.levelName),
       gameVisibility: GameVisibility.fromString(visibilityName),
-      password: visibilityName == GameVisibility.protected.name
+      password: visibilityName == GameVisibility.protected.visibilityName
           ? _passwordHandler.value.controller.text
           : '',
     );
@@ -249,7 +249,7 @@ class CreateGameFormState extends State<CreateGameForm> {
       String? visibility = values[0].nameEnum.visibilityName;
       TextFieldHandler passwordHandler = values[1];
 
-      if (visibility == GameVisibility.protected.name) {
+      if (visibility == GameVisibility.protected.visibilityName) {
         return passwordHandler.controller.text.isNotEmpty;
       }
       return true;
