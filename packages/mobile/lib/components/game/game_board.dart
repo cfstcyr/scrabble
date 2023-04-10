@@ -72,12 +72,12 @@ class GameBoard extends StatelessWidget {
       children.add(_buildGridNumber((col + 1).toString()));
     }
 
-    for (int row = 0; row < GRID_SIZE; row++) {
+    for (int col = 0; col < GRID_SIZE; col++) {
       // add the row header cell
       children
-          .add(_buildGridNumber(String.fromCharCode('A'.codeUnitAt(0) + row)));
+          .add(_buildGridNumber(String.fromCharCode('A'.codeUnitAt(0) + col)));
 
-      for (int col = 0; col < GRID_SIZE; col++) {
+      for (int row = 0; row < GRID_SIZE; row++) {
         var position = Position(row, col);
         children.add(GameSquare(
           tileRack: game?.tileRack,
