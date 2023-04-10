@@ -7,6 +7,7 @@ import 'package:mobile/classes/analysis/analysis.dart';
 import 'package:mobile/classes/puzzle/puzzle-level.dart';
 import 'package:mobile/classes/puzzle/puzzle-overview.dart';
 import 'package:mobile/classes/puzzle/puzzle-result.dart';
+import 'package:mobile/classes/puzzle/puzzle-type.dart';
 import 'package:mobile/components/analysis/analysis-overview-widget.dart';
 import 'package:mobile/components/analysis/critical-moment-widget.dart';
 import 'package:mobile/components/app_button.dart';
@@ -23,9 +24,11 @@ import 'package:rxdart/rxdart.dart';
 
 class PuzzleResultDialog {
   final PuzzlePlayed puzzlePlayed;
+  final PuzzleType puzzleType;
   List<PuzzleSolution> _puzzleSolutions;
 
-  PuzzleResultDialog({required this.puzzlePlayed}) : _puzzleSolutions = [] {
+  PuzzleResultDialog({required this.puzzlePlayed, required this.puzzleType})
+      : _puzzleSolutions = [] {
     _puzzleSolutions = _generateSlides();
   }
 
@@ -39,21 +42,27 @@ class PuzzleResultDialog {
             theme: AppButtonTheme.secondary,
             size: AppButtonSize.normal,
           ),
-          SizedBox(
-            width: SPACE_2,
-          ),
-          AppButton(
-            onPressed: () => _startNextPuzzle(context),
-            text: "Prochain puzzle",
-            theme: AppButtonTheme.primary,
-            size: AppButtonSize.normal,
-          )
+          ..._canGoToNextPuzzle() ? [] : _nextPuzzleButton(context),
         ],
         slides: [
           PuzzleOverviewWidget(
               overview: PuzzleOverview.fromPuzzlePlayed(puzzlePlayed)),
           ..._puzzleSolutions
         ]).openDialog(context);
+  }
+
+  List<Widget> _nextPuzzleButton(BuildContext context) {
+    return [
+      SizedBox(
+        width: SPACE_2,
+      ),
+      AppButton(
+        onPressed: () => _startNextPuzzle(context),
+        text: "Prochain puzzle",
+        theme: AppButtonTheme.primary,
+        size: AppButtonSize.normal,
+      )
+    ];
   }
 
   void _startNextPuzzle(BuildContext context) {
@@ -80,7 +89,9 @@ class PuzzleResultDialog {
 
     if (puzzlePlayed.playedPlacement != null) {
       placementsToShow.insert(
-          0, _generatePlacementView(puzzlePlayed.playedPlacement!, name: 'Votre placement'));
+          0,
+          _generatePlacementView(puzzlePlayed.playedPlacement!,
+              name: 'Votre placement'));
     }
 
     return placementsToShow
@@ -95,5 +106,9 @@ class PuzzleResultDialog {
       {required String name}) {
     return PlacementView(name: name)
         .fromPuzzlePlayed(puzzlePlayed.gridConfig, placement);
+  }
+
+  bool _canGoToNextPuzzle() {
+    return puzzleType == PuzzleType.daily;
   }
 }

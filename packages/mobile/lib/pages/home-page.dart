@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/image.dart';
+import 'package:mobile/components/puzzle/start-practice-puzzle-dialog.dart';
 import 'package:mobile/components/puzzle/start-puzzle-dialog.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
@@ -70,6 +71,15 @@ class HomePage extends StatelessWidget {
                       },
                       size: AppButtonSize.large,
                       child: Text(PUZZLE_TITLE,
+                          style: TextStyle(color: Colors.white, fontSize: 18)),
+                    ),
+                    SizedBox(height: 10),
+                    AppButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, LEADERBOARD_ROUTE);
+                      },
+                      size: AppButtonSize.large,
+                      child: Text(LEADERBOARD_MESSAGE,
                           style: TextStyle(color: Colors.white, fontSize: 18)),
                     ),
                   ],

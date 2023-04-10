@@ -6,6 +6,7 @@ import 'package:mobile/classes/analysis/analysis.dart';
 import 'package:mobile/classes/board/board.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/components/analysis/analysis-tile-rack.dart';
 import 'package:mobile/components/game/game_board.dart';
@@ -87,7 +88,6 @@ class PlacementView {
               tile: tile.copy(),
               size: TILE_SIZE - 10,
               shouldWiggle: false,
-              tint: Colors.transparent,
             ))
         .toList();
 
@@ -97,7 +97,7 @@ class PlacementView {
     for (w.Tile tileView in tileViews) {
       int index = usedTiles
           .indexWhere((Tile tile) => tile.letter == tileView.tile?.letter);
-      tileView.tint = index >= 0 ? NOT_APPLIED_COLOR : Colors.transparent;
+      tileView.tile!.withState(index >= 0 ? TileState.notApplied : TileState.defaultState);
       if (index >= 0) usedTiles.removeAt(index);
     }
 
