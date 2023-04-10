@@ -80,9 +80,6 @@ class _GameTimerState extends State<GameTimer> {
       (Timer timer) {
         if (_roundService.isLocalPlayerActive() && _timeLeft.value == lowTime) {
           _soundService.playSound(Sound.lowTime);
-        } else if (_roundService.isLocalPlayerActive() &&
-            _timeLeft.value == criticalLowTime) {
-          _soundService.playSound(Sound.criticalLowTime);
         }
 
         if (_timeLeft.value == 0) {
