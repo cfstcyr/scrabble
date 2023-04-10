@@ -46,6 +46,7 @@ export class BoardCursorService {
             this.setCursor(squareView.square.position);
         } else {
             this.clearCurrentCursor();
+            this.cursor = undefined;
         }
     }
 
