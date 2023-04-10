@@ -120,8 +120,10 @@ export default class RoundManager {
 
     private hasEveryonePlayedTwoRounds(): boolean {
         const playersTurnCount: Map<Player, number> = new Map();
+        const currentPlayers = this.getPlayers();
         for (const round of this.completedRounds) {
             if (round.player instanceof AbstractVirtualPlayer) continue;
+            if (!currentPlayers.includes(round.player)) continue;
             const playerTurnCount = playersTurnCount.get(round.player);
 
             if (playerTurnCount) {
@@ -147,6 +149,9 @@ export default class RoundManager {
         });
     }
 
+    private getPlayers(): Player[] {
+        return [this.player1, this.player2, this.player3, this.player4];
+    }
     private getNextPlayer(): Player {
         if (this.currentRound === undefined) {
             const startPlayerNumber = Random.randomIntFromInterval(1, 4);
