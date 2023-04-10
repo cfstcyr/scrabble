@@ -195,6 +195,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
         }
     }
     private async handleReRouteObserverAfterReplacement(observerId: string, gameData: StartGameData): Promise<void> {
+        this.router.navigateByUrl(ROUTE_GAME);
         this.gameId = gameData.gameId;
         this.playerContainer = new PlayerContainer(observerId, false).initializePlayers([
             gameData.player1,
@@ -204,18 +205,11 @@ export default class GameService implements OnDestroy, IResetServiceData {
         ]);
         this.tileReserve = gameData.tileReserve;
         this.tilePlacementService.resetTiles();
-
-        // this.roundManager.initialize(observerId, gameData);
-        // this.boardService.initializeBoard(gameData.board);
-
         this.isGameSetUp = true;
         this.isGameOver = false;
 
-        if (this.router.url !== ROUTE_GAME) {
-            this.roundManager.initializeEvents();
-            this.roundManager.startRound();
-            await this.router.navigateByUrl(ROUTE_GAME);
-        }
+        this.gameViewEventManagerService.emitGameViewEvent('reRender');
+        this.roundManager.initializeEvents();
     }
 
     private handleGameUpdate(gameUpdateData: GameUpdateData): void {
