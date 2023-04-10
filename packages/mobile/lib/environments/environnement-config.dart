@@ -13,7 +13,7 @@ abstract class BaseConfig {
 }
 
 class DevConfig implements BaseConfig {
-  String get ipAdressEmulator => 'localhost';
+  String get ipAdressEmulator => '10.0.2.2';
   String get ipAddressChrome => 'localhost';
 
   String get apiUrl => 'http://'
