@@ -86,8 +86,8 @@ export class SoundService {
     constructor() {
         this.soundsMap = new Map();
 
-        this.isMusicEnabled = Boolean(soundSettings.getIsMusicEnabled() === 'true');
-        SoundService.isSoundEnabled = Boolean(soundSettings.getIsSoundEffectsEnabled() === 'true');
+        this.isMusicEnabled = soundSettings.getIsMusicEnabled() ?? true;
+        SoundService.isSoundEnabled = soundSettings.getIsSoundEffectsEnabled() ?? true;
 
         for (const sound of Object.values(SoundName)) {
             this.soundsMap.set(
@@ -134,7 +134,7 @@ export class SoundService {
         if (this.isMusicEnabled === newSetting) return;
         this.isMusicEnabled = newSetting;
 
-        soundSettings.set('isMusicEnabled', newSetting.toString());
+        soundSettings.set('isMusicEnabled', newSetting);
 
         if (!this.isMusicEnabled) {
             this.musics.currentMusic?.stop();

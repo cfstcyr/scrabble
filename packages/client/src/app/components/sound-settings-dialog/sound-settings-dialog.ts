@@ -30,6 +30,6 @@ export class SoundSettingsDialogComponent implements OnInit {
     }
     saveSound() {
         SoundService.isSoundEnabled = this.isSoundEnabled;
-        soundSettings.set('isSoundEffectsEnabled', this.isSoundEnabled.toString());
+        soundSettings.set('isSoundEffectsEnabled', this.isSoundEnabled);
     }
 }
