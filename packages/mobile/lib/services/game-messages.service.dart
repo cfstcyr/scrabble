@@ -227,8 +227,7 @@ class GameMessagesService {
 
   Widget _buildPlayButton(HintMessagePayload hintPayload) {
     return AppButton(
-      onPressed: () => _actionService.sendAction(ActionType.place,
-          hintPayload.toActionPayload(_gameService.getTileRack())),
+      onPressed: () => _hanldePlaceAction(hintPayload),
       icon: Icons.play_arrow_rounded,
       size: AppButtonSize.normal,
       type: AppButtonType.normal,
