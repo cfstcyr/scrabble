@@ -203,6 +203,8 @@ export default class GameService implements OnDestroy, IResetServiceData {
             gameData.player3,
             gameData.player4,
         ]);
+        this.roundManager.initialize(observerId, gameData);
+        this.boardService.initializeBoard(gameData.board);
         this.tileReserve = gameData.tileReserve;
         this.tilePlacementService.resetTiles();
         this.isGameSetUp = true;
@@ -214,7 +216,6 @@ export default class GameService implements OnDestroy, IResetServiceData {
 
     private handleGameUpdate(gameUpdateData: GameUpdateData): void {
         this.tilePlacementService.resetTiles();
-
         if (gameUpdateData.player1) {
             this.handleUpdatePlayerData(gameUpdateData.player1);
         }

@@ -20,6 +20,7 @@ export const BEGINNER_PLAYER_RATING = 1100;
 @Service()
 export class ActiveGameService {
     playerLeftEvent: EventEmitter;
+    virtualPlayerReplacedEvent: EventEmitter;
     private activeGames: Game[];
 
     constructor(
@@ -28,6 +29,7 @@ export class ActiveGameService {
         private userStatisticService: UserStatisticsService,
     ) {
         this.playerLeftEvent = new EventEmitter();
+        this.virtualPlayerReplacedEvent = new EventEmitter();
         this.activeGames = [];
         Game.injectServices();
     }
@@ -124,6 +126,7 @@ export class ActiveGameService {
         const newPlayer: Player = this.observerToPlayer(observer);
         this.setPlayerElo(newPlayer);
         game.replacePlayer(replacedVirtualPlayer.id, newPlayer);
+        this.virtualPlayerReplacedEvent.emit('virtualPlayerReplaced');
     }
     private observerToPlayer(observer: Observer): Player {
         return new Player(observer.id, observer.publicUser);

@@ -224,8 +224,6 @@ export default class Game {
                 break;
         }
 
-        this.roundManager.replacePlayer(playerId, newPlayer);
-
         return updatedData;
     }
 

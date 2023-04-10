@@ -153,11 +153,8 @@ export class GamePlayController extends BaseController {
 
     private gameUpdate(gameId: string, data: GameUpdateData): void {
         this.socketService.emitToRoom(gameId, 'gameUpdate', data);
-        console.log('avant le if isIdVirtualPlayer');
         if (data.round && isIdVirtualPlayer(data.round.playerData.id)) {
-            console.log('dans le if isIsVirtualPlayer');
             this.virtualPlayerService.triggerVirtualPlayerTurn(data, this.activeGameService.getGame(gameId, data.round.playerData.id));
-            console.log('apres le triggerVP');
         }
     }
 
@@ -238,13 +235,14 @@ export class GamePlayController extends BaseController {
         this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
         const game: Game = this.activeGameService.getGame(gameId, observerId);
         const updatedData = {
+            player1: game.player1.convertToPlayerData(),
+            player2: game.player2.convertToPlayerData(),
             player3: game.player3.convertToPlayerData(),
             player4: game.player4.convertToPlayerData(),
         };
         const observerSocket = this.socketService.getSocket(observerId);
         this.socketService.emitToSocket(observerSocket.id, 'replaceVirtualPlayer', game.createStartGameData());
         this.gameUpdate(gameId, updatedData);
-
         this.socketService.emitToRoom(gameId, 'newMessage', {
             content: OBSERVER_REPLACE_JV_MESSAGE,
             senderId: 'system',

@@ -7,6 +7,11 @@
                 [square]='24'>
             <app-icon *ngIf='observedPlayerId === player1.player.id' icon='eye'></app-icon>
             <span class='game-observers-players__player__user__name'>{{player1.player.publicUser.username}}</span>
+            <button *ngIf='observedPlayerId === player1.player.id && isObservingVirtualPlayer(player1)'
+                class='replace-jv-button' mat-flat-button color="primary"
+                (click)="handleReplaceVirtualPlayerByObserver('1')">
+                <app-icon icon="exchange" styling="solid"></app-icon>
+            </button>
         </div>
         <div class='game-observers-players__player__points'>
             <span class='game-observers-players__player__points__value'>{{player1.player.score}}</span>
@@ -21,6 +26,11 @@
                 [square]='24'>
             <app-icon *ngIf='observedPlayerId === player2.player.id' icon='eye'></app-icon>
             <span class='game-observers-players__player__user__name'>{{player2.player.publicUser.username}}</span>
+            <button *ngIf='observedPlayerId === player2.player.id && isObservingVirtualPlayer(player2)'
+                class='replace-jv-button' mat-flat-button color="primary"
+                (click)="handleReplaceVirtualPlayerByObserver('2')">
+                <app-icon icon="exchange" styling="solid"></app-icon>
+            </button>
         </div>
         <div class='game-observers-players__player__points'>
             <span class='game-observers-players__player__points__value'>{{player2.player.score}}</span>
@@ -55,8 +65,9 @@
             <app-icon *ngIf='observedPlayerId === player4.player.id' icon='eye'></app-icon>
             <span class='game-observers-players__player__user__name'>{{player4.player.publicUser.username}}</span>
             <i class="fa-solid fa-arrows-rotate"></i>
-            <button *ngIf='observedPlayerId === player4.player.id' class='replace-jv-button' mat-flat-button
-                color="primary" (click)="handleReplaceVirtualPlayerByObserver('4')">
+            <button *ngIf='observedPlayerId === player4.player.id && isObservingVirtualPlayer(player4)'
+                class='replace-jv-button' mat-flat-button color="primary"
+                (click)="handleReplaceVirtualPlayerByObserver('4')">
                 <app-icon icon="exchange" styling="solid"></app-icon>
             </button>
         </div>

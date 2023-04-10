@@ -7,6 +7,7 @@ import RoundManagerService from '@app/services/round-manager-service/round-manag
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+const VIRTUAL_PLAYER_ID_PREFIX = 'virtual-player';
 interface GamePlayer {
     isActive: boolean;
     player: Player;
@@ -52,6 +53,9 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
     handleReplaceVirtualPlayerByObserver(virtualPlayerNumber: string) {
         this.gameService.replaceVirtualPlayer(virtualPlayerNumber);
     }
+    isObservingVirtualPlayer(player: GamePlayer) {
+        return player.player.id.includes(VIRTUAL_PLAYER_ID_PREFIX);
+    }
     private setupGame(): void {
         if (this.roundManager.timer) {
             this.roundManager.timer.pipe(takeUntil(this.componentDestroyed$)).subscribe(([, activePlayer]) => {
@@ -66,7 +70,6 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
         this.player3 = this.buildGamePlayer(3, activePlayer);
         this.player4 = this.buildGamePlayer(4, activePlayer);
     }
-
     private buildGamePlayer(playerNumber: number, activePlayer: Player | undefined): GamePlayer {
         return {
             isActive: !!activePlayer && activePlayer.id === this.gameService.getPlayerByNumber(playerNumber)?.id,
