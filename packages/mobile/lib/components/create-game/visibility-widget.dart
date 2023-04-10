@@ -27,7 +27,7 @@ class VisibilityWidget extends StatelessWidget {
             height: SPACE_1,
           ),
           Text(
-            visibility.nameEnum.name,
+            visibility.nameEnum.visibilityName,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           SizedBox(

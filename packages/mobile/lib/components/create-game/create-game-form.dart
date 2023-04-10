@@ -106,7 +106,7 @@ class CreateGameFormState extends State<CreateGameForm> {
                                   padding: const EdgeInsets.only(top: SPACE_1),
                                   child: Visibility(
                                     visible: visibility ==
-                                        GameVisibility.protected.name,
+                                        GameVisibility.protected.visibilityName,
                                     child: TextField(
                                       controller: passwordHandler.controller,
                                       focusNode: passwordHandler.focusNode,
