@@ -81,7 +81,7 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
         this.newlyPlacedTiles = [];
     }
 
-    squareClickHandler(squareView: SquareView): void {
+    squareClickHandler(squareView?: SquareView): void {
         if (this.isObserver || this.gameService.isGameOver || this.gameService.cannotPlay()) return;
         this.boardCursorService.handleSquareClick(squareView);
     }

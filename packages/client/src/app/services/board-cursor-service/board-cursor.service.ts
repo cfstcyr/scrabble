@@ -38,11 +38,15 @@ export class BoardCursorService {
         this.getUserTiles = getUserTiles;
     }
 
-    handleSquareClick(squareView: SquareView): void {
+    handleSquareClick(squareView?: SquareView): void {
         if (this.isDisabled) return;
 
         this.tilePlacementService.resetTiles();
-        this.setCursor(squareView.square.position);
+        if (squareView) {
+            this.setCursor(squareView.square.position);
+        } else {
+            this.clearCurrentCursor();
+        }
     }
 
     clear(): void {
