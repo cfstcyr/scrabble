@@ -199,7 +199,10 @@ class GameMessagesService {
                 Text(
                   placement.points.toString(),
                   style: TextStyle(
-                      color: Colors.black,
+                      color: placement is OpponentPlacementMessage ||
+                              placement is HintMessagePayload
+                          ? Colors.black
+                          : Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w600),
                 ),
@@ -209,8 +212,7 @@ class GameMessagesService {
                       color: placement is OpponentPlacementMessage ||
                               placement is HintMessagePayload
                           ? Colors.black
-                          : _themeColorService
-                              .themeDetails.value.color.colorValue,
+                          : Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.w600),
                 )
