@@ -86,6 +86,9 @@ class CustomLocator {
   }
 
   void _registerActiveSingleton() {
+    getIt.registerSingleton<AppRouteObserver>(AppRouteObserver());
+    getIt.registerSingleton<SoundService>(SoundService());
+
     getIt.registerSingleton<ChatService>(ChatService());
     getIt.registerSingleton<AccountAuthenticationController>(
         AccountAuthenticationController());
@@ -97,8 +100,5 @@ class CustomLocator {
     getIt.registerSingleton<EndGameService>(EndGameService());
     getIt.registerSingleton<GameMessagesService>(GameMessagesService());
     getIt.registerSingleton<GroupJoinController>(GroupJoinController());
-
-    getIt.registerSingleton<AppRouteObserver>(AppRouteObserver());
-    getIt.registerSingleton<SoundService>(SoundService());
   }
 }

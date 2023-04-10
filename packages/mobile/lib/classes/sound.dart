@@ -9,7 +9,7 @@ enum MusicType {
 enum Sound {
   click,
   lowTime,
-  // criticalLowTime,
+  criticalLowTime,
   victory,
   endGame,
   tilePlacement,
@@ -22,7 +22,8 @@ extension SoundName on Sound {
         return "ClickSound";
       case Sound.lowTime:
         return "LowTimeSound";
-      // case Sound.criticalLowTime:
+      case Sound.criticalLowTime:
+        return "LowTimeSound";
       //   return "CriticalLowTimeSound";
       case Sound.victory:
         return "VictorySound";
@@ -59,3 +60,6 @@ const lobbyMusic = [
 
 const pagesNoMusic = [GAME_PAGE_ROUTE, PUZZLE_ROUTE];
 const pageLobbyMusic = [CREATE_LOBBY_ROUTE, JOIN_WAITING_ROUTE];
+
+const lowTime = 20;
+const criticalLowTime = 5;

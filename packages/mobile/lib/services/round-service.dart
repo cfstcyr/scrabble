@@ -22,6 +22,8 @@ class RoundService {
 
   StreamSubscription<void>? roundTimeoutSubscription;
 
+  String? _localPlayerId;
+
   Round get currentRound {
     if (currentRound$.value == null) throw Exception('No current round');
 
@@ -40,6 +42,14 @@ class RoundService {
 
   bool isActivePlayer(String currentActivePlayerSocketId, String socketId) {
     return currentActivePlayerSocketId == socketId;
+  }
+
+  bool isLocalPlayerActive() {
+    return currentRound.socketIdOfActivePlayer == _localPlayerId;
+  }
+
+  void setLocalPlayerId(String? localPlayerId) {
+    _localPlayerId = localPlayerId;
   }
 
   void startRound(Round round, Function timerExpiresCallback) async {
