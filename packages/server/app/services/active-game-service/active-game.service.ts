@@ -117,12 +117,12 @@ export class ActiveGameService {
 
         this.playerLeftEvent.emit('playerLeftGame', gameId, playerId);
     }
-    async handleReplaceVirtualPlayer(gameId: string, observerId: string, playerNumber: string) {
+    handleReplaceVirtualPlayer(gameId: string, observerId: string, playerNumber: string) {
         const game: Game = this.getGame(gameId, observerId);
         const replacedVirtualPlayer = game.getPlayerByNumber(playerNumber);
         const observer: Observer = game.observers.filter((_observer) => _observer.id === observerId)[0];
         const newPlayer: Player = this.observerToPlayer(observer);
-
+        this.setPlayerElo(newPlayer);
         game.replacePlayer(replacedVirtualPlayer.id, newPlayer);
     }
     private observerToPlayer(observer: Observer): Player {

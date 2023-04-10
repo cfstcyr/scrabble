@@ -262,6 +262,7 @@ export default class Game {
     }
 
     createStartGameData(): StartGameData {
+        console.log('avant startgame data');
         const tileReserve: TileReserveData[] = [];
         this.addTilesToReserve(tileReserve);
         const round: Round = this.roundManager.getCurrentRound();
@@ -277,6 +278,7 @@ export default class Game {
             tileReserve,
             round: roundData,
         };
+        console.log('apres startgame data');
         return startGameData;
     }
 

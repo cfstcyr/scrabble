@@ -207,7 +207,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
         this.tilePlacementService.resetTiles();
         this.isGameSetUp = true;
         this.isGameOver = false;
-
+        // mettre a jour les données de la round
         this.gameViewEventManagerService.emitGameViewEvent('reRender');
         this.roundManager.initializeEvents();
     }
