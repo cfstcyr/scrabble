@@ -7,6 +7,7 @@ import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game-messages-constants.dart';
 import 'package:mobile/services/action-service.dart';
+import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
