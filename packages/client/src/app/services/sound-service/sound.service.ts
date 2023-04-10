@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Injectable } from '@angular/core';
 import {
     ROUTE_CREATE_WAITING,
@@ -9,11 +10,11 @@ import {
     ROUTE_PUZZLE_HOME,
 } from '@app/constants/routes-constants';
 import { Howl } from 'howler';
+import { soundSettings } from '@app/utils/settings';
 
 export enum SoundName {
     ClickSound = 'ClickSound',
     LowTimeSound = 'LowTimeSound',
-    CriticalLowTimeSound = 'CriticalLowTimeSound',
     VictorySound = 'VictorySound',
     EndGameSound = 'EndGameSound',
     TilePlacementSound = 'TilePlacementSound',
@@ -43,8 +44,31 @@ export enum MusicType {
     NoMusic,
     BackgroundMusic,
     LobbyMusic,
+    Init,
 }
 
+export interface SoundVolume {
+    sound: Howl[];
+    lobbyMusics: Howl[];
+    currentMusicType: MusicType;
+    currentMusic?: Howl;
+    backgroundMusicIndex: number;
+    lobbyMusicIndex: number;
+}
+
+export const SOUNDS_ADJUSTED_VOLUMES = new Map<SoundName | BackgroundMusicName | LobbyMusicName, number>([
+    [SoundName.ClickSound, 0.8],
+    [SoundName.LowTimeSound, 0.8],
+    [SoundName.VictorySound, 0.3],
+    [SoundName.EndGameSound, 0.5],
+    [SoundName.TilePlacementSound, 0.8],
+    [BackgroundMusicName.BackgroundMusic1, 0.25],
+    [BackgroundMusicName.BackgroundMusic2, 0.25],
+    [BackgroundMusicName.BackgroundMusic3, 0.25],
+    [LobbyMusicName.LobbyMusic1, 0.1],
+    [LobbyMusicName.LobbyMusic2, 0.15],
+    [LobbyMusicName.LobbyMusic3, 0.15],
+]);
 export const PAGES_NO_MUSIC = [ROUTE_GAME, ROUTE_GAME_OBSERVER, ROUTE_PUZZLE_GAME, ROUTE_PUZZLE_GAME_DAILY, ROUTE_PUZZLE_HOME];
 export const PAGES_LOBBY_MUSIC = [ROUTE_CREATE_WAITING, ROUTE_JOIN_WAITING];
 export const SOUND_FOLDER_PATH = 'assets\\sound\\';
@@ -61,21 +85,32 @@ export class SoundService {
     private soundsMap: Map<SoundName, Howl>;
     constructor() {
         this.soundsMap = new Map();
-        this.isMusicEnabled = true;
+
+        this.isMusicEnabled = Boolean(soundSettings.getIsMusicEnabled() === 'true');
+        SoundService.isSoundEnabled = Boolean(soundSettings.getIsSoundEffectsEnabled() === 'true');
+
         for (const sound of Object.values(SoundName)) {
             this.soundsMap.set(
                 sound,
                 new Howl({
                     src: [`${SOUND_FOLDER_PATH}${sound}.mp3`],
+                    volume: SOUNDS_ADJUSTED_VOLUMES.get(sound) ?? 1,
                 }),
             );
         }
 
-        this.musics = { backgroundMusicIndex: 0, backgroundMusics: [], lobbyMusicIndex: 0, lobbyMusics: [], currentMusicType: MusicType.NoMusic };
+        this.musics = {
+            backgroundMusicIndex: 0,
+            backgroundMusics: [],
+            lobbyMusicIndex: 0,
+            lobbyMusics: [],
+            currentMusicType: MusicType.Init,
+        };
         for (const sound of Object.values(BackgroundMusicName)) {
             this.musics.backgroundMusics.push(
                 new Howl({
                     src: [`${SOUND_FOLDER_PATH}${sound}.mp3`],
+                    volume: SOUNDS_ADJUSTED_VOLUMES.get(sound) ?? 1,
                     onend: () => this.startNextTrack(MusicType.BackgroundMusic),
                 }),
             );
@@ -84,6 +119,7 @@ export class SoundService {
             this.musics.lobbyMusics.push(
                 new Howl({
                     src: [`${SOUND_FOLDER_PATH}${sound}.mp3`],
+                    volume: SOUNDS_ADJUSTED_VOLUMES.get(sound) ?? 1,
                     onend: () => this.startNextTrack(MusicType.LobbyMusic),
                 }),
             );
@@ -97,6 +133,9 @@ export class SoundService {
     set isMusicEnabledSetting(newSetting: boolean) {
         if (this.isMusicEnabled === newSetting) return;
         this.isMusicEnabled = newSetting;
+
+        soundSettings.set('isMusicEnabled', newSetting.toString());
+
         if (!this.isMusicEnabled) {
             this.musics.currentMusic?.stop();
             this.musics.currentMusic = undefined;
@@ -107,7 +146,7 @@ export class SoundService {
 
     startNextTrack(musicType: MusicType) {
         if (!this.isMusicEnabled) return;
-        if (musicType === MusicType.BackgroundMusic) {
+        if (musicType === MusicType.BackgroundMusic || musicType === MusicType.Init) {
             this.musics.backgroundMusicIndex = (this.musics.backgroundMusicIndex + 1) % this.musics.backgroundMusics.length;
             const music = this.musics.backgroundMusics[this.musics.backgroundMusicIndex];
             this.musics.currentMusic = music;

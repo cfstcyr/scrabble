@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { SoundService } from '@app/services/sound-service/sound.service';
+import { soundSettings } from '@app/utils/settings';
 
 @Component({
     selector: 'app-sound-settings-dialog',
@@ -29,5 +30,6 @@ export class SoundSettingsDialogComponent implements OnInit {
     }
     saveSound() {
         SoundService.isSoundEnabled = this.isSoundEnabled;
+        soundSettings.set('isSoundEffectsEnabled', this.isSoundEnabled.toString());
     }
 }

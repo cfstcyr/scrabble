@@ -14,3 +14,8 @@ export const gameSettings = settings('game', {
 export const puzzleSettings = settings('puzzle', {
     time: num(),
 });
+
+export const soundSettings = settings('sound', {
+    isMusicEnabled: str({ default: 'true' }),
+    isSoundEffectsEnabled: str({ default: 'true' }),
+});
