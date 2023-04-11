@@ -21,13 +21,13 @@ import BoardService from '@app/services/board-service/board.service';
 import ObjectivesService from '@app/services/objective-service/objective.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { Channel } from '@common/models/chat/channel';
+import { GameHistoryCreation, GameHistoryPlayerCreation } from '@common/models/game-history';
 import { Observer } from '@common/models/observer';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { TypeOfId } from '@common/types/id';
 import { StatusCodes } from 'http-status-codes';
 import { Container } from 'typedi';
 import { ReadyGameConfig, StartGameData } from './game-config';
-import { GameHistoryCreation, GameHistoryPlayerCreation } from '@common/models/game-history';
 
 export default class Game {
     private static boardService: BoardService;
@@ -224,8 +224,6 @@ export default class Game {
                 break;
         }
 
-        this.roundManager.replacePlayer(playerId, newPlayer);
-
         return updatedData;
     }
 
@@ -262,6 +260,7 @@ export default class Game {
     }
 
     createStartGameData(): StartGameData {
+        console.log('avant startgame data');
         const tileReserve: TileReserveData[] = [];
         this.addTilesToReserve(tileReserve);
         const round: Round = this.roundManager.getCurrentRound();
@@ -277,6 +276,7 @@ export default class Game {
             tileReserve,
             round: roundData,
         };
+        console.log('apres startgame data');
         return startGameData;
     }
 

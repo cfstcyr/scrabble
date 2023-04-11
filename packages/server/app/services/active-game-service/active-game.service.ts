@@ -2,24 +2,25 @@ import Game from '@app/classes/game/game';
 import { ReadyGameConfig, StartGameData } from '@app/classes/game/game-config';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
+import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
 import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 import { Channel } from '@common/models/chat/channel';
 import { Observer } from '@common/models/observer';
 import { TypeOfId } from '@common/types/id';
 import { EventEmitter } from 'events';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
-import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 
 export const EXPERT_PLAYER_RATING = 1400;
 export const BEGINNER_PLAYER_RATING = 1100;
 @Service()
 export class ActiveGameService {
     playerLeftEvent: EventEmitter;
+    virtualPlayerReplacedEvent: EventEmitter;
     private activeGames: Game[];
 
     constructor(
@@ -28,6 +29,7 @@ export class ActiveGameService {
         private userStatisticService: UserStatisticsService,
     ) {
         this.playerLeftEvent = new EventEmitter();
+        this.virtualPlayerReplacedEvent = new EventEmitter();
         this.activeGames = [];
         Game.injectServices();
     }
@@ -117,13 +119,14 @@ export class ActiveGameService {
 
         this.playerLeftEvent.emit('playerLeftGame', gameId, playerId);
     }
-    async handleReplaceVirtualPlayer(gameId: string, observerId: string, playerNumber: string) {
+    handleReplaceVirtualPlayer(gameId: string, observerId: string, playerNumber: string) {
         const game: Game = this.getGame(gameId, observerId);
         const replacedVirtualPlayer = game.getPlayerByNumber(playerNumber);
         const observer: Observer = game.observers.filter((_observer) => _observer.id === observerId)[0];
         const newPlayer: Player = this.observerToPlayer(observer);
-
+        this.setPlayerElo(newPlayer);
         game.replacePlayer(replacedVirtualPlayer.id, newPlayer);
+        this.virtualPlayerReplacedEvent.emit('virtualPlayerReplaced');
     }
     private observerToPlayer(observer: Observer): Player {
         return new Player(observer.id, observer.publicUser);

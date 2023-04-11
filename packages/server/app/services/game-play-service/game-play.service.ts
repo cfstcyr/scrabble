@@ -10,25 +10,25 @@ import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
 import { MUST_HAVE_7_TILES_TO_SWAP } from '@app/constants/classes-errors';
+import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 import { INVALID_COMMAND, INVALID_PAYLOAD, NOT_PLAYER_TURN } from '@app/constants/services-errors';
 import { MINIMUM_TILES_LEFT_FOR_EXCHANGE } from '@app/constants/virtual-player-constants';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
+import { AnalysisService } from '@app/services/analysis-service/analysis.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import GameHistoriesService from '@app/services/game-history-service/game-history.service';
+import { RatingService } from '@app/services/rating-service/rating.service';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { ActionType } from '@common/models/action';
+import { GameHistoryPlayerCreation } from '@common/models/game-history';
+import { PlayerData } from '@common/models/player';
+import { PublicUserStatistics, UserGameStatisticInfo } from '@common/models/user-statistics';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
-import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
-import { PublicUserStatistics, UserGameStatisticInfo } from '@common/models/user-statistics';
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
-import { AnalysisService } from '@app/services/analysis-service/analysis.service';
-import { ActionType } from '@common/models/action';
-import { RatingService } from '@app/services/rating-service/rating.service';
-import { PlayerData } from '@common/models/player';
-import { GameHistoryPlayerCreation } from '@common/models/game-history';
 @Service()
 export class GamePlayService {
     constructor(
@@ -48,7 +48,9 @@ export class GamePlayService {
 
     async playAction(gameId: string, playerId: string, actionData: ActionData): Promise<[void | GameUpdateData, void | FeedbackMessages]> {
         const game = this.activeGameService.getGame(gameId, playerId);
+        console.log('avant');
         const player = game.getPlayer(playerId);
+        console.log('apress');
         if (player.id !== playerId) throw new HttpException(NOT_PLAYER_TURN, StatusCodes.FORBIDDEN);
         if (game.gameIsOver) return [undefined, undefined];
 

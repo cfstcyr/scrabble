@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Action, ActionPass } from '@app/classes/actions';
+import { Board } from '@app/classes/board';
 import { PlayerData } from '@app/classes/communication/player-data';
 import { RoundData } from '@app/classes/communication/round-data';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
+import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
+import { NUMBER_OF_PASSING_ROUNDS_TO_END_GAME, NUMBER_OF_PLAYERS_IN_GAME } from '@app/constants/classes-constants';
 import { INVALID_PLAYER_TO_REPLACE, NO_FIRST_ROUND_EXISTS } from '@app/constants/services-errors';
 import { Random } from '@app/utils/random/random';
 import { StatusCodes } from 'http-status-codes';
-import { AbstractVirtualPlayer } from '@app/classes/virtual-player/abstract-virtual-player/abstract-virtual-player';
 import { CompletedRound, Round } from './round';
-import { NUMBER_OF_PASSING_ROUNDS_TO_END_GAME, NUMBER_OF_PLAYERS_IN_GAME } from '@app/constants/classes-constants';
-import { Board } from '@app/classes/board';
 
 const SECONDS_TO_MILLISECONDS = 1000;
 
@@ -66,6 +66,9 @@ export default class RoundManager {
         };
         return this.currentRound;
     }
+    replaceCurrentRoundPlayer(newPlayer: Player, currentRound: Round) {
+        currentRound.player = newPlayer;
+    }
 
     getCurrentRound(): Round {
         return this.currentRound;
@@ -80,7 +83,7 @@ export default class RoundManager {
         return this.maxRoundTime;
     }
 
-    replacePlayer(oldPlayerId: string, newPlayer: Player): void {
+    replacePlayer(oldPlayerId: string, newPlayer: Player, isObserver: boolean): void {
         if (oldPlayerId === this.currentRound.player.id) this.currentRound.player = newPlayer;
 
         switch (oldPlayerId) {

@@ -79,6 +79,10 @@ export default class GameService implements OnDestroy, IResetServiceData {
         await this.initializeGame(initializeGameData.localPlayerId, initializeGameData.startGameData, isObserver);
         this.gameViewEventManagerService.emitGameViewEvent('gameInitialized', initializeGameData);
     }
+    async handleReplaceVirtualPlayer(initializeGameData: InitializeGameData | undefined): Promise<void> {
+        if (!initializeGameData) return;
+        await this.handleReRouteObserverAfterReplacement(initializeGameData.localPlayerId, initializeGameData.startGameData);
+    }
 
     isLocalPlayerPlaying(): boolean {
         return this.roundManager.currentRound?.player.id === this.playerContainer?.getLocalPlayerId();
@@ -180,7 +184,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
 
     private async handleReRouteOrReconnect(startGameData: StartGameData, isObserver: boolean): Promise<void> {
-        if (this.router.url !== ROUTE_GAME && this.router.url !== ROUTE_GAME_OBSERVER) {
+        if (this.router.url !== ROUTE_GAME) {
             this.roundManager.initializeEvents();
             this.roundManager.startRound();
             if (isObserver) {
@@ -190,10 +194,28 @@ export default class GameService implements OnDestroy, IResetServiceData {
             }
         }
     }
+    private async handleReRouteObserverAfterReplacement(observerId: string, gameData: StartGameData): Promise<void> {
+        this.router.navigateByUrl(ROUTE_GAME);
+        this.gameId = gameData.gameId;
+        this.playerContainer = new PlayerContainer(observerId, false).initializePlayers([
+            gameData.player1,
+            gameData.player2,
+            gameData.player3,
+            gameData.player4,
+        ]);
+        this.roundManager.initialize(observerId, gameData);
+        this.boardService.initializeBoard(gameData.board);
+        this.tileReserve = gameData.tileReserve;
+        this.tilePlacementService.resetTiles();
+        this.isGameSetUp = true;
+        this.isGameOver = false;
+        // mettre a jour les données de la round
+        this.gameViewEventManagerService.emitGameViewEvent('reRender');
+        this.roundManager.initializeEvents();
+    }
 
     private handleGameUpdate(gameUpdateData: GameUpdateData): void {
         this.tilePlacementService.resetTiles();
-
         if (gameUpdateData.player1) {
             this.handleUpdatePlayerData(gameUpdateData.player1);
         }

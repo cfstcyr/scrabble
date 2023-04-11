@@ -53,7 +53,7 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         if (this.mustDisconnectGameOnLeave) {
-            this.reconnectionService.disconnectGame();
+            // this.reconnectionService.disconnectGame();
         }
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
@@ -86,7 +86,6 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     }
 
     replaceObservingVirtualPlayer(virtualPlayerNumber: string) {
-        // remplacer le JV:
         this.gameService.replaceVirtualPlayer(virtualPlayerNumber);
     }
 

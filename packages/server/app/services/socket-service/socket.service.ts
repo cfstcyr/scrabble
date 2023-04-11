@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unified-signatures */
 /* eslint-disable no-console */
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
@@ -166,7 +167,8 @@ export class SocketService {
     emitToRoom(id: string, ev: '_test_event', ...args: unknown[]): void;
     emitToRoom<T>(room: string, ev: SocketEmitEvents, ...args: T[]): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
-
+        console.log('interieur emitroom');
+        console.log('room' + room);
         this.sio.to(room).emit(ev, ...args);
     }
 
@@ -184,6 +186,7 @@ export class SocketService {
     emitToSocket(id: string, ev: 'newMessage', ...args: NewMessageEmitArgs[]): void;
     emitToSocket(id: string, ev: 'cleanup', ...args: CleanupEmitArgs[]): void;
     emitToSocket(id: string, ev: '_test_event', ...args: unknown[]): void;
+    emitToSocket(id: string, ev: 'replaceVirtualPlayer', ...args: StartGameEmitArgs[]): void;
     emitToSocket<T>(id: string, ev: SocketEmitEvents, ...args: T[]): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
