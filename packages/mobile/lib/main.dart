@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -15,6 +16,13 @@ import 'package:mobile/services/initializer.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import 'environments/environment.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+
+  print("Handling a background message: ${message.messageId}");
+}
 
 Future<void> main() async {
   Intl.defaultLocale = 'fr_CA';
@@ -30,6 +38,10 @@ Future<void> main() async {
   Environment().initConfig(environment);
   CustomLocator().setUpLocator();
   getIt.get<InitializerService>().initialize();
+
+  // handler for messages when the app is closed
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   SystemChrome.setPreferredOrientations(
           [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
       .then((_) => runApp(MyApp()));
