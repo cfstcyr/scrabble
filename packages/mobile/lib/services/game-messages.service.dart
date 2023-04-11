@@ -241,8 +241,12 @@ class GameMessagesService {
     return false;
   }
 
-  void _hanldePlaceAction(HintMessagePayload hintPayload) {
+  void _hanldePlaceAction(HintMessagePayload hintPayload) async {
     _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
+
+    // Wait for tiles to be put back on tilerack
+    await Future.delayed(Duration(milliseconds: 250));
+
     _sendAction(hintPayload);
   }
 

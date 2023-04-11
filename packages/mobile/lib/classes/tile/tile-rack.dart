@@ -61,10 +61,6 @@ class TileRack {
     return this;
   }
 
-  Tile getTileByLetter(String letter) {
-    return _tiles.value.firstWhere((Tile tile) => tile.letter == letter);
-  }
-
   placeTile(Tile tile, {int? from, int? to}) {
     List<Tile> tiles = _tiles.value;
 
