@@ -239,7 +239,7 @@ export class GamePlayController extends BaseController {
         this.gameUpdate(gameId, updatedData);
         this.socketService.emitToRoom(gameId, 'newMessage', {
             content: OBSERVER_REPLACE_JV_MESSAGE,
-            senderId: 'system',
+            senderId: SYSTEM_ID,
             gameId,
         });
     }
