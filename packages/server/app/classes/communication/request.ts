@@ -24,4 +24,4 @@ export type GroupsRequest = Request & { params: { playerId: string } };
 
 export type PlaceRequest = UserRequest<{ tilePlacement: TilePlacement[] }> & { params: { gameId: string } };
 
-export type TokenRequest = Request & { params: { firebaseToken: string } };
+export type TokenRequest = UserRequest<{ firebaseToken: string }>;

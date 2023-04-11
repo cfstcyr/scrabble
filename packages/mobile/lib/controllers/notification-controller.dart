@@ -7,7 +7,8 @@ import 'package:mobile/services/client.dart';
 class NotificationController {
   NotificationController._privateConstructor();
 
-  static final NotificationController _instance = NotificationController._privateConstructor();
+  static final NotificationController _instance =
+      NotificationController._privateConstructor();
 
   factory NotificationController() {
     return _instance;
@@ -17,6 +18,6 @@ class NotificationController {
   final http = getIt.get<PersonnalHttpClient>().http;
 
   sendFirebaseToken(String token) async {
-    http.post(Uri.parse(endpoint), body: jsonEncode(token));
+    http.post(Uri.parse(endpoint), body: jsonEncode({'firebaseToken': token}));
   }
 }

@@ -1,10 +1,10 @@
 import { TokenRequest } from '@app/classes/communication/request';
+import { UserId } from '@app/classes/user/connected-user-types';
+import { BaseController } from '@app/controllers/base-controller';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '@app/controllers/base-controller';
-import { UserId } from '@app/classes/user/connected-user-types';
-import { NotificationService } from '@app/services/notification-service/notification.service';
 
 @Service()
 export class NotificationController extends BaseController {
@@ -14,7 +14,7 @@ export class NotificationController extends BaseController {
 
     protected configure(router: Router): void {
         router.post('/', async (req: TokenRequest, res: Response, next) => {
-            const { firebaseToken }: { firebaseToken: string } = req.body;
+            const firebaseToken: string = req.body.firebaseToken;
 
             const userId: UserId = req.body.idUser;
             try {
