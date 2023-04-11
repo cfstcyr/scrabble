@@ -49,6 +49,7 @@ class GameMessagesService {
 
   void addMessage(GameMessage? message) {
     if (message == null) return;
+    if (message.content.startsWith('!')) return;
 
     List<Widget> messages = messages$.value;
     messages.add(_buildMessage(message));
