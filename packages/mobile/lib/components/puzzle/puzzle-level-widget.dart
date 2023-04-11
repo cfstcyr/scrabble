@@ -17,7 +17,7 @@ class _PuzzleLevelWidgetState extends State<PuzzleLevelWidget> {
     return Container(
       constraints: BoxConstraints(minWidth: 128),
       padding:
-      const EdgeInsets.symmetric(horizontal: SPACE_3, vertical: SPACE_2),
+          const EdgeInsets.symmetric(horizontal: SPACE_3, vertical: SPACE_2),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -27,9 +27,9 @@ class _PuzzleLevelWidgetState extends State<PuzzleLevelWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: widget.puzzleLevel.icons
                 .map((IconData icon) => Icon(
-              icon,
-              size: 32,
-            ))
+                      icon,
+                      size: 32,
+                    ))
                 .toList(),
           ),
           SizedBox(

@@ -6,10 +6,13 @@ import RoundManagerService from '@app/services/round-manager-service/round-manag
 import { GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { takeUntil } from 'rxjs/operators';
+import { LetterValue, Tile } from '@app/classes/tile';
 
 interface GamePlayer {
     isActive: boolean;
     player: Player;
+    tilesLeft: number;
+    tilesLeftTile: Tile;
 }
 @Component({
     selector: 'app-game-observers-players',
@@ -21,10 +24,30 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
     @Input() observedPlayerId: string | undefined;
 
     readonly maxTilesPerPlayer = MAX_TILES_PER_PLAYER;
-    player1: GamePlayer = { isActive: false, player: new Player('', { username: 'Player1', email: '', avatar: '' }, []) };
-    player2: GamePlayer = { isActive: false, player: new Player('', { username: 'Player2', email: '', avatar: '' }, []) };
-    player3: GamePlayer = { isActive: false, player: new Player('', { username: 'Player3', email: '', avatar: '' }, []) };
-    player4: GamePlayer = { isActive: false, player: new Player('', { username: 'Player4', email: '', avatar: '' }, []) };
+    player1: GamePlayer = {
+        isActive: false,
+        player: new Player('', { username: 'Player1', email: '', avatar: '' }, []),
+        tilesLeft: 0,
+        tilesLeftTile: {} as Tile,
+    };
+    player2: GamePlayer = {
+        isActive: false,
+        player: new Player('', { username: 'Player2', email: '', avatar: '' }, []),
+        tilesLeft: 0,
+        tilesLeftTile: {} as Tile,
+    };
+    player3: GamePlayer = {
+        isActive: false,
+        player: new Player('', { username: 'Player3', email: '', avatar: '' }, []),
+        tilesLeft: 0,
+        tilesLeftTile: {} as Tile,
+    };
+    player4: GamePlayer = {
+        isActive: false,
+        player: new Player('', { username: 'Player4', email: '', avatar: '' }, []),
+        tilesLeft: 0,
+        tilesLeftTile: {} as Tile,
+    };
     private componentDestroyed$: Subject<boolean>;
 
     constructor(
@@ -32,6 +55,10 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
         private readonly gameService: GameService,
         private readonly gameViewEventManagerService: GameViewEventManagerService,
     ) {}
+
+    get players(): GamePlayer[] {
+        return [this.player1, this.player2, this.player3, this.player4];
+    }
 
     ngOnInit(): void {
         this.componentDestroyed$ = new Subject();
@@ -66,10 +93,14 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
     }
 
     private buildGamePlayer(playerNumber: number, activePlayer: Player | undefined): GamePlayer {
+        const player =
+            this.gameService.getPlayerByNumber(playerNumber) ?? new Player('', { username: 'Player' + playerNumber, email: '', avatar: '' }, []);
+
         return {
             isActive: !!activePlayer && activePlayer.id === this.gameService.getPlayerByNumber(playerNumber)?.id,
-            player:
-                this.gameService.getPlayerByNumber(playerNumber) ?? new Player('', { username: 'Player' + playerNumber, email: '', avatar: '' }, []),
+            player,
+            tilesLeft: player.getTiles().length,
+            tilesLeftTile: { letter: `${player.getTiles().length}` as LetterValue, value: 0 },
         };
     }
 }

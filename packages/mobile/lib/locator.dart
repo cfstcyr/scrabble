@@ -5,6 +5,7 @@ import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
 import 'package:mobile/controllers/notification-controller.dart';
 import 'package:mobile/controllers/puzzle-controller.dart';
+import 'package:mobile/controllers/tile-synchronisation-controller.dart';
 import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/analysis-service.dart';
@@ -23,6 +24,7 @@ import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:mobile/services/tile-synchronisation.service.dart';
 import 'package:mobile/services/upload.service.dart';
 import 'package:mobile/services/user-session.service.dart';
 import 'package:mobile/services/user.service.dart';
@@ -66,6 +68,11 @@ class CustomLocator {
     getIt.registerLazySingleton<GroupJoinService>(() => GroupJoinService());
 
     getIt.registerLazySingleton<GamePlayController>(() => GamePlayController());
+    getIt.registerLazySingleton<TileSynchronisationController>(
+        () => TileSynchronisationController());
+    getIt.registerLazySingleton<TileSynchronisationService>(
+        () => TileSynchronisationService());
+
     getIt.registerLazySingleton<ActionService>(() => ActionService());
     getIt.registerLazySingleton<PlayerLeaveService>(() => PlayerLeaveService());
     getIt.registerLazySingleton<NotificationController>(() => NotificationController());

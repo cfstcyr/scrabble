@@ -16,7 +16,7 @@ class UserProfileInfo extends StatelessWidget {
 
   final AccountAuthenticationController _authService =
       getIt.get<AccountAuthenticationController>();
-  BehaviorSubject<PublicUser?> user = BehaviorSubject.seeded(null);
+  PublicUser user;
   final bool isLocalUser;
 
   @override
@@ -24,11 +24,7 @@ class UserProfileInfo extends StatelessWidget {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(SPACE_3),
-        child: StreamBuilder<PublicUser?>(
-          stream: user,
-          builder: (context, snapshot) {
-            return snapshot.data != null
-                ? Row(
+        child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -36,17 +32,17 @@ class UserProfileInfo extends StatelessWidget {
                         spacing: SPACE_4,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Avatar(size: 150, avatar: snapshot.data!.avatar),
+                          Avatar(size: 150, avatar: user.avatar),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                snapshot.data!.username,
+                                user.username,
                                 style: TextStyle(
                                     fontSize: 48, fontWeight: FontWeight.w600),
                               ),
                               Text(
-                                snapshot.data!.email,
+                                user.email,
                                 style: TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.w500,
@@ -89,9 +85,6 @@ class UserProfileInfo extends StatelessWidget {
                             )
                           : Container(),
                     ],
-                  )
-                : Container();
-          },
         ),
       ),
     );

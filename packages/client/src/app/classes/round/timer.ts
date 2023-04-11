@@ -30,6 +30,11 @@ export class Timer {
     getTime(): number {
         return this.minutes * SECONDS_IN_MINUTE + this.seconds;
     }
+
+    getStringTimer(): string {
+        const minutes = this.minutes > 0 ? `${this.minutes} min ` : '';
+        return `${minutes}${this.getTimerSecondsPadded()} s`;
+    }
 }
 
 export const ILLEGAL_TIMER_PARAMETERS = 'The arguments passed to create the timer are not valid (minute < 0 or seconds < 0)';

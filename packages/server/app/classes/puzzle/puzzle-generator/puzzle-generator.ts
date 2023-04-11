@@ -164,6 +164,7 @@ export class PuzzleGenerator {
         for (const c of word.split('')) {
             const letter = c.toUpperCase() as LetterValue;
             navigator.square.tile = { letter, value: letterDistributionMap.get(letter)?.score ?? 0 };
+            navigator.square.wasMultiplierUsed = true;
             navigator.forward();
         }
     }

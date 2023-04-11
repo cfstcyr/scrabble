@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/group.dart';
 
 import '../classes/game-visibility.dart';
-import '../classes/virtual-player-level.dart';
 import '../components/group/group-management.dart';
 import '../components/group/parameters.dart';
 import '../components/group/player-waiting-list.dart';
@@ -62,7 +61,8 @@ class _CreateLobbyPageState extends State<CreateLobbyPage> {
                             style: TextStyle(fontSize: 18)),
                         Expanded(
                           child: WaitingRoom(
-                              virtualPlayerLevel: VirtualPlayerLevel.beginner),
+                              virtualPlayerLevel:
+                                  widget.group.virtualPlayerLevel),
                         ),
                         Row(children: <Widget>[
                           Expanded(

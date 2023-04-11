@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/components/tile/wildcard-dialog.dart';
@@ -11,7 +13,6 @@ import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-event.service.dart';
-import 'package:mobile/services/game.service.dart';
 
 // ignore: constant_identifier_names
 const Color NOT_APPLIED_COLOR = Color.fromARGB(255, 66, 135, 69);
@@ -20,10 +21,16 @@ class GameSquare extends StatefulWidget {
   final TileRack? tileRack;
   final Square square;
   final Color color;
+  final bool isLocalPlayerPlaying;
+  final double boardSize;
+  final bool isInteractable;
 
   GameSquare({
     required this.tileRack,
     required this.square,
+    required this.isLocalPlayerPlaying,
+    required this.boardSize,
+    required this.isInteractable,
   }) : color =
             square.multiplier != null ? square.getColor() : Color(0xFFEEEEEE);
 
@@ -62,7 +69,7 @@ class _GameSquareState extends State<GameSquare> {
         StreamBuilder<c.Tile?>(
           stream: widget.square.tile,
           builder: (context, snapshot) {
-            return snapshot.data != null
+            return snapshot.data != null || !widget.isLocalPlayerPlaying
                 ? SizedBox(
                     height: double.maxFinite,
                     width: double.maxFinite,
@@ -100,43 +107,58 @@ class _GameSquareState extends State<GameSquare> {
   }
 
   Widget _getContent() {
+    double contentScale = widget.boardSize / GAME_BOARD_SIZE;
     return StreamBuilder(
         stream: widget.square.tile,
         builder: (context, snapshot) {
           return Stack(
             alignment: Alignment.center,
             children: [
-              widget.square.isCenter
-                  ? Container(
-                      transform: Matrix4.translationValues(0, -2, 0),
-                      child: Text('★', style: TextStyle(fontSize: 24)),
-                    )
-                  : widget.square.multiplier != null
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              widget.square.multiplier!.getType().toUpperCase(),
-                              style: TextStyle(
-                                fontSize: 8,
+              Opacity(
+                opacity: snapshot.data?.state == TileState.synced ? 0.25 : 1,
+                child: widget.square.isCenter
+                    ? Container(
+                        transform: Matrix4.translationValues(0, -2, 0),
+                        child: Text('★',
+                            style: TextStyle(fontSize: 24),
+                            textScaleFactor: contentScale),
+                      )
+                    : widget.square.multiplier != null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                widget.square.multiplier!
+                                    .getType()
+                                    .toUpperCase(),
+                                textScaleFactor: contentScale,
+                                style: TextStyle(
+                                  fontSize: 8,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'x${widget.square.multiplier!.value}',
-                              style: TextStyle(
-                                height: 1,
-                              ),
-                            )
-                          ],
-                        )
-                      : SizedBox(),
+                              Text(
+                                'x${widget.square.multiplier!.value}',
+                                textScaleFactor: contentScale,
+                                style: TextStyle(
+                                  height: 1,
+                                ),
+                              )
+                            ],
+                          )
+                        : SizedBox(),
+              ),
               snapshot.data != null
                   ? StreamBuilder<bool>(
                       stream: widget.square.isAppliedStream,
                       builder: (context, isAppliedSnapshot) {
-                        return isAppliedSnapshot.data ?? false
-                            ? Tile(tile: snapshot.data)
-                            : Draggable(
+                        c.Tile tile = snapshot.data!;
+
+                        bool canDrag = widget.isLocalPlayerPlaying &&
+                                widget.isInteractable &&
+                                tile.state == TileState.notApplied;
+
+                        return canDrag
+                            ? Draggable(
                                 data: snapshot.data,
                                 feedback: Card(
                                   color: Colors.transparent,
@@ -155,12 +177,12 @@ class _GameSquareState extends State<GameSquare> {
                                 ),
                                 child: Tile(
                                   tile: snapshot.data,
-                                  tint: NOT_APPLIED_COLOR,
                                 ),
                                 onDragCompleted: () {
                                   removeTile();
                                 },
-                              );
+                              )
+                            : Tile(tile: snapshot.data);
                       },
                     )
                   : Opacity(opacity: 0, child: Tile()),
@@ -170,34 +192,42 @@ class _GameSquareState extends State<GameSquare> {
   }
 
   _onPlaceTile(BuildContext context, c.Tile tile) async {
-    widget.square.setTile(tile);
-
     if (tile.isWildcard) {
-      await triggerWildcardDialog(context, square: widget.square);
+      String playedLetter = await triggerWildcardDialog(context, square: widget.square);
+      tile.playedLetter = playedLetter;
     }
 
     _gameEventService.add<TilePlacement>(PLACE_TILE_ON_BOARD,
         TilePlacement(tile: tile, position: widget.square.position));
+
+    tile = tile.copy().withState(TileState.notApplied);
+    widget.square.setTile(tile);
   }
 
   _onPutBackTiles(void _) {
-    var tile = widget.square.getTile();
-
-    if (!widget.square.getIsApplied() && tile != null) {
-      widget.tileRack?.placeTile(tile);
+    if (widget.square.getTile() == null) return;
+    if (widget.square.getIsApplied()) return;
+    if (widget.square.getTile()!.state == TileState.synced) {
       removeTile();
+      return;
     }
+
+    // Ordre important, car si on removeTile avant, getTile() est null
+    widget.tileRack?.placeTile(widget.square.getTile()!);
+    removeTile();
   }
 
   removeTile() {
-    var tile = widget.square.getTile();
+    if (widget.square.getTile() == null) return;
+    if (widget.square.getIsApplied()) return;
 
-    if (tile != null) {
-      if (tile.isWildcard) tile.playedLetter = null;
+    c.Tile tile = widget.square.getTile()!;
 
-      widget.square.removeTile();
-      _gameEventService.add<TilePlacement>(REMOVE_TILE_FROM_BOARD,
-          TilePlacement(tile: tile, position: widget.square.position));
-    }
+    if (tile.isWildcard) tile.playedLetter = null;
+
+    widget.square.removeTile();
+
+    _gameEventService.add<TilePlacement>(REMOVE_TILE_FROM_BOARD,
+        TilePlacement(tile: tile, position: widget.square.position));
   }
 }

@@ -311,19 +311,11 @@ describe('RoundManager', () => {
             actionPlayed: {} as unknown as ActionPlace,
         } as unknown as CompletedRound;
 
-        it('should return false if completedRounds has a length of less that 8', () => {
+        it('should return false if completedRounds has a length of less that 4', () => {
             roundManager['completedRounds'] = [PASS_PLAYER1_ROUND, PASS_PLAYER1_ROUND, PASS_PLAYER1_ROUND];
             expect(roundManager.verifyIfGameOver()).to.be.false;
 
-            roundManager['completedRounds'] = [
-                PASS_PLAYER1_ROUND,
-                PASS_PLAYER1_ROUND,
-                PASS_PLAYER1_ROUND,
-                PASS_PLAYER1_ROUND,
-                PASS_PLAYER1_ROUND,
-                PASS_PLAYER1_ROUND,
-                PASS_PLAYER1_ROUND,
-            ];
+            roundManager['completedRounds'] = [PASS_PLAYER1_ROUND, PASS_PLAYER1_ROUND, PASS_PLAYER1_ROUND];
             expect(roundManager.verifyIfGameOver()).to.be.false;
         });
 

@@ -5,6 +5,7 @@ import RoundManagerService from '@app/services/round-manager-service/round-manag
 import { takeUntil } from 'rxjs/operators';
 import { SECONDS_TO_MILLISECONDS } from '@app/constants/game-constants';
 import { timer as timerCreationFunction } from 'rxjs/internal/observable/timer';
+import { SoundService, LOW_TIME, SoundName } from '@app/services/sound-service/sound.service';
 
 @Component({
     selector: 'app-game-timer',
@@ -18,7 +19,7 @@ export class GameTimerComponent implements OnInit, OnDestroy {
     private timerSubscription: Subscription;
     private componentDestroyed$: Subject<boolean>;
 
-    constructor(private roundManager: RoundManagerService) {}
+    constructor(private roundManager: RoundManagerService, private soundService: SoundService) {}
 
     ngOnInit(): void {
         this.timer = new Timer(0, 0);
@@ -44,7 +45,14 @@ export class GameTimerComponent implements OnInit, OnDestroy {
     private startTimer(timer: Timer): void {
         this.timer = timer;
         this.timerSource = this.createTimer(SECONDS_TO_MILLISECONDS);
-        this.timerSubscription = this.timerSource.pipe(takeUntil(this.componentDestroyed$)).subscribe(() => this.timer.decrement());
+        this.timerSubscription = this.timerSource.pipe(takeUntil(this.componentDestroyed$)).subscribe(() => {
+            this.timer.decrement();
+            if (this.roundManager.isActivePlayerLocalPlayer()) {
+                if (this.timer?.getTime() === LOW_TIME) {
+                    this.soundService.playSound(SoundName.LowTimeSound);
+                }
+            }
+        });
     }
 
     private endRound(): void {

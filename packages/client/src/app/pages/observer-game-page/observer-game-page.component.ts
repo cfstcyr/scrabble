@@ -22,6 +22,7 @@ import { ReconnectionService } from '@app/services/reconnection-service/reconnec
 import { Subject } from 'rxjs';
 import { AlertService } from '@app/services/alert-service/alert.service';
 import { OBSERVER_HELP_DELAY, OBSERVER_HELP_MESSAGE } from '@app/constants/game-constants';
+import { SoundName, SoundService } from '@app/services/sound-service/sound.service';
 
 @Component({
     selector: 'app-observer-game-page',
@@ -43,6 +44,7 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
         private gameViewEventManagerService: GameViewEventManagerService,
         private playerLeavesService: PlayerLeavesService,
         private readonly alertService: AlertService,
+        private readonly soundService: SoundService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
@@ -134,6 +136,8 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     }
 
     private endOfGameDialog(winnerNames: string[]): void {
+        this.soundService.playSound(SoundName.EndGameSound);
+
         this.dialog.open(DefaultDialogComponent, {
             data: {
                 title: DIALOG_END_OF_GAME_OBSERVER_TITLE,

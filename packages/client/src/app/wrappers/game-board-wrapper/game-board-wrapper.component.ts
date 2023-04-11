@@ -38,6 +38,8 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
 
     @HostListener('document:keypress', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent): void {
+        if (this.isObserver || this.gameService.isGameOver) return;
+
         const key = removeAccents(event.key.toLowerCase());
 
         if (event.key.length === 1 && key >= 'a' && key <= 'z') {
@@ -49,6 +51,11 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
     @HostListener('document:keydown.escape', ['$event'])
     handleEscapeEvent(): void {
         this.boardCursorService.clear();
+    }
+
+    @HostListener('document:keydown.backspace', ['$event'])
+    handleBackspaceEventEvent(): void {
+        this.boardCursorService.handleBackspace();
     }
 
     ngOnInit(): void {
@@ -79,8 +86,8 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
         this.newlyPlacedTiles = [];
     }
 
-    squareClickHandler(squareView: SquareView): void {
-        if (this.gameService.cannotPlay()) return;
+    squareClickHandler(squareView?: SquareView): void {
+        if (this.isObserver || this.gameService.isGameOver || this.gameService.cannotPlay()) return;
         this.boardCursorService.handleSquareClick(squareView);
     }
 

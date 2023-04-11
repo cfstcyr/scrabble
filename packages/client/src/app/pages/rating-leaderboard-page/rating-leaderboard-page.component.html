@@ -1,6 +1,4 @@
-<app-page-header title="Classement Elo">
-    <app-header-btn link="/home" header-button><app-icon icon="search" styling="solid"></app-icon></app-header-btn>
-</app-page-header>
+<app-page-header title="Classement Elo"></app-page-header>
 
 <div class="page">
     <div class="page-content">
@@ -14,7 +12,7 @@
             <mat-divider></mat-divider>
 
             <div *ngFor="let result of ((results | async) ?? []); let i=index" class="search-results">
-                <button class="search-result-item" (click)="reRoute(result.username)">
+                <button class="search-result-item" (click)="reRoute(result.username)" [class.connected-user]="result.username === ownUsername">
                     <div class="left-info">
                         <app-icon  *ngIf="i === 0" icon="medal" styling="solid" class="gold"></app-icon>
                         <app-icon  *ngIf="i === 1" icon="medal" styling="solid" class="silver"></app-icon>

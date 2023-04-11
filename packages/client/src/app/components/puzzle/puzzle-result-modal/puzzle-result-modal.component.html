@@ -17,6 +17,7 @@
             <div class='slide-info'>
                 <p class='slide-title'>Votre placement</p>
                 <p class='slide-points' *ngIf='placementPoints >= 0'>{{placementPoints}} pts</p>
+                <p class='slide-points' *ngIf='placementPoints < 0'> 0 pts</p>
             </div>
 
             <div class='board-container'>

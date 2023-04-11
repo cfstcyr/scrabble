@@ -1,3 +1,4 @@
+import 'package:mobile/classes/achievements.dart';
 import 'package:mobile/constants/avatars-constants.dart';
 
 import 'game-history.dart';
@@ -185,6 +186,27 @@ class EditableUserFields {
   }
 }
 
+class RatedUser {
+  double rating;
+  PublicUser user;
+
+  RatedUser({required this.user, required this.rating});
+
+  factory RatedUser.fromJson(Map<String, dynamic> json) {
+    return RatedUser(
+      user: PublicUser.fromJson(json),
+      rating: (json['rating'] as num).toDouble(),
+    );
+  }
+
+  static List<RatedUser> fromJsonList(List<dynamic> list) {
+    return list
+        .map<RatedUser>(
+            (json) => RatedUser.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+}
+
 class UserSearchItem {
   String username;
   String avatar;
@@ -221,6 +243,7 @@ class UserSearchQueryResult {
 class UserSearchResult {
   List<GameHistory> gameHistory;
   UserStatistics statistics;
+  List<UserAchievement> achievements;
   String username;
   String avatar;
 
@@ -228,14 +251,16 @@ class UserSearchResult {
       {required this.username,
       required this.avatar,
       required this.gameHistory,
-      required this.statistics});
+      required this.statistics,
+      required this.achievements});
 
   factory UserSearchResult.fromJson(Map<String, dynamic> json) {
     return UserSearchResult(
         username: json['username'] as String,
         avatar: json['avatar'] ?? AVATARS.first,
         gameHistory: GameHistory.fromJsonList(json['gameHistory']),
-        statistics: UserStatistics.fromJson(json['statistics']));
+        statistics: UserStatistics.fromJson(json['statistics']),
+        achievements: UserAchievement.fromJsonList(json['achievements']));
   }
 }
 
@@ -244,12 +269,18 @@ class UserStatistics {
   int gamesWonCount;
   double averagePointsPerGame;
   double averageTimePerGame;
+  double rating;
+  double ratingMax;
+  int bingoCount;
 
   UserStatistics(
       {required this.averagePointsPerGame,
       required this.averageTimePerGame,
       required this.gamesPlayedCount,
-      required this.gamesWonCount});
+      required this.gamesWonCount,
+      required this.rating,
+      required this.ratingMax,
+      required this.bingoCount});
 
   UserStatistics.fromJson(Map<String, dynamic> json)
       : this(
@@ -257,5 +288,8 @@ class UserStatistics {
                 (json['averagePointsPerGame'] as num).toDouble(),
             averageTimePerGame: (json['averageTimePerGame'] as num).toDouble(),
             gamesPlayedCount: json['gamesPlayedCount'],
-            gamesWonCount: json['gamesWonCount']);
+            gamesWonCount: json['gamesWonCount'],
+            rating: (json['rating'] as num).toDouble(),
+            ratingMax: (json['ratingMax'] as num).toDouble(),
+            bingoCount: json['bingoCount']);
 }

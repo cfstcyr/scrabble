@@ -1,8 +1,9 @@
 <div id="rack-grid" (click)="focus()">
     <mat-card>
-        <div class="tile-rack-actions">
+        <div class="tile-rack-actions"
+        [matTooltip]="isObserver ? 'Vous ne pouvez pas faire d\'action en tant qu\'observateur' : 'Mélanger les tuiles'"
+        >
             <button
-                matTooltip='Mélanger les tuiles'
                 mat-flat-button
                 color='primary'
                 class='tile-rack-actions__button tile-rack-actions__button--shuffle'

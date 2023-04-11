@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/analysis/analysis-request.dart';
 import 'package:mobile/classes/analysis/analysis.dart';
-import 'package:mobile/components/app-circular-spinner.dart';
 import 'package:mobile/components/LoadingDots.dart';
+import 'package:mobile/components/app-circular-spinner.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/constants/locale/analysis-constants.dart';
@@ -24,14 +24,17 @@ class AnalysisRequestDialog {
       this.idAnalysis,
       this.requestType});
 
-  Future<AnalysisCompleted?> openAnalysisRequestDialog(BuildContext context) async {
+  Future<AnalysisCompleted?> openAnalysisRequestDialog(
+      BuildContext context) async {
     _openDialog(context);
 
     if (idAnalysis == null || requestType == null) return null;
 
     await Future.delayed(Duration(milliseconds: 500));
 
-    return await getIt.get<AnalysisService>().requestAnalysis(idAnalysis!, requestType!);
+    return await getIt
+        .get<AnalysisService>()
+        .requestAnalysis(idAnalysis!, requestType!);
   }
 
   void _openDialog(BuildContext context) {
@@ -66,7 +69,7 @@ class AnalysisRequestDialog {
                           isLoading: true,
                           color: themeColorService
                               .themeDetails.value.color.colorValue,
-                          size: AppCircularSpinnerSize.large,
+                          size: AppCircularSpinnerSize.medium,
                         )
                       : Icon(
                           Icons.error,
@@ -96,7 +99,9 @@ class AnalysisRequestDialog {
             actions: [
               AppButton(
                 onPressed: () => _cancelAnalysisRequest(context),
-                text: isLoading ? CANCEL_ANALYSIS_REQUEST : CLOSE_ANALYSIS_REQUEST,
+                text: isLoading
+                    ? CANCEL_ANALYSIS_REQUEST
+                    : CLOSE_ANALYSIS_REQUEST,
                 theme: AppButtonTheme.secondary,
                 size: AppButtonSize.normal,
               )

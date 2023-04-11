@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/image.dart';
+import 'package:mobile/constants/puzzle-constants.dart';
 import 'package:mobile/constants/user-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/user.service.dart';
@@ -31,13 +32,17 @@ class Avatar extends StatelessWidget {
       width: size,
       child: forceInitials
           ? _getInitialsAvatar(getUsersInitials(initials ?? ''))
-          : avatar == null
+          : avatar == null || avatar!.isEmpty
               ? StreamBuilder<PublicUser?>(
                   stream: _userService.user,
-                  builder: (context, snapshot) => snapshot.hasData
-                      ? _getImageAvatar(snapshot.data!.avatar)
-                      : _getInitialsAvatar(getUsersInitials(initials ?? '')),
-                )
+                  builder: (context, snapshot) {
+                    bool shouldFetchAvatar =
+                        snapshot.hasData && snapshot.data!.avatar.isNotEmpty;
+
+                    return shouldFetchAvatar
+                        ? _getImageAvatar(snapshot.data!.avatar)
+                        : _getInitialsAvatar(getUsersInitials(initials ?? ''));
+                  })
               : _getImageAvatar(avatar!),
     );
   }
