@@ -1,27 +1,22 @@
 <div class='game-observers-players'>
-    <mat-card
-        *ngFor='let player of players; let index = index'
-        class='game-observers-players__player'
+    <mat-card *ngFor='let player of players; let index = index' class='game-observers-players__player'
         [ngClass]='{"game-observers-players__player--active": player.isActive, "game-observers-players__player--observed": observedPlayerId === player.player.id}'
-        (click)='playerClick.emit(index + 1)'
-    >
-        <div class='game-observers-players__player__user'>
-            <img class='game-observers-players__player__user__avatar' [appSrc]='player.player.publicUser.avatar' [square]='24'>
+        (click)='playerClick.emit(index + 1)'>
+        <div class='game-observers-players__player__user'
+            [matTooltip]='!isObservingVirtualPlayer(player) ? "Vous pouvez remplacer seulement un joueur virtuel":""'>
+            <img class=' game-observers-players__player__user__avatar' [appSrc]='player.player.publicUser.avatar'
+                [square]='24'>
             <app-icon *ngIf='observedPlayerId === player.player.id' icon='eye'></app-icon>
             <span class='game-observers-players__player__user__name'>{{player.player.publicUser.username}}</span>
-            <i class="fa-solid fa-arrows-rotate"></i>
-            <button *ngIf='observedPlayerId === player.player.id && isObservingVirtualPlayer(player)' class='replace-jv-button' mat-flat-button
-            color="primary" (click)="handleReplaceVirtualPlayerByObserver(index + 1)">
-            <app-icon icon="exchange" styling="solid"></app-icon>
-        </button>
+            <button *ngIf='observedPlayerId === player.player.id && isObservingVirtualPlayer(player)'
+                class='replace-jv-button' mat-flat-button color="primary"
+                (click)="handleReplaceVirtualPlayerByObserver(index + 1)">
+                <app-icon icon="exchange" styling="solid"></app-icon>
+            </button>
         </div>
         <div class='game-observers-players__player__points'>
-            <app-tile
-                [tile]='player.tilesLeftTile'
-                [hideValue]='true'
-                [matTooltip]='player.tilesLeft + " tuiles restantes"'
-                *ngIf='player.tilesLeft < 7'
-            ></app-tile>
+            <app-tile [tile]='player.tilesLeftTile' [hideValue]='true'
+                [matTooltip]='player.tilesLeft + " tuiles restantes"' *ngIf='player.tilesLeft < 7'></app-tile>
             <span class='game-observers-players__player__points__value'>{{player.player.score}}</span>
         </div>
     </mat-card>
