@@ -55,6 +55,8 @@ class GameService {
         .listen((GameUpdateData gameUpdate) => updateGame(gameUpdate));
   }
 
+  String? get currentGameId => gamePlayController.currentGameId;
+
   void startGame(String localPlayerId, StartGameData startGameData) {
     PlayersContainer playersContainer = PlayersContainer.fromPlayers(
         player1: startGameData.player1,
@@ -238,7 +240,11 @@ class GameService {
     );
   }
 
-  Stream<bool> isLocalPlayerPlaying() {
+  bool isLocalPlayerPlaying() {
+    return _roundService.currentRound.socketIdOfActivePlayer == game.players.localPlayerId;
+  }
+
+  Stream<bool> isLocalPlayerPlayingStream() {
     return CombineLatestStream<dynamic, bool>([_roundService.getActivePlayerId(), gameStream], (values) {
       String activePlayerId = values[0];
       MultiplayerGame? game = values[1];

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:mobile/classes/actions/action-data.dart';
+import 'package:mobile/classes/actions/action-place.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
@@ -10,6 +11,7 @@ import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../classes/game/game-message.dart';
 import '../classes/game/game_messages.dart';
@@ -19,21 +21,19 @@ import '../locator.dart';
 import '../utils/game_messages.dart';
 
 class GameMessagesService {
-  late List<Widget> messages = [_buildMessage("Début de la partie")];
+  late BehaviorSubject<List<Widget>> messages$ = BehaviorSubject.seeded([_buildMessage("Début de la partie")]);
 
   GameMessagesService._privateConstructor() {
-    messages = [_buildMessage("Début de la partie")];
-    _chatController.messageEvent.listen((GameMessage? gameMessage) => {
-          if (gameMessage != null)
-            messages.add(_buildMessage(gameMessage.content))
-        });
+    resetMessages();
+    _chatController.messageEvent
+        .listen((GameMessage? gameMessage) => addMessage(gameMessage));
   }
 
   ActionService _actionService = getIt.get<ActionService>();
   GameService _gameService = getIt.get<GameService>();
   GameEventService _gameEventService = getIt.get<GameEventService>();
 
-  Stream<GameMessage?> get messageEvent => _chatController.gameMessage$.stream;
+  Stream<List<Widget>> get messageEvent => messages$.stream;
 
   static final GameMessagesService _instance =
       GameMessagesService._privateConstructor();
@@ -45,8 +45,16 @@ class GameMessagesService {
 
   final _chatController = getIt.get<GamePlayController>();
 
+  void addMessage(GameMessage? message) {
+    if (message == null) return;
+
+    List<Widget> messages = messages$.value;
+    messages.add(_buildMessage(message.content));
+    messages$.add(messages);
+  }
+
   void resetMessages() {
-    messages = [_buildMessage("Début de la partie")];
+    messages$ = BehaviorSubject.seeded([_buildMessage("Début de la partie")]);
   }
 
   Widget _buildMessage(String message) {
@@ -251,7 +259,19 @@ class GameMessagesService {
   }
 
   void _sendAction(HintMessagePayload hintPayload) {
-    _actionService.sendAction(ActionType.place,
-        hintPayload.toActionPayload(_gameService.getTileRack()));
+    ActionPlacePayload? hintActionPayload;
+
+    try {
+      hintActionPayload =
+          hintPayload.toActionPayload(_gameService.getTileRack());
+    } catch (_) {
+      addMessage(GameMessage(
+          content: 'Impossible de jouer cet indice',
+          senderId: 'system-error',
+          gameId: _gameService.currentGameId ?? ''));
+      return;
+    }
+
+    _actionService.sendAction(ActionType.place, hintActionPayload);
   }
 }
