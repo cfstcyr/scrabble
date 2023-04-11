@@ -1,3 +1,4 @@
+import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import Game from '@app/classes/game/game';
 import { ReadyGameConfig, StartGameData } from '@app/classes/game/game-config';
 import { HttpException } from '@app/classes/http-exception/http-exception';
@@ -60,6 +61,7 @@ export class ActiveGameService {
         if (game.player1.id === playerId || game.player2.id === playerId || game.player3.id === playerId || game.player4.id === playerId) return game;
         const filteredObservers = game.observers.filter((observer) => observer.id === playerId);
         if (filteredObservers.length > 0) return game;
+
         throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.NOT_FOUND);
     }
 
@@ -101,7 +103,9 @@ export class ActiveGameService {
             disconnectedPlayer = game.getPlayer(playerId);
         } catch (exception) {
             const matchingObservers = game.observers.filter((obs) => obs.id === playerId);
-            if (matchingObservers.length < 1) throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.NOT_FOUND);
+            if (matchingObservers.length < 1) {
+                throw new HttpException(INVALID_PLAYER_ID_FOR_GAME, StatusCodes.NOT_FOUND);
+            }
 
             const index = game.observers.indexOf(matchingObservers[0]);
             game.observers.splice(index, 1);
@@ -119,14 +123,14 @@ export class ActiveGameService {
 
         this.playerLeftEvent.emit('playerLeftGame', gameId, playerId);
     }
-    handleReplaceVirtualPlayer(gameId: string, observerId: string, playerNumber: string) {
+    async handleReplaceVirtualPlayer(gameId: string, observerId: string, playerNumber: number): Promise<GameUpdateData> {
         const game: Game = this.getGame(gameId, observerId);
+
         const replacedVirtualPlayer = game.getPlayerByNumber(playerNumber);
         const observer: Observer = game.observers.filter((_observer) => _observer.id === observerId)[0];
         const newPlayer: Player = this.observerToPlayer(observer);
-        this.setPlayerElo(newPlayer);
-        game.replacePlayer(replacedVirtualPlayer.id, newPlayer);
-        this.virtualPlayerReplacedEvent.emit('virtualPlayerReplaced');
+        await this.setPlayerElo(newPlayer);
+        return game.replacePlayer(replacedVirtualPlayer.id, newPlayer);
     }
     private observerToPlayer(observer: Observer): Player {
         return new Player(observer.id, observer.publicUser);

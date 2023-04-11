@@ -83,7 +83,7 @@ export default class RoundManager {
         return this.maxRoundTime;
     }
 
-    replacePlayer(oldPlayerId: string, newPlayer: Player, isObserver: boolean): void {
+    replacePlayer(oldPlayerId: string, newPlayer: Player): void {
         if (oldPlayerId === this.currentRound.player.id) this.currentRound.player = newPlayer;
 
         switch (oldPlayerId) {

@@ -65,8 +65,7 @@ export class GamePlayController extends BaseController {
         router.post('/:gameId/players/replace', async (req: GameRequest, res: Response, next) => {
             const { gameId } = req.params;
             const userId: UserId = req.body.idUser;
-            const virtualPlayerNumber: string = req.body.virtualPlayerNumber;
-            console.log(virtualPlayerNumber);
+            const virtualPlayerNumber: number = req.body.virtualPlayerNumber;
             try {
                 const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
                 await this.handleReplaceVirtualPlayer(gameId, playerId, virtualPlayerNumber);
@@ -128,7 +127,6 @@ export class GamePlayController extends BaseController {
             }
 
             const [updateData, feedback] = await this.gamePlayService.playAction(gameId, playerId, data);
-
             if (updateData) {
                 this.gameUpdate(gameId, updateData);
             }
@@ -231,17 +229,13 @@ export class GamePlayController extends BaseController {
     private handleTilePlacement(gameId: string, playerId: string, data: TilePlacement[]) {
         this.socketService.emitToRoomNoSender(gameId, playerId, 'tilePlacement', data);
     }
-    private async handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: string): Promise<void> {
-        await this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
+    private async handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: number): Promise<void> {
+        const updatedData = await this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
+
         const game: Game = this.activeGameService.getGame(gameId, observerId);
-        const updatedData = {
-            player1: game.player1.convertToPlayerData(),
-            player2: game.player2.convertToPlayerData(),
-            player3: game.player3.convertToPlayerData(),
-            player4: game.player4.convertToPlayerData(),
-        };
         const observerSocket = this.socketService.getSocket(observerId);
-        this.socketService.emitToSocket(observerSocket.id, 'replaceVirtualPlayer', game.createStartGameData());
+        const data = game.createStartGameData();
+        this.socketService.emitToSocket(observerSocket.id, 'replaceVirtualPlayer', data);
         this.gameUpdate(gameId, updatedData);
         this.socketService.emitToRoom(gameId, 'newMessage', {
             content: OBSERVER_REPLACE_JV_MESSAGE,

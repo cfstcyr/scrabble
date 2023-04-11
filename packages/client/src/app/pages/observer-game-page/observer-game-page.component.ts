@@ -85,7 +85,7 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
         this.gameService.setLocalPlayer(playerNumber);
     }
 
-    replaceObservingVirtualPlayer(virtualPlayerNumber: string) {
+    replaceObservingVirtualPlayer(virtualPlayerNumber: number) {
         this.gameService.replaceVirtualPlayer(virtualPlayerNumber);
     }
 

@@ -77,12 +77,15 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
     }
-    handleReplaceVirtualPlayerByObserver(virtualPlayerNumber: string) {
+
+    handleReplaceVirtualPlayerByObserver(virtualPlayerNumber: number) {
         this.gameService.replaceVirtualPlayer(virtualPlayerNumber);
     }
+
     isObservingVirtualPlayer(player: GamePlayer) {
         return player.player.id.includes(VIRTUAL_PLAYER_ID_PREFIX);
     }
+
     private setupGame(): void {
         if (this.roundManager.timer) {
             this.roundManager.timer.pipe(takeUntil(this.componentDestroyed$)).subscribe(([, activePlayer]) => {

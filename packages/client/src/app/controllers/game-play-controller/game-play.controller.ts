@@ -28,7 +28,7 @@ export class GamePlayController {
             this.actionDone$.next();
         });
     }
-    replaceVirtualPlayerByObserver(gameId: string, virtualPlayerNumber: string): void {
+    replaceVirtualPlayerByObserver(gameId: string, virtualPlayerNumber: number): void {
         const endpoint = `${environment.serverUrl}/games/${gameId}/players/replace`;
         this.http.post(endpoint, { virtualPlayerNumber }).subscribe();
     }

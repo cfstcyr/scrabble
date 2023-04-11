@@ -8,7 +8,7 @@ import { Player } from '@app/classes/player';
 import { PlayerContainer } from '@app/classes/player/player-container';
 import { Round } from '@app/classes/round/round';
 import { TileReserveData } from '@app/classes/tile/tile.types';
-import { SYSTEM_ERROR_ID } from '@app/constants/game-constants';
+import { SECONDS_TO_MILLISECONDS, SYSTEM_ERROR_ID } from '@app/constants/game-constants';
 import { ROUTE_GAME, ROUTE_GAME_OBSERVER } from '@app/constants/routes-constants';
 import { GamePlayController } from '@app/controllers/game-play-controller/game-play.controller';
 import { ActionService } from '@app/services/action-service/action.service';
@@ -81,7 +81,8 @@ export default class GameService implements OnDestroy, IResetServiceData {
     }
     async handleReplaceVirtualPlayer(initializeGameData: InitializeGameData | undefined): Promise<void> {
         if (!initializeGameData) return;
-        await this.handleReRouteObserverAfterReplacement(initializeGameData.localPlayerId, initializeGameData.startGameData);
+        await this.initializeGame(initializeGameData.localPlayerId, initializeGameData.startGameData, false);
+        this.gameViewEventManagerService.emitGameViewEvent('gameInitialized', initializeGameData);
     }
 
     isLocalPlayerPlaying(): boolean {
@@ -154,7 +155,7 @@ export default class GameService implements OnDestroy, IResetServiceData {
             this.gameController.handleTilePlacement(this.gameId, tilePlacement);
         }
     }
-    replaceVirtualPlayer(virtualPlayerNumber: string) {
+    replaceVirtualPlayer(virtualPlayerNumber: number) {
         this.gameController.replaceVirtualPlayerByObserver(this.gameId, virtualPlayerNumber);
     }
 
@@ -186,32 +187,15 @@ export default class GameService implements OnDestroy, IResetServiceData {
     private async handleReRouteOrReconnect(startGameData: StartGameData, isObserver: boolean): Promise<void> {
         if (this.router.url !== ROUTE_GAME) {
             this.roundManager.initializeEvents();
-            this.roundManager.startRound();
+            const limitDate = new Date(startGameData.round.limitTime);
+            const timeLeft = (limitDate.getTime() - Date.now()) / SECONDS_TO_MILLISECONDS;
+            this.roundManager.startRound(timeLeft);
             if (isObserver) {
                 await this.router.navigateByUrl(ROUTE_GAME_OBSERVER);
             } else {
                 await this.router.navigateByUrl(ROUTE_GAME);
             }
         }
-    }
-    private async handleReRouteObserverAfterReplacement(observerId: string, gameData: StartGameData): Promise<void> {
-        this.router.navigateByUrl(ROUTE_GAME);
-        this.gameId = gameData.gameId;
-        this.playerContainer = new PlayerContainer(observerId, false).initializePlayers([
-            gameData.player1,
-            gameData.player2,
-            gameData.player3,
-            gameData.player4,
-        ]);
-        this.roundManager.initialize(observerId, gameData);
-        this.boardService.initializeBoard(gameData.board);
-        this.tileReserve = gameData.tileReserve;
-        this.tilePlacementService.resetTiles();
-        this.isGameSetUp = true;
-        this.isGameOver = false;
-        // mettre a jour les données de la round
-        this.gameViewEventManagerService.emitGameViewEvent('reRender');
-        this.roundManager.initializeEvents();
     }
 
     private handleGameUpdate(gameUpdateData: GameUpdateData): void {

@@ -224,6 +224,8 @@ export default class Game {
                 break;
         }
 
+        this.roundManager.replacePlayer(playerId, newPlayer);
+
         return updatedData;
     }
 
@@ -260,7 +262,6 @@ export default class Game {
     }
 
     createStartGameData(): StartGameData {
-        console.log('avant startgame data');
         const tileReserve: TileReserveData[] = [];
         this.addTilesToReserve(tileReserve);
         const round: Round = this.roundManager.getCurrentRound();
@@ -276,7 +277,6 @@ export default class Game {
             tileReserve,
             round: roundData,
         };
-        console.log('apres startgame data');
         return startGameData;
     }
 
@@ -298,15 +298,15 @@ export default class Game {
         return [this.player1, this.player2, this.player3, this.player4];
     }
 
-    getPlayerByNumber(playerNumber: string): Player {
+    getPlayerByNumber(playerNumber: number): Player {
         switch (playerNumber) {
-            case '1':
+            case 1:
                 return this.player1;
-            case '2':
+            case 2:
                 return this.player2;
-            case '3':
+            case 3:
                 return this.player3;
-            case '4':
+            case 4:
                 return this.player4;
             default:
                 return this.player1;

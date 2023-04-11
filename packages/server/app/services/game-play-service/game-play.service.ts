@@ -48,9 +48,7 @@ export class GamePlayService {
 
     async playAction(gameId: string, playerId: string, actionData: ActionData): Promise<[void | GameUpdateData, void | FeedbackMessages]> {
         const game = this.activeGameService.getGame(gameId, playerId);
-        console.log('avant');
         const player = game.getPlayer(playerId);
-        console.log('apress');
         if (player.id !== playerId) throw new HttpException(NOT_PLAYER_TURN, StatusCodes.FORBIDDEN);
         if (game.gameIsOver) return [undefined, undefined];
 

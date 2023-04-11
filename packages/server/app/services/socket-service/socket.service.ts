@@ -167,8 +167,6 @@ export class SocketService {
     emitToRoom(id: string, ev: '_test_event', ...args: unknown[]): void;
     emitToRoom<T>(room: string, ev: SocketEmitEvents, ...args: T[]): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
-        console.log('interieur emitroom');
-        console.log('room' + room);
         this.sio.to(room).emit(ev, ...args);
     }
 
