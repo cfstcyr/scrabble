@@ -22,7 +22,8 @@ import '../locator.dart';
 import '../utils/game_messages.dart';
 
 class GameMessagesService {
-  late BehaviorSubject<List<Widget>> messages$ = BehaviorSubject.seeded([_buildMessage("Début de la partie")]);
+  late BehaviorSubject<List<Widget>> messages$ =
+      BehaviorSubject.seeded([_buildMessage(START_MESSAGE)]);
 
   GameMessagesService._privateConstructor() {
     resetMessages();
@@ -50,15 +51,16 @@ class GameMessagesService {
     if (message == null) return;
 
     List<Widget> messages = messages$.value;
-    messages.add(_buildMessage(message.content));
+    messages.add(_buildMessage(message));
     messages$.add(messages);
   }
 
   void resetMessages() {
-    messages$ = BehaviorSubject.seeded([_buildMessage("Début de la partie")]);
+    messages$ = BehaviorSubject.seeded([_buildMessage(START_MESSAGE)]);
   }
 
-  Widget _buildMessage(String message) {
+  Widget _buildMessage(GameMessage gameMessage) {
+    String message = gameMessage.content;
     PlacementMessage? placement = getPlacementMessage(message);
 
     if (placement != null) return _buildPlacementMessage(placement);
@@ -70,7 +72,14 @@ class GameMessagesService {
       margin: EdgeInsets.only(bottom: SPACE_2),
       child: Column(
         children: subMessages
-            .map((String message) => MarkdownBody(data: message))
+            .map((String message) => MarkdownBody(
+                  data: message,
+                  styleSheet: MarkdownStyleSheet(
+                      textAlign: WrapAlignment.center,
+                      p: gameMessage.senderId == SYSTEM_ERROR_ID
+                          ? TextStyle(color: Colors.red)
+                          : null),
+                ))
             .toList(),
       ),
     );
