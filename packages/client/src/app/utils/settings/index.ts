@@ -1,6 +1,6 @@
 import { DEFAULT_TIMER_VALUE } from '@app/constants/pages-constants';
 import { settings } from './settings';
-import { num, str } from './validators';
+import { bool, num, str } from './validators';
 
 export const authenticationSettings = settings('authentication', {
     token: str(),
@@ -13,4 +13,9 @@ export const gameSettings = settings('game', {
 
 export const puzzleSettings = settings('puzzle', {
     time: num(),
+});
+
+export const soundSettings = settings('sound', {
+    isMusicEnabled: bool(),
+    isSoundEffectsEnabled: bool(),
 });

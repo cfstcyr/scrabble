@@ -32,7 +32,7 @@ import {
     PUZZLE_ERROR_DIALOG_TITLE,
 } from '@app/constants/puzzle-constants';
 import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
-import { CRITICAL_LOW_TIME, LOW_TIME, SoundName, SoundService } from '@app/services/sound-service/sound.service';
+import { LOW_TIME, SoundName, SoundService } from '@app/services/sound-service/sound.service';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
@@ -89,6 +89,11 @@ export class PuzzlePageComponent implements OnInit {
     handleKeyboardEventEsc(): void {
         this.boardCursorService.clear();
         this.tilePlacementService.resetTiles();
+    }
+
+    @HostListener('document:keydown.backspace', ['$event'])
+    handleBackspaceEventEvent(): void {
+        this.boardCursorService.handleBackspace();
     }
 
     ngOnInit(): void {
@@ -262,8 +267,6 @@ export class PuzzlePageComponent implements OnInit {
                 this.timer?.decrement();
                 if (this.timer?.getTime() === LOW_TIME) {
                     this.soundService.playSound(SoundName.LowTimeSound);
-                } else if (this.timer?.getTime() === CRITICAL_LOW_TIME) {
-                    this.soundService.playSound(SoundName.CriticalLowTimeSound);
                 }
             });
     }
