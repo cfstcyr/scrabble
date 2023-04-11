@@ -231,8 +231,8 @@ export class GamePlayController extends BaseController {
     private handleTilePlacement(gameId: string, playerId: string, data: TilePlacement[]) {
         this.socketService.emitToRoomNoSender(gameId, playerId, 'tilePlacement', data);
     }
-    private handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: string): void {
-        this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
+    private async handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: string): Promise<void> {
+        await this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
         const game: Game = this.activeGameService.getGame(gameId, observerId);
 
         const updatedData = {
@@ -240,12 +240,11 @@ export class GamePlayController extends BaseController {
             player2: game.player2,
             player3: game.player3,
             player4: game.player4,
-            isGameOver: game.gameIsOver,
         };
 
         this.gameUpdate(gameId, updatedData);
         this.socketService.emitToRoom(gameId, 'newMessage', {
-            content: 'Un Observateur a remplacé le JV ',
+            content: 'Un Observateur a remplacé le Joueur Virtuel',
             senderId: 'system',
             gameId,
         });
