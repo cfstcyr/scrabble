@@ -119,13 +119,13 @@
         }
     }
 }
-.mat-flat-button.replace-active-jv-button {
+.replace-active-jv-button {
     margin-left: 5px;
-    background-color: mat-color(green-theme, secondary);
+    background-color: rgba(var(--secondary));
     width: 25px;
 }
 .replace-inactive-jv-button {
     margin-left: 5px;
-    background-color: mat-color(green-theme, primary);
+    background-color: rgba(var(--primary));
     width: 25px;
 }
