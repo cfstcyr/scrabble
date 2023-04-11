@@ -13,15 +13,8 @@ class CreateGamePage extends StatelessWidget {
       title: "Création de partie",
       hasBackButton: true,
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Center(
-              child: Column(
-                children: [CreateGameForm()],
-              ),
-            ),
-          ],
+        child: Center(
+          child: CreateGameForm(),
         ),
       ),
       backgroundColor: theme.colorScheme.background,

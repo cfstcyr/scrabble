@@ -83,8 +83,8 @@ class Parameters extends StatelessWidget {
                   SizedBox(width: 8),
                   Text(
                     visibility == null
-                        ? GameVisibility.public.name
-                        : visibility!.name,
+                        ? GameVisibility.public.visibilityName
+                        : visibility!.visibilityName,
                     style: TextStyle(fontSize: 15),
                   ),
                 ],

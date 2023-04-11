@@ -203,9 +203,6 @@ class CreateAccountFormState extends State<CreateAccountForm> {
       });
     } else {
       validatePasswordMatch();
-      setState(() {
-        passwordHandler.errorMessage = "";
-      });
     }
   }
 
