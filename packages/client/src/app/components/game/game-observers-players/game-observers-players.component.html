@@ -8,9 +8,11 @@
                 [square]='24'>
             <app-icon *ngIf='observedPlayerId === player.player.id' icon='eye'></app-icon>
             <span class='game-observers-players__player__user__name'>{{player.player.publicUser.username}}</span>
-            <button *ngIf='observedPlayerId === player.player.id && isObservingVirtualPlayer(player)'
-                class='replace-jv-button' mat-flat-button color="primary"
-                (click)="handleReplaceVirtualPlayerByObserver(index + 1)">
+            <button *ngIf='observedPlayerId === player.player.id && isObservingVirtualPlayer(player)' mat-flat-button
+                [ngClass]="{
+                    'replace-active-jv-button' : player.isActive,
+                    'replace-inactive-jv-button' : !player.isActive
+                 }" (click)="handleReplaceVirtualPlayerByObserver(index + 1)">
                 <app-icon icon="exchange" styling="solid"></app-icon>
             </button>
         </div>

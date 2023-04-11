@@ -119,6 +119,13 @@
         }
     }
 }
-.replace-jv-icon {
-    margin-left: 20px;
+.mat-flat-button.replace-active-jv-button {
+    margin-left: 5px;
+    background-color: mat-color(green-theme, secondary);
+    width: 25px;
+}
+.replace-inactive-jv-button {
+    margin-left: 5px;
+    background-color: mat-color(green-theme, primary);
+    width: 25px;
 }
