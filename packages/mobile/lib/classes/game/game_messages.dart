@@ -34,14 +34,21 @@ class HintMessagePayload extends PlacementMessage {
   });
 
   ActionPlacePayload toActionPayload(TileRack tileRack) {
-    var tiles = letters.split('').map((letter) {
-      if (letter == letter.toUpperCase()) {
-        Tile tile = tileRack.getTileByLetter('*');
-        tile.playedLetter = letter;
-        return tile;
+    List<Tile> tileRackTiles = [...tileRack.stream.value.map((t) => t.copy())];
+
+    List<Tile> tilesToPlace = letters.split('').map((letter) {
+      if (isBlankTile(letter)) {
+        int indexOfBlank = tileRackTiles.indexWhere((Tile t) => t.letter == '*');
+        if (indexOfBlank < 0) throw Exception('The player does not have a working blank tile');
+
+        Tile blankTile = tileRackTiles.removeAt(indexOfBlank);
+        blankTile.playedLetter = letter;
+        return blankTile;
       }
 
-      return tileRack.getTileByLetter(letter.toUpperCase());
+      int indexOfTile = tileRackTiles.indexWhere((Tile t) => t.letter == letter.toUpperCase());
+      if (indexOfTile < 0) throw Exception('The player does not have a working tile');
+      return tileRackTiles.removeAt(indexOfTile);
     }).toList();
 
     Position pos = Position.fromString(position);
@@ -53,8 +60,10 @@ class HintMessagePayload extends PlacementMessage {
 
 
     return ActionPlacePayload(
-        tiles: tiles, position: pos, orientation: orientation);
+        tiles: tilesToPlace, position: pos, orientation: orientation);
   }
+
+  bool isBlankTile(String letter) => letter == letter.toUpperCase();
 }
 
 class HintMessage {
