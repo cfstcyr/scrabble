@@ -21,8 +21,8 @@ import { AlertService } from '@app/services/alert-service/alert.service';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
-import { Subject } from 'rxjs';
 import { SoundName, SoundService } from '@app/services/sound-service/sound.service';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'app-observer-game-page',
@@ -52,9 +52,6 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        if (this.mustDisconnectGameOnLeave) {
-            // this.reconnectionService.disconnectGame();
-        }
         this.componentDestroyed$.next(true);
         this.componentDestroyed$.complete();
     }
