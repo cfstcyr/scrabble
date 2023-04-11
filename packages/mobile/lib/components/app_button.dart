@@ -50,7 +50,7 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      onPressed: handlePressed,
+      onPressed: onPressed != null ? handlePressed : null,
       color: _getButtonColor(),
       disabledColor: type == AppButtonType.normal
           ? Colors.grey.shade300
