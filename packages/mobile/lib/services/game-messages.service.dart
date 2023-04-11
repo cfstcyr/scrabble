@@ -7,6 +7,7 @@ import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game-messages-constants.dart';
+import 'package:mobile/constants/locale/game-message-constants.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
@@ -266,8 +267,8 @@ class GameMessagesService {
           hintPayload.toActionPayload(_gameService.getTileRack());
     } catch (_) {
       addMessage(GameMessage(
-          content: 'Impossible de jouer cet indice',
-          senderId: 'system-error',
+          content: CANNOT_PLAY_HINT,
+          senderId: SYSTEM_ERROR_ID,
           gameId: _gameService.currentGameId ?? ''));
       return;
     }

@@ -1,5 +1,7 @@
 import 'package:mobile/classes/game/game-message.dart';
 import 'package:mobile/classes/http/ResponseResult.dart';
+import 'package:mobile/constants/game-messages-constants.dart';
+import 'package:mobile/constants/locale/game-message-constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/game.service.dart';
@@ -37,16 +39,16 @@ class ActionService {
     if (!getIt.get<GameService>().isLocalPlayerPlaying()) {
       getIt.get<
           GameMessagesService>().addMessage(GameMessage(
-          content: "Vous ne pouvez pas jouer une action quand ce n'est pas votre tour",
-          senderId: "system-error",
+          content: CANNOT_PLAY_WHEN_NOT_LOCAL_TURN,
+          senderId: SYSTEM_ERROR_ID,
           gameId: gameplayController.currentGameId ?? ''));
       return;
     }
     if (isActionBeingProcessed) {
       getIt.get<
           GameMessagesService>().addMessage(GameMessage(
-          content: "Veuillez patienter pendant que le serveur traite votre action",
-          senderId: "system-error",
+          content: SERVER_PROCESSING_ACTION,
+          senderId: SYSTEM_ERROR_ID,
           gameId: gameplayController.currentGameId ?? ''));
       return;
     }
