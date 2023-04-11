@@ -39,7 +39,11 @@ class TileRack {
 
   TileRack setTiles(List<Tile> tiles, {bool overrideState = true}) {
     _tiles.add(overrideState
-        ? [...tiles.map((t) => t.copy().withState(TileState.defaultState)).toList()]
+        ? [
+            ...tiles
+                .map((t) => t.copy().withState(TileState.defaultState))
+                .toList()
+          ]
         : [...tiles]);
     return this;
   }
@@ -103,7 +107,6 @@ class TileRack {
   }
 
   void toggleSelectedTile(Tile tile) {
-
     tile.toggleIsSelected();
     setTiles(stream.value, overrideState: false);
   }
