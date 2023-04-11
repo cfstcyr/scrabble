@@ -32,13 +32,7 @@ class VisibilityWidget extends StatelessWidget {
           ),
           SizedBox(
             height: SPACE_1,
-          ),
-          Opacity(
-              opacity: 0.54,
-              child: Text(
-                visibility.description,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ))
+          )
         ],
       ),
     );

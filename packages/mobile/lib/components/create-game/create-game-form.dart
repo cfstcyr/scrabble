@@ -85,10 +85,14 @@ class CreateGameFormState extends State<CreateGameForm> {
                       Wrap(
                         runSpacing: SPACE_2,
                         children: [
-                          Text(VP_LEVEL_FIELD_TITLE_FR),
+                          Text(VP_LEVEL_FIELD_TITLE_FR,
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
                           Center(child: difficultyLevelSelector),
-                          SizedBox(height: 16.0),
-                          Text(VISIBILITY_FIELD_TITLE_FR),
+                          SizedBox(width: 600, height: 10),
+                          Text(VISIBILITY_FIELD_TITLE_FR,
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
                           Center(child: visibilitySelector),
                           StreamBuilder(
                               stream: CombineLatestStream.list<dynamic>([
@@ -128,11 +132,10 @@ class CreateGameFormState extends State<CreateGameForm> {
                                   ),
                                 );
                               }),
-                          SizedBox(height: 16.0),
-                          Wrap(children: [
-                            Icon(Icons.hourglass_top),
-                            Text(ROUND_TIME_FIELD_TITLE_FR),
-                          ]),
+                          SizedBox(width: 600, height: 10),
+                          Text(ROUND_TIME_FIELD_TITLE_FR,
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
                           StreamBuilder<Duration>(
                               stream: _timePerTurn.stream,
                               builder: (context, snapshot) {
@@ -178,11 +181,12 @@ class CreateGameFormState extends State<CreateGameForm> {
                               }),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(width: 600, height: 30),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           AppButton(
+                              size: AppButtonSize.large,
                               onPressed: () {
                                 Navigator.push(
                                     context,
@@ -195,6 +199,7 @@ class CreateGameFormState extends State<CreateGameForm> {
                               stream: isFormValid(),
                               builder: (context, snapshot) {
                                 return AppButton(
+                                    size: AppButtonSize.large,
                                     onPressed:
                                         snapshot.hasData && snapshot.data!
                                             ? () async => await createGame()
