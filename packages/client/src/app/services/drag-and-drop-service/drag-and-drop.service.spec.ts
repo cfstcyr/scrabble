@@ -45,6 +45,9 @@ describe('DragAndDropService', () => {
         gamesWonCount: 1,
         averageTimePerGame: 1,
         averagePointsPerGame: 1,
+        rating: 1,
+        ratingMax: 1,
+        bingoCount: 0,
     });
     userService.gameHistory = new BehaviorSubject<GameHistoryForUser[]>([]);
     userService.serverActions = new BehaviorSubject<PublicServerAction[]>([]);

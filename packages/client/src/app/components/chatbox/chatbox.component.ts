@@ -12,4 +12,5 @@ export class ChatBoxComponent {
     @Input() hideIcon: boolean = false;
     @Input() icon: string;
     @Input() icon2?: string;
+    @Input() isPrimary: boolean = false;
 }

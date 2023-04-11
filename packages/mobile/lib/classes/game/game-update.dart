@@ -2,6 +2,7 @@ import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-reserve.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 
 class GameUpdateData {
   final PlayerUpdateData? player1;
@@ -13,18 +14,19 @@ class GameUpdateData {
   final List<Square>? board;
   final Round? round;
   final List<TileReserveData>? tileReserve;
+  final int? idGameHistory;
 
-  GameUpdateData({
-    this.player1,
-    this.player2,
-    this.player3,
-    this.player4,
-    this.isGameOver,
-    this.winners,
-    this.board,
-    this.round,
-    this.tileReserve,
-  });
+  GameUpdateData(
+      {this.player1,
+      this.player2,
+      this.player3,
+      this.player4,
+      this.isGameOver,
+      this.winners,
+      this.board,
+      this.round,
+      this.tileReserve,
+      this.idGameHistory});
 
   factory GameUpdateData.fromJson(Map<String, dynamic> json) {
     return GameUpdateData(
@@ -46,7 +48,7 @@ class GameUpdateData {
             : null,
         board: json['board'] != null
             ? List<Square>.from(
-                (json['board'] as List).map((e) => Square.fromJson(e)))
+                (json['board'] as List).map((e) => Square.fromJson(e)).toList())
             : null,
         round: json['round'] != null
             ? Round.fromJson(json['round'] as Map<String, dynamic>)
@@ -56,6 +58,7 @@ class GameUpdateData {
             ? (json['tileReserve'] as List<dynamic>)
                 .map((dynamic tile) => TileReserveData.fromJson(tile))
                 .toList()
-            : null);
+            : null,
+        idGameHistory: json['idGameHistory'] as int? ?? -1);
   }
 }

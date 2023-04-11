@@ -9,6 +9,7 @@ import 'package:mobile/services/theme-color-service.dart';
 import '../classes/channel-message.dart';
 import '../classes/chat-message.dart';
 import '../locator.dart';
+import '../routes/routes.dart';
 import '../services/user.service.dart';
 
 class Chatbox extends StatefulWidget {
@@ -28,6 +29,7 @@ class _ChatboxState extends State<Chatbox> {
   late types.User _userView;
   Color themeColor =
       getIt.get<ThemeColorService>().themeDetails.value.color.colorValue;
+
   @override
   void initState() {
     super.initState();
@@ -44,12 +46,23 @@ class _ChatboxState extends State<Chatbox> {
           shadowColor: Colors.black,
           backgroundColor: Colors.white,
           elevation: 1,
+          leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: theme.primaryColor,
+              ),
+              onPressed: () {
+                _chatService.scaffoldKey.currentState?.closeEndDrawer();
+                _chatService.closeChannel();
+              }),
+          automaticallyImplyLeading: false,
           surfaceTintColor: theme.colorScheme.primary),
       body: Chat(
         theme: DefaultChatTheme(
           inputBackgroundColor: themeColor,
           primaryColor: themeColor,
         ),
+        onAvatarTap: _navigateToProfile,
         messages: _filterToChatBoxFormat(widget.channel.messages),
         onSendPressed: _handleSendPressed,
         showUserAvatars: true,
@@ -57,6 +70,12 @@ class _ChatboxState extends State<Chatbox> {
         user: _userView,
       ),
     );
+  }
+
+  void _navigateToProfile(types.User user) {
+    Navigator.pushNamed(context, PROFILE_ROUTE,
+        arguments: PublicUser(
+            username: user.firstName ?? '', avatar: user.imageUrl ?? ''));
   }
 
   void _handleSendPressed(types.PartialText message) {
@@ -80,7 +99,9 @@ class _ChatboxState extends State<Chatbox> {
   types.TextMessage _toChatBoxFormat(ChatMessage message) {
     return types.TextMessage(
       author: types.User(
-          id: message.sender.email, firstName: message.sender.username),
+          imageUrl: message.sender.avatar,
+          id: message.sender.email,
+          firstName: message.sender.username),
       createdAt: DateTime.parse(message.date).millisecondsSinceEpoch,
       id: message.uid,
       text: message.content,

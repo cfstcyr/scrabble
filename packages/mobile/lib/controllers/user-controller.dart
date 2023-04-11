@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:mobile/classes/achievements.dart';
 import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/classes/server-action.dart';
 import 'package:mobile/classes/user.dart';
@@ -30,6 +31,22 @@ class UserController {
         (await _http.get(Uri.parse("$endpoint/users/statistics"))).body));
   }
 
+  Future<UserSearchResult> getProfileByUsername(String username) async {
+    return UserSearchResult.fromJson(jsonDecode(
+        (await _http.get(Uri.parse("$endpoint/users/profile/$username")))
+            .body));
+  }
+
+  Future<List<UserSearchItem>> searchUsers(String? query) async {
+    return UserSearchItem.fromJsonList(jsonDecode(
+        (await _http.get(Uri.parse("$endpoint/users/search?q=$query"))).body));
+  }
+
+  Future<List<RatedUser>> getRatingLeaderboard() async {
+    return RatedUser.fromJsonList(jsonDecode(
+        (await _http.get(Uri.parse("$endpoint/users/ratings"))).body));
+  }
+
   Future<List<GameHistory>> getGameHistory() async {
     return GameHistory.fromJsonList(jsonDecode(
         (await _http.get(Uri.parse("$endpoint/gameHistories"))).body));
@@ -38,5 +55,10 @@ class UserController {
   Future<List<ServerAction>> getServerActions() async {
     return ServerAction.fromJsonList(jsonDecode(
         (await _http.get(Uri.parse("$endpoint/server-actions"))).body));
+  }
+
+  Future<List<UserAchievement>> getAchievements() async {
+    return UserAchievement.fromJsonList(jsonDecode(
+        (await _http.get(Uri.parse("$endpoint/users/achievements"))).body));
   }
 }

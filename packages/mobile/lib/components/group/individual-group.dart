@@ -31,6 +31,7 @@ class IndividualGroup extends StatefulWidget {
 class _IndividualGroupState extends State<IndividualGroup> {
   final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
 
+  @override
   void initState() {
     super.initState();
   }
@@ -248,7 +249,7 @@ class GroupParameters extends StatelessWidget {
   Widget build(BuildContext context) {
     return IntrinsicWidth(
       child: SizedBox(
-        width: 115,
+        width: 130,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

@@ -3,7 +3,7 @@
         <app-swiper-slide class='analysis-overview'>
             <p class='title'>Analyse de partie</p>
             <div class="error-list">
-                <div class="error-container">
+                <div class="error-container" matTooltip="Un tour où il était possible de marquer 25 points de plus que l'action que vous avez faite.">
                     <p class='error-title'>Opportunités manquées</p>
                     <app-analysis-overview
                         [amount]='overview.minorMistakeCount'
@@ -12,7 +12,7 @@
                         [size]='175'
                     ></app-analysis-overview>
                 </div>
-                <div class="error-container">
+                <div class="error-container" matTooltip="Un tour où il était possible de marquer 50 points de plus que l'action que vous avez faite.">
                     <p class='error-title'>Imprécisions</p>
                     <app-analysis-overview
                         [amount]='overview.mediumMistakeCount'
@@ -21,7 +21,7 @@
                         [size]='175'
                     ></app-analysis-overview>
                 </div>
-                <div class="error-container">
+                <div class="error-container" matTooltip="Un tour où il était possible de marquer 100 points de plus que l'action que vous avez faite.">
                     <p class='error-title'>Erreurs</p>
                     <app-analysis-overview
                         [amount]='overview.majorMistakeCount'
@@ -35,7 +35,6 @@
             <p class='analysis-message'>{{message}}</p>
             <p class='help'>Utilisez les flèches pour voir les solutions possibles</p>
         </app-swiper-slide>
-
         <app-swiper-slide class='placement-slide result-placement' *ngFor='let criticalMoment of criticalMoments; let index = index'>
             <mat-button-toggle-group name="actionShown" [(ngModel)]="criticalMoment.actionToShow">
                 <mat-button-toggle value="playedAction" id="toggle">Action faite</mat-button-toggle>

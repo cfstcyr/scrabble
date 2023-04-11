@@ -35,8 +35,19 @@
         }
 
         &__points {
+            display: grid;
+            grid-template-columns: auto auto;
+            align-items: center;
+            gap: 8px;
+
             &__value {
                 font-weight: 500;
+            }
+
+            app-tile {
+                height: 16px;
+                width: 16px;
+                font-size: 0.5em;
             }
         }
 
@@ -50,18 +61,28 @@
                 &__user {
                     font-size: 1.5em;
                     gap: 12px;
+                    grid-template-columns: auto auto auto;
+                    justify-content: start;
 
                     &__avatar {
                         height: 30px;
                         width: 30px;
                     }
+
+                    app-tile {
+                        height: 20px;
+                        width: 20px;
+                        font-size: 0.45em;
+                    }
                 }
 
                 &__points {
                     display: grid;
+                    grid-template-columns: auto;
                     grid-template-rows: 1fr auto;
                     justify-self: flex-end;
                     text-align: right;
+                    gap: 0;
 
                     &__value {
                         font-size: 3em;
@@ -79,7 +100,7 @@
         }
 
         &--active {
-            background-color: $primary;
+            background-color: rgb(var(--primary));
             color: white;
         }
 

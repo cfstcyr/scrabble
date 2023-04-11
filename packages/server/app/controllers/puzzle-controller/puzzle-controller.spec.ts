@@ -55,6 +55,45 @@ describe('PuzzleController', () => {
         });
     });
 
+    describe('/api/puzzles/daily/start', () => {
+        describe('POST', () => {
+            it('should return 200', async () => {
+                return supertest(expressApp).post('/api/puzzles/daily/start').send({ idUser: DEFAULT_ID_USER }).expect(StatusCodes.OK);
+            });
+
+            it('should call startPuzzle', async () => {
+                await supertest(expressApp).post('/api/puzzles/daily/start').send({ idUser: DEFAULT_ID_USER });
+                expect(puzzleServiceStub.startDailyPuzzle.called).to.be.true;
+            });
+        });
+    });
+
+    describe('/api/puzzles/daily/is-completed', () => {
+        describe('POST', () => {
+            it('should return 200', async () => {
+                return supertest(expressApp).post('/api/puzzles/daily/is-completed').send({ idUser: DEFAULT_ID_USER }).expect(StatusCodes.OK);
+            });
+
+            it('should call startPuzzle', async () => {
+                await supertest(expressApp).post('/api/puzzles/daily/is-completed').send({ idUser: DEFAULT_ID_USER });
+                expect(puzzleServiceStub.canDoDailyPuzzle.called).to.be.true;
+            });
+        });
+    });
+
+    describe('/api/puzzles/daily/leaderboard', () => {
+        describe('POST', () => {
+            it('should return 200', async () => {
+                return supertest(expressApp).post('/api/puzzles/daily/leaderboard').send({ idUser: DEFAULT_ID_USER }).expect(StatusCodes.OK);
+            });
+
+            it('should call startPuzzle', async () => {
+                await supertest(expressApp).post('/api/puzzles/daily/leaderboard').send({ idUser: DEFAULT_ID_USER });
+                expect(puzzleServiceStub.getDailyPuzzleLeaderboard.called).to.be.true;
+            });
+        });
+    });
+
     describe('/api/puzzles/complete', () => {
         describe('POST', () => {
             it('should return 200', async () => {

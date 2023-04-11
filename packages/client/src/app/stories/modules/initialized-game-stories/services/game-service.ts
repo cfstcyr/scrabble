@@ -34,11 +34,10 @@ export class InitializedGameService implements OnDestroy {
                 { letter: 'D', value: 1 },
                 { letter: 'E', value: 1 },
                 { letter: '*', value: 0, isBlank: true },
-                { letter: '*', value: 0 },
             ],
             publicUser: { username: 'John', avatar: '1', email: '1' },
         },
-        { id: '2', score: 254, tiles: [], publicUser: { username: 'Mary', avatar: '2', email: '2' } },
+        { id: '2', score: 254, tiles: [{ letter: 'Z', value: 1 }], publicUser: { username: 'Mary', avatar: '2', email: '2' } },
         { id: '3', score: 234, tiles: [], publicUser: { username: 'ihaveaverylongnamefsadfadsgfdgfds', avatar: '3', email: '3' } },
         { id: '4', score: 163, tiles: [], publicUser: { username: 'xxx', avatar: '4', email: '4' } },
     ]);
@@ -63,9 +62,9 @@ export class InitializedGameService implements OnDestroy {
             })),
         );
 
-        // board[7][7].tile = { letter: 'A', value: 1 };
-        // board[7][8].tile = { letter: 'B', value: 1 };
-        // board[7][9].tile = { letter: 'C', value: 1 };
+        board[7][7].tile = { letter: 'A', value: 1 };
+        board[7][8].tile = { letter: 'B', value: 1 };
+        board[7][9].tile = { letter: 'C', value: 1 };
 
         board[2][2].scoreMultiplier = { multiplier: 2, multiplierEffect: MultiplierEffect.LETTER };
 
@@ -99,6 +98,11 @@ export class InitializedGameService implements OnDestroy {
     getTotalNumberOfTilesLeft(): number {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         return 999;
+    }
+
+    getAdversaries(): Player[] {
+        if (!this.playerContainer) return [];
+        return this.playerContainer.getAdversaries();
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function

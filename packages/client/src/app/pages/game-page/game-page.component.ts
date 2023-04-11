@@ -1,6 +1,11 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Observable, Subject } from 'rxjs';
+import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
+import { ActionService } from '@app/services/action-service/action.service';
+import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
+import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
+import { GameService } from '@app/services';
 import { ActionType } from '@app/classes/actions/action-data';
 import {
     AnalysisResultModalComponent,
@@ -11,16 +16,13 @@ import {
     AnalysisWaitingDialogParameter,
 } from '@app/components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
+import { EndGameDialogComponent } from '@app/components/end-game-dialog/end-game-dialog';
 import { DefaultDialogParameters } from '@app/components/default-dialog/default-dialog.component.types';
 import {
     DIALOG_ABANDON_BUTTON_CONFIRM,
     DIALOG_ABANDON_BUTTON_CONTINUE,
     DIALOG_ABANDON_CONTENT,
     DIALOG_ABANDON_TITLE,
-    DIALOG_ANALYSIS_BUTTON_CONFIRM,
-    DIALOG_END_OF_GAME_CLOSE_BUTTON,
-    DIALOG_END_OF_GAME_CONTENT,
-    DIALOG_END_OF_GAME_TITLE,
     DIALOG_NO_ACTIVE_GAME_BUTTON,
     DIALOG_NO_ACTIVE_GAME_CONTENT,
     DIALOG_NO_ACTIVE_GAME_TITLE,
@@ -32,15 +34,13 @@ import {
     MIN_CONFETTI_COUNT,
 } from '@app/constants/pages-constants';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
-import { GameService } from '@app/services';
-import { ActionService } from '@app/services/action-service/action.service';
-import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
-import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
-import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
-import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Analysis, AnalysisRequestInfoType } from '@common/models/analysis';
 import party from 'party-js';
 import { DynamicSourceType } from 'party-js/lib/systems/sources';
+import { DEFAULT_PLAYER_RATING } from '@common/models/constants';
+import { Observable, Subject } from 'rxjs';
+import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
+import { SoundService, SoundName } from '@app/services/sound-service/sound.service';
 
 @Component({
     selector: 'app-game-page',
@@ -60,6 +60,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
         private readonly gameViewEventManagerService: GameViewEventManagerService,
         private readonly actionService: ActionService,
         private readonly tilePlacementService: TilePlacementService,
+        private readonly boardCursorService: BoardCursorService,
+        private readonly soundService: SoundService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
@@ -67,6 +69,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     @HostListener('document:keydown.enter', ['$event'])
     handleEnter(): void {
+        this.boardCursorService.isDisabled = true;
+        this.boardCursorService.clearCurrentCursor();
         this.gameService.playTilesOnBoard();
     }
 
@@ -86,7 +90,7 @@ export class GamePageComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.gameViewEventManagerService.subscribeToGameViewEvent('noActiveGame', this.componentDestroyed$, this.openNoActiveGameDialog.bind(this));
-        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, this.openEngOfGameDialog.bind(this));
+        this.gameViewEventManagerService.subscribeToGameViewEvent('endOfGame', this.componentDestroyed$, this.endOfGameDialog.bind(this));
     }
 
     handleHintButtonClick(): void {
@@ -94,7 +98,9 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     handlePassButtonClick(): void {
+        this.boardCursorService.isDisabled = true;
         this.gameService.makeTilePlacement([]);
+        this.boardCursorService.clear();
         this.actionService.sendAction(this.gameService.getGameId(), this.actionService.createActionData(ActionType.PASS, {}, '', true));
     }
 
@@ -182,31 +188,16 @@ export class GamePageComponent implements OnInit, OnDestroy {
         });
     }
 
-    private openEngOfGameDialog(winnerNames: string[]) {
-        this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
-            data: {
-                title: DIALOG_END_OF_GAME_TITLE(this.isLocalPlayerWinner(winnerNames)),
-                content: DIALOG_END_OF_GAME_CONTENT(this.isLocalPlayerWinner(winnerNames)),
-                buttons: [
-                    {
-                        content: DIALOG_QUIT_BUTTON_CONFIRM,
-                        redirect: ROUTE_HOME,
-                        style: 'background-color: rgb(231, 231, 231)',
-                        action: () => this.handlePlayerLeaves(),
-                    },
-                    {
-                        closeDialog: true,
-                        content: DIALOG_ANALYSIS_BUTTON_CONFIRM,
-                        style: 'background-color: rgb(231, 231, 231)',
-                        action: () => this.requestAnalysis(),
-                    },
+    private endOfGameDialog(winnerNames: string[]): void {
+        const localPlayer = this.gameService.getLocalPlayer();
 
-                    {
-                        content: DIALOG_END_OF_GAME_CLOSE_BUTTON,
-                        closeDialog: true,
-                        style: 'background-color: rgb(231, 231, 231)',
-                    },
-                ],
+        this.dialog.open(EndGameDialogComponent, {
+            data: {
+                hasWon: this.isLocalPlayerWinner(winnerNames),
+                adjustedRating: localPlayer?.adjustedRating ?? DEFAULT_PLAYER_RATING,
+                ratingVariation: localPlayer?.ratingVariation ?? 0,
+                action: () => this.handlePlayerLeaves(),
+                actionAnalysis: () => this.requestAnalysis(),
             },
         });
 
@@ -214,6 +205,8 @@ export class GamePageComponent implements OnInit, OnDestroy {
     }
 
     private openDialog(title: string, content: string, buttons: string[]): MatDialogRef<DefaultDialogComponent> {
+        this.soundService.playSound(SoundName.EndGameSound);
+
         return this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
             data: {
                 title,

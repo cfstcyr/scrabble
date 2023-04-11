@@ -77,6 +77,7 @@ describe('UserSearchService', () => {
             expect(userResult).to.haveOwnProperty('avatar');
             expect(userResult).to.haveOwnProperty('gameHistory');
             expect(userResult).to.haveOwnProperty('statistics');
+            expect(userResult).to.haveOwnProperty('achievements');
         });
 
         it('should return a 404 if not found', async () => {

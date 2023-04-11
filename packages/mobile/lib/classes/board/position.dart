@@ -42,4 +42,9 @@ class Position extends Vec2 {
   factory Position.fromJson(Map<String, dynamic> json) {
     return Position(json['column'] as int, json['row'] as int);
   }
+
+  Map<String, dynamic> toJson() => {
+    'row': row,
+    'column': column
+  };
 }

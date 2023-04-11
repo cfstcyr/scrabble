@@ -10,7 +10,8 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
 
 class MultiplayerTileRack extends AbstractTileRack {
-  MultiplayerTileRack({required super.gameStream});
+  MultiplayerTileRack(
+      {required super.gameStream});
 
   final GameService _gameService = getIt.get<GameService>();
 
@@ -33,7 +34,7 @@ class MultiplayerTileRack extends AbstractTileRack {
         stream: _gameService.getTileRack().isExchangeModeEnabled,
         builder: (context, isExchangeModeEnabled) {
           return isExchangeModeEnabled.data == null ||
-              isExchangeModeEnabled.data == false
+                  isExchangeModeEnabled.data == false
               ? super.buildDraggableTile(tile, index)
               : _buildSelectableTile(tile, index, true);
         });

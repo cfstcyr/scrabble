@@ -4,9 +4,14 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { LocatorService } from '@app/services/locator-service/locator.service';
 import { of } from 'rxjs';
 
 import { UserSearchResultPageComponent } from './user-search-result-page.component';
+
+const mockLocatorService = {
+    getPreviousUrl: () => '/learderboard',
+};
 
 describe('UserSearchResultPageComponent', () => {
     let component: UserSearchResultPageComponent;
@@ -22,6 +27,10 @@ describe('UserSearchResultPageComponent', () => {
                     useValue: {
                         params: of({ username: 'my-username' }),
                     },
+                },
+                {
+                    provide: LocatorService,
+                    useValue: mockLocatorService,
                 },
             ],
         }).compileComponents();

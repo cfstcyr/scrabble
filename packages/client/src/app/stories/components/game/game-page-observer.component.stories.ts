@@ -22,6 +22,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ObserverGamePageComponent } from '@app/pages/observer-game-page/observer-game-page.component';
 import { GameObserversPlayersComponent } from '@app/components/game/game-observers-players/game-observers-players.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 export default {
     title: 'Game/Page observer',
@@ -54,6 +55,7 @@ export default {
                 ReactiveFormsModule,
                 MatFormFieldModule,
                 ScrollingModule,
+                MatSnackBarModule,
             ],
         }),
     ],

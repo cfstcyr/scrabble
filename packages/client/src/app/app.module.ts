@@ -64,6 +64,9 @@ import { SwiperComponent } from '@app/modules/swiper/components/swiper/swiper.co
 import { SwiperSlideComponent } from '@app/modules/swiper/components/swiper-slide/swiper-slide.component';
 import { SwiperNavigationComponent } from '@app/modules/swiper/components/swiper-navigation/swiper-navigation.component';
 import { PuzzleHistoryComponent } from '@app/components/puzzle/puzzle-history/puzzle-history.component';
+import { RatingLeaderboardPageComponent } from './pages/rating-leaderboard-page/rating-leaderboard-page.component';
+import { LocatorService } from './services/locator-service/locator.service';
+import { EndGameDialogComponent } from './components/end-game-dialog/end-game-dialog';
 import { AnalysisOverviewComponent } from './components/analysis/analysis-overview/analysis-overview.component';
 import { AnalysisResultModalComponent } from './components/analysis/analysis-result-modal/analysis-result-modal.component';
 import { AnalysisWaitingDialogComponent } from './components/analysis/analysis-waiting-dialog/analysis-waiting-dialog';
@@ -74,6 +77,13 @@ import { GamePlayersComponent } from './components/game/game-players/game-player
 import { GameTilesLeftComponent } from './components/game/game-tiles-left/game-tiles-left.component';
 import { GameTimerComponent } from './components/game/game-timer/game-timer.component';
 import { GameObserversPlayersComponent } from './components/game/game-observers-players/game-observers-players.component';
+import { ColorThemeDialogComponent } from './components/color-theme-dialog/color-theme-dialog';
+import { ColorThemeService } from './services/color-theme-service/color-theme.service';
+import { ClickSoundDirective } from './directives/button-sound-directive/click-sound.directive';
+import { SoundSettingsDialogComponent } from './components/sound-settings-dialog/sound-settings-dialog';
+import { PuzzleHomePageComponent } from './pages/puzzle-home-page/puzzle-home-page.component';
+import { UserAchievementComponent } from './components/user-profile/user-achievement/user-achievement.component';
+import { UserAchievementDialogComponent } from './components/user-profile/user-achievement-dialog/user-achievement-dialog.component';
 
 registerLocaleData(localeFr);
 
@@ -143,11 +153,19 @@ registerLocaleData(localeFr);
         AnalysisResultModalComponent,
         AnalysisWaitingDialogComponent,
         AvatarSelectorComponent,
+        RatingLeaderboardPageComponent,
+        EndGameDialogComponent,
         GamePageComponent,
         GamePlayersComponent,
         GameTilesLeftComponent,
         GameTimerComponent,
         GameObserversPlayersComponent,
+        ColorThemeDialogComponent,
+        ClickSoundDirective,
+        SoundSettingsDialogComponent,
+        PuzzleHomePageComponent,
+        UserAchievementComponent,
+        UserAchievementDialogComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -162,10 +180,11 @@ registerLocaleData(localeFr);
     ],
     providers: [
         InitializerService,
+        ColorThemeService,
         {
             provide: APP_INITIALIZER,
             useFactory: (initializer: InitializerService) => () => initializer.initialize(),
-            deps: [InitializerService],
+            deps: [InitializerService, LocatorService],
             multi: true,
         },
         {
@@ -173,6 +192,7 @@ registerLocaleData(localeFr);
             useValue: 'fr-CA',
         },
         { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
+        LocatorService,
     ],
     bootstrap: [AppComponent],
     exports: [IconComponent],

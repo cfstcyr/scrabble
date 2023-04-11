@@ -1,3 +1,5 @@
+import 'package:mobile/classes/puzzle/puzzle-level.dart';
+import 'package:mobile/classes/puzzle/puzzle-type.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/create-game.constants.dart';
@@ -5,9 +7,10 @@ import 'package:mobile/constants/create-game.constants.dart';
 class StartPuzzle {
   List<Square> board;
   List<Tile> tiles;
-  late Duration roundDuration;
+  late PuzzleLevel puzzleLevel;
+  late PuzzleType puzzleType;
 
-  StartPuzzle({required this.board, required this.tiles, this.roundDuration = DEFAULT_TIME});
+  StartPuzzle({required this.board, required this.tiles});
 
   factory StartPuzzle.fromJson(Map<String, dynamic> json) {
     return StartPuzzle(
@@ -17,8 +20,13 @@ class StartPuzzle {
             (json['tiles'] as List).map((e) => Tile.fromJson(e))));
   }
 
-  StartPuzzle withRoundDuration(Duration roundDuration) {
-    this.roundDuration = roundDuration;
+  StartPuzzle withPuzzleLevel(PuzzleLevel puzzleLevel) {
+    this.puzzleLevel = puzzleLevel;
+    return this;
+  }
+
+  StartPuzzle withPuzzleType(PuzzleType puzzleType) {
+    this.puzzleType = puzzleType;
     return this;
   }
 

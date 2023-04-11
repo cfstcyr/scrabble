@@ -167,3 +167,12 @@ class AppButton extends StatelessWidget {
     }
   }
 }
+
+AppButton defaultCloseButton(
+    {required BuildContext context, required AppButtonSize size}) {
+  return AppButton(
+      onPressed: () => Navigator.pop(context),
+      text: 'Fermer',
+      size: size,
+      theme: AppButtonTheme.secondary);
+}

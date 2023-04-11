@@ -1,3 +1,28 @@
+<div class='game-observers-players'>
+    <mat-card
+        *ngFor='let player of players; let index = index'
+        class='game-observers-players__player'
+        [ngClass]='{"game-observers-players__player--active": player.isActive, "game-observers-players__player--observed": observedPlayerId === player.player.id}'
+        (click)='playerClick.emit(index + 1)'
+    >
+        <div class='game-observers-players__player__user'>
+            <img class='game-observers-players__player__user__avatar' [appSrc]='player.player.publicUser.avatar' [square]='24'>
+            <app-icon *ngIf='observedPlayerId === player.player.id' icon='eye'></app-icon>
+            <span class='game-observers-players__player__user__name'>{{player.player.publicUser.username}}</span>
+        </div>
+        <div class='game-observers-players__player__points'>
+            <app-tile
+                [tile]='player.tilesLeftTile'
+                [hideValue]='true'
+                [matTooltip]='player.tilesLeft + " tuiles restantes"'
+                *ngIf='player.tilesLeft < 7'
+            ></app-tile>
+            <span class='game-observers-players__player__points__value'>{{player.player.score}}</span>
+        </div>
+    </mat-card>
+</div>'
+
+<!-- 
 '<div class='game-observers-players'>
     <mat-card class='game-observers-players__player'
         [ngClass]='{"game-observers-players__player--active": player1.isActive, "game-observers-players__player--observed": observedPlayerId === player1.player.id}'
@@ -36,9 +61,6 @@
             <app-icon *ngIf='observedPlayerId === player3.player.id' icon='eye'></app-icon>
             <span class='game-observers-players__player__user__name'>{{player3.player.publicUser.username}}</span>
             <i class="fa-solid fa-arrows-rotate"></i>
-            <!-- <app-icon class="replace-jv-icon" *ngIf='observedPlayerId === player3.player.id' icon='arrows-rotate'>
-            </app-icon>
-        -->
             <button class='replace-jv-button' mat-flat-button color="primary"
                 (click)="handleReplaceVirtualPlayerByObserver('3')">
                 <app-icon icon="square" styling="solid"></app-icon>
@@ -58,8 +80,6 @@
             <app-icon *ngIf='observedPlayerId === player4.player.id' icon='eye'></app-icon>
             <span class='game-observers-players__player__user__name'>{{player4.player.publicUser.username}}</span>
             <i class="fa-solid fa-arrows-rotate"></i>
-            <!-- <app-icon class="replace-jv-icon" *ngIf='observedPlayerId === player4.player.id' icon='arrows-rotate'>
-            </app-icon> -->
             <button class='replace-jv-button' mat-flat-button color="primary"
                 (click)="handleReplaceVirtualPlayerByObserver('4')">
                 <app-icon icon="square" styling="solid"></app-icon>
@@ -67,7 +87,4 @@
         </div>
 
         <div class='game-observers-players__player__points'>
-            <span class='game-observers-players__player__points__value'>{{player4.player.score}}</span>
-        </div>
-    </mat-card>
-</div>'
+            <span class='game-observers-players__player__points__value'>{{player4.player.score}}</span> -->

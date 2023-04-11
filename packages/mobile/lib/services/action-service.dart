@@ -1,3 +1,4 @@
+import 'package:mobile/classes/http/ResponseResult.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -17,7 +18,7 @@ class ActionService {
   final GameEventService _gameEventService = getIt.get<GameEventService>();
 
   ActionService._privateConstructor() {
-    gameplayController.actionDoneEvent.listen((_) => _actionProcessed());
+    gameplayController.actionDoneEvent.listen((ResponseResult result) => _actionProcessed(result));
   }
 
   static final ActionService _instance = ActionService._privateConstructor();
@@ -36,10 +37,12 @@ class ActionService {
     _isActionBeingProcessed.add(true);
   }
 
-  void _actionProcessed() {
+  void _actionProcessed(ResponseResult result) {
     _isActionBeingProcessed.add(false);
 
-    // remove tiles on board after an invalid word
-    _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
+    if (!result.isSuccess) {
+      // remove tiles on board after an invalid word
+      _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
+    }
   }
 }

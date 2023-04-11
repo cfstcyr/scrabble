@@ -40,6 +40,10 @@ export default {
                 GameTilesLeftComponent,
                 GameTimerComponent,
                 CommunicationBoxComponent,
+                TileComponent,
+                SquareComponent,
+                GameBoardWrapperComponent,
+                BoardComponent,
             ],
             imports: [
                 MatCardModule,

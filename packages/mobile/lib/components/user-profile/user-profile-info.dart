@@ -7,25 +7,24 @@ import 'package:mobile/controllers/account-authentification-controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
-import 'package:mobile/services/user.service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../alert-dialog.dart';
 
 class UserProfileInfo extends StatelessWidget {
-  final UserService _userService = getIt.get<UserService>();
+  UserProfileInfo({required this.user, this.isLocalUser = false});
+
   final AccountAuthenticationController _authService =
       getIt.get<AccountAuthenticationController>();
+  PublicUser user;
+  final bool isLocalUser;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(SPACE_3),
-        child: StreamBuilder<PublicUser?>(
-          stream: _userService.user,
-          builder: (context, snapshot) {
-            return snapshot.data != null
-                ? Row(
+        child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -33,17 +32,17 @@ class UserProfileInfo extends StatelessWidget {
                         spacing: SPACE_4,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Avatar(size: 150),
+                          Avatar(size: 150, avatar: user.avatar),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                snapshot.data!.username,
+                                user.username,
                                 style: TextStyle(
                                     fontSize: 48, fontWeight: FontWeight.w600),
                               ),
                               Text(
-                                snapshot.data!.email,
+                                user.email,
                                 style: TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.w500,
@@ -53,39 +52,39 @@ class UserProfileInfo extends StatelessWidget {
                           )
                         ],
                       ),
-                      Column(
-                        children: [
-                          AppButton(
-                            onPressed: () => Navigator.pushNamed(
-                                context, PROFILE_EDIT_ROUTE),
-                            icon: Icons.manage_accounts_rounded,
-                          ),
-                          AppButton(
-                            onPressed: () {
-                              _authService.signOut();
-                              Navigator.pushNamed(context, LOGIN_ROUTE);
-                            },
-                            icon: Icons.logout_rounded,
-                          ),
-                          AppButton(
-                            onPressed: () => {
-                              triggerDialogBox('Veuillez choisir un thème', [
-                                EditTheme()
-                              ], [
-                                DialogBoxButtonParameters(
-                                    content: 'Confirmer',
-                                    theme: AppButtonTheme.primary,
-                                    closesDialog: true)
-                              ])
-                            },
-                            icon: Icons.color_lens,
-                          ),
-                        ],
-                      ),
+                      isLocalUser
+                          ? Column(
+                              children: [
+                                AppButton(
+                                  onPressed: () => Navigator.pushNamed(
+                                      context, PROFILE_EDIT_ROUTE),
+                                  icon: Icons.manage_accounts_rounded,
+                                ),
+                                AppButton(
+                                  onPressed: () {
+                                    _authService.signOut();
+                                    Navigator.pushNamed(context, LOGIN_ROUTE);
+                                  },
+                                  icon: Icons.logout_rounded,
+                                ),
+                                AppButton(
+                                  onPressed: () => {
+                                    triggerDialogBox(
+                                        'Veuillez choisir un thème', [
+                                      EditTheme()
+                                    ], [
+                                      DialogBoxButtonParameters(
+                                          content: 'Confirmer',
+                                          theme: AppButtonTheme.primary,
+                                          closesDialog: true)
+                                    ])
+                                  },
+                                  icon: Icons.color_lens,
+                                ),
+                              ],
+                            )
+                          : Container(),
                     ],
-                  )
-                : Container();
-          },
         ),
       ),
     );
