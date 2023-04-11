@@ -66,9 +66,6 @@ export default class RoundManager {
         };
         return this.currentRound;
     }
-    replaceCurrentRoundPlayer(newPlayer: Player, currentRound: Round) {
-        currentRound.player = newPlayer;
-    }
 
     getCurrentRound(): Round {
         return this.currentRound;
