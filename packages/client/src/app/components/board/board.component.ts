@@ -16,7 +16,7 @@ export class BoardComponent {
     @Output() onSquareClick: EventEmitter<SquareView> = new EventEmitter();
     letters = LETTER_VALUES;
 
-    @HostListener('document:mousedown', ['$event'])
+    @HostListener('document:click', ['$event'])
     handleEnter(): void {
         this.onSquareClick.emit(undefined);
     }
@@ -25,7 +25,8 @@ export class BoardComponent {
         this.clearNewlyPlacedTiles.next();
     }
 
-    squareClickHandler(squareView: SquareView): void {
+    squareClickHandler(e: MouseEvent, squareView: SquareView): void {
+        e.stopPropagation();
         this.onSquareClick.emit(squareView);
     }
 }
