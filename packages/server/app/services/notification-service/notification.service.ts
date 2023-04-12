@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { UserId } from '@app/classes/user/connected-user-types';
-import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
+import { MINUTES_TO_SECONDS, SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 import { User, UserNotificationsSettings } from '@common/models/user';
 
 import * as admin from 'firebase-admin';
@@ -43,7 +43,7 @@ export class NotificationService {
         if (!firebaseToken || !user?.isNotificationsEnabled) return;
         const scheduledNotification = setTimeout(() => {
             this.sendReminderNotification(userId, firebaseToken, `${NOTIFICATION_TITLE} ${user.username}!`, NOTIFICATION_DESCRIPTION);
-        }, 10 * SECONDS_TO_MILLISECONDS);
+        }, REMINDER_DELAY_IN_MINUTES * MINUTES_TO_SECONDS * SECONDS_TO_MILLISECONDS);
 
         this.scheduledNotifications.set(userId, scheduledNotification);
         return scheduledNotification;
@@ -51,10 +51,8 @@ export class NotificationService {
 
     toggleNotifications(userId: UserId): boolean {
         const user = this.mobileUserAccounts.get(userId);
-        console.log(this.mobileUserAccounts.get(userId)?.isNotificationsEnabled);
         if (!user) return false;
         user.isNotificationsEnabled = !user.isNotificationsEnabled;
-        console.log(this.mobileUserAccounts.get(userId)?.isNotificationsEnabled);
 
         return user.isNotificationsEnabled;
     }
