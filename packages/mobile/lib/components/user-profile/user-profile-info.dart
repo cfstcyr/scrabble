@@ -6,8 +6,8 @@ import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/controllers/account-authentification-controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/notification.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../alert-dialog.dart';
 
@@ -25,66 +25,80 @@ class UserProfileInfo extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(SPACE_3),
         child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: SPACE_4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Avatar(size: 150, avatar: user.avatar),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.username,
+                      style:
+                          TextStyle(fontSize: 48, fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      user.email,
+                      style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade500),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            isLocalUser
+                ? Column(
                     children: [
-                      Wrap(
-                        spacing: SPACE_4,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Avatar(size: 150, avatar: user.avatar),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                user.username,
-                                style: TextStyle(
-                                    fontSize: 48, fontWeight: FontWeight.w600),
-                              ),
-                              Text(
-                                user.email,
-                                style: TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey.shade500),
-                              ),
-                            ],
-                          )
-                        ],
+                      AppButton(
+                        onPressed: () =>
+                            Navigator.pushNamed(context, PROFILE_EDIT_ROUTE),
+                        icon: Icons.manage_accounts_rounded,
                       ),
-                      isLocalUser
-                          ? Column(
-                              children: [
-                                AppButton(
-                                  onPressed: () => Navigator.pushNamed(
-                                      context, PROFILE_EDIT_ROUTE),
-                                  icon: Icons.manage_accounts_rounded,
-                                ),
-                                AppButton(
-                                  onPressed: () {
-                                    _authService.signOut();
-                                    Navigator.pushNamed(context, LOGIN_ROUTE);
-                                  },
-                                  icon: Icons.logout_rounded,
-                                ),
-                                AppButton(
-                                  onPressed: () => {
-                                    triggerDialogBox(
-                                        'Veuillez choisir un thème', [
-                                      EditTheme()
-                                    ], [
-                                      DialogBoxButtonParameters(
-                                          content: 'Confirmer',
-                                          theme: AppButtonTheme.primary,
-                                          closesDialog: true)
-                                    ])
-                                  },
-                                  icon: Icons.color_lens,
-                                ),
-                              ],
-                            )
-                          : Container(),
+                      StreamBuilder<bool>(
+                          stream: getIt
+                              .get<NotificationService>()
+                              .isNotificationEnabled,
+                          builder: (context, snapshot) {
+                            bool isEnabled = snapshot.data ?? true;
+                            return AppButton(
+                              onPressed: () => getIt
+                                  .get<NotificationService>()
+                                  .toggleNotifications(),
+                              icon: isEnabled
+                                  ? Icons.notifications
+                                  : Icons.notifications_off_rounded,
+                            );
+                          }),
+                      AppButton(
+                        onPressed: () {
+                          _authService.signOut();
+                          Navigator.pushNamed(context, LOGIN_ROUTE);
+                        },
+                        icon: Icons.logout_rounded,
+                      ),
+                      AppButton(
+                        onPressed: () => {
+                          triggerDialogBox('Veuillez choisir un thème', [
+                            EditTheme()
+                          ], [
+                            DialogBoxButtonParameters(
+                                content: 'Confirmer',
+                                theme: AppButtonTheme.primary,
+                                closesDialog: true)
+                          ])
+                        },
+                        icon: Icons.color_lens,
+                      ),
                     ],
+                  )
+                : Container(),
+          ],
         ),
       ),
     );

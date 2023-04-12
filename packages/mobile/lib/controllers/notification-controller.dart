@@ -17,7 +17,13 @@ class NotificationController {
   final String endpoint = NOTIFICATION_ENDPOINT;
   final http = getIt.get<PersonnalHttpClient>().http;
 
-  sendFirebaseToken(String token) async {
-    http.post(Uri.parse(endpoint), body: jsonEncode({'firebaseToken': token}));
+  Future<bool> sendFirebaseToken(String token) async {
+    return jsonDecode((await http.post(Uri.parse(endpoint),
+            body: jsonEncode({'firebaseToken': token})))
+        .body);
+  }
+
+  Future<bool> toggleNotifications() async {
+    return jsonDecode((await http.post(Uri.parse("$endpoint/toggle"))).body);
   }
 }

@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile/controllers/notification-controller.dart';
 import 'package:mobile/services/storage.handler.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../locator.dart';
 
@@ -18,7 +19,7 @@ class NotificationService {
   factory NotificationService() {
     return _instance;
   }
-  static bool isNotificationEnabled = true;
+  BehaviorSubject<bool> isNotificationEnabled = BehaviorSubject.seeded(true);
   late FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   late NotificationSettings _settings;
 
@@ -41,6 +42,11 @@ class NotificationService {
     });
   }
 
+  void toggleNotifications() async {
+    isNotificationEnabled
+        .add(await notificationController.toggleNotifications());
+  }
+
   Future<void> sendFirebaseToken() async {
     _settings = await _firebaseMessaging.requestPermission(
       alert: true,
@@ -55,7 +61,8 @@ class NotificationService {
 
     final token = await _firebaseMessaging.getToken();
     if (token == null) print("gg erreur token");
-    notificationController.sendFirebaseToken(token!);
+    isNotificationEnabled
+        .add(await notificationController.sendFirebaseToken(token!));
   }
 }
 
