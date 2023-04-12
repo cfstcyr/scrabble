@@ -14,6 +14,10 @@ import {
     DIALOG_QUIT_CONTENT,
     DIALOG_QUIT_STAY,
     DIALOG_QUIT_TITLE,
+    DIALOG_REPLACE_BUTTON_CONFIRM,
+    DIALOG_REPLACE_BUTTON_CONTINUE,
+    DIALOG_REPLACE_CONTENT,
+    DIALOG_REPLACE_TITLE,
 } from '@app/constants/pages-constants';
 import { ROUTE_HOME } from '@app/constants/routes-constants';
 import { GameService } from '@app/services';
@@ -74,7 +78,12 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
         const buttonsContent = [DIALOG_QUIT_BUTTON_CONFIRM, DIALOG_QUIT_STAY];
         this.openDialog(title, content, buttonsContent);
     }
-
+    handleReplaceButtonClick() {
+        const title = DIALOG_REPLACE_TITLE;
+        const content = DIALOG_REPLACE_CONTENT;
+        const buttonsContent = [DIALOG_REPLACE_BUTTON_CONTINUE, DIALOG_REPLACE_BUTTON_CONFIRM];
+        this.openReplacementDialog(title, content, buttonsContent);
+    }
     changeObservingPlayer(playerNumber: number): void {
         this.observedPlayerNumber = playerNumber;
         this.hasChangedPlayer = true;
@@ -105,15 +114,33 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
                         content: buttonsContent[0],
                         redirect: ROUTE_HOME,
                         style: 'background-color: #FA6B84; color: rgb(0, 0, 0)',
-                        // We haven't been able to test that the right function is called because this
-                        // arrow function creates a new instance of the function. We cannot spy on it.
-                        // It totally works tho, try it!
                         action: () => this.handlePlayerLeaves(),
                     },
                     {
                         content: buttonsContent[1],
                         closeDialog: true,
                         style: 'background-color: rgb(231, 231, 231)',
+                    },
+                ],
+            },
+        });
+    }
+    private openReplacementDialog(title: string, content: string, buttonsContent: string[]): void {
+        this.dialog.open(DefaultDialogComponent, {
+            data: {
+                title,
+                content,
+                buttons: [
+                    {
+                        content: buttonsContent[0],
+                        style: 'background-color: #FA6B84; color: rgb(255, 255, 255)',
+                        closeDialog: true,
+                    },
+                    {
+                        content: buttonsContent[1],
+                        closeDialog: true,
+                        style: 'background-color: rgba(var(--primary); color: rgb(255, 255, 255);',
+                        action: () => this.replaceObservingVirtualPlayer(),
                     },
                 ],
             },
