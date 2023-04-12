@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile/controllers/notification-controller.dart';
 import 'package:mobile/services/storage.handler.dart';
 
@@ -22,46 +23,34 @@ class NotificationService {
   late NotificationSettings _settings;
 
   Future init() async {
-    // final AndroidInitializationSettings initializationSettingsAndroid =
-    //     AndroidInitializationSettings('app_icon');
-    // final InitializationSettings initializationSettings =
-    //     InitializationSettings(android: initializationSettingsAndroid);
+    final AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
 
-    // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    //     FlutterLocalNotificationsPlugin();
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
 
-    // await flutterLocalNotificationsPlugin
-    //     .resolvePlatformSpecificImplementation<
-    //         AndroidFlutterLocalNotificationsPlugin>()
-    //     ?.createNotificationChannel(channel);
-    // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-    //     onSelectNotification: selectNotification);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-    // const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    //     AndroidNotificationDetails(
-    //         'reminders_channel', 'rappels', 'Rappels de jeu.',
-    //         importance: Importance.high, priority: Priority.high);
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+            'reminders_channel', 'rappels', 'Rappels de jeu.',
+            importance: Importance.max, priority: Priority.max);
 
-    // const NotificationDetails platformChannelSpecifics =
-    //     NotificationDetails(android: androidPlatformChannelSpecifics);
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (message.notification == null) {
-        print("message is empty ${message.notification}");
+        print("notification is empty ${message.notification}");
       }
 
       RemoteNotification notification = message.notification!;
-      print("HERE ${notification.title}");
 
-      // await flutterLocalNotificationsPlugin.show(notification.hashCode,
-      //     notification.title, notification.body, platformChannelSpecifics,
-      //     payload: 'i am a payload');
+      await flutterLocalNotificationsPlugin.show(notification.hashCode,
+          notification.title, notification.body, platformChannelSpecifics);
     });
-  }
-
-  Future selectNotification(String? payload) async {
-    print(payload);
-    //Handle notification tapped logic here
   }
 
   Future<void> sendFirebaseToken() async {
@@ -77,7 +66,6 @@ class NotificationService {
     print('User granted permission: ${_settings.authorizationStatus}');
 
     final token = await _firebaseMessaging.getToken();
-    print(token);
     if (token == null) print("gg erreur token");
     notificationController.sendFirebaseToken(token!);
   }
