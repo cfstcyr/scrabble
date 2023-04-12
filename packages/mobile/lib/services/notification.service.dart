@@ -1,16 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile/controllers/notification-controller.dart';
 import 'package:mobile/services/storage.handler.dart';
 
 import '../locator.dart';
-
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'reminders_channel', // id
-  'rappels', // title
-  'Rappels de jeu.', // description
-  importance: Importance.high,
-);
 
 class NotificationService {
   NotificationService._privateConstructor();
@@ -38,40 +30,40 @@ class NotificationService {
     //   sound: true,
     // );
 
-    final AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
-    final InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+    // final AndroidInitializationSettings initializationSettingsAndroid =
+    //     AndroidInitializationSettings('app_icon');
+    // final InitializationSettings initializationSettings =
+    //     InitializationSettings(android: initializationSettingsAndroid);
 
-    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
+    // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    //     FlutterLocalNotificationsPlugin();
 
     // await flutterLocalNotificationsPlugin
     //     .resolvePlatformSpecificImplementation<
     //         AndroidFlutterLocalNotificationsPlugin>()
     //     ?.createNotificationChannel(channel);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: selectNotification);
+    // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+    //     onSelectNotification: selectNotification);
 
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-            'reminders_channel', 'rappels', 'Rappels de jeu.',
-            importance: Importance.high, priority: Priority.high);
+    // const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    //     AndroidNotificationDetails(
+    //         'reminders_channel', 'rappels', 'Rappels de jeu.',
+    //         importance: Importance.high, priority: Priority.high);
 
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    // const NotificationDetails platformChannelSpecifics =
+    //     NotificationDetails(android: androidPlatformChannelSpecifics);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print("HERE ");
       if (message.notification == null) {
         print("message is empty ${message.notification}");
       }
 
       RemoteNotification notification = message.notification!;
+      print("HERE ${notification.title}");
 
-      await flutterLocalNotificationsPlugin.show(notification.hashCode,
-          notification.title, notification.body, platformChannelSpecifics,
-          payload: 'i am a payload');
+      // await flutterLocalNotificationsPlugin.show(notification.hashCode,
+      //     notification.title, notification.body, platformChannelSpecifics,
+      //     payload: 'i am a payload');
     });
   }
 

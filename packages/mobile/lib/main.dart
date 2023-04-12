@@ -27,7 +27,7 @@ Future<void> main() async {
   Intl.defaultLocale = 'fr_CA';
   initializeDateFormatting('fr_CA', null);
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
+  await Firebase.initializeApp();
 
   await dotenv.load(fileName: ".env");
   const String environment = String.fromEnvironment(
