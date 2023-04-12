@@ -1,23 +1,26 @@
 /* eslint-disable no-console */
 import { UserId } from '@app/classes/user/connected-user-types';
 import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
+import { User } from '@common/models/user';
 
 import * as admin from 'firebase-admin';
 import { AndroidConfig } from 'firebase-admin/lib/messaging/messaging-api';
 import { join } from 'path';
 import { Service } from 'typedi';
 export const FIREBASE_KEY_PATH = '../../../assets/log3900-polyscrabble-firebase-adminsdk-key.json';
-export const NOTIFICATION_TITLE = 'Revenez!';
+export const NOTIFICATION_TITLE = 'Revenez';
 export const NOTIFICATION_DESCRIPTION = 'Venez vous amuser sur PolyScrabble. On vous attend avec impatience!';
 export const REMINDER_DELAY_IN_MINUTES = 5;
 
 @Service()
 export class NotificationService {
     private mobileUserTokens: Map<UserId, string>;
+    private mobileUserAccounts: Map<UserId, User>;
     private scheduledNotifications: Map<UserId, NodeJS.Timeout>;
 
     constructor() {
         this.mobileUserTokens = new Map();
+        this.mobileUserAccounts = new Map();
         this.scheduledNotifications = new Map();
         const filePath = join(__dirname, FIREBASE_KEY_PATH);
         admin.initializeApp({
@@ -25,15 +28,17 @@ export class NotificationService {
         });
     }
 
-    addMobileUserToken(userId: UserId, firebaseToken: string) {
-        this.mobileUserTokens.set(userId, firebaseToken);
+    addMobileUserToken(user: User, firebaseToken: string) {
+        this.mobileUserTokens.set(user.idUser, firebaseToken);
+        this.mobileUserAccounts.set(user.idUser, user);
     }
 
     scheduleReminderNotification(userId: UserId) {
         const firebaseToken = this.mobileUserTokens.get(userId);
-        if (!firebaseToken) return;
+        const user = this.mobileUserAccounts.get(userId);
+        if (!firebaseToken || !user) return;
         const scheduledNotification = setTimeout(() => {
-            this.sendReminderNotification(userId, firebaseToken, NOTIFICATION_TITLE, NOTIFICATION_DESCRIPTION);
+            this.sendReminderNotification(userId, firebaseToken, `${NOTIFICATION_TITLE} ${user.username}!`, NOTIFICATION_DESCRIPTION);
         }, 10 * SECONDS_TO_MILLISECONDS);
 
         this.scheduledNotifications.set(userId, scheduledNotification);
