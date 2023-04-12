@@ -2,8 +2,7 @@
     <mat-card *ngFor='let player of players; let index = index' class='game-observers-players__player'
         [ngClass]='{"game-observers-players__player--active": player.isActive, "game-observers-players__player--observed": observedPlayerId === player.player.id}'
         (click)='playerClick.emit(index + 1)'>
-        <div class='game-observers-players__player__user'
-            [matTooltip]='!isObservingVirtualPlayer(player) ? "Vous pouvez seulement remplacer un joueur virtuel":""'>
+        <div class='game-observers-players__player__user'>
             <img class=' game-observers-players__player__user__avatar' [appSrc]='player.player.publicUser.avatar'
                 [square]='24'>
             <app-icon *ngIf='observedPlayerId === player.player.id' icon='eye'></app-icon>
