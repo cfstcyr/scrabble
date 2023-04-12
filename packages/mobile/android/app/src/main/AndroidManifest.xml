@@ -2,9 +2,9 @@
     package="com.example.mobile">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="mobile"
+        android:label="Scrabble"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/s_logo">
         <activity
             android:name=".MainActivity"
             android:exported="true"

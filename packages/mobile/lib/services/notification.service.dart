@@ -68,7 +68,7 @@ class NotificationService {
 
 Future<FlutterLocalNotificationsPlugin> setupNotificationPlugin() async {
   final AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@drawable/naked_s_logo');
   final InitializationSettings initializationSettings =
       InitializationSettings(android: initializationSettingsAndroid);
 
