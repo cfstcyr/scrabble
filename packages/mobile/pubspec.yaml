@@ -61,6 +61,7 @@ dependencies:
     uploadcare_client: ^6.2.1
     firebase_core: ^2.9.0
     firebase_messaging: ^14.4.0
+    flutter_local_notifications: ^5.0.0+1
 
 dev_dependencies:
     flutter_test:

@@ -13,6 +13,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/initializer.service.dart';
+import 'package:mobile/services/notification.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 import 'environments/environment.dart';
@@ -20,23 +21,23 @@ import 'environments/environment.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-
-  print("Handling a background message: ${message.messageId}");
 }
 
 Future<void> main() async {
   Intl.defaultLocale = 'fr_CA';
   initializeDateFormatting('fr_CA', null);
+  WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
 
   await dotenv.load(fileName: ".env");
   const String environment = String.fromEnvironment(
     'ENVIRONMENT',
     defaultValue: Environment.DEV,
   );
-  await Firebase.initializeApp();
 
   Environment().initConfig(environment);
   CustomLocator().setUpLocator();
+  await getIt.get<NotificationService>().init();
   getIt.get<InitializerService>().initialize();
 
   // handler for messages when the app is closed
@@ -45,6 +46,11 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations(
           [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
       .then((_) => runApp(MyApp()));
+  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //   alert: true,
+  //   badge: true,
+  //   sound: true,
+  // );
 }
 
 class MyApp extends StatelessWidget {

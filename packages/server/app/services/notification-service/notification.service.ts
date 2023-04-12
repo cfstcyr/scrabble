@@ -1,12 +1,14 @@
+/* eslint-disable no-console */
 import { UserId } from '@app/classes/user/connected-user-types';
-import { MINUTES_TO_SECONDS, SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
+import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 
 import * as admin from 'firebase-admin';
+import { AndroidConfig } from 'firebase-admin/lib/messaging/messaging-api';
 import { join } from 'path';
 import { Service } from 'typedi';
 export const FIREBASE_KEY_PATH = '../../../assets/log3900-polyscrabble-firebase-adminsdk-key.json';
 export const NOTIFICATION_TITLE = 'Revenez!';
-export const NOTIFICATION_DESCRIPTION = 'Venez nous amuser sur PolyScrabble. On vous attend avec impatiente!';
+export const NOTIFICATION_DESCRIPTION = 'Venez vous amuser sur PolyScrabble. On vous attend avec impatience!';
 export const REMINDER_DELAY_IN_MINUTES = 5;
 
 @Service()
@@ -15,6 +17,8 @@ export class NotificationService {
     private scheduledNotifications: Map<UserId, NodeJS.Timeout>;
 
     constructor() {
+        this.mobileUserTokens = new Map();
+        this.scheduledNotifications = new Map();
         const filePath = join(__dirname, FIREBASE_KEY_PATH);
         admin.initializeApp({
             credential: admin.credential.cert(filePath),
@@ -30,7 +34,7 @@ export class NotificationService {
         if (!firebaseToken) return;
         const scheduledNotification = setTimeout(() => {
             this.sendReminderNotification(userId, firebaseToken, NOTIFICATION_TITLE, NOTIFICATION_DESCRIPTION);
-        }, REMINDER_DELAY_IN_MINUTES * MINUTES_TO_SECONDS * SECONDS_TO_MILLISECONDS);
+        }, 10 * SECONDS_TO_MILLISECONDS);
 
         this.scheduledNotifications.set(userId, scheduledNotification);
         return scheduledNotification;
@@ -38,17 +42,17 @@ export class NotificationService {
 
     async sendReminderNotification(userId: UserId, registrationToken: string, title: string, body: string) {
         if (!this.scheduledNotifications.delete(userId)) return;
-
         const message = {
             notification: {
                 title,
                 body,
             },
             android: {
+                priority: 'high',
                 notification: {
                     sound: 'default',
                 },
-            },
+            } as AndroidConfig,
             token: registrationToken,
         };
 
