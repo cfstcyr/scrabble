@@ -18,7 +18,7 @@
             <app-icon icon='door-open' styling="solid"></app-icon>
         </button>
         <button class='game-page__actions__button game-page__actions__button--replace' mat-flat-button
-            (click)="handleReplaceVirtualPlayerByObserver()" color="warn" matTooltip="Remplacer un joueur virtuel"
+            (click)="handleReplaceButtonClick()" color="warn" matTooltip="Remplacer un joueur virtuel"
             matTooltipPosition='above' [disabled]="!isObservingVirtualPlayer()" color="primary">
             <app-icon icon='exchange' styling="solid"></app-icon>
         </button>
