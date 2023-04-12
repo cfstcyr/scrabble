@@ -22,14 +22,6 @@ class NotificationService {
   late NotificationSettings _settings;
 
   Future init() async {
-    // await Firebase.initializeApp();
-    // await FirebaseMessaging.instance
-    //     .setForegroundNotificationPresentationOptions(
-    //   alert: true,
-    //   badge: true,
-    //   sound: true,
-    // );
-
     // final AndroidInitializationSettings initializationSettingsAndroid =
     //     AndroidInitializationSettings('app_icon');
     // final InitializationSettings initializationSettings =
