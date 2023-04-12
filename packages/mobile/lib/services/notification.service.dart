@@ -70,3 +70,15 @@ class NotificationService {
     notificationController.sendFirebaseToken(token!);
   }
 }
+
+// Future<FlutterLocalNotificationsPlugin> notificationPluginSetup() async {
+//         final AndroidInitializationSettings initializationSettingsAndroid =
+//         AndroidInitializationSettings('@mipmap/ic_launcher');
+//     final InitializationSettings initializationSettings =
+//         InitializationSettings(android: initializationSettingsAndroid);
+
+//     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//         FlutterLocalNotificationsPlugin();
+
+//     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+// }
