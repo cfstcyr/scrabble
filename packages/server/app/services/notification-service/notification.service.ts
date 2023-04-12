@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { UserId } from '@app/classes/user/connected-user-types';
 import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
-import { User } from '@common/models/user';
+import { User, UserNotificationsSettings } from '@common/models/user';
 
 import * as admin from 'firebase-admin';
 import { AndroidConfig } from 'firebase-admin/lib/messaging/messaging-api';
@@ -15,7 +15,7 @@ export const REMINDER_DELAY_IN_MINUTES = 5;
 @Service()
 export class NotificationService {
     private mobileUserTokens: Map<UserId, string>;
-    private mobileUserAccounts: Map<UserId, User>;
+    private mobileUserAccounts: Map<UserId, UserNotificationsSettings>;
     private scheduledNotifications: Map<UserId, NodeJS.Timeout>;
 
     constructor() {
@@ -30,19 +30,33 @@ export class NotificationService {
 
     addMobileUserToken(user: User, firebaseToken: string) {
         this.mobileUserTokens.set(user.idUser, firebaseToken);
-        this.mobileUserAccounts.set(user.idUser, user);
+        const existingUser = this.mobileUserAccounts.get(user.idUser);
+        let isNotificationsEnabled = true;
+        if (existingUser != null) isNotificationsEnabled = existingUser.isNotificationsEnabled;
+        this.mobileUserAccounts.set(user.idUser, { ...user, isNotificationsEnabled } as UserNotificationsSettings);
+        return isNotificationsEnabled;
     }
 
     scheduleReminderNotification(userId: UserId) {
         const firebaseToken = this.mobileUserTokens.get(userId);
         const user = this.mobileUserAccounts.get(userId);
-        if (!firebaseToken || !user) return;
+        if (!firebaseToken || !user?.isNotificationsEnabled) return;
         const scheduledNotification = setTimeout(() => {
             this.sendReminderNotification(userId, firebaseToken, `${NOTIFICATION_TITLE} ${user.username}!`, NOTIFICATION_DESCRIPTION);
         }, 10 * SECONDS_TO_MILLISECONDS);
 
         this.scheduledNotifications.set(userId, scheduledNotification);
         return scheduledNotification;
+    }
+
+    toggleNotifications(userId: UserId): boolean {
+        const user = this.mobileUserAccounts.get(userId);
+        console.log(this.mobileUserAccounts.get(userId)?.isNotificationsEnabled);
+        if (!user) return false;
+        user.isNotificationsEnabled = !user.isNotificationsEnabled;
+        console.log(this.mobileUserAccounts.get(userId)?.isNotificationsEnabled);
+
+        return user.isNotificationsEnabled;
     }
 
     async sendReminderNotification(userId: UserId, registrationToken: string, title: string, body: string) {
