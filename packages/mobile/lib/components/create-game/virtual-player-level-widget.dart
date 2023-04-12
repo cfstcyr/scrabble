@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/classes/puzzle/puzzle-level.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
-class PuzzleLevelWidget extends StatefulWidget {
-  PuzzleLevelWidget({required this.puzzleLevel});
+import 'virtual-player-toggle.dart';
 
-  final PuzzleLevel puzzleLevel;
+class VirtualPlayerLevelWidget extends StatelessWidget {
+  VirtualPlayerLevelWidget({required this.difficultyLevel});
 
-  @override
-  State<PuzzleLevelWidget> createState() => _PuzzleLevelWidgetState();
-}
+  final VirtualPlayerToggle difficultyLevel;
 
-class _PuzzleLevelWidgetState extends State<PuzzleLevelWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,7 +21,7 @@ class _PuzzleLevelWidgetState extends State<PuzzleLevelWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: widget.puzzleLevel.icons
+            children: difficultyLevel.icons
                 .map((IconData icon) => Icon(
                       icon,
                       size: 32,
@@ -36,23 +32,14 @@ class _PuzzleLevelWidgetState extends State<PuzzleLevelWidget> {
             height: SPACE_1,
           ),
           Text(
-            widget.puzzleLevel.name,
+            difficultyLevel.name,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
-            height: SPACE_1,
-          ),
-          Opacity(
-              opacity: 0.54,
-              child: Text(
-                widget.puzzleLevel.description,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ))
         ],
       ),
     );
   }
 }
 
-Widget generatePuzzleLevelWidget(PuzzleLevel level) =>
-    PuzzleLevelWidget(puzzleLevel: level);
+Widget generateDifficultyLevelWidget(VirtualPlayerToggle level) =>
+    VirtualPlayerLevelWidget(difficultyLevel: level);
