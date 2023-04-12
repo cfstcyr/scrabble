@@ -17,26 +17,10 @@
             (click)="handleQuitButtonClick()" color="warn" matTooltip="Quitter" matTooltipPosition='above'>
             <app-icon icon='door-open' styling="solid"></app-icon>
         </button>
-
-        <div matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur" matTooltipPosition="above">
-            <button class='game-page__actions__button game-page__actions__button--hint' mat-flat-button color="primary"
-                [disabled]="true">
-                <app-icon icon="lightbulb" styling="solid"></app-icon>
-            </button>
-        </div>
-
-        <div matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur" matTooltipPosition="above">
-            <button class='game-page__actions__button game-page__actions__button--pass' mat-flat-button color="primary"
-                [disabled]="true">
-                <app-icon icon="redo"></app-icon>
-            </button>
-        </div>
-
-        <div matTooltip="Vous ne pouvez pas faire d'action en tant qu'observateur" matTooltipPosition="above">
-            <button class='game-page__actions__button game-page__actions__button--place' mat-flat-button color="primary"
-                [disabled]="true">
-                <app-icon icon="square" styling="solid"></app-icon>
-            </button>
-        </div>
+        <button class='game-page__actions__button game-page__actions__button--replace' mat-flat-button
+            (click)="handleReplaceVirtualPlayerByObserver()" color="warn" matTooltip="Remplacer un joueur virtuel"
+            matTooltipPosition='above' [disabled]="!isObservingVirtualPlayer()" color="primary">
+            <app-icon icon='exchange' styling="solid"></app-icon>
+        </button>
     </mat-card>
 </div>

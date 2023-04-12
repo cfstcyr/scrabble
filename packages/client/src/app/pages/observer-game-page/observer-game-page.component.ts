@@ -23,7 +23,7 @@ import { PlayerLeavesService } from '@app/services/player-leave-service/player-l
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
 import { SoundName, SoundService } from '@app/services/sound-service/sound.service';
 import { Subject } from 'rxjs';
-
+const VIRTUAL_PLAYER_ID_PREFIX = 'virtual-player';
 @Component({
     selector: 'app-observer-game-page',
     templateUrl: './observer-game-page.component.html',
@@ -31,8 +31,8 @@ import { Subject } from 'rxjs';
 })
 export class ObserverGamePageComponent implements OnInit, OnDestroy {
     @ViewChild(TileRackComponent, { static: false }) tileRackComponent: TileRackComponent;
+    observedPlayerNumber: number;
     private hasChangedPlayer: boolean = false;
-
     private componentDestroyed$: Subject<boolean>;
 
     constructor(
@@ -76,16 +76,23 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     }
 
     changeObservingPlayer(playerNumber: number): void {
+        this.observedPlayerNumber = playerNumber;
         this.hasChangedPlayer = true;
         this.gameService.setLocalPlayer(playerNumber);
     }
 
-    replaceObservingVirtualPlayer(virtualPlayerNumber: number) {
-        this.gameService.replaceVirtualPlayer(virtualPlayerNumber);
+    replaceObservingVirtualPlayer() {
+        this.gameService.replaceVirtualPlayer(this.observedPlayerNumber);
     }
 
     getObservingPlayerId(): string | undefined {
         return this.gameService.getLocalPlayerId();
+    }
+    handleReplaceVirtualPlayerByObserver() {
+        this.gameService.replaceVirtualPlayer(this.observedPlayerNumber);
+    }
+    isObservingVirtualPlayer() {
+        return this.gameService.getLocalPlayerId()?.includes(VIRTUAL_PLAYER_ID_PREFIX);
     }
 
     private openDialog(title: string, content: string, buttonsContent: string[]): void {
