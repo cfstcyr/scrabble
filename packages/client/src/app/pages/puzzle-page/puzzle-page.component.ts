@@ -19,7 +19,7 @@ import { PuzzleLevel } from '@app/components/puzzle/start-puzzle-modal/start-puz
 import { puzzleSettings } from '@app/utils/settings';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROUTE_PUZZLE_HOME } from '@app/constants/routes-constants';
-import { BACKSPACE, ENTER, ESCAPE } from '@app/constants/components-constants';
+import { ENTER, ESCAPE } from '@app/constants/components-constants';
 import { PuzzleResultModalComponent, PuzzleResultModalParameters } from '@app/components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
 import { WordPlacement } from '@common/models/word-finding';
 import { PuzzleResult } from '@common/models/puzzle';
@@ -75,9 +75,6 @@ export class PuzzlePageComponent implements OnInit {
             this.boardCursorService.handleLetter(event.key, event.shiftKey);
         } else {
             switch (event.key) {
-                case BACKSPACE:
-                    this.boardCursorService.handleBackspace();
-                    break;
                 case ENTER:
                     this.play();
                     break;
