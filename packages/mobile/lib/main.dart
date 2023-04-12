@@ -22,23 +22,11 @@ import 'environments/environment.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  final AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-  final InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
-
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+      await setupNotificationPlugin();
 
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-  const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
-          'reminders_channel', 'rappels', 'Rappels de jeu.',
-          importance: Importance.max, priority: Priority.max);
-
-  const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
+  final NotificationDetails platformChannelSpecifics =
+      setupNotificationDetails();
 
   RemoteNotification notification = message.notification!;
 
