@@ -33,7 +33,6 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     @ViewChild(TileRackComponent, { static: false }) tileRackComponent: TileRackComponent;
     private hasChangedPlayer: boolean = false;
 
-    private mustDisconnectGameOnLeave: boolean;
     private componentDestroyed$: Subject<boolean>;
 
     constructor(
@@ -46,7 +45,6 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
         private readonly alertService: AlertService,
         private readonly soundService: SoundService,
     ) {
-        this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
     }
 
@@ -129,7 +127,6 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
                         // We haven't been able to test that the right function is called because this
                         // arrow function creates a new instance of the function. We cannot spy on it.
                         // It totally works tho, try it!
-                        action: () => (this.mustDisconnectGameOnLeave = false),
                     },
                 ],
             },
@@ -164,7 +161,6 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     }
 
     private handlePlayerLeaves(): void {
-        this.mustDisconnectGameOnLeave = false;
         this.playerLeavesService.handleLocalPlayerLeavesGame();
     }
 }
