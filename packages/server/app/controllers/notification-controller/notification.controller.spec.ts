@@ -16,7 +16,7 @@ const DEFAULT_USER: User = {
     username: 'username',
 };
 
-describe.only('NotificationController', () => {
+describe('NotificationController', () => {
     let expressApp: Express.Application;
     let testingUnit: ServicesTestingUnit;
     let userService: UserService;
