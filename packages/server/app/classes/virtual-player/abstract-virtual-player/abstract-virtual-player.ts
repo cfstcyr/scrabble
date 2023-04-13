@@ -1,5 +1,6 @@
 import { Board } from '@app/classes/board';
 import { ActionData } from '@app/classes/communication/action-data';
+import Game from '@app/classes/game/game';
 import Player from '@app/classes/player/player';
 import Range from '@app/classes/range/range';
 import { AbstractWordFinding, ScoredWordPlacement, WordFindingRequest } from '@app/classes/word-finding';
@@ -44,6 +45,9 @@ export abstract class AbstractVirtualPlayer extends Player {
     getGameBoard(gameId: string, playerId: string): Board {
         return this.getActiveGameService().getGame(gameId, playerId).board;
     }
+    getGame(gameId: string, playerId: string): Game {
+        return this.getActiveGameService().getGame(gameId, playerId);
+    }
 
     async playTurn(): Promise<void> {
         const waitPreliminaryTime = async (): Promise<void> => {
@@ -52,12 +56,10 @@ export abstract class AbstractVirtualPlayer extends Player {
         const waitFinalTime = async (): Promise<void> => {
             await Delay.for(FINAL_WAIT_TIME);
         };
-
         const play = async (): Promise<[ActionData, void]> => {
             return Promise.all([this.findAction(), waitPreliminaryTime()]);
         };
         const actionResult: [ActionData, void] | void = await Promise.race([play(), waitFinalTime()]);
-
         this.getVirtualPlayerService().sendAction(this.gameId, this.id, actionResult ? actionResult[0] : this.alternativeMove());
     }
 

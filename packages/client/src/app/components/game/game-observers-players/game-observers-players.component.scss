@@ -119,3 +119,13 @@
         }
     }
 }
+.replace-active-jv-button {
+    margin-left: 5px;
+    background-color: rgba(var(--secondary));
+    width: 25px;
+}
+.replace-inactive-jv-button {
+    margin-left: 5px;
+    background-color: rgba(var(--primary));
+    width: 25px;
+}

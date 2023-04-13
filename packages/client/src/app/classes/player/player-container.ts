@@ -43,7 +43,9 @@ export class PlayerContainer {
 
     initializePlayer(playerNumber: number, playerData: PlayerData): this {
         if (!playerData.publicUser || !playerData.tiles) throw new Error(MISSING_PLAYER_DATA_TO_INITIALIZE);
-        this.setPlayer(playerNumber, new Player(playerData.id, playerData.publicUser, playerData.tiles));
+        const newPlayer = new Player(playerData.id, playerData.publicUser, playerData.tiles);
+        newPlayer.score = playerData.score ?? 0;
+        this.setPlayer(playerNumber, newPlayer);
         return this;
     }
 
