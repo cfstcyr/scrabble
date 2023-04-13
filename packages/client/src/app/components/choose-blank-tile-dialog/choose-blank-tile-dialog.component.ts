@@ -27,7 +27,10 @@ export class ChooseBlankTileDialogComponent {
     handleKeyboardEvent(event: KeyboardEvent): void {
         const key = event.key.toUpperCase();
 
-        if (key.length === 1 && key >= 'A' && key <= 'Z') this.letter.next(key);
+        if (key.length === 1 && key >= 'A' && key <= 'Z') {
+            this.letter.next(key);
+            event.stopPropagation();
+        }
 
         if (event.key === ENTER) this.handleConfirm();
     }
