@@ -33,8 +33,7 @@ export class NotificationService {
         });
     }
 
-    addMobileUserToken(user: User, firebaseToken: string) {
-        console.log('here');
+    addMobileUserToken(user: User, firebaseToken: string): boolean {
         this.mobileUserTokens.set(user.idUser, firebaseToken);
         const existingUser = this.mobileUserAccounts.get(user.idUser);
         let isNotificationsEnabled = true;
