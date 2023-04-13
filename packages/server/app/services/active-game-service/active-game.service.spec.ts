@@ -2,23 +2,24 @@
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import Game from '@app/classes/game/game';
 import { ReadyGameConfig } from '@app/classes/game/game-config';
 import Player from '@app/classes/player/player';
+import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
+import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
+import { ChatService } from '@app/services/chat-service/chat.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
+import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import { GameVisibility } from '@common/models/game-visibility';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
-import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
-import { ActiveGameService } from './active-game.service';
-import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
-import { SinonStubbedInstance } from 'sinon';
-import { ChatService } from '@app/services/chat-service/chat.service';
-import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as Sinon from 'sinon';
+import { SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
-import { GameVisibility } from '@common/models/game-visibility';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
-import { DictionarySummary } from '@app/classes/communication/dictionary-data';
+import { ActiveGameService } from './active-game.service';
 
 const expect = chai.expect;
 
@@ -66,7 +67,10 @@ describe('ActiveGameService', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbed(ChatService);
+        testingUnit = new ServicesTestingUnit().withStubbed(ChatService).withStubbed(NotificationService, {
+            initalizeAdminApp: undefined,
+            sendAdminMessage: Promise.resolve(' '),
+        });
         await testingUnit.withMockDatabaseService();
     });
 

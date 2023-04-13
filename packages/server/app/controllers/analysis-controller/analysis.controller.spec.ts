@@ -4,6 +4,7 @@
 import { Application } from '@app/app';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { AnalysisPersistenceService } from '@app/services/analysis-persistence-service/analysis-persistence.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { AnalysisRequestInfoType } from '@common/models/analysis';
 import * as chai from 'chai';
@@ -28,7 +29,10 @@ describe('AnalysisController', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withMockedAuthentification();
+        testingUnit = new ServicesTestingUnit().withMockedAuthentification().withStubbed(NotificationService, {
+            initalizeAdminApp: undefined,
+            sendAdminMessage: Promise.resolve(' '),
+        });
         await testingUnit.withMockDatabaseService();
         testingUnit.withStubbedDictionaryService().withStubbedControllers(AnalysisController);
         analysisPersistenceServiceStub = testingUnit.setStubbed(AnalysisPersistenceService);

@@ -3,6 +3,7 @@
 import { Application } from '@app/app';
 import { Position } from '@app/classes/board';
 import { WordPlacement } from '@app/classes/word-finding';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { PuzzleService } from '@app/services/puzzle-service/puzzle.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { Orientation } from '@common/models/position';
@@ -27,7 +28,13 @@ describe('PuzzleController', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withMockedAuthentification();
+        testingUnit = new ServicesTestingUnit()
+            .withStubbedDictionaryService()
+            .withMockedAuthentification()
+            .withStubbed(NotificationService, {
+                initalizeAdminApp: undefined,
+                sendAdminMessage: Promise.resolve(' '),
+            });
         await testingUnit.withMockDatabaseService();
         puzzleServiceStub = testingUnit.setStubbed(PuzzleService);
         expressApp = Container.get(Application).app;

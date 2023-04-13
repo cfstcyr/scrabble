@@ -4,7 +4,7 @@ import { MINUTES_TO_SECONDS, SECONDS_TO_MILLISECONDS } from '@app/constants/cont
 import { User, UserNotificationsSettings } from '@common/models/user';
 
 import * as admin from 'firebase-admin';
-import { AndroidConfig } from 'firebase-admin/lib/messaging/messaging-api';
+import { AndroidConfig, Message } from 'firebase-admin/lib/messaging/messaging-api';
 import { join } from 'path';
 import { Service } from 'typedi';
 export const FIREBASE_KEY_PATH = '../../../assets/log3900-polyscrabble-firebase-adminsdk-key.json';
@@ -22,13 +22,19 @@ export class NotificationService {
         this.mobileUserTokens = new Map();
         this.mobileUserAccounts = new Map();
         this.scheduledNotifications = new Map();
+        this.initalizeAdminApp();
+    }
+
+    initalizeAdminApp() {
         const filePath = join(__dirname, FIREBASE_KEY_PATH);
+
         admin.initializeApp({
             credential: admin.credential.cert(filePath),
         });
     }
 
     addMobileUserToken(user: User, firebaseToken: string) {
+        console.log('here');
         this.mobileUserTokens.set(user.idUser, firebaseToken);
         const existingUser = this.mobileUserAccounts.get(user.idUser);
         let isNotificationsEnabled = true;
@@ -74,11 +80,15 @@ export class NotificationService {
         };
 
         try {
-            const response = await admin.messaging().send(message);
+            const response = await this.sendAdminMessage(message);
             console.log(`Successfully sent notification: ${response}`);
         } catch (error) {
             console.error(`Error sending notification: ${error}`);
         }
+    }
+
+    async sendAdminMessage(message: Message): Promise<string> {
+        return await admin.messaging().send(message);
     }
 
     removeScheduledNotification(userId: UserId) {

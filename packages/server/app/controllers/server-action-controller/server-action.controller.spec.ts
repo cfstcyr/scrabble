@@ -1,13 +1,14 @@
 /* eslint-disable dot-notation */
 import { Application } from '@app/app';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServerActionService } from '@app/services/server-action-service/server-action.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { UserService } from '@app/services/user-service/user-service';
 import { ServerActionCreation, ServerActionType } from '@common/models/server-action';
 import { User } from '@common/models/user';
 import { StatusCodes } from 'http-status-codes';
-import { Container } from 'typedi';
 import * as supertest from 'supertest';
+import { Container } from 'typedi';
 
 const DEFAULT_USER: User = {
     idUser: 1,
@@ -24,7 +25,13 @@ describe('ServerActionController', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withMockedAuthentification();
+        testingUnit = new ServicesTestingUnit()
+            .withStubbedDictionaryService()
+            .withMockedAuthentification()
+            .withStubbed(NotificationService, {
+                initalizeAdminApp: undefined,
+                sendAdminMessage: Promise.resolve(' '),
+            });
         await testingUnit.withMockDatabaseService();
     });
 

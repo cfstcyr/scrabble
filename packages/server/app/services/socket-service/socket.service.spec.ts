@@ -4,11 +4,14 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
+import { ConnectedUser } from '@app/classes/user/connected-user';
 import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
+import { ServerActionService } from '@app/services/server-action-service/server-action.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { Delay } from '@app/utils/delay/delay';
 import * as arrowFunction from '@app/utils/is-id-virtual-player/is-id-virtual-player';
@@ -16,11 +19,9 @@ import { Server } from 'app/server';
 import * as chai from 'chai';
 import { expect, spy } from 'chai';
 import * as sinon from 'sinon';
-import { io as ioClient, Socket } from 'socket.io-client';
+import { Socket, io as ioClient } from 'socket.io-client';
 import { Container } from 'typedi';
-import { ServerActionService } from '@app/services/server-action-service/server-action.service';
 import { SocketService } from './socket.service';
-import { ConnectedUser } from '@app/classes/user/connected-user';
 
 const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
@@ -59,6 +60,10 @@ describe('SocketService', () => {
             testingUnit = new ServicesTestingUnit()
                 .withStubbed(DictionaryService)
                 .withStubbed(ChatService)
+                .withStubbed(NotificationService, {
+                    initalizeAdminApp: undefined,
+                    sendAdminMessage: Promise.resolve(' '),
+                })
                 .withStubbed(
                     AuthentificationService,
                     {
@@ -339,6 +344,7 @@ describe('SocketService', () => {
             service = new SocketService(
                 Container.get(AuthentificationService),
                 sinon.createStubInstance(ServerActionService) as unknown as ServerActionService,
+                Container.get(NotificationService),
             );
         });
 

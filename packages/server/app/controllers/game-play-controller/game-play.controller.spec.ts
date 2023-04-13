@@ -25,11 +25,13 @@ import { VIRTUAL_PLAYER_ID_PREFIX } from '@app/constants/virtual-player-constant
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { GamePlayService } from '@app/services/game-play-service/game-play.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
 import { Delay } from '@app/utils/delay/delay';
 import * as isIdVirtualPlayer from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { ActionType } from '@common/models/action';
 import { TilePlacement } from '@common/models/tile-placement';
 import * as chai from 'chai';
 import { spy } from 'chai';
@@ -37,11 +39,10 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
 import { StatusCodes } from 'http-status-codes';
 import * as sinon from 'sinon';
-import { createStubInstance, SinonStub, SinonStubbedInstance, stub } from 'sinon';
+import { SinonStub, SinonStubbedInstance, createStubInstance, stub } from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
 import { GamePlayController } from './game-play.controller';
-import { ActionType } from '@common/models/action';
 
 const expect = chai.expect;
 
@@ -101,6 +102,10 @@ describe('GamePlayController', () => {
             .withStubbed(ActiveGameService)
             .withStubbed(VirtualPlayerService)
             .withStubbedControllers(GamePlayController)
+            .withStubbed(NotificationService, {
+                initalizeAdminApp: undefined,
+                sendAdminMessage: Promise.resolve(' '),
+            })
             .withMockedAuthentification();
 
         gamePlayServiceStub = testingUnit.setStubbed(GamePlayService);

@@ -1,14 +1,15 @@
 /* eslint-disable dot-notation */
 import { Application } from '@app/app';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { UserService } from '@app/services/user-service/user-service';
-import { PublicUser, User } from '@common/models/user';
-import { StatusCodes } from 'http-status-codes';
-import { Container } from 'typedi';
-import * as supertest from 'supertest';
-import { PublicUserStatistics, UserStatistics } from '@common/models/user-statistics';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
+import { PublicUser, User } from '@common/models/user';
+import { PublicUserStatistics, UserStatistics } from '@common/models/user-statistics';
 import { expect } from 'chai';
+import { StatusCodes } from 'http-status-codes';
+import * as supertest from 'supertest';
+import { Container } from 'typedi';
 
 const DEFAULT_USER: User = {
     idUser: 1,
@@ -41,10 +42,15 @@ describe('UserController', () => {
     let testingUnit: ServicesTestingUnit;
     let userService: UserService;
     let userStatisticsService: UserStatisticsService;
-    // let authenticationService: AuthentificationService;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withMockedAuthentification();
+        testingUnit = new ServicesTestingUnit()
+            .withStubbedDictionaryService()
+            .withMockedAuthentification()
+            .withStubbed(NotificationService, {
+                initalizeAdminApp: undefined,
+                sendAdminMessage: Promise.resolve(' '),
+            });
         await testingUnit.withMockDatabaseService();
     });
 

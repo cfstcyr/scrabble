@@ -18,8 +18,8 @@ export class NotificationController extends BaseController {
         router.post('/', async (req: TokenRequest, res: Response, next) => {
             const firebaseToken: string = req.body.firebaseToken;
             const userId: UserId = req.body.idUser;
-            const user: User = await this.userService.getUserById(userId);
             try {
+                const user: User = await this.userService.getUserById(userId);
                 res.status(StatusCodes.OK).json(this.notificationService.addMobileUserToken(user, firebaseToken));
             } catch (exception) {
                 next(exception);

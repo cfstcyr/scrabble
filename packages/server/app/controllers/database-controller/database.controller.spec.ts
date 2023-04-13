@@ -1,5 +1,6 @@
 import { Application } from '@app/app';
 import DatabaseService from '@app/services/database-service/database.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { StatusCodes } from 'http-status-codes';
 import { SinonStubbedInstance } from 'sinon';
@@ -13,7 +14,13 @@ describe('DatabaseController', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(() => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbedControllers(DatabaseController);
+        testingUnit = new ServicesTestingUnit()
+            .withStubbedDictionaryService()
+            .withStubbedControllers(DatabaseController)
+            .withStubbed(NotificationService, {
+                initalizeAdminApp: undefined,
+                sendAdminMessage: Promise.resolve(' '),
+            });
         databaseServiceStub = testingUnit.setStubbed(DatabaseService);
     });
 

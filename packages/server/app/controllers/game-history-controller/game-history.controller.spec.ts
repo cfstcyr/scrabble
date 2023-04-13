@@ -5,6 +5,7 @@ import { Application } from '@app/app';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import { GameHistoriesController } from '@app/controllers/game-history-controller/game-history.controller';
 import GameHistoriesService from '@app/services/game-history-service/game-history.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -28,7 +29,13 @@ describe('GameHistoriesController', () => {
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withMockedAuthentification();
         await testingUnit.withMockDatabaseService();
-        testingUnit.withStubbedDictionaryService().withStubbedControllers(GameHistoriesController);
+        testingUnit
+            .withStubbedDictionaryService()
+            .withStubbedControllers(GameHistoriesController)
+            .withStubbed(NotificationService, {
+                initalizeAdminApp: undefined,
+                sendAdminMessage: Promise.resolve(' '),
+            });
         gameHistoriesServiceStub = testingUnit.setStubbed(GameHistoriesService);
     });
 
