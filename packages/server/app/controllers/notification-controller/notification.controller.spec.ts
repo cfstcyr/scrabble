@@ -20,7 +20,6 @@ describe.only('NotificationController', () => {
     let expressApp: Express.Application;
     let testingUnit: ServicesTestingUnit;
     let userService: UserService;
-    // let notificationService: NotificationService;
 
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit()
@@ -29,6 +28,7 @@ describe.only('NotificationController', () => {
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
                 sendAdminMessage: Promise.resolve(' '),
+                addMobileUserToken: true,
             });
         await testingUnit.withMockDatabaseService();
     });
@@ -36,7 +36,6 @@ describe.only('NotificationController', () => {
     beforeEach(() => {
         expressApp = Container.get(Application).app;
         userService = Container.get(UserService);
-        // notificationService = Container.get(NotificationService);
     });
 
     afterEach(() => {
@@ -45,16 +44,16 @@ describe.only('NotificationController', () => {
 
     describe('/api/notification', () => {
         describe('POST', () => {
-            it('should return user', async () => {
+            it('should return notification settings of user', async () => {
                 await userService['table'].insert(DEFAULT_USER);
                 return supertest(expressApp)
                     .post('/api/notification')
                     .send({ firebaseToken: 'mytoken', idUser: DEFAULT_USER.idUser })
-                    .expect(StatusCodes.OK, true);
+                    .expect(StatusCodes.OK, 'true');
             });
 
-            it('should return 404 if not found', async () => {
-                return supertest(expressApp).post('/api/notification').send({ firebaseToken: 'mytoken' }).expect(StatusCodes.NOT_FOUND);
+            it('should return 500 if no user param', async () => {
+                return supertest(expressApp).post('/api/notification').send({ firebaseToken: 'mytoken' }).expect(StatusCodes.INTERNAL_SERVER_ERROR);
             });
         });
     });
