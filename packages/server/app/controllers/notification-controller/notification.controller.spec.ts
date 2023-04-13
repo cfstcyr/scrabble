@@ -29,6 +29,7 @@ describe.only('NotificationController', () => {
                 initalizeAdminApp: undefined,
                 sendAdminMessage: Promise.resolve(' '),
                 addMobileUserToken: true,
+                toggleNotifications: false,
             });
         await testingUnit.withMockDatabaseService();
     });
@@ -54,6 +55,14 @@ describe.only('NotificationController', () => {
 
             it('should return 500 if no user param', async () => {
                 return supertest(expressApp).post('/api/notification').send({ firebaseToken: 'mytoken' }).expect(StatusCodes.INTERNAL_SERVER_ERROR);
+            });
+        });
+    });
+
+    describe('/api/notification/toggle', () => {
+        describe('POST', () => {
+            it('should return false', async () => {
+                return supertest(expressApp).post('/api/notification/toggle').send({ idUser: DEFAULT_USER.idUser }).expect(StatusCodes.OK, 'false');
             });
         });
     });
