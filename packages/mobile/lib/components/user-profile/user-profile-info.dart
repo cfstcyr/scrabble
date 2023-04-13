@@ -56,8 +56,10 @@ class UserProfileInfo extends StatelessWidget {
                 ? Column(
                     children: [
                       AppButton(
-                        onPressed: () =>
-                            Navigator.pushNamed(context, PROFILE_EDIT_ROUTE),
+                        onPressed: () {
+                          Navigator.popAndPushNamed(
+                              context, PROFILE_EDIT_ROUTE);
+                        },
                         icon: Icons.manage_accounts_rounded,
                       ),
                       StreamBuilder<bool>(
