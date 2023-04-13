@@ -63,4 +63,8 @@ class Multiplier {
       type: MultiplierType.fromJson(json['multiplierEffect']),
     );
   }
+
+  Multiplier copy() {
+    return Multiplier(value: value, type: type);
+  }
 }

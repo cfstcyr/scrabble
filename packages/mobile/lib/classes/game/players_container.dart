@@ -1,8 +1,8 @@
 import 'package:mobile/classes/game/player.dart';
-import 'package:mobile/classes/player/player-data.dart';
 import 'package:mobile/components/error-pop-up.dart';
 import 'package:mobile/constants/create-lobby-constants.dart';
 import 'package:mobile/routes/navigator-key.dart';
+import 'package:mobile/view-methods/create-lobby-methods.dart';
 
 import '../../constants/erros/game-errors.dart';
 
@@ -41,9 +41,18 @@ class PlayersContainer {
     throw Exception(INVALID_PLAYER_INDEX);
   }
 
+  Player getPlayerByName(String username) {
+    return players.firstWhere((player) => player.user.username == username);
+  }
+
   List<Player> get players => [player1, player2, player3, player4];
 
+  setLocalPlayer(int playerNumber) {
+    localPlayerId = getPlayer(playerNumber).socketId;
+  }
+
   Player getLocalPlayer() {
+    if (userService.isObserver) return player1;
     if (localPlayerId == null) {
       errorSnackBar(navigatorKey.currentContext!, NO_LOCAL_PLAYER_DEFINED);
     }

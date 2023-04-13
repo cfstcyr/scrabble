@@ -9,6 +9,7 @@ import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Subject } from 'rxjs';
+import { MatDialogModule } from '@angular/material/dialog';
 
 export default {
     title: 'Game/Tile rack',
@@ -16,7 +17,15 @@ export default {
     decorators: [
         moduleMetadata({
             declarations: [IconComponent, TileComponent],
-            imports: [InitializedGameStoriesModule, MatCardModule, MatTooltipModule, MatButtonModule, DragDropModule, BrowserAnimationsModule],
+            imports: [
+                InitializedGameStoriesModule,
+                MatCardModule,
+                MatTooltipModule,
+                MatButtonModule,
+                DragDropModule,
+                BrowserAnimationsModule,
+                MatDialogModule,
+            ],
         }),
     ],
 } as Meta;
@@ -32,3 +41,7 @@ const template: Story<TileRackComponent> = (args: TileRackComponent) => {
 };
 
 export const primary = template.bind({});
+
+primary.args = {
+    allowExchange: true,
+};

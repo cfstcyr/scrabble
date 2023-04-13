@@ -22,3 +22,20 @@ export interface PuzzleResult {
 }
 
 export type PuzzleResultSolution = Pick<PuzzleResult, 'targetPlacement' | 'allPlacements'>;
+
+
+export interface DailyPuzzleResult {
+    username: string;
+    avatar: string;
+    score: number;
+}
+
+export interface DailyPuzzleLeaderboard {
+    leaderboard: DailyPuzzleResult[];
+    userScore: number;
+    userRank: number;
+    totalPlayers: number;
+}
+
+export const PUZZLE_ABANDONED_OR_FAILED = -1;
+export const PUZZLE_NOT_COMPLETED = -2;

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { matchValidator, PASSWORD_REGEX } from '@app/constants/authentification-constants';
-import { AVATARS } from '@app/constants/avatar-constants';
+import { EMAIL_MAX_LENGTH, matchValidator, PASSWORD_MAX_LENGTH, PASSWORD_REGEX } from '@app/constants/authentification-constants';
+import { AVATARS, UPLOADCARE_PUBLIC_KEY } from '@app/constants/avatar-constants';
 import { NAME_VALIDATION } from '@app/constants/name-validation';
 import { UserSignupInformation } from '@common/models/user';
 
@@ -20,6 +20,7 @@ export class SignupContainerComponent implements OnChanges {
 
     signupForm: FormGroup;
     arePasswordsShown: boolean = false;
+    apiKey = UPLOADCARE_PUBLIC_KEY;
 
     private hasBeenSubmitted: boolean = false;
 
@@ -33,13 +34,23 @@ export class SignupContainerComponent implements OnChanges {
                     Validators.pattern(NAME_VALIDATION.rule),
                     this.usernameTakenValidator(),
                 ]),
-                email: new FormControl('', [Validators.required, Validators.email, this.emailTakenValidator()]),
-                password: new FormControl('', [Validators.required, Validators.pattern(PASSWORD_REGEX)]),
+                email: new FormControl('', [
+                    Validators.required,
+                    Validators.email,
+                    Validators.maxLength(EMAIL_MAX_LENGTH),
+                    this.emailTakenValidator(),
+                ]),
+                password: new FormControl('', [Validators.required, Validators.maxLength(PASSWORD_MAX_LENGTH), Validators.pattern(PASSWORD_REGEX)]),
                 confirmPassword: new FormControl('', [Validators.required, this.fieldMatchValidator()]),
                 avatar: new FormControl('', [Validators.required]),
             },
             [matchValidator('password', 'confirmPassword')],
         );
+    }
+
+    get avatarControl(): FormControl {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.signupForm.controls.avatar! as FormControl;
     }
 
     ngOnChanges(): void {
@@ -77,6 +88,11 @@ export class SignupContainerComponent implements OnChanges {
     handleUsernameLoseFocus(): void {
         if (this.signupForm.get('username')?.invalid && !this.signupForm.get('username')?.errors?.usernameTaken) return;
         this.checkUsernameUnicity.next(this.signupForm.get('username')?.value);
+    }
+
+    handlePasswordLoseFocus(): void {
+        this.signupForm.controls.password?.updateValueAndValidity();
+        this.signupForm.controls.confirmPassword?.updateValueAndValidity();
     }
 
     private fieldMatchValidator(): ValidatorFn {

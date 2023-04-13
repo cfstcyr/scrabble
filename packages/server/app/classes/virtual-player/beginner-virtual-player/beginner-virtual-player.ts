@@ -17,9 +17,15 @@ import {
     MINIMUM_TILES_LEFT_FOR_EXCHANGE,
     PLACE_ACTION_THRESHOLD,
 } from '@app/constants/virtual-player-constants';
+import { BEGINNER_PLAYER_RATING } from '@app/services/active-game-service/active-game.service';
 import { Random } from '@app/utils/random/random';
 
 export class BeginnerVirtualPlayer extends AbstractVirtualPlayer {
+    constructor(gameId: string, name: string, avatar: string = '') {
+        super(gameId, name, avatar);
+        this.initialRating = BEGINNER_PLAYER_RATING;
+        this.adjustedRating = BEGINNER_PLAYER_RATING;
+    }
     protected isExchangePossible(): boolean {
         const totalTilesLeft = this.getActiveGameService().getGame(this.gameId, this.id).getTotalTilesLeft();
         return totalTilesLeft >= MINIMUM_TILES_LEFT_FOR_EXCHANGE;

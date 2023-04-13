@@ -20,6 +20,9 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import { PlayerLeavesService } from '@app/services/player-leave-service/player-leave.service';
 import { ReconnectionService } from '@app/services/reconnection-service/reconnection.service';
 import { Subject } from 'rxjs';
+import { AlertService } from '@app/services/alert-service/alert.service';
+import { OBSERVER_HELP_DELAY, OBSERVER_HELP_MESSAGE } from '@app/constants/game-constants';
+import { SoundName, SoundService } from '@app/services/sound-service/sound.service';
 
 @Component({
     selector: 'app-observer-game-page',
@@ -28,6 +31,7 @@ import { Subject } from 'rxjs';
 })
 export class ObserverGamePageComponent implements OnInit, OnDestroy {
     @ViewChild(TileRackComponent, { static: false }) tileRackComponent: TileRackComponent;
+    private hasChangedPlayer: boolean = false;
 
     private mustDisconnectGameOnLeave: boolean;
     private componentDestroyed$: Subject<boolean>;
@@ -39,6 +43,8 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
         public surrenderDialog: MatDialog,
         private gameViewEventManagerService: GameViewEventManagerService,
         private playerLeavesService: PlayerLeavesService,
+        private readonly alertService: AlertService,
+        private readonly soundService: SoundService,
     ) {
         this.mustDisconnectGameOnLeave = true;
         this.componentDestroyed$ = new Subject();
@@ -61,9 +67,13 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
         if (!this.gameService.getGameId()) {
             this.reconnectionService.reconnectGame();
         }
+
+        setTimeout(() => {
+            if (!this.hasChangedPlayer) this.alertService.info(OBSERVER_HELP_MESSAGE);
+        }, OBSERVER_HELP_DELAY);
     }
 
-    quitButtonClicked(): void {
+    handleQuitButtonClick(): void {
         const title = DIALOG_QUIT_TITLE;
         const content = DIALOG_QUIT_CONTENT;
         const buttonsContent = [DIALOG_QUIT_BUTTON_CONFIRM, DIALOG_QUIT_STAY];
@@ -71,7 +81,12 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     }
 
     changeObservingPlayer(playerNumber: number): void {
+        this.hasChangedPlayer = true;
         this.gameService.setLocalPlayer(playerNumber);
+    }
+
+    getObservingPlayerId(): string | undefined {
+        return this.gameService.getLocalPlayerId();
     }
 
     private openDialog(title: string, content: string, buttonsContent: string[]): void {
@@ -121,6 +136,8 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     }
 
     private endOfGameDialog(winnerNames: string[]): void {
+        this.soundService.playSound(SoundName.EndGameSound);
+
         this.dialog.open(DefaultDialogComponent, {
             data: {
                 title: DIALOG_END_OF_GAME_OBSERVER_TITLE,

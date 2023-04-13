@@ -15,6 +15,7 @@ import BoardService from '@app/services/board-service/board.service';
 import { comparePlacements, comparePositions } from '@app/utils/comparator/comparator';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { SoundName, SoundService } from '@app/services/sound-service/sound.service';
 
 @Injectable({
     providedIn: 'root',
@@ -24,7 +25,7 @@ export class TilePlacementService {
     private tilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private isPlacementValidSubject$: BehaviorSubject<boolean>;
 
-    constructor(private readonly boardService: BoardService, private readonly dialog: MatDialog) {
+    constructor(private readonly boardService: BoardService, private readonly dialog: MatDialog, private soundService: SoundService) {
         this.blankTileModalOpened$ = new BehaviorSubject<boolean>(false);
         this.tilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
         this.isPlacementValidSubject$ = new BehaviorSubject<boolean>(false);
@@ -48,13 +49,20 @@ export class TilePlacementService {
         return this.isPlacementValidSubject$.value && !this.blankTileModalOpened$.value;
     }
 
-    placeTile(tilePlacement: TilePlacement): void {
+    placeTile(tilePlacement: TilePlacement, skipAskBlank: boolean = false): void {
+        this.soundService.playSound(SoundName.TilePlacementSound);
         if (tilePlacement.tile.isBlank || tilePlacement.tile.letter === '*') {
-            this.askFillBlankLetter((letter) => {
-                tilePlacement.tile.playedLetter = letter as LetterValue;
+            if (skipAskBlank) {
+                if (tilePlacement.tile.playedLetter === undefined) throw new Error('Blank tile must have a letter');
                 this.tilePlacementsSubject$.next([...this.tilePlacementsSubject$.value, tilePlacement]);
                 this.updatePlacement();
-            });
+            } else {
+                this.askFillBlankLetter((letter) => {
+                    tilePlacement.tile.playedLetter = letter as LetterValue;
+                    this.tilePlacementsSubject$.next([...this.tilePlacementsSubject$.value, tilePlacement]);
+                    this.updatePlacement();
+                });
+            }
         } else {
             this.tilePlacementsSubject$.next([...this.tilePlacementsSubject$.value, tilePlacement]);
             this.updatePlacement();
@@ -62,6 +70,8 @@ export class TilePlacementService {
     }
 
     moveTile(tilePlacement: TilePlacement, previousPosition: Position): void {
+        this.soundService.playSound(SoundName.TilePlacementSound);
+
         const placements = [...this.tilePlacements];
         const previousPlacement: TilePlacement = { ...tilePlacement, position: previousPosition };
 

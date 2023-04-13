@@ -1,11 +1,16 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:mobile/classes/game/game-config.dart';
 import 'package:mobile/classes/group.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../components/alert-dialog.dart';
+import '../components/app_button.dart';
 import '../constants/create-lobby-constants.dart';
+import '../constants/join-group.constants.dart';
+import '../routes/routes.dart';
 
 BehaviorSubject<List<Group>> groups$ = BehaviorSubject.seeded([]);
 
@@ -40,3 +45,47 @@ Stream<bool> get fullGroupStream => fullGroup$.stream;
 
 Subject<bool> leftGroup$ = PublishSubject();
 Stream<bool> get leftGroupStream => leftGroup$.stream;
+void handleCanceledGame(PublicUser host, BuildContext context) {
+  Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
+  Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+
+  triggerDialogBox(GAME_CANCELED, [
+    Text("${host.username} a annulé la partie")
+  ], [
+    DialogBoxButtonParameters(
+      content: 'OK',
+      closesDialog: true,
+      theme: AppButtonTheme.primary,
+    )
+  ]);
+}
+
+void handleFullGroup(bool isFull, context) {
+  Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
+  Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+
+  triggerDialogBox(GAME_STARTED, [
+    Text(GAME_STARTED_MESSAGE)
+  ], [
+    DialogBoxButtonParameters(
+      closesDialog: true,
+      content: 'OK',
+      theme: AppButtonTheme.primary,
+    )
+  ]);
+}
+
+void handleGameStarted(PublicUser host, context) {
+  Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
+  Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
+
+  triggerDialogBox(GAME_STARTED, [
+    Text(GAME_STARTED_MESSAGE)
+  ], [
+    DialogBoxButtonParameters(
+      content: 'OK',
+      closesDialog: true,
+      theme: AppButtonTheme.primary,
+    ),
+  ]);
+}

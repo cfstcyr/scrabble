@@ -2,21 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/image.dart';
+import 'package:mobile/components/puzzle/start-practice-puzzle-dialog.dart';
 import 'package:mobile/components/puzzle/start-puzzle-dialog.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/routes/routes.dart';
+import 'package:mobile/services/theme-color-service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/home-page.constants.dart';
 import '../constants/login-constants.dart';
+import '../locator.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
-      title: "Home",
+      title: "Accueil",
       body: Container(
         constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
@@ -31,7 +34,11 @@ class HomePage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 100, bottom: 80),
                 child: AppImage(
-                  src: LOGO_PATH,
+                  src: getIt
+                      .get<ThemeColorService>()
+                      .themeDetails
+                      .value
+                      .logoPath,
                   height: 100,
                 ),
               ),
@@ -63,7 +70,16 @@ class HomePage extends StatelessWidget {
                         _handleStartPuzzle(context);
                       },
                       size: AppButtonSize.large,
-                      child: Text(START_PUZZLE_MESSAGE,
+                      child: Text(PUZZLE_TITLE,
+                          style: TextStyle(color: Colors.white, fontSize: 18)),
+                    ),
+                    SizedBox(height: 10),
+                    AppButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, LEADERBOARD_ROUTE);
+                      },
+                      size: AppButtonSize.large,
+                      child: Text(LEADERBOARD_MESSAGE,
                           style: TextStyle(color: Colors.white, fontSize: 18)),
                     ),
                   ],

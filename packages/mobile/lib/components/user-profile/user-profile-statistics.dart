@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/locator.dart';
-import 'package:mobile/services/user.service.dart';
+
+import '../../classes/user.dart';
 
 class UserProfileStatisticsItem extends StatelessWidget {
   final String title;
@@ -31,42 +31,50 @@ class UserProfileStatisticsItem extends StatelessWidget {
 }
 
 class UserProfileStatistics extends StatelessWidget {
-  final UserService _userService = getIt.get<UserService>();
+  UserProfileStatistics({required this.statistics});
+
+  final UserStatistics? statistics;
 
   @override
   Widget build(BuildContext context) {
     return Card(
-        child: Padding(
-      padding: EdgeInsets.all(SPACE_3),
-      child: FutureBuilder(
-          future: _userService.getUserStatistics(),
-          builder: (context, snapshot) => snapshot.hasData
+      child: Padding(
+          padding: EdgeInsets.all(SPACE_3),
+          child: statistics != null
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Parties jouées",
-                            value: "${snapshot.data?.gamesPlayedCount ?? 0}")),
+                            title: "CLASSEMENT ELO",
+                            value: "${statistics!.rating.round()}")),
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Parties gagnées",
-                            value: "${snapshot.data?.gamesWonCount ?? 0}")),
+                            title: "PARTIES JOUÉES",
+                            value: "${statistics!.gamesPlayedCount}")),
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Moyenne de points",
+                            title: "PARTIES GAGNÉES",
+                            value: "${statistics!.gamesWonCount}")),
+                    Expanded(
+                        child: UserProfileStatisticsItem(
+                            title: "MOYENNE DE POINTS",
                             value:
-                                "${(snapshot.data?.averagePointsPerGame ?? 0).round()} pts")),
+                                "${(statistics!.averagePointsPerGame).round()} pts")),
                     Expanded(
                         child: UserProfileStatisticsItem(
-                            title: "Temps moyen",
-                            value:
-                                "${(snapshot.data?.averageTimePerGame ?? 0).round()} s")),
+                            title: "TEMPS MOYEN",
+                            value: handleTimeString(
+                                statistics!.averageTimePerGame))),
                   ],
                 )
-              : snapshot.hasError
-                  ? Text('Impossible de charger les statistiques')
-                  : Container()),
-    ));
+              : Text('Impossible de charger les statistiques')),
+    );
   }
+}
+
+String handleTimeString(double time) {
+  int timeInSec = (time % 60).round();
+  int timeInMin = ((time - timeInSec) / 60).round();
+  return timeInMin != 0 ? "$timeInMin min $timeInSec s" : "$timeInSec s";
 }

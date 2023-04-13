@@ -9,20 +9,25 @@ import { GameHistoryForUser } from '@common/models/game-history';
 import { PublicServerAction } from '@common/models/server-action';
 import { PublicUser } from '@common/models/user';
 import { PublicUserStatistics } from '@common/models/user-statistics';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { UserProfilePageComponent } from './user-profile-page.component';
 
 describe('UserProfilePageComponent', () => {
     let component: UserProfilePageComponent;
     let fixture: ComponentFixture<UserProfilePageComponent>;
-    const userService = jasmine.createSpyObj(UserService, ['updateStatistics', 'updateGameHistory', 'updateServerActions']);
+    const userService = jasmine.createSpyObj('UserService', ['updateStatistics', 'updateGameHistory', 'updateServerActions', 'updateAchievements'], {
+        achievements: new Subject(),
+    });
     userService.user = new BehaviorSubject<PublicUser>({ email: '1@2', avatar: '', username: 'John Doe' });
     userService.statistics = new BehaviorSubject<PublicUserStatistics>({
         gamesPlayedCount: 1,
         gamesWonCount: 1,
         averageTimePerGame: 1,
         averagePointsPerGame: 1,
+        rating: 1,
+        ratingMax: 1,
+        bingoCount: 0,
     });
     userService.gameHistory = new BehaviorSubject<GameHistoryForUser[]>([]);
     userService.serverActions = new BehaviorSubject<PublicServerAction[]>([]);

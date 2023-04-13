@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
@@ -14,30 +15,24 @@ import { Orientation } from '@common/models/position';
 import { BehaviorSubject, iif, Observable, of, timer } from 'rxjs';
 import { catchError, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
-import {
-    PuzzleLevel,
-    StartPuzzleModalComponent,
-    StartPuzzleModalParameters,
-} from '@app/components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
+import { PuzzleLevel } from '@app/components/puzzle/start-puzzle-modal/start-puzzle-modal.component';
 import { puzzleSettings } from '@app/utils/settings';
-import { Router } from '@angular/router';
-import { ROUTE_HOME } from '@app/constants/routes-constants';
-import { ENTER, ESCAPE } from '@app/constants/components-constants';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ROUTE_PUZZLE_HOME } from '@app/constants/routes-constants';
+import { BACKSPACE, ENTER, ESCAPE } from '@app/constants/components-constants';
 import { PuzzleResultModalComponent, PuzzleResultModalParameters } from '@app/components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
 import { WordPlacement } from '@common/models/word-finding';
 import { PuzzleResult } from '@common/models/puzzle';
 import { DefaultDialogComponent } from '@app/components/default-dialog/default-dialog.component';
 import { DefaultDialogParameters } from '@app/components/default-dialog/default-dialog.component.types';
 import {
-    ABANDON_PUZZLE_DIALOG_BUTTON_ABANDON,
-    ABANDON_PUZZLE_DIALOG_BUTTON_CONTINUE,
-    ABANDON_PUZZLE_DIALOG_CONTENT,
-    ABANDON_PUZZLE_DIALOG_TITLE,
     PUZZLE_ERROR_DIALOG_BUTTON_CONTINUE,
     PUZZLE_ERROR_DIALOG_BUTTON_GO_HOME,
     PUZZLE_ERROR_DIALOG_CONTENT,
     PUZZLE_ERROR_DIALOG_TITLE,
 } from '@app/constants/puzzle-constants';
+import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
+import { LOW_TIME, SoundName, SoundService } from '@app/services/sound-service/sound.service';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
@@ -47,6 +42,7 @@ export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
     styleUrls: ['./puzzle-page.component.scss'],
 })
 export class PuzzlePageComponent implements OnInit {
+    isDailyPuzzle: boolean = false;
     history: PuzzleResult[] = [];
     startGrid: SquareView[][];
     grid: BehaviorSubject<SquareView[][]> = new BehaviorSubject<SquareView[][]>([]);
@@ -64,6 +60,9 @@ export class PuzzlePageComponent implements OnInit {
         private readonly boardService: BoardService,
         private readonly dialog: MatDialog,
         private readonly router: Router,
+        private readonly boardCursorService: BoardCursorService,
+        private readonly soundService: SoundService,
+        private readonly route: ActivatedRoute,
     ) {}
 
     get stopPlaying(): Observable<boolean> {
@@ -72,15 +71,29 @@ export class PuzzlePageComponent implements OnInit {
 
     @HostListener('document:keypress', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent): void {
-        switch (event.key) {
-            case ENTER:
-                this.play();
-                break;
+        if (event.key.length === 1 && event.key.toLowerCase() >= 'a' && event.key.toLowerCase() <= 'z') {
+            this.boardCursorService.handleLetter(event.key, event.shiftKey);
+        } else {
+            switch (event.key) {
+                case BACKSPACE:
+                    this.boardCursorService.handleBackspace();
+                    break;
+                case ENTER:
+                    this.play();
+                    break;
+            }
         }
     }
+
     @HostListener('document:keydown.escape', ['$event'])
     handleKeyboardEventEsc(): void {
+        this.boardCursorService.clear();
         this.tilePlacementService.resetTiles();
+    }
+
+    @HostListener('document:keydown.backspace', ['$event'])
+    handleBackspaceEventEvent(): void {
+        this.boardCursorService.handleBackspace();
     }
 
     ngOnInit(): void {
@@ -89,24 +102,24 @@ export class PuzzlePageComponent implements OnInit {
 
         this.tilePlacementService.tilePlacements$.subscribe((tilePlacements) => this.handleUsedTiles(tilePlacements));
 
+        this.route.data.subscribe((data) => (this.isDailyPuzzle = data.isDaily));
+
         this.askStart();
     }
 
     askStart(): void {
-        this.dialog.open<StartPuzzleModalComponent, Partial<StartPuzzleModalParameters>>(StartPuzzleModalComponent, {
-            disableClose: true,
-            data: {
-                onStart: (level) => {
-                    this.start(level.time);
-                    this.level = level;
-                    puzzleSettings.setTime(level.time);
-                },
-                onCancel: () => {
-                    this.router.navigate([ROUTE_HOME]);
-                },
-                defaultTime: puzzleSettings.getTime(),
+        this.puzzleService.askToStart(
+            (level) => {
+                this.start(level.time);
+                this.level = level;
+                puzzleSettings.setTime(level.time);
             },
-        });
+            () => {
+                this.router.navigate([ROUTE_PUZZLE_HOME]);
+            },
+            puzzleSettings.getTime(),
+            this.isDailyPuzzle,
+        );
     }
 
     start(time: number): void {
@@ -115,7 +128,7 @@ export class PuzzlePageComponent implements OnInit {
         this.dragAndDropService.reset();
         this.clearNotAppliedSquares();
 
-        this.puzzleService.start().subscribe((puzzle) => {
+        (this.isDailyPuzzle ? this.puzzleService.startDaily() : this.puzzleService.start()).subscribe((puzzle) => {
             const grid = puzzle.board.grid.map((row) => row.map((square) => new SquareView({ ...square }, SQUARE_SIZE)));
             this.startGrid = puzzle.board.grid.map((row) => row.map((square) => new SquareView({ ...square }, SQUARE_SIZE)));
 
@@ -123,6 +136,8 @@ export class PuzzlePageComponent implements OnInit {
 
             this.grid.next(grid);
             this.tiles.next(puzzle.tiles.map((tile) => ({ ...tile, isUsed: false, isSelected: false })));
+
+            this.boardCursorService.initialize(this.grid, () => this.tiles.value);
         });
 
         this.startTimer(time);
@@ -130,6 +145,7 @@ export class PuzzlePageComponent implements OnInit {
 
     cancelPlacement(): void {
         this.tilePlacementService.resetTiles();
+        this.boardCursorService.clear();
     }
 
     canCancelPlacement(): Observable<boolean> {
@@ -174,43 +190,23 @@ export class PuzzlePageComponent implements OnInit {
     }
 
     abandon(): void {
-        this.dialog.open<DefaultDialogComponent, DefaultDialogParameters>(DefaultDialogComponent, {
-            data: {
-                title: ABANDON_PUZZLE_DIALOG_TITLE,
-                content: ABANDON_PUZZLE_DIALOG_CONTENT,
-                buttons: [
-                    {
-                        content: ABANDON_PUZZLE_DIALOG_BUTTON_CONTINUE,
-                        closeDialog: true,
-                        key: ESCAPE,
-                    },
-                    {
-                        content: ABANDON_PUZZLE_DIALOG_BUTTON_ABANDON,
-                        style: 'background-color: tomato; color: white;',
-                        closeDialog: true,
-                        key: ENTER,
-                        action: () => {
-                            this.tilePlacementService.resetTiles();
-                            this.stopPuzzle();
+        this.puzzleService.askToAbandon(() => {
+            this.stopPuzzle();
 
-                            this.puzzleService
-                                .abandon()
-                                .pipe(
-                                    catchError(() => {
-                                        this.showErrorModal();
-                                        return of(null);
-                                    }),
-                                )
-                                .subscribe((result) => {
-                                    if (result) {
-                                        this.history.push(result);
-                                        this.showEndOfPuzzleModal(result, undefined);
-                                    }
-                                });
-                        },
-                    },
-                ],
-            },
+            this.puzzleService
+                .abandon()
+                .pipe(
+                    catchError(() => {
+                        this.showErrorModal();
+                        return of(null);
+                    }),
+                )
+                .subscribe((result) => {
+                    if (result) {
+                        this.history.push(result);
+                        this.showEndOfPuzzleModal(result, undefined);
+                    }
+                });
         });
     }
 
@@ -255,6 +251,10 @@ export class PuzzlePageComponent implements OnInit {
         this.timer = undefined;
     }
 
+    handleSquareClick(square: SquareView): void {
+        this.boardCursorService.handleSquareClick(square);
+    }
+
     private startTimer(time: number): void {
         this.timer = Timer.convertTime(time);
 
@@ -263,7 +263,12 @@ export class PuzzlePageComponent implements OnInit {
             .subscribe(() => this.timeout());
         timer(0, SECONDS_TO_MILLISECONDS)
             .pipe(takeUntil(this.stopPlaying))
-            .subscribe(() => this.timer?.decrement());
+            .subscribe(() => {
+                this.timer?.decrement();
+                if (this.timer?.getTime() === LOW_TIME) {
+                    this.soundService.playSound(SoundName.LowTimeSound);
+                }
+            });
     }
 
     private showEndOfPuzzleModal(result: PuzzleResult, placement: WordPlacement | undefined) {
@@ -276,10 +281,18 @@ export class PuzzlePageComponent implements OnInit {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 level: this.level!,
                 onCancel: () => {
-                    this.router.navigate([ROUTE_HOME]);
+                    this.router.navigate([ROUTE_PUZZLE_HOME]);
                 },
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                onContinue: () => this.start(this.level!.time),
+
+                onContinue: () => {
+                    if (this.isDailyPuzzle) {
+                        this.router.navigate([ROUTE_PUZZLE_HOME]);
+                    } else {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        this.start(this.level!.time);
+                    }
+                },
+                hideContinueButton: this.isDailyPuzzle,
             },
         });
     }
@@ -296,7 +309,7 @@ export class PuzzlePageComponent implements OnInit {
                         key: ESCAPE,
                         closeDialog: true,
                         action: () => {
-                            this.router.navigate([ROUTE_HOME]);
+                            this.router.navigate([ROUTE_PUZZLE_HOME]);
                         },
                     },
                     {

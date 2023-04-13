@@ -23,6 +23,7 @@ export class UserProfileEditDialogComponent implements OnInit {
     avatars = AVATARS;
     isUsernameTaken: boolean;
     lastUsernameValue: string;
+    initialUsernameValue: string;
 
     constructor(
         private readonly dialogRef: MatDialogRef<UserProfileEditDialogComponent>,
@@ -31,6 +32,7 @@ export class UserProfileEditDialogComponent implements OnInit {
         private readonly alertService: AlertService,
     ) {
         this.isUsernameTaken = false;
+        this.initialUsernameValue = this.initialValues.username ?? '';
 
         this.form = new FormGroup({
             username: new FormControl(this.initialValues.username, [
@@ -49,7 +51,7 @@ export class UserProfileEditDialogComponent implements OnInit {
         return this.form.get('username')! as FormControl;
     }
 
-    get avatar(): FormControl {
+    get avatarField(): FormControl {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.form.get('avatar')! as FormControl;
     }
@@ -59,6 +61,11 @@ export class UserProfileEditDialogComponent implements OnInit {
             if (this.username.value === this.lastUsernameValue) return;
             this.lastUsernameValue = this.username.value;
 
+            if (this.initialUsernameValue === this.username.value) {
+                this.isUsernameTaken = false;
+                this.username.updateValueAndValidity();
+                return;
+            }
             this.userValidatorService.validateUsername(this.username.value).subscribe(
                 (isAvailable) => {
                     this.isUsernameTaken = !isAvailable;
@@ -71,12 +78,16 @@ export class UserProfileEditDialogComponent implements OnInit {
         });
     }
 
+    isFormInvalid(): boolean {
+        return this.form.invalid;
+    }
+
     onSubmit(): void {
         if (this.form.invalid) return;
 
         const edits: EditableUserFields = {
             username: this.username.value,
-            avatar: this.avatar.value,
+            avatar: this.avatarField.value,
         };
         this.dialogRef.close(edits);
     }

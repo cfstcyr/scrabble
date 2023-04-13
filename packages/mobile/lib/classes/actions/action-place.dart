@@ -13,11 +13,11 @@ class ActionPlacePayload extends ActionPayload {
 
   ActionPlacePayload.fromJson(Map<String, dynamic> json)
       : super.fromJson(json) {
-    tiles = (json['tiles'] as List<Map<String, dynamic>>)
+    tiles = (json['tilesToPlace'] as List<dynamic>)
         .map((tile) => Tile(
             letter: tile['letter'],
             value: tile['value'],
-            isWildcard: tile['isBlank'],
+            isWildcard: tile['isBlank'] ?? false,
             playedLetter: tile['playedLetter']))
         .toList();
     position =

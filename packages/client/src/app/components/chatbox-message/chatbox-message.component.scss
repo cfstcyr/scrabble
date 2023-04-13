@@ -1,4 +1,5 @@
 @import '../../style/variables.scss';
+@import '../../style/utils.scss';
 
 .chatbox-message {
     &__content {
@@ -24,7 +25,7 @@
                 height: 100%;
                 justify-content: center;
                 align-items: center;
-                
+
                 &::after {
                     content: "Aucun message pour le moment";
                     opacity: 0.35;
@@ -41,12 +42,14 @@
         gap: 4px;
 
         &__username {
+            @include no-select;
             margin: 0;
             font-size: 0.75em;
             opacity: 0.55;
         }
 
         &__time {
+            @include no-select;
             margin: 0;
             font-size: 0.75em;
             opacity: 0.55;
@@ -62,6 +65,7 @@
         &__avatar {
             $size: 20px;
 
+            @include no-select;
             height: $size;
             width: $size;
             border-radius: $size / 2;
@@ -91,20 +95,20 @@
 
             .chatbox-message__message {
                 text-align: right;
-                background-color: $primary;
+                background-color: rgb(var(--primary));
                 color: white;
                 border-top-left-radius: $border-radius-l;
                 border-bottom-left-radius: $border-radius-l;
 
                 &__outer {
                     &:first-child {
-                        .chatbox-message__message { 
+                        .chatbox-message__message {
                             border-top-right-radius: $border-radius-l;
                         }
                     }
-                        
+
                     &:last-child {
-                        .chatbox-message__message { 
+                        .chatbox-message__message {
                             border-bottom-right-radius: $border-radius-l;
                         }
                     }
@@ -118,20 +122,20 @@
                     margin-left: $border-radius-l + 14px;
                 }
             }
-            
+
             .chatbox-message__message {
                 border-top-right-radius: $border-radius-l;
                 border-bottom-right-radius: $border-radius-l;
 
                 &__outer {
                     &:first-child {
-                        .chatbox-message__message { 
+                        .chatbox-message__message {
                             border-top-left-radius: $border-radius-l;
                         }
                     }
-                        
+
                     &:last-child {
-                        .chatbox-message__message { 
+                        .chatbox-message__message {
                             border-bottom-left-radius: $border-radius-l;
                         }
                     }
@@ -156,6 +160,7 @@
         font-size: 0.95em;
 
         &--only-emoji {
+            @include no-select;
             background-color: transparent !important;
             padding: 0 !important;
             border-radius: 0 !important;
@@ -215,6 +220,7 @@
         }
 
         &__button {
+            @include no-select;
             width: 40px;
         }
     }

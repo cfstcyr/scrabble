@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { SquareView } from '@app/classes/square';
 import { LETTER_VALUES } from '@app/constants/game-constants';
 import { Observable } from 'rxjs';
@@ -13,9 +13,20 @@ export class BoardComponent {
     @Input() grid: Observable<SquareView[][]>;
     @Input() canInteract: boolean = true;
     @Output() clearNewlyPlacedTiles: EventEmitter<void> = new EventEmitter();
+    @Output() onSquareClick: EventEmitter<SquareView> = new EventEmitter();
     letters = LETTER_VALUES;
+
+    @HostListener('document:click', ['$event'])
+    handleEnter(): void {
+        this.onSquareClick.emit(undefined);
+    }
 
     onBoardClick() {
         this.clearNewlyPlacedTiles.next();
+    }
+
+    squareClickHandler(e: MouseEvent, squareView: SquareView): void {
+        e.stopPropagation();
+        this.onSquareClick.emit(squareView);
     }
 }

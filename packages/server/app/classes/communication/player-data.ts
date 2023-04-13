@@ -1,11 +1,3 @@
-import { Tile } from '@app/classes/tile';
-import { PublicUser } from '@common/models/user';
+import { PlayerData as PublicPlayerData } from '@common/models/player';
 
-export interface PlayerData {
-    id: string;
-    newId?: string;
-    publicUser?: PublicUser;
-    score?: number;
-    tiles?: Tile[];
-    isConnected?: boolean;
-}
+export type PlayerData = PublicPlayerData;

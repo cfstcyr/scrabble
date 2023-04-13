@@ -1,12 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mobile/components/scaffold-persistance.dart';
-import 'package:mobile/pages/join-waiting-page.dart';
 import 'package:mobile/services/group-join.service.dart';
-import 'package:mobile/view-methods/group.methods.dart';
 
-import '../classes/group.dart';
 import '../components/group/group-selection.dart';
 import '../constants/locale/group-selection-constants.dart';
 import '../locator.dart';
@@ -27,10 +22,13 @@ class _GroupPageState extends State<GroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
+    ThemeData theme = Theme.of(context);
 
     return MyScaffold(
-        title: JOIN_GAME,
-        body: Center(child: GroupSelection()));
+      title: JOIN_GAME,
+      hasBackButton: true,
+      body: Center(child: GroupSelection()),
+      backgroundColor: theme.colorScheme.background,
+    );
   }
 }

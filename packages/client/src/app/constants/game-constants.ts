@@ -101,3 +101,6 @@ export const PLAYER_1_INDEX = 1;
 export const PLAYER_2_INDEX = 2;
 export const PLAYER_3_INDEX = 3;
 export const PLAYER_4_INDEX = 4;
+
+export const OBSERVER_HELP_DELAY = 15000;
+export const OBSERVER_HELP_MESSAGE = "Cliquez sur le nom d'un joueur pour observer sa partie";

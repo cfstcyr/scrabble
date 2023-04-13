@@ -17,6 +17,7 @@
             <div class='slide-info'>
                 <p class='slide-title'>Votre placement</p>
                 <p class='slide-points' *ngIf='placementPoints >= 0'>{{placementPoints}} pts</p>
+                <p class='slide-points' *ngIf='placementPoints < 0'> 0 pts</p>
             </div>
 
             <div class='board-container'>
@@ -38,6 +39,6 @@
 
     <div class='buttons'>
         <button mat-flat-button (click)='onCancel()'>Retour à l'accueil</button>
-        <button mat-flat-button color='primary' (click)='onContinue()'>Puzzle suivant</button>
+        <button mat-flat-button color='primary' (click)='onContinue()' *ngIf='!parameters.hideContinueButton'>Puzzle suivant</button>
     </div>
 </div>

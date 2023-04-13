@@ -13,6 +13,8 @@ import 'package:mobile/services/player-leave-service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../services/user.service.dart';
+
 class GameActions extends StatelessWidget {
   final GameService _gameService = getIt.get<GameService>();
   final ActionService _actionService = getIt.get<ActionService>();
@@ -40,19 +42,16 @@ class GameActions extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  StreamBuilder<bool>(
-                      stream: _endGameStream(),
-                      initialData: false,
-                      builder: (context, snapshot) {
-                        bool isOver = snapshot.hasData && snapshot.data!;
-                        return AppButton(
-                          onPressed: () =>
-                              isOver ? leave(context) : surrender(context),
-                          icon: isOver ? Icons.output_outlined : Icons.flag,
-                          size: AppButtonSize.large,
-                          theme: AppButtonTheme.danger,
-                        );
-                      }),
+                  AppButton(
+                    onPressed: () => getIt.get<UserService>().isObserver
+                        ? leave(context)
+                        : surrender(context),
+                    icon: getIt.get<UserService>().isObserver
+                        ? Icons.output_outlined
+                        : Icons.flag,
+                    size: AppButtonSize.large,
+                    theme: AppButtonTheme.danger,
+                  ),
                   StreamBuilder<bool>(
                       stream: _canPlayStream(),
                       initialData: false,
@@ -136,7 +135,8 @@ class GameActions extends StatelessWidget {
       bool isActionBeingProcessed = values[1];
       String activePlayerSocketId = values[2];
 
-      return _roundService.isActivePlayer(
+      return !getIt.get<UserService>().isObserver &&
+          _roundService.isActivePlayer(
               activePlayerSocketId, game.players.getLocalPlayer().socketId) &&
           !game.isOver &&
           !isActionBeingProcessed;
@@ -169,6 +169,7 @@ class GameActions extends StatelessWidget {
         [_canPlayStream(), game.board.isValidPlacementStream], (values) {
       bool canPlay = values[0];
       bool isValidPlacement = values[1];
+
       return canPlay && isValidPlacement;
     });
   }

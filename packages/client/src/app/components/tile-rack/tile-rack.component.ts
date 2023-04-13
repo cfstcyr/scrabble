@@ -15,18 +15,20 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { preserveArrayOrder } from '@app/utils/preserve-array-order/preserve-array-order';
 import { Random } from '@app/utils/random/random';
-import { Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
 @Component({
     selector: 'app-tile-rack',
     templateUrl: './tile-rack.component.html',
-    styleUrls: ['./tile-rack.component.scss', './tile-rack-2.component.scss'],
+    styleUrls: ['./tile-rack.component.scss'],
 })
 export class TileRackComponent extends FocusableComponent<KeyboardEvent> implements OnInit, OnDestroy {
     @Input() isObserver: boolean;
+    @Input() allowExchange: boolean = true;
 
     tiles: RackTile[];
     others: RackTile[];
@@ -44,6 +46,7 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
         private readonly actionService: ActionService,
         private readonly tilePlacementService: TilePlacementService,
         readonly dragAndDropService: DragAndDropService,
+        private readonly boardCusorService: BoardCursorService,
     ) {
         super();
         this.tiles = [];
@@ -53,6 +56,7 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
         this.tileFontSize = RACK_TILE_DEFAULT_FONT_SIZE;
         this.isShuffling = false;
         this.componentDestroyed$ = new Subject();
+        this.selectedTiles = [];
     }
 
     drop(event: CdkDragDrop<RackTile[]>) {
@@ -87,11 +91,13 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     }
 
     cancelPlacement(): void {
+        this.resetExchange();
         this.tilePlacementService.handleCancelPlacement();
+        this.boardCusorService.clear();
     }
 
-    canCancelPlacement(): Observable<boolean> {
-        return this.tilePlacementService.tilePlacements$.pipe(map((placements) => placements.length > 0));
+    canCancelPlacement(): boolean {
+        return this.tilePlacementService.tilePlacements.length > 0 || this.selectedTiles.length > 0;
     }
 
     focus(): void {
@@ -100,7 +106,6 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
 
     canExchangeTiles(): boolean {
         return (
-            this.selectionType === TileRackSelectType.Exchange &&
             this.selectedTiles.length > 0 &&
             this.gameService.isLocalPlayerPlaying() &&
             this.gameService.getTotalNumberOfTilesLeft() >= MAX_TILES_PER_PLAYER &&
@@ -111,12 +116,30 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
     exchangeTiles(): void {
         if (!this.canExchangeTiles()) return;
 
+        this.selectedTiles.forEach((tile) => (tile.isUsed = true));
+
         this.actionService.sendAction(
             this.gameService.getGameId(),
             this.actionService.createActionData(ActionType.EXCHANGE, this.actionService.createExchangeActionPayload(this.selectedTiles)),
         );
-        this.selectedTiles.forEach((tile) => (tile.isUsed = true));
+
         this.cancelPlacement();
+    }
+
+    onTileRightClick(tile: RackTile): boolean {
+        if (!this.allowExchange) return false;
+
+        const index = this.selectedTiles.indexOf(tile);
+
+        if (index >= 0) {
+            tile.isSelected = false;
+            this.selectedTiles.splice(index, 1);
+        } else {
+            this.selectedTiles.push(tile);
+            tile.isSelected = true;
+        }
+
+        return false;
     }
 
     async shuffleTiles(): Promise<void> {
@@ -134,6 +157,11 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
                 this.cancelPlacement();
                 break;
         }
+    }
+
+    private resetExchange(): void {
+        this.selectedTiles.forEach((tile) => (tile.isSelected = false));
+        this.selectedTiles = [];
     }
 
     private updateTileRack(playerId?: string): void {

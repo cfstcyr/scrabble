@@ -1,10 +1,5 @@
-import { Tile } from '@app/classes/tile';
-import { PublicUser } from '@common/models/user';
+import { PlayerData as PlayerDataCommon } from '@common/models/player';
 
-export default interface PlayerData {
-    id: string;
-    newId?: string;
-    publicUser?: PublicUser;
-    score?: number;
-    tiles?: Tile[];
-}
+type PlayerData = PlayerDataCommon;
+
+export default PlayerData;

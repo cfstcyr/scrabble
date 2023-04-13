@@ -1,3 +1,4 @@
+import 'package:mobile/classes/achievements.dart';
 import 'package:mobile/classes/game-history.dart';
 import 'package:mobile/classes/server-action.dart';
 import 'package:mobile/controllers/user-controller.dart';
@@ -11,6 +12,7 @@ const USER_NOT_INITIALIZED = "User not initialized";
 class UserService {
   UserService._privateConstructor();
   BehaviorSubject<PublicUser?> _user = BehaviorSubject<PublicUser?>();
+  late bool isObserver = false;
   static final UserService _instance = UserService._privateConstructor();
   factory UserService() {
     return _instance;
@@ -39,11 +41,27 @@ class UserService {
     return await _userController.getUserStatistics();
   }
 
+  Future<List<UserSearchItem>> searchUsers(String? query) async {
+    return await _userController.searchUsers(query);
+  }
+
+  Future<List<RatedUser>> requestRatingLeaderboard() async {
+    return await _userController.getRatingLeaderboard();
+  }
+
+  Future<UserSearchResult> getProfileByUsername(String username) async {
+    return await _userController.getProfileByUsername(username);
+  }
+
   Future<List<GameHistory>> getGameHistory() async {
     return await _userController.getGameHistory();
   }
 
   Future<List<ServerAction>> getServerActions() async {
     return await _userController.getServerActions();
+  }
+
+  Future<List<UserAchievement>> getAchievements() async {
+    return await _userController.getAchievements();
   }
 }

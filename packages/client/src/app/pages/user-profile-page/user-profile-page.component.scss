@@ -1,3 +1,8 @@
+::ng-deep mat-dialog-container.mat-dialog-container {
+    max-height: calc(100vh - 24px) !important;
+}
+
+
 .page {
     padding-top: 60px;
 
@@ -10,6 +15,8 @@
         gap: 16px;
     }
 
+
+
     .user-stats {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
@@ -17,6 +24,15 @@
         gap: 24px;
         flex-wrap: wrap;
         padding: 24px;
+    }
+
+    .achievements {
+        &__content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            justify-content: center;
+        }
     }
 
     .game-result {
@@ -42,6 +58,19 @@
             background-color: tomato;
             color: white;
         }
+    }
+
+    .analysis-status {
+        $size: 40px;
+        height: $size;
+        width: $size;
+        border-radius: $size;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 1em;
+        min-width: unset;
     }
 
     .table {

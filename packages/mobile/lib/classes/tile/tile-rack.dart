@@ -1,5 +1,6 @@
 import 'package:mobile/classes/actions/action-exchange.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/locator.dart';
@@ -36,8 +37,14 @@ class TileRack {
         .toList();
   }
 
-  TileRack setTiles(List<Tile> tiles) {
-    _tiles.add([...tiles]);
+  TileRack setTiles(List<Tile> tiles, {bool overrideState = true}) {
+    _tiles.add(overrideState
+        ? [
+            ...tiles
+                .map((t) => t.copy().withState(TileState.defaultState))
+                .toList()
+          ]
+        : [...tiles]);
     return this;
   }
 
@@ -50,32 +57,31 @@ class TileRack {
     List<Tile> tiles = _tiles.value;
 
     tiles.remove(tile);
-    _tiles.add([...tiles]);
+    setTiles(tiles);
     return this;
   }
 
-  placeTile(Tile tile, {int? to}) {
+  placeTile(Tile tile, {int? from, int? to}) {
     List<Tile> tiles = _tiles.value;
 
     if (to != null) {
-      int from = tiles.indexOf(tile);
-
-      if (from < 0) {
+      int computedFrom = from ?? tiles.indexOf(tile);
+      // If it was not in the tilerack
+      if (computedFrom < 0 || tile.state == TileState.notApplied) {
         // Add to tile rack
         tiles.insert(to + 1, tile);
       } else {
         // Move from within tile rack
-        if (from > to) to = to + 1;
+        if (computedFrom > to) to = to + 1;
 
-        if (from < to) {
-          tiles.setRange(from, to, tiles, from + 1);
+        if (computedFrom < to) {
+          tiles.setRange(computedFrom, to, tiles, computedFrom + 1);
         } else {
-          tiles.setRange(to + 1, from + 1, tiles, to);
+          tiles.setRange(to + 1, computedFrom + 1, tiles, to);
         }
         tiles[to] = tile;
       }
     } else {
-      tiles.remove(tile);
       tiles.add(tile);
     }
 
@@ -85,7 +91,7 @@ class TileRack {
   shuffle() {
     var tiles = _tiles.value;
     tiles.shuffle();
-    _tiles.add([...tiles]);
+    setTiles(tiles);
   }
 
   void toggleExchangeMode() {
@@ -102,7 +108,7 @@ class TileRack {
 
   void toggleSelectedTile(Tile tile) {
     tile.toggleIsSelected();
-    setTiles(stream.value);
+    setTiles(stream.value, overrideState: false);
   }
 
   ActionExchangePayload getSelectedTilesPayload() {
@@ -111,7 +117,7 @@ class TileRack {
 
   void _resetSelectedTiles() {
     setTiles(stream.value.map((Tile tile) {
-      tile.isSelectedForExchange = false;
+      tile.unselectTile();
       return tile;
     }).toList());
   }

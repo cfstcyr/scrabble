@@ -22,6 +22,8 @@ import { PublicUser } from '@common/models/user';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Observer } from '@common/models/observer';
 import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
+import { Random } from '@app/utils/random/random';
+import { AVATARS } from '@app/constants/avatar';
 @Service()
 export class GameDispatcherService {
     private waitingRooms: WaitingRoom[];
@@ -114,22 +116,32 @@ export class GameDispatcherService {
         const index = this.waitingRooms.indexOf(waitingRoom);
         this.waitingRooms.splice(index, 1);
 
+        const avatars = Random.shuffle([...AVATARS]);
+
         const player2 = waitingRoom.joinedPlayer2
             ? waitingRoom.joinedPlayer2
-            : this.virtualPlayerFactory.generateVirtualPlayer(waitingRoomId, waitingRoom.getConfig().virtualPlayerLevel, waitingRoom.getPlayers());
+            : this.virtualPlayerFactory.generateVirtualPlayer(
+                  waitingRoomId,
+                  waitingRoom.getConfig().virtualPlayerLevel,
+                  waitingRoom.getPlayers(),
+                  avatars[0],
+              );
         const player3 = waitingRoom.joinedPlayer3
             ? waitingRoom.joinedPlayer3
-            : this.virtualPlayerFactory.generateVirtualPlayer(waitingRoomId, waitingRoom.getConfig().virtualPlayerLevel, [
-                  ...waitingRoom.getPlayers(),
-                  player2,
-              ]);
+            : this.virtualPlayerFactory.generateVirtualPlayer(
+                  waitingRoomId,
+                  waitingRoom.getConfig().virtualPlayerLevel,
+                  [...waitingRoom.getPlayers(), player2],
+                  avatars[1],
+              );
         const player4 = waitingRoom.joinedPlayer4
             ? waitingRoom.joinedPlayer4
-            : this.virtualPlayerFactory.generateVirtualPlayer(waitingRoomId, waitingRoom.getConfig().virtualPlayerLevel, [
-                  ...waitingRoom.getPlayers(),
-                  player2,
-                  player3,
-              ]);
+            : this.virtualPlayerFactory.generateVirtualPlayer(
+                  waitingRoomId,
+                  waitingRoom.getConfig().virtualPlayerLevel,
+                  [...waitingRoom.getPlayers(), player2, player3],
+                  avatars[2],
+              );
         const config: ReadyGameConfig = {
             ...waitingRoom.getConfig(),
             player2,

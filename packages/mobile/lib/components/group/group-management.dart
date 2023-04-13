@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/user.dart';
+import 'package:mobile/components/app_button.dart';
 
 import '../../classes/group.dart';
 import '../../constants/create-lobby-constants.dart';
@@ -17,21 +18,15 @@ class GroupManagement extends StatelessWidget {
           child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ElevatedButton.icon(
+          AppButton(
               onPressed: () async {
                 await backOut();
                 handleLeave(group.groupId!);
                 if (context.mounted) Navigator.pop(context);
               },
-              style: setStyleSecondaryActionButtons(),
-              icon: Icon(
-                Icons.keyboard_arrow_left_sharp,
-                size: 20,
-              ),
-              label: Text(
-                STOP_GAME_SETUP,
-                style: TextStyle(fontSize: 15),
-              )),
+              theme: AppButtonTheme.secondary,
+              icon: Icons.keyboard_arrow_left_sharp,
+              text: STOP_GAME_SETUP),
           handleStartGameButton()
         ],
       )),
@@ -43,18 +38,14 @@ StreamBuilder<List<PublicUser>> handleStartGameButton() {
   return StreamBuilder<List<PublicUser>>(
     stream: playerList$.stream,
     builder: (BuildContext context, AsyncSnapshot<List<PublicUser>> snapshot) {
-      return ElevatedButton.icon(
+      return AppButton(
           onPressed: isMinimumPlayerCount()
               ? null
               : () async {
                   await startGame();
                 },
-          style: setStyleMainActionButtons(),
-          icon: Icon(Icons.start, size: 20),
-          label: Text(
-            START_GAME,
-            style: TextStyle(fontSize: 15),
-          ));
+          icon: Icons.start,
+          text: START_GAME);
     },
   );
 }

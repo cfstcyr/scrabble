@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/virtual-player-level.dart';
 
+import '../../classes/game-visibility.dart';
 import '../../utils/duration-format.dart';
 
 class Parameters extends StatelessWidget {
@@ -8,11 +9,13 @@ class Parameters extends StatelessWidget {
       {super.key,
       this.maxRoundTime,
       this.virtualPlayerLevel,
+      this.visibility,
       this.backgroundColor});
 
   final Color? backgroundColor;
   final int? maxRoundTime;
   final VirtualPlayerLevel? virtualPlayerLevel;
+  final GameVisibility? visibility;
 
   @override
   Widget build(BuildContext context) {
@@ -22,27 +25,25 @@ class Parameters extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: EdgeInsets.only(left: 0, right: 25.0, top: 0, bottom: 0),
-            child: Container(
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: backgroundColor ?? theme.colorScheme.tertiary,
-                  borderRadius: BorderRadius.all(Radius.circular(8))),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.hourglass_bottom),
-                    SizedBox(width: 8),
-                    Text(formatTime(maxRoundTime == null ? 60 : maxRoundTime!),
-                        style: TextStyle(fontSize: 15)),
-                  ],
-                ),
+          Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                color: backgroundColor ?? theme.colorScheme.tertiary,
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.hourglass_bottom),
+                  SizedBox(width: 8),
+                  Text(formatTime(maxRoundTime == null ? 60 : maxRoundTime!),
+                      style: TextStyle(fontSize: 15)),
+                ],
               ),
             ),
           ),
+          SizedBox(width: 15),
           Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
@@ -59,6 +60,31 @@ class Parameters extends StatelessWidget {
                     virtualPlayerLevel == null
                         ? VirtualPlayerLevel.expert.levelName
                         : virtualPlayerLevel!.levelName,
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(width: 15),
+          Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                color: backgroundColor ?? theme.colorScheme.tertiary,
+                borderRadius: BorderRadius.all(Radius.circular(8))),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(visibility == null
+                      ? GameVisibility.public.icon
+                      : visibility!.icon),
+                  SizedBox(width: 8),
+                  Text(
+                    visibility == null
+                        ? GameVisibility.public.visibilityName
+                        : visibility!.visibilityName,
                     style: TextStyle(fontSize: 15),
                   ),
                 ],

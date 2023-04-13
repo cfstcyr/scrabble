@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/abstract-game.dart';
 import 'package:mobile/classes/board/board.dart';
+import 'package:mobile/classes/tile/tile-state.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/tile/tile-rack/shuffle-tile-rack-button.dart';
 import 'package:mobile/components/tile/tile.dart';
@@ -31,7 +32,13 @@ abstract class AbstractTileRack extends StatelessWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     alignment: WrapAlignment.spaceBetween,
                     children: [
-                      ShuffleTileRackButton(tileRack: game.data!.tileRack),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: startOfTileRackButtons(
+                            tileRack: game.data!.tileRack),
+                      ),
                       playerTileRack(game.data!.tileRack.stream),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -52,6 +59,10 @@ abstract class AbstractTileRack extends StatelessWidget {
   List<Widget> endOfTileRackButtons(p.TileRack tileRack, Board board);
 
   Widget buildTile(c.Tile tile, int index);
+
+  List<Widget> startOfTileRackButtons({required p.TileRack tileRack}) {
+    return List.of([ShuffleTileRackButton(tileRack: tileRack)]);
+  }
 
   Widget playerTileRack(Stream<List<c.Tile>> tilesStream) {
     return StreamBuilder(
@@ -80,6 +91,7 @@ abstract class AbstractTileRack extends StatelessWidget {
         Draggable(
             data: tile,
             onDragStarted: () {
+              tile.withState(TileState.defaultState);
               _currentTileIndex.add(index);
               _currentHoveredTileIndex.add(index);
             },
@@ -120,14 +132,12 @@ abstract class AbstractTileRack extends StatelessWidget {
         Stack(
           children: [
             Tile(
-              tile: tile,
-              size: TILE_SIZE,
-              shouldWiggle: shouldWiggle,
-            ),
+                tile: tile,
+                size: TILE_SIZE,
+                shouldWiggle: shouldWiggle),
             Wrap(
               children: [
-                _buildTarget(index - 1,
-                    width: TILE_SIZE / 2, height: TILE_SIZE),
+                _buildTarget(index - 1, width: TILE_SIZE / 2, height: TILE_SIZE),
                 _buildTarget(index, width: TILE_SIZE / 2, height: TILE_SIZE),
               ],
             ),
@@ -170,7 +180,7 @@ abstract class AbstractTileRack extends StatelessWidget {
                   });
             },
             onAccept: (data) {
-              snapshot.data!.tileRack.placeTile(data, to: index);
+              snapshot.data!.tileRack.placeTile(data, from: _currentTileIndex.value, to: index);
               _currentHoveredTileIndex.add(null);
             },
             onMove: (details) {

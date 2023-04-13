@@ -5,8 +5,9 @@ import { Observable } from 'rxjs';
 import { PublicUserStatistics } from '@common/models/user-statistics';
 import { GameHistoryForUser } from '@common/models/game-history';
 import { PublicServerAction } from '@common/models/server-action';
-import { EditableUserFields, PublicUser } from '@common/models/user';
+import { EditableUserFields, PublicUser, RatedUser } from '@common/models/user';
 import { UserSearchItem, UserSearchResult } from '@common/models/user-search';
+import { UserAchievement } from '@common/models/achievement';
 
 @Injectable({
     providedIn: 'root',
@@ -32,11 +33,19 @@ export class UserController extends AbstractController {
         return this.http.get<PublicUserStatistics>(this.url('/users/statistics'));
     }
 
+    getRatingLeaderboard(): Observable<RatedUser[]> {
+        return this.http.get<RatedUser[]>(this.url('/users/ratings'));
+    }
+
     getGameHistory(): Observable<GameHistoryForUser[]> {
         return this.http.get<GameHistoryForUser[]>(this.url('/gameHistories'));
     }
 
     getServerActions(): Observable<PublicServerAction[]> {
         return this.http.get<PublicServerAction[]>(this.url('/server-actions'));
+    }
+
+    getAchievements(): Observable<UserAchievement[]> {
+        return this.http.get<UserAchievement[]>(this.url('/users/achievements'));
     }
 }

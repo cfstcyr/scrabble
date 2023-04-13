@@ -2,7 +2,8 @@
     <app-board
         [isObserver]="isObserver"
         [grid]="grid"
-        [canInteract]='!gameService.isGameOver'
+        [canInteract]='!gameService.isGameOver && canInteract'
         (clearNewlyPlacedTiles)="clearNewlyPlacedTiles()"
+        (onSquareClick)='squareClickHandler($event)'
     ></app-board>
 </mat-card>

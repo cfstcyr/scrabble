@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { BoardNavigator } from '@app/classes/board-navigator/board-navigator';
 import { Square, SquareView } from '@app/classes/square';
 import { TilePlacement } from '@app/classes/tile';
@@ -6,40 +6,89 @@ import { SQUARE_SIZE, UNDEFINED_SQUARE } from '@app/constants/game-constants';
 import { BoardService, GameService } from '@app/services';
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { Orientation } from '@common/models/position';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
+import { BACKSPACE } from '@app/constants/components-constants';
+import { removeAccents } from '@app/utils/remove-accents/remove-accents';
+import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 
 @Component({
     selector: 'app-game-board-wrapper',
     templateUrl: './game-board-wrapper.component.html',
     styleUrls: ['./game-board-wrapper.component.scss'],
 })
-export class GameBoardWrapperComponent implements OnInit {
+export class GameBoardWrapperComponent implements OnInit, OnDestroy {
     @Input() isObserver: boolean;
+    @Input() canInteract: boolean = true;
     grid: BehaviorSubject<SquareView[][]> = new BehaviorSubject<SquareView[][]>([]);
 
     private notAppliedSquares: SquareView[] = [];
     private newlyPlacedTiles: SquareView[] = [];
     private opponentPlacedTiles: SquareView[] = [];
+    private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
 
-    constructor(readonly boardService: BoardService, readonly tilePlacementService: TilePlacementService, readonly gameService: GameService) {}
+    constructor(
+        readonly boardService: BoardService,
+        readonly tilePlacementService: TilePlacementService,
+        readonly gameService: GameService,
+        private readonly roundManagerService: RoundManagerService,
+        private readonly boardCursorService: BoardCursorService,
+    ) {}
+
+    @HostListener('document:keypress', ['$event'])
+    handleKeyboardEvent(event: KeyboardEvent): void {
+        if (this.isObserver || this.gameService.isGameOver) return;
+
+        const key = removeAccents(event.key.toLowerCase());
+
+        if (event.key.length === 1 && key >= 'a' && key <= 'z') {
+            this.boardCursorService.handleLetter(key, event.shiftKey);
+        } else if (event.key === BACKSPACE) {
+            this.boardCursorService.handleBackspace();
+        }
+    }
+    @HostListener('document:keydown.escape', ['$event'])
+    handleEscapeEvent(): void {
+        this.boardCursorService.clear();
+    }
+
+    @HostListener('document:keydown.backspace', ['$event'])
+    handleBackspaceEventEvent(): void {
+        this.boardCursorService.handleBackspace();
+    }
 
     ngOnInit(): void {
-        this.boardService.subscribeToInitializeBoard(of(), this.initializeBoard.bind(this));
-        this.boardService.subscribeToBoardUpdate(of(), this.handleUpdateBoard.bind(this));
-        this.tilePlacementService.tilePlacements$.subscribe(this.handlePlaceTiles.bind(this));
-        this.boardService.subscribeToTemporaryTilePlacements(this.handleOpponentPlaceTiles.bind(this));
+        this.boardService.subscribeToInitializeBoard(this.componentDestroyed$, this.initializeBoard.bind(this));
+        this.boardService.subscribeToBoardUpdate(this.componentDestroyed$, this.handleUpdateBoard.bind(this));
+        this.tilePlacementService.tilePlacements$.pipe(takeUntil(this.componentDestroyed$)).subscribe(this.handlePlaceTiles.bind(this));
+        this.boardService.subscribeToTemporaryTilePlacements(this.componentDestroyed$, this.handleOpponentPlaceTiles.bind(this));
+        this.roundManagerService.subscribeToEndRoundEvent(this.componentDestroyed$, this.resetNotAppliedSquares.bind(this));
 
         if (!this.boardService.readInitialBoard()) return;
         this.initializeBoard(this.boardService.readInitialBoard());
+
+        this.boardCursorService.initialize(this.grid, () => [...(this.gameService.getLocalPlayer()?.getTiles() ?? [])]);
+    }
+
+    ngOnDestroy() {
+        this.componentDestroyed$.next(true);
+        this.componentDestroyed$.complete();
     }
 
     resetNotAppliedSquares(): void {
+        this.boardCursorService.clear();
         this.tilePlacementService.resetTiles();
     }
 
     clearNewlyPlacedTiles(): void {
         this.newlyPlacedTiles.forEach((squareView) => (squareView.newlyPlaced = false));
         this.newlyPlacedTiles = [];
+    }
+
+    squareClickHandler(squareView?: SquareView): void {
+        if (this.isObserver || this.gameService.isGameOver || this.gameService.cannotPlay()) return;
+        this.boardCursorService.handleSquareClick(squareView);
     }
 
     private initializeBoard(board: Square[][]): void {
@@ -60,6 +109,8 @@ export class GameBoardWrapperComponent implements OnInit {
 
     private handleUpdateBoard(squaresToUpdate: Square[]): void {
         this.clearNewlyPlacedTiles();
+        this.boardCursorService.isDisabled = false;
+        this.boardCursorService.clear();
         this.tilePlacementService.resetTiles();
 
         const grid = this.grid.value;

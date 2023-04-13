@@ -42,7 +42,8 @@ class GroupJoinController {
   Future<Response> handleJoinGroup(
       String groupId, String password, bool isObserver) async {
     joinedGroupId = groupId;
-    JoinRequest joinRequestData = JoinRequest(password: password);
+    JoinRequest joinRequestData =
+        JoinRequest(password: password, isObserver: isObserver);
     return http.post(Uri.parse("$endpoint/$groupId/players/join"),
         body: jsonEncode(joinRequestData));
   }

@@ -4,7 +4,6 @@
 
 <div class="page">
     <div class="page-content">
-
         <app-user-profile-info
             [avatar]="(avatar | async) ?? ''"
             [username]="(username | async) ?? ''"
@@ -13,9 +12,15 @@
             <button color="primary" mat-flat-button user-action (click)="openEditUserDialog()">
                 <app-icon icon="user-edit" styling="solid"></app-icon>
             </button>
+            <button color="primary" mat-flat-button user-action (click)="openColorDialog()">
+                <app-icon icon="palette" styling="solid"></app-icon>
+            </button>
         </app-user-profile-info>
 
         <mat-card class="user-stats">
+            <app-user-profile-stats-item title="Classement Elo" [value]="(rating | async | number:'1.0-0') ?? 1000">
+                <app-icon icon="trophy" styling="solid" stats-icon></app-icon>
+            </app-user-profile-stats-item>
             <app-user-profile-stats-item title="Parties jouées" [value]="(gamesPlayedCount | async) ?? 0">
                 <app-icon icon="gamepad" styling="solid" stats-icon></app-icon>
             </app-user-profile-stats-item>
@@ -25,14 +30,21 @@
             <app-user-profile-stats-item title="Moyenne de points" [value]="(((averagePointsPerGame | async) | number:'1.0-0') ?? 0) + ' pts'">
                 <app-icon icon="poll-h" styling="solid" stats-icon></app-icon>
             </app-user-profile-stats-item>
-            <app-user-profile-stats-item title="Temps moyen" [value]="(((averageTimePerGame | async) | number:'1.0-0') ?? 0) + ' s'">
+            <app-user-profile-stats-item title="Temps moyen" [value]="(averageTimePerGame | async) ?? ''">
                 <app-icon icon="clock" styling="solid" stats-icon></app-icon>
             </app-user-profile-stats-item>
         </mat-card>
 
+        <mat-card class='achievements'>
+            <h2>Badges</h2>
+            <div class='achievements__content'>
+                <app-user-achievement *ngFor='let achievement of achievements | async' [achievement]='achievement'></app-user-achievement>
+            </div>
+        </mat-card>
+
         <mat-card style="padding: 24px">
-            <h2>Historique de partie</h2>
-            <table 
+            <h2>Historique de parties</h2>
+            <table
                 mat-table [dataSource]="gameHistory"
                 class="table"
             >
@@ -52,21 +64,41 @@
                 <ng-container matColumnDef="gameResult">
                     <th mat-header-cell *matHeaderCellDef>Résultat</th>
                     <td mat-cell *matCellDef="let element">
-                        <div *ngIf="element.hasBeenAbandoned" class="game-result game-result--abandoned" matTooltip="Abandonnée">
+                        <div *ngIf="element.hasAbandoned" class="game-result game-result--abandoned" matTooltip="Abandonnée">
                             <app-icon icon="pennant" styling="solid"></app-icon>
                         </div>
-                        <div *ngIf="!element.hasBeenAbandoned && element.isWinner" class="game-result game-result--winner" matTooltip="Gagnée">
+                        <div *ngIf="!element.hasAbandoned && element.isWinner" class="game-result game-result--winner" matTooltip="Gagnée">
                             <app-icon icon="crown" styling="solid"></app-icon>
                         </div>
-                        <div *ngIf="!element.hasBeenAbandoned && !element.isWinner" class="game-result game-result--lost"  matTooltip="Perdue">
+                        <div *ngIf="!element.hasAbandoned && !element.isWinner" class="game-result game-result--lost"  matTooltip="Perdue">
                             <app-icon icon="times" styling="solid"></app-icon>
                         </div>
                     </td>
+                </ng-container>
+                <ng-container matColumnDef="ratingVariation">
+                    <th mat-header-cell *matHeaderCellDef>Variation de Elo</th>
+                    <td mat-cell *matCellDef="let element"> {{element.ratingVariation > 0 ?"+": ''}}{{((element.ratingVariation| number:'1.0-0') ?? 0)}} Elo</td>
                 </ng-container>
 
                 <ng-container matColumnDef="score">
                     <th mat-header-cell *matHeaderCellDef>Score</th>
                     <td mat-cell *matCellDef="let element"> {{element.score}} pts</td>
+                </ng-container>
+
+                <ng-container matColumnDef="analysis">
+                    <th mat-header-cell *matHeaderCellDef>Analyse</th>
+                    <td mat-cell *matCellDef="let element">
+                        <div *ngIf="!element.idAnalysis" matTooltip="Non disponible">
+                            <button disabled="true" mat-flat-button color="primary" class="analysis-status">
+                                <app-icon icon="flask" styling="solid"></app-icon>
+                            </button>
+                        </div>
+                        <div *ngIf="element.idAnalysis" matTooltip="Disponible">
+                            <button mat-flat-button color="primary" (click)="requestAnalysis(element.idAnalysis)" class="analysis-status">
+                                <app-icon icon="flask" styling="solid"></app-icon>
+                            </button>
+                        </div>
+                    </td>
                 </ng-container>
             </table>
 
@@ -77,7 +109,7 @@
 
         <mat-card style="padding: 24px">
             <h2>Historique d'actions</h2>
-            <table 
+            <table
                 mat-table
                 [dataSource]="serverActions"
                 class="table"

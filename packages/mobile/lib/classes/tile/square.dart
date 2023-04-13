@@ -9,7 +9,6 @@ class Square {
   Multiplier? multiplier;
   bool isCenter;
   BehaviorSubject<Tile?> _tile;
-  BehaviorSubject<bool> _isApplied;
 
   Square({
     required this.position,
@@ -17,8 +16,9 @@ class Square {
     this.isCenter = false,
     Tile? tile,
     bool isApplied = false,
-  })  : _tile = BehaviorSubject.seeded(tile),
-        _isApplied = BehaviorSubject.seeded(isApplied);
+  })  : _tile = BehaviorSubject.seeded(tile) {
+    if (isApplied) applyTile();
+  }
 
   Color getColor() {
     return multiplier?.getColor() ?? Colors.transparent;
@@ -32,12 +32,12 @@ class Square {
     return _tile.map((tile) => tile != null);
   }
 
-  ValueStream<bool> get isAppliedStream {
-    return _isApplied.stream;
+  Stream<bool> get isAppliedStream {
+    return tile.switchMap((Tile? tile) => Stream.value(tile?.isApplied ?? false));
   }
 
   bool getIsApplied() {
-    return _isApplied.value;
+    return getTile()?.isApplied ?? false;
   }
 
   Square setTile(Tile tile) {
@@ -50,7 +50,7 @@ class Square {
   }
 
   Square applyTile() {
-    _isApplied.add(true);
+    getTile()?.applyTile();
     return this;
   }
 
@@ -69,7 +69,19 @@ class Square {
       tile: json['tile'] != null
           ? Tile.fromJson(json['tile'] as Map<String, dynamic>)
           : null,
-      isApplied: json['isApplied'] != null ? json['isApplied'] as bool : json['tile'] != null,
+      isApplied: json['isApplied'] != null
+          ? json['isApplied'] as bool
+          : json['tile'] != null,
+    );
+  }
+
+  Square copy() {
+    return Square(
+      position: position.copy(),
+      tile: _tile.value?.copy(),
+      multiplier: multiplier?.copy(),
+      isCenter: isCenter,
+      isApplied: getIsApplied(),
     );
   }
 }

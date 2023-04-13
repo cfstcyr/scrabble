@@ -48,12 +48,12 @@ export default class RoundManager {
 
     nextRound(actionPlayed: Action, board: Board): Round {
         if (this.currentRound !== undefined) {
-            this.saveCompletedRound(this.currentRound, actionPlayed, board);
+            this.saveCompletedRound(this.currentRound, actionPlayed);
         }
-        return this.beginRound();
+        return this.beginRound(board);
     }
 
-    beginRound(): Round {
+    beginRound(board: Board): Round {
         const player = this.getNextPlayer();
         const now = new Date();
         const limit = new Date(Date.now() + this.maxRoundTime * SECONDS_TO_MILLISECONDS);
@@ -62,6 +62,7 @@ export default class RoundManager {
             tiles: player.tiles.map((tile) => ({ ...tile })),
             startTime: now,
             limitTime: limit,
+            board: new Board(board.grid.map((row) => row.map((square) => ({ ...square })))),
         };
         return this.currentRound;
     }
@@ -105,9 +106,9 @@ export default class RoundManager {
     }
 
     verifyIfGameOver(): boolean {
-        if (this.completedRounds.length < NUMBER_OF_PASSING_ROUNDS_TO_END_GAME * NUMBER_OF_PLAYERS_IN_GAME) return false;
+        if (this.completedRounds.length < NUMBER_OF_PLAYERS_IN_GAME || !this.hasEveryonePlayedTwoRounds()) return false;
 
-        for (let i = 0; i < NUMBER_OF_PASSING_ROUNDS_TO_END_GAME * NUMBER_OF_PLAYERS_IN_GAME; i++) {
+        for (let i = 0; i < Math.min(NUMBER_OF_PASSING_ROUNDS_TO_END_GAME * NUMBER_OF_PLAYERS_IN_GAME, this.completedRounds.length); i++) {
             const round = this.completedRounds[this.completedRounds.length - 1 - i];
             if (round.player instanceof AbstractVirtualPlayer) continue;
             if (!(round.actionPlayed instanceof ActionPass)) {
@@ -117,16 +118,40 @@ export default class RoundManager {
         return true;
     }
 
-    private saveCompletedRound(round: Round, actionPlayed: Action, board: Board): void {
+    private hasEveryonePlayedTwoRounds(): boolean {
+        const playersTurnCount: Map<Player, number> = new Map();
+        const currentPlayers = this.getPlayers();
+        for (const round of this.completedRounds) {
+            if (round.player instanceof AbstractVirtualPlayer) continue;
+            if (!currentPlayers.includes(round.player)) continue;
+            const playerTurnCount = playersTurnCount.get(round.player);
+
+            if (playerTurnCount) {
+                playersTurnCount.set(round.player, playerTurnCount + 1);
+            } else {
+                playersTurnCount.set(round.player, 1);
+            }
+        }
+        for (const [, turnCount] of playersTurnCount) {
+            if (turnCount < NUMBER_OF_PASSING_ROUNDS_TO_END_GAME) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private saveCompletedRound(round: Round, actionPlayed: Action): void {
         const now = new Date();
         this.completedRounds.push({
             ...round,
             completedTime: now,
             actionPlayed,
-            board: new Board(board.grid.map((row) => row.map((square) => ({ ...square })))),
         });
     }
 
+    private getPlayers(): Player[] {
+        return [this.player1, this.player2, this.player3, this.player4];
+    }
     private getNextPlayer(): Player {
         if (this.currentRound === undefined) {
             const startPlayerNumber = Random.randomIntFromInterval(1, 4);

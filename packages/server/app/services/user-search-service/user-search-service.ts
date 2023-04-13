@@ -10,6 +10,7 @@ import { StatusCodes } from 'http-status-codes';
 import { USER_NOT_FOUND } from '@app/constants/services-errors';
 import GameHistoriesService from '@app/services/game-history-service/game-history.service';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
+import { AchievementsService } from '@app/services/achievements-service/achievements-service';
 
 @Service()
 export class UserSearchService {
@@ -17,10 +18,11 @@ export class UserSearchService {
         private readonly databaseService: DatabaseService,
         private readonly gameHistoryService: GameHistoriesService,
         private readonly userStatisticsService: UserStatisticsService,
+        private readonly achievementsService: AchievementsService,
     ) {}
 
     async search(query: string, exclude?: TypeOfId<User>): Promise<UserSearchItem[]> {
-        const sqlQuery = this.table.select('username', 'avatar').where('username', 'like', `%${query}%`).limit(USER_SEARCH_LIMIT);
+        const sqlQuery = this.table.select('username', 'avatar').where('username', 'ILIKE', `%${query}%`).limit(USER_SEARCH_LIMIT);
 
         if (exclude !== undefined) sqlQuery.andWhereNot({ idUser: exclude });
 
@@ -37,11 +39,15 @@ export class UserSearchService {
             this.userStatisticsService.getStatistics(user.idUser),
         ]);
 
+        // This must be after the call getStatistics as it creates a conflict with the database
+        const achievements = await this.achievementsService.getAchievements(user.idUser);
+
         return {
             username: user.username,
             avatar: user.avatar,
             gameHistory,
             statistics,
+            achievements,
         };
     }
 

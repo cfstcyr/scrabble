@@ -114,4 +114,8 @@ export class ChatboxMessageComponent extends ChatBoxComponent {
     onEmojiClick(emoji: string): void {
         this.addMessage(emoji);
     }
+
+    onKeyPress(e: KeyboardEvent): void {
+        e.stopPropagation();
+    }
 }

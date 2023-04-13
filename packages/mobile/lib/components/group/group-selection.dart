@@ -4,6 +4,7 @@ import 'package:mobile/services/group-join.service.dart';
 import '../../classes/group.dart';
 import '../../constants/locale/group-selection-constants.dart';
 import '../../locator.dart';
+import '../../services/user.service.dart';
 import '../../view-methods/group.methods.dart';
 import 'individual-group.dart';
 
@@ -15,6 +16,7 @@ class GroupSelection extends StatelessWidget {
   final GroupJoinService groupJoinService = getIt.get<GroupJoinService>();
   Future<bool> joinGroup(
       String groupId, String password, bool isObserver) async {
+    getIt<UserService>().isObserver = isObserver;
     return await groupJoinService.handleJoinGroup(
         groupId, password, isObserver);
   }

@@ -1,4 +1,7 @@
+import 'package:mobile/classes/achievements.dart';
 import 'package:mobile/constants/avatars-constants.dart';
+
+import 'game-history.dart';
 
 class User {
   int idUser;
@@ -49,6 +52,54 @@ class UserLoginCredentials {
     return {
       'email': email,
       'password': password,
+    };
+  }
+}
+
+class UserRequest {
+  PublicUser publicUser;
+  bool isObserver;
+  UserRequest({
+    required this.publicUser,
+    this.isObserver = false,
+  });
+
+  factory UserRequest.fromJson(Map<String, dynamic> json) {
+    return UserRequest(
+      publicUser: PublicUser.fromJson(json['publicUser']),
+      isObserver: json['isObserver'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'publicUser': publicUser,
+      'isObserver': isObserver,
+    };
+  }
+}
+
+class RequestingUsers {
+  List<PublicUser> requestingPlayers;
+  List<PublicUser> requestingObservers;
+  RequestingUsers({
+    required this.requestingPlayers,
+    required this.requestingObservers,
+  });
+
+  factory RequestingUsers.fromJson(Map<String, dynamic> json) {
+    return RequestingUsers(
+      requestingPlayers:
+          PublicUser.usersFromJsonList(json['requestingPlayers']),
+      requestingObservers:
+          PublicUser.usersFromJsonList(json['requestingObservers']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'requestingPlayers': requestingPlayers,
+      'requestingObservers': requestingObservers,
     };
   }
 }
@@ -135,22 +186,110 @@ class EditableUserFields {
   }
 }
 
+class RatedUser {
+  double rating;
+  PublicUser user;
+
+  RatedUser({required this.user, required this.rating});
+
+  factory RatedUser.fromJson(Map<String, dynamic> json) {
+    return RatedUser(
+      user: PublicUser.fromJson(json),
+      rating: (json['rating'] as num).toDouble(),
+    );
+  }
+
+  static List<RatedUser> fromJsonList(List<dynamic> list) {
+    return list
+        .map<RatedUser>(
+            (json) => RatedUser.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+}
+
+class UserSearchItem {
+  String username;
+  String avatar;
+
+  UserSearchItem({required this.username, required this.avatar});
+
+  factory UserSearchItem.fromJson(Map<String, dynamic> json) {
+    return UserSearchItem(
+      username: json['username'] as String,
+      avatar: json['avatar'] ?? AVATARS.first,
+    );
+  }
+
+  static List<UserSearchItem> fromJsonList(List<dynamic> list) {
+    return list
+        .map<UserSearchItem>(
+            (json) => UserSearchItem.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+}
+
+class UserSearchQueryResult {
+  List<UserSearchItem> results;
+
+  UserSearchQueryResult({required this.results});
+
+  factory UserSearchQueryResult.fromJson(dynamic json) {
+    return UserSearchQueryResult(
+      results: UserSearchItem.fromJsonList(json),
+    );
+  }
+}
+
+class UserSearchResult {
+  List<GameHistory> gameHistory;
+  UserStatistics statistics;
+  List<UserAchievement> achievements;
+  String username;
+  String avatar;
+
+  UserSearchResult(
+      {required this.username,
+      required this.avatar,
+      required this.gameHistory,
+      required this.statistics,
+      required this.achievements});
+
+  factory UserSearchResult.fromJson(Map<String, dynamic> json) {
+    return UserSearchResult(
+        username: json['username'] as String,
+        avatar: json['avatar'] ?? AVATARS.first,
+        gameHistory: GameHistory.fromJsonList(json['gameHistory']),
+        statistics: UserStatistics.fromJson(json['statistics']),
+        achievements: UserAchievement.fromJsonList(json['achievements']));
+  }
+}
+
 class UserStatistics {
   int gamesPlayedCount;
   int gamesWonCount;
   double averagePointsPerGame;
   double averageTimePerGame;
+  double rating;
+  double ratingMax;
+  int bingoCount;
 
   UserStatistics(
       {required this.averagePointsPerGame,
       required this.averageTimePerGame,
       required this.gamesPlayedCount,
-      required this.gamesWonCount});
+      required this.gamesWonCount,
+      required this.rating,
+      required this.ratingMax,
+      required this.bingoCount});
 
   UserStatistics.fromJson(Map<String, dynamic> json)
       : this(
-            averagePointsPerGame: json['averagePointsPerGame'],
-            averageTimePerGame: json['averageTimePerGame'],
+            averagePointsPerGame:
+                (json['averagePointsPerGame'] as num).toDouble(),
+            averageTimePerGame: (json['averageTimePerGame'] as num).toDouble(),
             gamesPlayedCount: json['gamesPlayedCount'],
-            gamesWonCount: json['gamesWonCount']);
+            gamesWonCount: json['gamesWonCount'],
+            rating: (json['rating'] as num).toDouble(),
+            ratingMax: (json['ratingMax'] as num).toDouble(),
+            bingoCount: json['bingoCount']);
 }
