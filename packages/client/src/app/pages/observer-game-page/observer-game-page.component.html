@@ -17,10 +17,11 @@
             (click)="handleQuitButtonClick()" color="warn" matTooltip="Quitter" matTooltipPosition='above'>
             <app-icon icon='door-open' styling="solid"></app-icon>
         </button>
-        <button class='game-page__actions__button game-page__actions__button--replace' mat-flat-button
-            (click)="handleReplaceButtonClick()" color="warn" matTooltip="Remplacer un joueur virtuel"
-            matTooltipPosition='above' [disabled]="!isObservingVirtualPlayer()" color="primary">
-            <app-icon icon='exchange' styling="solid"></app-icon>
-        </button>
+        <div [matTooltip]="isObservingVirtualPlayer() ? 'Remplacer un joueur virtuel' : 'Il est uniquement possible de remplacer un joueur virtuel'">
+            <button class='game-page__actions__button game-page__actions__button--replace' mat-flat-button
+                (click)="handleReplaceButtonClick()" color="warn" [disabled]="!isObservingVirtualPlayer()" color="primary">
+                <app-icon icon='exchange' styling="solid"></app-icon>
+            </button>
+        </div>
     </mat-card>
 </div>

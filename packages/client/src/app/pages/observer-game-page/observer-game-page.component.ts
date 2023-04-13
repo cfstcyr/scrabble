@@ -80,7 +80,7 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     }
     handleReplaceButtonClick() {
         const title = DIALOG_REPLACE_TITLE;
-        const content = DIALOG_REPLACE_CONTENT;
+        const content = DIALOG_REPLACE_CONTENT(this.gameService.getLocalPlayer()?.publicUser.username ?? 'ce joueur virtuel');
         const buttonsContent = [DIALOG_REPLACE_BUTTON_CONTINUE, DIALOG_REPLACE_BUTTON_CONFIRM];
         this.openReplacementDialog(title, content, buttonsContent);
     }
