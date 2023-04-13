@@ -60,7 +60,7 @@ class NotificationService {
     print('User granted permission: ${_settings.authorizationStatus}');
 
     final token = await _firebaseMessaging.getToken();
-    if (token == null) print("gg erreur token");
+    if (token == null) print("no token has been found");
     isNotificationEnabled
         .add(await notificationController.sendFirebaseToken(token!));
   }
