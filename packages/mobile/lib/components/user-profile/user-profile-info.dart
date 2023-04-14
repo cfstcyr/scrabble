@@ -10,6 +10,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/notification.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../alert-dialog.dart';
 import '../error-pop-up.dart';
@@ -40,9 +41,13 @@ class _UserProfileInfoState extends State<UserProfileInfo> {
   void initState() {
     super.initState();
     notificationsErrorSubscription = notificationService.notificationErrorStream
-        .listen((_) => errorSnackBar(context, NOTIFICATION_ERROR));
+        .whereNotNull()
+        .listen((error) {
+      errorSnackBar(context, NOTIFICATION_ERROR);
+    });
     notificationsToggleSubscription = notificationService
         .isNotificationEnabled.stream
+        .skip(1)
         .listen((bool isEnabled) => successSnackBar(
             context, isEnabled ? ENABLE_SUCCESS : DISABLE_SUCCESS));
   }

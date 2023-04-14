@@ -13,7 +13,7 @@ void errorSnackBar(BuildContext context, String errorMessage) {
 void successSnackBar(BuildContext context, String message) {
   AnimatedSnackBar.material(message,
           type: AnimatedSnackBarType.success,
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 5),
           mobileSnackBarPosition: MobileSnackBarPosition.top,
           desktopSnackBarPosition: DesktopSnackBarPosition.topCenter)
       .show(context);
