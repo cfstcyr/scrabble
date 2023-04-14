@@ -11,6 +11,7 @@ import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/locale/analysis-constants.dart';
+import 'package:mobile/constants/locale/groups-constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
@@ -27,6 +28,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../components/alert-dialog.dart';
 import '../components/app_button.dart';
+import '../components/error-pop-up.dart';
 import '../constants/locale/game-constants.dart';
 import 'game-observer-service.dart';
 
@@ -50,13 +52,12 @@ class GameService {
     startGameEvent.listen((InitializeGameData initializeGameData) => startGame(
         initializeGameData.localPlayerSocketId,
         initializeGameData.startGameData));
-    replaceVirtualPlayer$.listen((InitializeGameData gameData) =>
-        replaceVirtualPlayer(
+    replaceVirtualPlayerEvent$.listen((InitializeGameData gameData) =>
+        handleReplaceVirtualPlayer(
             gameData.localPlayerSocketId, gameData.startGameData));
     gamePlayController.gameUpdateEvent
         .listen((GameUpdateData gameUpdate) => updateGame(gameUpdate));
   }
-
   void startGame(String localPlayerId, StartGameData startGameData) {
     PlayersContainer playersContainer = PlayersContainer.fromPlayers(
         player1: startGameData.player1,
@@ -261,7 +262,8 @@ class GameService {
     }
   }
 
-  void replaceVirtualPlayer(String localPlayerId, StartGameData gameData) {
+  void handleReplaceVirtualPlayer(
+      String localPlayerId, StartGameData gameData) {
     _userService.isObserver = false;
     PlayersContainer playersContainer = PlayersContainer.fromPlayers(
         player1: gameData.player1,
@@ -290,5 +292,14 @@ class GameService {
     getIt.get<GameMessagesService>().resetMessages();
     Navigator.pushReplacementNamed(
         navigatorKey.currentContext!, GAME_PAGE_ROUTE);
+  }
+
+  Future<void> replaceVirtualPlayer(int playerNumber) async {
+    await gamePlayController
+        .replaceVirtualPlayer(playerNumber)
+        .catchError((error) {
+      errorSnackBar(navigatorKey.currentContext!, GAME_CANCEL_FAILED);
+      return error;
+    });
   }
 }
