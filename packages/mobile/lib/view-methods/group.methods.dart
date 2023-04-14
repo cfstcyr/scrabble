@@ -40,6 +40,9 @@ Stream<PublicUser> get canceledStream => canceledGroup$.stream;
 Stream<InitializeGameData> get startGameEvent => startGame$.stream;
 Subject<InitializeGameData> startGame$ = PublishSubject();
 
+BehaviorSubject<InitializeGameData> replaceVirtualPlayer$ =
+    BehaviorSubject<InitializeGameData>.seeded({} as InitializeGameData);
+
 Subject<bool> fullGroup$ = PublishSubject();
 Stream<bool> get fullGroupStream => fullGroup$.stream;
 
