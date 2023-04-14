@@ -79,14 +79,14 @@ export class NotificationService {
         };
 
         try {
-            const response = await this.sendAdminMessage(message);
+            const response = await this.sendNotification(message);
             console.log(`Successfully sent notification: ${response}`);
         } catch (error) {
             console.error(`Error sending notification: ${error}`);
         }
     }
 
-    async sendAdminMessage(message: Message): Promise<string> {
+    async sendNotification(message: Message): Promise<string> {
         return await admin.messaging().send(message);
     }
 

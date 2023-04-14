@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile/controllers/notification-controller.dart';
@@ -22,6 +24,8 @@ class NotificationService {
   BehaviorSubject<bool> isNotificationEnabled = BehaviorSubject.seeded(true);
   late FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   late NotificationSettings _settings;
+  Stream<Object?> get notificationErrorStream =>
+      notificationController.notificationError.stream;
 
   Future init() async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -32,7 +36,7 @@ class NotificationService {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (message.notification == null) {
-        print("notification is empty ${message.notification}");
+        log("notification is empty ${message.notification}");
       }
 
       RemoteNotification notification = message.notification!;
@@ -57,10 +61,10 @@ class NotificationService {
       provisional: false,
       sound: true,
     );
-    print('User granted permission: ${_settings.authorizationStatus}');
+    log('User granted permission: ${_settings.authorizationStatus}');
 
     final token = await _firebaseMessaging.getToken();
-    if (token == null) print("no token has been found");
+    if (token == null) log("no token has been found");
     isNotificationEnabled
         .add(await notificationController.sendFirebaseToken(token!));
   }
