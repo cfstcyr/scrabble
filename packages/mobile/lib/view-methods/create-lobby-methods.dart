@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/game/game-config.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/game-creation-service.dart';
 import 'package:mobile/services/user.service.dart';
@@ -12,6 +13,9 @@ UserService userService = getIt.get<UserService>();
 
 BehaviorSubject<List<PublicUser>> playerList$ =
     BehaviorSubject<List<PublicUser>>.seeded([userService.getUser()]);
+
+BehaviorSubject<StartGameData> replaceVirtualPlayer$ =
+    BehaviorSubject<StartGameData>.seeded({} as StartGameData);
 
 BehaviorSubject<List<PublicUser>> playerWaitingList$ =
     BehaviorSubject<List<PublicUser>>.seeded([]);
