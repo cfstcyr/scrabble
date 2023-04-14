@@ -284,7 +284,7 @@ class GroupParameters extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.precision_manufacturing),
+                      Icon(Icons.smart_toy_sharp),
                       SizedBox(width: 8),
                       Text(group.virtualPlayerLevel.levelName),
                     ],
