@@ -5,6 +5,7 @@ import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game-event.service.dart';
@@ -17,6 +18,8 @@ import '../../services/user.service.dart';
 
 class GameActions extends StatelessWidget {
   final GameService _gameService = getIt.get<GameService>();
+  final GameCreationController _gameCreationController =
+      getIt.get<GameCreationController>();
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
   final GameEventService _gameEventService = getIt.get<GameEventService>();
@@ -114,6 +117,22 @@ class GameActions extends StatelessWidget {
                             ? () => _gameService.playPlacement()
                             : null,
                         icon: Icons.play_arrow_rounded,
+                        size: AppButtonSize.large,
+                      );
+                    },
+                  ),
+                  StreamBuilder<bool>(
+                    stream: snapshot.hasData
+                        ? _canPlaceStream(snapshot.data!)
+                        : Stream.value(false),
+                    builder: (context, canPlace) {
+                      return AppButton(
+                        onPressed: canPlace.data ?? false
+                            ? () {
+                                _gameService.replaceVirtualPlayer(3);
+                              }
+                            : null,
+                        icon: Icons.rotate_90_degrees_ccw_rounded,
                         size: AppButtonSize.large,
                       );
                     },
