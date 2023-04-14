@@ -32,6 +32,7 @@ class AppButton extends StatelessWidget {
   final IconData? icon;
   final Widget? child;
   final bool iconOnly;
+  final double? width;
 
   AppButton({
     required this.onPressed,
@@ -42,6 +43,7 @@ class AppButton extends StatelessWidget {
     this.icon,
     this.child,
     this.iconOnly = false,
+    this.width,
   }) : assert(child != null ? text == null && icon == null : true);
 
   @override
@@ -54,7 +56,7 @@ class AppButton extends StatelessWidget {
           : Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
       height: _getSize(),
-      minWidth: _getSize(),
+      minWidth: _getWidth(),
       padding: iconOnly ? EdgeInsets.zero : null,
       elevation: type == AppButtonType.normal ? 1 : 0,
       focusElevation: type == AppButtonType.normal ? 4 : 0,
@@ -134,6 +136,10 @@ class AppButton extends StatelessWidget {
       case AppButtonSize.extraLarge:
         return 72;
     }
+  }
+
+  double _getWidth() {
+    return width == null ? _getSize() : width as double;
   }
 
   Widget? _getChild() {
