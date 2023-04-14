@@ -93,7 +93,11 @@ class GameCreationController {
     observerWaitingList$.add(data.requestingObservers);
   }
 
-  void handleReplaceVirtualPlayer(StartGameData data) {
-    replaceVirtualPlayer$.add(data);
+  void handleReplaceVirtualPlayer(data) {
+    StartGameData gameData = StartGameData.fromJson(data);
+    getIt.get<GamePlayController>().currentGameId = gameData.gameId;
+    replaceVirtualPlayer$.add(InitializeGameData(
+        localPlayerSocketId: SocketService.socket.id!,
+        startGameData: gameData));
   }
 }
