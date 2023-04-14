@@ -50,7 +50,9 @@ class GameService {
     startGameEvent.listen((InitializeGameData initializeGameData) => startGame(
         initializeGameData.localPlayerSocketId,
         initializeGameData.startGameData));
-
+    replaceVirtualPlayer$.listen((InitializeGameData gameData) =>
+        replaceVirtualPlayer(
+            gameData.localPlayerSocketId, gameData.startGameData));
     gamePlayController.gameUpdateEvent
         .listen((GameUpdateData gameUpdate) => updateGame(gameUpdate));
   }
@@ -239,11 +241,14 @@ class GameService {
   }
 
   Stream<bool> isLocalPlayerPlaying() {
-    return CombineLatestStream<dynamic, bool>([_roundService.getActivePlayerId(), gameStream], (values) {
+    return CombineLatestStream<dynamic, bool>(
+        [_roundService.getActivePlayerId(), gameStream], (values) {
       String activePlayerId = values[0];
       MultiplayerGame? game = values[1];
 
-      return game != null ? game.players.localPlayerId == activePlayerId : false;
+      return game != null
+          ? game.players.localPlayerId == activePlayerId
+          : false;
     }).asBroadcastStream();
   }
 
@@ -254,5 +259,36 @@ class GameService {
       _actionService.sendAction(ActionType.pass);
       _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
     }
+  }
+
+  void replaceVirtualPlayer(String localPlayerId, StartGameData gameData) {
+    _userService.isObserver = false;
+    PlayersContainer playersContainer = PlayersContainer.fromPlayers(
+        player1: gameData.player1,
+        player2: gameData.player2,
+        player3: gameData.player3,
+        player4: gameData.player4);
+
+    playersContainer.localPlayerId = localPlayerId;
+
+    playersContainer.players
+        .where((Player player) => player.socketId == localPlayerId)
+        .map((Player player) => player.isLocalPlayer = true);
+
+    _gameObserverService.playersContainer.add(playersContainer);
+
+    TileRack tileRack =
+        TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
+
+    _game.add(MultiplayerGame(
+        board: Board(),
+        tileRack: tileRack,
+        players: playersContainer,
+        tileReserve: gameData.tileReserve));
+
+    //_roundService.startRound(gameData.firstRound, _onTimerExpires);
+    getIt.get<GameMessagesService>().resetMessages();
+    Navigator.pushReplacementNamed(
+        navigatorKey.currentContext!, GAME_PAGE_ROUTE);
   }
 }
