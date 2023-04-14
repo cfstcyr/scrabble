@@ -86,8 +86,6 @@ class MyScaffold extends StatelessWidget {
                     onTap: _canNavigateToProfile(context)
                         ? () {
                             openUserMenu(context);
-                            // Navigator.pushNamed(context, PROFILE_ROUTE,
-                            //     arguments: getIt.get<UserService>().user.value);
                           }
                         : null,
                     child: Padding(
