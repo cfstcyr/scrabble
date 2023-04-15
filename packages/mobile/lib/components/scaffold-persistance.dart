@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/notification-pastille.dart';
 import 'package:mobile/components/user-avatar.dart';
+import 'package:mobile/components/user-menu.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
@@ -82,8 +83,7 @@ class MyScaffold extends StatelessWidget {
           ),
           _shouldShowProfileButton(context) ? Builder(
               builder: (context) => InkWell(
-                    onTap: () => Navigator.pushNamed(context, PROFILE_ROUTE,
-                        arguments: getIt.get<UserService>().user.value),
+                    onTap: () => openUserMenu(context),
                     child: Padding(
                       padding: EdgeInsets.only(right: SPACE_2),
                       child: Avatar(
