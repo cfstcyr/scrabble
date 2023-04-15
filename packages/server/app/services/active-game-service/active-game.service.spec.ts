@@ -9,6 +9,7 @@ import Player from '@app/classes/player/player';
 import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
 import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
 import { ChatService } from '@app/services/chat-service/chat.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { GameVisibility } from '@common/models/game-visibility';
 import { Observer } from '@common/models/observer';
@@ -73,7 +74,10 @@ describe('ActiveGameService', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbed(ChatService);
+        testingUnit = new ServicesTestingUnit().withStubbed(ChatService).withStubbed(NotificationService, {
+            initalizeAdminApp: undefined,
+            sendNotification: Promise.resolve(' '),
+        });
         await testingUnit.withMockDatabaseService();
     });
 

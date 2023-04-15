@@ -20,6 +20,7 @@ import { ActiveGameService } from '@app/services/active-game-service/active-game
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { ChatService } from '@app/services/chat-service/chat.service';
 import { GameDispatcherService } from '@app/services/game-dispatcher-service/game-dispatcher.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { UserService } from '@app/services/user-service/user-service';
@@ -34,7 +35,7 @@ import * as spies from 'chai-spies';
 import { EventEmitter } from 'events';
 import { StatusCodes } from 'http-status-codes';
 import * as sinon from 'sinon';
-import { createStubInstance, SinonStub, SinonStubbedInstance, stub, useFakeTimers } from 'sinon';
+import { SinonStub, SinonStubbedInstance, createStubInstance, stub, useFakeTimers } from 'sinon';
 import { Socket } from 'socket.io';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
@@ -97,6 +98,10 @@ describe('GameDispatcherController', () => {
             .withStubbedDictionaryService()
             .withStubbedControllers(GameDispatcherController)
             .withStubbed(ChatService)
+            .withStubbed(NotificationService, {
+                initalizeAdminApp: undefined,
+                sendNotification: Promise.resolve(' '),
+            })
             .withMockedAuthentification();
         authentificationServiceStub = testingUnit.setStubbed(AuthentificationService);
         socketServiceStub = testingUnit.setStubbed(SocketService);

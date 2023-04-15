@@ -2,9 +2,11 @@
 /* eslint-disable no-console */
 import { ServerSocket } from '@app/classes/communication/socket-type';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { GAME_ROOM_ID_PREFIX } from '@app/constants/classes-constants';
 import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { INVALID_ID_FOR_SOCKET, NO_TOKEN, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServerActionService } from '@app/services/server-action-service/server-action.service';
 import { env } from '@app/utils/environment/environment';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
@@ -14,7 +16,7 @@ import { ServerActionType } from '@common/models/server-action';
 import { EventEmitter } from 'events';
 import { NextFunction } from 'express';
 import * as http from 'http';
-import { getReasonPhrase, StatusCodes } from 'http-status-codes';
+import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 import * as io from 'socket.io';
 import { Service } from 'typedi';
 import {
@@ -33,7 +35,6 @@ import {
     TilePlacementEmitArgs,
     UserLeftGroupEmitArgs,
 } from './socket-types';
-import { GAME_ROOM_ID_PREFIX } from '@app/constants/classes-constants';
 
 export interface SocketWithInfo {
     socket: io.Socket;
@@ -47,7 +48,11 @@ export class SocketService {
     private sockets: Map<string, SocketWithInfo>;
     private configureSocketsEvent: EventEmitter;
 
-    constructor(private readonly authentificationService: AuthentificationService, private readonly serverActionService: ServerActionService) {
+    constructor(
+        private readonly authentificationService: AuthentificationService,
+        private readonly serverActionService: ServerActionService,
+        private readonly notificationService: NotificationService,
+    ) {
         this.sockets = new Map();
         this.configureSocketsEvent = new EventEmitter();
         this.playerDisconnectedEvent = new EventEmitter();
@@ -113,10 +118,12 @@ export class SocketService {
             this.sockets.set(socket.id, { socket });
             socket.emit('initialization', { id: socket.id });
 
+            const idUser = this.authentificationService.connectedUsers.getUserId(socket.id);
             this.serverActionService.addAction({
-                idUser: this.authentificationService.connectedUsers.getUserId(socket.id),
+                idUser,
                 actionType: ServerActionType.LOGIN,
             });
+            this.notificationService.removeScheduledNotification(idUser);
 
             this.configureSocketsEvent.emit(SOCKET_CONFIGURE_EVENT_NAME, socket);
 
@@ -234,11 +241,12 @@ export class SocketService {
     }
 
     private handleDisconnect(socket: io.Socket): void {
+        const idUser = this.authentificationService.connectedUsers.getUserId(socket.id);
         this.serverActionService.addAction({
-            idUser: this.authentificationService.connectedUsers.getUserId(socket.id),
+            idUser,
             actionType: ServerActionType.LOGOUT,
         });
-
+        this.notificationService.scheduleReminderNotification(idUser);
         const socketInfo = this.getSocket(socket.id);
         if (socketInfo.gameRoom) {
             this.playerDisconnectedEvent.emit('playerDisconnected', socketInfo.gameRoom, socket.id);

@@ -1,10 +1,8 @@
 /* eslint-disable dot-notation */
 import { Application } from '@app/app';
 import { NotificationService } from '@app/services/notification-service/notification.service';
-import { ServerActionService } from '@app/services/server-action-service/server-action.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { UserService } from '@app/services/user-service/user-service';
-import { ServerActionCreation, ServerActionType } from '@common/models/server-action';
 import { User } from '@common/models/user';
 import { StatusCodes } from 'http-status-codes';
 import * as supertest from 'supertest';
@@ -18,11 +16,10 @@ const DEFAULT_USER: User = {
     username: 'username',
 };
 
-describe('ServerActionController', () => {
+describe('NotificationController', () => {
     let expressApp: Express.Application;
-    let userService: UserService;
-    let serverActionService: ServerActionService;
     let testingUnit: ServicesTestingUnit;
+    let userService: UserService;
 
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit()
@@ -31,6 +28,8 @@ describe('ServerActionController', () => {
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
                 sendNotification: Promise.resolve(' '),
+                addMobileUserToken: true,
+                toggleNotifications: false,
             });
         await testingUnit.withMockDatabaseService();
     });
@@ -38,29 +37,32 @@ describe('ServerActionController', () => {
     beforeEach(() => {
         expressApp = Container.get(Application).app;
         userService = Container.get(UserService);
-        serverActionService = Container.get(ServerActionService);
     });
 
     afterEach(() => {
         testingUnit.restore();
     });
 
-    describe('/api/server-actions', () => {
-        describe('GET', () => {
-            it('should return user actions', async () => {
+    describe('/api/notification', () => {
+        describe('POST', () => {
+            it('should return notification settings of user', async () => {
                 await userService['table'].insert(DEFAULT_USER);
-                await serverActionService.addAction({
-                    idUser: DEFAULT_USER.idUser,
-                    actionType: ServerActionType.LOGIN,
-                    timestamp: new Date(0),
-                } as ServerActionCreation);
-                await serverActionService.addAction({
-                    idUser: DEFAULT_USER.idUser,
-                    actionType: ServerActionType.LOGOUT,
-                    timestamp: new Date(0),
-                } as ServerActionCreation);
+                return supertest(expressApp)
+                    .post('/api/notification')
+                    .send({ firebaseToken: 'mytoken', idUser: DEFAULT_USER.idUser })
+                    .expect(StatusCodes.OK, 'true');
+            });
 
-                return supertest(expressApp).get('/api/server-actions').send({ idUser: DEFAULT_USER.idUser }).expect(StatusCodes.OK);
+            it('should return 500 if no user param', async () => {
+                return supertest(expressApp).post('/api/notification').send({ firebaseToken: 'mytoken' }).expect(StatusCodes.INTERNAL_SERVER_ERROR);
+            });
+        });
+    });
+
+    describe('/api/notification/toggle', () => {
+        describe('POST', () => {
+            it('should return false', async () => {
+                return supertest(expressApp).post('/api/notification/toggle').send({ idUser: DEFAULT_USER.idUser }).expect(StatusCodes.OK, 'false');
             });
         });
     });

@@ -5,35 +5,36 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-unused-expressions, no-unused-expressions */
 
+import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import { GameConfig } from '@app/classes/game/game-config';
+import Room from '@app/classes/game/room';
 import WaitingRoom from '@app/classes/game/waiting-room';
 import Player from '@app/classes/player/player';
+import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatcher-const';
 import {
     CANT_START_GAME_WITH_NO_REAL_OPPONENT,
     INVALID_PLAYER_ID_FOR_GAME,
     NO_DICTIONARY_INITIALIZED,
     NO_GAME_FOUND_WITH_ID,
 } from '@app/constants/services-errors';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
+import { ChatService } from '@app/services/chat-service/chat.service';
 import { CreateGameService } from '@app/services/create-game-service/create-game.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { SocketService } from '@app/services/socket-service/socket.service';
+import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
+import { GameVisibility } from '@common/models/game-visibility';
+import { GroupData } from '@common/models/group';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import * as chai from 'chai';
 import { spy } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
 import * as sinon from 'sinon';
-import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { SinonStubbedInstance, createStubInstance } from 'sinon';
 import { Container } from 'typedi';
-import { ChatService } from '@app/services/chat-service/chat.service';
 import { GameDispatcherService } from './game-dispatcher.service';
-import { GroupData } from '@common/models/group';
-import { GameVisibility } from '@common/models/game-visibility';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
-import { ACCEPT, REJECT } from '@app/constants/services-constants/game-dispatcher-const';
-import { DictionarySummary } from '@app/classes/communication/dictionary-data';
-import Room from '@app/classes/game/room';
-import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
-import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 
 const expect = chai.expect;
 
@@ -86,7 +87,14 @@ describe('GameDispatcherService', () => {
     let virtualPlayerServiceStub: SinonStubbedInstance<VirtualPlayerService>;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(ChatService).withStubbed(VirtualPlayerFactory);
+        testingUnit = new ServicesTestingUnit()
+            .withStubbedDictionaryService()
+            .withStubbed(ChatService)
+            .withStubbed(VirtualPlayerFactory)
+            .withStubbed(NotificationService, {
+                initalizeAdminApp: undefined,
+                sendNotification: Promise.resolve(' '),
+            });
         await testingUnit.withMockDatabaseService();
         virtualPlayerServiceStub = createStubInstance(VirtualPlayerService);
         gameDispatcherService = Container.get(GameDispatcherService);
