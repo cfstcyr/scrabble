@@ -92,10 +92,8 @@ class PlayersContainer extends StatelessWidget {
       int observedIndex, List<c.Player> orderedPlayerList) {
     return GestureDetector(
       onTap: () {
-        print(index);
-        print(orderedPlayerList[index].socketId);
         changeObservedPlayer$.add(index);
-        isObservingVirtualPlayer$.add(orderedPlayerList[index]
+        isObservingVirtualPlayer$.add(orderedPlayerList[index - 1]
             .socketId
             .contains(VIRTUAL_PLAYER_ID_PREFIX));
         _gameObserverService.setPlayerTileRack(index);
