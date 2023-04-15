@@ -9,6 +9,7 @@ import Game from '@app/classes/game/game';
 import { HttpException } from '@app/classes/http-exception/http-exception';
 import Player from '@app/classes/player/player';
 import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-player/expert-virtual-player';
+import { AVATARS } from '@app/constants/avatar';
 import { MUST_HAVE_7_TILES_TO_SWAP } from '@app/constants/classes-errors';
 import { SECONDS_TO_MILLISECONDS } from '@app/constants/controllers-constants';
 import { INVALID_COMMAND, INVALID_PAYLOAD, NOT_PLAYER_TURN } from '@app/constants/services-errors';
@@ -23,6 +24,7 @@ import { RatingService } from '@app/services/rating-service/rating.service';
 import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { Random } from '@app/utils/random/random';
 import { ActionType } from '@common/models/action';
 import { GameHistoryPlayerCreation } from '@common/models/game-history';
 import { PlayerData } from '@common/models/player';
@@ -250,9 +252,12 @@ export class GamePlayService {
             return;
         }
 
+        const avatars = Random.shuffle([...AVATARS]);
+        const usedAvatars = game.getPlayers().map((player) => player.publicUser.avatar);
+        const unusedAvatars = avatars.filter((avatar) => !usedAvatars.includes(avatar));
         const updatedData: GameUpdateData = game.replacePlayer(
             playerWhoLeftId,
-            this.virtualPlayerFactory.generateVirtualPlayer(gameId, game.virtualPlayerLevel, playersStillInGame),
+            this.virtualPlayerFactory.generateVirtualPlayer(gameId, game.virtualPlayerLevel, playersStillInGame, unusedAvatars[0]),
         );
 
         if (this.isVirtualPlayerTurn(game)) {
