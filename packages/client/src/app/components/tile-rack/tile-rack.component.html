@@ -35,7 +35,7 @@
 
         <div class="tile-rack-actions" *ngIf="!isObserver">
             <div
-                [matTooltip]="isObserver ? 'Vous ne pouvez pas faire d\'action en tant qu\'observateur' : (canExchangeTiles() ? 'Échanger' : 'Lors de votre tour, faites un clique droit sur une tuile pour l\'échanger')">
+                [matTooltip]="isObserver ? 'Vous ne pouvez pas faire d\'action en tant qu\'observateur' : (canExchangeTiles() ? 'Échanger' : 'Lors de votre tour, faites un clic droit sur une tuile pour l\'échanger')">
                 <button mat-flat-button color='primary'
                     class='tile-rack-actions__button tile-rack-actions__button--exchange'
                     [disabled]='isObserver || !canExchangeTiles()' (click)='exchangeTiles()'>
