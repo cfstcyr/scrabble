@@ -31,66 +31,69 @@ abstract class AbstractTileRack extends StatelessWidget {
                 EdgeInsets.symmetric(vertical: SPACE_2, horizontal: SPACE_3),
             height: 70,
             child: game.data != null
-                ? Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    alignment: WrapAlignment.spaceBetween,
+                ? Stack(
+                    clipBehavior: Clip.none,
+                    fit: StackFit.expand,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: startOfTileRackButtons(
-                            tileRack: game.data!.tileRack),
-                      ),
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          playerTileRack(game.data!.tileRack.stream),
-                          StreamBuilder(
-                              stream: game.data!.tileRack.isExchangeModeEnabled,
-                              builder: ((context, snapshot) => Positioned.fill(
-                                  top: -95,
-                                  child: snapshot.data ?? false
-                                      ? Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Card(
-                                              color: _themeColorService
-                                                  .themeDetails
-                                                  .value
-                                                  .color
-                                                  .colorValue,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(3)),
-                                              child: Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: SPACE_3,
-                                                    vertical: SPACE_1),
-                                                child: Text(
-                                                  "Sélectionnez des tuiles et échangez avec le bouton ⏎",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          alignment: WrapAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: startOfTileRackButtons(
+                                  tileRack: game.data!.tileRack),
+                            ),
+                            Expanded(
+                                child:
+                                    playerTileRack(game.data!.tileRack.stream)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.min,
+                              children: endOfTileRackButtons(
+                                  game.data!.tileRack, game.data!.board),
+                            )
+                          ],
+                        ),
+                        StreamBuilder(
+                            stream: game.data!.tileRack.isExchangeModeEnabled,
+                            builder: ((context, snapshot) => Positioned.fill(
+                                top: -95,
+                                child: snapshot.data ?? false
+                                    ? Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Card(
+                                            color: _themeColorService
+                                                .themeDetails
+                                                .value
+                                                .color
+                                                .colorValue,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(3)),
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: SPACE_3,
+                                                  vertical: SPACE_1),
+                                              child: Text(
+                                                "Sélectionnez des tuiles et échangez les avec le bouton ⏎",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.w500),
                                               ),
-                                            )
-                                          ],
-                                        )
-                                      : Container())))
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: endOfTileRackButtons(
-                            game.data!.tileRack, game.data!.board),
-                      )
-                    ],
-                  )
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    : Container())))
+                      ])
                 : Container(),
           ),
         );

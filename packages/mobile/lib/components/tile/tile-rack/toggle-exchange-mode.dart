@@ -5,6 +5,7 @@ import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/game-events.dart';
+import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game-event.service.dart';
@@ -32,13 +33,17 @@ class ToggleExchangeModeWidget extends StatelessWidget {
         builder: (context, snapshot) {
           return (snapshot.data ?? false)
               ? StreamBuilder(
-                  stream: CombineLatestStream(
-                      [tileRack.selectedTilesStream, _canPlayStream()],
-                      (values) => values),
+                  stream: CombineLatestStream([
+                    tileRack.selectedTilesStream,
+                    tileRack.stream,
+                    _canPlayStream()
+                  ], (values) => values),
                   builder: (context, snapshot) {
                     return AppButton(
-                      onPressed: ((snapshot.data?[1] ?? false) as bool) &&
-                              ((snapshot.data?[0] ?? []) as List).isNotEmpty
+                      onPressed: ((snapshot.data?[2] ?? false) as bool) &&
+                              ((snapshot.data?[0] ?? []) as List).isNotEmpty &&
+                              ((snapshot.data?[1] ?? []) as List).length ==
+                                  MAX_TILES_PER_PLAYER
                           ? () {
                               _actionService.sendAction(
                                   ActionType.exchange,
@@ -53,10 +58,13 @@ class ToggleExchangeModeWidget extends StatelessWidget {
                     );
                   })
               : StreamBuilder(
-                  stream: _canPlayStream(),
+                  stream: CombineLatestStream<dynamic, dynamic>(
+                      [_canPlayStream()], (values) => values),
                   builder: (context, snapshot) => AppButton(
-                        onPressed: snapshot.data ?? false
+                        onPressed: (snapshot.data?[0] ?? false) as bool
                             ? () {
+                                _gameEventService.add<void>(
+                                    PUT_BACK_TILES_ON_TILE_RACK, null);
                                 tileRack.toggleExchangeMode();
                               }
                             : null,

@@ -18,9 +18,6 @@ class MultiplayerTileRack extends AbstractTileRack {
   List<Widget> endOfTileRackButtons(TileRack tileRack, Board board) {
     return List<Widget>.of([
       ToggleExchangeModeWidget(tileRack: tileRack),
-      SizedBox(
-        width: SPACE_2,
-      ),
       ClearPlacedTilesWidget(
         hasPlacementStream: board.hasPlacementStream,
         tileRack: tileRack,
