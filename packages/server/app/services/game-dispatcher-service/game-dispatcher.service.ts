@@ -2,6 +2,8 @@ import { ReadyGameConfig, ReadyGameConfigWithChannelId } from '@app/classes/game
 import Room from '@app/classes/game/room';
 import WaitingRoom from '@app/classes/game/waiting-room';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { UserId } from '@app/classes/user/connected-user-types';
+import { AVATARS } from '@app/constants/avatar';
 import {
     CANT_START_GAME_WITH_NO_REAL_OPPONENT,
     INVALID_PASSWORD,
@@ -9,21 +11,19 @@ import {
     NO_DICTIONARY_INITIALIZED,
     NO_GAME_FOUND_WITH_ID,
 } from '@app/constants/services-errors';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
+import { ChatService } from '@app/services/chat-service/chat.service';
 import { CreateGameService } from '@app/services/create-game-service/create-game.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
+import { Random } from '@app/utils/random/random';
+import { GameVisibility } from '@common/models/game-visibility';
+import { Group, GroupData } from '@common/models/group';
+import { Observer } from '@common/models/observer';
+import { PublicUser } from '@common/models/user';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { ChatService } from '@app/services/chat-service/chat.service';
-import { UserId } from '@app/classes/user/connected-user-types';
-import { Group, GroupData } from '@common/models/group';
-import { PublicUser } from '@common/models/user';
-import { GameVisibility } from '@common/models/game-visibility';
-import { Observer } from '@common/models/observer';
-import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
-import { Random } from '@app/utils/random/random';
-import { AVATARS } from '@app/constants/avatar';
 @Service()
 export class GameDispatcherService {
     private waitingRooms: WaitingRoom[];

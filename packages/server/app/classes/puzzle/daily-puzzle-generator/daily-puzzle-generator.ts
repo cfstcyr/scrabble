@@ -1,8 +1,8 @@
 import { PuzzleGenerator } from '@app/classes/puzzle/puzzle-generator/puzzle-generator';
-import * as seedrandom from 'seedrandom';
-import { MAX_WORD_COUNT, MAX_WORD_SIZE, MIN_WORD_COUNT, MIN_WORD_SIZE, SKIP_PLACEMENT_DISTANCE_CUTOFF } from '@app/constants/puzzle-constants';
-import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
 import { PuzzleGeneratorParameters } from '@app/classes/puzzle/puzzle-generator/puzzle-generator-parameters';
+import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
+import { MAX_WORD_COUNT, MAX_WORD_SIZE, MIN_WORD_COUNT, MIN_WORD_SIZE, SKIP_PLACEMENT_DISTANCE_CUTOFF } from '@app/constants/puzzle-constants';
+import * as seedrandom from 'seedrandom';
 
 export class DailyPuzzleGenerator extends PuzzleGenerator {
     private seed: string;

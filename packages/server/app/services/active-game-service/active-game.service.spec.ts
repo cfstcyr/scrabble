@@ -12,6 +12,7 @@ import { ChatService } from '@app/services/chat-service/chat.service';
 import { NotificationService } from '@app/services/notification-service/notification.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import { GameVisibility } from '@common/models/game-visibility';
+import { Observer } from '@common/models/observer';
 import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -30,11 +31,13 @@ const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
 const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
 const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
+const USER5 = { username: 'user5', email: 'email5', avatar: 'avatar5' };
 
 const DEFAULT_PLAYER_1 = new Player('id1', USER1);
 const DEFAULT_PLAYER_2 = new Player('id2', USER2);
 const DEFAULT_PLAYER_3 = new Player('id3', USER3);
 const DEFAULT_PLAYER_4 = new Player('id4', USER4);
+const DEFAULT_PLAYER_OBSERVER = new Player('id5', USER5);
 const DEFAULT_ID = 'gameId';
 const DEFAULT_GAME_CHANNEL_ID = 1;
 const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
@@ -47,6 +50,10 @@ const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     dictionarySummary: {} as unknown as DictionarySummary,
     password: '',
+};
+const DEFAULT_OBSERVER: Observer = {
+    publicUser: USER5,
+    id: 'id5',
 };
 const DEFAULT_GAME = {
     player1: DEFAULT_PLAYER_1,
@@ -125,7 +132,7 @@ describe('ActiveGameService', () => {
     describe('getGame', () => {
         beforeEach(async () => {
             chai.spy.on(Game, 'createMultiplayerGame', async () => Promise.resolve(DEFAULT_GAME));
-            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG, []);
+            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG, [DEFAULT_OBSERVER]);
         });
 
         afterEach(() => {
@@ -284,6 +291,21 @@ describe('ActiveGameService', () => {
                 gameId: DEFAULT_ID,
             };
             expect(emitToRoomSpy).to.have.been.called.with(DEFAULT_ID, 'newMessage', expectedArg);
+        });
+        it('should call replace player', async () => {
+            gameStub.observers = [DEFAULT_OBSERVER];
+            gameStub.player1 = DEFAULT_PLAYER_1;
+            gameStub.getPlayerByNumber.returns(DEFAULT_PLAYER_2);
+
+            const observerToPlayerSpy = chai.spy.on(activeGameService, 'observerToPlayer', () => {
+                DEFAULT_PLAYER_OBSERVER;
+            });
+
+            gameStub.replacePlayer.returns({});
+            const setEloSpy = chai.spy.on(activeGameService, 'setPlayerElo', () => {});
+            await activeGameService['handleReplaceVirtualPlayer'](DEFAULT_ID, DEFAULT_PLAYER_1.id, 3);
+            expect(observerToPlayerSpy).to.have.been.called;
+            expect(setEloSpy).to.have.been.called;
         });
     });
 });

@@ -23,10 +23,7 @@ import 'package:mobile/constants/socket-constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/puzzle-controller.dart';
 import 'package:mobile/routes/navigator-key.dart';
-import 'package:mobile/routes/routes.dart';
-import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/round-service.dart';
-import 'package:mobile/services/socket.service.dart';
 import 'package:mobile/services/user.service.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -131,8 +128,12 @@ class PuzzleService {
 
   void quitPuzzle() {
     _puzzleController.quitPuzzle();
-    _puzzle.add(null);
+    clearPuzzle();
     _roundService.endRound();
+  }
+
+  void clearPuzzle() {
+    _puzzle.add(null);
   }
 
   Future<bool> startDailyPuzzle() async {
