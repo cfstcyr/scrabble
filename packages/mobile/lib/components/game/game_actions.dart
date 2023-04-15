@@ -19,19 +19,51 @@ import 'package:rxdart/rxdart.dart';
 import '../../services/user.service.dart';
 import '../../view-methods/group.methods.dart';
 
-class GameActions extends StatelessWidget {
-  late final _index;
-  StreamSubscription observedPlayerChangeSubscription =
-      changeObservedPlayerStream.listen((int index) {
-    _index = index;
-  });
+class GameActions extends StatefulWidget {
+  @override
+  State<GameActions> createState() => _GameActionsState();
+}
+
+class _GameActionsState extends State<GameActions> {
+  late var _index;
+  var _isObservingVirtualPlayer = false;
+  late StreamSubscription observedPlayerChangeSubscription;
+  late StreamSubscription isObservingVirtualPlayerSubscription;
+  @override
+  void initState() {
+    super.initState();
+    observedPlayerChangeSubscription =
+        changeObservedPlayerStream.listen((int index) {
+      print(index);
+      _index = index;
+    });
+
+    isObservingVirtualPlayerStream.listen((bool isObservingVirtualPlayer) {
+      setState(() {
+        print(isObservingVirtualPlayer);
+        _isObservingVirtualPlayer = isObservingVirtualPlayer;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    observedPlayerChangeSubscription.cancel();
+    isObservingVirtualPlayerSubscription.cancel();
+    super.dispose();
+  }
+
   final GameService _gameService = getIt.get<GameService>();
 
   final GameCreationController _gameCreationController =
       getIt.get<GameCreationController>();
+
   final ActionService _actionService = getIt.get<ActionService>();
+
   final RoundService _roundService = getIt.get<RoundService>();
+
   final GameEventService _gameEventService = getIt.get<GameEventService>();
+
   void surrender(BuildContext context) {
     getIt.get<PlayerLeaveService>().abandonGame(context);
   }
@@ -128,12 +160,13 @@ class GameActions extends StatelessWidget {
                         size: AppButtonSize.large,
                       );
                     },
-                  ),
+                  ), // remplacer JV
                   Visibility(
                     visible: getIt.get<UserService>().isObserver,
                     child: AppButton(
-                      onPressed: () => getIt.get<UserService>().isObserver
-                          ? this._gameService.replaceVirtualPlayer(3)
+                      onPressed: () => getIt.get<UserService>().isObserver &&
+                              _isObservingVirtualPlayer
+                          ? this._gameService.replaceVirtualPlayer(_index)
                           : null,
                       icon: Icons.rotate_90_degrees_ccw_sharp,
                       size: AppButtonSize.large,
@@ -194,5 +227,13 @@ class GameActions extends StatelessWidget {
 
       return canPlay && isValidPlacement;
     });
+  }
+
+  void handleObservedChange(int index) {
+    _index = index;
+  }
+
+  void handleVirtualPlayerObserving(bool isObservingVirtualPlayer) {
+    _isObservingVirtualPlayer = isObservingVirtualPlayer;
   }
 }
