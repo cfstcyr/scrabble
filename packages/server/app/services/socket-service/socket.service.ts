@@ -33,16 +33,24 @@ import {
     TilePlacementEmitArgs,
     UserLeftGroupEmitArgs,
 } from './socket-types';
+import { GAME_ROOM_ID_PREFIX } from '@app/constants/classes-constants';
+
+export interface SocketWithInfo {
+    socket: io.Socket;
+    gameRoom?: string;
+}
 
 @Service()
 export class SocketService {
+    playerDisconnectedEvent: EventEmitter;
     private sio?: io.Server;
-    private sockets: Map<string, io.Socket>;
+    private sockets: Map<string, SocketWithInfo>;
     private configureSocketsEvent: EventEmitter;
 
     constructor(private readonly authentificationService: AuthentificationService, private readonly serverActionService: ServerActionService) {
         this.sockets = new Map();
         this.configureSocketsEvent = new EventEmitter();
+        this.playerDisconnectedEvent = new EventEmitter();
     }
 
     static handleError(error: Error, socket: ServerSocket): void {
@@ -102,7 +110,7 @@ export class SocketService {
                 console.error('\x1b[1m\x1b[3m<< !Socket error! >>\x1b[0m', error);
             });
 
-            this.sockets.set(socket.id, socket);
+            this.sockets.set(socket.id, { socket });
             socket.emit('initialization', { id: socket.id });
 
             this.serverActionService.addAction({
@@ -121,13 +129,19 @@ export class SocketService {
     addToRoom(socketId: string, room: string): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
         const socket = this.getSocket(socketId);
-        socket.join(room);
+        if (room.includes(GAME_ROOM_ID_PREFIX)) {
+            socket.gameRoom = room;
+        }
+        socket.socket.join(room);
     }
 
     removeFromRoom(socketId: string, room: string): void {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
         const socket = this.getSocket(socketId);
-        socket.leave(room);
+        if (socket.gameRoom === room) {
+            socket.gameRoom = undefined;
+        }
+        socket.socket.leave(room);
     }
 
     deleteRoom(roomName: string): void {
@@ -140,14 +154,14 @@ export class SocketService {
         return this.sio.sockets.adapter.rooms.get(roomName) !== undefined;
     }
 
-    getSocket(id: string): io.Socket {
+    getSocket(id: string): SocketWithInfo {
         const socket = this.sockets.get(id);
         if (!socket) throw new HttpException(INVALID_ID_FOR_SOCKET, StatusCodes.NOT_FOUND);
         return socket;
     }
 
     getAllSockets(): io.Socket[] {
-        return Array.from(this.sockets.values());
+        return Array.from(this.sockets.values()).map((socketWithInfo) => socketWithInfo.socket);
     }
 
     // Required for signature overload. This forces us to use only the correct payload
@@ -189,7 +203,7 @@ export class SocketService {
         if (this.sio === undefined) throw new HttpException(SOCKET_SERVICE_NOT_INITIALIZED, StatusCodes.INTERNAL_SERVER_ERROR);
 
         if (isIdVirtualPlayer(id)) return;
-        this.getSocket(id).emit(ev, ...args);
+        this.getSocket(id).socket.emit(ev, ...args);
     }
 
     emitToRoomNoSender(id: string, socketSenderId: string, ev: 'acceptJoinRequest', ...args: AcceptJoinRequestEmitArgs[]): void;
@@ -211,7 +225,7 @@ export class SocketService {
         }
 
         this.getSocket(socketSenderId)
-            .to(room)
+            .socket.to(room)
             .emit(ev, ...args);
     }
 
@@ -225,6 +239,10 @@ export class SocketService {
             actionType: ServerActionType.LOGOUT,
         });
 
+        const socketInfo = this.getSocket(socket.id);
+        if (socketInfo.gameRoom) {
+            this.playerDisconnectedEvent.emit('playerDisconnected', socketInfo.gameRoom, socket.id);
+        }
         this.authentificationService.disconnectSocket(socket.id);
         this.sockets.delete(socket.id);
     }

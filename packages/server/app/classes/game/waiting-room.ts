@@ -12,6 +12,7 @@ import { Observer } from '@common/models/observer';
 import { PublicUser } from '@common/models/user';
 import { INVALID_PLAYER_ID_FOR_GAME, INVALID_TYPES } from '@app/constants/services-errors';
 import { RequestingUsers } from '@common/models/requesting-users';
+import { GAME_ROOM_ID_PREFIX } from '@app/constants/classes-constants';
 
 export default class WaitingRoom extends Room {
     joinedPlayer2?: Player;
@@ -26,7 +27,7 @@ export default class WaitingRoom extends Room {
     private readonly groupChannelId: TypeOfId<Channel>;
 
     constructor(config: GameConfig, groupChannelId: TypeOfId<Channel>) {
-        super();
+        super(GAME_ROOM_ID_PREFIX);
         this.config = config;
         this.joinedPlayer2 = undefined;
         this.joinedPlayer3 = undefined;
