@@ -121,21 +121,29 @@ class GameActions extends StatelessWidget {
                       );
                     },
                   ),
-                  StreamBuilder<bool>(
-                    stream: snapshot.hasData
-                        ? _canPlaceStream(snapshot.data!)
-                        : Stream.value(false),
-                    builder: (context, canPlace) {
-                      return AppButton(
-                        onPressed: canPlace.data ?? false
-                            ? () {
-                                _gameService.replaceVirtualPlayer(3);
-                              }
-                            : null,
-                        icon: Icons.rotate_90_degrees_ccw_rounded,
-                        size: AppButtonSize.large,
-                      );
-                    },
+                  // StreamBuilder<bool>(
+                  //   stream: snapshot.hasData
+                  //       ? _canPlaceStream(snapshot.data!)
+                  //       : Stream.value(false),
+                  //   builder: (context, canPlace) {
+                  //     return AppButton(
+                  //       onPressed:
+                  //           () {
+                  //               _gameService.replaceVirtualPlayer(3);
+                  //             }
+                  //           : null,
+                  //       icon: Icons.rotate_90_degrees_ccw_rounded,
+                  //       size: AppButtonSize.large,
+                  //     );
+                  //   },
+                  // ),
+                  AppButton(
+                    onPressed: () => getIt.get<UserService>().isObserver
+                        ? this._gameService.replaceVirtualPlayer(3)
+                        : null,
+                    icon: Icons.rotate_90_degrees_ccw_sharp,
+                    size: AppButtonSize.large,
+                    theme: AppButtonTheme.danger,
                   ),
                 ],
               )),
