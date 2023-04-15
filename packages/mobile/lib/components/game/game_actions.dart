@@ -92,6 +92,7 @@ class _GameActionsState extends State<GameActions> {
                         : Icons.flag,
                     size: AppButtonSize.large,
                     theme: AppButtonTheme.danger,
+                    width: 80,
                   ),
                   Visibility(
                     visible: !getIt.get<UserService>().isObserver,

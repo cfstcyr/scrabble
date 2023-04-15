@@ -10,8 +10,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
 
 class MultiplayerTileRack extends AbstractTileRack {
-  MultiplayerTileRack(
-      {required super.gameStream});
+  MultiplayerTileRack({required super.gameStream});
 
   final GameService _gameService = getIt.get<GameService>();
 
@@ -19,11 +18,9 @@ class MultiplayerTileRack extends AbstractTileRack {
   List<Widget> endOfTileRackButtons(TileRack tileRack, Board board) {
     return List<Widget>.of([
       ToggleExchangeModeWidget(tileRack: tileRack),
-      SizedBox(
-        width: SPACE_2,
-      ),
       ClearPlacedTilesWidget(
         hasPlacementStream: board.hasPlacementStream,
+        tileRack: tileRack,
       ),
     ]);
   }
