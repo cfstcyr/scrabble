@@ -81,20 +81,16 @@ class MyScaffold extends StatelessWidget {
                       ));
                 }),
           ),
-          Builder(
+          _shouldShowProfileButton(context) ? Builder(
               builder: (context) => InkWell(
-                    onTap: _canNavigateToProfile(context)
-                        ? () {
-                            openUserMenu(context);
-                          }
-                        : null,
+                    onTap: () => openUserMenu(context),
                     child: Padding(
                       padding: EdgeInsets.only(right: SPACE_2),
                       child: Avatar(
                         size: 38,
                       ),
                     ),
-                  )),
+                  )) : Container(),
         ],
       ),
       body: body,
@@ -103,10 +99,9 @@ class MyScaffold extends StatelessWidget {
     );
   }
 
-  bool _canNavigateToProfile(BuildContext context) {
-    return ModalRoute.of(context)?.settings.name != PROFILE_ROUTE &&
-        ModalRoute.of(context)?.settings.name != PROFILE_EDIT_ROUTE &&
-        ModalRoute.of(context)?.settings.name != PROFILE_SEARCH_ROUTE;
+  bool _shouldShowProfileButton(BuildContext context) {
+    return ModalRoute.of(context)?.settings.name == HOME_ROUTE ||
+        ModalRoute.of(context)?.settings.name == BASE_ROUTE;
   }
 
   bool _isLocalProfile(BuildContext context) {

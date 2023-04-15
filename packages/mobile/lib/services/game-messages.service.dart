@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:mobile/classes/actions/action-data.dart';
+import 'package:mobile/classes/actions/action-place.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game-messages-constants.dart';
+import 'package:mobile/constants/locale/game-message-constants.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../classes/game/game-message.dart';
 import '../classes/game/game_messages.dart';
@@ -19,21 +22,20 @@ import '../locator.dart';
 import '../utils/game_messages.dart';
 
 class GameMessagesService {
-  late List<Widget> messages = [_buildMessage("Début de la partie")];
+  late BehaviorSubject<List<Widget>> messages$ =
+      BehaviorSubject.seeded([_buildMessage(START_MESSAGE)]);
 
   GameMessagesService._privateConstructor() {
-    messages = [_buildMessage("Début de la partie")];
-    _chatController.messageEvent.listen((GameMessage? gameMessage) => {
-          if (gameMessage != null)
-            messages.add(_buildMessage(gameMessage.content))
-        });
+    resetMessages();
+    _chatController.messageEvent
+        .listen((GameMessage? gameMessage) => addMessage(gameMessage));
   }
 
   ActionService _actionService = getIt.get<ActionService>();
   GameService _gameService = getIt.get<GameService>();
   GameEventService _gameEventService = getIt.get<GameEventService>();
 
-  Stream<GameMessage?> get messageEvent => _chatController.gameMessage$.stream;
+  Stream<List<Widget>> get messageEvent => messages$.stream;
 
   static final GameMessagesService _instance =
       GameMessagesService._privateConstructor();
@@ -45,11 +47,21 @@ class GameMessagesService {
 
   final _chatController = getIt.get<GamePlayController>();
 
-  void resetMessages() {
-    messages = [_buildMessage("Début de la partie")];
+  void addMessage(GameMessage? message) {
+    if (message == null) return;
+    if (message.content.startsWith('!')) return;
+
+    List<Widget> messages = messages$.value;
+    messages.add(_buildMessage(message));
+    messages$.add(messages);
   }
 
-  Widget _buildMessage(String message) {
+  void resetMessages() {
+    messages$ = BehaviorSubject.seeded([_buildMessage(START_MESSAGE)]);
+  }
+
+  Widget _buildMessage(GameMessage gameMessage) {
+    String message = gameMessage.content;
     PlacementMessage? placement = getPlacementMessage(message);
 
     if (placement != null) return _buildPlacementMessage(placement);
@@ -61,7 +73,14 @@ class GameMessagesService {
       margin: EdgeInsets.only(bottom: SPACE_2),
       child: Column(
         children: subMessages
-            .map((String message) => MarkdownBody(data: message))
+            .map((String message) => MarkdownBody(
+                  data: message,
+                  styleSheet: MarkdownStyleSheet(
+                      textAlign: WrapAlignment.center,
+                      p: gameMessage.senderId == SYSTEM_ERROR_ID
+                          ? TextStyle(color: Colors.red)
+                          : null),
+                ))
             .toList(),
       ),
     );
@@ -251,7 +270,19 @@ class GameMessagesService {
   }
 
   void _sendAction(HintMessagePayload hintPayload) {
-    _actionService.sendAction(ActionType.place,
-        hintPayload.toActionPayload(_gameService.getTileRack()));
+    ActionPlacePayload? hintActionPayload;
+
+    try {
+      hintActionPayload =
+          hintPayload.toActionPayload(_gameService.getTileRack());
+    } catch (_) {
+      addMessage(GameMessage(
+          content: CANNOT_PLAY_HINT,
+          senderId: SYSTEM_ERROR_ID,
+          gameId: _gameService.currentGameId ?? ''));
+      return;
+    }
+
+    _actionService.sendAction(ActionType.place, hintActionPayload);
   }
 }

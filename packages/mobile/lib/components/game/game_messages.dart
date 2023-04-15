@@ -12,10 +12,10 @@ class GameMessages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<GameMessage?>(
+    return StreamBuilder<List<Widget>>(
         stream: gameMessagesService.messageEvent,
         builder: (context, snapshot) {
-          final children = gameMessagesService.messages;
+          final children = snapshot.data ?? [];
 
           WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
           return Card(
