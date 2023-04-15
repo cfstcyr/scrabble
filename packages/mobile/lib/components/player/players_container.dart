@@ -13,6 +13,8 @@ import '../../services/game-observer-service.dart';
 import '../../services/user.service.dart';
 import '../../view-methods/group.methods.dart';
 
+const VIRTUAL_PLAYER_ID_PREFIX = 'virtual-player';
+
 class PlayersContainer extends StatelessWidget {
   GameService _gameService = getIt.get<GameService>();
   RoundService _roundService = getIt.get<RoundService>();
@@ -86,11 +88,16 @@ class PlayersContainer extends StatelessWidget {
     ));
   }
 
-  Widget handleObserver(
-      c.Player observer, int index, String activePlayerId, int observedIndex) {
+  Widget handleObserver(c.Player observer, int index, String activePlayerId,
+      int observedIndex, List<c.Player> orderedPlayerList) {
     return GestureDetector(
       onTap: () {
+        print(index);
+        print(orderedPlayerList[index].socketId);
         changeObservedPlayer$.add(index);
+        isObservingVirtualPlayer$.add(orderedPlayerList[index]
+            .socketId
+            .contains(VIRTUAL_PLAYER_ID_PREFIX));
         _gameObserverService.setPlayerTileRack(index);
       },
       child: Player(
@@ -115,20 +122,20 @@ class PlayersContainer extends StatelessWidget {
               Expanded(
                 child: Column(
                   children: [
-                    handleObserver(
-                        orderedPlayerList[0], 1, activePlayerId, observedIndex),
-                    handleObserver(
-                        orderedPlayerList[1], 2, activePlayerId, observedIndex),
+                    handleObserver(orderedPlayerList[0], 1, activePlayerId,
+                        observedIndex, orderedPlayerList),
+                    handleObserver(orderedPlayerList[1], 2, activePlayerId,
+                        observedIndex, orderedPlayerList),
                   ],
                 ),
               ),
               Expanded(
                 child: Column(
                   children: [
-                    handleObserver(
-                        orderedPlayerList[2], 3, activePlayerId, observedIndex),
-                    handleObserver(
-                        orderedPlayerList[3], 4, activePlayerId, observedIndex),
+                    handleObserver(orderedPlayerList[2], 3, activePlayerId,
+                        observedIndex, orderedPlayerList),
+                    handleObserver(orderedPlayerList[3], 4, activePlayerId,
+                        observedIndex, orderedPlayerList),
                   ],
                 ),
               )
