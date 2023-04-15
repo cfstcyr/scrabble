@@ -7,6 +7,8 @@ import 'package:mobile/components/tile/tile-rack/shuffle-tile-rack-button.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
+import 'package:mobile/locator.dart';
+import 'package:mobile/services/theme-color-service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:mobile/classes/tile/tile-rack.dart' as p;
 
@@ -16,6 +18,7 @@ abstract class AbstractTileRack extends StatelessWidget {
   final ValueStream<AbstractGame?> gameStream;
   final BehaviorSubject<int?> _currentTileIndex = BehaviorSubject();
   final BehaviorSubject<int?> _currentHoveredTileIndex = BehaviorSubject();
+  final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,27 +31,69 @@ abstract class AbstractTileRack extends StatelessWidget {
                 EdgeInsets.symmetric(vertical: SPACE_2, horizontal: SPACE_3),
             height: 70,
             child: game.data != null
-                ? Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    alignment: WrapAlignment.spaceBetween,
+                ? Stack(
+                    clipBehavior: Clip.none,
+                    fit: StackFit.expand,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: startOfTileRackButtons(
-                            tileRack: game.data!.tileRack),
-                      ),
-                      playerTileRack(game.data!.tileRack.stream),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: endOfTileRackButtons(
-                            game.data!.tileRack, game.data!.board),
-                      )
-                    ],
-                  )
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          alignment: WrapAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: startOfTileRackButtons(
+                                  tileRack: game.data!.tileRack),
+                            ),
+                            Expanded(
+                                child:
+                                    playerTileRack(game.data!.tileRack.stream)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.min,
+                              children: endOfTileRackButtons(
+                                  game.data!.tileRack, game.data!.board),
+                            )
+                          ],
+                        ),
+                        StreamBuilder(
+                            stream: game.data!.tileRack.isExchangeModeEnabled,
+                            builder: ((context, snapshot) => Positioned.fill(
+                                top: -95,
+                                child: snapshot.data ?? false
+                                    ? Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Card(
+                                            color: _themeColorService
+                                                .themeDetails
+                                                .value
+                                                .color
+                                                .colorValue,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(3)),
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: SPACE_3,
+                                                  vertical: SPACE_1),
+                                              child: Text(
+                                                "Sélectionnez des tuiles et échangez les avec le bouton ⏎",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    : Container())))
+                      ])
                 : Container(),
           ),
         );
@@ -131,13 +176,11 @@ abstract class AbstractTileRack extends StatelessWidget {
       children: [
         Stack(
           children: [
-            Tile(
-                tile: tile,
-                size: TILE_SIZE,
-                shouldWiggle: shouldWiggle),
+            Tile(tile: tile, size: TILE_SIZE, shouldWiggle: shouldWiggle),
             Wrap(
               children: [
-                _buildTarget(index - 1, width: TILE_SIZE / 2, height: TILE_SIZE),
+                _buildTarget(index - 1,
+                    width: TILE_SIZE / 2, height: TILE_SIZE),
                 _buildTarget(index, width: TILE_SIZE / 2, height: TILE_SIZE),
               ],
             ),
@@ -180,7 +223,8 @@ abstract class AbstractTileRack extends StatelessWidget {
                   });
             },
             onAccept: (data) {
-              snapshot.data!.tileRack.placeTile(data, from: _currentTileIndex.value, to: index);
+              snapshot.data!.tileRack
+                  .placeTile(data, from: _currentTileIndex.value, to: index);
               _currentHoveredTileIndex.add(null);
             },
             onMove: (details) {

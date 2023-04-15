@@ -16,8 +16,9 @@ class ShuffleTileRackButton extends StatelessWidget {
       onPressed: () {
         tileRack.shuffle();
       },
-      icon: Icons.repeat,
+      icon: Icons.shuffle,
       iconOnly: true,
+      theme: AppButtonTheme.tertiary,
     );
   }
 }

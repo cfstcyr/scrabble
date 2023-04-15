@@ -17,6 +17,7 @@ class PuzzleTileRack extends AbstractTileRack {
     return List<Widget>.of([
       ClearPlacedTilesWidget(
         hasPlacementStream: board.hasPlacementStream,
+        tileRack: tileRack,
       ),
     ]);
   }
