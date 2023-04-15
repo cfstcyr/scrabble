@@ -10,7 +10,6 @@ import 'package:mobile/services/chat.service.dart';
 import 'package:mobile/services/sound-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
-import '../services/user.service.dart';
 import 'chat-management.dart';
 
 class MyScaffold extends StatelessWidget {
@@ -91,20 +90,21 @@ class MyScaffold extends StatelessWidget {
                       ));
                 }),
           ),
-          Builder(
-              builder: (context) => InkWell(
-                    onTap: () {
-                      _soundService.playSound(Sound.click);
-                      openUserMenu(context,
-                          canAccessMyProfile: _canNavigateToProfile(context));
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(right: SPACE_2),
-                      child: Avatar(
-                        size: 38,
-                      ),
-                    ),
-                  )),
+          _shouldShowProfileButton(context)
+              ? Builder(
+                  builder: (context) => InkWell(
+                        onTap: () {
+                          _soundService.playSound(Sound.click);
+                          openUserMenu(context);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(right: SPACE_2),
+                          child: Avatar(
+                            size: 38,
+                          ),
+                        ),
+                      ))
+              : Container(),
         ],
       ),
       body: body,
@@ -113,10 +113,9 @@ class MyScaffold extends StatelessWidget {
     );
   }
 
-  bool _canNavigateToProfile(BuildContext context) {
-    return ModalRoute.of(context)?.settings.name != PROFILE_ROUTE &&
-        ModalRoute.of(context)?.settings.name != PROFILE_EDIT_ROUTE &&
-        ModalRoute.of(context)?.settings.name != PROFILE_SEARCH_ROUTE;
+  bool _shouldShowProfileButton(BuildContext context) {
+    return ModalRoute.of(context)?.settings.name == HOME_ROUTE ||
+        ModalRoute.of(context)?.settings.name == BASE_ROUTE;
   }
 
   bool _isLocalProfile(BuildContext context) {

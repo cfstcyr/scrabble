@@ -16,6 +16,8 @@ import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/puzzle-service.dart';
 
 void showStartPracticePuzzleDialog(BuildContext context) {
+  PuzzleService _puzzleService = getIt.get<PuzzleService>();
+
   showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -70,8 +72,9 @@ void showStartPracticePuzzleDialog(BuildContext context) {
                   constraints: BoxConstraints.tightFor(width: 216, height: 60),
                   child: AppButton(
                     onPressed: () {
-                      getIt
-                          .get<PuzzleService>()
+                      _puzzleService.clearPuzzle();
+
+                      _puzzleService
                           .startPuzzle(puzzleLevelSelector.selectedValue ??
                               advancedPuzzleLevel)
                           .then((bool isSuccess) {

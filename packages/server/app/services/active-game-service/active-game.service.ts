@@ -81,17 +81,12 @@ export class ActiveGameService {
         return this.getGame(gameId, playerId).gameIsOver;
     }
 
-    async handlePlayerLeaves(gameId: string, playerId: string): Promise<void> {
+    async handlePlayerLeaves(gameId: string, playerId: string, shouldQuit: boolean = true): Promise<void> {
         const game: Game = this.getGame(gameId, playerId);
-        await this.chatService.quitChannel(game.getGroupChannelId(), playerId);
+        if (shouldQuit) await this.chatService.quitChannel(game.getGroupChannelId(), playerId);
 
         // Check if there is no player left --> cleanup server and client
         try {
-            if (!this.socketService.doesRoomExist(gameId)) {
-                this.removeGame(gameId, playerId);
-                return;
-            }
-
             this.socketService.removeFromRoom(playerId, gameId);
             this.socketService.emitToSocket(playerId, 'cleanup');
         } catch (exception) {

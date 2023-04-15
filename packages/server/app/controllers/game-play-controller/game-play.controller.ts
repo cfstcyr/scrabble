@@ -233,9 +233,8 @@ export class GamePlayController extends BaseController {
         const updatedData = await this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
 
         const game: Game = this.activeGameService.getGame(gameId, observerId);
-        const observerSocket = this.socketService.getSocket(observerId);
         const data = game.createStartGameData();
-        this.socketService.emitToSocket(observerSocket.id, 'replaceVirtualPlayer', data);
+        this.socketService.emitToSocket(observerId, 'replaceVirtualPlayer', data);
         this.gameUpdate(gameId, updatedData);
         this.socketService.emitToRoom(gameId, 'newMessage', {
             content: OBSERVER_REPLACE_JV_MESSAGE,

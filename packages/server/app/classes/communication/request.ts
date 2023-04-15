@@ -23,3 +23,5 @@ export type GameHistoriesRequest = Request & { params: { playerId: string } };
 export type GroupsRequest = Request & { params: { playerId: string } };
 
 export type PlaceRequest = UserRequest<{ tilePlacement: TilePlacement[] }> & { params: { gameId: string } };
+
+export type TokenRequest = UserRequest<{ firebaseToken: string }>;

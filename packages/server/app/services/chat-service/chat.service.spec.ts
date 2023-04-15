@@ -408,7 +408,7 @@ describe('ChatService', () => {
             const stub = Sinon.stub(service, 'handleCreateChannel' as any).callsFake(async () => Promise.resolve());
             // testingUnit.getStubbedInstance(AuthentificationService).connectedUsers = new ConnectedUser();
             Sinon.stub(authenticationService.connectedUsers, 'getSocketId').withArgs(USER.idUser).returns(DEFAULT_PLAYER_ID);
-            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
+            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns({ socket: serverSocket });
 
             await service['createChannel'](channelCreation, USER.idUser);
 
@@ -419,7 +419,7 @@ describe('ChatService', () => {
     describe('joinChannel', () => {
         it('should call handleJoinChannel', async () => {
             const stub = Sinon.stub(service, 'handleJoinChannel' as any).callsFake(async () => Promise.resolve());
-            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
+            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns({ socket: serverSocket });
 
             await service['joinChannel'](testChannel.idChannel, DEFAULT_PLAYER_ID);
 
@@ -430,7 +430,7 @@ describe('ChatService', () => {
     describe('quitChannel', () => {
         it('should call handleQuitChannel', async () => {
             const stub = Sinon.stub(service, 'handleQuitChannel' as any).callsFake(async () => Promise.resolve());
-            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns(serverSocket);
+            testingUnit.getStubbedInstance(SocketService).getSocket.withArgs(DEFAULT_PLAYER_ID).returns({ socket: serverSocket });
 
             await service['quitChannel'](testChannel.idChannel, DEFAULT_PLAYER_ID);
 
@@ -448,11 +448,11 @@ describe('ChatService', () => {
             testingUnit
                 .getStubbedInstance(SocketService)
                 .getSocket.onFirstCall()
-                .returns(expectedUserIds[0] as unknown as ServerSocket)
+                .returns({ socket: expectedUserIds[0] as unknown as ServerSocket })
                 .onSecondCall()
-                .returns(expectedUserIds[1] as unknown as ServerSocket)
+                .returns({ socket: expectedUserIds[1] as unknown as ServerSocket })
                 .onThirdCall()
-                .returns(expectedUserIds[2] as unknown as ServerSocket);
+                .returns({ socket: expectedUserIds[2] as unknown as ServerSocket });
 
             await service['emptyChannel'](testChannel.idChannel);
 
