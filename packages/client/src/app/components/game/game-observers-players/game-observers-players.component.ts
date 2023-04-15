@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
-import { Subject } from 'rxjs';
 import { Player } from '@app/classes/player';
-import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
+import { MAX_TILES_PER_PLAYER } from '@app/constants/game-constants';
 import { GameService } from '@app/services';
 import { GameViewEventManagerService } from '@app/services/game-view-event-manager-service/game-view-event-manager.service';
+import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LetterValue, Tile } from '@app/classes/tile';
 
+const VIRTUAL_PLAYER_ID_PREFIX = 'virtual-player';
 interface GamePlayer {
     isActive: boolean;
     player: Player;
@@ -77,6 +78,14 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
         this.componentDestroyed$.complete();
     }
 
+    handleReplaceVirtualPlayerByObserver(virtualPlayerNumber: number) {
+        this.gameService.replaceVirtualPlayer(virtualPlayerNumber);
+    }
+
+    isObservingVirtualPlayer(player: GamePlayer) {
+        return player.player.id.includes(VIRTUAL_PLAYER_ID_PREFIX);
+    }
+
     private setupGame(): void {
         if (this.roundManager.timer) {
             this.roundManager.timer.pipe(takeUntil(this.componentDestroyed$)).subscribe(([, activePlayer]) => {
@@ -91,7 +100,6 @@ export class GameObserversPlayersComponent implements OnInit, OnDestroy {
         this.player3 = this.buildGamePlayer(3, activePlayer);
         this.player4 = this.buildGamePlayer(4, activePlayer);
     }
-
     private buildGamePlayer(playerNumber: number, activePlayer: Player | undefined): GamePlayer {
         const player =
             this.gameService.getPlayerByNumber(playerNumber) ?? new Player('', { username: 'Player' + playerNumber, email: '', avatar: '' }, []);

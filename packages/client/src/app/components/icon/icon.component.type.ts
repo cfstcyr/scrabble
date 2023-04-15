@@ -112,6 +112,7 @@ export type IconName =
     | 'arrows-alt-v'
     | 'arrows-h'
     | 'arrows-v'
+    | 'arrows-rotate'
     | 'assistive-listening-systems'
     | 'asterisk'
     | 'at'

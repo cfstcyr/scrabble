@@ -3,25 +3,26 @@ import { FeedbackMessage, FeedbackMessages } from '@app/classes/communication/fe
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
 import { GameRequest, PlaceRequest } from '@app/classes/communication/request';
+import Game from '@app/classes/game/game';
 import { HttpException } from '@app/classes/http-exception/http-exception';
+import { UserId } from '@app/classes/user/connected-user-types';
 import { CONTENT_REQUIRED, SENDER_REQUIRED } from '@app/constants/controllers-errors';
-import { INVALID_WORD_TIMEOUT, SYSTEM_ERROR_ID, SYSTEM_ID } from '@app/constants/game-constants';
+import { INVALID_WORD_TIMEOUT, OBSERVER_REPLACE_JV_MESSAGE, SYSTEM_ERROR_ID, SYSTEM_ID } from '@app/constants/game-constants';
 import { COMMAND_IS_INVALID, OPPONENT_PLAYED_INVALID_WORD } from '@app/constants/services-errors';
+import { BaseController } from '@app/controllers/base-controller';
+import { wordPlacementValidator } from '@app/middlewares/validators/tile-placement';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import { GamePlayService } from '@app/services/game-play-service/game-play.service';
 import { SocketService } from '@app/services/socket-service/socket.service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
 import { Delay } from '@app/utils/delay/delay';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { ActionType } from '@common/models/action';
+import { TilePlacement } from '@common/models/tile-placement';
 import { Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
-import { BaseController } from '@app/controllers/base-controller';
-import { UserId } from '@app/classes/user/connected-user-types';
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { TilePlacement } from '@common/models/tile-placement';
-import { wordPlacementValidator } from '@app/middlewares/validators/tile-placement';
-import { ActionType } from '@common/models/action';
 
 @Service()
 export class GamePlayController extends BaseController {
@@ -55,6 +56,19 @@ export class GamePlayController extends BaseController {
             const playerId = req.body.virtualPlayerId;
             try {
                 await this.handlePlayAction(gameId, playerId, data);
+                res.status(StatusCodes.NO_CONTENT).send();
+            } catch (exception) {
+                next(exception);
+            }
+        });
+
+        router.post('/:gameId/players/replace', async (req: GameRequest, res: Response, next) => {
+            const { gameId } = req.params;
+            const userId: UserId = req.body.idUser;
+            const virtualPlayerNumber: number = req.body.virtualPlayerNumber;
+            try {
+                const playerId = this.authentificationService.connectedUsers.getSocketId(userId);
+                await this.handleReplaceVirtualPlayer(gameId, playerId, virtualPlayerNumber);
                 res.status(StatusCodes.NO_CONTENT).send();
             } catch (exception) {
                 next(exception);
@@ -113,7 +127,6 @@ export class GamePlayController extends BaseController {
             }
 
             const [updateData, feedback] = await this.gamePlayService.playAction(gameId, playerId, data);
-
             if (updateData) {
                 this.gameUpdate(gameId, updateData);
             }
@@ -215,5 +228,19 @@ export class GamePlayController extends BaseController {
 
     private handleTilePlacement(gameId: string, playerId: string, data: TilePlacement[]) {
         this.socketService.emitToRoomNoSender(gameId, playerId, 'tilePlacement', data);
+    }
+    private async handleReplaceVirtualPlayer(gameId: string, observerId: string, virtualPlayerNumber: number): Promise<void> {
+        const updatedData = await this.activeGameService.handleReplaceVirtualPlayer(gameId, observerId, virtualPlayerNumber);
+
+        const game: Game = this.activeGameService.getGame(gameId, observerId);
+        const observerSocket = this.socketService.getSocket(observerId);
+        const data = game.createStartGameData();
+        this.socketService.emitToSocket(observerSocket.id, 'replaceVirtualPlayer', data);
+        this.gameUpdate(gameId, updatedData);
+        this.socketService.emitToRoom(gameId, 'newMessage', {
+            content: OBSERVER_REPLACE_JV_MESSAGE,
+            senderId: SYSTEM_ID,
+            gameId,
+        });
     }
 }
