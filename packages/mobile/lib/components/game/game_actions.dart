@@ -51,6 +51,7 @@ class GameActions extends StatelessWidget {
                         : Icons.flag,
                     size: AppButtonSize.large,
                     theme: AppButtonTheme.danger,
+                    width: 80,
                   ),
                   StreamBuilder<bool>(
                       stream: _canPlayStream(),
@@ -64,30 +65,9 @@ class GameActions extends StatelessWidget {
                               : null,
                           icon: Icons.lightbulb,
                           size: AppButtonSize.large,
+                          width: 80,
                         );
                       }),
-
-                  StreamBuilder<bool>(
-                      stream: _canExchangeStream(),
-                      initialData: false,
-                      builder: (context, snapshot) {
-                        return AppButton(
-                          onPressed: snapshot.hasData && snapshot.data!
-                              ? () {
-                                  _actionService.sendAction(
-                                      ActionType.exchange,
-                                      _gameService
-                                          .getTileRack()
-                                          .getSelectedTilesPayload());
-                                  _gameService
-                                      .getTileRack()
-                                      .disableExchangeMode();
-                                }
-                              : null,
-                          icon: Icons.swap_horiz_rounded,
-                          size: AppButtonSize.large,
-                        );
-                      }), //Échanger
                   StreamBuilder<bool>(
                       stream: _canPlayStream(),
                       initialData: false,
@@ -102,6 +82,7 @@ class GameActions extends StatelessWidget {
                               : null,
                           icon: Icons.not_interested_rounded,
                           size: AppButtonSize.large,
+                          width: 80,
                         );
                       }), // Passer
                   StreamBuilder<bool>(
@@ -115,6 +96,7 @@ class GameActions extends StatelessWidget {
                             : null,
                         icon: Icons.play_arrow_rounded,
                         size: AppButtonSize.large,
+                        width: 80,
                       );
                     },
                   ),

@@ -10,8 +10,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/services/game.service.dart';
 
 class MultiplayerTileRack extends AbstractTileRack {
-  MultiplayerTileRack(
-      {required super.gameStream});
+  MultiplayerTileRack({required super.gameStream});
 
   final GameService _gameService = getIt.get<GameService>();
 
@@ -24,6 +23,7 @@ class MultiplayerTileRack extends AbstractTileRack {
       ),
       ClearPlacedTilesWidget(
         hasPlacementStream: board.hasPlacementStream,
+        tileRack: tileRack,
       ),
     ]);
   }

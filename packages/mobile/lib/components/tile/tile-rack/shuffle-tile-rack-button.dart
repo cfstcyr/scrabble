@@ -18,6 +18,7 @@ class ShuffleTileRackButton extends StatelessWidget {
       },
       icon: Icons.repeat,
       iconOnly: true,
+      theme: AppButtonTheme.tertiary,
     );
   }
 }
