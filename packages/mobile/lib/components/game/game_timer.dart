@@ -78,7 +78,8 @@ class _GameTimerState extends State<GameTimer> {
     _timer = Timer.periodic(
       oneSec,
       (Timer timer) {
-        if (_roundService.isLocalPlayerActive() && _timeLeft.value == lowTime) {
+        if (getIt.get<GameService>().isLocalPlayerPlaying() &&
+            _timeLeft.value == lowTime) {
           _soundService.playSound(Sound.lowTime);
         }
 

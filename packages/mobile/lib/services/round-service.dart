@@ -1,11 +1,7 @@
 import 'dart:async';
 
 import 'package:mobile/classes/rounds/round.dart';
-import 'package:mobile/locator.dart';
-import 'package:mobile/services/action-service.dart';
 import 'package:rxdart/rxdart.dart';
-
-import 'game-event.service.dart';
 
 class RoundService {
   final Subject<Duration> _startRound$ = PublishSubject();
@@ -42,10 +38,6 @@ class RoundService {
 
   bool isActivePlayer(String currentActivePlayerSocketId, String socketId) {
     return currentActivePlayerSocketId == socketId;
-  }
-
-  bool isLocalPlayerActive() {
-    return currentRound.socketIdOfActivePlayer == _localPlayerId;
   }
 
   void setLocalPlayerId(String? localPlayerId) {
