@@ -32,8 +32,6 @@ import '../components/error-pop-up.dart';
 import '../constants/locale/game-constants.dart';
 import 'game-observer-service.dart';
 
-const SECONDS_TO_MILLISECONDS = 1000;
-
 class GameService {
   final GamePlayController gamePlayController = getIt.get<GamePlayController>();
   final ActionService _actionService = getIt.get<ActionService>();
