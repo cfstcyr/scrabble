@@ -22,7 +22,7 @@ describe('VirtualPlayerFactory', () => {
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withStubbed(NotificationService, {
             initalizeAdminApp: undefined,
-            sendAdminMessage: Promise.resolve(' '),
+            sendNotification: Promise.resolve(' '),
         });
         await testingUnit.withMockDatabaseService();
     });

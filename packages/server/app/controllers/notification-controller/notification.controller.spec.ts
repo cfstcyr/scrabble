@@ -27,7 +27,7 @@ describe('NotificationController', () => {
             .withMockedAuthentification()
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
-                sendAdminMessage: Promise.resolve(' '),
+                sendNotification: Promise.resolve(' '),
                 addMobileUserToken: true,
                 toggleNotifications: false,
             });

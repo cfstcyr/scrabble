@@ -62,7 +62,7 @@ describe('SocketService', () => {
                 .withStubbed(ChatService)
                 .withStubbed(NotificationService, {
                     initalizeAdminApp: undefined,
-                    sendAdminMessage: Promise.resolve(' '),
+                    sendNotification: Promise.resolve(' '),
                 })
                 .withStubbed(
                     AuthentificationService,

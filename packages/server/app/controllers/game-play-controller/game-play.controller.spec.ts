@@ -104,7 +104,7 @@ describe('GamePlayController', () => {
             .withStubbedControllers(GamePlayController)
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
-                sendAdminMessage: Promise.resolve(' '),
+                sendNotification: Promise.resolve(' '),
             })
             .withMockedAuthentification();
 

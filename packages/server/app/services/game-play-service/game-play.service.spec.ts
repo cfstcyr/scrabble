@@ -92,7 +92,7 @@ describe('GamePlayService', () => {
             .withStubbed(VirtualPlayerFactory)
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
-                sendAdminMessage: Promise.resolve(' '),
+                sendNotification: Promise.resolve(' '),
             });
         await testingUnit.withMockDatabaseService();
     });

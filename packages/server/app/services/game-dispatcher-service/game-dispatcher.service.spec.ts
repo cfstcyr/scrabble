@@ -93,7 +93,7 @@ describe('GameDispatcherService', () => {
             .withStubbed(VirtualPlayerFactory)
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
-                sendAdminMessage: Promise.resolve(' '),
+                sendNotification: Promise.resolve(' '),
             });
         await testingUnit.withMockDatabaseService();
         virtualPlayerServiceStub = createStubInstance(VirtualPlayerService);

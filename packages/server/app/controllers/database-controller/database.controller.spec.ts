@@ -19,7 +19,7 @@ describe('DatabaseController', () => {
             .withStubbedControllers(DatabaseController)
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
-                sendAdminMessage: Promise.resolve(' '),
+                sendNotification: Promise.resolve(' '),
             });
         databaseServiceStub = testingUnit.setStubbed(DatabaseService);
     });

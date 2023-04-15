@@ -100,7 +100,7 @@ describe('GameDispatcherController', () => {
             .withStubbed(ChatService)
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
-                sendAdminMessage: Promise.resolve(' '),
+                sendNotification: Promise.resolve(' '),
             })
             .withMockedAuthentification();
         authentificationServiceStub = testingUnit.setStubbed(AuthentificationService);

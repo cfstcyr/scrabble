@@ -30,7 +30,7 @@ describe('ServerActionController', () => {
             .withMockedAuthentification()
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
-                sendAdminMessage: Promise.resolve(' '),
+                sendNotification: Promise.resolve(' '),
             });
         await testingUnit.withMockDatabaseService();
     });

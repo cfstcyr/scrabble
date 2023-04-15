@@ -31,7 +31,7 @@ describe('AnalysisController', () => {
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withMockedAuthentification().withStubbed(NotificationService, {
             initalizeAdminApp: undefined,
-            sendAdminMessage: Promise.resolve(' '),
+            sendNotification: Promise.resolve(' '),
         });
         await testingUnit.withMockDatabaseService();
         testingUnit.withStubbedDictionaryService().withStubbedControllers(AnalysisController);

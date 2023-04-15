@@ -28,7 +28,7 @@ describe('NotificationService', () => {
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withStubbed(NotificationService, {
             initalizeAdminApp: undefined,
-            sendAdminMessage: Promise.resolve(''),
+            sendNotification: Promise.resolve(''),
         });
         service = testingUnit.setStubbed(NotificationService);
         service['mobileUserTokens'] = new Map();
@@ -90,8 +90,8 @@ describe('NotificationService', () => {
     });
 
     describe('sendReminderNotification', () => {
-        it(' should call sendAdminMessage', async () => {
-            const spy = chai.spy.on(service, 'sendAdminMessage', async () => Promise.resolve(''));
+        it(' should call sendNotification', async () => {
+            const spy = chai.spy.on(service, 'sendNotification', async () => Promise.resolve(''));
             service['mobileUserAccounts'].set(DEFAULT_USER.idUser, { ...USER_NOTIFICATIONS_SETTINGS });
             service.sendReminderNotification(DEFAULT_USER.idUser, TOKEN, 'titre', 'body');
             expect(spy).to.be.called;

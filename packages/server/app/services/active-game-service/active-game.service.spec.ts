@@ -69,7 +69,7 @@ describe('ActiveGameService', () => {
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withStubbed(ChatService).withStubbed(NotificationService, {
             initalizeAdminApp: undefined,
-            sendAdminMessage: Promise.resolve(' '),
+            sendNotification: Promise.resolve(' '),
         });
         await testingUnit.withMockDatabaseService();
     });

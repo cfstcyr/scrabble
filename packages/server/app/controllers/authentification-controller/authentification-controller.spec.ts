@@ -28,7 +28,7 @@ describe('AuthentificationController', () => {
     beforeEach(async () => {
         testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(NotificationService, {
             initalizeAdminApp: undefined,
-            sendAdminMessage: Promise.resolve(' '),
+            sendNotification: Promise.resolve(' '),
         });
         await testingUnit.withMockDatabaseService();
         testingUnit.withStubbedControllers(AuthentificationService);

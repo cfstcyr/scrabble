@@ -34,7 +34,7 @@ describe('GameHistoriesController', () => {
             .withStubbedControllers(GameHistoriesController)
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
-                sendAdminMessage: Promise.resolve(' '),
+                sendNotification: Promise.resolve(' '),
             });
         gameHistoriesServiceStub = testingUnit.setStubbed(GameHistoriesService);
     });
