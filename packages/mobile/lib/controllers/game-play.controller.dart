@@ -61,7 +61,8 @@ class GamePlayController {
 
   Future<void> replaceVirtualPlayer(int playerNumber) async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/players/replace");
-    await http.post(endpoint, body: jsonEncode(playerNumber));
+    var data = {'virtualPlayerNumber': playerNumber};
+    await http.post(endpoint, body: jsonEncode(data));
   }
 
   void configureSocket() {
