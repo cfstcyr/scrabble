@@ -48,7 +48,7 @@ class Group {
         'user1': users[0],
         'maxRoundTime': maxRoundTime,
         'virtualPlayerLevel': virtualPlayerLevel.levelName,
-        'gameVisibility': gameVisibility.name,
+        'gameVisibility': gameVisibility.visibilityName,
         'password': password
       };
 }

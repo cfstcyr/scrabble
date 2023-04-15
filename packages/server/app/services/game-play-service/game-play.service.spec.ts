@@ -23,26 +23,27 @@ import { ExpertVirtualPlayer } from '@app/classes/virtual-player/expert-virtual-
 import { MUST_HAVE_7_TILES_TO_SWAP } from '@app/constants/classes-errors';
 import { INVALID_COMMAND, INVALID_PAYLOAD } from '@app/constants/services-errors';
 import { VIRTUAL_PLAYER_ID_PREFIX } from '@app/constants/virtual-player-constants';
+import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
 import { ActiveGameService } from '@app/services/active-game-service/active-game.service';
+import { AnalysisService } from '@app/services/analysis-service/analysis.service';
+import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
 import DictionaryService from '@app/services/dictionary-service/dictionary.service';
 import GameHistoriesService from '@app/services/game-history-service/game-history.service';
 import { GamePlayService } from '@app/services/game-play-service/game-play.service';
 import HighScoresService from '@app/services/high-score-service/high-score.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
+import { RatingService } from '@app/services/rating-service/rating.service';
 import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
 import { VirtualPlayerService } from '@app/services/virtual-player-service/virtual-player.service';
 import * as arrowFunction from '@app/utils/is-id-virtual-player/is-id-virtual-player';
+import { ActionType } from '@common/models/action';
+import { GameHistoryPlayerCreation } from '@common/models/game-history';
 import * as chai from 'chai';
 import { EventEmitter } from 'events';
 import * as sinon from 'sinon';
-import { createStubInstance, restore, SinonStub, SinonStubbedInstance, stub } from 'sinon';
+import { SinonStub, SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { Container } from 'typedi';
-import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
-import { UserStatisticsService } from '@app/services/user-statistics-service/user-statistics-service';
-import { VirtualPlayerFactory } from '@app/factories/virtual-player-factory/virtual-player-factory';
-import { AnalysisService } from '@app/services/analysis-service/analysis.service';
-import { ActionType } from '@common/models/action';
-import { RatingService } from '@app/services/rating-service/rating.service';
-import { GameHistoryPlayerCreation } from '@common/models/game-history';
 
 const expect = chai.expect;
 
@@ -86,7 +87,13 @@ describe('GamePlayService', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(VirtualPlayerFactory);
+        testingUnit = new ServicesTestingUnit()
+            .withStubbedDictionaryService()
+            .withStubbed(VirtualPlayerFactory)
+            .withStubbed(NotificationService, {
+                initalizeAdminApp: undefined,
+                sendNotification: Promise.resolve(' '),
+            });
         await testingUnit.withMockDatabaseService();
     });
 

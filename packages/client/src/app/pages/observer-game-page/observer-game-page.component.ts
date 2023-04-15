@@ -97,11 +97,17 @@ export class ObserverGamePageComponent implements OnInit, OnDestroy {
     getObservingPlayerId(): string | undefined {
         return this.gameService.getLocalPlayerId();
     }
+
     handleReplaceVirtualPlayerByObserver() {
         this.gameService.replaceVirtualPlayer(this.observedPlayerNumber);
     }
+
     isObservingVirtualPlayer() {
         return this.gameService.getLocalPlayerId()?.includes(VIRTUAL_PLAYER_ID_PREFIX);
+    }
+
+    get isGameOver(): boolean {
+        return this.gameService.isGameOver;
     }
 
     private openDialog(title: string, content: string, buttonsContent: string[]): void {

@@ -39,6 +39,10 @@ export class GameDispatcherController extends BaseController {
                 this.handlePlayerLeftFeedback(gameId, endOfGameMessages, updatedData);
             },
         );
+
+        this.socketService.playerDisconnectedEvent.on('playerDisconnected', async (gameId: string, playerId: string) => {
+            await this.handlePlayerDisconnected(gameId, playerId);
+        });
     }
 
     protected configure(router: Router): void {
@@ -213,15 +217,15 @@ export class GameDispatcherController extends BaseController {
         const waitingRoom = this.gameDispatcherService.getMultiplayerGameFromId(gameId);
         if (isObserver) waitingRoom.requestingObservers.push({ publicUser, id: playerId });
         else waitingRoom.requestingPlayers.push(new Player(playerId, publicUser));
-        this.socketService.getSocket(playerId).leave(this.gameDispatcherService.getGroupsRoom().getId());
+        this.socketService.getSocket(playerId).socket.leave(this.gameDispatcherService.getGroupsRoom().getId());
     }
 
-    private async handleLeave(gameId: string, playerId: string): Promise<void> {
+    private async handleLeave(gameId: string, playerId: string, shouldQuit: boolean = true): Promise<void> {
         if (this.gameDispatcherService.isGameInWaitingRooms(gameId)) {
             if (this.gameDispatcherService.isPlayerFromAcceptedUsers(gameId, playerId)) {
-                this.socketService.removeFromRoom(playerId, gameId);
+                if (shouldQuit) this.socketService.removeFromRoom(playerId, gameId);
 
-                const group = await this.gameDispatcherService.leaveGroupRequest(gameId, playerId);
+                const group = await this.gameDispatcherService.leaveGroupRequest(gameId, playerId, shouldQuit);
                 this.socketService.emitToRoom(gameId, 'userLeftGroup', group);
                 this.handleGroupsUpdate();
             } else {
@@ -236,7 +240,7 @@ export class GameDispatcherController extends BaseController {
             return;
         }
 
-        await this.activeGameService.handlePlayerLeaves(gameId, playerId);
+        await this.activeGameService.handlePlayerLeaves(gameId, playerId, shouldQuit);
     }
 
     private handlePlayerLeftFeedback(gameId: string, endOfGameMessages: string[], updatedData: GameUpdateData): void {
@@ -246,6 +250,23 @@ export class GameDispatcherController extends BaseController {
             senderId: SYSTEM_ID,
             gameId,
         });
+    }
+
+    private async handlePlayerDisconnected(gameId: string, playerId: string): Promise<void> {
+        if (
+            this.gameDispatcherService.isGameInWaitingRooms(gameId) &&
+            this.gameDispatcherService.getMultiplayerGameFromId(gameId).getConfig().player1.id === playerId
+        ) {
+            try {
+                await this.handleCancelGame(gameId, playerId);
+                // eslint-disable-next-line no-empty
+            } catch (_) {}
+        } else {
+            try {
+                await this.handleLeave(gameId, playerId, false);
+                // eslint-disable-next-line no-empty
+            } catch (_) {}
+        }
     }
 
     private async handleCreateGame(groupData: GroupData, userId: UserId, playerId: string): Promise<Group | void> {
@@ -271,7 +292,7 @@ export class GameDispatcherController extends BaseController {
             this.socketService.emitToRoom(gameId, 'acceptJoinRequest', waitingRoom.convertToGroup());
         }
 
-        this.socketService.getSocket(playerId).leave(this.gameDispatcherService.getGroupsRoom().getId());
+        this.socketService.getSocket(playerId).socket.leave(this.gameDispatcherService.getGroupsRoom().getId());
         this.handleGroupsUpdate();
     }
 

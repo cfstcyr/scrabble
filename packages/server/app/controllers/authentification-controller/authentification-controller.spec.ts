@@ -1,19 +1,20 @@
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+import { Application } from '@app/app';
+import { HttpException } from '@app/classes/http-exception/http-exception';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
+import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
-import { AuthentificationController } from './authentification-controller';
+import { StatusCodes } from 'http-status-codes';
 import * as sinon from 'sinon';
+import { SinonStubbedInstance } from 'sinon';
 import * as supertest from 'supertest';
 import { Container } from 'typedi';
-import { Application } from '@app/app';
-import { StatusCodes } from 'http-status-codes';
-import { HttpException } from '@app/classes/http-exception/http-exception';
-import { SinonStubbedInstance } from 'sinon';
-import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import { AuthentificationController } from './authentification-controller';
 
 const expect = chai.expect;
 chai.use(spies);
@@ -25,7 +26,10 @@ describe('AuthentificationController', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService();
+        testingUnit = new ServicesTestingUnit().withStubbedDictionaryService().withStubbed(NotificationService, {
+            initalizeAdminApp: undefined,
+            sendNotification: Promise.resolve(' '),
+        });
         await testingUnit.withMockDatabaseService();
         testingUnit.withStubbedControllers(AuthentificationService);
         authentificationServiceStub = testingUnit.setStubbed(AuthentificationService);

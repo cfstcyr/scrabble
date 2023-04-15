@@ -27,4 +27,9 @@ export interface RatedUser extends PublicUser {
     rating: number;
 }
 
+export interface UserNotificationsSettings extends User {
+    isNotificationsEnabled: boolean;
+}
+
+
 export const UNKOWN_USER: PublicUser = { email: '', username: 'Inconnu', avatar: '' };

@@ -164,7 +164,7 @@ export class GameDispatcherService {
         );
     }
 
-    async leaveGroupRequest(waitingRoomId: string, playerId: string): Promise<Group> {
+    async leaveGroupRequest(waitingRoomId: string, playerId: string, shouldQuit: boolean = true): Promise<Group> {
         const waitingRoom = this.getMultiplayerGameFromId(waitingRoomId);
         switch (playerId) {
             case waitingRoom.joinedPlayer2?.id: {
@@ -187,7 +187,7 @@ export class GameDispatcherService {
             }
         }
 
-        await this.chatService.quitChannel(waitingRoom.getGroupChannelId(), playerId);
+        if (shouldQuit) await this.chatService.quitChannel(waitingRoom.getGroupChannelId(), playerId);
         return waitingRoom.convertToGroup();
     }
 
