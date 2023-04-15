@@ -79,19 +79,19 @@ export class ChatService {
 
     async createChannel(channel: ChannelCreation, userId: UserId): Promise<Channel> {
         const socketId: SocketId = this.authentificationService.connectedUsers.getSocketId(userId);
-        const socket: ServerSocket = this.socketService.getSocket(socketId);
+        const socket: ServerSocket = this.socketService.getSocket(socketId).socket;
         return this.handleCreateChannel(channel, socket);
     }
 
     // TODO: User userId when playerId has been replaced in requests !153
     async joinChannel(idChannel: TypeOfId<Channel>, playerId: SocketId): Promise<void> {
-        const socket: ServerSocket = this.socketService.getSocket(playerId);
+        const socket: ServerSocket = this.socketService.getSocket(playerId).socket;
         return this.handleJoinChannel(idChannel, socket);
     }
 
     // TODO: User userId when playerId has been replaced in requests !153
     async quitChannel(idChannel: TypeOfId<Channel>, playerId: SocketId): Promise<void> {
-        const socket: ServerSocket = this.socketService.getSocket(playerId);
+        const socket: ServerSocket = this.socketService.getSocket(playerId).socket;
         return this.handleQuitChannel(idChannel, socket);
     }
 
@@ -100,7 +100,7 @@ export class ChatService {
         playerIdsInChannel.forEach((userId) => {
             try {
                 const socketId: SocketId = this.authentificationService.connectedUsers.getSocketId(userId);
-                const socket: ServerSocket = this.socketService.getSocket(socketId);
+                const socket: ServerSocket = this.socketService.getSocket(socketId).socket;
                 this.handleQuitChannel(idChannel, socket);
             } catch {
                 return;
@@ -220,7 +220,7 @@ export class ChatService {
 
     private async updateJoinableChannelsForUser(idUser: TypeOfId<User>): Promise<void> {
         const socketId: SocketId = this.authentificationService.connectedUsers.getSocketId(idUser);
-        const socket: ServerSocket = this.socketService.getSocket(socketId);
+        const socket: ServerSocket = this.socketService.getSocket(socketId).socket;
         const joinableChannels = await this.chatPersistenceService.getJoinableChannels(idUser);
         socket.emit('channel:joinableChannels', joinableChannels);
     }

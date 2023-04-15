@@ -87,6 +87,7 @@ const DEFAULT_JOINED_PLAYER3 = new Player(DEFAULT_PLAYER_ID, USER1);
 describe('GameDispatcherController', () => {
     let controller: GameDispatcherController;
     let authentificationServiceStub: SinonStubbedInstance<AuthentificationService>;
+    let socketServiceStub: SinonStubbedInstance<SocketService>;
     let userService: UserService;
     let testingUnit: ServicesTestingUnit;
 
@@ -96,7 +97,6 @@ describe('GameDispatcherController', () => {
         testingUnit
             .withStubbedDictionaryService()
             .withStubbedControllers(GameDispatcherController)
-            .withStubbed(SocketService)
             .withStubbed(ChatService)
             .withStubbed(NotificationService, {
                 initalizeAdminApp: undefined,
@@ -104,9 +104,11 @@ describe('GameDispatcherController', () => {
             })
             .withMockedAuthentification();
         authentificationServiceStub = testingUnit.setStubbed(AuthentificationService);
+        socketServiceStub = testingUnit.setStubbed(SocketService);
     });
 
     beforeEach(() => {
+        socketServiceStub.playerDisconnectedEvent = new EventEmitter();
         controller = Container.get(GameDispatcherController);
         userService = Container.get(UserService);
         authentificationServiceStub.connectedUsers = new ConnectedUser();
@@ -486,7 +488,7 @@ describe('GameDispatcherController', () => {
             const stubSocket = createStubInstance(Socket);
             stubSocket.leave.returns();
             chai.spy.on(controller['socketService'], 'getSocket', () => {
-                return stubSocket;
+                return { socket: stubSocket };
             });
         });
 

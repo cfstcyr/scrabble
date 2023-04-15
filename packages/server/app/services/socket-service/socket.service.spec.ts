@@ -5,6 +5,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Application } from '@app/app';
 import { ConnectedUser } from '@app/classes/user/connected-user';
+import { GAME_ROOM_ID_PREFIX } from '@app/constants/classes-constants';
 import { SOCKET_CONFIGURE_EVENT_NAME } from '@app/constants/services-constants/socket-consts';
 import { INVALID_ID_FOR_SOCKET, SOCKET_SERVICE_NOT_INITIALIZED } from '@app/constants/services-errors';
 import { AuthentificationService } from '@app/services/authentification-service/authentification.service';
@@ -27,6 +28,7 @@ const RESPONSE_DELAY = 400;
 const SERVER_URL = 'http://localhost:';
 
 const DEFAULT_ROOM = 'default_room';
+const DEFAULT_GAME_ROOM = GAME_ROOM_ID_PREFIX + 'default_room';
 const INVALID_ROOM_NAME = 'invalid_room';
 const INVALID_ID = 'invalid-id';
 const DEFAULT_ARGS = 'data';
@@ -79,6 +81,7 @@ describe('SocketService', () => {
             server = Container.get(Server);
             server.init();
             service = server['socketService'];
+            chai.spy.on(service, 'handleDisconnect', () => {});
             clientSocket = ioClient(SERVER_URL + Server['appPort'], { auth: { token: DEFAULT_TOKEN } });
             service.handleSockets();
         });
@@ -160,9 +163,14 @@ describe('SocketService', () => {
             });
 
             it('should add it to the room', () => {
-                expect(service.getSocket(id).rooms.has(DEFAULT_ROOM)).to.be.false;
+                expect(service.getSocket(id).socket.rooms.has(DEFAULT_ROOM)).to.be.false;
                 service.addToRoom(id, DEFAULT_ROOM);
-                expect(service.getSocket(id).rooms.has(DEFAULT_ROOM)).to.be.true;
+                expect(service.getSocket(id).socket.rooms.has(DEFAULT_ROOM)).to.be.true;
+            });
+
+            it('should add it to the gameRoom', () => {
+                service.addToRoom(id, DEFAULT_GAME_ROOM);
+                expect(service.getSocket(id).gameRoom).to.equal(DEFAULT_GAME_ROOM);
             });
         });
 
@@ -179,9 +187,9 @@ describe('SocketService', () => {
 
             it('should remove it from the room', () => {
                 service.addToRoom(id, DEFAULT_ROOM);
-                expect(service.getSocket(id).rooms.has(DEFAULT_ROOM)).to.be.true;
+                expect(service.getSocket(id).socket.rooms.has(DEFAULT_ROOM)).to.be.true;
                 service.deleteRoom(DEFAULT_ROOM);
-                expect(service.getSocket(id).rooms.has(DEFAULT_ROOM)).to.be.false;
+                expect(service.getSocket(id).socket.rooms.has(DEFAULT_ROOM)).to.be.false;
                 expect(service['sio']?.sockets.adapter.rooms.has(DEFAULT_ROOM)).to.be.false;
             });
         });
@@ -199,9 +207,16 @@ describe('SocketService', () => {
             });
 
             it('should remove socketId from room', () => {
-                expect(service.getSocket(id).rooms.has(DEFAULT_ROOM)).to.be.true;
+                expect(service.getSocket(id).socket.rooms.has(DEFAULT_ROOM)).to.be.true;
                 service.removeFromRoom(id, DEFAULT_ROOM);
-                expect(service.getSocket(id).rooms.has(DEFAULT_ROOM)).to.be.false;
+                expect(service.getSocket(id).socket.rooms.has(DEFAULT_ROOM)).to.be.false;
+            });
+
+            it('should remove it from the gameRoom if it matches', () => {
+                service.addToRoom(id, DEFAULT_GAME_ROOM);
+                expect(service.getSocket(id).gameRoom).to.equal(DEFAULT_GAME_ROOM);
+                service.removeFromRoom(id, DEFAULT_GAME_ROOM);
+                expect(service.getSocket(id).gameRoom).to.equal(undefined);
             });
         });
 
@@ -218,7 +233,7 @@ describe('SocketService', () => {
 
             it('should return true if room has socket in it', () => {
                 service.addToRoom(id, DEFAULT_ROOM);
-                expect(service.getSocket(id).rooms.has(DEFAULT_ROOM)).to.be.true;
+                expect(service.getSocket(id).socket.rooms.has(DEFAULT_ROOM)).to.be.true;
                 expect(service.doesRoomExist(DEFAULT_ROOM)).to.be.true;
             });
 
