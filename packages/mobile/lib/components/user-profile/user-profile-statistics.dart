@@ -17,13 +17,13 @@ class UserProfileStatisticsItem extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: FontWeight.w600,
               color: Colors.grey.shade500),
         ),
         Text(
           value,
-          style: TextStyle(fontSize: 48, fontWeight: FontWeight.w800),
+          style: TextStyle(fontSize: 44, fontWeight: FontWeight.w800),
         ),
       ],
     );
@@ -76,5 +76,5 @@ class UserProfileStatistics extends StatelessWidget {
 String handleTimeString(double time) {
   int timeInSec = (time % 60).round();
   int timeInMin = ((time - timeInSec) / 60).round();
-  return timeInMin != 0 ? "$timeInMin min $timeInSec s" : "$timeInSec s";
+  return timeInMin != 0 ? "$timeInMin m $timeInSec s" : "$timeInSec s";
 }
