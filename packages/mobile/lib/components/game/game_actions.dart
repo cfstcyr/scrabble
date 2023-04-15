@@ -93,71 +93,82 @@ class _GameActionsState extends State<GameActions> {
                     size: AppButtonSize.large,
                     theme: AppButtonTheme.danger,
                   ),
-                  StreamBuilder<bool>(
-                      stream: _canPlayStream(),
-                      initialData: false,
-                      builder: (context, snapshot) {
+                  Visibility(
+                    visible: !getIt.get<UserService>().isObserver,
+                    child: StreamBuilder<bool>(
+                        stream: _canPlayStream(),
+                        initialData: false,
+                        builder: (context, snapshot) {
+                          return AppButton(
+                            onPressed: snapshot.hasData && snapshot.data!
+                                ? () {
+                                    _actionService.sendAction(ActionType.hint);
+                                  }
+                                : null,
+                            icon: Icons.lightbulb,
+                            size: AppButtonSize.large,
+                          );
+                        }),
+                  ),
+                  Visibility(
+                    visible: !getIt.get<UserService>().isObserver,
+                    child: StreamBuilder<bool>(
+                        stream: _canExchangeStream(),
+                        initialData: false,
+                        builder: (context, snapshot) {
+                          return AppButton(
+                            onPressed: snapshot.hasData && snapshot.data!
+                                ? () {
+                                    _actionService.sendAction(
+                                        ActionType.exchange,
+                                        _gameService
+                                            .getTileRack()
+                                            .getSelectedTilesPayload());
+                                    _gameService
+                                        .getTileRack()
+                                        .disableExchangeMode();
+                                  }
+                                : null,
+                            icon: Icons.swap_horiz_rounded,
+                            size: AppButtonSize.large,
+                          );
+                        }),
+                  ), //Échanger
+                  Visibility(
+                    visible: !getIt.get<UserService>().isObserver,
+                    child: StreamBuilder<bool>(
+                        stream: _canPlayStream(),
+                        initialData: false,
+                        builder: (context, snapshot) {
+                          return AppButton(
+                            onPressed: snapshot.hasData && snapshot.data!
+                                ? () {
+                                    _actionService.sendAction(ActionType.pass);
+                                    _gameEventService.add<void>(
+                                        PUT_BACK_TILES_ON_TILE_RACK, null);
+                                  }
+                                : null,
+                            icon: Icons.not_interested_rounded,
+                            size: AppButtonSize.large,
+                          );
+                        }),
+                  ), // Passer
+                  Visibility(
+                    visible: !getIt.get<UserService>().isObserver,
+                    child: StreamBuilder<bool>(
+                      stream: snapshot.hasData
+                          ? _canPlaceStream(snapshot.data!)
+                          : Stream.value(false),
+                      builder: (context, canPlace) {
                         return AppButton(
-                          onPressed: snapshot.hasData && snapshot.data!
-                              ? () {
-                                  _actionService.sendAction(ActionType.hint);
-                                }
+                          onPressed: canPlace.data ?? false
+                              ? () => _gameService.playPlacement()
                               : null,
-                          icon: Icons.lightbulb,
+                          icon: Icons.play_arrow_rounded,
                           size: AppButtonSize.large,
                         );
-                      }),
-
-                  StreamBuilder<bool>(
-                      stream: _canExchangeStream(),
-                      initialData: false,
-                      builder: (context, snapshot) {
-                        return AppButton(
-                          onPressed: snapshot.hasData && snapshot.data!
-                              ? () {
-                                  _actionService.sendAction(
-                                      ActionType.exchange,
-                                      _gameService
-                                          .getTileRack()
-                                          .getSelectedTilesPayload());
-                                  _gameService
-                                      .getTileRack()
-                                      .disableExchangeMode();
-                                }
-                              : null,
-                          icon: Icons.swap_horiz_rounded,
-                          size: AppButtonSize.large,
-                        );
-                      }), //Échanger
-                  StreamBuilder<bool>(
-                      stream: _canPlayStream(),
-                      initialData: false,
-                      builder: (context, snapshot) {
-                        return AppButton(
-                          onPressed: snapshot.hasData && snapshot.data!
-                              ? () {
-                                  _actionService.sendAction(ActionType.pass);
-                                  _gameEventService.add<void>(
-                                      PUT_BACK_TILES_ON_TILE_RACK, null);
-                                }
-                              : null,
-                          icon: Icons.not_interested_rounded,
-                          size: AppButtonSize.large,
-                        );
-                      }), // Passer
-                  StreamBuilder<bool>(
-                    stream: snapshot.hasData
-                        ? _canPlaceStream(snapshot.data!)
-                        : Stream.value(false),
-                    builder: (context, canPlace) {
-                      return AppButton(
-                        onPressed: canPlace.data ?? false
-                            ? () => _gameService.playPlacement()
-                            : null,
-                        icon: Icons.play_arrow_rounded,
-                        size: AppButtonSize.large,
-                      );
-                    },
+                      },
+                    ),
                   ), // remplacer JV
                   Visibility(
                     visible: getIt.get<UserService>().isObserver,
