@@ -60,7 +60,7 @@ class ToggleExchangeModeWidget extends StatelessWidget {
                                 tileRack.toggleExchangeMode();
                               }
                             : null,
-                        icon: Icons.shuffle,
+                        icon: Icons.repeat,
                         iconOnly: true,
                       ));
         });
