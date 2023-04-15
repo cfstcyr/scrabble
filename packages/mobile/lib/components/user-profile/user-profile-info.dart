@@ -97,6 +97,20 @@ class _UserProfileInfoState extends State<UserProfileInfo> {
                           Navigator.pushNamed(context, PROFILE_EDIT_ROUTE),
                       icon: Icons.manage_accounts_rounded,
                     ),
+                    StreamBuilder<bool>(
+                        stream: getIt
+                            .get<NotificationService>()
+                            .isNotificationEnabled,
+                        builder: (context, snapshot) {
+                          bool isEnabled = snapshot.data ?? true;
+                          return AppButton(
+                            onPressed: () =>
+                                notificationService.toggleNotifications(),
+                            icon: isEnabled
+                                ? Icons.notifications
+                                : Icons.notifications_off_rounded,
+                          );
+                        }),
                   ])
                 : Container(),
           ],
