@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/notification-pastille.dart';
 import 'package:mobile/components/user-avatar.dart';
+import 'package:mobile/components/user-menu.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
@@ -84,8 +85,7 @@ class MyScaffold extends StatelessWidget {
               builder: (context) => InkWell(
                     onTap: _canNavigateToProfile(context)
                         ? () {
-                            Navigator.pushNamed(context, PROFILE_ROUTE,
-                                arguments: getIt.get<UserService>().user.value);
+                            openUserMenu(context);
                           }
                         : null,
                     child: Padding(
