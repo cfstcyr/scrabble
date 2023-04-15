@@ -19,6 +19,8 @@ import 'package:rxdart/rxdart.dart';
 import '../../services/user.service.dart';
 import '../../view-methods/group.methods.dart';
 
+const REPLACE_VIRTUAL_PLAYER_LABEL = 'Remplacer Joueur Virtuel';
+
 class GameActions extends StatefulWidget {
   @override
   State<GameActions> createState() => _GameActionsState();
@@ -34,15 +36,11 @@ class _GameActionsState extends State<GameActions> {
     super.initState();
     observedPlayerChangeSubscription =
         changeObservedPlayerStream.listen((int index) {
-      print(index);
       _index = index;
     });
 
     isObservingVirtualPlayerStream.listen((bool isObservingVirtualPlayer) {
-      setState(() {
-        print(isObservingVirtualPlayer);
-        _isObservingVirtualPlayer = isObservingVirtualPlayer;
-      });
+      _isObservingVirtualPlayer = isObservingVirtualPlayer;
     });
   }
 
@@ -163,16 +161,25 @@ class _GameActionsState extends State<GameActions> {
                   ), // remplacer JV
                   Visibility(
                     visible: getIt.get<UserService>().isObserver,
-                    child: AppButton(
-                      onPressed: () => getIt.get<UserService>().isObserver &&
-                              _isObservingVirtualPlayer
-                          ? this._gameService.replaceVirtualPlayer(_index)
-                          : null,
-                      icon: Icons.rotate_90_degrees_ccw_sharp,
-                      size: AppButtonSize.large,
-                      theme: AppButtonTheme.primary,
+                    child: StreamBuilder<bool>(
+                      stream: isObservingVirtualPlayerStream,
+                      initialData: false,
+                      builder: (context, snapshot) {
+                        bool isObservingVirtualPlayer = snapshot.data ?? false;
+                        return Tooltip(
+                          message: REPLACE_VIRTUAL_PLAYER_LABEL,
+                          child: AppButton(
+                            onPressed: () => snapshot.hasData && snapshot.data!
+                                ? this._gameService.replaceVirtualPlayer(_index)
+                                : null,
+                            icon: Icons.swap_horiz_rounded,
+                            size: AppButtonSize.large,
+                            theme: AppButtonTheme.primary,
+                          ),
+                        );
+                      },
                     ),
-                  ),
+                  )
                 ],
               )),
         );
