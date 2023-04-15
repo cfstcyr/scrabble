@@ -169,9 +169,12 @@ class _GameActionsState extends State<GameActions> {
                         return Tooltip(
                           message: REPLACE_VIRTUAL_PLAYER_LABEL,
                           child: AppButton(
-                            onPressed: () => snapshot.hasData && snapshot.data!
-                                ? this._gameService.replaceVirtualPlayer(_index)
-                                : null,
+                            onPressed:
+                                snapshot.hasData && isObservingVirtualPlayer
+                                    ? () => this
+                                        ._gameService
+                                        .replaceVirtualPlayer(_index)
+                                    : null,
                             icon: Icons.swap_horiz_rounded,
                             size: AppButtonSize.large,
                             theme: AppButtonTheme.primary,
