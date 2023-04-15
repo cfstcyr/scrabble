@@ -37,7 +37,9 @@ export class AvatarSelectorComponent {
     handleAvatarChange(event: Update) {
         this.state.next(ImageDocumentProgressState.Uploading);
         event.then((document) => {
-            this.control.setValue(document.cdnUrl);
+            if (!document.cdnUrl.includes('crop/0x0')) {
+                this.control.setValue(document.cdnUrl);
+            }
             this.state.next(ImageDocumentProgressState.Ready);
         });
     }

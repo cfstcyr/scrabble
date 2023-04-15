@@ -9,7 +9,6 @@ import { Orientation } from '@common/models/position';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
-import { BACKSPACE } from '@app/constants/components-constants';
 import { removeAccents } from '@app/utils/remove-accents/remove-accents';
 import RoundManagerService from '@app/services/round-manager-service/round-manager.service';
 
@@ -44,13 +43,16 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
 
         if (event.key.length === 1 && key >= 'a' && key <= 'z') {
             this.boardCursorService.handleLetter(key, event.shiftKey);
-        } else if (event.key === BACKSPACE) {
-            this.boardCursorService.handleBackspace();
         }
     }
     @HostListener('document:keydown.escape', ['$event'])
     handleEscapeEvent(): void {
         this.boardCursorService.clear();
+    }
+
+    @HostListener('document:keydown.backspace', ['$event'])
+    handleBackspaceEventEvent(): void {
+        this.boardCursorService.handleBackspace();
     }
 
     ngOnInit(): void {
@@ -81,7 +83,7 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
         this.newlyPlacedTiles = [];
     }
 
-    squareClickHandler(squareView: SquareView): void {
+    squareClickHandler(squareView?: SquareView): void {
         if (this.isObserver || this.gameService.isGameOver || this.gameService.cannotPlay()) return;
         this.boardCursorService.handleSquareClick(squareView);
     }

@@ -3,8 +3,8 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { GameConfig, InitializeGameData, StartGameData } from '@app/classes/communication/game-config';
 import SocketService from '@app/services/socket-service/socket.service';
 import { Group, GroupData } from '@common/models/group';
-import { PublicUser } from '@common/models/user';
 import { RequestingUsers } from '@common/models/requesting-users';
+import { PublicUser } from '@common/models/user';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -21,6 +21,9 @@ export class GameDispatcherController implements OnDestroy {
     private groupFullEvent: Subject<void> = new Subject();
     private invalidPasswordEvent: Subject<void> = new Subject();
     private groupRequestValidEvent: Subject<void> = new Subject();
+    private replaceVirtualPlayerEvent: BehaviorSubject<InitializeGameData | undefined> = new BehaviorSubject<InitializeGameData | undefined>(
+        undefined,
+    );
     private groupsUpdateEvent: Subject<Group[]> = new Subject();
     private joinerRejectedEvent: Subject<PublicUser> = new Subject();
     private initializeGame$: BehaviorSubject<InitializeGameData | undefined> = new BehaviorSubject<InitializeGameData | undefined>(undefined);
@@ -127,7 +130,9 @@ export class GameDispatcherController implements OnDestroy {
     subscribeToInitializeGame(serviceDestroyed$: Subject<boolean>, callback: (value: InitializeGameData | undefined) => void): void {
         this.initializeGame$.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
     }
-
+    subscribeToReplaceVirtualPlayer(serviceDestroyed$: Subject<boolean>, callback: (value: InitializeGameData | undefined) => void): void {
+        this.replaceVirtualPlayerEvent.pipe(takeUntil(serviceDestroyed$)).subscribe(callback);
+    }
     private handleJoinError(errorStatus: HttpStatusCode): void {
         switch (errorStatus) {
             case HttpStatusCode.Unauthorized: {
@@ -166,6 +171,9 @@ export class GameDispatcherController implements OnDestroy {
         });
         this.socketService.on('startGame', (startGameData: StartGameData) => {
             this.initializeGame$.next({ localPlayerId: this.socketService.getId(), startGameData });
+        });
+        this.socketService.on('replaceVirtualPlayer', (startGameData: StartGameData) => {
+            this.replaceVirtualPlayerEvent.next({ localPlayerId: this.socketService.getId(), startGameData });
         });
     }
 }

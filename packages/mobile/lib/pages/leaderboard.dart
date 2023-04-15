@@ -71,13 +71,22 @@ class LeaderBoardPage extends StatelessWidget {
                                     physics: NeverScrollableScrollPhysics(),
                                     itemCount: users.data!.length,
                                     itemBuilder: (_, int index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 8, right: 8, bottom: 8),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(4.0))),
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                            border: _userService
+                                                        .getUser()
+                                                        .username ==
+                                                    users.data![index].user
+                                                        .username
+                                                ? Border.all(
+                                                    width: 1,
+                                                    color: theme
+                                                        .colorScheme.primary)
+                                                : null,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(4.0))),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8),
                                           child: InkWell(
                                             onTap: () {
                                               _userService.getProfileByUsername(

@@ -5,7 +5,7 @@ import RoundManagerService from '@app/services/round-manager-service/round-manag
 import { takeUntil } from 'rxjs/operators';
 import { SECONDS_TO_MILLISECONDS } from '@app/constants/game-constants';
 import { timer as timerCreationFunction } from 'rxjs/internal/observable/timer';
-import { SoundService, LOW_TIME, SoundName, CRITICAL_LOW_TIME } from '@app/services/sound-service/sound.service';
+import { SoundService, LOW_TIME, SoundName } from '@app/services/sound-service/sound.service';
 
 @Component({
     selector: 'app-game-timer',
@@ -50,8 +50,6 @@ export class GameTimerComponent implements OnInit, OnDestroy {
             if (this.roundManager.isActivePlayerLocalPlayer()) {
                 if (this.timer?.getTime() === LOW_TIME) {
                     this.soundService.playSound(SoundName.LowTimeSound);
-                } else if (this.timer?.getTime() === CRITICAL_LOW_TIME) {
-                    this.soundService.playSound(SoundName.CriticalLowTimeSound);
                 }
             }
         });

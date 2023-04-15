@@ -44,6 +44,7 @@
                     class="chatbox-message__input__form__control"
                     placeholder="Aa"
                     [maxlength]="512"
+                    (keypress)="onKeyPress($event)"
                 >
             </form>
 

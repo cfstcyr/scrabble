@@ -19,7 +19,7 @@ import { PuzzleLevel } from '@app/components/puzzle/start-puzzle-modal/start-puz
 import { puzzleSettings } from '@app/utils/settings';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROUTE_PUZZLE_HOME } from '@app/constants/routes-constants';
-import { BACKSPACE, ENTER, ESCAPE } from '@app/constants/components-constants';
+import { ENTER, ESCAPE } from '@app/constants/components-constants';
 import { PuzzleResultModalComponent, PuzzleResultModalParameters } from '@app/components/puzzle/puzzle-result-modal/puzzle-result-modal.component';
 import { WordPlacement } from '@common/models/word-finding';
 import { PuzzleResult } from '@common/models/puzzle';
@@ -32,7 +32,7 @@ import {
     PUZZLE_ERROR_DIALOG_TITLE,
 } from '@app/constants/puzzle-constants';
 import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
-import { CRITICAL_LOW_TIME, LOW_TIME, SoundName, SoundService } from '@app/services/sound-service/sound.service';
+import { LOW_TIME, SoundName, SoundService } from '@app/services/sound-service/sound.service';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
@@ -75,9 +75,6 @@ export class PuzzlePageComponent implements OnInit {
             this.boardCursorService.handleLetter(event.key, event.shiftKey);
         } else {
             switch (event.key) {
-                case BACKSPACE:
-                    this.boardCursorService.handleBackspace();
-                    break;
                 case ENTER:
                     this.play();
                     break;
@@ -89,6 +86,11 @@ export class PuzzlePageComponent implements OnInit {
     handleKeyboardEventEsc(): void {
         this.boardCursorService.clear();
         this.tilePlacementService.resetTiles();
+    }
+
+    @HostListener('document:keydown.backspace', ['$event'])
+    handleBackspaceEventEvent(): void {
+        this.boardCursorService.handleBackspace();
     }
 
     ngOnInit(): void {
@@ -262,8 +264,6 @@ export class PuzzlePageComponent implements OnInit {
                 this.timer?.decrement();
                 if (this.timer?.getTime() === LOW_TIME) {
                     this.soundService.playSound(SoundName.LowTimeSound);
-                } else if (this.timer?.getTime() === CRITICAL_LOW_TIME) {
-                    this.soundService.playSound(SoundName.CriticalLowTimeSound);
                 }
             });
     }

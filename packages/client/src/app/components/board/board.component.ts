@@ -20,7 +20,8 @@ export class BoardComponent {
         this.clearNewlyPlacedTiles.next();
     }
 
-    squareClickHandler(squareView: SquareView): void {
+    squareClickHandler(e: MouseEvent, squareView: SquareView): void {
+        e.stopPropagation();
         this.onSquareClick.emit(squareView);
     }
 }

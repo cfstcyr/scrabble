@@ -24,22 +24,18 @@ export class UserAchievementComponent {
 
     get nextLevelPoints(): number {
         return this.messageType === MessageType.MaxedOut
-            ? 0
+            ? Number.POSITIVE_INFINITY
             : this.achievement.levelIndex !== undefined
             ? this.achievement.achievement.levels[this.achievement.levelIndex + 1].value
             : this.achievement.achievement.levels[0].value;
     }
 
     get previousLevelPoints(): number {
-        return this.messageType === MessageType.MaxedOut
-            ? Number.POSITIVE_INFINITY
-            : this.achievement.levelIndex !== undefined
-            ? this.achievement.achievement.levels[this.achievement.levelIndex].value
-            : this.achievement.achievement.zeroValue;
+        return this.achievement.levelIndex !== undefined ? this.achievement.achievement.levels[this.achievement.levelIndex].value : 0;
     }
 
     get levelsMarks(): number[] {
-        return new Array(this.achievement.achievement.levels.length - 1).fill(0).map((_, i) => i + 1);
+        return new Array(this.achievement.achievement.levels.length).fill(0).map((_, i) => i + 1);
     }
 
     get progress(): number {
@@ -48,8 +44,8 @@ export class UserAchievementComponent {
         const progress = (this.achievement.value - previousLevel) / (nextLevel - previousLevel);
 
         return (
-            ((this.achievement.levelIndex ?? -1) + 1) / this.achievement.achievement.levels.length +
-            progress / this.achievement.achievement.levels.length
+            ((this.achievement.levelIndex ?? -1) + 1) / (this.achievement.achievement.levels.length + 1) +
+            progress / (this.achievement.achievement.levels.length + 1)
         );
     }
 

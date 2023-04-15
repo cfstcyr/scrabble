@@ -86,3 +86,5 @@ export const BINGO_BONUS_POINTS = 50;
 export const HIGH_SCORE_COUNT = 5;
 
 export const USER_STATS_PRECISION = 2;
+
+export const OBSERVER_REPLACE_JV_MESSAGE = ' Un observateur a remplacé un joueur virtuel';
