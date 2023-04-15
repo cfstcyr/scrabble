@@ -292,4 +292,14 @@ class UserStatistics {
             rating: (json['rating'] as num).toDouble(),
             ratingMax: (json['ratingMax'] as num).toDouble(),
             bingoCount: json['bingoCount']);
+
+  UserStatistics.empty()
+      : this(
+            averagePointsPerGame: 0,
+            averageTimePerGame: 0,
+            gamesPlayedCount: 0,
+            gamesWonCount: 0,
+            rating: 0,
+            ratingMax: 0,
+            bingoCount: 0);
 }
