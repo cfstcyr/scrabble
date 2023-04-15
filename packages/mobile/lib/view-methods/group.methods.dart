@@ -46,6 +46,8 @@ Subject<InitializeGameData> replaceVirtualPlayer$ = PublishSubject();
 
 Subject<bool> fullGroup$ = PublishSubject();
 Stream<bool> get fullGroupStream => fullGroup$.stream;
+Subject<int> changeObservedPlayer$ = PublishSubject();
+Stream<int> get changeObservedPlayerStream => changeObservedPlayer$.stream;
 
 void handleCanceledGame(PublicUser host, BuildContext context) {
   Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));

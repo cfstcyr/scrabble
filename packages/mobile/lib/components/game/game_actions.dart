@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/game/game.dart';
@@ -15,15 +17,21 @@ import 'package:mobile/services/round-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../services/user.service.dart';
+import '../../view-methods/group.methods.dart';
 
 class GameActions extends StatelessWidget {
+  late final _index;
+  StreamSubscription observedPlayerChangeSubscription =
+      changeObservedPlayerStream.listen((int index) {
+    _index = index;
+  });
   final GameService _gameService = getIt.get<GameService>();
+
   final GameCreationController _gameCreationController =
       getIt.get<GameCreationController>();
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
   final GameEventService _gameEventService = getIt.get<GameEventService>();
-
   void surrender(BuildContext context) {
     getIt.get<PlayerLeaveService>().abandonGame(context);
   }
@@ -121,29 +129,16 @@ class GameActions extends StatelessWidget {
                       );
                     },
                   ),
-                  // StreamBuilder<bool>(
-                  //   stream: snapshot.hasData
-                  //       ? _canPlaceStream(snapshot.data!)
-                  //       : Stream.value(false),
-                  //   builder: (context, canPlace) {
-                  //     return AppButton(
-                  //       onPressed:
-                  //           () {
-                  //               _gameService.replaceVirtualPlayer(3);
-                  //             }
-                  //           : null,
-                  //       icon: Icons.rotate_90_degrees_ccw_rounded,
-                  //       size: AppButtonSize.large,
-                  //     );
-                  //   },
-                  // ),
-                  AppButton(
-                    onPressed: () => getIt.get<UserService>().isObserver
-                        ? this._gameService.replaceVirtualPlayer(3)
-                        : null,
-                    icon: Icons.rotate_90_degrees_ccw_sharp,
-                    size: AppButtonSize.large,
-                    theme: AppButtonTheme.danger,
+                  Visibility(
+                    visible: getIt.get<UserService>().isObserver,
+                    child: AppButton(
+                      onPressed: () => getIt.get<UserService>().isObserver
+                          ? this._gameService.replaceVirtualPlayer(3)
+                          : null,
+                      icon: Icons.rotate_90_degrees_ccw_sharp,
+                      size: AppButtonSize.large,
+                      theme: AppButtonTheme.primary,
+                    ),
                   ),
                 ],
               )),

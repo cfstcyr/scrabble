@@ -11,12 +11,12 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../services/game-observer-service.dart';
 import '../../services/user.service.dart';
+import '../../view-methods/group.methods.dart';
 
 class PlayersContainer extends StatelessWidget {
   GameService _gameService = getIt.get<GameService>();
   RoundService _roundService = getIt.get<RoundService>();
   GameObserverService _gameObserverService = getIt.get<GameObserverService>();
-
   List<c.Player> generateOrderedPlayerList(
       p.PlayersContainer playersContainer) {
     List<c.Player> playerList = List.of([playersContainer.getLocalPlayer()]);
@@ -90,6 +90,7 @@ class PlayersContainer extends StatelessWidget {
       c.Player observer, int index, String activePlayerId, int observedIndex) {
     return GestureDetector(
       onTap: () {
+        changeObservedPlayer$.add(index);
         _gameObserverService.setPlayerTileRack(index);
       },
       child: Player(

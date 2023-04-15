@@ -86,29 +86,11 @@ class GameService {
         tileRack: tileRack,
         players: playersContainer,
         tileReserve: startGameData.tileReserve));
-    // var limit = DateTime.parse(startGameData.firstRound.duration.toString());
-    // var timeLeft =
-    //     (limit.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) /
-    //         SECONDS_TO_MILLISECONDS;
     _roundService.startRound(startGameData.firstRound, _onTimerExpires);
     getIt.get<GameMessagesService>().resetMessages();
     Navigator.pushReplacementNamed(
         navigatorKey.currentContext!, GAME_PAGE_ROUTE);
   }
-
-  // private async handleReRouteOrReconnect(startGameData: StartGameData, isObserver: boolean): Promise<void> {
-  //     if (this.router.url !== ROUTE_GAME) {
-  //         this.roundManager.initializeEvents();
-  //         const limitDate = new Date(startGameData.round.limitTime);
-  //         const timeLeft = (limitDate.getTime() - Date.now()) / SECONDS_TO_MILLISECONDS;
-  //         this.roundManager.startRound(timeLeft);
-  //         if (isObserver) {
-  //             await this.router.navigateByUrl(ROUTE_GAME_OBSERVER);
-  //         } else {
-  //             await this.router.navigateByUrl(ROUTE_GAME);
-  //         }
-  //     }
-  // }
 
   void updateGame(GameUpdateData gameUpdate) {
     if (_game.value == null) {
