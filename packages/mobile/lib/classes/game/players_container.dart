@@ -42,11 +42,13 @@ class PlayersContainer {
   }
 
   Player getPlayerByName(String username) {
-    return players.firstWhere((player) => player.user.username == username);
+    return players.firstWhere((player) => player.user.username == username,
+        orElse: () => player1);
   }
 
   Player getPlayerBySocketId(String socketId) {
-    return players.firstWhere((player) => player.socketId == socketId);
+    return players.firstWhere((player) => player.socketId == socketId,
+        orElse: () => player1);
   }
 
   List<Player> get players => [player1, player2, player3, player4];

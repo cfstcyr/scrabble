@@ -55,9 +55,11 @@ class GameObserverService {
   }
 
   void syncActiveTiles(List<TilePlacement> synchronisedTiles) {
-    List<Tile> currentPlayerTiles = [
-      ...playersContainer.value.getPlayerBySocketId(activePlayerId.value).tiles
-    ];
+    List<Tile> currentPlayerTilesCopy = playersContainer.value
+            .getPlayerBySocketId(activePlayerId.value)
+            .tiles ??
+        [];
+    List<Tile> currentPlayerTiles = [...currentPlayerTilesCopy];
 
     List<TilePlacement> syncTilePlacements = [...synchronisedTiles];
     List<Tile> syncTiles =
