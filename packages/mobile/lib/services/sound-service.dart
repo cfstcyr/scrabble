@@ -50,7 +50,7 @@ class SoundService {
     _soundPlayer.play(
       AssetSource(sound.path),
       mode: PlayerMode.lowLatency,
-      volume: 1,
+      volume: _soundVolume,
     );
   }
 
