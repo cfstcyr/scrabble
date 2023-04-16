@@ -14,6 +14,7 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import { MessageStorageService } from '@app/services/message-storage-service/message-storage.service';
 import { marked } from 'marked';
 import { Subject } from 'rxjs';
+import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 
 @Component({
     selector: 'app-communication-box',
@@ -30,6 +31,7 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
     messageForm = new FormGroup({
         content: new FormControl('', [Validators.maxLength(MAX_INPUT_LENGTH), Validators.minLength(1)]),
     });
+    lastPlacementPreview: string | undefined = '';
 
     private componentDestroyed$: Subject<boolean> = new Subject<boolean>();
 
@@ -40,6 +42,7 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
         private changeDetectorRef: ChangeDetectorRef,
         private messageStorageService: MessageStorageService,
         private gameViewEventManagerService: GameViewEventManagerService,
+        private tilePlacementService: TilePlacementService,
     ) {
         super();
         this.focusableComponentsService.setActiveKeyboardComponent(this);
@@ -97,7 +100,36 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
         if (!element.innerText) return;
         if (!this.isElementClickable(element)) return;
 
+        console.log(element.innerText);
+
         this.inputParser.handleInput(element.innerText);
+    }
+
+    onMessageHovered(event: MouseEvent): void {
+        const element: HTMLElement = event.target as HTMLElement;
+        if (!element.innerText) return;
+        if (!this.isElementClickable(element)) return;
+
+        const input = element.innerText;
+
+        if (!this.inputParser.isAction(input)) return;
+        if (this.lastPlacementPreview === input) return;
+
+        this.lastPlacementPreview = input;
+
+        try {
+            const action = this.inputParser.getPlaceActionPayload(input);
+
+            if (!action) return;
+
+            this.tilePlacementService.resetTiles();
+            this.tilePlacementService.placeTileFromPlacePayload(action);
+        } catch {}
+    }
+
+    onMessageHoveredOut(): void {
+        this.lastPlacementPreview = undefined;
+        this.tilePlacementService.resetTiles();
     }
 
     protected onFocusableEvent(event: KeyboardEvent): void {

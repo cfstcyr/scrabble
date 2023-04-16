@@ -52,6 +52,22 @@ export default class InputParserService {
         }
     }
 
+    isAction(input: string): boolean {
+        return input[0] === ACTION_COMMAND_INDICATOR;
+    }
+
+    getPlaceActionPayload(input: string): PlaceActionPayload | undefined {
+        const inputWords: string[] = this.separateCommandWords(input);
+        const actionType: string = inputWords[0];
+
+        switch (actionType) {
+            case ActionType.PLACE:
+                return this.createPlaceActionPayload(inputWords[1], inputWords[2]);
+            default:
+                return undefined;
+        }
+    }
+
     private handleCommand(input: string, gameId: string): void {
         try {
             this.actionService.sendAction(gameId, this.createActionData(input));
@@ -182,10 +198,6 @@ export default class InputParserService {
 
     private isPositionWithinBounds(position: Position): boolean {
         return position.row >= 0 && position.column >= 0 && position.row < BOARD_SIZE && position.column < BOARD_SIZE;
-    }
-
-    private isAction(input: string): boolean {
-        return input[0] === ACTION_COMMAND_INDICATOR;
     }
 
     private separateCommandWords(input: string): string[] {

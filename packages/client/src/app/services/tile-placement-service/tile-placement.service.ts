@@ -71,6 +71,33 @@ export class TilePlacementService {
         }
     }
 
+    placeTileFromPlacePayload(placeActionPayload: PlaceActionPayload): void {
+        const navigator = this.boardService.navigator?.clone();
+
+        if (!navigator) return;
+
+        navigator.setPosition(placeActionPayload.startPosition);
+        navigator.orientation = placeActionPayload.orientation;
+
+        let index = 0;
+        const tilePlacements: TilePlacement[] = [];
+        do {
+            if (navigator.isEmpty()) {
+                tilePlacements.push({
+                    tile: placeActionPayload.tiles[index],
+                    position: { ...navigator.getPosition() },
+                });
+                index++;
+            }
+
+            navigator.forward();
+        } while (index < placeActionPayload.tiles.length && navigator.isWithinBounds());
+
+        this.tilePlacementsSubject$.next(tilePlacements);
+        this.soundService.playSound(SoundName.TilePlacementSound);
+        this.updatePlacement();
+    }
+
     moveTile(tilePlacement: TilePlacement, previousPosition: Position): void {
         this.soundService.playSound(SoundName.TilePlacementSound);
 
