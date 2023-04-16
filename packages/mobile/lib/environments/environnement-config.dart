@@ -19,7 +19,8 @@ class DevConfig implements BaseConfig {
   String get apiUrl => 'http://'
       '$ipAdressEmulator:${dotenv.env['SERVER_PORT']}/api';
 
-  String get webSocketUrl => 'http://$ipAdressEmulator:${dotenv.env['SERVER_PORT']}';
+  String get webSocketUrl =>
+      'http://$ipAdressEmulator:${dotenv.env['SERVER_PORT']}';
 
   bool get reportErrors => false;
 

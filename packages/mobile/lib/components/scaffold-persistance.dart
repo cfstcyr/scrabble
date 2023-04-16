@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/sound.dart';
 import 'package:mobile/components/notification-pastille.dart';
 import 'package:mobile/components/user-avatar.dart';
 import 'package:mobile/components/user-menu.dart';
@@ -6,13 +7,14 @@ import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/chat.service.dart';
+import 'package:mobile/services/sound-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
-import '../services/user.service.dart';
 import 'chat-management.dart';
 
 class MyScaffold extends StatelessWidget {
   final ChatService _chatService = getIt.get<ChatService>();
+  final SoundService _soundService = getIt.get<SoundService>();
   final Widget body;
   final String title;
   final Color backgroundColor;
@@ -42,7 +44,10 @@ class MyScaffold extends StatelessWidget {
                   Icons.arrow_back,
                   color: theme.primaryColor,
                 ),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  _soundService.playSound(Sound.click);
+                  Navigator.of(context).pop();
+                },
               )
             : null,
         automaticallyImplyLeading: false,
@@ -57,6 +62,7 @@ class MyScaffold extends StatelessWidget {
               ? Builder(
                   builder: (context) => InkWell(
                         onTap: () {
+                          _soundService.playSound(Sound.click);
                           Navigator.pushNamed(context, PROFILE_SEARCH_ROUTE);
                         },
                         child: Icon(Icons.search, color: mainColor, size: 28),
@@ -76,20 +82,24 @@ class MyScaffold extends StatelessWidget {
                               _getNotificationPastilleColor(hasUnreadMessages);
                         }
 
-                        return NotificationPastille(
-                            pastilleColor: pastilleColor,
-                            child: IconButton(
-                              icon: Icon(Icons.chat, color: mainColor),
-                              onPressed: () =>
-                                  Scaffold.of(context).openEndDrawer(),
-                            ));
-                      }),
-                )
-              : Container(),
+                  return NotificationPastille(
+                      pastilleColor: pastilleColor,
+                      child: IconButton(
+                        icon: Icon(Icons.chat, color: mainColor),
+                        onPressed: () {
+                          _soundService.playSound(Sound.click);
+                          Scaffold.of(context).openEndDrawer();
+                        },
+                      ));
+                }),
+          ),
           _shouldShowProfileButton(context)
               ? Builder(
                   builder: (context) => InkWell(
-                        onTap: () => openUserMenu(context),
+                        onTap: () {
+                          _soundService.playSound(Sound.click);
+                          openUserMenu(context);
+                        },
                         child: Padding(
                           padding: EdgeInsets.only(right: SPACE_2),
                           child: Avatar(
