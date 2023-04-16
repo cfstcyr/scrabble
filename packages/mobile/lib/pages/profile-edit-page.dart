@@ -132,6 +132,8 @@ class ProfileEditPageState extends State<ProfileEditPage> {
           username: usernameHandler.controller.text, avatar: avatarSrc.value!));
       if (context.mounted) {
         Navigator.pop(context);
+        Navigator.popAndPushNamed(context, PROFILE_ROUTE,
+            arguments: _userService.getUser());
       }
     } catch (e) {
       if (context.mounted) {
