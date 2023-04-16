@@ -15,9 +15,10 @@ import { GameViewEventManagerService } from '@app/services/game-view-event-manag
 import { TilePlacementService } from '@app/services/tile-placement-service/tile-placement.service';
 import { preserveArrayOrder } from '@app/utils/preserve-array-order/preserve-array-order';
 import { Random } from '@app/utils/random/random';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { combineLatest, Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { BoardCursorService } from '@app/services/board-cursor-service/board-cursor.service';
+import { compareTile } from '@app/utils/comparator/comparator';
 
 export type RackTile = Tile & { isUsed: boolean; isSelected: boolean };
 
@@ -140,6 +141,27 @@ export class TileRackComponent extends FocusableComponent<KeyboardEvent> impleme
         }
 
         return false;
+    }
+
+    get observerTiles(): Observable<RackTile[]> {
+        return combineLatest([this.tilePlacementService.opponentTilePlacementsSubject$, this.gameService.activePlayer]).pipe(
+            map(([tilePlacements, activePlayer]) => {
+                const tiles = [...this.tiles];
+
+                tiles.forEach((tile) => (tile.isUsed = false));
+
+                if (activePlayer?.id !== this.gameService.getLocalPlayerId()) return tiles;
+
+                for (const tilePlacement of tilePlacements) {
+                    const tile = tiles.find((t) => compareTile(t, tilePlacement.tile) && !t.isUsed);
+                    if (tile) {
+                        tile.isUsed = true;
+                    }
+                }
+
+                return tiles;
+            }),
+        );
     }
 
     async shuffleTiles(): Promise<void> {

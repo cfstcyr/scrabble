@@ -20,6 +20,7 @@ import { takeUntil } from 'rxjs/operators';
 export default class RoundManagerService implements IResetServiceData, OnDestroy {
     currentRound: Round;
     timer: Observable<[timer: Timer, activePlayer: Player]>;
+    activePlayer: BehaviorSubject<Player | undefined>;
 
     private gameId: string;
     private localPlayerId: string;
@@ -36,6 +37,7 @@ export default class RoundManagerService implements IResetServiceData, OnDestroy
         private readonly gameViewEventManagerService: GameViewEventManagerService,
     ) {
         this.serviceDestroyed$ = new Subject();
+        this.activePlayer = new BehaviorSubject<Player | undefined>(undefined);
         this.initializeEvents();
         this.gameViewEventManagerService.subscribeToGameViewEvent('resetServices', this.serviceDestroyed$, () => this.resetServiceData());
     }
@@ -94,6 +96,7 @@ export default class RoundManagerService implements IResetServiceData, OnDestroy
         this.completedRounds.push(this.currentRound);
         this.currentRound = round;
         this.endRoundEvent$.next();
+        this.activePlayer.next(this.currentRound.player);
         this.startRound();
     }
 
@@ -125,6 +128,7 @@ export default class RoundManagerService implements IResetServiceData, OnDestroy
         this.currentRound = null as unknown as Round;
         this.completedRounds = [];
         this.maxRoundTime = 0;
+        this.activePlayer.next(undefined);
     }
 
     private timeLeft(limitTime: Date): number {
@@ -137,6 +141,7 @@ export default class RoundManagerService implements IResetServiceData, OnDestroy
 
     private roundTimeout(): void {
         if (this.router.url === '/game' && this.isActivePlayerLocalPlayer()) {
+            this.activePlayer.next(undefined);
             this.endRoundEvent$.next();
             this.actionService.sendAction(this.gameId, this.actionService.createActionData(ActionType.PASS, {}));
         }

@@ -162,6 +162,8 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
             }
         }
 
+        this.tilePlacementService.opponentTilePlacementsSubject$.next(tilePlacements);
+
         this.grid.next(grid);
     }
 

@@ -20,7 +20,7 @@ import { IResetServiceData } from '@app/utils/i-reset-service-data/i-reset-servi
 import { GameHistory } from '@common/models/game-history';
 import { TilePlacement } from '@common/models/tile-placement';
 import { TypeOfId } from '@common/types/id';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Injectable({
@@ -161,6 +161,10 @@ export default class GameService implements OnDestroy, IResetServiceData {
 
     cannotPlay(): boolean {
         return this.isGameSetUp && !this.isLocalPlayerPlaying();
+    }
+
+    get activePlayer(): Observable<Player | undefined> {
+        return this.roundManager.activePlayer.asObservable();
     }
 
     private async initializeGame(localPlayerId: string, startGameData: StartGameData, isObserver: boolean): Promise<void> {
