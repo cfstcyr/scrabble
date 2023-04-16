@@ -84,6 +84,7 @@ class GameService {
         .map((Player player) => player.isLocalPlayer = true);
 
     _gameObserverService.playersContainer.add(playersContainer);
+    _gameObserverService.setPlayerTileRack(1);
 
     TileRack tileRack =
         TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
