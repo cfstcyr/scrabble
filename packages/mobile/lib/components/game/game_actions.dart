@@ -8,7 +8,6 @@ import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game-event.service.dart';
@@ -53,9 +52,6 @@ class _GameActionsState extends State<GameActions> {
   }
 
   final GameService _gameService = getIt.get<GameService>();
-
-  final GameCreationController _gameCreationController =
-      getIt.get<GameCreationController>();
 
   final ActionService _actionService = getIt.get<ActionService>();
 
