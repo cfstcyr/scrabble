@@ -69,6 +69,7 @@ class GameCreationService {
         .catchError((error) {
       errorSnackBar(navigatorKey.currentContext!, GAME_CREATE_FAILED);
     });
+    groupId = response.group.groupId;
     return response;
   }
 }

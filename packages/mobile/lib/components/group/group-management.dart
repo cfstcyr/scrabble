@@ -5,7 +5,6 @@ import 'package:mobile/components/app_button.dart';
 import '../../classes/group.dart';
 import '../../constants/create-lobby-constants.dart';
 import '../../view-methods/create-lobby-methods.dart';
-import '../game-password-pop-up/game-password-pop-up.dart';
 
 class GroupManagement extends StatelessWidget {
   GroupManagement(this.group);
@@ -21,7 +20,6 @@ class GroupManagement extends StatelessWidget {
           AppButton(
               onPressed: () async {
                 await backOut();
-                handleLeave(group.groupId!);
                 if (context.mounted) Navigator.pop(context);
               },
               theme: AppButtonTheme.secondary,
