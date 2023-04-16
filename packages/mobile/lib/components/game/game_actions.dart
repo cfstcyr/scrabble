@@ -34,6 +34,7 @@ class _GameActionsState extends State<GameActions> {
   @override
   void initState() {
     super.initState();
+
     observedPlayerChangeSubscription =
         changeObservedPlayerStream.listen((int index) {
       _index = index;
@@ -81,7 +82,7 @@ class _GameActionsState extends State<GameActions> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   AppButton(
-                    text: !getIt.get<UserService>().isObserver
+                    text: getIt.get<UserService>().isObserver
                         ? QUIT_LABEL_FR
                         : null,
                     onPressed: () => getIt.get<UserService>().isObserver
