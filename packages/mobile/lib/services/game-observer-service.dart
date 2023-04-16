@@ -27,7 +27,7 @@ class GameObserverService {
         _observedPlayerIndex = BehaviorSubject<int>.seeded(1) {
     setPlayerTileRack(_observedPlayerIndex.value);
     playersContainer.stream.listen((_) {
-      setPlayerTileRack(_observedPlayerIndex.value);
+      syncActiveTiles([]);
     });
 
     _tileSyncService.synchronisedTiles.listen(
@@ -55,9 +55,11 @@ class GameObserverService {
   }
 
   void syncActiveTiles(List<TilePlacement> synchronisedTiles) {
-    List<Tile> currentPlayerTiles = [
-      ...playersContainer.value.getPlayerBySocketId(activePlayerId.value).tiles
-    ];
+    List<Tile> currentPlayerTilesCopy = playersContainer.value
+            .getPlayerBySocketId(activePlayerId.value)
+            .tiles ??
+        [];
+    List<Tile> currentPlayerTiles = [...currentPlayerTilesCopy];
 
     List<TilePlacement> syncTilePlacements = [...synchronisedTiles];
     List<Tile> syncTiles =

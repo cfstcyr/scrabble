@@ -146,9 +146,9 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void login(BuildContext context) async {
+    String trimmedEmail = emailHandler.controller.text.trim();
     if (await isLoggedIn(UserLoginCredentials(
-        email: emailHandler.controller.text,
-        password: passwordHandler.controller.text))) {
+        email: trimmedEmail, password: passwordHandler.controller.text))) {
       if (context.mounted) {
         Navigator.of(context).pushReplacementNamed(HOME_ROUTE);
       }
@@ -156,8 +156,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   bool validation(String email) {
-    return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+")
-        .hasMatch(email);
+    return RegExp(EMAIL_REGEX_PATTERN).hasMatch(email.trim());
   }
 
   Future<void> validateEmail() async {

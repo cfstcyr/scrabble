@@ -33,3 +33,5 @@ const PROFILE_EDIT_DIALOG_ERROR_BODY =
 const String USERNAME_REGEX_PATTERN = r'^.{1,40}$';
 const String PASSWORD_REGEX_PATTERN =
     r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
+const String EMAIL_REGEX_PATTERN =
+    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+";

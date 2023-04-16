@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/account.dart';
 import 'package:mobile/classes/text-field-handler.dart';
@@ -13,7 +12,6 @@ import 'package:rxdart/rxdart.dart';
 
 import '../constants/create-account-constants.dart';
 import '../controllers/account-authentification-controller.dart';
-import '../pages/home-page.dart';
 import 'app_button.dart';
 
 class CreateAccountForm extends StatefulWidget {
@@ -224,12 +222,12 @@ class CreateAccountFormState extends State<CreateAccountForm> {
       setState(() {
         emailHandler.errorMessage = EMAIL_EMPTY_FR;
       });
-    } else if (!EmailValidator.validate(emailHandler.controller.text, true)) {
+    } else if (!validateEmailStructure(emailHandler.controller.text)) {
       setState(() {
         emailHandler.errorMessage = EMAIL_INVALID_FORMAT_FR;
       });
     } else if (!await accountController
-        .isEmailUnique(emailHandler.controller.text)) {
+        .isEmailUnique(emailHandler.controller.text.trim())) {
       setState(() {
         emailHandler.errorMessage = EMAIL_ALREADY_USED_FR;
       });
@@ -302,6 +300,11 @@ class CreateAccountFormState extends State<CreateAccountForm> {
   bool validatePasswordStructure(String value) {
     RegExp regExp = RegExp(PASSWORD_REGEX_PATTERN);
     return regExp.hasMatch(value);
+  }
+
+  bool validateEmailStructure(String value) {
+    RegExp regExp = RegExp(EMAIL_REGEX_PATTERN);
+    return regExp.hasMatch(value.trim());
   }
 
   bool validateUsernameStructure(String value) {
