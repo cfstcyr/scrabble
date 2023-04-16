@@ -55,9 +55,9 @@ class Group {
 
 class GroupCreationResponse {
   bool isCreated;
-  String groupId;
+  Group group;
 
-  GroupCreationResponse({required this.isCreated, required this.groupId});
+  GroupCreationResponse({required this.isCreated, required this.group});
 }
 
 class JoinRequest {

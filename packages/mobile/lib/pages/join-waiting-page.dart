@@ -153,7 +153,7 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
                           SizedBox(height: 15),
                           AppButton(
                             onPressed: () {
-                              _onBack(context);
+                              _onBack(context, widget.currentGroup.groupId!);
                             },
                             icon: Icons.keyboard_arrow_left_sharp,
                             text: QUIT_GROUP,
@@ -170,12 +170,12 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
         ),
         backgroundColor: theme.colorScheme.background,
       ),
-      onWillPop: () => _onBack(context),
+      onWillPop: () => _onBack(context, widget.currentGroup.groupId!),
     );
   }
 
-  Future<bool> _onBack(BuildContext context) {
-    getIt.get<GroupJoinService>().handleLeaveGroup();
+  Future<bool> _onBack(BuildContext context, String groupId) {
+    getIt.get<GroupJoinService>().handleLeaveGroup(groupId);
     Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
     Navigator.popAndPushNamed(context, GROUPS_ROUTE);
     return Future.value(true);
