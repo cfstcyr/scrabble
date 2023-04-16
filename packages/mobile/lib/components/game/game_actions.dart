@@ -30,7 +30,6 @@ class _GameActionsState extends State<GameActions> {
   late var _index;
   var _isObservingVirtualPlayer = false;
   late StreamSubscription observedPlayerChangeSubscription;
-  late StreamSubscription isObservingVirtualPlayerSubscription;
   @override
   void initState() {
     super.initState();
@@ -48,7 +47,6 @@ class _GameActionsState extends State<GameActions> {
   @override
   void dispose() {
     observedPlayerChangeSubscription.cancel();
-    isObservingVirtualPlayerSubscription.cancel();
     super.dispose();
   }
 

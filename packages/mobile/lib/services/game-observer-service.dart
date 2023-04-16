@@ -46,8 +46,6 @@ class GameObserverService {
 
   void setPlayerTileRack(int playerNumber) {
     if (!playersContainer.hasValue) return;
-    print(activePlayerId.value);
-    print(playersContainer.value.getPlayer(playerNumber).socketId);
     List<Tile> tilesToShow = activePlayerId.value !=
             playersContainer.value.getPlayer(playerNumber).socketId
         ? [...playersContainer.value.getPlayer(playerNumber).tiles]
