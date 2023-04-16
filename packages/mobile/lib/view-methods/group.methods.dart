@@ -43,8 +43,6 @@ Subject<InitializeGameData> startGame$ = PublishSubject();
 Subject<bool> fullGroup$ = PublishSubject();
 Stream<bool> get fullGroupStream => fullGroup$.stream;
 
-Subject<bool> leftGroup$ = PublishSubject();
-Stream<bool> get leftGroupStream => leftGroup$.stream;
 void handleCanceledGame(PublicUser host, BuildContext context) {
   Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
   Navigator.pushReplacementNamed(context, GROUPS_ROUTE);
