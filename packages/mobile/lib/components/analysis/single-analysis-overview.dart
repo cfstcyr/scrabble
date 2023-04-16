@@ -43,14 +43,16 @@ class _SingleAnalysisOverviewState extends State<SingleAnalysisOverview> {
                     width: SPACE_2,
                   ),
                   InkWell(
-                    onTap: () => triggerDialogBox(widget.title ?? "", [
-                      Text(widget.description ?? "")
-                    ], [
-                      DialogBoxButtonParameters(
-                          content: "Ok",
-                          theme: AppButtonTheme.primary,
-                          closesDialog: true)
-                    ]),
+                    onTap: () => triggerDialogBox(
+                        widget.title ?? "",
+                        [Text(widget.description ?? "")],
+                        [
+                          DialogBoxButtonParameters(
+                              content: "Ok",
+                              theme: AppButtonTheme.primary,
+                              closesDialog: true)
+                        ],
+                        dismissOnBackgroundTouch: true),
                     child: Icon(
                       Icons.help_outline,
                       color: theme.primaryColor,
