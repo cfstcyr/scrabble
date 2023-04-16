@@ -190,6 +190,7 @@ class _GameActionsState extends State<GameActions> {
                             icon: Icons.swap_horiz_rounded,
                             size: AppButtonSize.large,
                             theme: AppButtonTheme.primary,
+                            width: 80,
                           ),
                         );
                       },
