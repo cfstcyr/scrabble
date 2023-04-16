@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/login.dart';
 import 'package:mobile/classes/text-field-handler.dart';
 import 'package:mobile/components/app_button.dart';
+import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/theme-color-service.dart';
@@ -52,78 +53,95 @@ class _LoginFormState extends State<LoginForm> {
     var style = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        Padding(padding: EdgeInsets.only(top: 0)),
-        Container(
-          height: 353,
-          width: 580,
-          decoration: BoxDecoration(
-              border: Border.all(
-                color: theme.colorScheme.onPrimary,
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: SPACE_4),
+      child: Card(
+        child: Column(
+          children: [
+            Container(
+              width: 580,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: theme.colorScheme.onPrimary,
+                  ),
+                  borderRadius: BorderRadius.circular(5)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: 15.0, right: 15.0, top: 15.0, bottom: 0),
+                      child: TextField(
+                        controller: emailHandler.controller,
+                        focusNode: emailHandler.focusNode,
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: EMAIL_LABEL_FR,
+                          errorText: emailHandler.errorMessage.isEmpty
+                              ? null
+                              : emailHandler.errorMessage,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: 15.0, right: 15.0, top: 15.0, bottom: 0),
+                      child: TextField(
+                        controller: passwordHandler.controller,
+                        focusNode: passwordHandler.focusNode,
+                        keyboardType: TextInputType.visiblePassword,
+                        obscureText: !isPasswordShown,
+                        onSubmitted: (data) async => login(context),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: PASSWORD_LABEL_FR,
+                          errorText: passwordHandler.errorMessage.isEmpty
+                              ? null
+                              : passwordHandler.errorMessage,
+                        ),
+                      ),
+                    ),
+                    CheckboxListTile(
+                      title: Text(CHECKBOX_SHOW_PASSWORD_LABEL_FR),
+                      value: isPasswordShown,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isPasswordShown = value!;
+                        });
+                      },
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SPACE_2, vertical: SPACE_2),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          AppButton(
+                            onPressed: () => Navigator.pushReplacementNamed(
+                                context, SIGNUP_ROUTE),
+                            text: CREATE_ACCOUNT_LABEL_FR,
+                            theme: AppButtonTheme.secondary,
+                          ),
+                          SizedBox(
+                            width: SPACE_3,
+                          ),
+                          AppButton(
+                              onPressed: () async => login(context),
+                              text: LOGIN_LABEL_FR),
+                        ],
+                      ),
+                    ),
+                  ]),
+                ],
               ),
-              borderRadius: BorderRadius.circular(5)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                      left: 15.0, right: 15.0, top: 15.0, bottom: 0),
-                  child: TextField(
-                    controller: emailHandler.controller,
-                    focusNode: emailHandler.focusNode,
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: EMAIL_LABEL_FR,
-                      errorText: emailHandler.errorMessage.isEmpty
-                          ? null
-                          : emailHandler.errorMessage,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 15),
-                Padding(
-                  padding: EdgeInsets.only(
-                      left: 15.0, right: 15.0, top: 15.0, bottom: 0),
-                  child: TextField(
-                    controller: passwordHandler.controller,
-                    focusNode: passwordHandler.focusNode,
-                    keyboardType: TextInputType.visiblePassword,
-                    obscureText: !isPasswordShown,
-                    onSubmitted: (data) async => login(context),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: PASSWORD_LABEL_FR,
-                      errorText: passwordHandler.errorMessage.isEmpty
-                          ? null
-                          : passwordHandler.errorMessage,
-                    ),
-                  ),
-                ),
-                CheckboxListTile(
-                  title: Text(CHECKBOX_SHOW_PASSWORD_LABEL_FR),
-                  value: isPasswordShown,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      isPasswordShown = value!;
-                    });
-                  },
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-                AppButton(
-                    onPressed: () async => login(context),
-                    text: LOGIN_LABEL_FR),
-                AppButton(
-                    onPressed: () => Navigator.pushNamed(context, SIGNUP_ROUTE),
-                    text: CREATE_ACCOUNT_LABEL_FR)
-              ]),
-            ],
-          ),
-        )
-      ],
+            )
+          ],
+        ),
+      ),
     );
   }
 

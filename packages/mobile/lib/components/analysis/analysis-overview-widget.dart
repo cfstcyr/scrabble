@@ -31,18 +31,21 @@ class _AnalysisOverviewWidgetState extends State<AnalysisOverviewWidget> {
             children: [
               SingleAnalysisOverview(
                 title: CRITICAL_MOMENT_MINOR_MISTAKE_NAME,
+                description: CRITICAL_MOMENT_MINOR_MISTAKE_DESCRIPTION,
                 color: MINOR_MISTAKES_SPINNER_COLOR,
                 value: widget.overview.minorMistakeCount.toDouble(),
                 maximum: widget.overview.totalMistakes.toDouble(),
               ),
               SingleAnalysisOverview(
                 title: CRITICAL_MOMENT_MEDIUM_MISTAKE_NAME,
+                description: CRITICAL_MOMENT_MEDIUM_MISTAKE_DESCRIPTION,
                 color: MEDIUM_MISTAKES_SPINNER_COLOR,
                 value: widget.overview.mediumMistakeCount.toDouble(),
                 maximum: widget.overview.totalMistakes.toDouble(),
               ),
               SingleAnalysisOverview(
                 title: CRITICAL_MOMENT_MAJOR_MISTAKE_NAME,
+                description: CRITICAL_MOMENT_MAJOR_MISTAKE_DESCRIPTION,
                 color: MAJOR_MISTAKES_SPINNER_COLOR,
                 value: widget.overview.majorMistakeCount.toDouble(),
                 maximum: widget.overview.totalMistakes.toDouble(),
@@ -50,13 +53,17 @@ class _AnalysisOverviewWidgetState extends State<AnalysisOverviewWidget> {
             ],
           ),
         ),
-        SizedBox(height: SPACE_4,),
+        SizedBox(
+          height: SPACE_4,
+        ),
         Text(
           _resultMessage(),
           style: theme.textTheme.headlineMedium!
               .copyWith(fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: SPACE_2,),
+        SizedBox(
+          height: SPACE_2,
+        ),
         Opacity(
             opacity: 0.6,
             child: Text(

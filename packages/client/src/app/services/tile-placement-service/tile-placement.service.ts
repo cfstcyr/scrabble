@@ -21,6 +21,7 @@ import { SoundName, SoundService } from '@app/services/sound-service/sound.servi
     providedIn: 'root',
 })
 export class TilePlacementService {
+    opponentTilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private blankTileModalOpened$: BehaviorSubject<boolean>;
     private tilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private isPlacementValidSubject$: BehaviorSubject<boolean>;
@@ -29,6 +30,7 @@ export class TilePlacementService {
         this.blankTileModalOpened$ = new BehaviorSubject<boolean>(false);
         this.tilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
         this.isPlacementValidSubject$ = new BehaviorSubject<boolean>(false);
+        this.opponentTilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
     }
 
     get tilePlacements$(): Observable<TilePlacement[]> {
@@ -112,6 +114,7 @@ export class TilePlacementService {
     handleCancelPlacement(): void {
         this.tilePlacements.forEach(({ tile }) => (tile.playedLetter = undefined));
         this.tilePlacementsSubject$.next([]);
+        this.opponentTilePlacementsSubject$.next([]);
         this.updatePlacement();
     }
 

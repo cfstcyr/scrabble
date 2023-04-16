@@ -13,7 +13,12 @@ import '../../utils/duration.dart';
 
 class UserProfileGameHistory extends StatelessWidget {
   UserProfileGameHistory(
-      {required this.gameHistories, this.isLocalUser = false});
+      {required List<GameHistory> gameHistories, this.isLocalUser = false})
+      : gameHistories = gameHistories.map((gameHistory) {
+          gameHistory.startTime = gameHistory.startTime.add(Duration(hours: 8));
+          gameHistory.endTime = gameHistory.endTime.add(Duration(hours: 8));
+          return gameHistory;
+        }).toList();
 
   final List<GameHistory> gameHistories;
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();

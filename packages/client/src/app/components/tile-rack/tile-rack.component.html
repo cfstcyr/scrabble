@@ -25,7 +25,7 @@
         <div class="rack-card-container" [class]="'tile-rack selection-' + selectionType"
             [ngClass]="{'is-shuffling': isShuffling}" cdkDropList cdkDropListOrientation="horizontal"
             [cdkDropListData]="tiles" (cdkDropListDropped)="drop($event)" *ngIf="isObserver">
-            <div class="rack-tile-container" *ngFor="let tile of tiles"
+            <div class="rack-tile-container" *ngFor="let tile of (observerTiles | async)"
                 [ngClass]="{ selected: tile.isSelected, hidden: tile.isUsed }">
                 <app-tile [tile]="tile" [ngStyle]="{'fontSize': tileFontSize+'em'}" class="rack-tile">
                     {{ tile.letter }}

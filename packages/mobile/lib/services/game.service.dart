@@ -7,6 +7,7 @@ import 'package:mobile/classes/game/game-update.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/game/player.dart';
 import 'package:mobile/classes/game/players_container.dart';
+import 'package:mobile/classes/sound.dart';
 import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/constants/game-events.dart';
@@ -21,6 +22,7 @@ import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game-messages.service.dart';
 import 'package:mobile/services/round-service.dart';
+import 'package:mobile/services/sound-service.dart';
 import 'package:mobile/services/user.service.dart';
 import 'package:mobile/view-methods/create-lobby-methods.dart';
 import 'package:mobile/view-methods/group.methods.dart';
@@ -34,6 +36,7 @@ import '../constants/locale/game-constants.dart';
 import 'game-observer-service.dart';
 
 class GameService {
+  final SoundService _soundService = getIt.get<SoundService>();
   final GamePlayController gamePlayController = getIt.get<GamePlayController>();
   final ActionService _actionService = getIt.get<ActionService>();
   final RoundService _roundService = getIt.get<RoundService>();
@@ -72,6 +75,8 @@ class GameService {
     playersContainer.localPlayerId = localPlayerId;
     if (_userService.isObserver) {
       playersContainer.localPlayerId = playersContainer.player1.socketId;
+    } else {
+      _roundService.setLocalPlayerId(localPlayerId);
     }
 
     playersContainer.players
@@ -188,6 +193,12 @@ class GameService {
     List<String> winners = getIt.get<EndGameService>().winners$.value;
     bool isWinner = winners.contains(localUsername);
 
+    if (isWinner) {
+      _soundService.playSound(Sound.victory);
+    } else {
+      _soundService.playSound(Sound.endGame);
+    }
+
     Player localPlayer = game.players.getPlayerByName(localUsername);
 
     triggerDialogBox(
@@ -254,6 +265,8 @@ class GameService {
         [_roundService.getActivePlayerId(), gameStream], (values) {
       String activePlayerId = values[0];
       MultiplayerGame? game = values[1];
+
+      _gameObserverService.activePlayerId.add(activePlayerId);
 
       return game != null
           ? game.players.localPlayerId == activePlayerId

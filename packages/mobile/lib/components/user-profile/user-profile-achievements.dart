@@ -105,37 +105,46 @@ class UserProfileAchievements extends StatelessWidget {
   }
 
   Widget buildDialog(BuildContext context, UserAchievement achievement) {
-    return Row(
-      children: achievement.achievement.levels
-          .asMap()
-          .entries
-          .map<Widget>((level) => Container(
-                margin: EdgeInsets.symmetric(horizontal: SPACE_3),
-                child: Opacity(
-                  opacity:
-                      ((achievement.levelIndex ?? -1) >= level.key ? 1 : 0.55),
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: SPACE_1),
-                        child: AppImage(
-                          src: level.value.image,
-                          width: 100,
-                        ),
+    return Column(
+      children: [
+        Text(achievement.achievement.description),
+        SizedBox(
+          height: SPACE_4,
+        ),
+        Row(
+          children: achievement.achievement.levels
+              .asMap()
+              .entries
+              .map<Widget>((level) => Container(
+                    margin: EdgeInsets.symmetric(horizontal: SPACE_3),
+                    child: Opacity(
+                      opacity: ((achievement.levelIndex ?? -1) >= level.key
+                          ? 1
+                          : 0.55),
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(bottom: SPACE_1),
+                            child: AppImage(
+                              src: level.value.image,
+                              width: 100,
+                            ),
+                          ),
+                          Text(
+                            level.value.value.toString(),
+                            style: TextStyle(
+                                color: _themeColorService
+                                    .themeDetails.value.color.colorValue,
+                                fontSize: 36,
+                                fontWeight: FontWeight.w600),
+                          )
+                        ],
                       ),
-                      Text(
-                        level.value.value.toString(),
-                        style: TextStyle(
-                            color: _themeColorService
-                                .themeDetails.value.color.colorValue,
-                            fontSize: 36,
-                            fontWeight: FontWeight.w600),
-                      )
-                    ],
-                  ),
-                ),
-              ))
-          .toList(),
+                    ),
+                  ))
+              .toList(),
+        )
+      ],
     );
   }
 
