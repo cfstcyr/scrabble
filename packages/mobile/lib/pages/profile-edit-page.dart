@@ -131,8 +131,7 @@ class ProfileEditPageState extends State<ProfileEditPage> {
       await _userService.editUser(EditableUserFields(
           username: usernameHandler.controller.text, avatar: avatarSrc.value!));
       if (context.mounted) {
-        Navigator.popAndPushNamed(context, PROFILE_ROUTE,
-            arguments: _userService.getUser());
+        Navigator.pop(context);
       }
     } catch (e) {
       if (context.mounted) {
