@@ -5,7 +5,6 @@ import 'package:mobile/constants/layout.constants.dart';
 
 import '../../locator.dart';
 import '../../services/user.service.dart';
-import '../animation/pulse.dart';
 
 class Player extends AbstractPlayer {
   Player({
@@ -19,6 +18,11 @@ class Player extends AbstractPlayer {
     return Card(
         color: getColor(),
         child: Container(
+          decoration: BoxDecoration(
+              border: isObserved
+                  ? Border.all(width: 3, color: Color.fromRGBO(236, 182, 32, 1))
+                  : Border.all(width: 3, color: getColor() ?? Colors.white),
+              borderRadius: BorderRadius.all(Radius.circular(10))),
           padding: EdgeInsets.symmetric(
             horizontal: SPACE_2,
             vertical: SPACE_1,
@@ -41,13 +45,11 @@ class Player extends AbstractPlayer {
                 width: 2,
               ),
               getIt.get<UserService>().isObserver
-                  ? Pulse(
-                      duration: Duration(milliseconds: 350),
-                      active: isObserved,
-                      child: Icon(
-                        Icons.visibility,
-                        color: getTextColor(),
-                      ),
+                  ? Icon(
+                      Icons.visibility,
+                      color: isObserved
+                          ? Color.fromRGBO(236, 182, 32, 1)
+                          : getTextColor(),
                     )
                   : Container(),
             ],
