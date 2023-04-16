@@ -10,6 +10,8 @@ import '../../classes/user.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/join-game.constants.dart';
 import '../../constants/join-group.constants.dart';
+import '../../locator.dart';
+import '../../services/group-join.service.dart';
 import '../../view-methods/group.methods.dart';
 import '../app_button.dart';
 
@@ -144,4 +146,8 @@ class _PasswordDialogState extends State<PasswordDialog> {
       backgroundColor: Colors.white,
     );
   }
+}
+
+void handleLeave(String groupId) {
+  getIt.get<GroupJoinService>().handleLeaveGroup(groupId);
 }

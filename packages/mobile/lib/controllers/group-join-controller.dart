@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
@@ -16,7 +17,7 @@ import '../services/socket.service.dart';
 class GroupJoinController {
   final String endpoint = GAME_ENDPOINT;
 
-  String? joinedGroupedId;
+  String? joinedGroupId;
 
   SocketService socketService = getIt.get<SocketService>();
   PersonnalHttpClient httpClient = getIt.get<PersonnalHttpClient>();
@@ -40,7 +41,7 @@ class GroupJoinController {
 
   Future<Response> handleJoinGroup(
       String groupId, String password, bool isObserver) async {
-    joinedGroupedId = groupId;
+    joinedGroupId = groupId;
     JoinRequest joinRequestData =
         JoinRequest(password: password, isObserver: isObserver);
     return http.post(Uri.parse("$endpoint/$groupId/players/join"),
@@ -52,14 +53,13 @@ class GroupJoinController {
         body: jsonEncode({"isObserver": isObserver}));
   }
 
-  Future<Response> handleCancelJoinRequest() async {
-    return handleLeaveGroup();
+  Future<Response> handleCancelJoinRequest(groupId) async {
+    return handleLeaveGroup(groupId);
   }
 
-  Future<Response> handleLeaveGroup() async {
+  Future<Response> handleLeaveGroup(String groupId) async {
     Future<Response> response =
-        http.delete(Uri.parse("$endpoint/$joinedGroupedId/players/leave"));
-    joinedGroupedId = null;
+        http.delete(Uri.parse("$endpoint/$groupId/players/leave"));
     return response;
   }
 

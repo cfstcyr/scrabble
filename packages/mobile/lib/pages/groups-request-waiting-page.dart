@@ -77,7 +77,8 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
             color: Colors.white,
             borderOnForeground: true,
             child: ConstrainedBox(
-              constraints: BoxConstraints(minWidth: 400, minHeight: 400, maxWidth: 500, maxHeight: 400),
+              constraints: BoxConstraints(
+                  minWidth: 400, minHeight: 400, maxWidth: 500, maxHeight: 400),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 32, 0, 16),
                 child: Column(
@@ -118,7 +119,9 @@ class _GroupRequestWaitingPageState extends State<GroupRequestWaitingPage> {
   }
 
   Future<bool> _onBack(BuildContext context) {
-    getIt.get<GroupJoinService>().handleCancelJoinRequest();
+    getIt
+        .get<GroupJoinService>()
+        .handleCancelJoinRequest(widget.group.groupId!);
     Navigator.pop(context);
     return Future.value(true);
   }

@@ -117,7 +117,7 @@ class _CreateLobbyPageState extends State<CreateLobbyPage> {
                                 ),
                               );
                             }),
-                        GroupManagement(),
+                        GroupManagement(widget.group),
                       ],
                     ),
                   ),
