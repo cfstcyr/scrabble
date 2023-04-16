@@ -36,6 +36,8 @@ class SoundService {
     _musicPlayer.audioCache.loadAll(backgroundMusic);
     _musicPlayer.audioCache.loadAll(lobbyMusic);
     _routeObserver.currentRoute$.listen(handleRouteChange);
+    _musicPlayer.onPlayerComplete
+        .listen((event) => playMusic(_currentMusicType));
   }
 
   factory SoundService() {
