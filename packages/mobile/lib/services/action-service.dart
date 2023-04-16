@@ -59,5 +59,10 @@ class ActionService {
 
   void _actionProcessed(ResponseResult result) {
     _isActionBeingProcessed.add(false);
+
+    if (!result.isSuccess) {
+      // remove tiles on board after an invalid word
+      _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
+    }
   }
 }
