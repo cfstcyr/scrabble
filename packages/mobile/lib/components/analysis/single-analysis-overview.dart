@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/components/app-circular-spinner.dart';
+import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
 class SingleAnalysisOverview extends StatefulWidget {
-  SingleAnalysisOverview({this.title, required this.value, required this.maximum, required this.color});
+  SingleAnalysisOverview(
+      {this.title,
+      this.description,
+      required this.value,
+      required this.maximum,
+      required this.color});
 
   final String? title;
+  final String? description;
   final double value;
   final double maximum;
   final Color color;
@@ -24,10 +32,33 @@ class _SingleAnalysisOverviewState extends State<SingleAnalysisOverview> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         widget.title != null
-            ? Text(
-                widget.title!,
-                style: theme.textTheme.titleMedium!
-                    .copyWith(fontWeight: FontWeight.w600),
+            ? Row(
+                children: [
+                  Text(
+                    widget.title!,
+                    style: theme.textTheme.titleMedium!
+                        .copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(
+                    width: SPACE_2,
+                  ),
+                  InkWell(
+                    onTap: () => triggerDialogBox(
+                        widget.title ?? "",
+                        [Text(widget.description ?? "")],
+                        [
+                          DialogBoxButtonParameters(
+                              content: "Ok",
+                              theme: AppButtonTheme.primary,
+                              closesDialog: true)
+                        ],
+                        dismissOnBackgroundTouch: true),
+                    child: Icon(
+                      Icons.help_outline,
+                      color: theme.primaryColor,
+                    ),
+                  )
+                ],
               )
             : SizedBox.shrink(),
         SizedBox(

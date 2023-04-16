@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart' as c;
 import 'package:flutter/widgets.dart';
 
@@ -76,7 +74,6 @@ class AppImage extends c.StatelessWidget {
 
   @override
   c.Widget build(c.BuildContext context) {
-    log(_getSrc());
     return c.Image.network(
       _getSrc(),
       height: (height),

@@ -40,25 +40,35 @@ class UploadService {
   void myAlert(BuildContext context, BehaviorSubject<String?> image) {
     triggerDialogBox(
         'Veuillez choisir un média',
-        [],
         [
-          DialogBoxButtonParameters(
-              content: 'Photos',
+          AppButton(
+              text: 'Photos',
               theme: AppButtonTheme.primary,
               icon: Icons.image,
+              width: 200,
               onPressed: () async {
                 Navigator.pop(context);
                 image
                     .add(formatAvatarLink(await getImage(ImageSource.gallery)));
               }),
-          DialogBoxButtonParameters(
-              content: 'Camera',
-              icon: Icons.camera,
+          AppButton(
+              text: 'Camera',
               theme: AppButtonTheme.primary,
+              icon: Icons.camera,
+              width: 200,
               onPressed: () async {
+                Navigator.pop(context);
                 image.add(formatAvatarLink(await getImage(ImageSource.camera)));
               }),
+          AppButton(
+              text: 'Annuler',
+              theme: AppButtonTheme.secondary,
+              width: 200,
+              onPressed: () {
+                Navigator.pop(context);
+              }),
         ],
+        [],
         dismissOnBackgroundTouch: true);
   }
 }

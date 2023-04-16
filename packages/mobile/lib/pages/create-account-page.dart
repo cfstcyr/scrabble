@@ -2,19 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile/components/create-account-form.dart';
+import 'package:mobile/components/scaffold-persistance.dart';
 
 class CreateAccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Création d'un compte"),
-        shadowColor: Colors.black,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        elevation: 1,
-        centerTitle: true,
-      ),
+    return MyScaffold(
+      title: "Création d'un compte",
+      showChat: false,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

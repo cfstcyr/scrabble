@@ -9,7 +9,9 @@ import 'package:mobile/constants/user-constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/routes.dart';
 import 'package:mobile/services/group-join.service.dart';
+import 'package:mobile/services/sound-service.dart';
 
+import '../../classes/sound.dart';
 import '../../services/theme-color-service.dart';
 import '../../utils/duration-format.dart';
 
@@ -102,6 +104,10 @@ class _IndividualGroupState extends State<IndividualGroup> {
                               height: 60,
                               child: ElevatedButton(
                                   onPressed: () async {
+                                    getIt
+                                        .get<SoundService>()
+                                        .playSound(Sound.click);
+
                                     if (widget.group.gameVisibility ==
                                         GameVisibility.protected) {
                                       await groupJoinService
@@ -146,6 +152,9 @@ class _IndividualGroupState extends State<IndividualGroup> {
                               child: ElevatedButton(
                                   onPressed: widget.group.canJoin!
                                       ? () async {
+                                          getIt
+                                              .get<SoundService>()
+                                              .playSound(Sound.click);
                                           if (widget.group.gameVisibility ==
                                               GameVisibility.protected) {
                                             await groupJoinService
