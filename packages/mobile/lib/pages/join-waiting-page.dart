@@ -13,6 +13,7 @@ import '../components/group/parameters.dart';
 import '../components/group/waiting-room.dart';
 import '../constants/locale/group-selection-constants.dart';
 import '../constants/locale/groups-constants.dart';
+import '../routes/routes.dart';
 
 class JoinWaitingPage extends StatefulWidget {
   JoinWaitingPage({super.key, required this.currentGroup});
@@ -175,7 +176,8 @@ class _JoinWaitingPageState extends State<JoinWaitingPage> {
 
   Future<bool> _onBack(BuildContext context) {
     getIt.get<GroupJoinService>().handleLeaveGroup();
-    Navigator.pop(context);
+    Navigator.popUntil(context, ModalRoute.withName(GROUPS_ROUTE));
+    Navigator.popAndPushNamed(context, GROUPS_ROUTE);
     return Future.value(true);
   }
 }
