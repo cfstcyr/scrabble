@@ -7,3 +7,4 @@ const CANCELED_GROUP = 'cancelledGroup';
 const USER_LEFT_GROUP = 'userLeftGroup';
 const JOIN_REQUEST = 'joinRequest';
 const JOIN_REQUEST_CANCELLED = 'joinRequestCancelled';
+const REPLACE_VIRTUAL_PLAYER_EVENT = 'replaceVirtualPlayer';

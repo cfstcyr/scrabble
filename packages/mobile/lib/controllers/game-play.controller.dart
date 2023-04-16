@@ -44,12 +44,12 @@ class GamePlayController {
       BehaviorSubject<GameUpdateData>();
   final BehaviorSubject<GameMessage?> gameMessage$ =
       BehaviorSubject<GameMessage?>.seeded(null);
-  final PublishSubject<ResponseResult> _actionDone$ = PublishSubject<ResponseResult>();
+  final PublishSubject<ResponseResult> _actionDone$ =
+      PublishSubject<ResponseResult>();
 
   Future<void> sendAction(ActionData actionData) async {
     Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/players/action");
-    http
-        .post(endpoint, body: jsonEncode(actionData));
+    http.post(endpoint, body: jsonEncode(actionData));
   }
 
   Future<void> leaveGame() async {
@@ -57,6 +57,12 @@ class GamePlayController {
     await http.delete(endpoint).then((_) {
       currentGameId = null;
     });
+  }
+
+  Future<void> replaceVirtualPlayer(int playerNumber) async {
+    Uri endpoint = Uri.parse("$baseEndpoint/$currentGameId/players/replace");
+    var data = {'virtualPlayerNumber': playerNumber};
+    await http.post(endpoint, body: jsonEncode(data));
   }
 
   void configureSocket() {

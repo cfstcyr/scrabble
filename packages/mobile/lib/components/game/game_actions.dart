@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/game-events.dart';
+import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/action-service.dart';
@@ -14,11 +17,45 @@ import 'package:mobile/services/round-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../services/user.service.dart';
+import '../../view-methods/group.methods.dart';
 
-class GameActions extends StatelessWidget {
+const REPLACE_VIRTUAL_PLAYER_LABEL = 'Remplacer Joueur Virtuel';
+
+class GameActions extends StatefulWidget {
+  @override
+  State<GameActions> createState() => _GameActionsState();
+}
+
+class _GameActionsState extends State<GameActions> {
+  late var _index;
+  var _isObservingVirtualPlayer = false;
+  late StreamSubscription observedPlayerChangeSubscription;
+  @override
+  void initState() {
+    super.initState();
+
+    observedPlayerChangeSubscription =
+        changeObservedPlayerStream.listen((int index) {
+      _index = index;
+    });
+
+    isObservingVirtualPlayerStream.listen((bool isObservingVirtualPlayer) {
+      _isObservingVirtualPlayer = isObservingVirtualPlayer;
+    });
+  }
+
+  @override
+  void dispose() {
+    observedPlayerChangeSubscription.cancel();
+    super.dispose();
+  }
+
   final GameService _gameService = getIt.get<GameService>();
+
   final ActionService _actionService = getIt.get<ActionService>();
+
   final RoundService _roundService = getIt.get<RoundService>();
+
   final GameEventService _gameEventService = getIt.get<GameEventService>();
 
   void surrender(BuildContext context) {
@@ -43,6 +80,9 @@ class GameActions extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   AppButton(
+                    text: getIt.get<UserService>().isObserver
+                        ? QUIT_LABEL_FR
+                        : null,
                     onPressed: () => getIt.get<UserService>().isObserver
                         ? leave(context)
                         : surrender(context),
@@ -51,55 +91,108 @@ class GameActions extends StatelessWidget {
                         : Icons.flag,
                     size: AppButtonSize.large,
                     theme: AppButtonTheme.danger,
-                    width: 80,
                   ),
-                  StreamBuilder<bool>(
-                      stream: _canPlayStream(),
+                  Visibility(
+                    visible: !getIt.get<UserService>().isObserver,
+                    child: StreamBuilder<bool>(
+                        stream: _canPlayStream(),
+                        initialData: false,
+                        builder: (context, snapshot) {
+                          return AppButton(
+                            onPressed: snapshot.hasData && snapshot.data!
+                                ? () {
+                                    _actionService.sendAction(ActionType.hint);
+                                  }
+                                : null,
+                            icon: Icons.lightbulb,
+                            size: AppButtonSize.large,
+                          );
+                        }),
+                  ),
+                  Visibility(
+                    visible: !getIt.get<UserService>().isObserver,
+                    child: StreamBuilder<bool>(
+                        stream: _canExchangeStream(),
+                        initialData: false,
+                        builder: (context, snapshot) {
+                          return AppButton(
+                            onPressed: snapshot.hasData && snapshot.data!
+                                ? () {
+                                    _actionService.sendAction(
+                                        ActionType.exchange,
+                                        _gameService
+                                            .getTileRack()
+                                            .getSelectedTilesPayload());
+                                    _gameService
+                                        .getTileRack()
+                                        .disableExchangeMode();
+                                  }
+                                : null,
+                            icon: Icons.swap_horiz_rounded,
+                            size: AppButtonSize.large,
+                          );
+                        }),
+                  ), //Échanger
+                  Visibility(
+                    visible: !getIt.get<UserService>().isObserver,
+                    child: StreamBuilder<bool>(
+                        stream: _canPlayStream(),
+                        initialData: false,
+                        builder: (context, snapshot) {
+                          return AppButton(
+                            onPressed: snapshot.hasData && snapshot.data!
+                                ? () {
+                                    _actionService.sendAction(ActionType.pass);
+                                    _gameEventService.add<void>(
+                                        PUT_BACK_TILES_ON_TILE_RACK, null);
+                                  }
+                                : null,
+                            icon: Icons.not_interested_rounded,
+                            size: AppButtonSize.large,
+                          );
+                        }),
+                  ), // Passer
+                  Visibility(
+                    visible: !getIt.get<UserService>().isObserver,
+                    child: StreamBuilder<bool>(
+                      stream: snapshot.hasData
+                          ? _canPlaceStream(snapshot.data!)
+                          : Stream.value(false),
+                      builder: (context, canPlace) {
+                        return AppButton(
+                          onPressed: canPlace.data ?? false
+                              ? () => _gameService.playPlacement()
+                              : null,
+                          icon: Icons.play_arrow_rounded,
+                          size: AppButtonSize.large,
+                        );
+                      },
+                    ),
+                  ), // remplacer JV
+                  Visibility(
+                    visible: getIt.get<UserService>().isObserver,
+                    child: StreamBuilder<bool>(
+                      stream: isObservingVirtualPlayerStream,
                       initialData: false,
                       builder: (context, snapshot) {
-                        return AppButton(
-                          onPressed: snapshot.hasData && snapshot.data!
-                              ? () {
-                                  _actionService.sendAction(ActionType.hint);
-                                }
-                              : null,
-                          icon: Icons.lightbulb,
-                          size: AppButtonSize.large,
-                          width: 80,
+                        bool isObservingVirtualPlayer = snapshot.data ?? false;
+                        return Tooltip(
+                          message: REPLACE_VIRTUAL_PLAYER_LABEL,
+                          child: AppButton(
+                            text: REPLACE_LABEL_FR,
+                            onPressed:
+                                snapshot.hasData && isObservingVirtualPlayer
+                                    ? () => _gameService
+                                        .replaceVirtualPlayer(_index)
+                                    : null,
+                            icon: Icons.swap_horiz_rounded,
+                            size: AppButtonSize.large,
+                            theme: AppButtonTheme.primary,
+                          ),
                         );
-                      }),
-                  StreamBuilder<bool>(
-                      stream: _canPlayStream(),
-                      initialData: false,
-                      builder: (context, snapshot) {
-                        return AppButton(
-                          onPressed: snapshot.hasData && snapshot.data!
-                              ? () {
-                                  _actionService.sendAction(ActionType.pass);
-                                  _gameEventService.add<void>(
-                                      PUT_BACK_TILES_ON_TILE_RACK, null);
-                                }
-                              : null,
-                          icon: Icons.not_interested_rounded,
-                          size: AppButtonSize.large,
-                          width: 80,
-                        );
-                      }), // Passer
-                  StreamBuilder<bool>(
-                    stream: snapshot.hasData
-                        ? _canPlaceStream(snapshot.data!)
-                        : Stream.value(false),
-                    builder: (context, canPlace) {
-                      return AppButton(
-                        onPressed: canPlace.data ?? false
-                            ? () => _gameService.playPlacement()
-                            : null,
-                        icon: Icons.play_arrow_rounded,
-                        size: AppButtonSize.large,
-                        width: 80,
-                      );
-                    },
-                  ),
+                      },
+                    ),
+                  )
                 ],
               )),
         );
@@ -154,5 +247,13 @@ class GameActions extends StatelessWidget {
 
       return canPlay && isValidPlacement;
     });
+  }
+
+  void handleObservedChange(int index) {
+    _index = index;
+  }
+
+  void handleVirtualPlayerObserving(bool isObservingVirtualPlayer) {
+    _isObservingVirtualPlayer = isObservingVirtualPlayer;
   }
 }

@@ -80,6 +80,9 @@ class GameCreationController {
     socketService.on(JOIN_REQUEST_CANCELLED, (data) {
       handleJoinRequestCancelled(RequestingUsers.fromJson(data));
     });
+    socketService.on(REPLACE_VIRTUAL_PLAYER_EVENT, (data) {
+      handleReplaceVirtualPlayer(data);
+    });
   }
 
   void handleJoinRequest(RequestingUsers data) {
@@ -90,5 +93,13 @@ class GameCreationController {
   void handleJoinRequestCancelled(RequestingUsers data) {
     playerWaitingList$.add(data.requestingPlayers);
     observerWaitingList$.add(data.requestingObservers);
+  }
+
+  void handleReplaceVirtualPlayer(data) {
+    StartGameData gameData = StartGameData.fromJson(data);
+    getIt.get<GamePlayController>().currentGameId = gameData.gameId;
+    replaceVirtualPlayer$.add(InitializeGameData(
+        localPlayerSocketId: SocketService.socket.id!,
+        startGameData: gameData));
   }
 }

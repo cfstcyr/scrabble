@@ -12,6 +12,7 @@ import 'package:mobile/classes/tile/tile-rack.dart';
 import 'package:mobile/components/analysis/analysis-request-dialog.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/locale/analysis-constants.dart';
+import 'package:mobile/constants/locale/groups-constants.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/routes/navigator-key.dart';
@@ -27,8 +28,10 @@ import 'package:mobile/view-methods/create-lobby-methods.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../classes/rounds/round.dart';
 import '../components/alert-dialog.dart';
 import '../components/app_button.dart';
+import '../components/error-pop-up.dart';
 import '../constants/locale/game-constants.dart';
 import 'game-observer-service.dart';
 
@@ -53,7 +56,9 @@ class GameService {
     startGameEvent.listen((InitializeGameData initializeGameData) => startGame(
         initializeGameData.localPlayerSocketId,
         initializeGameData.startGameData));
-
+    replaceVirtualPlayerEvent$.listen((InitializeGameData gameData) =>
+        handleReplaceVirtualPlayer(
+            gameData.localPlayerSocketId, gameData.startGameData));
     gamePlayController.gameUpdateEvent
         .listen((GameUpdateData gameUpdate) => updateGame(gameUpdate));
   }
@@ -88,7 +93,6 @@ class GameService {
         tileRack: tileRack,
         players: playersContainer,
         tileReserve: startGameData.tileReserve));
-
     _roundService.startRound(startGameData.firstRound, _onTimerExpires);
     getIt.get<GameMessagesService>().resetMessages();
     Navigator.pushReplacementNamed(
@@ -277,5 +281,53 @@ class GameService {
       _actionService.sendAction(ActionType.pass);
       _gameEventService.add<void>(PUT_BACK_TILES_ON_TILE_RACK, null);
     }
+  }
+
+  void handleReplaceVirtualPlayer(
+      String localPlayerId, StartGameData gameData) {
+    _userService.isObserver = false;
+    PlayersContainer playersContainer = PlayersContainer.fromPlayers(
+        player1: gameData.player1,
+        player2: gameData.player2,
+        player3: gameData.player3,
+        player4: gameData.player4);
+    playersContainer.localPlayerId = localPlayerId;
+
+    playersContainer.players
+        .where((Player player) => player.socketId == localPlayerId)
+        .map((Player player) => player.isLocalPlayer = true);
+
+    _gameObserverService.playersContainer.add(playersContainer);
+
+    TileRack tileRack =
+        TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
+
+    _game.add(MultiplayerGame(
+        board: _game.value!.board,
+        tileRack: tileRack,
+        players: playersContainer,
+        tileReserve: gameData.tileReserve));
+
+    getIt.get<GameMessagesService>().resetMessages();
+    Navigator.pushReplacementNamed(
+        navigatorKey.currentContext!, GAME_PAGE_ROUTE);
+
+    // Sync le timer avec ce qui reste du round
+
+    Duration elapsedTime = DateTime.now().difference(_roundService.startTime);
+    Duration remaining = gameData.firstRound.duration - elapsedTime;
+    var currentRound = Round(
+        socketIdOfActivePlayer: gameData.firstRound.socketIdOfActivePlayer,
+        duration: remaining);
+    _roundService.startRound(currentRound, _onTimerExpires);
+  }
+
+  Future<void> replaceVirtualPlayer(int playerNumber) async {
+    await gamePlayController
+        .replaceVirtualPlayer(playerNumber)
+        .catchError((error) {
+      errorSnackBar(navigatorKey.currentContext!, GAME_CANCEL_FAILED);
+      return error;
+    });
   }
 }

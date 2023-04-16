@@ -10,9 +10,10 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/services/analysis-service.dart';
 import 'package:mobile/services/game.service.dart';
 import 'package:mobile/services/player-leave-service.dart';
+import 'package:mobile/services/user.service.dart';
 
 class PostGameActions extends StatelessWidget {
-  final AnalysisService _analysisService = getIt.get<AnalysisService>();
+  final UserService _userService = getIt.get<UserService>();
   final GameService _gameService = getIt.get<GameService>();
   AnalysisCompleted? analysis;
 
@@ -45,30 +46,56 @@ class PostGameActions extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Expanded(
-                flex: 5,
-                child: AppButton(
-                  onPressed: () => leave(context),
-                  icon: Icons.output_outlined,
-                  text: 'Quitter',
-                  size: AppButtonSize.large,
-                  theme: AppButtonTheme.danger,
-                ),
-              ),
-              Spacer(flex: 1,),
-              Expanded(
-                flex: 5,
-                child: AppButton(
-                  onPressed: () => requestAnalysis(context),
-                  icon: Icons.science,
-                  text: 'Analyse',
-                  size: AppButtonSize.large,
-                  theme: AppButtonTheme.primary,
-                ),
-              ),
-              // Spacer(flex: 1,)
+              ..._userService.isObserver
+                  ? _observerButtons(context)
+                  : _playerButtons(context),
             ],
           )),
     );
+  }
+
+  List<Widget> _playerButtons(BuildContext context) {
+    return [
+      Expanded(
+        flex: 5,
+        child: AppButton(
+          onPressed: () => leave(context),
+          icon: Icons.output_outlined,
+          text: 'Quitter',
+          size: AppButtonSize.large,
+          theme: AppButtonTheme.danger,
+        ),
+      ),
+      Spacer(
+        flex: 1,
+      ),
+      Expanded(
+        flex: 5,
+        child: AppButton(
+          onPressed: () => requestAnalysis(context),
+          icon: Icons.science,
+          text: 'Analyse',
+          size: AppButtonSize.large,
+          theme: AppButtonTheme.primary,
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _observerButtons(BuildContext context) {
+    return [
+      Spacer(flex: 3),
+      Expanded(
+        flex: 5,
+        child: AppButton(
+          onPressed: () => leave(context),
+          icon: Icons.output_outlined,
+          text: 'Quitter',
+          size: AppButtonSize.large,
+          theme: AppButtonTheme.danger,
+        ),
+      ),
+      Spacer(flex: 3),
+    ];
   }
 }
