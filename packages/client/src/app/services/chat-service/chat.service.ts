@@ -8,6 +8,7 @@ import { ChannelMessage } from '@common/models/chat/chat-message';
 import { TypeOfId } from '@common/types/id';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { PublicUser } from '@common/models/user';
 
 @Injectable({
     providedIn: 'root',
@@ -36,6 +37,10 @@ export class ChatService {
             this.ready.next(false);
             this.channels.next(new Map());
             this.joinableChannels.next(new Map());
+        });
+
+        this.userService.user.subscribe((user) => {
+            if (user) this.updateUserInfo(user);
         });
     }
 
@@ -111,12 +116,28 @@ export class ChatService {
     }
 
     handleNewMessage(channelMessage: ChannelMessage): void {
+        this.updateUserInfo(channelMessage.message.sender);
         this.addMessageToChannel(channelMessage);
         this.channels.next(this.channels.value);
     }
 
     handleChannelHistory(channelMessages: ChannelMessage[]): void {
         channelMessages.forEach((channelMessage: ChannelMessage) => this.addMessageToChannel(channelMessage));
+    }
+
+    private updateUserInfo(sender: PublicUser): void {
+        for (const channel of this.channels.value.values()) {
+            for (const message of channel.messages) {
+                if (message.sender.email === sender.email) {
+                    if (message.sender.username === sender.username && message.sender.avatar === sender.avatar) {
+                        return;
+                    }
+
+                    message.sender.username = sender.username;
+                    message.sender.avatar = sender.avatar;
+                }
+            }
+        }
     }
 
     private addMessageToChannel(channelMessage: ChannelMessage): void {
