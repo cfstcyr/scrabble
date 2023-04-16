@@ -290,15 +290,23 @@ class GameService {
         TileRack().setTiles(playersContainer.getLocalPlayer().tiles);
 
     _game.add(MultiplayerGame(
-        board: Board(),
+        board: _game.value!.board,
         tileRack: tileRack,
         players: playersContainer,
         tileReserve: gameData.tileReserve));
 
-    _roundService.startRound(gameData.firstRound, _onTimerExpires);
     getIt.get<GameMessagesService>().resetMessages();
     Navigator.pushReplacementNamed(
         navigatorKey.currentContext!, GAME_PAGE_ROUTE);
+    final limitDate = DateTime.parse(gameData.firstRound.duration.toString());
+    final timeLeft = (limitDate.millisecondsSinceEpoch -
+            DateTime.now().millisecondsSinceEpoch) /
+        1000;
+    final timeLeftMilliseconds = limitDate.millisecondsSinceEpoch -
+        DateTime.now().millisecondsSinceEpoch;
+    final timeLeftDuration = Duration(milliseconds: timeLeftMilliseconds);
+    gameData.firstRound.duration = timeLeftDuration;
+    _roundService.startRound(gameData.firstRound, _onTimerExpires);
   }
 
   Future<void> replaceVirtualPlayer(int playerNumber) async {
