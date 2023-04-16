@@ -158,7 +158,7 @@ class GameService {
   }
 
   MultiplayerGame get game {
-    if (_game.value == null) throw Exception("No game");
+    if (!_game.hasValue || _game.value == null) throw Exception("No game");
 
     return _game.value!;
   }
@@ -251,8 +251,12 @@ class GameService {
   }
 
   bool isLocalPlayerPlaying() {
-    return _roundService.currentRound.socketIdOfActivePlayer ==
-        game.players.localPlayerId;
+    try {
+      return _roundService.currentRound.socketIdOfActivePlayer ==
+          game.players.localPlayerId;
+    } catch (err) {
+      return true;
+    }
   }
 
   Stream<bool> isLocalPlayerPlayingStream() {
