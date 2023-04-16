@@ -70,7 +70,7 @@ export class ChatService {
         });
         socket.on('channel:delete', async (idChannel: TypeOfId<Channel>) => {
             try {
-                await this.deleteChannel(idChannel);
+                await this.deleteChannel(idChannel, socket);
             } catch (error) {
                 SocketService.handleError(error, socket);
             }
@@ -108,8 +108,8 @@ export class ChatService {
         });
     }
 
-    async deleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
-        await this.handleDeleteChannel(idChannel);
+    async deleteChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
+        await this.handleDeleteChannel(idChannel, socket);
         await this.updateJoinableChannels();
     }
 
@@ -131,7 +131,8 @@ export class ChatService {
         socket.nsp.to(getSocketNameFromChannel(channel)).emit('channel:newMessage', channelMessage);
     }
 
-    private async handleDeleteChannel(idChannel: TypeOfId<Channel>): Promise<void> {
+    private async handleDeleteChannel(idChannel: TypeOfId<Channel>, socket: ServerSocket): Promise<void> {
+        socket.nsp.to(getSocketNameFromChannel({ idChannel })).emit('channel:delete', idChannel);
         await this.emptyChannel(idChannel);
         await this.chatPersistenceService.deleteChannel(idChannel);
     }
@@ -195,7 +196,7 @@ export class ChatService {
             const userCount = await this.chatPersistenceService.getUserCountInChannel(idChannel);
 
             if (userCount === 0) {
-                await this.deleteChannel(idChannel);
+                await this.deleteChannel(idChannel, socket);
             }
         }
 

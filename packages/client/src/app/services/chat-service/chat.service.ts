@@ -53,6 +53,7 @@ export class ChatService {
         socket.on('channel:newMessage', this.handleNewMessage.bind(this));
         socket.on('channel:history', this.handleChannelHistory.bind(this));
         socket.on('channel:joinableChannels', this.handleJoinableChannels.bind(this));
+        socket.on('channel:delete', this.handleChannelDelete.bind(this));
         socket.emit('channel:init');
     }
 
@@ -100,6 +101,13 @@ export class ChatService {
         this.joinableChannels.value.delete(channel.idChannel);
         this.joinableChannels.next(this.joinableChannels.value);
         this.quittedChannel.next({ ...channel, messages: [] });
+    }
+
+    handleChannelDelete(channelId: TypeOfId<Channel>): void {
+        this.channels.value.delete(channelId);
+        this.channels.next(this.channels.value);
+        this.joinableChannels.value.delete(channelId);
+        this.joinableChannels.next(this.joinableChannels.value);
     }
 
     handleNewMessage(channelMessage: ChannelMessage): void {

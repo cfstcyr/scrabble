@@ -9,6 +9,7 @@ export interface ChatServerEvents {
     'channel:quit': (channel: Channel) => void;
     'channel:history': (history: ChannelMessage[]) => void;
     'channel:joinableChannels': (channels: Channel[]) => void;
+    'channel:delete': (channel: TypeOfId<Channel>) => void;
     'channel:initDone': () => void;
 }
 
