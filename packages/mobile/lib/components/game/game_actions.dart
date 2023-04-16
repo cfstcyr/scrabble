@@ -6,6 +6,7 @@ import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/game-events.dart';
+import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/locator.dart';
@@ -84,6 +85,9 @@ class _GameActionsState extends State<GameActions> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   AppButton(
+                    text: !getIt.get<UserService>().isObserver
+                        ? QUIT_LABEL_FR
+                        : null,
                     onPressed: () => getIt.get<UserService>().isObserver
                         ? leave(context)
                         : surrender(context),
@@ -181,6 +185,7 @@ class _GameActionsState extends State<GameActions> {
                         return Tooltip(
                           message: REPLACE_VIRTUAL_PLAYER_LABEL,
                           child: AppButton(
+                            text: REPLACE_LABEL_FR,
                             onPressed:
                                 snapshot.hasData && isObservingVirtualPlayer
                                     ? () => this
