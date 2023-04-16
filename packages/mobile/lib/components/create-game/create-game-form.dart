@@ -20,7 +20,6 @@ import 'package:rxdart/rxdart.dart';
 import '../../classes/group.dart';
 import '../../constants/create-account-constants.dart';
 import '../../constants/create-game.constants.dart';
-import '../../pages/home-page.dart';
 import '../app-toggle-button.dart';
 import 'game-visibility-toggle.dart';
 import 'virtual-player-toggle.dart';
@@ -188,10 +187,11 @@ class CreateGameFormState extends State<CreateGameForm> {
                           AppButton(
                               size: AppButtonSize.large,
                               onPressed: () {
-                                Navigator.push(
+                                Navigator.popUntil(
                                     context,
-                                    MaterialPageRoute(
-                                        builder: (context) => HomePage()));
+                                    (route) =>
+                                        route.settings.name == HOME_ROUTE ||
+                                        route.settings.name == BASE_ROUTE);
                               },
                               theme: AppButtonTheme.secondary,
                               text: CANCEL_CREATION_LABEL_FR),

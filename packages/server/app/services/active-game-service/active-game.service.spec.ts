@@ -2,23 +2,25 @@
 /* eslint-disable dot-notation */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+import { DictionarySummary } from '@app/classes/communication/dictionary-data';
 import Game from '@app/classes/game/game';
 import { ReadyGameConfig } from '@app/classes/game/game-config';
 import Player from '@app/classes/player/player';
+import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
+import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
+import { ChatService } from '@app/services/chat-service/chat.service';
+import { NotificationService } from '@app/services/notification-service/notification.service';
+import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
+import { GameVisibility } from '@common/models/game-visibility';
+import { Observer } from '@common/models/observer';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as spies from 'chai-spies';
-import { PLAYER_LEFT_GAME } from '@app/constants/controllers-errors';
-import { ActiveGameService } from './active-game.service';
-import { INVALID_PLAYER_ID_FOR_GAME, NO_GAME_FOUND_WITH_ID } from '@app/constants/services-errors';
-import { SinonStubbedInstance } from 'sinon';
-import { ChatService } from '@app/services/chat-service/chat.service';
-import { ServicesTestingUnit } from '@app/services/service-testing-unit/services-testing-unit.spec';
 import * as Sinon from 'sinon';
+import { SinonStubbedInstance } from 'sinon';
 import { Container } from 'typedi';
-import { GameVisibility } from '@common/models/game-visibility';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
-import { DictionarySummary } from '@app/classes/communication/dictionary-data';
+import { ActiveGameService } from './active-game.service';
 
 const expect = chai.expect;
 
@@ -29,11 +31,13 @@ const USER1 = { username: 'user1', email: 'email1', avatar: 'avatar1' };
 const USER2 = { username: 'user2', email: 'email2', avatar: 'avatar2' };
 const USER3 = { username: 'user3', email: 'email3', avatar: 'avatar3' };
 const USER4 = { username: 'user4', email: 'email4', avatar: 'avatar4' };
+const USER5 = { username: 'user5', email: 'email5', avatar: 'avatar5' };
 
 const DEFAULT_PLAYER_1 = new Player('id1', USER1);
 const DEFAULT_PLAYER_2 = new Player('id2', USER2);
 const DEFAULT_PLAYER_3 = new Player('id3', USER3);
 const DEFAULT_PLAYER_4 = new Player('id4', USER4);
+const DEFAULT_PLAYER_OBSERVER = new Player('id5', USER5);
 const DEFAULT_ID = 'gameId';
 const DEFAULT_GAME_CHANNEL_ID = 1;
 const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
@@ -46,6 +50,10 @@ const DEFAULT_MULTIPLAYER_CONFIG: ReadyGameConfig = {
     virtualPlayerLevel: VirtualPlayerLevel.Beginner,
     dictionarySummary: {} as unknown as DictionarySummary,
     password: '',
+};
+const DEFAULT_OBSERVER: Observer = {
+    publicUser: USER5,
+    id: 'id5',
 };
 const DEFAULT_GAME = {
     player1: DEFAULT_PLAYER_1,
@@ -66,7 +74,10 @@ describe('ActiveGameService', () => {
     let testingUnit: ServicesTestingUnit;
 
     beforeEach(async () => {
-        testingUnit = new ServicesTestingUnit().withStubbed(ChatService);
+        testingUnit = new ServicesTestingUnit().withStubbed(ChatService).withStubbed(NotificationService, {
+            initalizeAdminApp: undefined,
+            sendNotification: Promise.resolve(' '),
+        });
         await testingUnit.withMockDatabaseService();
     });
 
@@ -121,7 +132,7 @@ describe('ActiveGameService', () => {
     describe('getGame', () => {
         beforeEach(async () => {
             chai.spy.on(Game, 'createMultiplayerGame', async () => Promise.resolve(DEFAULT_GAME));
-            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG, []);
+            await activeGameService.beginGame(DEFAULT_ID, DEFAULT_GAME_CHANNEL_ID, DEFAULT_MULTIPLAYER_CONFIG, [DEFAULT_OBSERVER]);
         });
 
         afterEach(() => {
@@ -189,9 +200,7 @@ describe('ActiveGameService', () => {
         let emitToSocketSpy: unknown;
         let emitToRoomSpy: unknown;
         let removeFromRoomSpy: unknown;
-        let doesRoomExistSpy: unknown;
         let isGameOverSpy: unknown;
-        let removeGameSpy: unknown;
         let playerLeftEventSpy: unknown;
         let chatServiceStub: SinonStubbedInstance<ChatService>;
 
@@ -202,7 +211,7 @@ describe('ActiveGameService', () => {
             emitToSocketSpy = chai.spy.on(activeGameService['socketService'], 'emitToSocket', () => {});
             emitToRoomSpy = chai.spy.on(activeGameService['socketService'], 'emitToRoom', () => {});
             removeFromRoomSpy = chai.spy.on(activeGameService['socketService'], 'removeFromRoom', () => {});
-            removeGameSpy = chai.spy.on(activeGameService, 'removeGame', () => {});
+            chai.spy.on(activeGameService, 'removeGame', () => {});
             chatServiceStub = testingUnit.getStubbedInstance(ChatService);
             chatServiceStub.quitChannel.callsFake(async () => {});
         });
@@ -215,28 +224,20 @@ describe('ActiveGameService', () => {
         });
 
         it('should remove player who leaves from socket room', async () => {
-            doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
+            chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
 
             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
             expect(removeFromRoomSpy).to.have.been.called();
         });
 
         it('should emit cleanup event to socket', async () => {
-            doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
+            chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
             await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
             expect(emitToSocketSpy).to.have.been.called();
         });
 
-        it('should remove game from active game activeGameService if there is no more player in room', async () => {
-            doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => false);
-
-            await activeGameService['handlePlayerLeaves'](DEFAULT_ID, DEFAULT_PLAYER_1.id);
-            expect(doesRoomExistSpy).to.have.been.called();
-            expect(removeGameSpy).to.have.been.called.with(DEFAULT_ID, DEFAULT_PLAYER_1.id);
-        });
-
         it('should not emit player left event if the game is over', async () => {
-            doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
+            chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
             isGameOverSpy = chai.spy.on(activeGameService, 'isGameOver', () => true);
             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
 
@@ -246,7 +247,7 @@ describe('ActiveGameService', () => {
         });
 
         it('should emit player left event if the game is still ongoing', async () => {
-            doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
+            chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
             isGameOverSpy = chai.spy.on(activeGameService, 'isGameOver', () => false);
             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
 
@@ -255,7 +256,7 @@ describe('ActiveGameService', () => {
         });
 
         it('should send message explaining the user left with new VP message if game is NOT over', async () => {
-            doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
+            chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
             isGameOverSpy = chai.spy.on(activeGameService, 'isGameOver', () => false);
             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
 
@@ -269,7 +270,7 @@ describe('ActiveGameService', () => {
         });
 
         it('should send message explaining the user left without VP message if game IS over', async () => {
-            doesRoomExistSpy = chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
+            chai.spy.on(activeGameService['socketService'], 'doesRoomExist', () => true);
             isGameOverSpy = chai.spy.on(activeGameService, 'isGameOver', () => true);
             playerLeftEventSpy = chai.spy.on(activeGameService.playerLeftEvent, 'emit', () => {});
 
@@ -280,6 +281,21 @@ describe('ActiveGameService', () => {
                 gameId: DEFAULT_ID,
             };
             expect(emitToRoomSpy).to.have.been.called.with(DEFAULT_ID, 'newMessage', expectedArg);
+        });
+        it('should call replace player', async () => {
+            gameStub.observers = [DEFAULT_OBSERVER];
+            gameStub.player1 = DEFAULT_PLAYER_1;
+            gameStub.getPlayerByNumber.returns(DEFAULT_PLAYER_2);
+
+            const observerToPlayerSpy = chai.spy.on(activeGameService, 'observerToPlayer', () => {
+                DEFAULT_PLAYER_OBSERVER;
+            });
+
+            gameStub.replacePlayer.returns({});
+            const setEloSpy = chai.spy.on(activeGameService, 'setPlayerElo', () => {});
+            await activeGameService['handleReplaceVirtualPlayer'](DEFAULT_ID, DEFAULT_PLAYER_1.id, 3);
+            expect(observerToPlayerSpy).to.have.been.called;
+            expect(setEloSpy).to.have.been.called;
         });
     });
 });

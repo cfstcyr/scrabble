@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
 import Board from '@app/classes/board/board';
+import { DictionarySummary } from '@app/classes/communication/dictionary-data';
+import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { GameObjectivesData } from '@app/classes/communication/objective-data';
 import { RoundData } from '@app/classes/communication/round-data';
@@ -12,22 +14,20 @@ import { LetterValue, Tile } from '@app/classes/tile';
 import TileReserve from '@app/classes/tile/tile-reserve';
 import { TileReserveData } from '@app/classes/tile/tile.types';
 import { END_GAME_HEADER_MESSAGE, START_TILES_AMOUNT } from '@app/constants/classes-constants';
+import { INVALID_LIST_LENGTH } from '@app/constants/classes-errors';
 import { WINNER_MESSAGE } from '@app/constants/game-constants';
 import { INVALID_PLAYER_ID_FOR_GAME } from '@app/constants/services-errors';
 import BoardService from '@app/services/board-service/board.service';
 import ObjectivesService from '@app/services/objective-service/objective.service';
 import { isIdVirtualPlayer } from '@app/utils/is-id-virtual-player/is-id-virtual-player';
 import { Channel } from '@common/models/chat/channel';
+import { GameHistoryCreation, GameHistoryPlayerCreation } from '@common/models/game-history';
+import { Observer } from '@common/models/observer';
+import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
 import { TypeOfId } from '@common/types/id';
 import { StatusCodes } from 'http-status-codes';
 import { Container } from 'typedi';
-import { FeedbackMessage } from '@app/classes/communication/feedback-messages';
 import { ReadyGameConfig, StartGameData } from './game-config';
-import { INVALID_LIST_LENGTH } from '@app/constants/classes-errors';
-import { DictionarySummary } from '@app/classes/communication/dictionary-data';
-import { VirtualPlayerLevel } from '@common/models/virtual-player-level';
-import { GameHistoryCreation, GameHistoryPlayerCreation } from '@common/models/game-history';
-import { Observer } from '@common/models/observer';
 
 export default class Game {
     private static boardService: BoardService;
@@ -296,6 +296,21 @@ export default class Game {
 
     getPlayers(): Player[] {
         return [this.player1, this.player2, this.player3, this.player4];
+    }
+
+    getPlayerByNumber(playerNumber: number): Player {
+        switch (playerNumber) {
+            case 1:
+                return this.player1;
+            case 2:
+                return this.player2;
+            case 3:
+                return this.player3;
+            case 4:
+                return this.player4;
+            default:
+                return this.player1;
+        }
     }
 
     private computeEndOfGameScore(playerHasWon: boolean[], playerPointsToDeduct: number[]): number[] {

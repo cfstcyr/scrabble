@@ -3,11 +3,13 @@ import 'package:mobile/controllers/analysis-controller.dart';
 import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/controllers/game-play.controller.dart';
 import 'package:mobile/controllers/group-join-controller.dart';
+import 'package:mobile/controllers/notification-controller.dart';
 import 'package:mobile/controllers/puzzle-controller.dart';
 import 'package:mobile/controllers/tile-synchronisation-controller.dart';
 import 'package:mobile/controllers/user-controller.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/analysis-service.dart';
+import 'package:mobile/services/app-route-observer.dart';
 import 'package:mobile/services/client.dart';
 import 'package:mobile/services/end-game.service.dart';
 import 'package:mobile/services/game-creation-service.dart';
@@ -21,6 +23,7 @@ import 'package:mobile/services/player-leave-service.dart';
 import 'package:mobile/services/puzzle-service.dart';
 import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/socket.service.dart';
+import 'package:mobile/services/sound-service.dart';
 import 'package:mobile/services/storage.handler.dart';
 import 'package:mobile/services/theme-color-service.dart';
 import 'package:mobile/services/tile-synchronisation.service.dart';
@@ -30,6 +33,7 @@ import 'package:mobile/services/user.service.dart';
 
 import 'controllers/account-authentification-controller.dart';
 import 'services/chat.service.dart';
+import 'services/notification.service.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -73,6 +77,8 @@ class CustomLocator {
 
     getIt.registerLazySingleton<ActionService>(() => ActionService());
     getIt.registerLazySingleton<PlayerLeaveService>(() => PlayerLeaveService());
+    getIt.registerLazySingleton<NotificationController>(
+        () => NotificationController());
 
     getIt.registerLazySingleton<GameCreationController>(
         () => GameCreationController());
@@ -83,6 +89,10 @@ class CustomLocator {
   }
 
   void _registerActiveSingleton() {
+    getIt.registerSingleton<AppRouteObserver>(AppRouteObserver());
+    getIt.registerSingleton<SoundService>(SoundService());
+
+    getIt.registerSingleton<NotificationService>(NotificationService());
     getIt.registerSingleton<ChatService>(ChatService());
     getIt.registerSingleton<AccountAuthenticationController>(
         AccountAuthenticationController());

@@ -2,9 +2,9 @@
     package="com.example.mobile">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="mobile"
+        android:label="Scrabble"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/s_logo">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -26,6 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+       <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+           android:exported="true">
+       </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

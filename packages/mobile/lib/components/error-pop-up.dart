@@ -9,3 +9,12 @@ void errorSnackBar(BuildContext context, String errorMessage) {
           desktopSnackBarPosition: DesktopSnackBarPosition.topCenter)
       .show(context);
 }
+
+void successSnackBar(BuildContext context, String message) {
+  AnimatedSnackBar.material(message,
+          type: AnimatedSnackBarType.success,
+          duration: Duration(seconds: 5),
+          mobileSnackBarPosition: MobileSnackBarPosition.top,
+          desktopSnackBarPosition: DesktopSnackBarPosition.topCenter)
+      .show(context);
+}

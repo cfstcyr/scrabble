@@ -1,15 +1,24 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:mobile/classes/actions/action-data.dart';
+import 'package:mobile/classes/actions/action-place.dart';
+import 'package:mobile/classes/game/game.dart';
+import 'package:mobile/classes/rounds/round.dart';
 import 'package:mobile/classes/tile/tile.dart' as c;
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/components/tile/tile.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game-messages-constants.dart';
+import 'package:mobile/constants/locale/game-message-constants.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/game.service.dart';
+import 'package:mobile/services/round-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
+import 'package:mobile/services/user.service.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../classes/game/game-message.dart';
 import '../classes/game/game_messages.dart';
@@ -19,21 +28,21 @@ import '../locator.dart';
 import '../utils/game_messages.dart';
 
 class GameMessagesService {
-  late List<Widget> messages = [_buildMessage("Début de la partie")];
+  late BehaviorSubject<List<Widget>> messages$ =
+      BehaviorSubject.seeded([_buildMessage(START_MESSAGE)]);
 
   GameMessagesService._privateConstructor() {
-    messages = [_buildMessage("Début de la partie")];
-    _chatController.messageEvent.listen((GameMessage? gameMessage) => {
-          if (gameMessage != null)
-            messages.add(_buildMessage(gameMessage.content))
-        });
+    resetMessages();
+    _chatController.messageEvent
+        .listen((GameMessage? gameMessage) => addMessage(gameMessage));
   }
 
   ActionService _actionService = getIt.get<ActionService>();
   GameService _gameService = getIt.get<GameService>();
   GameEventService _gameEventService = getIt.get<GameEventService>();
+  final RoundService _roundService = getIt.get<RoundService>();
 
-  Stream<GameMessage?> get messageEvent => _chatController.gameMessage$.stream;
+  Stream<List<Widget>> get messageEvent => messages$.stream;
 
   static final GameMessagesService _instance =
       GameMessagesService._privateConstructor();
@@ -45,11 +54,21 @@ class GameMessagesService {
 
   final _chatController = getIt.get<GamePlayController>();
 
-  void resetMessages() {
-    messages = [_buildMessage("Début de la partie")];
+  void addMessage(GameMessage? message) {
+    if (message == null) return;
+    if (message.content.startsWith('!')) return;
+
+    List<Widget> messages = messages$.value;
+    messages.add(_buildMessage(message));
+    messages$.add(messages);
   }
 
-  Widget _buildMessage(String message) {
+  void resetMessages() {
+    messages$ = BehaviorSubject.seeded([_buildMessage(START_MESSAGE)]);
+  }
+
+  Widget _buildMessage(GameMessage gameMessage) {
+    String message = gameMessage.content;
     PlacementMessage? placement = getPlacementMessage(message);
 
     if (placement != null) return _buildPlacementMessage(placement);
@@ -61,7 +80,14 @@ class GameMessagesService {
       margin: EdgeInsets.only(bottom: SPACE_2),
       child: Column(
         children: subMessages
-            .map((String message) => MarkdownBody(data: message))
+            .map((String message) => MarkdownBody(
+                  data: message,
+                  styleSheet: MarkdownStyleSheet(
+                      textAlign: WrapAlignment.center,
+                      p: gameMessage.senderId == SYSTEM_ERROR_ID
+                          ? TextStyle(color: Colors.red)
+                          : null),
+                ))
             .toList(),
       ),
     );
@@ -73,7 +99,8 @@ class GameMessagesService {
     return _buildHintMessage(hints);
   }
 
-  Widget _buildHindMessagePayload(HintMessagePayload hintMessagePayload) {
+  Widget _buildHindMessagePayload(HintMessagePayload hintMessagePayload,
+      {bool canPlay = true}) {
     return Container(
       margin: EdgeInsets.only(bottom: SPACE_1),
       child: Table(
@@ -106,7 +133,7 @@ class GameMessagesService {
               verticalAlignment: TableCellVerticalAlignment.middle,
               child: Container(
                 padding: EdgeInsets.all(SPACE_1),
-                child: _buildPlayButton(hintMessagePayload),
+                child: _buildPlayButton(hintMessagePayload, canPlay: canPlay),
               ),
             )
           ])
@@ -116,18 +143,21 @@ class GameMessagesService {
   }
 
   Widget _buildHintMessage(HintMessage subMessages) {
-    return Container(
-      margin: EdgeInsets.only(bottom: SPACE_1),
-      child: Column(
-        children: [
-          MarkdownBody(data: HINT_MESSAGE),
-          ...subMessages.hints
-              .map((HintMessagePayload hintMessagePayload) =>
-                  _buildHindMessagePayload(hintMessagePayload))
-              .toList()
-        ],
-      ),
-    );
+    return StreamBuilder(
+        stream: _canPlayStream(),
+        builder: ((context, snapshot) => Container(
+              margin: EdgeInsets.only(bottom: SPACE_1),
+              child: Column(
+                children: [
+                  MarkdownBody(data: HINT_MESSAGE),
+                  ...subMessages.hints
+                      .map((HintMessagePayload hintMessagePayload) =>
+                          _buildHindMessagePayload(hintMessagePayload,
+                              canPlay: snapshot.data ?? false))
+                      .toList()
+                ],
+              ),
+            )));
   }
 
   Widget _buildPlacementMessageLetters(PlacementMessage placement) {
@@ -227,9 +257,10 @@ class GameMessagesService {
     );
   }
 
-  Widget _buildPlayButton(HintMessagePayload hintPayload) {
+  Widget _buildPlayButton(HintMessagePayload hintPayload,
+      {bool canPlay = true}) {
     return AppButton(
-      onPressed: () => _hanldePlaceAction(hintPayload),
+      onPressed: canPlay ? () => _hanldePlaceAction(hintPayload) : null,
       icon: Icons.play_arrow_rounded,
       size: AppButtonSize.normal,
       type: AppButtonType.normal,
@@ -251,7 +282,42 @@ class GameMessagesService {
   }
 
   void _sendAction(HintMessagePayload hintPayload) {
-    _actionService.sendAction(ActionType.place,
-        hintPayload.toActionPayload(_gameService.getTileRack()));
+    ActionPlacePayload? hintActionPayload;
+
+    try {
+      hintActionPayload =
+          hintPayload.toActionPayload(_gameService.getTileRack());
+    } catch (_) {
+      addMessage(GameMessage(
+          content: CANNOT_PLAY_HINT,
+          senderId: SYSTEM_ERROR_ID,
+          gameId: _gameService.currentGameId ?? ''));
+      return;
+    }
+
+    _actionService.sendAction(ActionType.place, hintActionPayload);
+  }
+
+  Stream<bool> _canPlayStream() {
+    return CombineLatestStream<dynamic, bool>([
+      _gameService.gameStream,
+      _actionService.isActionBeingProcessedStream,
+      _roundService.getActivePlayerId(),
+      _roundService.currentRoundStream,
+    ], (values) {
+      MultiplayerGame game = values[0];
+      bool isActionBeingProcessed = values[1];
+      String activePlayerSocketId = values[2];
+      Round? currentRound = values[3];
+
+      if (currentRound == null) return false;
+
+      return !getIt.get<UserService>().isObserver &&
+          _roundService.isActivePlayer(
+              activePlayerSocketId, game.players.getLocalPlayer().socketId) &&
+          currentRound.socketIdOfActivePlayer == activePlayerSocketId &&
+          !game.isOver &&
+          !isActionBeingProcessed;
+    });
   }
 }

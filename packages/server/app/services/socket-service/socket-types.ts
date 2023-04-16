@@ -2,11 +2,11 @@ import { GameUpdateData } from '@app/classes/communication/game-update-data';
 import { Message } from '@app/classes/communication/message';
 import { StartGameData } from '@app/classes/game/game-config';
 import { Group } from '@common/models/group';
-import { RequestingUsers } from '@common/models/requesting-users';
 import { HighScoreWithPlayers } from '@common/models/high-score';
+import { RequestingUsers } from '@common/models/requesting-users';
+import { TilePlacement } from '@common/models/tile-placement';
 import { PublicUser } from '@common/models/user';
 import { NoId } from '@common/types/id';
-import { TilePlacement } from '@common/models/tile-placement';
 
 export type SocketEmitEvents =
     | 'joinRequest'
@@ -17,6 +17,7 @@ export type SocketEmitEvents =
     | 'userLeftGroup'
     | 'gameUpdate'
     | 'startGame'
+    | 'replaceVirtualPlayer'
     | 'groupsUpdate'
     | 'highScoresList'
     | 'newMessage'

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/sound.dart';
 import 'package:mobile/constants/layout.constants.dart';
 import 'package:mobile/locator.dart';
+import 'package:mobile/services/sound-service.dart';
 import 'package:mobile/services/theme-color-service.dart';
 
 enum AppButtonTheme {
@@ -24,6 +26,7 @@ enum AppButtonType {
 
 class AppButton extends StatelessWidget {
   final ThemeColorService _themeColorService = getIt.get<ThemeColorService>();
+  final SoundService _soundService = getIt.get<SoundService>();
   final Function()? onPressed;
   final AppButtonTheme theme;
   final AppButtonSize size;
@@ -32,6 +35,7 @@ class AppButton extends StatelessWidget {
   final IconData? icon;
   final Widget? child;
   final bool iconOnly;
+  final double? width;
 
   AppButton({
     required this.onPressed,
@@ -42,19 +46,20 @@ class AppButton extends StatelessWidget {
     this.icon,
     this.child,
     this.iconOnly = false,
+    this.width,
   }) : assert(child != null ? text == null && icon == null : true);
 
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      onPressed: onPressed,
+      onPressed: onPressed != null ? handlePressed : null,
       color: _getButtonColor(),
       disabledColor: type == AppButtonType.normal
           ? Colors.grey.shade300
           : Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
       height: _getSize(),
-      minWidth: _getSize(),
+      minWidth: _getWidth(),
       padding: iconOnly ? EdgeInsets.zero : null,
       elevation: type == AppButtonType.normal ? 1 : 0,
       focusElevation: type == AppButtonType.normal ? 4 : 0,
@@ -136,6 +141,10 @@ class AppButton extends StatelessWidget {
     }
   }
 
+  double _getWidth() {
+    return width == null ? _getSize() : width as double;
+  }
+
   Widget? _getChild() {
     if (text != null || icon != null) {
       List<Widget> children = [];
@@ -165,6 +174,11 @@ class AppButton extends StatelessWidget {
     } else {
       return child;
     }
+  }
+
+  void handlePressed() {
+    _soundService.playSound(Sound.click);
+    if (onPressed != null) onPressed!();
   }
 }
 

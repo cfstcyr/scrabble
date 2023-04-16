@@ -45,6 +45,10 @@ class PlayersContainer {
     return players.firstWhere((player) => player.user.username == username);
   }
 
+  Player getPlayerBySocketId(String socketId) {
+    return players.firstWhere((player) => player.socketId == socketId);
+  }
+
   List<Player> get players => [player1, player2, player3, player4];
 
   setLocalPlayer(int playerNumber) {

@@ -7,9 +7,9 @@ import 'package:mobile/components/tile/tile.dart' as w;
 import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
 
-
 class AnalysisTileRack extends AbstractTileRack {
-  AnalysisTileRack({required super.gameStream, required this.tileViews});
+  AnalysisTileRack({required super.gameStream, required this.tileViews})
+      : super(width: 370);
 
   final List<w.Tile> tileViews;
 

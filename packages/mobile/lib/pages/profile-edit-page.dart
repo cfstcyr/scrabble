@@ -11,12 +11,7 @@ import 'package:mobile/locator.dart';
 import 'package:mobile/services/user.service.dart';
 import 'package:rxdart/rxdart.dart';
 
-// class ProfileEditPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MyScaffold(body: Container(), title: 'Modifier mon profil');
-//   }
-// }
+import '../routes/routes.dart';
 
 class ProfileEditPage extends StatefulWidget {
   @override
@@ -135,7 +130,11 @@ class ProfileEditPageState extends State<ProfileEditPage> {
     try {
       await _userService.editUser(EditableUserFields(
           username: usernameHandler.controller.text, avatar: avatarSrc.value!));
-      if (context.mounted) Navigator.pop(context);
+      if (context.mounted) {
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, PROFILE_ROUTE,
+            arguments: _userService.getUser());
+      }
     } catch (e) {
       if (context.mounted) {
         showDialog(
