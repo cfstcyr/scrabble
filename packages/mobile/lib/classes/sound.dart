@@ -19,7 +19,7 @@ extension SoundName on Sound {
   String get name {
     switch (this) {
       case Sound.click:
-        return "ClickSound";
+        return "TilePlacementSound";
       case Sound.lowTime:
         return "LowTimeSound";
       case Sound.criticalLowTime:
@@ -59,7 +59,11 @@ const lobbyMusic = [
 ];
 
 const pagesNoMusic = [GAME_PAGE_ROUTE, PUZZLE_ROUTE];
-const pageLobbyMusic = [CREATE_LOBBY_ROUTE, JOIN_WAITING_ROUTE];
+const pageLobbyMusic = [
+  CREATE_LOBBY_ROUTE,
+  JOIN_WAITING_ROUTE,
+  JOIN_LOBBY_ROUTE
+];
 
 const lowTime = 20;
 const criticalLowTime = 5;

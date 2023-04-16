@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -21,7 +22,6 @@ class SoundService {
   final Future<SharedPreferences> _sharedPreference =
       SharedPreferences.getInstance();
   final AppRouteObserver _routeObserver = getIt.get<AppRouteObserver>();
-
   bool _isMusicEnabled = true;
   double _musicVolume = 1;
   bool _isSoundEnabled = true;
@@ -30,12 +30,11 @@ class SoundService {
 
   SoundService._() {
     _loadConfig();
-
+    _soundPlayer.setReleaseMode(ReleaseMode.stop);
     _soundPlayer.audioCache
         .loadAll(Sound.values.map((sound) => sound.path).toList());
     _musicPlayer.audioCache.loadAll(backgroundMusic);
     _musicPlayer.audioCache.loadAll(lobbyMusic);
-
     _routeObserver.currentRoute$.listen(handleRouteChange);
   }
 
@@ -45,9 +44,17 @@ class SoundService {
 
   Future<void> playSound(Sound sound) async {
     if (!_isSoundEnabled) return;
+    await _soundPlayer.stop();
+    _soundPlayer.play(
+      AssetSource(sound.path),
+      mode: PlayerMode.lowLatency,
+      volume: 1,
+    );
+  }
 
-    await _soundPlayer.play(AssetSource(sound.path),
-        volume: _soundVolume, mode: PlayerMode.lowLatency);
+  Future<void> stopSound() async {
+    if (!_isSoundEnabled) return;
+    await _soundPlayer.stop();
   }
 
   Future<void> playMusic(MusicType musicType) async {
@@ -58,7 +65,10 @@ class SoundService {
     if (path == null) {
       _musicPlayer.stop();
     } else {
-      _musicPlayer.play(AssetSource(path), volume: _musicVolume);
+      _musicPlayer.play(
+        AssetSource(path),
+        volume: _musicVolume,
+      );
     }
   }
 
@@ -86,6 +96,9 @@ class SoundService {
 
   Future<void> setIsSoundEnabled(bool isSoundEnabled) async {
     _isSoundEnabled = isSoundEnabled;
+
+    if (!isSoundEnabled) _soundPlayer.stop();
+
     (await _sharedPreference).setBool(isSoundEnabledKey, isSoundEnabled);
   }
 
