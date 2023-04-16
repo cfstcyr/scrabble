@@ -1,16 +1,14 @@
 import 'dart:async';
 
 import 'package:mobile/classes/rounds/round.dart';
-import 'package:mobile/locator.dart';
-import 'package:mobile/services/action-service.dart';
 import 'package:rxdart/rxdart.dart';
-
-import 'game-event.service.dart';
 
 class RoundService {
   final Subject<Duration> _startRound$ = PublishSubject();
   final Subject _endRound$ = PublishSubject();
   final Subject _roundTimeout$ = PublishSubject();
+  late DateTime startTime;
+  late Duration elapsed;
   BehaviorSubject<Round?> currentRound$ = BehaviorSubject.seeded(null);
 
   RoundService._privateConstructor();
@@ -43,6 +41,7 @@ class RoundService {
   }
 
   void startRound(Round round, Function timerExpiresCallback) async {
+    startTime = DateTime.now();
     currentRound$.add(round);
 
     await roundTimeoutSubscription?.cancel();
@@ -50,7 +49,6 @@ class RoundService {
     roundTimeoutSubscription = roundTimeoutStream.listen((event) {
       timerExpiresCallback();
     });
-
     _startRound$.add(round.duration);
   }
 
@@ -60,6 +58,10 @@ class RoundService {
 
   void roundTimeout() {
     _roundTimeout$.add(null);
+  }
+
+  getStartRoundDate() {
+    return startTime;
   }
 
   void updateRoundData(Round round, Function timerExpiresCallback) {
