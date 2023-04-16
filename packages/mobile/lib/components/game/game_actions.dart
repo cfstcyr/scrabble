@@ -53,9 +53,6 @@ class _GameActionsState extends State<GameActions> {
 
   final GameService _gameService = getIt.get<GameService>();
 
-  final GameCreationController _gameCreationController =
-      getIt.get<GameCreationController>();
-
   final ActionService _actionService = getIt.get<ActionService>();
 
   final RoundService _roundService = getIt.get<RoundService>();
@@ -92,7 +89,6 @@ class _GameActionsState extends State<GameActions> {
                         : Icons.flag,
                     size: AppButtonSize.large,
                     theme: AppButtonTheme.danger,
-                    width: 80,
                   ),
                   Visibility(
                     visible: !getIt.get<UserService>().isObserver,
@@ -183,14 +179,12 @@ class _GameActionsState extends State<GameActions> {
                           child: AppButton(
                             onPressed:
                                 snapshot.hasData && isObservingVirtualPlayer
-                                    ? () => this
-                                        ._gameService
+                                    ? () => _gameService
                                         .replaceVirtualPlayer(_index)
                                     : null,
                             icon: Icons.swap_horiz_rounded,
                             size: AppButtonSize.large,
                             theme: AppButtonTheme.primary,
-                            width: 80,
                           ),
                         );
                       },
