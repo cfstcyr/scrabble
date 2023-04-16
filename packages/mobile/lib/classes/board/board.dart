@@ -1,6 +1,7 @@
 import 'package:mobile/classes/board/navigator.dart';
 import 'package:mobile/classes/board/orientation.dart';
 import 'package:mobile/classes/board/position.dart';
+import 'package:mobile/classes/sound.dart';
 import 'package:mobile/classes/tile/multiplier.dart';
 import 'package:mobile/classes/tile/square.dart';
 import 'package:mobile/classes/tile/tile-placement.dart';
@@ -13,7 +14,10 @@ import 'package:mobile/services/game-event.service.dart';
 import 'package:mobile/services/tile-synchronisation.service.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../services/sound-service.dart';
+
 class Board {
+  final SoundService _soundService = getIt.get<SoundService>();
   final GameEventService _gameEventService = getIt.get<GameEventService>();
   final TileSynchronisationService _tileSynchronisationService =
       getIt.get<TileSynchronisationService>();
@@ -35,6 +39,9 @@ class Board {
     _gameEventService.listen<TilePlacement>(PLACE_TILE_ON_BOARD,
         (tilePlacement) async {
       if (tilePlacement.tile.state == TileState.synced) return;
+
+      _soundService.playSound(Sound.tilePlacement);
+
       var placement = _currentPlacement$.value;
 
       placement.add(tilePlacement);
@@ -199,7 +206,8 @@ class Board {
 
   void _handleClearSynchronisedTiles() {
     for (TilePlacement tilePlacement in currentSynchronisedTiles) {
-      if(getSquare(tilePlacement.position).getTile()?.state != TileState.synced) continue;
+      if (getSquare(tilePlacement.position).getTile()?.state !=
+          TileState.synced) continue;
       getSquare(tilePlacement.position).removeTile();
     }
   }

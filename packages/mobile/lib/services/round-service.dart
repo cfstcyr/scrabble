@@ -1,11 +1,7 @@
 import 'dart:async';
 
 import 'package:mobile/classes/rounds/round.dart';
-import 'package:mobile/locator.dart';
-import 'package:mobile/services/action-service.dart';
 import 'package:rxdart/rxdart.dart';
-
-import 'game-event.service.dart';
 
 class RoundService {
   final Subject<Duration> _startRound$ = PublishSubject();
@@ -21,6 +17,8 @@ class RoundService {
   ValueStream<Round?> get currentRoundStream => currentRound$.stream;
 
   StreamSubscription<void>? roundTimeoutSubscription;
+
+  String? _localPlayerId;
 
   Round get currentRound {
     if (currentRound$.value == null) throw Exception('No current round');
@@ -40,6 +38,10 @@ class RoundService {
 
   bool isActivePlayer(String currentActivePlayerSocketId, String socketId) {
     return currentActivePlayerSocketId == socketId;
+  }
+
+  void setLocalPlayerId(String? localPlayerId) {
+    _localPlayerId = localPlayerId;
   }
 
   void startRound(Round round, Function timerExpiresCallback) async {

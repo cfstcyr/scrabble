@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/sound.dart';
 import 'package:mobile/components/game/game_info.dart';
 import 'package:mobile/components/timer.dart';
 import 'package:mobile/locator.dart';
@@ -10,12 +11,15 @@ import 'package:mobile/services/round-service.dart';
 import 'package:mobile/utils/round-utils.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../services/sound-service.dart';
+
 class GameTimer extends StatefulWidget {
   @override
   State<GameTimer> createState() => _GameTimerState();
 }
 
 class _GameTimerState extends State<GameTimer> {
+  final SoundService _soundService = getIt.get<SoundService>();
   final RoundService _roundService = getIt.get<RoundService>();
 
   Timer? _timer;
@@ -74,6 +78,11 @@ class _GameTimerState extends State<GameTimer> {
     _timer = Timer.periodic(
       oneSec,
       (Timer timer) {
+        if (getIt.get<GameService>().isLocalPlayerPlaying() &&
+            _timeLeft.value == lowTime) {
+          _soundService.playSound(Sound.lowTime);
+        }
+
         if (_timeLeft.value == 0) {
           timer.cancel();
           _roundService.roundTimeout();
