@@ -262,6 +262,8 @@ class GameService {
       String activePlayerId = values[0];
       MultiplayerGame? game = values[1];
 
+      _gameObserverService.activePlayerId.add(activePlayerId);
+
       return game != null
           ? game.players.localPlayerId == activePlayerId
           : false;
