@@ -26,6 +26,7 @@ import 'package:mobile/view-methods/create-lobby-methods.dart';
 import 'package:mobile/view-methods/group.methods.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../classes/rounds/round.dart';
 import '../components/alert-dialog.dart';
 import '../components/app_button.dart';
 import '../components/error-pop-up.dart';
@@ -277,7 +278,6 @@ class GameService {
         player2: gameData.player2,
         player3: gameData.player3,
         player4: gameData.player4);
-
     playersContainer.localPlayerId = localPlayerId;
 
     playersContainer.players
@@ -298,15 +298,15 @@ class GameService {
     getIt.get<GameMessagesService>().resetMessages();
     Navigator.pushReplacementNamed(
         navigatorKey.currentContext!, GAME_PAGE_ROUTE);
-    final limitDate = DateTime.parse(gameData.firstRound.duration.toString());
-    final timeLeft = (limitDate.millisecondsSinceEpoch -
-            DateTime.now().millisecondsSinceEpoch) /
-        1000;
-    final timeLeftMilliseconds = limitDate.millisecondsSinceEpoch -
-        DateTime.now().millisecondsSinceEpoch;
-    final timeLeftDuration = Duration(milliseconds: timeLeftMilliseconds);
-    gameData.firstRound.duration = timeLeftDuration;
-    _roundService.startRound(gameData.firstRound, _onTimerExpires);
+
+    // Sync le timer avec ce qui reste du round
+
+    Duration elapsedTime = DateTime.now().difference(_roundService.startTime);
+    Duration remaining = gameData.firstRound.duration - elapsedTime;
+    var currentRound = Round(
+        socketIdOfActivePlayer: gameData.firstRound.socketIdOfActivePlayer,
+        duration: remaining);
+    _roundService.startRound(currentRound, _onTimerExpires);
   }
 
   Future<void> replaceVirtualPlayer(int playerNumber) async {
