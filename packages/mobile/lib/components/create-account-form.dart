@@ -279,8 +279,7 @@ class CreateAccountFormState extends State<CreateAccountForm> {
         email: emailHandler.controller.text,
         avatar: avatarSrc.value!);
     if (await accountController.createAccount(newAccount)) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.pushNamed(context, HOME_ROUTE);
     } else {
       validateUsername();
       validateEmail();
