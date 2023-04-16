@@ -36,10 +36,10 @@
                                 {{ channel.name }}
                             </button>
                             <div *ngIf="channel.canQuit" class="buttons-container">
-                                <app-icon-button (click)="handleDeleteChannel(channel)">
+                                <app-icon-button (onClick)="handleDeleteChannel(channel)">
                                     <app-icon icon="trash"></app-icon>
                                 </app-icon-button>
-                                <app-icon-button (click)="handleQuitChannel(channel)">
+                                <app-icon-button (onClick)="handleQuitChannel(channel)">
                                     <app-icon icon="sign-out"></app-icon>
                                 </app-icon-button>
                             </div>
@@ -55,7 +55,7 @@
                             <button disabled class="chatbox-container__my-channels__button" style="color: black;">
                                 {{ channel.name }}
                             </button>
-                            <app-icon-button (click)="joinChannelFromMenu(channel)" *ngIf="channel.canQuit">
+                            <app-icon-button (onClick)="joinChannelFromMenu(channel)" *ngIf="channel.canQuit">
                                 <app-icon icon="plus"></app-icon>
                             </app-icon-button>
                         </div>

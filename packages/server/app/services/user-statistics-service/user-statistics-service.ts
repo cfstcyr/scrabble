@@ -8,7 +8,7 @@ import { Service } from 'typedi';
 import { PublicUserStatistics, UserGameStatisticInfo, UserStatistics } from '@common/models/user-statistics';
 import { DEFAULT_PLAYER_RATING } from '@common/models/constants';
 
-export const NUMBER_OF_USERS_IN_LEADERBOARD = 25;
+export const NUMBER_OF_USERS_IN_LEADERBOARD = 10;
 
 @Service()
 export class UserStatisticsService {
