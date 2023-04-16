@@ -213,30 +213,24 @@ class GameService {
                 handleRatingChange(localPlayer),
               ]
             : [],
-        [
-          DialogBoxButtonParameters(
-              content: DIALOG_LEAVE_BUTTON_CONTINUE,
-              theme: AppButtonTheme.secondary,
-              onPressed: () async {
-                await getIt.get<GamePlayController>().leaveGame();
+        !userService.isObserver
+            ? [
+                handleLeaveButton(context),
+                DialogBoxButtonParameters(
+                    content: DIALOG_SEE_ANALYSIS_BUTTON,
+                    theme: AppButtonTheme.primary,
+                    onPressed: () {
+                      Navigator.pop(context);
 
-                if (!context.mounted) return;
-                Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
-              }),
-          DialogBoxButtonParameters(
-              content: DIALOG_SEE_ANALYSIS_BUTTON,
-              theme: AppButtonTheme.primary,
-              onPressed: () {
-                Navigator.pop(context);
-
-                AnalysisRequestDialog(
-                        title: ANALYSIS_REQUEST_TITLE,
-                        message: ANALYSIS_REQUEST_COMPUTING,
-                        idAnalysis: game.idGameHistory,
-                        requestType: AnalysisRequestInfoType.idGame)
-                    .openAnalysisRequestDialog(context);
-              }),
-        ],
+                      AnalysisRequestDialog(
+                              title: ANALYSIS_REQUEST_TITLE,
+                              message: ANALYSIS_REQUEST_COMPUTING,
+                              idAnalysis: game.idGameHistory,
+                              requestType: AnalysisRequestInfoType.idGame)
+                          .openAnalysisRequestDialog(context);
+                    }),
+              ]
+            : [handleLeaveButton(context)],
         dismissOnBackgroundTouch: true);
   }
 
@@ -330,5 +324,17 @@ class GameService {
       errorSnackBar(navigatorKey.currentContext!, GAME_CANCEL_FAILED);
       return error;
     });
+  }
+
+  DialogBoxButtonParameters handleLeaveButton(BuildContext context) {
+    return DialogBoxButtonParameters(
+        content: DIALOG_LEAVE_BUTTON_CONTINUE,
+        theme: AppButtonTheme.secondary,
+        onPressed: () async {
+          await getIt.get<GamePlayController>().leaveGame();
+
+          if (!context.mounted) return;
+          Navigator.popUntil(context, ModalRoute.withName(HOME_ROUTE));
+        });
   }
 }
