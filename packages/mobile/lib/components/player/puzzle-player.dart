@@ -23,7 +23,7 @@ class PuzzlePlayer extends StatelessWidget {
             vertical: SPACE_1,
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Avatar(
@@ -33,37 +33,42 @@ class PuzzlePlayer extends StatelessWidget {
                   background: theme.colorScheme.onBackground,
                   radius: 16,
                   size: 44),
-              Column(
+              SizedBox(
+                width: SPACE_2,
+              ),
+              Expanded(
+                  child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     player.user.username,
                     overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.start,
                     style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 20,
                         height: 1,
                         fontWeight: FontWeight.w500,
                         color: Colors.white),
                   ),
+                  SizedBox(
+                    height: SPACE_1,
+                  ),
                   Opacity(
                     opacity: 0.64,
-                    child: SizedBox(
-                      width: 120,
-                      child: Text(
-                        '${player.streakPoints} / ${player.streakMaxPoints} pts',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            height: 1,
-                            color: Colors.white),
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.right,
-                      ),
+                    child: Text(
+                      '${player.streakPoints} / ${player.streakMaxPoints} pts',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          height: 1,
+                          color: Colors.white),
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
                     ),
                   ),
                 ],
-              )
+              )),
             ],
           ),
         ));

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/scaffold-persistance.dart';
 import 'package:mobile/controllers/account-authentification-controller.dart';
 import 'package:mobile/locator.dart';
 
@@ -23,15 +24,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [AppImage(src: LOGO_PATH, height: 24)]),
-          automaticallyImplyLeading: false,
-          surfaceTintColor: Colors.white,
-        ),
-        backgroundColor: Colors.white,
+    return MyScaffold(
+        title: 'Se connecter',
+        showChat: false,
         body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

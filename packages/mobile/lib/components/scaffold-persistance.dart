@@ -20,13 +20,15 @@ class MyScaffold extends StatelessWidget {
   final Color backgroundColor;
   final bool hasBackButton;
   final bool isLocalProfile;
+  final bool showChat;
 
   MyScaffold(
       {required this.body,
       required this.title,
       this.backgroundColor = Colors.white,
       this.hasBackButton = false,
-      this.isLocalProfile = true});
+      this.isLocalProfile = true,
+      this.showChat = true});
 
   @override
   Widget build(BuildContext context) {
@@ -66,30 +68,32 @@ class MyScaffold extends StatelessWidget {
                         child: Icon(Icons.search, color: mainColor, size: 28),
                       ))
               : Container(),
-          Builder(
-            builder: (context) => StreamBuilder<dynamic>(
-                stream: _chatService.hasUnreadMessages,
-                builder: (context, snapshot) {
-                  Color? pastilleColor;
+          showChat
+              ? Builder(
+                  builder: (context) => StreamBuilder<dynamic>(
+                      stream: _chatService.hasUnreadMessages,
+                      builder: (context, snapshot) {
+                        Color? pastilleColor;
 
-                  if (snapshot.hasData) {
-                    bool hasUnreadMessages = snapshot.data!;
+                        if (snapshot.hasData) {
+                          bool hasUnreadMessages = snapshot.data!;
 
-                    pastilleColor =
-                        _getNotificationPastilleColor(hasUnreadMessages);
-                  }
+                          pastilleColor =
+                              _getNotificationPastilleColor(hasUnreadMessages);
+                        }
 
-                  return NotificationPastille(
-                      pastilleColor: pastilleColor,
-                      child: IconButton(
-                        icon: Icon(Icons.chat, color: mainColor),
-                        onPressed: () {
-                          _soundService.playSound(Sound.click);
-                          Scaffold.of(context).openEndDrawer();
-                        },
-                      ));
-                }),
-          ),
+                        return NotificationPastille(
+                            pastilleColor: pastilleColor,
+                            child: IconButton(
+                              icon: Icon(Icons.chat, color: mainColor),
+                              onPressed: () {
+                                _soundService.playSound(Sound.click);
+                                Scaffold.of(context).openEndDrawer();
+                              },
+                            ));
+                      }),
+                )
+              : Container(),
           _shouldShowProfileButton(context)
               ? Builder(
                   builder: (context) => InkWell(

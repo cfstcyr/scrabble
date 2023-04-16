@@ -13,7 +13,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:mobile/classes/tile/tile-rack.dart' as p;
 
 abstract class AbstractTileRack extends StatelessWidget {
-  AbstractTileRack({required this.gameStream});
+  final double? width;
+
+  AbstractTileRack({required this.gameStream, this.width});
 
   final ValueStream<AbstractGame?> gameStream;
   final BehaviorSubject<int?> _currentTileIndex = BehaviorSubject();
@@ -30,6 +32,7 @@ abstract class AbstractTileRack extends StatelessWidget {
             padding:
                 EdgeInsets.symmetric(vertical: SPACE_2, horizontal: SPACE_3),
             height: 70,
+            width: width,
             child: game.data != null
                 ? Stack(
                     clipBehavior: Clip.none,
@@ -46,9 +49,7 @@ abstract class AbstractTileRack extends StatelessWidget {
                               children: startOfTileRackButtons(
                                   tileRack: game.data!.tileRack),
                             ),
-                            Expanded(
-                                child:
-                                    playerTileRack(game.data!.tileRack.stream)),
+                            playerTileRack(game.data!.tileRack.stream),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.end,
