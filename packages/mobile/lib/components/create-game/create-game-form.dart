@@ -235,14 +235,15 @@ class CreateGameFormState extends State<CreateGameForm> {
           ? _passwordHandler.value.controller.text
           : '',
     );
-    bool isCreated = await gameCreationService.handleCreateGame(groupData);
+    GroupCreationResponse res =
+        await gameCreationService.handleCreateGame(groupData);
     if (context.mounted) {
-      isCreated
+      res.isCreated
           ? {
               userService.isObserver = false,
               reInitialize(),
               Navigator.pushNamed(context, CREATE_LOBBY_ROUTE,
-                  arguments: groupData)
+                  arguments: res.group)
             }
           : {};
     }

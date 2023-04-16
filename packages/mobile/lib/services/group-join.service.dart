@@ -48,13 +48,13 @@ class GroupJoinService {
     return res.statusCode == HttpStatus.created;
   }
 
-  Future<void> handleLeaveGroup() async {
-    await groupJoinController.handleLeaveGroup();
+  Future<void> handleLeaveGroup(groupId) async {
+    await groupJoinController.handleLeaveGroup(groupId);
   }
 
-  Future<bool> handleCancelJoinRequest() async {
+  Future<bool> handleCancelJoinRequest(String groupId) async {
     return await groupJoinController
-        .handleCancelJoinRequest()
+        .handleCancelJoinRequest(groupId)
         .then((_) => true)
         .catchError((error) {
       _handleJoinError(error);

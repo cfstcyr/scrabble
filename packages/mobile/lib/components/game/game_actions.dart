@@ -6,8 +6,8 @@ import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/tile/tile.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/game-events.dart';
+import 'package:mobile/constants/game.constants.dart';
 import 'package:mobile/constants/layout.constants.dart';
-import 'package:mobile/controllers/game-creation-controller.dart';
 import 'package:mobile/locator.dart';
 import 'package:mobile/services/action-service.dart';
 import 'package:mobile/services/game-event.service.dart';
@@ -30,10 +30,10 @@ class _GameActionsState extends State<GameActions> {
   late var _index;
   var _isObservingVirtualPlayer = false;
   late StreamSubscription observedPlayerChangeSubscription;
-  late StreamSubscription isObservingVirtualPlayerSubscription;
   @override
   void initState() {
     super.initState();
+
     observedPlayerChangeSubscription =
         changeObservedPlayerStream.listen((int index) {
       _index = index;
@@ -47,7 +47,6 @@ class _GameActionsState extends State<GameActions> {
   @override
   void dispose() {
     observedPlayerChangeSubscription.cancel();
-    isObservingVirtualPlayerSubscription.cancel();
     super.dispose();
   }
 
@@ -81,6 +80,9 @@ class _GameActionsState extends State<GameActions> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   AppButton(
+                    text: getIt.get<UserService>().isObserver
+                        ? QUIT_LABEL_FR
+                        : null,
                     onPressed: () => getIt.get<UserService>().isObserver
                         ? leave(context)
                         : surrender(context),
@@ -177,6 +179,7 @@ class _GameActionsState extends State<GameActions> {
                         return Tooltip(
                           message: REPLACE_VIRTUAL_PLAYER_LABEL,
                           child: AppButton(
+                            text: REPLACE_LABEL_FR,
                             onPressed:
                                 snapshot.hasData && isObservingVirtualPlayer
                                     ? () => _gameService

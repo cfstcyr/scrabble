@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/user.dart';
 import 'package:mobile/components/app_button.dart';
 
+import '../../classes/group.dart';
 import '../../constants/create-lobby-constants.dart';
 import '../../view-methods/create-lobby-methods.dart';
 
 class GroupManagement extends StatelessWidget {
-  GroupManagement({
-    super.key,
-  });
+  GroupManagement(this.group);
+  final Group group;
   @override
   Widget build(BuildContext context) {
     return Padding(

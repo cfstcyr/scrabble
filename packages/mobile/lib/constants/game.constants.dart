@@ -3,7 +3,6 @@
 const int GRID_SIZE = 15;
 const int MIDDLE_ROW = 7, MIDDLE_COL = 7;
 
-
 const String LETTER = "Lettre";
 const String WORD = "Mot";
 
@@ -29,3 +28,6 @@ const double GAME_BOARD_SIZE = 630.0;
 
 const String SYSTEM_ID = 'system';
 const String SYSTEM_ERROR_ID = 'system-error';
+
+const QUIT_LABEL_FR = 'Quitter';
+const REPLACE_LABEL_FR = 'Remplacer';
