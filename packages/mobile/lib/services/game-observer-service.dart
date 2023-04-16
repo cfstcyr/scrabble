@@ -27,7 +27,7 @@ class GameObserverService {
         _observedPlayerIndex = BehaviorSubject<int>.seeded(1) {
     setPlayerTileRack(_observedPlayerIndex.value);
     playersContainer.stream.listen((_) {
-      setPlayerTileRack(_observedPlayerIndex.value);
+      syncActiveTiles([]);
     });
 
     _tileSyncService.synchronisedTiles.listen(
