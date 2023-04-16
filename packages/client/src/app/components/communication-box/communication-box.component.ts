@@ -100,8 +100,6 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
         if (!element.innerText) return;
         if (!this.isElementClickable(element)) return;
 
-        console.log(element.innerText);
-
         this.inputParser.handleInput(element.innerText);
     }
 
@@ -124,7 +122,9 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
 
             this.tilePlacementService.resetTiles();
             this.tilePlacementService.placeTileFromPlacePayload(action);
-        } catch {}
+        } catch {
+            // nothing to do
+        }
     }
 
     onMessageHoveredOut(): void {
