@@ -82,17 +82,18 @@ class MyScaffold extends StatelessWidget {
                               _getNotificationPastilleColor(hasUnreadMessages);
                         }
 
-                  return NotificationPastille(
-                      pastilleColor: pastilleColor,
-                      child: IconButton(
-                        icon: Icon(Icons.chat, color: mainColor),
-                        onPressed: () {
-                          _soundService.playSound(Sound.click);
-                          Scaffold.of(context).openEndDrawer();
-                        },
-                      ));
-                }),
-          ),
+                        return NotificationPastille(
+                            pastilleColor: pastilleColor,
+                            child: IconButton(
+                              icon: Icon(Icons.chat, color: mainColor),
+                              onPressed: () {
+                                _soundService.playSound(Sound.click);
+                                Scaffold.of(context).openEndDrawer();
+                              },
+                            ));
+                      }),
+                )
+              : Container(),
           _shouldShowProfileButton(context)
               ? Builder(
                   builder: (context) => InkWell(
