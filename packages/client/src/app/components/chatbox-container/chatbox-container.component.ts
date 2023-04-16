@@ -145,13 +145,8 @@ export class ChatboxContainerComponent implements OnDestroy, OnInit {
     }
 
     joinChannelFromMenu(channel: ClientChannel): void {
-        console.log('JOIN', channel);
         this.joinChannel.emit(channel);
         this.showChannel(channel);
-    }
-
-    test() {
-        console.log('test');
     }
 
     handleCreateChannel(): void {
