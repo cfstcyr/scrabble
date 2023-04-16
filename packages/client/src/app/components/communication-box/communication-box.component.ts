@@ -121,15 +121,20 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
             if (!action) return;
 
             this.tilePlacementService.resetTiles();
+            this.tilePlacementService.propagateTilePlacementToOpponents = false;
             this.tilePlacementService.placeTileFromPlacePayload(action);
+            this.tilePlacementService.propagateTilePlacementToOpponents = true;
         } catch {
             // nothing to do
         }
     }
 
     onMessageHoveredOut(): void {
-        this.lastPlacementPreview = undefined;
-        this.tilePlacementService.resetTiles();
+        this.tilePlacementService.propagateTilePlacementToOpponents = true;
+        if (this.lastPlacementPreview) {
+            this.lastPlacementPreview = undefined;
+            this.tilePlacementService.resetTiles();
+        }
     }
 
     protected onFocusableEvent(event: KeyboardEvent): void {

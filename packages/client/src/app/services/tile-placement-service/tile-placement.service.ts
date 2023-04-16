@@ -22,6 +22,7 @@ import { SoundName, SoundService } from '@app/services/sound-service/sound.servi
 })
 export class TilePlacementService {
     opponentTilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
+    propagateTilePlacementToOpponents: boolean;
     private blankTileModalOpened$: BehaviorSubject<boolean>;
     private tilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private isPlacementValidSubject$: BehaviorSubject<boolean>;
@@ -31,6 +32,7 @@ export class TilePlacementService {
         this.tilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
         this.isPlacementValidSubject$ = new BehaviorSubject<boolean>(false);
         this.opponentTilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
+        this.propagateTilePlacementToOpponents = true;
     }
 
     get tilePlacements$(): Observable<TilePlacement[]> {
