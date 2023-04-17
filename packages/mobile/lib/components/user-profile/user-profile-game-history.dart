@@ -15,8 +15,8 @@ class UserProfileGameHistory extends StatelessWidget {
   UserProfileGameHistory(
       {required List<GameHistory> gameHistories, this.isLocalUser = false})
       : gameHistories = gameHistories.map((gameHistory) {
-          gameHistory.startTime = gameHistory.startTime.add(Duration(hours: 8));
-          gameHistory.endTime = gameHistory.endTime.add(Duration(hours: 8));
+          gameHistory.startTime = gameHistory.startTime.toLocal();
+          gameHistory.endTime = gameHistory.endTime.toLocal();
           return gameHistory;
         }).toList();
 
