@@ -7,6 +7,8 @@
                     class="message"
                     [innerHTML]="msg.content"
                     (click)="onMessageClicked($event)"
+                    (mouseleave)="msg.isClickable ? onMessageHoveredOut() : undefined"
+                    (mousemove)='msg.isClickable ? onMessageHovered($event) : undefined'
                 ></p>
             </div>
         </div>
