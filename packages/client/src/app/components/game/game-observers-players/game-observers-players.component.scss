@@ -17,7 +17,8 @@
         transition: ease-in scale 0.1s, ease-in opacity 0.1s;
 
         &__user {
-            display: flex;
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
             gap: 6px;
             align-items: center;
 
