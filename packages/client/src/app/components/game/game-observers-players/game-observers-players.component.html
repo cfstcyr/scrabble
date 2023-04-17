@@ -5,8 +5,7 @@
         <div class='game-observers-players__player__user'>
             <img class=' game-observers-players__player__user__avatar' [appSrc]='player.player.publicUser.avatar'
                 [square]='24'>
-            <app-icon *ngIf='observedPlayerId === player.player.id' icon='eye'></app-icon>
-            <span class='game-observers-players__player__user__name'>{{player.player.publicUser.username}}</span>
+            <span class='game-observers-players__player__user__name'><app-icon *ngIf='observedPlayerId === player.player.id' icon='eye'></app-icon> {{player.player.publicUser.username}}</span>
         </div>
         <div class='game-observers-players__player__points'>
             <app-tile [tile]='player.tilesLeftTile' [hideValue]='true'
