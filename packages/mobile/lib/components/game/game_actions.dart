@@ -108,30 +108,6 @@ class _GameActionsState extends State<GameActions> {
                             size: AppButtonSize.large,
                           );
                         }),
-                  ),
-                  Visibility(
-                    visible: !getIt.get<UserService>().isObserver,
-                    child: StreamBuilder<bool>(
-                        stream: _canExchangeStream(),
-                        initialData: false,
-                        builder: (context, snapshot) {
-                          return AppButton(
-                            onPressed: snapshot.hasData && snapshot.data!
-                                ? () {
-                                    _actionService.sendAction(
-                                        ActionType.exchange,
-                                        _gameService
-                                            .getTileRack()
-                                            .getSelectedTilesPayload());
-                                    _gameService
-                                        .getTileRack()
-                                        .disableExchangeMode();
-                                  }
-                                : null,
-                            icon: Icons.swap_horiz_rounded,
-                            size: AppButtonSize.large,
-                          );
-                        }),
                   ), //Échanger
                   Visibility(
                     visible: !getIt.get<UserService>().isObserver,
@@ -180,11 +156,11 @@ class _GameActionsState extends State<GameActions> {
                           message: REPLACE_VIRTUAL_PLAYER_LABEL,
                           child: AppButton(
                             text: REPLACE_LABEL_FR,
-                            onPressed:
-                                snapshot.hasData && isObservingVirtualPlayer
-                                    ? () => _gameService
-                                        .replaceVirtualPlayer(_index)
-                                    : null,
+                            onPressed: snapshot.hasData &&
+                                    isObservingVirtualPlayer
+                                ? () =>
+                                    _gameService.replaceVirtualPlayer(_index)
+                                : null,
                             icon: Icons.swap_horiz_rounded,
                             size: AppButtonSize.large,
                             theme: AppButtonTheme.primary,
