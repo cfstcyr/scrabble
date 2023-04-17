@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/actions/action-data.dart';
 import 'package:mobile/classes/game/game.dart';
 import 'package:mobile/classes/tile/tile.dart';
+import 'package:mobile/components/alert-dialog.dart';
 import 'package:mobile/components/app_button.dart';
 import 'package:mobile/constants/game-events.dart';
 import 'package:mobile/constants/game.constants.dart';
@@ -30,6 +31,7 @@ class _GameActionsState extends State<GameActions> {
   late var _index;
   var _isObservingVirtualPlayer = false;
   late StreamSubscription observedPlayerChangeSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -180,11 +182,11 @@ class _GameActionsState extends State<GameActions> {
                           message: REPLACE_VIRTUAL_PLAYER_LABEL,
                           child: AppButton(
                             text: REPLACE_LABEL_FR,
-                            onPressed:
-                                snapshot.hasData && isObservingVirtualPlayer
-                                    ? () => _gameService
-                                        .replaceVirtualPlayer(_index)
-                                    : null,
+                            onPressed: snapshot.hasData &&
+                                    isObservingVirtualPlayer
+                                ? () =>
+                                    _openReplacePlayerDialogBox(context, _index)
+                                : null,
                             icon: Icons.swap_horiz_rounded,
                             size: AppButtonSize.large,
                             theme: AppButtonTheme.primary,
@@ -255,5 +257,23 @@ class _GameActionsState extends State<GameActions> {
 
   void handleVirtualPlayerObserving(bool isObservingVirtualPlayer) {
     _isObservingVirtualPlayer = isObservingVirtualPlayer;
+  }
+
+  void _openReplacePlayerDialogBox(BuildContext context, int playerIndex) {
+    triggerDialogBox('Remplacer un joueur virtuel', [
+      Center(child: Text('Voulez-vous vraiment remplacer un joueur virtuel?'))
+    ], [
+      DialogBoxButtonParameters(
+          content: 'Annuler',
+          theme: AppButtonTheme.secondary,
+          closesDialog: true),
+      DialogBoxButtonParameters(
+          content: 'Remplacer',
+          theme: AppButtonTheme.primary,
+          onPressed: () {
+            Navigator.pop(context);
+            _gameService.replaceVirtualPlayer(_index);
+          }),
+    ]);
   }
 }
