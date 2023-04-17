@@ -73,7 +73,7 @@
     <mat-card class="puzzle-actions">
         <button mat-flat-button class="button-danger" (click)="abandon()" [disabled]="(isPlaying | async) === false"><app-icon icon="flag" styling="solid"></app-icon> Abandonner</button>
         <div class='action-container' matTooltip='Placez un placement valide pour jouer' [matTooltipDisabled]='(canPlay() | async) === true && (isPlaying | async) === true'>
-            <button mat-flat-button color="primary" (click)="play()" [disabled]="(canPlay() | async) === false || (isPlaying | async) === false"><app-icon icon="square" styling="solid"></app-icon> Placer</button>
+            <button mat-flat-button color="primary" (click)="play()" [disabled]="(canPlay() | async) === false || (isPlaying | async) === false"><app-icon icon="play" styling="solid"></app-icon> Placer</button>
         </div>
     </mat-card>
 </div>
