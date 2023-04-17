@@ -104,6 +104,7 @@ export class CommunicationBoxComponent extends FocusableComponent<KeyboardEvent>
     }
 
     onMessageHovered(event: MouseEvent): void {
+        if (!this.gameService.isLocalPlayerPlaying()) return;
         const element: HTMLElement = event.target as HTMLElement;
         if (!element.innerText) return;
         if (!this.isElementClickable(element)) return;
