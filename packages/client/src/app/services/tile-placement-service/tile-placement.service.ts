@@ -22,6 +22,7 @@ import { SoundName, SoundService } from '@app/services/sound-service/sound.servi
 })
 export class TilePlacementService {
     opponentTilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
+    propagateTilePlacementToOpponents: boolean;
     private blankTileModalOpened$: BehaviorSubject<boolean>;
     private tilePlacementsSubject$: BehaviorSubject<TilePlacement[]>;
     private isPlacementValidSubject$: BehaviorSubject<boolean>;
@@ -31,6 +32,7 @@ export class TilePlacementService {
         this.tilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
         this.isPlacementValidSubject$ = new BehaviorSubject<boolean>(false);
         this.opponentTilePlacementsSubject$ = new BehaviorSubject<TilePlacement[]>([]);
+        this.propagateTilePlacementToOpponents = true;
     }
 
     get tilePlacements$(): Observable<TilePlacement[]> {
@@ -69,6 +71,33 @@ export class TilePlacementService {
             this.tilePlacementsSubject$.next([...this.tilePlacementsSubject$.value, tilePlacement]);
             this.updatePlacement();
         }
+    }
+
+    placeTileFromPlacePayload(placeActionPayload: PlaceActionPayload): void {
+        const navigator = this.boardService.navigator?.clone();
+
+        if (!navigator) return;
+
+        navigator.setPosition(placeActionPayload.startPosition);
+        navigator.orientation = placeActionPayload.orientation;
+
+        let index = 0;
+        const tilePlacements: TilePlacement[] = [];
+        do {
+            if (navigator.isEmpty()) {
+                tilePlacements.push({
+                    tile: placeActionPayload.tiles[index],
+                    position: { ...navigator.getPosition() },
+                });
+                index++;
+            }
+
+            navigator.forward();
+        } while (index < placeActionPayload.tiles.length && navigator.isWithinBounds());
+
+        this.tilePlacementsSubject$.next(tilePlacements);
+        this.soundService.playSound(SoundName.TilePlacementSound);
+        this.updatePlacement();
     }
 
     moveTile(tilePlacement: TilePlacement, previousPosition: Position): void {

@@ -32,14 +32,14 @@
                     <p class="chatbox-container__section__title">Mes canaux</p>
                     <div class="chatbox-container__my-channels__content">
                         <div class="chatbox-container__my-channels__item" *ngFor="let channel of getChannelsForMenu() | async">
-                            <button [disabled]="!channel.canOpen" (click)="showChannel(channel)" class="chatbox-container__my-channels__button">
+                            <button [disabled]="!channel.canOpen" (mouseup)="showChannel(channel)" class="chatbox-container__my-channels__button">
                                 {{ channel.name }}
                             </button>
                             <div *ngIf="channel.canQuit" class="buttons-container">
-                                <app-icon-button (onClick)="handleDeleteChannel(channel)">
+                                <app-icon-button (mouseup)="handleDeleteChannel(channel)">
                                     <app-icon icon="trash"></app-icon>
                                 </app-icon-button>
-                                <app-icon-button (onClick)="handleQuitChannel(channel)">
+                                <app-icon-button (mouseup)="handleQuitChannel(channel)">
                                     <app-icon icon="sign-out"></app-icon>
                                 </app-icon-button>
                             </div>
@@ -55,7 +55,7 @@
                             <button disabled class="chatbox-container__my-channels__button" style="color: black;">
                                 {{ channel.name }}
                             </button>
-                            <app-icon-button (onClick)="joinChannelFromMenu(channel)" *ngIf="channel.canQuit">
+                            <app-icon-button (mouseup)="joinChannelFromMenu(channel)" *ngIf="channel.canQuit">
                                 <app-icon icon="plus"></app-icon>
                             </app-icon-button>
                         </div>

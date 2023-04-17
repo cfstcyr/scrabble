@@ -118,6 +118,7 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
             squareView.square = square;
             squareView.applied = true;
             squareView.newlyPlaced = true;
+            squareView.halfOppacity = false;
 
             this.newlyPlacedTiles.push(squareView);
         }
@@ -158,6 +159,8 @@ export class GameBoardWrapperComponent implements OnInit, OnDestroy {
             if (!squareView.square.tile) {
                 squareView.square.tile = tilePlacement.tile;
                 squareView.halfOppacity = true;
+                squareView.applied = true;
+                squareView.newlyPlaced = false;
                 this.opponentPlacedTiles.push(squareView);
             }
         }

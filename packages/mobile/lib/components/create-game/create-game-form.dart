@@ -44,7 +44,7 @@ class CreateGameFormState extends State<CreateGameForm> {
 
   final BehaviorSubject<TextFieldHandler> _passwordHandler =
       BehaviorSubject<TextFieldHandler>.seeded(TextFieldHandler());
-
+  final BehaviorSubject<bool> _pressed = BehaviorSubject<bool>.seeded(false);
   @override
   void initState() {
     super.initState();
@@ -58,6 +58,7 @@ class CreateGameFormState extends State<CreateGameForm> {
         defaultValue: GameVisibility.public,
         optionsToValue: VISIBILITY_LEVELS,
         toggleOptionWidget: generateVisibilityWidget);
+    _pressed.add(false);
   }
 
   @override
@@ -202,7 +203,11 @@ class CreateGameFormState extends State<CreateGameForm> {
                                     size: AppButtonSize.large,
                                     onPressed:
                                         snapshot.hasData && snapshot.data!
-                                            ? () async => await createGame()
+                                            ? () async {
+                                                _pressed.add(true);
+                                                await createGame().whenComplete(
+                                                    () => _pressed.add(false));
+                                              }
                                             : null,
                                     text: CREATE_GAME_LABEL_FR);
                               })
@@ -250,15 +255,19 @@ class CreateGameFormState extends State<CreateGameForm> {
   }
 
   Stream<bool> isFormValid() {
-    return CombineLatestStream<dynamic, bool>(
-        [visibilitySelector.selectedStream, _passwordHandler.stream], (values) {
+    return CombineLatestStream<dynamic, bool>([
+      visibilitySelector.selectedStream,
+      _passwordHandler.stream,
+      _pressed.stream
+    ], (values) {
       String? visibility = values[0].nameEnum.visibilityName;
       TextFieldHandler passwordHandler = values[1];
+      bool hasBeenPressed = values[2];
 
       if (visibility == GameVisibility.protected.visibilityName) {
         return passwordHandler.controller.text.isNotEmpty;
       }
-      return true;
+      return !hasBeenPressed;
     });
   }
 }
