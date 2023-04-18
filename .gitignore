@@ -32,3 +32,6 @@ packages/mobile/macos/Flutter/GeneratedPluginRegistrant.swift
 packages/mobile/windows/flutter/generated_plugin_registrant.cc
 
 packages/mobile/windows/flutter/generated_plugins.cmake
+
+packages/mobile/firebase-tools-instant-win.exe
+packages/mobile/firebase.exe
